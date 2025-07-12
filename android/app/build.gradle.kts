@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "io.coursepick.coursepick"
-        minSdk = 29
+        minSdk = 23
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
