@@ -46,51 +46,12 @@ public class Course {
         return minDistance;
     }
 
-    private double distanceFromPointToLineSegment(Coordinate point, Coordinate start, Coordinate end) {
-        // 선분의 양 끝점까지의 거리
-        double distToStart = point.distanceFrom(start);
-        double distToEnd = point.distanceFrom(end);
-
-        // 선분의 길이
-        double segmentLength = start.distanceFrom(end);
-
-        // 선분이 점인 경우
-        if (segmentLength == 0) {
-            return distToStart;
-        }
-
-        // 투영 계산을 위한 벡터 내적
-        double lat1 = start.latitude();
-        double lon1 = start.longitude();
-        double lat2 = end.latitude();
-        double lon2 = end.longitude();
-        double latP = point.latitude();
-        double lonP = point.longitude();
-
-        double A = latP - lat1;
-        double B = lonP - lon1;
-        double C = lat2 - lat1;
-        double D = lon2 - lon1;
-
-        double dot = A * C + B * D;
-        double lenSq = C * C + D * D;
-
-        double param = dot / lenSq;
-
-        // 투영점이 선분 밖에 있는 경우
-        if (param < 0) {
-            return distToStart;
-        }
-        if (param > 1) {
-            return distToEnd;
-        }
-
-        // 투영점이 선분 위에 있는 경우
-        double projLat = lat1 + param * C;
-        double projLon = lon1 + param * D;
-        Coordinate projection = new Coordinate(projLat, projLon);
-
-        return point.distanceFrom(projection);
+    private double distanceFromPointToLineSegment(Coordinate target, Coordinate start, Coordinate end) {
+        double distanceRatio = target.calculateDistanceRatioBetween(start, end);
+        if (distanceRatio < 0) return target.distanceFrom(start);
+        if (distanceRatio > 1) return target.distanceFrom(end);
+        Coordinate closestCoordinate = start.moveTo(end, distanceRatio);
+        return target.distanceFrom(closestCoordinate);
     }
 
     private static String compactName(String name) {

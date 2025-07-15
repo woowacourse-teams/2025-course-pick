@@ -18,8 +18,16 @@ public class Coordinate {
         return this.latitude == other.latitude && this.longitude == other.longitude;
     }
 
+    /**
+     * 두 점 사이의 거리를 계산합니다.
+     * 3D 구면체 위에서의 곡률 거리를 계산하는 하버사인 공식을 활용하여 계산합니다.
+     * 하버사인 공식 : https://en.wikipedia.org/wiki/Haversine_formula
+     *
+     * @param other 기준 좌표
+     * @return 거리(M)
+     */
     public double distanceFrom(Coordinate other) {
-        final double earthRadiusKm = 6371.0;
+        final double earthRadiusMeter = 6371000.0;
 
         double lat1Rad = Math.toRadians(this.latitude);
         double lon1Rad = Math.toRadians(this.longitude);
@@ -30,13 +38,28 @@ public class Coordinate {
         double deltaLon = lon2Rad - lon1Rad;
 
         // Haversine 공식
-        double a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
-                Math.cos(lat1Rad) * Math.cos(lat2Rad) *
-                        Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+        double harversineA = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) + Math.cos(lat1Rad) * Math.cos(lat2Rad) * Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+        double centralAngle = 2 * Math.atan2(Math.sqrt(harversineA), Math.sqrt(1 - harversineA));
 
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return centralAngle * earthRadiusMeter;
+    }
 
-        return earthRadiusKm * c * 1000;
+    public double calculateDistanceRatioBetween(Coordinate start, Coordinate end) {
+        double startToTargetLatitudeDiff = start.latitude - this.latitude;
+        double startToTargetLongitudeDiff = start.longitude - this.longitude;
+        double startToEndLatitudeDiff = start.latitude - end.latitude;
+        double startToEndLongitudeDiff = start.longitude - end.longitude;
+
+        double dotProduct = startToTargetLatitudeDiff * startToEndLatitudeDiff + startToTargetLongitudeDiff * startToEndLongitudeDiff;
+        double segmentLengthSquared = startToEndLatitudeDiff * startToEndLatitudeDiff + startToEndLongitudeDiff * startToEndLongitudeDiff;
+
+        return dotProduct / segmentLengthSquared;
+    }
+
+    public Coordinate moveTo(Coordinate other, double distanceRatio) {
+        double projectionLatitude = this.latitude + (other.latitude - this.latitude) * distanceRatio;
+        double projectionLongitude = this.longitude + (other.longitude - this.longitude) * distanceRatio;
+        return new Coordinate(projectionLatitude, projectionLongitude);
     }
 
     public double latitude() {
