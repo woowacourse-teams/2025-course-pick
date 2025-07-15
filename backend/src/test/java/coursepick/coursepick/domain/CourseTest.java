@@ -3,6 +3,7 @@ package coursepick.coursepick.domain;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
@@ -70,25 +71,43 @@ class CourseTest {
     @Test
     void 코스의_총_거리를_계산할_수_있다() {
         Course course = new Course("한강뛰어보자", List.of(
-                new Coordinate(37.5184, 126.9956),
-                new Coordinate(37.5180, 126.9965),
-                new Coordinate(37.5175, 126.9980),
-                new Coordinate(37.5170, 127.0000),
-                new Coordinate(37.5165, 127.0020),
-                new Coordinate(37.5160, 127.0045),
-                new Coordinate(37.5155, 127.0070),
-                new Coordinate(37.5150, 127.0095),
-                new Coordinate(37.5155, 127.0070),
-                new Coordinate(37.5160, 127.0045),
-                new Coordinate(37.5165, 127.0020),
-                new Coordinate(37.5170, 127.0000),
-                new Coordinate(37.5175, 126.9980),
-                new Coordinate(37.5180, 126.9965),
-                new Coordinate(37.5184, 126.9956)
+                new Coordinate(37.518400, 126.995600),
+                new Coordinate(37.518000, 126.996500),
+                new Coordinate(37.517500, 126.998000),
+                new Coordinate(37.517000, 127.000000),
+                new Coordinate(37.516500, 127.002000),
+                new Coordinate(37.516000, 127.004500),
+                new Coordinate(37.515500, 127.007000),
+                new Coordinate(37.515000, 127.009500),
+                new Coordinate(37.515500, 127.007000),
+                new Coordinate(37.516000, 127.004500),
+                new Coordinate(37.516500, 127.002000),
+                new Coordinate(37.517000, 127.000000),
+                new Coordinate(37.517500, 126.998000),
+                new Coordinate(37.518000, 126.996500),
+                new Coordinate(37.518400, 126.995600)
         ));
 
         double totalLength = course.length();
 
         assertThat((int) totalLength).isEqualTo(2573);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "37.517712, 126.995012, 142",
+            "37.516678, 126.997065, 46"
+    })
+    void 특정_좌표에서_코스까지_가장_가까운_거리를_계산할_수_있다(double latitude, double longitude, int expectedDistance) {
+        Course course = new Course("한강뛰어보자", List.of(
+                new Coordinate(37.519760, 126.995477),
+                new Coordinate(37.517083, 126.997182),
+                new Coordinate(37.519760, 126.995477)
+        ));
+        Coordinate target = new Coordinate(latitude, longitude);
+
+        double distance = course.minDistanceFrom(target);
+
+        assertThat((int) distance).isEqualTo(expectedDistance);
     }
 }
