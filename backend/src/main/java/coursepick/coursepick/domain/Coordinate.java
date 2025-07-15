@@ -5,18 +5,11 @@ public class Coordinate {
     private final double latitude;
     private final double longitude;
 
-
     public Coordinate(double latitude, double longitude) {
         double roundedLatitude = Math.floor(latitude * 1000000.0) / 1000000.0;
         double roundedLongitude = Math.floor(longitude * 1000000.0) / 1000000.0;
-
-        if (roundedLatitude < -90 || roundedLatitude > 90) {
-            throw new IllegalArgumentException();
-        }
-        if (roundedLongitude < -180 || roundedLongitude >= 180) {
-            throw new IllegalArgumentException();
-        }
-
+        validateLatitudeRange(roundedLatitude);
+        validateLongitudeRange(roundedLongitude);
         this.latitude = roundedLatitude;
         this.longitude = roundedLongitude;
     }
@@ -53,5 +46,17 @@ public class Coordinate {
 
     public double longitude() {
         return longitude;
+    }
+
+    private static void validateLatitudeRange(double roundedLatitude) {
+        if (roundedLatitude < -90 || roundedLatitude > 90) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private static void validateLongitudeRange(double roundedLongitude) {
+        if (roundedLongitude < -180 || roundedLongitude >= 180) {
+            throw new IllegalArgumentException();
+        }
     }
 }
