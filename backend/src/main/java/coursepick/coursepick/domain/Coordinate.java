@@ -19,13 +19,13 @@ public class Coordinate {
         return this.latitude == other.latitude && this.longitude == other.longitude;
     }
 
-    public double distanceFrom(Coordinate coordinate) {
+    public double distanceFrom(Coordinate other) {
         final double earthRadiusKm = 6371.0;
 
         double lat1Rad = Math.toRadians(this.latitude);
         double lon1Rad = Math.toRadians(this.longitude);
-        double lat2Rad = Math.toRadians(coordinate.latitude);
-        double lon2Rad = Math.toRadians(coordinate.longitude);
+        double lat2Rad = Math.toRadians(other.latitude);
+        double lon2Rad = Math.toRadians(other.longitude);
 
         double deltaLat = lat2Rad - lat1Rad;
         double deltaLon = lon2Rad - lon1Rad;
