@@ -7,8 +7,18 @@ public class Coordinate {
 
 
     public Coordinate(double latitude, double longitude) {
-        this.latitude = latitude;
-        this.longitude = longitude;
+        double roundedLatitude = Math.floor(latitude * 1000000.0) / 1000000.0;
+        double roundedLongitude = Math.floor(longitude * 1000000.0) / 1000000.0;
+
+        if (roundedLatitude < -90 || roundedLatitude > 90) {
+            throw new IllegalArgumentException();
+        }
+        if (roundedLongitude < -180 || roundedLongitude >= 180) {
+            throw new IllegalArgumentException();
+        }
+
+        this.latitude = roundedLatitude;
+        this.longitude = roundedLongitude;
     }
 
     public boolean hasSameLatitudeAndLongitude(Coordinate other) {
@@ -35,5 +45,13 @@ public class Coordinate {
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
         return earthRadiusKm * c * 1000;
+    }
+
+    public double latitude() {
+        return latitude;
+    }
+
+    public double longitude() {
+        return longitude;
     }
 }
