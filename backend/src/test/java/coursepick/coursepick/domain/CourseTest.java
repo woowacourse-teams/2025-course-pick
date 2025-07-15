@@ -66,4 +66,29 @@ class CourseTest {
             return List.of(new Coordinate(1d, 1d), new Coordinate(1d, 1d));
         }
     }
+
+    @Test
+    void 코스의_총_거리를_계산할_수_있다() {
+        Course course = new Course("한강뛰어보자", List.of(
+                new Coordinate(37.5184, 126.9956),
+                new Coordinate(37.5180, 126.9965),
+                new Coordinate(37.5175, 126.9980),
+                new Coordinate(37.5170, 127.0000),
+                new Coordinate(37.5165, 127.0020),
+                new Coordinate(37.5160, 127.0045),
+                new Coordinate(37.5155, 127.0070),
+                new Coordinate(37.5150, 127.0095),
+                new Coordinate(37.5155, 127.0070),
+                new Coordinate(37.5160, 127.0045),
+                new Coordinate(37.5165, 127.0020),
+                new Coordinate(37.5170, 127.0000),
+                new Coordinate(37.5175, 126.9980),
+                new Coordinate(37.5180, 126.9965),
+                new Coordinate(37.5184, 126.9956)
+        ));
+
+        double totalLength = course.length();
+
+        assertThat((int) totalLength).isEqualTo(2573);
+    }
 }
