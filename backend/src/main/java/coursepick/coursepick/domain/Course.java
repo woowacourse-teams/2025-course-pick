@@ -1,5 +1,6 @@
 package coursepick.coursepick.domain;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class Course {
@@ -44,6 +45,14 @@ public class Course {
         }
 
         return minDistance;
+    }
+
+    public static Comparator<? super Course> distanceComparator(double latitude, double longitude) {
+        return (course1, course2) -> (int) (course1.minDistanceFrom(new Coordinate(latitude, longitude)) - course2.minDistanceFrom(new Coordinate(latitude, longitude)));
+    }
+
+    public List<Coordinate> coordinates() {
+        return coordinates;
     }
 
     private double distanceFromPointToLineSegment(Coordinate target, Coordinate start, Coordinate end) {
