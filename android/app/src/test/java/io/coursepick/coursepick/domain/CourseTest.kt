@@ -12,7 +12,7 @@ class CourseTest {
                 CourseName("석촌호수 러닝 코스"),
                 Distance(300),
                 Length(3000),
-                emptyList()
+                emptyList(),
             )
         }
     }
