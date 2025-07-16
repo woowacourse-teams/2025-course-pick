@@ -1,0 +1,4 @@
+spring:
+  application.name: coursepick
+  jpa:
+    open-in-view: true
