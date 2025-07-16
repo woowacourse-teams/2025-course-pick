@@ -6,8 +6,8 @@ import org.junit.jupiter.params.provider.ValueSource
 
 class LongitudeTest {
     @ParameterizedTest
-    @ValueSource(ints = [-181, 180])
-    fun `경도는 -180 이상 180 미만이다`(value: Int) {
+    @ValueSource(doubles = [-181.0, 180.0])
+    fun `경도는 -180 이상 180 미만이다`(value: Double) {
         assertThrows<IllegalArgumentException> { Longitude(value) }
     }
 }
