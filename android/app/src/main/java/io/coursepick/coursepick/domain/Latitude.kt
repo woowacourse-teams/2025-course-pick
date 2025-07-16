@@ -1,8 +1,11 @@
 package io.coursepick.coursepick.domain
+
 @JvmInline
-value class Latitude(private val value: Double) {
+value class Latitude(
+    private val value: Double,
+) {
     init {
-        require(value in MIN_VALUE .. MAX_VALUE)
+        require(value in MIN_VALUE..MAX_VALUE)
     }
 
     companion object {
