@@ -1,11 +1,27 @@
 package coursepick.coursepick.domain;
 
-import java.util.Comparator;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
+@Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 public class Course {
 
+    @Id
+    @GeneratedValue
+    private final Long id;
+
+    @Column(nullable = false, length = 50)
     private final String name;
+
+    @ElementCollection
+    @CollectionTable(
+            name = "course_coordinates",
+            joinColumns = @JoinColumn(name = "course_id")
+    )
     private final List<Coordinate> coordinates;
 
     public Course(String name, List<Coordinate> coordinates) {
@@ -13,6 +29,7 @@ public class Course {
         validateNameLength(compactName);
         validateCoordinatesCount(coordinates);
         validateFirstLastCoordinateHasSameLatitudeAndLongitude(coordinates);
+        this.id = null;
         this.name = compactName;
         this.coordinates = coordinates;
     }
@@ -29,10 +46,6 @@ public class Course {
         return totalLength;
     }
 
-    public String name() {
-        return name;
-    }
-
     public double minDistanceFrom(Coordinate target) {
         double minDistance = Double.MAX_VALUE;
 
@@ -47,8 +60,8 @@ public class Course {
         return minDistance;
     }
 
-    public static Comparator<? super Course> distanceComparator(double latitude, double longitude) {
-        return (course1, course2) -> (int) (course1.minDistanceFrom(new Coordinate(latitude, longitude)) - course2.minDistanceFrom(new Coordinate(latitude, longitude)));
+    public String name() {
+        return name;
     }
 
     public List<Coordinate> coordinates() {

@@ -1,23 +1,25 @@
 package coursepick.coursepick.application;
 
-import coursepick.coursepick.domain.Course;
+import coursepick.coursepick.application.dto.CourseResponse;
+import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.CourseRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CourseApplicationService {
 
     private final CourseRepository courseRepository;
 
-    public CourseApplicationService(CourseRepository courseRepository) {
-        this.courseRepository = courseRepository;
-    }
-
-    public List<Course> findNearbyCourses(double latitude, double longitude) {
-        return courseRepository.findAllHasDistanceLessThen(1000).stream()
-                .sorted(Course.distanceComparator(latitude, longitude))
+    @Transactional(readOnly = true)
+    public List<CourseResponse> findNearbyCourses(double latitude, double longitude) {
+        final Coordinate target = new Coordinate(latitude, longitude);
+        return courseRepository.findAllHasDistanceLessThen(target, 1000).stream()
+                .map(course -> CourseResponse.from(course, target))
                 .toList();
     }
 }

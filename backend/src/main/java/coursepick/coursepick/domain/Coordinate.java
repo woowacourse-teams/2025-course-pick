@@ -1,10 +1,16 @@
 package coursepick.coursepick.domain;
 
-public class Coordinate {
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
-    private final double latitude;
-    private final double longitude;
-
+@Embeddable
+public record Coordinate(
+        @Column(nullable = false)
+        double latitude,
+        
+        @Column(nullable = false)
+        double longitude
+) {
     public Coordinate(double latitude, double longitude) {
         double roundedLatitude = Math.floor(latitude * 1000000.0) / 1000000.0;
         double roundedLongitude = Math.floor(longitude * 1000000.0) / 1000000.0;
@@ -60,14 +66,6 @@ public class Coordinate {
         double projectionLatitude = this.latitude + (other.latitude - this.latitude) * distanceRatio;
         double projectionLongitude = this.longitude + (other.longitude - this.longitude) * distanceRatio;
         return new Coordinate(projectionLatitude, projectionLongitude);
-    }
-
-    public double latitude() {
-        return latitude;
-    }
-
-    public double longitude() {
-        return longitude;
     }
 
     private static void validateLatitudeRange(double roundedLatitude) {
