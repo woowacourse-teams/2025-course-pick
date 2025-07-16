@@ -11,17 +11,14 @@ import java.util.List;
 public class Course {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private final Long id;
 
     @Column(nullable = false, length = 50)
     private final String name;
 
     @ElementCollection
-    @CollectionTable(
-            name = "course_coordinates",
-            joinColumns = @JoinColumn(name = "course_id")
-    )
+    @CollectionTable(name = "coordinate")
     private final List<Coordinate> coordinates;
 
     public Course(String name, List<Coordinate> coordinates) {
