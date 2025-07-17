@@ -1,8 +1,10 @@
 spring:
-  config:
-    activate:
-      on-profile: local
+  config.activate.on-profile: local
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true
+  datasource:
+    url: jdbc:mysql://localhost:3307/coursepick
+    username: user
+    password: secret
