@@ -1,7 +1,7 @@
 name: Backend Dev Server CD
 
 on:
-  push:
+  pull_request:
     branches: [ backend ]
 
 jobs:
@@ -61,8 +61,8 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v3
       with:
-        context: .
-        file: ./Dockerfile
+        context: ./backend
+        file: ./backend/Dockerfile
         push: true
         platforms: linux/arm64
         tags: |
