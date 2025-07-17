@@ -12,6 +12,7 @@ import io.coursepick.coursepick.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val viewModel: MainViewModel by viewModels()
+    private val courseAdapter by lazy { CourseAdapter(viewModel::select) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,14 +24,12 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        val courseAdapter =
-            CourseAdapter { course: CourseItem ->
-                viewModel.select(course)
-            }
         binding.adapter = courseAdapter
+        setUpObservers(courseAdapter)
+    }
 
+    private fun setUpObservers(courseAdapter: CourseAdapter) {
         viewModel.state.observe(this) { state: MainUiState ->
-            // Success
             courseAdapter.submitList(state.courses)
         }
     }
