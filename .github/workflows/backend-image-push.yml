@@ -1,7 +1,7 @@
 name: Backend Image Push
 
 on:
-  pull_request:
+  push:
     branches: [ backend ]
 
 jobs:
