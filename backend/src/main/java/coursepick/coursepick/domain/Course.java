@@ -50,7 +50,7 @@ public class Course {
             Coordinate start = coordinates.get(i);
             Coordinate end = coordinates.get(i + 1);
 
-            double distance = distanceFromPointToLineSegment(target, start, end);
+            double distance = distanceFromPointToLine(target, start, end);
             minDistance = Math.min(minDistance, distance);
         }
 
@@ -65,11 +65,11 @@ public class Course {
         return coordinates;
     }
 
-    private double distanceFromPointToLineSegment(Coordinate target, Coordinate start, Coordinate end) {
-        double distanceRatio = target.calculateDistanceRatioBetween(start, end);
-        if (distanceRatio < 0) return target.distanceFrom(start);
-        if (distanceRatio > 1) return target.distanceFrom(end);
-        Coordinate closestCoordinate = start.moveTo(end, distanceRatio);
+    private double distanceFromPointToLine(Coordinate target, Coordinate start, Coordinate end) {
+        double projectionRatio = target.calculateProjectionRatioBetween(start, end);
+        if (projectionRatio < 0) return target.distanceFrom(start);
+        if (projectionRatio > 1) return target.distanceFrom(end);
+        Coordinate closestCoordinate = start.moveTo(end, projectionRatio);
         return target.distanceFrom(closestCoordinate);
     }
 

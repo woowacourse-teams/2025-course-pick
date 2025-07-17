@@ -50,7 +50,7 @@ public record Coordinate(
         return centralAngle * earthRadiusMeter;
     }
 
-    public double calculateDistanceRatioBetween(Coordinate start, Coordinate end) {
+    public double calculateProjectionRatioBetween(Coordinate start, Coordinate end) {
         double startToTargetLatitudeDiff = start.latitude - this.latitude;
         double startToTargetLongitudeDiff = start.longitude - this.longitude;
         double startToEndLatitudeDiff = start.latitude - end.latitude;
@@ -62,9 +62,9 @@ public record Coordinate(
         return dotProduct / segmentLengthSquared;
     }
 
-    public Coordinate moveTo(Coordinate other, double distanceRatio) {
-        double projectionLatitude = this.latitude + (other.latitude - this.latitude) * distanceRatio;
-        double projectionLongitude = this.longitude + (other.longitude - this.longitude) * distanceRatio;
+    public Coordinate moveTo(Coordinate other, double projectionRatio) {
+        double projectionLatitude = this.latitude + (other.latitude - this.latitude) * projectionRatio;
+        double projectionLongitude = this.longitude + (other.longitude - this.longitude) * projectionRatio;
         return new Coordinate(projectionLatitude, projectionLongitude);
     }
 
