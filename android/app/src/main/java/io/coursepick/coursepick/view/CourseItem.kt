@@ -10,8 +10,4 @@ data class CourseItem(
     val name: String = course.name.value
     val distance: Int = course.distance.meter
     val length: Int = course.length.meter
-
-    companion object {
-        fun Course.toCourseItem(): CourseItem = CourseItem(this)
-    }
 }

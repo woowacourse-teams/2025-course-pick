@@ -10,7 +10,6 @@ import io.coursepick.coursepick.domain.Distance
 import io.coursepick.coursepick.domain.Latitude
 import io.coursepick.coursepick.domain.Length
 import io.coursepick.coursepick.domain.Longitude
-import io.coursepick.coursepick.view.CourseItem.Companion.toCourseItem
 
 class MainViewModel : ViewModel() {
     private val _state: MutableLiveData<MainUiState> =
@@ -26,27 +25,49 @@ class MainViewModel : ViewModel() {
         fetchCourses()
     }
 
-    fun select(course: CourseItem) {
+    fun select(selectedCourse: CourseItem) {
+        if (selectedCourse.selected) return
         val oldCourses: List<CourseItem> = state.value?.courses ?: return
-        val selectedIndex = oldCourses.indexOf(course)
+
+        val selectedIndex = oldCourses.indexOf(selectedCourse)
         if (selectedIndex == -1) return
-        val newCourses = oldCourses.toMutableList()
-        newCourses[selectedIndex] = course.copy(selected = !course.selected)
+
+        val newCourses: List<CourseItem> = newCourses(oldCourses, selectedCourse)
         _state.value = state.value?.copy(courses = newCourses)
     }
+
+    private fun newCourses(
+        oldCourses: List<CourseItem>,
+        selectedCourse: CourseItem,
+    ): List<CourseItem> =
+        oldCourses.map { course: CourseItem ->
+            if (course == selectedCourse) {
+                course.copy(selected = true)
+            } else {
+                course.copy(selected = false)
+            }
+        }
 
     private fun fetchCourses() {
         _state.value =
             MainUiState(
-                List(20) {
-                    Course(
-                        it.toLong(),
-                        CourseName("코스 $it"),
-                        Distance(it * 10),
-                        Length(it * 100),
-                        listOf(Coordinate(Latitude(it.toDouble()), Longitude(it.toDouble()))),
-                    ).toCourseItem()
-                },
+                List(20) { index: Int ->
+                    CourseItem(
+                        Course(
+                            index.toLong(),
+                            CourseName("코스 $index"),
+                            Distance(index * 10),
+                            Length(index * 100),
+                            listOf(
+                                Coordinate(
+                                    Latitude(index.toDouble()),
+                                    Longitude(index.toDouble()),
+                                ),
+                            ),
+                        ),
+                        index == 0,
+                    )
+                }.sortedBy { it.distance },
             )
     }
 }
