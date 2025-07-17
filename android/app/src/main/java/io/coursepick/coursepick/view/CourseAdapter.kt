@@ -14,7 +14,7 @@ class CourseAdapter(
         viewType: Int,
     ): CourseViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        val binding: ItemCourseBinding = ItemCourseBinding.inflate(layoutInflater, parent, false)
+        val binding = ItemCourseBinding.inflate(layoutInflater, parent, false)
         return CourseViewHolder(binding, onSelectCourseListener)
     }
 
