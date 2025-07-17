@@ -3,7 +3,7 @@ package coursepick.coursepick.application;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
-import coursepick.coursepick.domain.DatabaseInserter;
+import coursepick.coursepick.test_util.DatabaseInserter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

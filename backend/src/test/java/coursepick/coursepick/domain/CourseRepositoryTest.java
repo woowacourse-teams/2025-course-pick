@@ -1,5 +1,6 @@
 package coursepick.coursepick.domain;
 
+import coursepick.coursepick.test_util.DatabaseInserter;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,13 +54,13 @@ class CourseRepositoryTest {
                 new Coordinate(37.517802, 127.069576)
         ));
         Course course3 = new Course("잠실제일교회 둘레길", List.of(
-                new Coordinate(37.517396,127.092439),
-                new Coordinate(37.512785,127.094059),
-                new Coordinate(37.513460,127.097520),
-                new Coordinate(37.514285,127.097306),
-                new Coordinate(37.516743,127.094943),
-                new Coordinate(37.517897,127.094506),
-                new Coordinate(37.517396,127.092439)
+                new Coordinate(37.517396, 127.092439),
+                new Coordinate(37.512785, 127.094059),
+                new Coordinate(37.513460, 127.097520),
+                new Coordinate(37.514285, 127.097306),
+                new Coordinate(37.516743, 127.094943),
+                new Coordinate(37.517897, 127.094506),
+                new Coordinate(37.517396, 127.092439)
         ));
         databaseInserter.saveCourse(course1);
         databaseInserter.saveCourse(course2);
