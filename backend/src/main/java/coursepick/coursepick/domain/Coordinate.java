@@ -24,11 +24,11 @@ public record Coordinate(
         return this.latitude == other.latitude && this.longitude == other.longitude;
     }
 
-    public double calculateProjectionRatioBetween(Coordinate start, Coordinate end) {
-        double startToTargetLatitudeDiff = start.latitude - this.latitude;
-        double startToTargetLongitudeDiff = start.longitude - this.longitude;
-        double startToEndLatitudeDiff = start.latitude - end.latitude;
-        double startToEndLongitudeDiff = start.longitude - end.longitude;
+    public double projectionRatioBetween(Coordinate lineStart, Coordinate lineEnd) {
+        double startToTargetLatitudeDiff = lineStart.latitude - this.latitude;
+        double startToTargetLongitudeDiff = lineStart.longitude - this.longitude;
+        double startToEndLatitudeDiff = lineStart.latitude - lineEnd.latitude;
+        double startToEndLongitudeDiff = lineStart.longitude - lineEnd.longitude;
 
         double dotProduct = startToTargetLatitudeDiff * startToEndLatitudeDiff + startToTargetLongitudeDiff * startToEndLongitudeDiff;
         double segmentLengthSquared = startToEndLatitudeDiff * startToEndLatitudeDiff + startToEndLongitudeDiff * startToEndLongitudeDiff;
@@ -37,9 +37,10 @@ public record Coordinate(
     }
 
     public Coordinate moveTo(Coordinate other, double projectionRatio) {
-        double projectionLatitude = this.latitude + (other.latitude - this.latitude) * projectionRatio;
-        double projectionLongitude = this.longitude + (other.longitude - this.longitude) * projectionRatio;
-        return new Coordinate(projectionLatitude, projectionLongitude);
+        double latitudeDelta = (other.latitude - this.latitude) * projectionRatio;
+        double longitudeDelta = (other.longitude - this.longitude) * projectionRatio;
+
+        return new Coordinate(this.latitude + latitudeDelta, this.longitude + longitudeDelta);
     }
 
     private static void validateLatitudeRange(double roundedLatitude) {

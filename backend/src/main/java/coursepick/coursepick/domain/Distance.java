@@ -31,7 +31,7 @@ public record Distance(
     }
 
     public static Distance betweenPointAndLine(Coordinate target, Coordinate lineStart, Coordinate lineEnd) {
-        double projectionRatio = target.calculateProjectionRatioBetween(lineStart, lineEnd);
+        double projectionRatio = target.projectionRatioBetween(lineStart, lineEnd);
         if (projectionRatio < 0) {
             return Distance.between(target, lineStart);
         }

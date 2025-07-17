@@ -93,7 +93,7 @@ class CoordinateTest {
             var start = new Coordinate(0.0, 0.0);
             var end = new Coordinate(endLat, endLng);
 
-            double ratio = target.calculateProjectionRatioBetween(start, end);
+            double ratio = target.projectionRatioBetween(start, end);
 
             assertThat(ratio).isEqualTo(expectedRatio);
         }
@@ -104,7 +104,7 @@ class CoordinateTest {
             var end = new Coordinate(3.0, 3.0);
             var target = new Coordinate(1.0, 1.0);
 
-            double ratio = target.calculateProjectionRatioBetween(start, end);
+            double ratio = target.projectionRatioBetween(start, end);
 
             assertThat(ratio).isEqualTo(0.0);
         }
@@ -115,7 +115,7 @@ class CoordinateTest {
             var end = new Coordinate(3.0, 3.0);
             var target = new Coordinate(3.0, 3.0);
 
-            double ratio = target.calculateProjectionRatioBetween(start, end);
+            double ratio = target.projectionRatioBetween(start, end);
 
             assertThat(ratio).isEqualTo(1.0);
         }
