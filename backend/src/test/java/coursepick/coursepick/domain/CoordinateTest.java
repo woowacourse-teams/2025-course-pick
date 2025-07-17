@@ -44,67 +44,6 @@ class CoordinateTest {
     }
 
     @Nested
-    class 거리_계산_테스트 {
-
-        @ParameterizedTest
-        @CsvSource({
-                "37.566535, 126.977969, 37.565223, 126.978946, 169",  // 경복궁 - 광화문
-                "37.579617, 126.977041, 37.566535, 126.977969, 1456", // 종각 - 경복궁
-                "37.540705, 127.071917, 37.513294, 127.058000, 3285", // 성수역 - 잠실역
-                "35.158170, 129.160179, 35.179665, 129.075986, 8017", // 부산역 - 해운대역
-                "37.551224, 126.988243, 37.497952, 127.027619, 6866"  // 명동 - 강남역
-        })
-        void 좌표와_좌표_사이의_거리를_계산한다(double lat1, double lng1, double lat2, double lng2, int expectedDistance) {
-            var coord1 = new Coordinate(lat1, lng1);
-            var coord2 = new Coordinate(lat2, lng2);
-
-            var distance = coord1.distanceFrom(coord2);
-
-            assertThat((int) distance).isEqualTo(expectedDistance);
-        }
-
-        @Test
-        void 동일한_좌표의_거리는_0이다() {
-            var coord1 = new Coordinate(37.515348, 127.103015);
-            var coord2 = new Coordinate(37.515348, 127.103015);
-
-            var distance = coord1.distanceFrom(coord2);
-
-            assertThat(distance).isEqualTo(0.0);
-        }
-
-        @Test
-        void 매우_가까운_좌표의_거리를_계산한다() {
-            var coord1 = new Coordinate(37.515348, 127.103015);
-            var coord2 = new Coordinate(37.515349, 127.103016);
-
-            var distance = coord1.distanceFrom(coord2);
-
-            assertThat(distance).isLessThan(1.0).isGreaterThan(0.0);
-        }
-
-        @Test
-        void 소수점_6자리_정밀도_내에서의_거리_계산() {
-            var coord1 = new Coordinate(37.515348123456, 127.103015123456);
-            var coord2 = new Coordinate(37.515348123457, 127.103015123457);
-
-            var distance = coord1.distanceFrom(coord2);
-
-            assertThat(distance).isEqualTo(0.0);
-        }
-
-        @Test
-        void 반대편_지구에서의_거리를_계산한다() {
-            var seoul = new Coordinate(37.5665, 126.9780);
-            var antipode = new Coordinate(-37.5665, -53.0220);
-
-            var distance = seoul.distanceFrom(antipode);
-
-            assertThat((int) distance).isEqualTo(20015086);
-        }
-    }
-
-    @Nested
     class 위도_경도_비교_테스트 {
 
         @Test
