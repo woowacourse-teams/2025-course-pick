@@ -3,11 +3,6 @@ package coursepick.coursepick.domain;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.locationtech.spatial4j.context.SpatialContext;
-import org.locationtech.spatial4j.distance.DistanceCalculator;
-import org.locationtech.spatial4j.distance.GeodesicSphereDistCalc;
-import org.locationtech.spatial4j.shape.Point;
-import org.locationtech.spatial4j.shape.ShapeFactory;
 
 import java.util.List;
 
@@ -36,43 +31,32 @@ public class Course {
         this.coordinates = coordinates;
     }
 
-    // Spatial4J 기반 코스 길이 계산
     public double length() {
-        ShapeFactory shapeFactory = SpatialContext.GEO.getShapeFactory();
-        DistanceCalculator distCalc = new GeodesicSphereDistCalc.Haversine();
+        Distance totalDistance = Distance.zero();
 
-        double totalLength = 0;
         for (int i = 0; i < coordinates.size() - 1; i++) {
             Coordinate coord1 = coordinates.get(i);
             Coordinate coord2 = coordinates.get(i + 1);
 
-            Point point1 = createPoint(coord1, shapeFactory);
-            Point point2 = createPoint(coord2, shapeFactory);
-
-            double distanceInDegrees = distCalc.distance(point1, point2);
-            double distanceInMeters = convertDegreeToMeter(distanceInDegrees);
-            totalLength += distanceInMeters;
+            Distance distance = Distance.between(coord1, coord2);
+            totalDistance = totalDistance.add(distance);
         }
 
-        return totalLength;
+        return totalDistance.meter();
     }
 
-    // Spatial4J 기반 최단 거리 계산
     public double minDistanceFrom(Coordinate target) {
-        ShapeFactory shapeFactory = SpatialContext.GEO.getShapeFactory();
-        DistanceCalculator distCalc = new GeodesicSphereDistCalc.Haversine();
-
-        double minDistance = Double.MAX_VALUE;
+        Distance minDistance = Distance.max();
 
         for (int i = 0; i < coordinates.size() - 1; i++) {
-            Coordinate start = coordinates.get(i);
-            Coordinate end = coordinates.get(i + 1);
+            Coordinate lineStart = coordinates.get(i);
+            Coordinate lineEnd = coordinates.get(i + 1);
 
-            double distance = distanceFromPointToLine(target, start, end, shapeFactory, distCalc);
-            minDistance = Math.min(minDistance, distance);
+            Distance distance = Distance.betweenPointAndLine(target, lineStart, lineEnd);
+            minDistance = minDistance.minimum(distance);
         }
 
-        return minDistance;
+        return minDistance.meter();
     }
 
     public String name() {
@@ -81,46 +65,6 @@ public class Course {
 
     public List<Coordinate> coordinates() {
         return coordinates;
-    }
-
-    // Spatial4J 기반 점-선분 거리 계산
-    private static double distanceFromPointToLine(
-            Coordinate target,
-            Coordinate start,
-            Coordinate end,
-            ShapeFactory shapeFactory,
-            DistanceCalculator distCalc
-    ) {
-        Point targetPoint = createPoint(target, shapeFactory);
-        Point startPoint = createPoint(start, shapeFactory);
-        Point endPoint = createPoint(end, shapeFactory);
-
-        double projectionRatio = target.calculateProjectionRatioBetween(start, end);
-
-        if (projectionRatio < 0) {
-            double distanceInDegrees = distCalc.distance(targetPoint, startPoint);
-            return convertDegreeToMeter(distanceInDegrees);
-        }
-        if (projectionRatio > 1) {
-            double distanceInDegrees = distCalc.distance(targetPoint, endPoint);
-            return convertDegreeToMeter(distanceInDegrees);
-        }
-
-        // 투영점 계산
-        Coordinate closestCoordinate = start.moveTo(end, projectionRatio);
-        Point closestPoint = createPoint(closestCoordinate, shapeFactory);
-
-        double distanceInDegrees = distCalc.distance(targetPoint, closestPoint);
-        return convertDegreeToMeter(distanceInDegrees);
-    }
-
-    private static Point createPoint(Coordinate target, ShapeFactory shapeFactory) {
-        return shapeFactory.pointXY(target.longitude(), target.latitude());
-    }
-
-    private static double convertDegreeToMeter(double distanceInDegrees) {
-        final double earthRadiusMeters = 6371000.0;
-        return distanceInDegrees * earthRadiusMeters * Math.PI / 180.0;
     }
 
     private static String compactName(String name) {
