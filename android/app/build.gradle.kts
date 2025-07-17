@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.android.junit5)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.serialization)
+    id("kotlin-kapt")
 }
 
 private val localProperties: Properties =
