@@ -49,6 +49,11 @@ class CourseApplicationServiceTest {
 
         List<CourseResponse> courses = sut.findNearbyCourses(latitude, longitude);
 
-        assertThat(courses).hasSize(2);
+        assertThat(courses).hasSize(2)
+                .extracting(CourseResponse::name)
+                .containsExactlyInAnyOrder(course1.name(), course2.name());
+        assertThat(course1.minDistanceFrom(new Coordinate(latitude, longitude))).isLessThan(1000.0);
+        assertThat(course2.minDistanceFrom(new Coordinate(latitude, longitude))).isLessThan(1000.0);
+        assertThat(course3.minDistanceFrom(new Coordinate(latitude, longitude))).isGreaterThan(1000.0);
     }
 }
