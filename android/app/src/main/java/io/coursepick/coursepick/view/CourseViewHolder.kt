@@ -15,7 +15,3 @@ class CourseViewHolder(
         binding.course = course
     }
 }
-
-fun interface OnSelectCourseListener {
-    fun select(course: CourseItem)
-}
