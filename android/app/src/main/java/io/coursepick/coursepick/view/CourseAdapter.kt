@@ -1,10 +1,9 @@
 package io.coursepick.coursepick.view
 
-import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import io.coursepick.coursepick.databinding.ItemCourseBinding
+import io.coursepick.coursepick.view.CourseViewHolder.Companion.CourseViewHolder
 
 class CourseAdapter(
     private val onSelectCourseListener: OnSelectCourseListener,
@@ -12,11 +11,7 @@ class CourseAdapter(
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
-    ): CourseViewHolder {
-        val layoutInflater = LayoutInflater.from(parent.context)
-        val binding = ItemCourseBinding.inflate(layoutInflater, parent, false)
-        return CourseViewHolder(binding, onSelectCourseListener)
-    }
+    ): CourseViewHolder = CourseViewHolder(parent, onSelectCourseListener)
 
     override fun onBindViewHolder(
         holder: CourseViewHolder,
