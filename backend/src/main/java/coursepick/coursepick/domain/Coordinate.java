@@ -7,7 +7,7 @@ import jakarta.persistence.Embeddable;
 public record Coordinate(
         @Column(nullable = false)
         double latitude,
-        
+
         @Column(nullable = false)
         double longitude
 ) {
@@ -27,7 +27,7 @@ public record Coordinate(
     /**
      * 두 점 사이의 거리를 계산합니다.
      * 3D 구면체 위에서의 곡률 거리를 계산하는 하버사인 공식을 활용하여 계산합니다.
-     * 하버사인 공식 : https://en.wikipedia.org/wiki/Haversine_formula
+     * <a href="https://en.wikipedia.org/wiki/Haversine_formula">하버사인 공식</a>
      *
      * @param other 기준 좌표
      * @return 거리(M)
