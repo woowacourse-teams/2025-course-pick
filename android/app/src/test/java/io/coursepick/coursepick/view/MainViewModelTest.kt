@@ -1,16 +1,11 @@
 package io.coursepick.coursepick.view
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import io.coursepick.coursepick.view.fixtures.COURSE_20
 import io.coursepick.coursepick.view.fixtures.FAKE_COURSES
 import io.coursepick.coursepick.view.fixtures.FakeRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
 
 @ExtendWith(InstantTaskExecutorExtension::class)
 class MainViewModelTest {
@@ -70,29 +65,4 @@ class MainViewModelTest {
         // then
         assertThat(mainViewModel.state.getOrAwaitValue()).isEqualTo(expected)
     }
-}
-
-fun <T> LiveData<T>.getOrAwaitValue(
-    time: Long = 2,
-    timeUnit: TimeUnit = TimeUnit.SECONDS,
-): T {
-    var data: T? = null
-    val latch = CountDownLatch(1)
-    val observer =
-        object : Observer<T> {
-            override fun onChanged(value: T) {
-                data = value
-                latch.countDown()
-                this@getOrAwaitValue.removeObserver(this)
-            }
-        }
-
-    this.observeForever(observer)
-
-    if (!latch.await(time, timeUnit)) {
-        throw TimeoutException("LiveData value was never set.")
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    return data as T
 }
