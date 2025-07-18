@@ -3,9 +3,13 @@ package io.coursepick.coursepick.view
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import io.coursepick.coursepick.data.DefaultCourseRepository
 import io.coursepick.coursepick.domain.Course
 import io.coursepick.coursepick.domain.CourseRepository
-import io.coursepick.coursepick.domain.DefaultCourseRepository
+import io.coursepick.coursepick.domain.Latitude
+import io.coursepick.coursepick.domain.Longitude
+import kotlinx.coroutines.launch
 
 class MainViewModel(
     private val courseRepository: CourseRepository = DefaultCourseRepository(),
@@ -47,16 +51,23 @@ class MainViewModel(
         }
 
     private fun fetchCourses() {
-        _state.value =
-            MainUiState(
-                courseRepository.courses
-                    .sortedBy { course: Course -> course.distance }
-                    .mapIndexed { index: Int, course: Course ->
-                        CourseItem(
-                            course,
-                            index == 0,
-                        )
-                    },
-            )
+        viewModelScope.launch {
+            val courses =
+                courseRepository.courses(
+                    Latitude(37.5165004),
+                    Longitude(127.1040109),
+                )
+            _state.value =
+                MainUiState(
+                    courses
+                        .sortedBy { course: Course -> course.distance }
+                        .mapIndexed { index: Int, course: Course ->
+                            CourseItem(
+                                course,
+                                index == 0,
+                            )
+                        },
+                )
+        }
     }
 }
