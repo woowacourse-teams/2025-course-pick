@@ -1,7 +1,6 @@
 package coursepick.coursepick.presentation.dto;
 
 import coursepick.coursepick.application.exception.ApplicationException;
-
 import java.time.LocalDateTime;
 
 public record ErrorResponse(
