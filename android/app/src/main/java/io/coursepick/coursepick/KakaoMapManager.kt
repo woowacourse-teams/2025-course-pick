@@ -56,6 +56,14 @@ class KakaoMapManager(
             }
     }
 
+    fun resume() {
+        mapView.resume()
+    }
+
+    fun pause() {
+        mapView.pause()
+    }
+
     private fun hasLocationPermission(): Boolean =
         ActivityCompat.checkSelfPermission(
             context,
@@ -65,12 +73,4 @@ class KakaoMapManager(
                 context,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
             ) == PackageManager.PERMISSION_GRANTED
-
-    fun resume() {
-        mapView.resume()
-    }
-
-    fun pause() {
-        mapView.pause()
-    }
 }
