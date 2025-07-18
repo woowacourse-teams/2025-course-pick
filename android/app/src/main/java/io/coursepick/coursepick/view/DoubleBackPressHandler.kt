@@ -7,8 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 
 class DoubleBackPressHandler(
     private val context: Context,
-    private val intervalTime: Long = LIMIT_TIME,
     private val toastMessage: String,
+    private val intervalTime: Long = LIMIT_TIME,
 ) {
     private var backPressedTime: Long = 0
 
