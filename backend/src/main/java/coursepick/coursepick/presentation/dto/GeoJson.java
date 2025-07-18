@@ -38,7 +38,7 @@ public record GeoJson(
         return new GeoJson(
                 "Feature",
                 GeometryResponse.from(courseResponse.coordinates()),
-                PropertiesResponse.from(courseResponse.name(), courseResponse.distance(), courseResponse.length())
+                PropertiesResponse.from(courseResponse.name(), courseResponse.meter().value(), courseResponse.length().value())
         );
     }
 

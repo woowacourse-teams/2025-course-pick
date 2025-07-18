@@ -26,6 +26,9 @@ dependencies {
     runtimeOnly("com.mysql:mysql-connector-j")
     runtimeOnly("com.h2database:h2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    // Geographic libraries for comparison
+    implementation("org.locationtech.spatial4j:spatial4j:0.8")
 }
 
 tasks.withType<Test> {

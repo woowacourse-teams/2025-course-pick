@@ -67,7 +67,7 @@ class CourseRepositoryTest {
         databaseInserter.saveCourse(course3);
         Coordinate target = new Coordinate(37.514647, 127.086592);
 
-        List<Course> courses = courseRepository.findAllHasDistanceLessThen(target, distance);
+        List<Course> courses = courseRepository.findAllHasDistanceWithin(target, new Meter(distance));
 
         assertThat(courses).hasSize(expectedSize);
     }

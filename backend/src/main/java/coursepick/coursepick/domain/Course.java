@@ -31,30 +31,32 @@ public class Course {
         this.coordinates = coordinates;
     }
 
-    public double length() {
-        double totalLength = 0;
-        for (int idx = 0; idx < coordinates.size() - 1; idx++) {
-            Coordinate coordinate1 = coordinates.get(idx);
-            Coordinate coordinate2 = coordinates.get(idx + 1);
-
-            totalLength += coordinate1.distanceFrom(coordinate2);
-        }
-
-        return totalLength;
-    }
-
-    public double minDistanceFrom(Coordinate target) {
-        double minDistance = Double.MAX_VALUE;
+    public Meter length() {
+        Meter total = Meter.zero();
 
         for (int i = 0; i < coordinates.size() - 1; i++) {
-            Coordinate start = coordinates.get(i);
-            Coordinate end = coordinates.get(i + 1);
+            Coordinate coord1 = coordinates.get(i);
+            Coordinate coord2 = coordinates.get(i + 1);
 
-            double distance = distanceFromPointToLineSegment(target, start, end);
-            minDistance = Math.min(minDistance, distance);
+            Meter meter = GeoLine.between(coord1, coord2).length();
+            total = total.add(meter);
         }
 
-        return minDistance;
+        return total;
+    }
+
+    public Meter minDistanceFrom(Coordinate target) {
+        Meter min = Meter.max();
+
+        for (int i = 0; i < coordinates.size() - 1; i++) {
+            Coordinate lineStart = coordinates.get(i);
+            Coordinate lineEnd = coordinates.get(i + 1);
+
+            Meter meter = GeoLine.between(lineStart, lineEnd).distanceTo(target);
+            min = min.minimum(meter);
+        }
+
+        return min;
     }
 
     public String name() {
@@ -63,14 +65,6 @@ public class Course {
 
     public List<Coordinate> coordinates() {
         return coordinates;
-    }
-
-    private double distanceFromPointToLineSegment(Coordinate target, Coordinate start, Coordinate end) {
-        double distanceRatio = target.calculateDistanceRatioBetween(start, end);
-        if (distanceRatio < 0) return target.distanceFrom(start);
-        if (distanceRatio > 1) return target.distanceFrom(end);
-        Coordinate closestCoordinate = start.moveTo(end, distanceRatio);
-        return target.distanceFrom(closestCoordinate);
     }
 
     private static String compactName(String name) {

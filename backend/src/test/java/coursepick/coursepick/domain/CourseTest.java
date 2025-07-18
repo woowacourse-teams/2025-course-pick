@@ -88,9 +88,9 @@ class CourseTest {
                 new Coordinate(37.518400, 126.995600)
         ));
 
-        double totalLength = course.length();
+        Meter totalLength = course.length();
 
-        assertThat((int) totalLength).isEqualTo(2573);
+        assertThat((int) totalLength.value()).isEqualTo(2573);
     }
 
     @ParameterizedTest
@@ -106,9 +106,9 @@ class CourseTest {
         ));
         Coordinate target = new Coordinate(latitude, longitude);
 
-        double distance = course.minDistanceFrom(target);
+        Meter distance = course.minDistanceFrom(target);
 
-        assertThat((int) distance).isEqualTo(expectedDistance);
+        assertThat((int) distance.value()).isEqualTo(expectedDistance);
     }
 
     @Test
@@ -120,9 +120,9 @@ class CourseTest {
         ));
         Coordinate target = new Coordinate(37.5, 127.0005); // 코스 선분의 중점
 
-        double distance = course.minDistanceFrom(target);
+        Meter distance = course.minDistanceFrom(target);
 
-        assertThat(distance).isLessThan(1.0);
+        assertThat(distance.value()).isLessThan(1.0);
     }
 
     @Test
@@ -135,9 +135,9 @@ class CourseTest {
         ));
         Coordinate target = new Coordinate(37.5, 127.0);
 
-        double distance = course.minDistanceFrom(target);
+        Meter distance = course.minDistanceFrom(target);
 
-        assertThat(distance).isEqualTo(0.0);
+        assertThat(distance.value()).isEqualTo(0.0);
     }
 
     @Test
@@ -151,9 +151,9 @@ class CourseTest {
         ));
         Coordinate target = new Coordinate(37.5005, 127.0005); // 사각형 중앙
 
-        double distance = course.minDistanceFrom(target);
+        Meter distance = course.minDistanceFrom(target);
 
-        assertThat((int) distance).isEqualTo(44);
+        assertThat((int) distance.value()).isEqualTo(44);
     }
 
     @Test
@@ -167,9 +167,9 @@ class CourseTest {
         ));
         Coordinate target = new Coordinate(37.52, 127.02); // 매우 멀리 떨어진 점
 
-        double distance = course.minDistanceFrom(target);
+        Meter distance = course.minDistanceFrom(target);
 
-        assertThat((int) distance).isEqualTo(2829);
+        assertThat((int) distance.value()).isEqualTo(2829);
     }
 
     @ParameterizedTest
@@ -188,8 +188,8 @@ class CourseTest {
         ));
         Coordinate target = new Coordinate(latitude, longitude);
 
-        double distance = course.minDistanceFrom(target);
+        Meter distance = course.minDistanceFrom(target);
 
-        assertThat((int) distance).isEqualTo(expectedDistance);
+        assertThat((int) distance.value()).isEqualTo(expectedDistance);
     }
 }
