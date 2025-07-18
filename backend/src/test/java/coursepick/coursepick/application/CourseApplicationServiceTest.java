@@ -3,7 +3,7 @@ package coursepick.coursepick.application;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
-import coursepick.coursepick.domain.DatabaseInserter;
+import coursepick.coursepick.test_util.DatabaseInserter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -49,6 +49,11 @@ class CourseApplicationServiceTest {
 
         List<CourseResponse> courses = sut.findNearbyCourses(latitude, longitude);
 
-        assertThat(courses).hasSize(2);
+        assertThat(courses).hasSize(2)
+                .extracting(CourseResponse::name)
+                .containsExactlyInAnyOrder(course1.name(), course2.name());
+        assertThat(course1.minDistanceFrom(new Coordinate(latitude, longitude))).isLessThan(1000.0);
+        assertThat(course2.minDistanceFrom(new Coordinate(latitude, longitude))).isLessThan(1000.0);
+        assertThat(course3.minDistanceFrom(new Coordinate(latitude, longitude))).isGreaterThan(1000.0);
     }
 }
