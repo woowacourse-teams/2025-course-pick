@@ -1,5 +1,6 @@
 package io.coursepick.coursepick.view
 
+import io.coursepick.coursepick.domain.Course
 import io.coursepick.coursepick.view.fixtures.COURSE_20
 import io.coursepick.coursepick.view.fixtures.FAKE_COURSES
 import io.coursepick.coursepick.view.fixtures.FakeRepository
@@ -18,7 +19,7 @@ class MainViewModelTest {
         mainViewModel = MainViewModel(fakeRepository)
         val expected =
             MainUiState(
-                FAKE_COURSES.mapIndexed { index, course ->
+                FAKE_COURSES.mapIndexed { index: Int, course: Course ->
                     CourseItem(course, selected = index == 0)
                 },
             )
@@ -34,7 +35,7 @@ class MainViewModelTest {
         mainViewModel = MainViewModel(fakeRepository)
         val expected =
             MainUiState(
-                FAKE_COURSES.map { course ->
+                FAKE_COURSES.map { course: Course ->
                     CourseItem(course, selected = course == COURSE_20)
                 },
             )
@@ -54,7 +55,7 @@ class MainViewModelTest {
 
         val expected =
             MainUiState(
-                FAKE_COURSES.map { course ->
+                FAKE_COURSES.map { course: Course ->
                     CourseItem(course, selected = course == COURSE_20)
                 },
             )
