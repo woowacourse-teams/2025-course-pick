@@ -1,9 +1,19 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.android.junit5)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.serialization)
 }
+
+private val localProperties: Properties =
+    Properties().apply {
+        val localFile = rootProject.file("local.properties")
+        if (localFile.exists()) {
+            load(localFile.inputStream())
+        }
+    }
 
 android {
     namespace = "io.coursepick.coursepick"
@@ -20,12 +30,18 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("boolean", "DEBUG", "true")
+            buildConfigField("String", "BASE_URL", localProperties["base.url.debug"].toString())
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+            buildConfigField("boolean", "DEBUG", "false")
+            buildConfigField("String", "BASE_URL", localProperties["base.url.release"].toString())
         }
     }
     compileOptions {
@@ -36,6 +52,7 @@ android {
         jvmTarget = "21"
     }
     buildFeatures {
+        buildConfig = true
         dataBinding = true
     }
 }
