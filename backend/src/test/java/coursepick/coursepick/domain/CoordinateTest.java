@@ -1,5 +1,6 @@
 package coursepick.coursepick.domain;
 
+import coursepick.coursepick.application.exception.InvalidArgumentException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,17 +22,17 @@ class CoordinateTest {
         @Test
         void 위도의_범위가_벗어나면_예외가_발생한다() {
             assertThatThrownBy(() -> new Coordinate(91, 30))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(InvalidArgumentException.class);
             assertThatThrownBy(() -> new Coordinate(-91, 30))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(InvalidArgumentException.class);
         }
 
         @Test
         void 경도의_범위가_벗어나면_예외가_발생한다() {
             assertThatThrownBy(() -> new Coordinate(80, 180))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(InvalidArgumentException.class);
             assertThatThrownBy(() -> new Coordinate(80, -181))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(InvalidArgumentException.class);
         }
 
         @Test
