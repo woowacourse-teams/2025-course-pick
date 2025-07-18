@@ -1,5 +1,7 @@
 package coursepick.coursepick.domain;
 
+import coursepick.coursepick.application.exception.ErrorType;
+import coursepick.coursepick.application.exception.InvalidArgumentException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -73,19 +75,19 @@ public class Course {
 
     private static void validateNameLength(String compactName) {
         if (compactName.length() < 2 || compactName.length() > 30) {
-            throw new IllegalArgumentException();
+            throw new InvalidArgumentException(ErrorType.INVALID_NAME_LENGTH);
         }
     }
 
     private static void validateCoordinatesCount(List<Coordinate> coordinates) {
         if (coordinates.size() < 2) {
-            throw new IllegalArgumentException();
+            throw new InvalidArgumentException(ErrorType.INVALID_COORDINATE_COUNT);
         }
     }
 
     private static void validateFirstLastCoordinateHasSameLatitudeAndLongitude(List<Coordinate> coordinates) {
         if (!coordinates.getFirst().hasSameLatitudeAndLongitude(coordinates.getLast())) {
-            throw new IllegalArgumentException();
+            throw new InvalidArgumentException(ErrorType.NOT_CONNECTED_COURSE);
         }
     }
 }
