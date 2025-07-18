@@ -2,7 +2,7 @@ package io.coursepick.coursepick.domain
 
 @JvmInline
 value class CourseName(
-    private val value: String,
+    val value: String,
 ) {
     init {
         require(value.length in MIN_LENGTH..MAX_LENGTH)
