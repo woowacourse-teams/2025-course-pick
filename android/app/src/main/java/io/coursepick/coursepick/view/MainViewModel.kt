@@ -55,7 +55,7 @@ class MainViewModel(
                             course,
                             index == 0,
                         )
-                    }.sortedBy { it.distance },
+                    }.sortedBy { course: CourseItem -> course.distance },
             )
     }
 }
