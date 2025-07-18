@@ -4,19 +4,38 @@ import io.coursepick.coursepick.domain.Course
 import io.coursepick.coursepick.view.fixtures.COURSE_20
 import io.coursepick.coursepick.view.fixtures.FAKE_COURSES
 import io.coursepick.coursepick.view.fixtures.FakeRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @ExtendWith(InstantTaskExecutorExtension::class)
 class MainViewModelTest {
-    private val fakeRepository = FakeRepository(FAKE_COURSES)
+    private val testDispatcher = UnconfinedTestDispatcher()
+    private val fakeRepository = FakeRepository()
     private lateinit var mainViewModel: MainViewModel
+
+    @BeforeEach
+    fun setUp() {
+        Dispatchers.setMain(testDispatcher)
+        mainViewModel = MainViewModel(fakeRepository)
+    }
+
+    @AfterEach
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
 
     @Test
     fun `초기 상태에서는 가장 가까운 코스가 선택된다`() {
         // given
-        mainViewModel = MainViewModel(fakeRepository)
         val expected =
             MainUiState(
                 FAKE_COURSES.mapIndexed { index: Int, course: Course ->
