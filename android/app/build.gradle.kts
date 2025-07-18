@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.android.junit5)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.serialization)
+    id("kotlin-kapt")
 }
 
 private val localProperties: Properties =
@@ -73,11 +74,10 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.retrofit2.kotlinx.serialization.converter)
-
+    testImplementation(libs.assertj.core)
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.kotest.runner.junit5)
-
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

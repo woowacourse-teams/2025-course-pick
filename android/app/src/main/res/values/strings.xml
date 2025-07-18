@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">CoursePick</string>
+    <string name="main_course_distance">%dm만큼 떨어짐</string>
+    <string name="main_course_length">%dkm</string>
 </resources>
