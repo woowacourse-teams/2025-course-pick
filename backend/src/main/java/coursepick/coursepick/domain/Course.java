@@ -38,7 +38,7 @@ public class Course {
             Coordinate coord1 = coordinates.get(i);
             Coordinate coord2 = coordinates.get(i + 1);
 
-            Distance distance = Distance.between(coord1, coord2);
+            Distance distance = Line.between(coord1, coord2).length();
             totalDistance = totalDistance.add(distance);
         }
 
@@ -52,7 +52,7 @@ public class Course {
             Coordinate lineStart = coordinates.get(i);
             Coordinate lineEnd = coordinates.get(i + 1);
 
-            Distance distance = Distance.betweenPointAndLine(target, lineStart, lineEnd);
+            Distance distance = Line.between(lineStart, lineEnd).distanceTo(target);
             minDistance = minDistance.minimum(distance);
         }
 
