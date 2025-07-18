@@ -1,5 +1,6 @@
 package coursepick.coursepick.domain;
 
+import coursepick.coursepick.application.exception.InvalidArgumentException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -36,7 +37,7 @@ class CourseTest {
         })
         void 잘못된_길이의_이름으로_코스를_생성하면_예외가_발생한다(String name) {
             assertThatThrownBy(() -> new Course(name, getNormalCoordinates()))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(InvalidArgumentException.class);
         }
 
         @ParameterizedTest
@@ -54,13 +55,13 @@ class CourseTest {
         @Test
         void 코스의_좌표의_개수가_2보다_적으면_예외가_발생한다() {
             assertThatThrownBy(() -> new Course("코스이름", List.of(new Coordinate(1d, 1d))))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(InvalidArgumentException.class);
         }
 
         @Test
         void 첫_좌표와_끝_좌표의_위도경도가_동일하지_않으면_예외가_발생한다() {
             assertThatThrownBy(() -> new Course("코스이름", List.of(new Coordinate(1d, 1d), new Coordinate(2d, 3d))))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(InvalidArgumentException.class);
         }
 
         private static List<Coordinate> getNormalCoordinates() {
