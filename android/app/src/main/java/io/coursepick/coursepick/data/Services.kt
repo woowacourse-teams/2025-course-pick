@@ -21,5 +21,5 @@ object Services {
             .addConverterFactory(Json.asConverterFactory(contentType))
             .build()
 
-    private val courseService: CourseService = retrofit.create(CourseService::class.java)
+    val courseService: CourseService = retrofit.create(CourseService::class.java)
 }
