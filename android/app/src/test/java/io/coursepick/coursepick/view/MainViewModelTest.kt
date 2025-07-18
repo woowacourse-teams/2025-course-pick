@@ -18,7 +18,7 @@ class MainViewModelTest {
     private lateinit var mainViewModel: MainViewModel
 
     @Test
-    fun `초기 상태는 첫 번째 코스가 선택된 상태이다`() {
+    fun `초기 상태에서는 가장 가까운 코스가 선택된다`() {
         // given
         mainViewModel = MainViewModel(fakeRepository)
         val expected =
@@ -27,9 +27,10 @@ class MainViewModelTest {
                     CourseItem(course, selected = index == 0)
                 },
             )
+        val actual = mainViewModel.state.getOrAwaitValue()
 
         // then
-        assertThat(mainViewModel.state.getOrAwaitValue()).isEqualTo(expected)
+        assertThat(actual).isEqualTo(expected)
     }
 
     @Test
@@ -51,7 +52,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `이미 선택된 코스가 선택되면 그대로 반환한다`() {
+    fun `이미 선택된 코스가 선택되면 해당 코스가 유지된다`() {
         // given
         mainViewModel = MainViewModel(fakeRepository)
         mainViewModel.select(CourseItem(COURSE_20, selected = false))
