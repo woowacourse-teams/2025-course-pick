@@ -21,6 +21,7 @@ lifecycle-viewmodel-ktx = "2.7.0"
 retrofit2-kotlinx-serialization-converter = "1.0.0"
 kakao-maps = "2.12.8"
 play-services-location = "21.3.0"
+assertj-core = "3.27.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
