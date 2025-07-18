@@ -50,7 +50,7 @@ class MainViewModel(
         _state.value =
             MainUiState(
                 courseRepository.courses
-                    .sortedBy { course: Course -> course.distance.meter }
+                    .sortedBy { course: Course -> course.distance }
                     .mapIndexed { index: Int, course: Course ->
                         CourseItem(
                             course,
