@@ -87,6 +87,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.kakao.maps)
+    implementation(libs.play.services.location)
     testImplementation(libs.assertj.core)
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
