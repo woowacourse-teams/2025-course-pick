@@ -52,8 +52,8 @@ class CourseApplicationServiceTest {
         assertThat(courses).hasSize(2)
                 .extracting(CourseResponse::name)
                 .containsExactlyInAnyOrder(course1.name(), course2.name());
-        assertThat(course1.minDistanceFrom(new Coordinate(latitude, longitude))).isLessThan(1000.0);
-        assertThat(course2.minDistanceFrom(new Coordinate(latitude, longitude))).isLessThan(1000.0);
-        assertThat(course3.minDistanceFrom(new Coordinate(latitude, longitude))).isGreaterThan(1000.0);
+        assertThat(course1.minDistanceFrom(new Coordinate(latitude, longitude)).value()).isLessThan(1000.0);
+        assertThat(course2.minDistanceFrom(new Coordinate(latitude, longitude)).value()).isLessThan(1000.0);
+        assertThat(course3.minDistanceFrom(new Coordinate(latitude, longitude)).value()).isGreaterThan(1000.0);
     }
 }
