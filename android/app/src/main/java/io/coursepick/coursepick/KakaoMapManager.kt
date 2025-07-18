@@ -1,6 +1,7 @@
 package io.coursepick.coursepick
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
@@ -32,6 +33,7 @@ class KakaoMapManager(
                 override fun onMapError(exception: Exception?) {}
             },
             object : KakaoMapReadyCallback() {
+                @SuppressLint("MissingPermission")
                 override fun onMapReady(kakaoMap: KakaoMap) {
                     fetchLocation(kakaoMap)
                 }
