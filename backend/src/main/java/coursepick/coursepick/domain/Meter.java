@@ -18,4 +18,8 @@ public record Meter(
     public Meter minimum(Meter other) {
         return this.value() <= other.value() ? this : other;
     }
+
+    public boolean isWithin(Meter other) {
+        return this.value() <= other.value();
+    }
 }

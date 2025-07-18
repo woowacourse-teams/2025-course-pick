@@ -31,7 +31,7 @@ public class Course {
         this.coordinates = coordinates;
     }
 
-    public double length() {
+    public Meter length() {
         Meter total = Meter.zero();
 
         for (int i = 0; i < coordinates.size() - 1; i++) {
@@ -42,10 +42,10 @@ public class Course {
             total = total.add(meter);
         }
 
-        return total.value();
+        return total;
     }
 
-    public double minDistanceFrom(Coordinate target) {
+    public Meter minDistanceFrom(Coordinate target) {
         Meter min = Meter.max();
 
         for (int i = 0; i < coordinates.size() - 1; i++) {
@@ -56,7 +56,7 @@ public class Course {
             min = min.minimum(meter);
         }
 
-        return min.value();
+        return min;
     }
 
     public String name() {

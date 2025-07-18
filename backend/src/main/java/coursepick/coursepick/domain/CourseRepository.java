@@ -8,9 +8,9 @@ public interface CourseRepository extends Repository<Course, Long> {
 
     List<Course> findAll();
 
-    default List<Course> findAllHasDistanceLessThen(Coordinate target, int distance) {
+    default List<Course> findAllHasDistanceWithin(Coordinate target, Meter meter) {
         return findAll().stream()
-                .filter(c -> c.minDistanceFrom(target) < distance)
+                .filter(c -> c.minDistanceFrom(target).isWithin(meter))
                 .toList();
     }
 }
