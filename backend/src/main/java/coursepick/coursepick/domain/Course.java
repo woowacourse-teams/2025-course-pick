@@ -32,31 +32,31 @@ public class Course {
     }
 
     public double length() {
-        Distance totalDistance = Distance.zero();
+        Meter total = Meter.zero();
 
         for (int i = 0; i < coordinates.size() - 1; i++) {
             Coordinate coord1 = coordinates.get(i);
             Coordinate coord2 = coordinates.get(i + 1);
 
-            Distance distance = Line.between(coord1, coord2).length();
-            totalDistance = totalDistance.add(distance);
+            Meter meter = GeoLine.between(coord1, coord2).length();
+            total = total.add(meter);
         }
 
-        return totalDistance.meter();
+        return total.value();
     }
 
     public double minDistanceFrom(Coordinate target) {
-        Distance minDistance = Distance.max();
+        Meter min = Meter.max();
 
         for (int i = 0; i < coordinates.size() - 1; i++) {
             Coordinate lineStart = coordinates.get(i);
             Coordinate lineEnd = coordinates.get(i + 1);
 
-            Distance distance = Line.between(lineStart, lineEnd).distanceTo(target);
-            minDistance = minDistance.minimum(distance);
+            Meter meter = GeoLine.between(lineStart, lineEnd).distanceTo(target);
+            min = min.minimum(meter);
         }
 
-        return minDistance.meter();
+        return min.value();
     }
 
     public String name() {
