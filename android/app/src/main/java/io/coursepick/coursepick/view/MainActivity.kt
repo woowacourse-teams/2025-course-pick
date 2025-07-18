@@ -1,8 +1,6 @@
 package io.coursepick.coursepick.view
 
 import android.os.Bundle
-import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -16,15 +14,7 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(viewModel::select) }
 
-    private var backPressedTime: Long = 0
-    private val finishIntervalTime = 2000L
-
-    private val callback =
-        object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                this@MainActivity.exitOnDoubleBackPressed()
-            }
-        }
+    private lateinit var doubleBackPressHandler: DoubleBackPressHandler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,26 +29,16 @@ class MainActivity : AppCompatActivity() {
 
         binding.adapter = courseAdapter
         setUpObservers(courseAdapter)
-        this.onBackPressedDispatcher.addCallback(this, callback)
+        setupDoubleBackPress()
     }
 
-    private fun exitOnDoubleBackPressed() {
-        val currentTime = System.currentTimeMillis()
-        if (currentTime - backPressedTime >= finishIntervalTime) {
-            backPressedTime = currentTime
-            showPressBackAgainToast()
-        } else {
-            finish()
-        }
-    }
-
-    private fun showPressBackAgainToast() {
-        Toast
-            .makeText(
-                this,
-                R.string.toast_back_press_exit,
-                Toast.LENGTH_SHORT,
-            ).show()
+    private fun setupDoubleBackPress() {
+        doubleBackPressHandler =
+            DoubleBackPressHandler(
+                context = this,
+                toastMessage = getString(R.string.toast_back_press_exit),
+            )
+        doubleBackPressHandler.setupWith(this)
     }
 
     private fun setUpObservers(courseAdapter: CourseAdapter) {
