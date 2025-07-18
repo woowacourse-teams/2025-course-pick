@@ -2,7 +2,7 @@ package io.coursepick.coursepick.domain
 
 @JvmInline
 value class Longitude(
-    private val value: Double,
+    val value: Double,
 ) {
     init {
         require(value in MIN_VALUE..<UPPER_BOUND)
