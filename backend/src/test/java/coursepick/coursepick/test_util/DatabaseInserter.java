@@ -1,5 +1,6 @@
-package coursepick.coursepick.domain;
+package coursepick.coursepick.test_util;
 
+import coursepick.coursepick.domain.Course;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Component;
