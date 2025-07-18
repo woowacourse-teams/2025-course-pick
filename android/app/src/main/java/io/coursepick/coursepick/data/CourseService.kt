@@ -8,5 +8,5 @@ interface CourseService {
     suspend fun courses(
         @Query("lat") latitude: String,
         @Query("lng") longitude: String,
-    ): List<CourseResponse>
+    ): List<GetCoursesResponseItem>
 }

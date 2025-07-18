@@ -3,7 +3,7 @@ package io.coursepick.coursepick.data
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CourseResponse(
+data class GetCoursesResponseItem(
     val type: String?,
     val geometry: Geometry?,
     val properties: Properties?,
