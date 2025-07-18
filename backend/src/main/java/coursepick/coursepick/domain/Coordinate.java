@@ -1,7 +1,6 @@
 package coursepick.coursepick.domain;
 
 import coursepick.coursepick.application.exception.ErrorType;
-import coursepick.coursepick.application.exception.InvalidArgumentException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
@@ -47,13 +46,13 @@ public record Coordinate(
 
     private static void validateLatitudeRange(double roundedLatitude) {
         if (roundedLatitude < -90 || roundedLatitude > 90) {
-            throw new InvalidArgumentException(ErrorType.INVALID_LATITUDE_RANGE);
+            throw new IllegalArgumentException(ErrorType.INVALID_LATITUDE_RANGE.message(roundedLatitude));
         }
     }
 
     private static void validateLongitudeRange(double roundedLongitude) {
         if (roundedLongitude < -180 || roundedLongitude >= 180) {
-            throw new InvalidArgumentException(ErrorType.INVALID_LONGITUDE_RANGE);
+            throw new IllegalArgumentException(ErrorType.INVALID_LONGITUDE_RANGE.message(roundedLongitude));
         }
     }
 }

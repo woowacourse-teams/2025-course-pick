@@ -1,12 +1,12 @@
 package coursepick.coursepick.domain;
 
-import coursepick.coursepick.application.exception.ErrorType;
-import coursepick.coursepick.application.exception.InvalidArgumentException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+
+import static coursepick.coursepick.application.exception.ErrorType.*;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
@@ -75,19 +75,21 @@ public class Course {
 
     private static void validateNameLength(String compactName) {
         if (compactName.length() < 2 || compactName.length() > 30) {
-            throw new InvalidArgumentException(ErrorType.INVALID_NAME_LENGTH);
+            throw new IllegalArgumentException(INVALID_NAME_LENGTH.message(compactName));
         }
     }
 
     private static void validateCoordinatesCount(List<Coordinate> coordinates) {
         if (coordinates.size() < 2) {
-            throw new InvalidArgumentException(ErrorType.INVALID_COORDINATE_COUNT);
+            throw new IllegalArgumentException(INVALID_COORDINATE_COUNT.message(coordinates.size()));
         }
     }
 
     private static void validateFirstLastCoordinateHasSameLatitudeAndLongitude(List<Coordinate> coordinates) {
-        if (!coordinates.getFirst().hasSameLatitudeAndLongitude(coordinates.getLast())) {
-            throw new InvalidArgumentException(ErrorType.NOT_CONNECTED_COURSE);
+        Coordinate first = coordinates.getFirst();
+        Coordinate last = coordinates.getLast();
+        if (!first.hasSameLatitudeAndLongitude(last)) {
+            throw new IllegalArgumentException(NOT_CONNECTED_COURSE.message(first, last));
         }
     }
 }
