@@ -1,26 +1,3 @@
-[versions]
-android-junit5 = "1.12.0.0"
-agp = "8.10.0"
-kotlin = "2.0.21"
-coreKtx = "1.16.0"
-junit = "4.13.2"
-junit-jupiter = "5.13.3"
-junitVersion = "1.2.1"
-kotest-runner-junit5 = "5.9.1"
-espressoCore = "3.6.1"
-appcompat = "1.7.1"
-material = "1.12.0"
-activity = "1.10.1"
-constraintlayout = "2.2.1"
-ktlint = "13.0.0"
-okhttp = "4.12.0"
-retrofit = "3.0.0"
-kotlinx-serialization-json = "1.8.1"
-kotlinx-coroutines-android = "1.8.0"
-lifecycle-viewmodel-ktx = "2.7.0"
-retrofit2-kotlinx-serialization-converter = "1.0.0"
-assertj-core = "3.27.3"
-
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -41,6 +18,7 @@ kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutine
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle-viewmodel-ktx" }
 retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2-kotlinx-serialization-converter" }
 assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj-core" }
+kakao-maps = { module = "com.kakao.maps.open:android", version.ref = "kakao-maps" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

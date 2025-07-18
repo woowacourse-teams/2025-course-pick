@@ -35,6 +35,13 @@ android {
             buildConfigField("boolean", "DEBUG", "true")
             buildConfigField("String", "BASE_URL", localProperties["base.url.debug"].toString())
         }
+        debug {
+            buildConfigField(
+                "String",
+                "KAKAO_NATIVE_APP_KEY",
+                localProperties["kakao.native.app.key"].toString(),
+            )
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -43,6 +50,11 @@ android {
             )
             buildConfigField("boolean", "DEBUG", "false")
             buildConfigField("String", "BASE_URL", localProperties["base.url.release"].toString())
+            buildConfigField(
+                "String",
+                "KAKAO_NATIVE_APP_KEY",
+                localProperties["kakao.native.app.key"].toString(),
+            )
         }
     }
 
@@ -74,6 +86,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.retrofit2.kotlinx.serialization.converter)
+    implementation(libs.kakao.maps)
     testImplementation(libs.assertj.core)
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
