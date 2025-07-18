@@ -70,6 +70,9 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging.interceptor)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.retrofit2.kotlinx.serialization.converter)
 
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
