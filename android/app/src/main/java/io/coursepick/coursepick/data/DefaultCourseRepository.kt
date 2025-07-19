@@ -1,6 +1,5 @@
 package io.coursepick.coursepick.data
 
-import io.coursepick.coursepick.data.GetCoursesResponseItem.Companion.toCourse
 import io.coursepick.coursepick.domain.Course
 import io.coursepick.coursepick.domain.CourseRepository
 import io.coursepick.coursepick.domain.Latitude
