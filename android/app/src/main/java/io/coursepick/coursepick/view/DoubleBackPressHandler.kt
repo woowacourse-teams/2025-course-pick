@@ -6,17 +6,19 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 
 class DoubleBackPressHandler(
-    private val context: Context,
     private val toastMessage: String,
     private val intervalTime: Long = LIMIT_TIME,
 ) {
     private var backPressedTime: Long = 0
 
-    fun handleBackPress(onExit: () -> Unit): Boolean {
+    fun handleBackPress(
+        context: Context,
+        onExit: () -> Unit,
+    ): Boolean {
         val currentTime: Long = System.currentTimeMillis()
         return if (currentTime - backPressedTime >= intervalTime) {
             backPressedTime = currentTime
-            showToast()
+            showToast(context)
             false
         } else {
             onExit()
@@ -28,13 +30,13 @@ class DoubleBackPressHandler(
         val callback =
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    handleBackPress { activity.finish() }
+                    handleBackPress(activity.baseContext) { activity.finish() }
                 }
             }
         activity.onBackPressedDispatcher.addCallback(activity, callback)
     }
 
-    private fun showToast() {
+    private fun showToast(context: Context) {
         Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
     }
 
