@@ -10,7 +10,7 @@ class KakaoMapLifecycleHandler(
 ) {
     private var kakaoMap: KakaoMap? = null
 
-    fun start(onReady: (KakaoMap) -> Unit) {
+    fun start(onMapReady: (KakaoMap) -> Unit) {
         mapView.start(
             object : MapLifeCycleCallback() {
                 override fun onMapDestroy() {}
@@ -20,7 +20,7 @@ class KakaoMapLifecycleHandler(
             object : KakaoMapReadyCallback() {
                 override fun onMapReady(map: KakaoMap) {
                     kakaoMap = map
-                    onReady(map)
+                    onMapReady(map)
                 }
             },
         )
