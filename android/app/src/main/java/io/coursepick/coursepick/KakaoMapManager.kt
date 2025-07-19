@@ -43,7 +43,7 @@ class KakaoMapManager(
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     fun fetchLocation(kakaoMap: KakaoMap) {
-        if (!hasLocationPermission()) return
+        if (!hasLocationPermission) return
 
         fusedLocationClient
             .getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
@@ -64,13 +64,20 @@ class KakaoMapManager(
         mapView.pause()
     }
 
-    private fun hasLocationPermission(): Boolean =
-        ActivityCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-        ) == PackageManager.PERMISSION_GRANTED ||
+    private val hasLocationPermission: Boolean =
+        hasFineLocationPermission || hasCoarseLocationPermission
+
+    private val hasCoarseLocationPermission: Boolean
+        get() =
             ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
+            ) == PackageManager.PERMISSION_GRANTED
+
+    private val hasFineLocationPermission: Boolean
+        get() =
+            ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION,
             ) == PackageManager.PERMISSION_GRANTED
 }
