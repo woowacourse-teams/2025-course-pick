@@ -52,7 +52,7 @@ class MainViewModel(
 
     private fun fetchCourses() {
         viewModelScope.launch {
-            val courses =
+            val courses: List<Course> =
                 courseRepository.courses(
                     Latitude(37.5165004),
                     Longitude(127.1040109),
