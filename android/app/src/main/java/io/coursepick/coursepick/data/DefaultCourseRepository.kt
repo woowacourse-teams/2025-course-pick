@@ -12,7 +12,7 @@ class DefaultCourseRepository : CourseRepository {
     ): List<Course> =
         Services.courseService
             .courses(latitude.value.toString(), longitude.value.toString())
-            .map { item: GetCoursesResponseItem ->
+            .mapNotNull { item: GetCoursesResponseItem ->
                 item.toCourse()
             }
 }

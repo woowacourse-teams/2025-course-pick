@@ -28,19 +28,21 @@ data class GetCoursesResponseItem(
         val length: Double?,
     )
 
-    fun toCourse(): Course {
+    fun toCourse(): Course? {
         val coordinates: List<Coordinate> =
             geometry?.coordinates?.map { coordinate: List<Double?>? ->
-                val latitude = Latitude(coordinate?.get(0) ?: 0.0)
-                val longitude = Longitude(coordinate?.get(1) ?: 0.0)
-                Coordinate(latitude, longitude)
-            } ?: emptyList()
-
+                if (coordinate == null) return null
+                Coordinate(
+                    Latitude(coordinate[0] ?: return null),
+                    Longitude(coordinate[1] ?: return null),
+                )
+            } ?: return null
+        if (properties == null) return null
         return Course(
             id = 0,
-            name = CourseName(properties?.name ?: ""),
-            distance = Distance(properties?.distance?.toInt() ?: 0),
-            length = Length(properties?.distance?.toInt() ?: 0),
+            name = CourseName(properties.name ?: return null),
+            distance = Distance(properties.distance?.toInt() ?: return null),
+            length = Length(properties.length?.toInt() ?: return null),
             coordinates = coordinates,
         )
     }
