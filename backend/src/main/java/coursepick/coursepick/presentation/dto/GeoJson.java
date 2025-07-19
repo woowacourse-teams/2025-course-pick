@@ -25,12 +25,13 @@ public record GeoJson(
     }
 
     record PropertiesResponse(
+            long id,
             String name,
             double distance,
             double length
     ) {
-        public static PropertiesResponse from(String name, double distance, double length) {
-            return new PropertiesResponse(name, distance, length);
+        public static PropertiesResponse from(long id, String name, double distance, double length) {
+            return new PropertiesResponse(id, name, distance, length);
         }
     }
 
@@ -38,7 +39,7 @@ public record GeoJson(
         return new GeoJson(
                 "Feature",
                 GeometryResponse.from(courseResponse.coordinates()),
-                PropertiesResponse.from(courseResponse.name(), courseResponse.meter().value(), courseResponse.length().value())
+                PropertiesResponse.from(courseResponse.id(), courseResponse.name(), courseResponse.meter().value(), courseResponse.length().value())
         );
     }
 
