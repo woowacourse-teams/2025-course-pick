@@ -19,8 +19,9 @@ kotlinx-serialization-json = "1.8.1"
 kotlinx-coroutines-android = "1.8.0"
 lifecycle-viewmodel-ktx = "2.7.0"
 retrofit2-kotlinx-serialization-converter = "1.0.0"
+kakao-maps = "2.12.8"
+play-services-location = "21.3.0"
 assertj-core = "3.27.3"
-
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -41,6 +42,8 @@ kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutine
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle-viewmodel-ktx" }
 retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2-kotlinx-serialization-converter" }
 assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj-core" }
+kakao-maps = { module = "com.kakao.maps.open:android", version.ref = "kakao-maps" }
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "play-services-location" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
