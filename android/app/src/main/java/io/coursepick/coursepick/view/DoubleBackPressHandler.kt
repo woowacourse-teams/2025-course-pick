@@ -24,10 +24,6 @@ class DoubleBackPressHandler(
         }
     }
 
-    private fun showToast() {
-        Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
-    }
-
     fun setUpWith(activity: AppCompatActivity) {
         val callback =
             object : OnBackPressedCallback(true) {
@@ -36,6 +32,10 @@ class DoubleBackPressHandler(
                 }
             }
         activity.onBackPressedDispatcher.addCallback(activity, callback)
+    }
+
+    private fun showToast() {
+        Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
     }
 
     companion object {
