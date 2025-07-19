@@ -61,6 +61,10 @@ public class Course {
         return min;
     }
 
+    public Long id() {
+        return id;
+    }
+
     public String name() {
         return name;
     }
