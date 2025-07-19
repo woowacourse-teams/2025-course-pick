@@ -9,11 +9,11 @@ import io.coursepick.coursepick.domain.Course
 class KakaoMapManager(
     mapView: MapView,
     locationProvider: LocationProvider = LocationProvider(mapView.context),
-    private val lifecycleHandler: KakaoMapLifecycleHandler = KakaoMapLifecycleHandler(mapView),
-    private val cameraController: KakaoMapCameraController =
-        KakaoMapCameraController(locationProvider),
-    private val drawer: KakaoMapDrawer = KakaoMapDrawer(mapView.context),
 ) {
+    private val lifecycleHandler: KakaoMapLifecycleHandler = KakaoMapLifecycleHandler(mapView)
+    private val cameraController: KakaoMapCameraController =
+        KakaoMapCameraController(locationProvider)
+    private val drawer: KakaoMapDrawer = KakaoMapDrawer(mapView.context)
     private var kakaoMap: KakaoMap? = null
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
