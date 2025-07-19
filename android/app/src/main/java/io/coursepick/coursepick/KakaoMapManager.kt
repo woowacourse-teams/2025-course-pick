@@ -30,11 +30,11 @@ class KakaoMapManager(
     fun pause() = lifecycleHandler.pause()
 
     fun draw(course: Course) {
-        kakaoMap?.let { drawer.drawCourse(it, course) }
+        kakaoMap?.let { map: KakaoMap -> drawer.drawCourse(map, course) }
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     fun moveToCurrentLocation() {
-        kakaoMap?.let { cameraController.moveToCurrentLocation(it) }
+        kakaoMap?.let { map: KakaoMap -> cameraController.moveToCurrentLocation(map) }
     }
 }
