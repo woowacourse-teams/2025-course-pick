@@ -12,10 +12,11 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class CourseWebController {
+public class CourseWebController implements CourseWebApi {
 
     private final CourseApplicationService courseApplicationService;
 
+    @Override
     @GetMapping("/courses")
     public List<GeoJson> findNearbyCourses(
             @RequestParam("lat") double latitude,
