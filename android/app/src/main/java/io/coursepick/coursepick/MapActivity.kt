@@ -5,10 +5,18 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import io.coursepick.coursepick.databinding.ActivityMapBinding
+import io.coursepick.coursepick.domain.Coordinate
+import io.coursepick.coursepick.domain.Course
+import io.coursepick.coursepick.domain.CourseName
+import io.coursepick.coursepick.domain.Distance
+import io.coursepick.coursepick.domain.Latitude
+import io.coursepick.coursepick.domain.Length
+import io.coursepick.coursepick.domain.Longitude
 
 class MapActivity : AppCompatActivity() {
     private val binding: ActivityMapBinding by lazy { ActivityMapBinding.inflate(layoutInflater) }
@@ -26,6 +34,7 @@ class MapActivity : AppCompatActivity() {
             }
         }
 
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -37,6 +46,7 @@ class MapActivity : AppCompatActivity() {
         }
 
         requestLocationPermissions()
+        mapManager.start(course)
     }
 
     override fun onResume() {
@@ -60,3 +70,82 @@ class MapActivity : AppCompatActivity() {
         )
     }
 }
+
+private val course =
+    Course(
+        id = 0,
+        name = CourseName(value = "Seokchon-Lake"),
+        distance = Distance(meter = 449),
+        length = Length(meter = 449),
+        coordinates =
+            listOf(
+                Coordinate(
+                    latitude = Latitude(value = 37.509835),
+                    longitude = Longitude(value = 127.102495),
+                ),
+                Coordinate(
+                    latitude = Latitude(value = 37.510367),
+                    longitude = Longitude(value = 127.101655),
+                ),
+                Coordinate(
+                    latitude = Latitude(value = 37.509204),
+                    longitude = Longitude(value = 127.098165),
+                ),
+                Coordinate(
+                    latitude = Latitude(value = 37.508038),
+                    longitude = Longitude(value = 127.097838),
+                ),
+                Coordinate(
+                    latitude = Latitude(value = 37.506873),
+                    longitude = Longitude(value = 127.09791),
+                ),
+                Coordinate(
+                    latitude = Latitude(value = 37.507053),
+                    longitude = Longitude(value = 127.09991),
+                ),
+                Coordinate(
+                    latitude = Latitude(value = 37.508496),
+                    longitude = Longitude(value = 127.102865),
+                ),
+                Coordinate(
+                    latitude = Latitude(value = 37.509548),
+                    longitude = Longitude(value = 127.102787),
+                ),
+                Coordinate(
+                    latitude = Latitude(value = 37.509928),
+                    longitude = Longitude(value = 127.103403),
+                ),
+                Coordinate(
+                    latitude = Latitude(value = 37.509479),
+                    longitude = Longitude(value = 127.104189),
+                ),
+                Coordinate(
+                    latitude = Latitude(value = 37.511344),
+                    longitude = Longitude(value = 127.106898),
+                ),
+                Coordinate(
+                    latitude = Latitude(value = 37.512422),
+                    longitude = Longitude(value = 127.107543),
+                ),
+                Coordinate(
+                    latitude = Latitude(value = 37.513117),
+                    longitude = Longitude(value = 127.107097),
+                ),
+                Coordinate(
+                    latitude = Latitude(value = 37.512668),
+                    longitude = Longitude(value = 127.105626),
+                ),
+                Coordinate(
+                    latitude = Latitude(value = 37.511144),
+                    longitude = Longitude(value = 127.102666),
+                ),
+                Coordinate(
+                    latitude = Latitude(value = 37.510188),
+                    longitude = Longitude(value = 127.103115),
+                ),
+                Coordinate(
+                    latitude = Latitude(value = 37.509835),
+                    longitude = Longitude(value = 127.102495),
+                ),
+            ),
+    )
