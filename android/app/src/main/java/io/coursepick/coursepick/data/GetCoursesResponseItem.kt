@@ -23,6 +23,7 @@ data class GetCoursesResponseItem(
 
     @Serializable
     data class Properties(
+        val id: Long?,
         val name: String?,
         val distance: Double?,
         val length: Double?,
@@ -39,7 +40,7 @@ data class GetCoursesResponseItem(
             } ?: return null
         if (properties == null) return null
         return Course(
-            id = 0,
+            id = properties.id ?: return null,
             name = CourseName(properties.name ?: return null),
             distance = Distance(properties.distance?.toInt() ?: return null),
             length = Length(properties.length?.toInt() ?: return null),
