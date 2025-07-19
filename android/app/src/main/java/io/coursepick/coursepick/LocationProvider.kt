@@ -21,7 +21,7 @@ class LocationProvider(
         onSuccess: (Location) -> Unit,
         onFailure: (Exception) -> Unit,
     ) {
-        if (!hasPermission) return
+        if (!hasLocationPermission) return
 
         locationClient
             .getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
@@ -32,14 +32,20 @@ class LocationProvider(
             }
     }
 
-    private val hasPermission: Boolean
+    private val hasLocationPermission: Boolean =
+        hasFineLocationPermission || hasCoarseLocationPermission
+
+    private val hasCoarseLocationPermission: Boolean
+        get() =
+            ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+            ) == PackageManager.PERMISSION_GRANTED
+
+    private val hasFineLocationPermission: Boolean
         get() =
             ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.ACCESS_FINE_LOCATION,
-            ) == PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                ) == PackageManager.PERMISSION_GRANTED
+            ) == PackageManager.PERMISSION_GRANTED
 }
