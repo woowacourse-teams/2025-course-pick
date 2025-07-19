@@ -13,8 +13,12 @@ class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val viewModel: MainViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(viewModel::select) }
-
-    private lateinit var doubleBackPressHandler: DoubleBackPressHandler
+    private val doubleBackPressHandler by lazy {
+        DoubleBackPressHandler(
+            context = this,
+            toastMessage = getString(R.string.toast_back_press_exit),
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,11 +37,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setUpDoubleBackPress() {
-        doubleBackPressHandler =
-            DoubleBackPressHandler(
-                context = this,
-                toastMessage = getString(R.string.toast_back_press_exit),
-            )
         doubleBackPressHandler.setUpWith(this)
     }
 
