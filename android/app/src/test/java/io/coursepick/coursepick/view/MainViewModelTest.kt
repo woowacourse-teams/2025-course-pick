@@ -4,33 +4,22 @@ import io.coursepick.coursepick.domain.Course
 import io.coursepick.coursepick.view.fixtures.COURSE_20
 import io.coursepick.coursepick.view.fixtures.FAKE_COURSES
 import io.coursepick.coursepick.view.fixtures.FakeRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@ExperimentalCoroutinesApi
+@ExtendWith(CoroutinesTestExtension::class)
 @ExtendWith(InstantTaskExecutorExtension::class)
 class MainViewModelTest {
-    private val testDispatcher = UnconfinedTestDispatcher()
     private val fakeRepository = FakeRepository()
     private lateinit var mainViewModel: MainViewModel
 
     @BeforeEach
     fun setUp() {
-        Dispatchers.setMain(testDispatcher)
         mainViewModel = MainViewModel(fakeRepository)
-    }
-
-    @AfterEach
-    fun tearDown() {
-        Dispatchers.resetMain()
     }
 
     @Test
@@ -51,7 +40,6 @@ class MainViewModelTest {
     @Test
     fun `하나의 코스를 선택하면 나머지는 해제되고 해당 코스만 선택된다`() {
         // given
-        mainViewModel = MainViewModel(fakeRepository)
         val expected =
             MainUiState(
                 FAKE_COURSES.map { course: Course ->
@@ -69,7 +57,6 @@ class MainViewModelTest {
     @Test
     fun `이미 선택된 코스가 선택되면 해당 코스가 유지된다`() {
         // given
-        mainViewModel = MainViewModel(fakeRepository)
         mainViewModel.select(CourseItem(COURSE_20, selected = false))
 
         val expected =
