@@ -13,7 +13,7 @@ class DoubleBackPressHandler(
     private var backPressedTime: Long = 0
 
     fun handleBackPress(onExit: () -> Unit): Boolean {
-        val currentTime = System.currentTimeMillis()
+        val currentTime: Long = System.currentTimeMillis()
         return if (currentTime - backPressedTime >= intervalTime) {
             backPressedTime = currentTime
             showToast()
