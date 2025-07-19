@@ -28,7 +28,7 @@ data class GetCoursesResponseItem(
         val length: Double?,
     )
 
-    fun toCourse(): Course? {
+    fun toCourseOrNull(): Course? {
         val coordinates: List<Coordinate> =
             geometry?.coordinates?.map { coordinate: List<Double?>? ->
                 if (coordinate == null) return null

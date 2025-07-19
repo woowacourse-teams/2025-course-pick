@@ -13,6 +13,6 @@ class DefaultCourseRepository : CourseRepository {
         Services.courseService
             .courses(latitude.value.toString(), longitude.value.toString())
             .mapNotNull { item: GetCoursesResponseItem ->
-                item.toCourse()
+                item.toCourseOrNull()
             }
 }
