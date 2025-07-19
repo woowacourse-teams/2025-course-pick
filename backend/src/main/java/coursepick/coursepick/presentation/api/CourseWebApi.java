@@ -1,4 +1,4 @@
-package coursepick.coursepick.presentation;
+package coursepick.coursepick.presentation.api;
 
 import coursepick.coursepick.presentation.dto.GeoJson;
 import io.swagger.v3.oas.annotations.Operation;

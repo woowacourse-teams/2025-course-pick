@@ -1,4 +1,4 @@
-package coursepick.coursepick.presentation;
+package coursepick.coursepick.presentation.api;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
@@ -17,7 +17,7 @@ import static coursepick.coursepick.application.exception.ErrorType.INVALID_LONG
 
 @OpenAPIDefinition(
         info = @Info(title = "코스픽 API", version = "1.0.0"),
-        servers = @Server(url = "http://54.180.213.93", description = "개발 환경 서버")
+        servers = @Server(url = "http://54.180.213.93", description = "개발 서버")
 )
 @Configuration
 public class OpenApiConfig {
