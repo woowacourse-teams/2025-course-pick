@@ -5,7 +5,7 @@ data class Course(
     val name: CourseName,
     val distance: Distance,
     val length: Length,
-    private val coordinates: List<Coordinate>,
+    val coordinates: List<Coordinate>,
 ) {
     init {
         require(coordinates.isNotEmpty())
