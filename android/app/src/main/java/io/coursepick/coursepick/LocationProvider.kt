@@ -25,9 +25,9 @@ class LocationProvider(
 
         locationClient
             .getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
-            .addOnSuccessListener { location ->
+            .addOnSuccessListener { location: Location ->
                 onSuccess(location)
-            }.addOnFailureListener { exception ->
+            }.addOnFailureListener { exception: Exception ->
                 onFailure(exception)
             }
     }
