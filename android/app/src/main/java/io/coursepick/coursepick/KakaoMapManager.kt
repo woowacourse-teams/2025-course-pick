@@ -51,8 +51,8 @@ class KakaoMapManager(
                 val target: LatLng = LatLng.from(location.latitude, location.longitude)
                 val cameraUpdate: CameraUpdate = CameraUpdateFactory.newCenterPosition(target)
                 kakaoMap.moveCamera(cameraUpdate)
-            }.addOnFailureListener {
-                Log.e("Location", "위치 조회 실패: ${it.message}")
+            }.addOnFailureListener { exception: Exception ->
+                Log.e("Location", "위치 조회 실패: ${exception.message}")
             }
     }
 
