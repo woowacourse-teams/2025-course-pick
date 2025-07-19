@@ -7,6 +7,7 @@ import coursepick.coursepick.domain.Meter;
 import java.util.List;
 
 public record CourseResponse(
+        Long id,
         String name,
         List<Coordinate> coordinates,
         Meter meter,
@@ -14,6 +15,7 @@ public record CourseResponse(
 ) {
     public static CourseResponse from(Course course, Coordinate target) {
         return new CourseResponse(
+                course.id(),
                 course.name(),
                 course.coordinates(),
                 course.minDistanceFrom(target),
