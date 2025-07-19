@@ -19,12 +19,17 @@ object Services {
 
     private val client: OkHttpClient = OkHttpClient.Builder().addInterceptor(interceptor).build()
 
+    private val json =
+        Json {
+            ignoreUnknownKeys = true
+        }
+
     private val retrofit =
         Retrofit
             .Builder()
             .baseUrl(BuildConfig.BASE_URL)
             .client(client)
-            .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
 
     val courseService: CourseService = retrofit.create(CourseService::class.java)
