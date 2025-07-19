@@ -6,12 +6,15 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import io.coursepick.coursepick.R
 import io.coursepick.coursepick.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val viewModel: MainViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(viewModel::select) }
+
+    private lateinit var doubleBackPressHandler: DoubleBackPressHandler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,6 +29,16 @@ class MainActivity : AppCompatActivity() {
 
         binding.adapter = courseAdapter
         setUpObservers(courseAdapter)
+        setupDoubleBackPress()
+    }
+
+    private fun setupDoubleBackPress() {
+        doubleBackPressHandler =
+            DoubleBackPressHandler(
+                context = this,
+                toastMessage = getString(R.string.toast_back_press_exit),
+            )
+        doubleBackPressHandler.setupWith(this)
     }
 
     private fun setUpObservers(courseAdapter: CourseAdapter) {

@@ -2,4 +2,5 @@
     <string name="app_name">CoursePick</string>
     <string name="main_course_distance">%dm만큼 떨어짐</string>
     <string name="main_course_length">%dkm</string>
+    <string name="toast_back_press_exit">버튼을 한 번 더 누르면 종료됩니다.</string>
 </resources>
