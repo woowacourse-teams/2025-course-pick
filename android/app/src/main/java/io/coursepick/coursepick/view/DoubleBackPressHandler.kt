@@ -28,7 +28,7 @@ class DoubleBackPressHandler(
         Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
     }
 
-    fun setupWith(activity: AppCompatActivity) {
+    fun setUpWith(activity: AppCompatActivity) {
         val callback =
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {

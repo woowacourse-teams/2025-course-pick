@@ -29,16 +29,16 @@ class MainActivity : AppCompatActivity() {
 
         binding.adapter = courseAdapter
         setUpObservers(courseAdapter)
-        setupDoubleBackPress()
+        setUpDoubleBackPress()
     }
 
-    private fun setupDoubleBackPress() {
+    private fun setUpDoubleBackPress() {
         doubleBackPressHandler =
             DoubleBackPressHandler(
                 context = this,
                 toastMessage = getString(R.string.toast_back_press_exit),
             )
-        doubleBackPressHandler.setupWith(this)
+        doubleBackPressHandler.setUpWith(this)
     }
 
     private fun setUpObservers(courseAdapter: CourseAdapter) {
