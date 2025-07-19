@@ -2,3 +2,12 @@ spring:
   application.name: coursepick
   jpa:
     open-in-view: true
+
+springdoc:
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  swagger-ui:
+    path: /api-docs.html
+    tags-sorter: alpha
+    operations-sorter: method
+    defaultModelsExpandDepth: 0
