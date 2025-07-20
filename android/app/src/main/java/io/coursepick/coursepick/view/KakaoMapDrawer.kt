@@ -1,4 +1,4 @@
-package io.coursepick.coursepick
+package io.coursepick.coursepick.view
 
 import android.content.Context
 import com.kakao.vectormap.KakaoMap
@@ -10,7 +10,6 @@ import com.kakao.vectormap.route.RouteLineStyle
 import com.kakao.vectormap.route.RouteLineStyles
 import com.kakao.vectormap.route.RouteLineStylesSet
 import io.coursepick.coursepick.domain.Coordinate
-import io.coursepick.coursepick.view.CourseItem
 
 class KakaoMapDrawer(
     private val context: Context,

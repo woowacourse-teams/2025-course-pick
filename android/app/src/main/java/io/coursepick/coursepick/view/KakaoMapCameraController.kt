@@ -1,4 +1,4 @@
-package io.coursepick.coursepick
+package io.coursepick.coursepick.view
 
 import android.Manifest
 import android.location.Location

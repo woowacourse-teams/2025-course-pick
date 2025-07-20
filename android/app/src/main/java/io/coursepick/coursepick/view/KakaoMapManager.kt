@@ -1,11 +1,10 @@
-package io.coursepick.coursepick
+package io.coursepick.coursepick.view
 
 import android.Manifest
 import androidx.annotation.RequiresPermission
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.MapView
 import io.coursepick.coursepick.domain.Coordinate
-import io.coursepick.coursepick.view.CourseItem
 
 class KakaoMapManager(
     mapView: MapView,
