@@ -33,7 +33,11 @@ class MainViewModel(
     }
 
     fun select(selectedCourse: CourseItem) {
-        if (selectedCourse.selected) return
+        if (selectedCourse.selected) {
+            _event.value = MainUiEvent.SelectNewCourse(selectedCourse)
+            return
+        }
+
         val oldCourses: List<CourseItem> = state.value?.courses ?: return
 
         val selectedIndex = oldCourses.indexOf(selectedCourse)
