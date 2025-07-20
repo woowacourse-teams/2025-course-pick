@@ -10,6 +10,8 @@ import io.coursepick.coursepick.domain.CourseRepository
 import io.coursepick.coursepick.domain.Latitude
 import io.coursepick.coursepick.domain.Longitude
 import kotlinx.coroutines.launch
+import woowacourse.shopping.view.MutableSingleLiveData
+import woowacourse.shopping.view.SingleLiveData
 
 class MainViewModel(
     private val courseRepository: CourseRepository = DefaultCourseRepository(),
@@ -22,6 +24,9 @@ class MainViewModel(
             ),
         )
     val state: LiveData<MainUiState> get() = _state
+
+    private val _event: MutableSingleLiveData<MainUiEvent> = MutableSingleLiveData()
+    val event: SingleLiveData<MainUiEvent> get() = _event
 
     init {
         fetchCourses()
@@ -36,6 +41,32 @@ class MainViewModel(
 
         val newCourses: List<CourseItem> = newCourses(oldCourses, selectedCourse)
         _state.value = state.value?.copy(courses = newCourses)
+        _event.value = MainUiEvent.SelectNewCourse(selectedCourse)
+    }
+
+    private fun fetchCourses() {
+        viewModelScope.launch {
+            runCatching {
+                courseRepository.courses(
+                    Latitude(37.5165004),
+                    Longitude(127.1040109),
+                )
+            }.onSuccess { courses: List<Course> ->
+                val courses: List<CourseItem> =
+                    courses
+                        .sortedBy { course: Course -> course.distance }
+                        .mapIndexed { index: Int, course: Course ->
+                            CourseItem(
+                                course,
+                                index == 0,
+                            )
+                        }
+                _state.value = MainUiState(courses)
+                _event.value = MainUiEvent.FetchCourseSuccess(courses.first())
+            }.onFailure { error: Throwable ->
+                _event.value = MainUiEvent.FetchCourseFailure
+            }
+        }
     }
 
     private fun newCourses(
@@ -49,25 +80,4 @@ class MainViewModel(
                 course.copy(selected = false)
             }
         }
-
-    private fun fetchCourses() {
-        viewModelScope.launch {
-            val courses: List<Course> =
-                courseRepository.courses(
-                    Latitude(37.5165004),
-                    Longitude(127.1040109),
-                )
-            _state.value =
-                MainUiState(
-                    courses
-                        .sortedBy { course: Course -> course.distance }
-                        .mapIndexed { index: Int, course: Course ->
-                            CourseItem(
-                                course,
-                                index == 0,
-                            )
-                        },
-                )
-        }
-    }
 }
