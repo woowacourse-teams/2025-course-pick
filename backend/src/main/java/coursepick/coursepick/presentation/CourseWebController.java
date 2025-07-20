@@ -29,7 +29,7 @@ public class CourseWebController {
             @RequestParam("filePath") String filePath
     ) {
         if (adminToken.isEmpty() || !adminToken.equals(token)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid admin token");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "올바르지 않은 어드민 토큰값 입니다.");
         }
 
         courseApplicationService.parseAndSaveCourses(filePath);
