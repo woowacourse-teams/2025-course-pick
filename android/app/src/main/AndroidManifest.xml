@@ -17,9 +17,6 @@
         android:theme="@style/Theme.CoursePick"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".MapActivity"
-            android:exported="true" />
-        <activity
             android:name=".view.MainActivity"
             android:exported="true">
             <intent-filter>
