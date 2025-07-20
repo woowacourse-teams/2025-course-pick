@@ -17,11 +17,10 @@ class KakaoMapManager(
     private var kakaoMap: KakaoMap? = null
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    fun start(course: CourseItem?) {
+    fun start(onMapReady: (KakaoMap) -> Unit) {
         lifecycleHandler.start { map: KakaoMap ->
             kakaoMap = map
-            cameraController.moveToCurrentLocation(map)
-            if (course != null) draw(course)
+            onMapReady(map)
         }
     }
 

@@ -50,7 +50,6 @@ class MainActivity : AppCompatActivity() {
         setUpObservers()
         setUpDoubleBackPress()
         requestLocationPermissions()
-        mapManager.start(null)
     }
 
     private fun setUpDoubleBackPress() {
@@ -101,7 +100,9 @@ class MainActivity : AppCompatActivity() {
         viewModel.event.observe(this) { event: MainUiEvent ->
             when (event) {
                 is MainUiEvent.FetchCourseSuccess -> {
-                    selectCourse(event.course)
+                    mapManager.start {
+                        selectCourse(event.course)
+                    }
                 }
 
                 MainUiEvent.FetchCourseFailure ->
