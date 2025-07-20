@@ -4,9 +4,13 @@ import coursepick.coursepick.application.CourseApplicationService;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.presentation.dto.GeoJson;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -15,6 +19,21 @@ import java.util.List;
 public class CourseWebController {
 
     private final CourseApplicationService courseApplicationService;
+
+    @Value("${admin.token}")
+    private String adminToken;
+
+    @PostMapping("/admin/courses/import")
+    public void importCourses(
+            @RequestParam("adminToken") String token,
+            @RequestParam("filePath") String filePath
+    ) {
+        if (adminToken.isEmpty() || !adminToken.equals(token)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid admin token");
+        }
+
+        courseApplicationService.parseAndSaveCourses(filePath);
+    }
 
     @GetMapping("/courses")
     public List<GeoJson> findNearbyCourses(
