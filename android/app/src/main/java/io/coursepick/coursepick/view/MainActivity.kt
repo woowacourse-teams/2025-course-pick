@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val viewModel: MainViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(viewModel::select) }
-    private val doubleBackPressDetector = DoubleBackPressDetector()
+    private val doublePressDetector = DoublePressDetector()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         val callback =
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    if (doubleBackPressDetector.doubleBackPressed()) {
+                    if (doublePressDetector.doublePressed()) {
                         finish()
                     } else {
                         Toast
