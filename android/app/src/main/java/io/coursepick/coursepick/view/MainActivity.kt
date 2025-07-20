@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
                         Toast
                             .makeText(
                                 this@MainActivity,
-                                getString(R.string.toast_back_press_exit),
+                                getString(R.string.main_back_press_exit),
                                 Toast.LENGTH_SHORT,
                             ).show()
                     }
