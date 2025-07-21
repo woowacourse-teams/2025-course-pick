@@ -5,6 +5,12 @@
 
     <data>
 
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="io.coursepick.coursepick.view.MainViewModel" />
+
         <variable
             name="adapter"
             type="io.coursepick.coursepick.view.CourseAdapter" />
@@ -25,6 +31,7 @@
             android:layout_height="match_parent"
             android:background="@drawable/background_courses"
             android:paddingBottom="10dp"
+            android:visibility="@{viewModel.state.areCoursesEmpty ? View.GONE : View.VISIBLE}"
             app:behavior_hideable="false"
             app:behavior_peekHeight="@dimen/main_bottom_sheet_peek_height"
             app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">

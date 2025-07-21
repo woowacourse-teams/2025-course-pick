@@ -1,6 +1,7 @@
 package io.coursepick.coursepick.view
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -15,6 +16,9 @@ import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.databinding.ActivityMainBinding
+import io.coursepick.coursepick.domain.Coordinate
+import io.coursepick.coursepick.domain.Latitude
+import io.coursepick.coursepick.domain.Longitude
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
@@ -22,17 +26,13 @@ class MainActivity : AppCompatActivity() {
     private val courseAdapter by lazy { CourseAdapter(viewModel::select) }
     private val doublePressDetector = DoublePressDetector()
     private val mapManager by lazy { KakaoMapManager(binding.mainMap) }
+
+    @SuppressLint("MissingPermission")
     private val locationPermissionLauncher: ActivityResultLauncher<Array<String>> =
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions(),
-        ) { permissions ->
-            val granted: Boolean =
-                permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
-                    permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
-
-            if (!granted) {
-                Toast.makeText(this, "위치 권한이 없어 위치를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show()
-            }
+        ) { permissions: Map<String, @JvmSuppressWildcards Boolean> ->
+            mapManager.showCurrentLocation(DEFAULT_COORDINATE)
         }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -47,6 +47,8 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = this
         binding.adapter = courseAdapter
         setUpObservers()
         setUpDoubleBackPress()
@@ -106,13 +108,16 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                MainUiEvent.FetchCourseFailure ->
+                MainUiEvent.FetchCourseFailure -> {
                     Toast
                         .makeText(
                             this,
                             "코스 정보를 불러오지 못했습니다.",
                             Toast.LENGTH_SHORT,
                         ).show()
+
+                    mapManager.start {}
+                }
 
                 is MainUiEvent.SelectNewCourse -> {
                     selectCourse(event.course)
@@ -136,5 +141,12 @@ class MainActivity : AppCompatActivity() {
                 Manifest.permission.ACCESS_COARSE_LOCATION,
             ),
         )
+    }
+
+    companion object {
+        private const val DEFAULT_LATITUDE = 37.5165004
+        private const val DEFAULT_LONGITUDE = 127.1040109
+        private val DEFAULT_COORDINATE =
+            Coordinate(Latitude(DEFAULT_LATITUDE), Longitude(DEFAULT_LONGITUDE))
     }
 }

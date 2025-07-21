@@ -1,8 +1,14 @@
 package io.coursepick.coursepick.view
 
 import android.content.Context
+import android.location.Location
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.LatLng
+import com.kakao.vectormap.label.LabelLayer
+import com.kakao.vectormap.label.LabelManager
+import com.kakao.vectormap.label.LabelOptions
+import com.kakao.vectormap.label.LabelStyle
+import com.kakao.vectormap.label.LabelStyles
 import com.kakao.vectormap.route.RouteLineLayer
 import com.kakao.vectormap.route.RouteLineOptions
 import com.kakao.vectormap.route.RouteLineSegment
@@ -15,7 +21,7 @@ import io.coursepick.coursepick.domain.Coordinate
 class KakaoMapDrawer(
     private val context: Context,
 ) {
-    fun drawCourse(
+    fun draw(
         kakaoMap: KakaoMap,
         course: CourseItem,
     ) {
@@ -31,6 +37,50 @@ class KakaoMapDrawer(
         val segment = RouteLineSegment.from(course.toLatLngs()).setStyles(styleSet.getStyles(0))
         val options = RouteLineOptions.from(segment).setStylesSet(styleSet)
         layer.addRouteLine(options)
+    }
+
+    fun draw(
+        map: KakaoMap,
+        coordinate: Coordinate,
+    ) {
+        draw(
+            map,
+            coordinate.latitude.value,
+            coordinate.longitude.value,
+        )
+    }
+
+    fun draw(
+        map: KakaoMap,
+        location: Location,
+    ) {
+        draw(
+            map,
+            location.latitude,
+            location.longitude,
+        )
+    }
+
+    private fun draw(
+        map: KakaoMap,
+        latitude: Double,
+        longitude: Double,
+    ) {
+        val labelManager: LabelManager = map.labelManager ?: return
+        val styles: LabelStyles =
+            labelManager.addLabelStyles(LabelStyles.from(LabelStyle.from(R.drawable.image_current_location)))
+                ?: return
+        val options: LabelOptions =
+            LabelOptions
+                .from(
+                    LatLng.from(
+                        latitude,
+                        longitude,
+                    ),
+                ).setStyles(styles)
+        val layer: LabelLayer = map.labelManager?.layer ?: return
+
+        layer.addLabel(options)
     }
 
     private fun CourseItem.toLatLngs() = coordinates.map { coordinate: Coordinate -> coordinate.toLatLng() }
