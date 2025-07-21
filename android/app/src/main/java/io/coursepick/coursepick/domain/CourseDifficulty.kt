@@ -7,15 +7,12 @@ enum class CourseDifficulty {
     ;
 
     companion object {
-        fun courseDifficulty(
-            type: CourseType,
-            score: CourseScore,
-        ): CourseDifficulty {
-            val adjustedScore: Double = type.difficultyOffset + score.value
+        fun courseDifficulty(score: CourseScore): CourseDifficulty {
+            val adjustedScore: Double = score.value
 
             return when {
                 adjustedScore < 3.0 -> EASY
-                adjustedScore < 6.0 -> NORMAL
+                adjustedScore < 7.0 -> NORMAL
                 else -> HARD
             }
         }
