@@ -22,8 +22,8 @@ class KakaoMapManager(
             kakaoMap = map
             map.logo?.setPosition(
                 MapGravity.TOP or MapGravity.LEFT,
-                mapView.context.dpToPx(10F),
-                mapView.context.dpToPx(10F),
+                mapView.context.dpToPx(LOGO_POSITION_OFFSET_DP),
+                mapView.context.dpToPx(LOGO_POSITION_OFFSET_DP),
             )
             onMapReady(map)
         }
@@ -53,5 +53,9 @@ class KakaoMapManager(
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     fun moveToCurrentLocation() {
         kakaoMap?.let { map: KakaoMap -> cameraController.moveToCurrentLocation(map) }
+    }
+
+    companion object {
+        private const val LOGO_POSITION_OFFSET_DP = 10F
     }
 }
