@@ -13,6 +13,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.KakaoMapManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import io.coursepick.coursepick.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -115,6 +116,8 @@ class MainActivity : AppCompatActivity() {
 
                 is MainUiEvent.SelectNewCourse -> {
                     selectCourse(event.course)
+                    val behavior = BottomSheetBehavior.from(binding.mainBottomSheet)
+                    behavior.state = BottomSheetBehavior.STATE_COLLAPSED
                 }
             }
         }
