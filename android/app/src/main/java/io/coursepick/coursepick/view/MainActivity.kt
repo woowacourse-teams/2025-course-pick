@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresPermission
@@ -21,12 +22,12 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(viewModel::select) }
     private val doublePressDetector = DoublePressDetector()
-    private val mapManager: KakaoMapManager by lazy { KakaoMapManager(binding.mainMap) }
-    private val locationPermissionLauncher =
+    private val mapManager by lazy { KakaoMapManager(binding.mainMap) }
+    private val locationPermissionLauncher: ActivityResultLauncher<Array<String>> =
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions(),
         ) { permissions ->
-            val granted =
+            val granted: Boolean =
                 permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
                     permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
 

@@ -22,7 +22,7 @@ class KakaoMapDrawer(
         layer.removeAll()
 
         val lineWidthPx: Float = context.dpToPx(LINE_WIDTH_DP)
-        val styleSet: RouteLineStylesSet =
+        val styleSet =
             RouteLineStylesSet.from(
                 STYLE_ID,
                 RouteLineStyles.from(RouteLineStyle.from(lineWidthPx, LINE_COLOR)),
