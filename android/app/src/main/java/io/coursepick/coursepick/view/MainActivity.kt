@@ -1,17 +1,21 @@
 package io.coursepick.coursepick.view
 
 import android.os.Bundle
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import io.coursepick.coursepick.R
 import io.coursepick.coursepick.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val viewModel: MainViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(viewModel::select) }
+    private val doublePressDetector = DoublePressDetector()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,6 +30,26 @@ class MainActivity : AppCompatActivity() {
 
         binding.adapter = courseAdapter
         setUpObservers(courseAdapter)
+        setUpDoubleBackPress()
+    }
+
+    private fun setUpDoubleBackPress() {
+        val callback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (doublePressDetector.doublePressed()) {
+                        finish()
+                    } else {
+                        Toast
+                            .makeText(
+                                this@MainActivity,
+                                getString(R.string.main_back_press_exit),
+                                Toast.LENGTH_SHORT,
+                            ).show()
+                    }
+                }
+            }
+        onBackPressedDispatcher.addCallback(this@MainActivity, callback)
     }
 
     private fun setUpObservers(courseAdapter: CourseAdapter) {
