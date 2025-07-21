@@ -17,16 +17,14 @@ class KakaoMapCameraController(
         map: KakaoMap,
         coordinate: Coordinate,
     ) {
-        val latLng: LatLng = coordinate.toLatLng()
-        val cameraUpdate: CameraUpdate = CameraUpdateFactory.newCenterPosition(latLng)
-        map.moveCamera(cameraUpdate)
+        moveTo(map, coordinate.latitude.value, coordinate.longitude.value)
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     fun moveToCurrentLocation(map: KakaoMap) {
         locationProvider.fetchCurrentLocation(
             onSuccess = { location: Location ->
-                moveTo(map, location)
+                moveTo(map, location.latitude, location.longitude)
             },
             onFailure = { exception: Exception ->
                 Log.e("Location", "위치 조회 실패: ${exception.message}")
@@ -34,13 +32,12 @@ class KakaoMapCameraController(
         )
     }
 
-    private fun Coordinate.toLatLng() = LatLng.from(latitude.value, longitude.value)
-
     private fun moveTo(
         map: KakaoMap,
-        location: Location,
+        latitude: Double,
+        longitude: Double,
     ) {
-        val latLng: LatLng = LatLng.from(location.latitude, location.longitude)
+        val latLng = LatLng.from(latitude, longitude)
         val cameraUpdate: CameraUpdate = CameraUpdateFactory.newCenterPosition(latLng)
         map.moveCamera(cameraUpdate)
     }
