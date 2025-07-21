@@ -14,13 +14,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Hello World!" />
+        <com.kakao.vectormap.MapView
+            android:id="@+id/mainMap"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/mainBottomSheet"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/background_courses"

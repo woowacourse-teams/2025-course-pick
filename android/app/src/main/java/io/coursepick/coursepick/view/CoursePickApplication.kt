@@ -1,7 +1,8 @@
-package io.coursepick.coursepick
+package io.coursepick.coursepick.view
 
 import android.app.Application
 import com.kakao.vectormap.KakaoMapSdk
+import io.coursepick.coursepick.BuildConfig
 
 class CoursePickApplication : Application() {
     override fun onCreate() {
