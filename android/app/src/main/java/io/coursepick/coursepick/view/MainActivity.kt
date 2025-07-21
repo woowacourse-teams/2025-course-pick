@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity() {
             when (event) {
                 is MainUiEvent.FetchCourseSuccess -> {
                     mapManager.start {
-                        selectCourse(event.course)
+                        event.course?.let { course: CourseItem -> selectCourse(course) }
                     }
                 }
 

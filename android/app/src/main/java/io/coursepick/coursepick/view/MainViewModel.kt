@@ -64,7 +64,7 @@ class MainViewModel(
                             )
                         }
                 _state.value = MainUiState(courses)
-                _event.value = MainUiEvent.FetchCourseSuccess(courses.first())
+                _event.value = MainUiEvent.FetchCourseSuccess(courses.firstOrNull())
             }.onFailure { error: Throwable ->
                 _event.value = MainUiEvent.FetchCourseFailure
             }
