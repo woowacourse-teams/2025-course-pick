@@ -3,6 +3,7 @@ package io.coursepick.coursepick.view
 import android.Manifest
 import androidx.annotation.RequiresPermission
 import com.kakao.vectormap.KakaoMap
+import com.kakao.vectormap.MapGravity
 import com.kakao.vectormap.MapView
 import io.coursepick.coursepick.domain.Coordinate
 
@@ -19,6 +20,11 @@ class KakaoMapManager(
     fun start(onMapReady: (KakaoMap) -> Unit) {
         lifecycleHandler.start { map: KakaoMap ->
             kakaoMap = map
+            map.logo?.setPosition(
+                MapGravity.TOP or MapGravity.LEFT,
+                20F,
+                20F,
+            )
             onMapReady(map)
         }
     }
