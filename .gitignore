@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Cloude Code ###
+CLAUDE.md
+/backend/.claude/**
