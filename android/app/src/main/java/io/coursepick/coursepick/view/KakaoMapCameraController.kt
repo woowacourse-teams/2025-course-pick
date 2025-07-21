@@ -25,13 +25,14 @@ class KakaoMapCameraController(
         map: KakaoMap,
         northeast: Coordinate,
         southwest: Coordinate,
+        padding: Int,
     ) {
         val bounds =
             LatLngBounds(
                 LatLng.from(northeast.latitude.value, northeast.longitude.value),
                 LatLng.from(southwest.latitude.value, southwest.longitude.value),
             )
-        val cameraUpdate: CameraUpdate = CameraUpdateFactory.fitMapPoints(bounds)
+        val cameraUpdate: CameraUpdate = CameraUpdateFactory.fitMapPoints(bounds, padding)
         map.moveCamera(cameraUpdate)
     }
 

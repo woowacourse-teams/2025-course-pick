@@ -57,8 +57,9 @@ class KakaoMapManager(
             Coordinate(latitudes.maxBy(Latitude::value), longitudes.maxBy(Longitude::value))
         val southwest =
             Coordinate(latitudes.minBy(Latitude::value), longitudes.minBy(Longitude::value))
+        val padding = mapView.context.dpToPx(COURSE_PADDING_DP).toInt()
         kakaoMap?.let { map: KakaoMap ->
-            cameraController.fitTo(map, northeast, southwest)
+            cameraController.fitTo(map, northeast, southwest, padding)
         }
     }
 
@@ -80,5 +81,6 @@ class KakaoMapManager(
 
     companion object {
         private const val LOGO_POSITION_OFFSET_DP = 10F
+        private const val COURSE_PADDING_DP = 20F
     }
 }
