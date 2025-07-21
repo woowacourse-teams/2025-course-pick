@@ -35,7 +35,7 @@ class KakaoMapManager(
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     fun moveTo(course: CourseItem) {
-        val coordinate: Coordinate = course.coordinates.first()
+        val coordinate: Coordinate = course.coordinates.firstOrNull() ?: return
         kakaoMap?.let { map: KakaoMap ->
             cameraController.moveTo(
                 map,
