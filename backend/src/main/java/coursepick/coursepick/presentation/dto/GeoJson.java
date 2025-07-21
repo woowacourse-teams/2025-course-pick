@@ -2,6 +2,7 @@ package coursepick.coursepick.presentation.dto;
 
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.domain.Coordinate;
+import coursepick.coursepick.domain.RoadType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
@@ -36,10 +37,12 @@ public record GeoJson(
             @Schema(example = "449.305349")
             double distance,
             @Schema(example = "2613.121514")
-            double length
+            double length,
+            @Schema(example = "트레일")
+            RoadType roadType
     ) {
-        public static PropertiesResponse from(long id, String name, double distance, double length) {
-            return new PropertiesResponse(id, name, distance, length);
+        public static PropertiesResponse from(long id, String name, double distance, double length, RoadType roadType) {
+            return new PropertiesResponse(id, name, distance, length, roadType);
         }
     }
 
@@ -47,7 +50,7 @@ public record GeoJson(
         return new GeoJson(
                 "Feature",
                 GeometryResponse.from(courseResponse.coordinates()),
-                PropertiesResponse.from(courseResponse.id(), courseResponse.name(), courseResponse.meter().value(), courseResponse.length().value())
+                PropertiesResponse.from(courseResponse.id(), courseResponse.name(), courseResponse.meter().value(), courseResponse.length().value(), courseResponse.roadType())
         );
     }
 
