@@ -1,4 +1,4 @@
-package woowacourse.shopping.view
+package io.coursepick.coursepick.view
 
 class MutableSingleLiveData<T> : SingleLiveData<T> {
     constructor() : super()

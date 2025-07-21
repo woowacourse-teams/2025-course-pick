@@ -10,8 +10,6 @@ import io.coursepick.coursepick.domain.CourseRepository
 import io.coursepick.coursepick.domain.Latitude
 import io.coursepick.coursepick.domain.Longitude
 import kotlinx.coroutines.launch
-import woowacourse.shopping.view.MutableSingleLiveData
-import woowacourse.shopping.view.SingleLiveData
 
 class MainViewModel(
     private val courseRepository: CourseRepository = DefaultCourseRepository(),

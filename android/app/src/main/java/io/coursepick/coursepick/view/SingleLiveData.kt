@@ -1,4 +1,4 @@
-package woowacourse.shopping.view
+package io.coursepick.coursepick.view
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
