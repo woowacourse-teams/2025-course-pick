@@ -13,5 +13,5 @@ reviews:
     drafts: false
     base_branches: ["*"]
 
-chat:1
+chat:
   auto_reply: true
