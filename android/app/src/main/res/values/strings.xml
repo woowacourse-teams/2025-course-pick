@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">CoursePick</string>
-    <string name="main_course_distance">%dm만큼 떨어짐</string>
-    <string name="main_course_length">%dkm</string>
+    <string name="main_course_distance_suffix">%s만큼 떨어짐</string>
+    <string name="main_course_unit_meter">%dm</string>
+    <string name="main_course_unit_kilometer">%.2fkm</string>
 </resources>
