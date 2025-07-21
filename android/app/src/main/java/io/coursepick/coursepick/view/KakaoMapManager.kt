@@ -1,10 +1,10 @@
-package io.coursepick.coursepick
+package io.coursepick.coursepick.view
 
 import android.Manifest
 import androidx.annotation.RequiresPermission
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.MapView
-import io.coursepick.coursepick.domain.Course
+import io.coursepick.coursepick.domain.Coordinate
 
 class KakaoMapManager(
     mapView: MapView,
@@ -16,11 +16,10 @@ class KakaoMapManager(
     private var kakaoMap: KakaoMap? = null
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    fun start(course: Course?) {
+    fun start(onMapReady: (KakaoMap) -> Unit) {
         lifecycleHandler.start { map: KakaoMap ->
             kakaoMap = map
-            cameraController.moveToCurrentLocation(map)
-            if (course != null) draw(course)
+            onMapReady(map)
         }
     }
 
@@ -28,8 +27,21 @@ class KakaoMapManager(
 
     fun pause() = lifecycleHandler.pause()
 
-    fun draw(course: Course) {
-        kakaoMap?.let { map: KakaoMap -> drawer.drawCourse(map, course) }
+    fun draw(course: CourseItem) {
+        kakaoMap?.let { map: KakaoMap ->
+            drawer.drawCourse(map, course)
+        }
+    }
+
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+    fun moveTo(course: CourseItem) {
+        val coordinate: Coordinate = course.coordinates.firstOrNull() ?: return
+        kakaoMap?.let { map: KakaoMap ->
+            cameraController.moveTo(
+                map,
+                coordinate,
+            )
+        }
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])

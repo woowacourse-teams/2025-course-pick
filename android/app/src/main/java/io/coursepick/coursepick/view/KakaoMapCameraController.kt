@@ -1,4 +1,4 @@
-package io.coursepick.coursepick
+package io.coursepick.coursepick.view
 
 import android.Manifest
 import android.location.Location
@@ -8,15 +8,23 @@ import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.camera.CameraUpdate
 import com.kakao.vectormap.camera.CameraUpdateFactory
+import io.coursepick.coursepick.domain.Coordinate
 
 class KakaoMapCameraController(
     private val locationProvider: LocationProvider,
 ) {
+    fun moveTo(
+        map: KakaoMap,
+        coordinate: Coordinate,
+    ) {
+        moveTo(map, coordinate.latitude.value, coordinate.longitude.value)
+    }
+
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    fun moveToCurrentLocation(kakaoMap: KakaoMap) {
+    fun moveToCurrentLocation(map: KakaoMap) {
         locationProvider.fetchCurrentLocation(
             onSuccess = { location: Location ->
-                kakaoMap.moveTo(location)
+                moveTo(map, location.latitude, location.longitude)
             },
             onFailure = { exception: Exception ->
                 Log.e("Location", "위치 조회 실패: ${exception.message}")
@@ -24,9 +32,13 @@ class KakaoMapCameraController(
         )
     }
 
-    private fun KakaoMap.moveTo(location: Location) {
-        val latLng = LatLng.from(location.latitude, location.longitude)
+    private fun moveTo(
+        map: KakaoMap,
+        latitude: Double,
+        longitude: Double,
+    ) {
+        val latLng = LatLng.from(latitude, longitude)
         val cameraUpdate: CameraUpdate = CameraUpdateFactory.newCenterPosition(latLng)
-        moveCamera(cameraUpdate)
+        map.moveCamera(cameraUpdate)
     }
 }

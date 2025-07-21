@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
-        android:name=".CoursePickApplication"
+        android:name=".view.CoursePickApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -16,9 +16,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CoursePick"
         android:usesCleartextTraffic="true">
-        <activity
-            android:name=".MapActivity"
-            android:exported="true" />
         <activity
             android:name=".view.MainActivity"
             android:exported="true">
