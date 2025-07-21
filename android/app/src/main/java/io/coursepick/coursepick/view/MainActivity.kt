@@ -12,9 +12,8 @@ import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import io.coursepick.coursepick.R
-import io.coursepick.coursepick.KakaoMapManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import io.coursepick.coursepick.R
 import io.coursepick.coursepick.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
