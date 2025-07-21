@@ -8,7 +8,7 @@ import com.kakao.vectormap.MapView
 import io.coursepick.coursepick.domain.Coordinate
 
 class KakaoMapManager(
-    mapView: MapView,
+    private val mapView: MapView,
     locationProvider: LocationProvider = LocationProvider(mapView.context),
 ) {
     private val lifecycleHandler = KakaoMapLifecycleHandler(mapView)
@@ -22,8 +22,8 @@ class KakaoMapManager(
             kakaoMap = map
             map.logo?.setPosition(
                 MapGravity.TOP or MapGravity.LEFT,
-                20F,
-                20F,
+                mapView.context.dpToPx(10F),
+                mapView.context.dpToPx(10F),
             )
             onMapReady(map)
         }
