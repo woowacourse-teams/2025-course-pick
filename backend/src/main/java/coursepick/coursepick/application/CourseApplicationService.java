@@ -1,20 +1,33 @@
 package coursepick.coursepick.application;
 
 import coursepick.coursepick.application.dto.CourseResponse;
-import coursepick.coursepick.domain.Coordinate;
-import coursepick.coursepick.domain.CourseRepository;
-import coursepick.coursepick.domain.Meter;
+import coursepick.coursepick.domain.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CourseApplicationService {
 
     private final CourseRepository courseRepository;
+    private final CourseParser courseParser;
+
+    @Transactional
+    public void parseAndSaveCourses(String filePath) {
+        log.info("코스 데이터 가져오기 시작: {}", filePath);
+
+        List<Course> parsedCourses = courseParser.parse(filePath);
+        log.info("{} 개의 코스를 파싱했습니다", parsedCourses.size());
+
+        List<Course> savedCourses = courseRepository.saveAll(parsedCourses);
+
+        log.info("DB에 {} 개의 코스를 저장했습니다", savedCourses.size());
+    }
 
     @Transactional(readOnly = true)
     public List<CourseResponse> findNearbyCourses(double latitude, double longitude) {
