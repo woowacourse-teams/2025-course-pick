@@ -5,6 +5,7 @@ import androidx.annotation.RequiresPermission
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.MapGravity
 import com.kakao.vectormap.MapView
+import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.Latitude
 import io.coursepick.coursepick.domain.Longitude
@@ -26,6 +27,12 @@ class KakaoMapManager(
                 MapGravity.TOP or MapGravity.LEFT,
                 mapView.context.dpToPx(LOGO_POSITION_OFFSET_DP),
                 mapView.context.dpToPx(LOGO_POSITION_OFFSET_DP),
+            )
+            map.setPadding(
+                0,
+                0,
+                0,
+                mapView.context.resources.getDimensionPixelSize(R.dimen.main_bottom_sheet_peek_height),
             )
             onMapReady(map)
         }
