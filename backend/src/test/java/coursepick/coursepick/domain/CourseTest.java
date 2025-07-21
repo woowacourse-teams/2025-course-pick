@@ -3,10 +3,13 @@ package coursepick.coursepick.domain;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -191,5 +194,50 @@ class CourseTest {
         Meter distance = course.minDistanceFrom(target);
 
         assertThat((int) distance.value()).isEqualTo(expectedDistance);
+    }
+
+    @ParameterizedTest
+    @MethodSource("createArguments")
+    void 코스의_난이도를_계산한다(List<Coordinate> coordinates, RoadType roadType, double expectedDifficulty) {
+        Course course = new Course("코스", roadType, coordinates);
+
+        double difficulty = course.calculateDifficulty();
+
+        assertThat(difficulty).isEqualTo(expectedDifficulty);
+    }
+
+    private static Stream<Arguments> createArguments() {
+        return Stream.of(
+                Arguments.of(
+                        List.of(new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0)),
+                        RoadType.트랙,
+                        1
+                ),
+                Arguments.of(
+                        List.of(new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0)),
+                        RoadType.트레일,
+                        1
+                ),
+                Arguments.of(
+                        List.of(new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0)),
+                        RoadType.보도,
+                        1
+                ),
+                Arguments.of(
+                        List.of(new Coordinate(37.499384, 126.999433), new Coordinate(37.501806, 127.239550), new Coordinate(37.499384, 126.999433)),
+                        RoadType.보도,
+                        10
+                ),
+                Arguments.of(
+                        List.of(new Coordinate(37.506591, 127.145630), new Coordinate(37.311405, 127.383810), new Coordinate(37.506591, 127.145630)),
+                        RoadType.트랙,
+                        10
+                ),
+                Arguments.of(
+                        List.of(new Coordinate(37.486225, 127.063228), new Coordinate(37.486557, 127.187908), new Coordinate(37.486225, 127.063228)),
+                        RoadType.트레일,
+                        10
+                )
+        );
     }
 }
