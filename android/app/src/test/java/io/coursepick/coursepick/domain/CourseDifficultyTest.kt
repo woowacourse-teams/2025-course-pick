@@ -13,7 +13,7 @@ class CourseDifficultyTest {
         val expected = CourseDifficulty.EASY
 
         // when
-        val actual = CourseDifficulty.courseDifficulty(score)
+        val actual = CourseDifficulty(score)
 
         // then
         assertThat(actual).isEqualTo(expected)
@@ -27,7 +27,7 @@ class CourseDifficultyTest {
         val expected = CourseDifficulty.NORMAL
 
         // when
-        val actual = CourseDifficulty.courseDifficulty(score)
+        val actual = CourseDifficulty(score)
 
         // then
         assertThat(actual).isEqualTo(expected)
@@ -41,7 +41,7 @@ class CourseDifficultyTest {
         val expected = CourseDifficulty.HARD
 
         // when
-        val actual = CourseDifficulty.courseDifficulty(score)
+        val actual = CourseDifficulty(score)
 
         // then
         assertThat(actual).isEqualTo(expected)

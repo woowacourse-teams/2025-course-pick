@@ -7,12 +7,12 @@ enum class CourseDifficulty {
     ;
 
     companion object {
-        fun courseDifficulty(score: CourseScore): CourseDifficulty {
-            val adjustedScore: Double = score.value
+        operator fun invoke(courseScore: CourseScore): CourseDifficulty {
+            val score: Double = courseScore.value
 
             return when {
-                adjustedScore < 3.0 -> EASY
-                adjustedScore < 7.0 -> NORMAL
+                score < 3.0 -> EASY
+                score < 7.0 -> NORMAL
                 else -> HARD
             }
         }
