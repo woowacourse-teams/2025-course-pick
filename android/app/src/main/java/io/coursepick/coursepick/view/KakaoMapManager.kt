@@ -19,12 +19,14 @@ class KakaoMapManager(
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     fun start(onMapReady: (KakaoMap) -> Unit) {
+        val offsetPx: Float =
+            mapView.context.resources.getDimension(R.dimen.map_logo_position_offset)
         lifecycleHandler.start { map: KakaoMap ->
             kakaoMap = map
             map.logo?.setPosition(
                 MapGravity.TOP or MapGravity.LEFT,
-                mapView.context.dpToPx(LOGO_POSITION_OFFSET_DP),
-                mapView.context.dpToPx(LOGO_POSITION_OFFSET_DP),
+                offsetPx,
+                offsetPx,
             )
             map.setPadding(
                 0,
@@ -47,7 +49,7 @@ class KakaoMapManager(
     }
 
     fun fitTo(course: CourseItem) {
-        val padding = mapView.context.dpToPx(COURSE_PADDING_DP).toInt()
+        val padding = mapView.context.resources.getDimensionPixelSize(R.dimen.course_route_padding)
         kakaoMap?.let { map: KakaoMap ->
             cameraController.fitTo(map, course.coordinates, padding)
         }
@@ -67,10 +69,5 @@ class KakaoMapManager(
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     fun moveToCurrentLocation() {
         kakaoMap?.let { map: KakaoMap -> cameraController.moveToCurrentLocation(map) }
-    }
-
-    companion object {
-        private const val LOGO_POSITION_OFFSET_DP = 10F
-        private const val COURSE_PADDING_DP = 10F
     }
 }

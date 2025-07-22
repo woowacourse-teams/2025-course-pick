@@ -9,6 +9,7 @@ import com.kakao.vectormap.route.RouteLineSegment
 import com.kakao.vectormap.route.RouteLineStyle
 import com.kakao.vectormap.route.RouteLineStyles
 import com.kakao.vectormap.route.RouteLineStylesSet
+import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.Coordinate
 
 class KakaoMapDrawer(
@@ -21,7 +22,7 @@ class KakaoMapDrawer(
         val layer: RouteLineLayer = kakaoMap.routeLineManager?.layer ?: return
         layer.removeAll()
 
-        val lineWidthPx: Float = context.dpToPx(LINE_WIDTH_DP)
+        val lineWidthPx: Float = context.resources.getDimension(R.dimen.course_route_width)
         val styleSet =
             RouteLineStylesSet.from(
                 STYLE_ID,
@@ -38,7 +39,6 @@ class KakaoMapDrawer(
 
     companion object {
         private const val STYLE_ID = "CoursePickRouteLineStyle"
-        private const val LINE_WIDTH_DP = 4f
         private const val LINE_COLOR = 0xFF0000FF.toInt()
     }
 }
