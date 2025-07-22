@@ -9,6 +9,5 @@ class CoursePickApplication : Application() {
         super.onCreate()
 
         KakaoMapSdk.init(this, BuildConfig.KAKAO_NATIVE_APP_KEY)
-        FirebaseLogger.init()
     }
 }

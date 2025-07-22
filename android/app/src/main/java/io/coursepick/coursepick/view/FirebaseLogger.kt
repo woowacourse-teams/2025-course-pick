@@ -6,11 +6,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
 
 object FirebaseLogger {
-    private lateinit var firebaseAnalytics: FirebaseAnalytics
-
-    fun init() {
-        firebaseAnalytics = Firebase.analytics
-    }
+    private val firebaseAnalytics: FirebaseAnalytics by lazy { Firebase.analytics }
 
     fun log(
         event: Event,
