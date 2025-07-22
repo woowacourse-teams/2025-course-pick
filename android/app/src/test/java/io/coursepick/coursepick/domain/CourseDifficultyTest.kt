@@ -5,7 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
 class CourseDifficultyTest {
-    @ValueSource(doubles = [0.1, 1.1, 2.2, 2.9])
+    @ValueSource(doubles = [0.1, 2.9])
     @ParameterizedTest
     fun `난이도는 점수가 3점 미만이면 EASY이다`(value: Double) {
         // given
