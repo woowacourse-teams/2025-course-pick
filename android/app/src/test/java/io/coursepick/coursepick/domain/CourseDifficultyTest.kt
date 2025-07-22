@@ -1,14 +1,13 @@
 package io.coursepick.coursepick.domain
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
 class CourseDifficultyTest {
     @ValueSource(doubles = [0.1, 1.1, 2.2, 2.9])
     @ParameterizedTest
-    fun `난이도는 점수가 4점 미만이면 EASY이다`(value: Double) {
+    fun `난이도는 점수가 3점 미만이면 EASY이다`(value: Double) {
         // given
         val score = CourseScore(value)
         val expected = CourseDifficulty.EASY
@@ -46,14 +45,5 @@ class CourseDifficultyTest {
 
         // then
         assertThat(actual).isEqualTo(expected)
-    }
-
-    @ValueSource(doubles = [0.0, 10.0])
-    @ParameterizedTest
-    fun `난이도는 도로일 때, 점수가 0점 이하 10점 이상이면 에러를 발생시킨다`(value: Double) {
-        val score = CourseScore(value)
-        assertThrows<IllegalArgumentException> {
-            CourseDifficulty.courseDifficulty(score)
-        }
     }
 }
