@@ -1,0 +1,5 @@
+{"properties": [{
+  "name": "admin.token",
+  "type": "java.lang.String",
+  "description": "임시 인증을 위한 어드민 토큰 값 입니다."
+}]}

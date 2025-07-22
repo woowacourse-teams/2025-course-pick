@@ -69,6 +69,19 @@ public class Course {
         return min;
     }
 
+    public double difficulty() {
+        Meter length = length();
+        if (length.isWithin(Meter.zero())) return 1.0;
+
+        double score = switch (roadType) {
+            case RoadType.보도, RoadType.알수없음 -> 1 + (9.0 / 42195) * length.value();
+            case RoadType.트랙 -> 1.0 + (9.0 / 60000) * length.value();
+            case RoadType.트레일 -> 1.0 + (9.0 / 22000) * length.value();
+        };
+
+        return Math.clamp(score, 1, 10);
+    }
+
     public Long id() {
         return id;
     }

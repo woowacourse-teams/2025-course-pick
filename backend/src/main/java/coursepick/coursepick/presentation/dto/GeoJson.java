@@ -39,10 +39,12 @@ public record GeoJson(
             @Schema(example = "2613.121514")
             double length,
             @Schema(example = "트레일")
-            RoadType roadType
+            RoadType roadType,
+            @Schema(example = "9.8123")
+            double difficulty
     ) {
-        public static PropertiesResponse from(long id, String name, double distance, double length, RoadType roadType) {
-            return new PropertiesResponse(id, name, distance, length, roadType);
+        public static PropertiesResponse from(long id, String name, double distance, double length, RoadType roadType, double difficulty) {
+            return new PropertiesResponse(id, name, distance, length, roadType, difficulty);
         }
     }
 
@@ -50,7 +52,7 @@ public record GeoJson(
         return new GeoJson(
                 "Feature",
                 GeometryResponse.from(courseResponse.coordinates()),
-                PropertiesResponse.from(courseResponse.id(), courseResponse.name(), courseResponse.meter().value(), courseResponse.length().value(), courseResponse.roadType())
+                PropertiesResponse.from(courseResponse.id(), courseResponse.name(), courseResponse.meter().value(), courseResponse.length().value(), courseResponse.roadType(), courseResponse.difficulty())
         );
     }
 
