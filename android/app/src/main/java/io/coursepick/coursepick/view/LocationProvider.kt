@@ -31,8 +31,9 @@ class LocationProvider(
             }
     }
 
-    private val hasLocationPermission: Boolean =
-        hasFineLocationPermission || hasCoarseLocationPermission
+    private val hasLocationPermission: Boolean
+        get() =
+            hasFineLocationPermission || hasCoarseLocationPermission
 
     private val hasCoarseLocationPermission: Boolean
         get() =
