@@ -77,7 +77,6 @@ public class Course {
             case RoadType.보도, RoadType.알수없음 -> 1 + (9.0 / 42195) * length.value();
             case RoadType.트랙 -> 1.0 + (9.0 / 60000) * length.value();
             case RoadType.트레일 -> 1.0 + (9.0 / 22000) * length.value();
-
         };
 
         return Math.clamp(score, 1, 10);
