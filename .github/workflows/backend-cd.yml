@@ -65,7 +65,7 @@ jobs:
           path: ./artifacts
 
       - name: 80 포트 서버 내리기
-        run:
+        run: |
           sudo lsof -t -i :80 | sudo xargs -r kill -9
           sleep 5
 
