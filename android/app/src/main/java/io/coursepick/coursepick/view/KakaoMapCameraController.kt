@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.annotation.RequiresPermission
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.LatLng
+import com.kakao.vectormap.camera.CameraAnimation
 import com.kakao.vectormap.camera.CameraUpdate
 import com.kakao.vectormap.camera.CameraUpdateFactory
 import io.coursepick.coursepick.domain.Coordinate
@@ -31,7 +32,8 @@ class KakaoMapCameraController(
                     LatLng.from(coordinate.latitude.value, coordinate.longitude.value)
                 }.toTypedArray()
         val cameraUpdate: CameraUpdate = CameraUpdateFactory.fitMapPoints(latLngs, padding)
-        map.moveCamera(cameraUpdate)
+        val cameraAnimation = CameraAnimation.from(MOVE_ANIMATION_DURATION, true, false)
+        map.moveCamera(cameraUpdate, cameraAnimation)
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -54,5 +56,9 @@ class KakaoMapCameraController(
         val latLng = LatLng.from(latitude, longitude)
         val cameraUpdate: CameraUpdate = CameraUpdateFactory.newCenterPosition(latLng)
         map.moveCamera(cameraUpdate)
+    }
+
+    companion object {
+        private const val MOVE_ANIMATION_DURATION = 750
     }
 }
