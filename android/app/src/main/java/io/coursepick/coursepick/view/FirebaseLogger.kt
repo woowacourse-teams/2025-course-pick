@@ -46,12 +46,6 @@ object FirebaseLogger {
         val target: String
         val name: String get() = "${type}_$target"
 
-        class View(
-            override val target: String,
-        ) : Event {
-            override val type: String = "view"
-        }
-
         class Click(
             override val target: String,
         ) : Event {
