@@ -13,21 +13,21 @@ object FirebaseLogger {
     }
 
     fun log(
-        name: String,
-        params: Bundle,
+        event: Event,
+        parameters: Bundle,
     ) {
-        firebaseAnalytics.logEvent(name, params)
+        firebaseAnalytics.logEvent(event.name, parameters)
     }
 
     fun log(
-        name: String,
-        vararg params: Pair<String, Any>,
+        event: Event,
+        vararg parameters: Pair<String, Any>,
     ) {
         val bundle =
             Bundle().apply {
-                params.forEach { (k, v) -> putAny(k, v) }
+                parameters.forEach { (key: String, value: Any) -> putAny(key, value) }
             }
-        firebaseAnalytics.logEvent(name, bundle)
+        firebaseAnalytics.logEvent(event.name, bundle)
     }
 
     private fun Bundle.putAny(
@@ -42,6 +42,24 @@ object FirebaseLogger {
             is Float -> putFloat(key, value)
             is Boolean -> putBoolean(key, value)
             else -> putString(key, value.toString())
+        }
+    }
+
+    sealed interface Event {
+        val type: String
+        val target: String
+        val name: String get() = "${type}_$target"
+
+        class View(
+            override val target: String,
+        ) : Event {
+            override val type: String = "view"
+        }
+
+        class Click(
+            override val target: String,
+        ) : Event {
+            override val type: String = "click"
         }
     }
 }
