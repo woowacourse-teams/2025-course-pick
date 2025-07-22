@@ -5,8 +5,8 @@ on:
     branches: [ backend ]
 
 jobs:
-  image-push:
-    runs-on: ubuntu-latest
+  deploy:
+    runs-on: self-hosted # runner를 self-hosted로 지정합니다.
 
     defaults:
       run:
@@ -52,25 +52,16 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v3
-        with:
-          context: ./backend
-          file: ./backend/Dockerfile
-          push: true
-          platforms: linux/arm64
-          tags: |
-            ${{ secrets.DOCKER_USERNAME }}/coursepick-server:latest
-            ${{ secrets.DOCKER_USERNAME }}/coursepick-server:${{ github.sha }}
-          build-args: |
-            PROFILE=${{ secrets.DEV_PROFILE }}
-            DB_URL=${{ secrets.DEV_DB_URL }}
-            DB_USERNAME=${{ secrets.DEV_DB_USERNAME }}
-            DB_PASSWORD=${{ secrets.DEV_DB_PASSWORD }}
-            ADMIN_TOKEN=${{ secrets.DEV_ADMIN_TOKEN }}
+      - name: Run Spring Boot Application
+        run: |
+          JAR_PATH=$(find build/libs -name "*.jar" | head -n 1)
+          JAR_NAME=$(basename $JAR_PATH)
+          echo "### Found JAR file: $JAR_PATH ###"
+          PID=$(pgrep -f "$JAR_NAME")
+          if [ -n "$PID" ]; then
+            echo "### Stopping existing process (PID: $PID) ###"
+            kill -15 $PID
+            sleep 5 # 종료 대기
+          fi
+          echo "### Starting new application... ###"
+          nohup java -jar $JAR_PATH > application.log 2>&1 &
