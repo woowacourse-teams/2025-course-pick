@@ -69,7 +69,7 @@ public class Course {
         return min;
     }
 
-    public double calculateDifficulty() {
+    public double difficulty() {
         Meter length = length();
         if (length.isWithin(Meter.zero())) return 1.0;
 

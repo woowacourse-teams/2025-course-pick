@@ -201,7 +201,7 @@ class CourseTest {
     void 코스의_난이도를_계산한다(List<Coordinate> coordinates, RoadType roadType, double expectedDifficulty) {
         Course course = new Course("코스", roadType, coordinates);
 
-        double difficulty = course.calculateDifficulty();
+        double difficulty = course.difficulty();
 
         assertThat(difficulty).isEqualTo(expectedDifficulty);
     }
