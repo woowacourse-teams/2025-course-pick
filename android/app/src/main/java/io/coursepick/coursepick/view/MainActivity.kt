@@ -126,7 +126,7 @@ class MainActivity : AppCompatActivity() {
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun selectCourse(course: CourseItem) {
         mapManager.draw(course)
-        mapManager.moveTo(course)
+        mapManager.fitTo(course)
     }
 
     private fun requestLocationPermissions() {

@@ -5,6 +5,7 @@ import androidx.annotation.RequiresPermission
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.MapGravity
 import com.kakao.vectormap.MapView
+import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.Coordinate
 
 class KakaoMapManager(
@@ -18,12 +19,20 @@ class KakaoMapManager(
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     fun start(onMapReady: (KakaoMap) -> Unit) {
+        val offsetPx: Float =
+            mapView.context.resources.getDimension(R.dimen.map_logo_position_offset)
         lifecycleHandler.start { map: KakaoMap ->
             kakaoMap = map
             map.logo?.setPosition(
                 MapGravity.TOP or MapGravity.LEFT,
-                mapView.context.dpToPx(LOGO_POSITION_OFFSET_DP),
-                mapView.context.dpToPx(LOGO_POSITION_OFFSET_DP),
+                offsetPx,
+                offsetPx,
+            )
+            map.setPadding(
+                0,
+                0,
+                0,
+                mapView.context.resources.getDimensionPixelSize(R.dimen.main_bottom_sheet_peek_height),
             )
             onMapReady(map)
         }
@@ -36,6 +45,13 @@ class KakaoMapManager(
     fun draw(course: CourseItem) {
         kakaoMap?.let { map: KakaoMap ->
             drawer.drawCourse(map, course)
+        }
+    }
+
+    fun fitTo(course: CourseItem) {
+        val padding = mapView.context.resources.getDimensionPixelSize(R.dimen.course_route_padding)
+        kakaoMap?.let { map: KakaoMap ->
+            cameraController.fitTo(map, course.coordinates, padding)
         }
     }
 
@@ -53,9 +69,5 @@ class KakaoMapManager(
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     fun moveToCurrentLocation() {
         kakaoMap?.let { map: KakaoMap -> cameraController.moveToCurrentLocation(map) }
-    }
-
-    companion object {
-        private const val LOGO_POSITION_OFFSET_DP = 10F
     }
 }

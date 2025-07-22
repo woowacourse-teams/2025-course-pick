@@ -20,6 +20,20 @@ class KakaoMapCameraController(
         moveTo(map, coordinate.latitude.value, coordinate.longitude.value)
     }
 
+    fun fitTo(
+        map: KakaoMap,
+        coordinates: List<Coordinate>,
+        padding: Int,
+    ) {
+        val latLngs: Array<LatLng> =
+            coordinates
+                .map { coordinate: Coordinate ->
+                    LatLng.from(coordinate.latitude.value, coordinate.longitude.value)
+                }.toTypedArray()
+        val cameraUpdate: CameraUpdate = CameraUpdateFactory.fitMapPoints(latLngs, padding)
+        map.moveCamera(cameraUpdate)
+    }
+
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     fun moveToCurrentLocation(map: KakaoMap) {
         locationProvider.fetchCurrentLocation(
