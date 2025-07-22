@@ -22,6 +22,7 @@ class LocationProvider(
     ) {
         if (!hasLocationPermission) {
             onFailure(IllegalStateException("현재 위치를 불러올 권한이 없습니다."))
+            return
         }
 
         locationClient
