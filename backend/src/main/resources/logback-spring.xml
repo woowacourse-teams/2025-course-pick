@@ -33,7 +33,7 @@
 
     <!-- dev 프로필: 파일 + CloudWatch -->
     <springProfile name="dev">
-        <root level="DEBUG">
+        <root level="INFO">
             <appender-ref ref="FILE"/>
         </root>
     </springProfile>
