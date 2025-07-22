@@ -76,7 +76,7 @@ class KakaoMapManager(
                     cameraController.moveTo(map, location)
                 }
             },
-            onFailure = { exception ->
+            onFailure = { exception: Exception ->
                 kakaoMap?.let { map: KakaoMap ->
                     drawer.draw(map, default)
                     cameraController.moveTo(map, default)
