@@ -2,6 +2,7 @@ package io.coursepick.coursepick.data
 
 import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.Course
+import io.coursepick.coursepick.domain.CourseDifficulty
 import io.coursepick.coursepick.domain.CourseName
 import io.coursepick.coursepick.domain.Distance
 import io.coursepick.coursepick.domain.Latitude
@@ -47,4 +48,12 @@ data class GetCoursesResponseItem(
             coordinates = coordinates,
         )
     }
+
+    private fun Double.toCourseDifficultyOrNull(): CourseDifficulty? =
+        when {
+            this > 0.0 && this < 3.0 -> CourseDifficulty.EASY
+            this >= 3.0 && this < 6.0 -> CourseDifficulty.NORMAL
+            this >= 6.0 && this < 10.0 -> CourseDifficulty.HARD
+            else -> null
+        }
 }
