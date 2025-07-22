@@ -20,7 +20,9 @@ class LocationProvider(
         onSuccess: (Location) -> Unit,
         onFailure: (Exception) -> Unit,
     ) {
-        if (!hasLocationPermission) return
+        if (!hasLocationPermission) {
+            onFailure(IllegalStateException("현재 위치를 불러올 권한이 없습니다."))
+        }
 
         locationClient
             .getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
