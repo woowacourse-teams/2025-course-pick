@@ -83,4 +83,4 @@ jobs:
           --DB_USERNAME="${{ secrets.DEV_DB_USERNAME }}" \
           --DB_PASSWORD="${{ secrets.DEV_DB_PASSWORD }}" \
           --ADMIN_TOKEN="${{ secrets.DEV_ADMIN_TOKEN }}"
-          > app.log 2>&1 &
+          > app.log 2>&1 & disown
