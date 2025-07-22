@@ -5,6 +5,7 @@ import android.location.Location
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.label.LabelLayer
+import com.kakao.vectormap.label.LabelManager
 import com.kakao.vectormap.label.LabelOptions
 import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
@@ -65,9 +66,10 @@ class KakaoMapDrawer(
         latitude: Double,
         longitude: Double,
     ) {
-        val styles: LabelStyles? =
-            map.labelManager
-                ?.addLabelStyles(LabelStyles.from(LabelStyle.from(R.drawable.image_current_location)))
+        val labelManager: LabelManager = map.labelManager ?: return
+        val styles: LabelStyles =
+            labelManager.addLabelStyles(LabelStyles.from(LabelStyle.from(R.drawable.image_current_location)))
+                ?: return
         val options: LabelOptions =
             LabelOptions
                 .from(
@@ -76,10 +78,9 @@ class KakaoMapDrawer(
                         longitude,
                     ),
                 ).setStyles(styles)
+        val layer: LabelLayer = map.labelManager?.layer ?: return
 
-        val layer: LabelLayer? = map.labelManager?.layer
-
-        layer?.addLabel(options)
+        layer.addLabel(options)
     }
 
     private fun CourseItem.toLatLngs() = coordinates.map { coordinate: Coordinate -> coordinate.toLatLng() }
