@@ -7,8 +7,6 @@ import com.kakao.vectormap.MapGravity
 import com.kakao.vectormap.MapView
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.Coordinate
-import io.coursepick.coursepick.domain.Latitude
-import io.coursepick.coursepick.domain.Longitude
 
 class KakaoMapManager(
     private val mapView: MapView,
@@ -49,17 +47,9 @@ class KakaoMapManager(
     }
 
     fun fitTo(course: CourseItem) {
-        val latitudes: List<Latitude> =
-            course.coordinates.map { coordinate: Coordinate -> coordinate.latitude }
-        val longitudes: List<Longitude> =
-            course.coordinates.map { coordinate: Coordinate -> coordinate.longitude }
-        val northeast =
-            Coordinate(latitudes.maxBy(Latitude::value), longitudes.maxBy(Longitude::value))
-        val southwest =
-            Coordinate(latitudes.minBy(Latitude::value), longitudes.minBy(Longitude::value))
         val padding = mapView.context.dpToPx(COURSE_PADDING_DP).toInt()
         kakaoMap?.let { map: KakaoMap ->
-            cameraController.fitTo(map, northeast, southwest, padding)
+            cameraController.fitTo(map, course.coordinates, padding)
         }
     }
 
@@ -81,6 +71,6 @@ class KakaoMapManager(
 
     companion object {
         private const val LOGO_POSITION_OFFSET_DP = 10F
-        private const val COURSE_PADDING_DP = 20F
+        private const val COURSE_PADDING_DP = 10F
     }
 }

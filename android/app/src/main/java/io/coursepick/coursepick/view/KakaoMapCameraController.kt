@@ -6,7 +6,6 @@ import android.util.Log
 import androidx.annotation.RequiresPermission
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.LatLng
-import com.kakao.vectormap.LatLngBounds
 import com.kakao.vectormap.camera.CameraUpdate
 import com.kakao.vectormap.camera.CameraUpdateFactory
 import io.coursepick.coursepick.domain.Coordinate
@@ -23,16 +22,15 @@ class KakaoMapCameraController(
 
     fun fitTo(
         map: KakaoMap,
-        northeast: Coordinate,
-        southwest: Coordinate,
+        coordinates: List<Coordinate>,
         padding: Int,
     ) {
-        val bounds =
-            LatLngBounds(
-                LatLng.from(northeast.latitude.value, northeast.longitude.value),
-                LatLng.from(southwest.latitude.value, southwest.longitude.value),
-            )
-        val cameraUpdate: CameraUpdate = CameraUpdateFactory.fitMapPoints(bounds, padding)
+        val latLngs: Array<LatLng> =
+            coordinates
+                .map { coordinate: Coordinate ->
+                    LatLng.from(coordinate.latitude.value, coordinate.longitude.value)
+                }.toTypedArray()
+        val cameraUpdate: CameraUpdate = CameraUpdateFactory.fitMapPoints(latLngs, padding)
         map.moveCamera(cameraUpdate)
     }
 
