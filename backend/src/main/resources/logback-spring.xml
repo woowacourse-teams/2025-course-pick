@@ -24,20 +24,6 @@
         </rollingPolicy>
     </appender>
 
-    <!-- CloudWatch Appender -->
-    <appender name="CLOUDWATCH" class="ca.pjer.logback.AwsLogsAppender">
-        <logGroupName>/aws/codebuild/project-2025</logGroupName>
-        <logStreamName>${spring.application.name}/${spring.profiles.active}</logStreamName>
-        <logRegion>ap-northeast-2</logRegion>
-        <maxBatchLogEvents>10000</maxBatchLogEvents>
-        <maxFlushTimeMillis>30000</maxFlushTimeMillis>
-        <maxBlockTimeMillis>5000</maxBlockTimeMillis>
-        <retentionTimeDays>30</retentionTimeDays>
-        <encoder>
-            <pattern>${LOG_PATTERN}</pattern>
-        </encoder>
-    </appender>
-
     <!-- local 프로필: 콘솔만 -->
     <springProfile name="local">
         <root level="INFO">
@@ -49,7 +35,6 @@
     <springProfile name="dev">
         <root level="DEBUG">
             <appender-ref ref="FILE"/>
-            <appender-ref ref="CLOUDWATCH"/>
         </root>
     </springProfile>
 
