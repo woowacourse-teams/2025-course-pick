@@ -30,6 +30,9 @@ dependencies {
 
     // Geographic libraries for comparison
     implementation("org.locationtech.spatial4j:spatial4j:0.8")
+
+    // clpudwatch log appender
+    implementation("ca.pjer:logback-awslogs-appender:1.6.0")
 }
 
 tasks.withType<Test> {
