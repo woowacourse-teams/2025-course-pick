@@ -78,7 +78,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
-            android:text="|"
+            android:text="@string/item_divider"
             app:layout_constraintBottom_toBottomOf="@+id/courseLength"
             app:layout_constraintStart_toEndOf="@+id/courseLength"
             app:layout_constraintTop_toTopOf="@+id/courseLength" />
@@ -108,11 +108,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
-            android:text="|"
+            android:text="@string/item_divider"
             app:layout_constraintBottom_toBottomOf="@+id/courseType"
             app:layout_constraintStart_toEndOf="@+id/courseType"
-            app:layout_constraintTop_toTopOf="@+id/courseType"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintTop_toTopOf="@+id/courseType" />
 
         <TextView
             android:id="@+id/courseDifficulty"
