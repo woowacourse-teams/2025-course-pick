@@ -1,6 +1,7 @@
 package io.coursepick.coursepick.view
 
 import android.Manifest
+import android.location.Location
 import androidx.annotation.RequiresPermission
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.MapGravity
@@ -10,10 +11,10 @@ import io.coursepick.coursepick.domain.Coordinate
 
 class KakaoMapManager(
     private val mapView: MapView,
-    locationProvider: LocationProvider = LocationProvider(mapView.context),
+    private val locationProvider: LocationProvider = LocationProvider(mapView.context),
 ) {
     private val lifecycleHandler = KakaoMapLifecycleHandler(mapView)
-    private val cameraController = KakaoMapCameraController(locationProvider)
+    private val cameraController = KakaoMapCameraController()
     private val drawer = KakaoMapDrawer(mapView.context)
     private var kakaoMap: KakaoMap? = null
 
@@ -67,7 +68,20 @@ class KakaoMapManager(
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    fun moveToCurrentLocation() {
-        kakaoMap?.let { map: KakaoMap -> cameraController.moveToCurrentLocation(map) }
+    fun showCurrentLocation(default: Coordinate) {
+        locationProvider.fetchCurrentLocation(
+            onSuccess = { location: Location ->
+                kakaoMap?.let { map: KakaoMap ->
+                    drawer.drawLocation(map, location)
+                    cameraController.moveTo(map, location)
+                }
+            },
+            onFailure = { exception ->
+                kakaoMap?.let { map: KakaoMap ->
+                    drawer.drawLocation(map, default)
+                    cameraController.moveTo(map, default)
+                }
+            },
+        )
     }
 }
