@@ -47,7 +47,7 @@
 
     <!-- dev 프로필: 파일 + CloudWatch -->
     <springProfile name="dev">
-        <root level="INFO">
+        <root level="DEBUG">
             <appender-ref ref="FILE"/>
             <appender-ref ref="CLOUDWATCH"/>
         </root>
