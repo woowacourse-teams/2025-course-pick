@@ -47,6 +47,8 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = this
         binding.adapter = courseAdapter
         setUpObservers()
         setUpDoubleBackPress()
@@ -106,13 +108,16 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                MainUiEvent.FetchCourseFailure ->
+                MainUiEvent.FetchCourseFailure -> {
                     Toast
                         .makeText(
                             this,
                             "코스 정보를 불러오지 못했습니다.",
                             Toast.LENGTH_SHORT,
                         ).show()
+
+                    mapManager.start {}
+                }
 
                 is MainUiEvent.SelectNewCourse -> {
                     selectCourse(event.course)
