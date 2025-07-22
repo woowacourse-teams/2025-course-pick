@@ -74,7 +74,7 @@
             tools:text="5km" />
 
         <TextView
-            android:id="@+id/divider1"
+            android:id="@+id/courseDivider"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
@@ -88,9 +88,9 @@
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_marginStart="6dp"
-            app:layout_constraintBottom_toBottomOf="@+id/divider1"
-            app:layout_constraintStart_toEndOf="@+id/divider1"
-            app:layout_constraintTop_toTopOf="@+id/divider1"
+            app:layout_constraintBottom_toBottomOf="@+id/courseDivider"
+            app:layout_constraintStart_toEndOf="@+id/courseDivider"
+            app:layout_constraintTop_toTopOf="@+id/courseDivider"
             app:srcCompat="@drawable/icon_course_type" />
 
         <TextView
@@ -98,14 +98,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
-            android:text="도로"
             app:layout_constraintBottom_toBottomOf="@+id/courseTypeIcon"
             app:layout_constraintStart_toEndOf="@+id/courseTypeIcon"
             app:layout_constraintTop_toTopOf="@+id/courseTypeIcon"
             tools:text="트랙" />
 
         <TextView
-            android:id="@+id/divider2"
+            android:id="@+id/courseDivider2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
@@ -120,10 +119,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
-            android:text="NORMAL"
-            app:layout_constraintBottom_toBottomOf="@+id/divider2"
-            app:layout_constraintStart_toEndOf="@+id/divider2"
-            app:layout_constraintTop_toTopOf="@+id/divider2"
+            app:layout_constraintBottom_toBottomOf="@+id/courseDivider2"
+            app:layout_constraintStart_toEndOf="@+id/courseDivider2"
+            app:layout_constraintTop_toTopOf="@+id/courseDivider2"
             tools:text="EASY" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
