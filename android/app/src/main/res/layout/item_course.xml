@@ -79,18 +79,18 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
             android:text="@string/item_divider"
-            app:layout_constraintBottom_toBottomOf="@+id/courseLength"
-            app:layout_constraintStart_toEndOf="@+id/courseLength"
-            app:layout_constraintTop_toTopOf="@+id/courseLength" />
+            app:layout_constraintBottom_toBottomOf="@id/courseLength"
+            app:layout_constraintStart_toEndOf="@id/courseLength"
+            app:layout_constraintTop_toTopOf="@id/courseLength" />
 
         <ImageView
             android:id="@+id/courseTypeIcon"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_marginStart="6dp"
-            app:layout_constraintBottom_toBottomOf="@+id/courseDivider"
-            app:layout_constraintStart_toEndOf="@+id/courseDivider"
-            app:layout_constraintTop_toTopOf="@+id/courseDivider"
+            app:layout_constraintBottom_toBottomOf="@id/courseDivider"
+            app:layout_constraintStart_toEndOf="@id/courseDivider"
+            app:layout_constraintTop_toTopOf="@id/courseDivider"
             app:srcCompat="@drawable/icon_course_type" />
 
         <TextView
@@ -98,9 +98,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
-            app:layout_constraintBottom_toBottomOf="@+id/courseTypeIcon"
-            app:layout_constraintStart_toEndOf="@+id/courseTypeIcon"
-            app:layout_constraintTop_toTopOf="@+id/courseTypeIcon"
+            app:layout_constraintBottom_toBottomOf="@id/courseTypeIcon"
+            app:layout_constraintStart_toEndOf="@id/courseTypeIcon"
+            app:layout_constraintTop_toTopOf="@id/courseTypeIcon"
             tools:text="트랙" />
 
         <TextView
@@ -109,18 +109,18 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
             android:text="@string/item_divider"
-            app:layout_constraintBottom_toBottomOf="@+id/courseType"
-            app:layout_constraintStart_toEndOf="@+id/courseType"
-            app:layout_constraintTop_toTopOf="@+id/courseType" />
+            app:layout_constraintBottom_toBottomOf="@id/courseType"
+            app:layout_constraintStart_toEndOf="@id/courseType"
+            app:layout_constraintTop_toTopOf="@id/courseType" />
 
         <TextView
             android:id="@+id/courseDifficulty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
-            app:layout_constraintBottom_toBottomOf="@+id/courseDivider2"
-            app:layout_constraintStart_toEndOf="@+id/courseDivider2"
-            app:layout_constraintTop_toTopOf="@+id/courseDivider2"
+            app:layout_constraintBottom_toBottomOf="@id/courseDivider2"
+            app:layout_constraintStart_toEndOf="@id/courseDivider2"
+            app:layout_constraintTop_toTopOf="@id/courseDivider2"
             tools:text="EASY" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
