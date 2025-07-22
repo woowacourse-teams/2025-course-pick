@@ -13,7 +13,8 @@ public record CourseResponse(
         List<Coordinate> coordinates,
         Meter meter,
         Meter length,
-        RoadType roadType
+        RoadType roadType,
+        double difficulty
 ) {
     public static CourseResponse from(Course course, Coordinate target) {
         return new CourseResponse(
@@ -22,7 +23,8 @@ public record CourseResponse(
                 course.coordinates(),
                 course.minDistanceFrom(target),
                 course.length(),
-                course.roadType()
+                course.roadType(),
+                course.difficulty()
         );
     }
 }

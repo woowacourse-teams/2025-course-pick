@@ -3,6 +3,7 @@ name: Backend CI
 on:
   pull_request:
     branches: [ backend ]
+  workflow_dispatch:
 
 jobs:
   test:
