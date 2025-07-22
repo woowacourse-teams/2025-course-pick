@@ -71,13 +71,12 @@ jobs:
         run: |
           JAR_FILE=$(find ./artifacts -name "*.jar" | head -n 1)
           echo "Starting server with $JAR_FILE"
-          RUNNER_TRACKING_ID="" && nohup sudo java -Dspring.profiles.active="${{ secrets.DEV_PROFILE }}" -jar "$JAR_FILE" \
+          sudo -b sh -c "java -Dspring.profiles.active='${{ secrets.DEV_PROFILE }}' -jar '$JAR_FILE' \
           --server.port=80 \
-          --DB_URL="${{ secrets.DEV_DB_URL }}" \
-          --DB_USERNAME="${{ secrets.DEV_DB_USERNAME }}" \
-          --DB_PASSWORD="${{ secrets.DEV_DB_PASSWORD }}" \
-          --ADMIN_TOKEN="${{ secrets.DEV_ADMIN_TOKEN }}" \
-          > app.log 2>&1 < /dev/null &
-          disown
+          --DB_URL='${{ secrets.DEV_DB_URL }}' \
+          --DB_USERNAME='${{ secrets.DEV_DB_USERNAME }}' \
+          --DB_PASSWORD='${{ secrets.DEV_DB_PASSWORD }}' \
+          --ADMIN_TOKEN='${{ secrets.DEV_ADMIN_TOKEN }}' \
+          > /var/log/app.log 2>&1"
           sleep 5
           echo "Server started successfully"
