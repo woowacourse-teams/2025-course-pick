@@ -77,8 +77,7 @@ jobs:
           JAR_FILE=$(find ./artifacts -name "*.jar" | head -n 1)
           echo "Starting server with $JAR_FILE"
           RUNNER_TRACKING_ID=""
-          nohup java -jar "$JAR_FILE" \
-          -Dspring.profiles.active="${{ secrets.DEV_PROFILE }}" \
+          nohup java -Dspring.profiles.active="${{ secrets.DEV_PROFILE }}" -jar "$JAR_FILE" \
           --server.port=80 \
           --DB_URL="${{ secrets.DEV_DB_URL }}" \
           --DB_USERNAME="${{ secrets.DEV_DB_USERNAME }}" \
