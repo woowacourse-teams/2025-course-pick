@@ -49,7 +49,7 @@ data class GetCoursesResponseItem(
         )
     }
 
-    private fun courseDifficulty(value: Double): CourseDifficulty? =
+    private fun toCourseDifficultyOrNull(value: Double): CourseDifficulty? =
         when {
             value > 0.0 && value < 3.0 -> CourseDifficulty.EASY
             value >= 3.0 && value < 6.0 -> CourseDifficulty.NORMAL
