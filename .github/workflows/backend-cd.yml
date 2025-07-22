@@ -65,12 +65,9 @@ jobs:
           path: ./artifacts
 
       - name: 80 포트 서버 내리기
-        run: |
-          PID=$(lsof -t -i :80 || true)
-          if [ -n "$PID" ]; then
-            echo "Killing existing process: $PID"
-            kill -9 $PID
-          fi
+        run:
+          sudo lsof -t -i :80 | sudo xargs -r kill -9
+          sleep 5
 
       - name: 서버 다시 올리기
         run: |
