@@ -74,7 +74,7 @@
             tools:text="5km" />
 
         <TextView
-            android:id="@+id/courseDivider"
+            android:id="@+id/courseDivider1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
@@ -88,9 +88,9 @@
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_marginStart="6dp"
-            app:layout_constraintBottom_toBottomOf="@id/courseDivider"
-            app:layout_constraintStart_toEndOf="@id/courseDivider"
-            app:layout_constraintTop_toTopOf="@id/courseDivider"
+            app:layout_constraintBottom_toBottomOf="@id/courseDivider1"
+            app:layout_constraintStart_toEndOf="@id/courseDivider1"
+            app:layout_constraintTop_toTopOf="@id/courseDivider1"
             app:srcCompat="@drawable/icon_course_type" />
 
         <TextView
