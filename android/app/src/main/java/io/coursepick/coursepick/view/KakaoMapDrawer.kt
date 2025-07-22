@@ -36,8 +36,6 @@ class KakaoMapDrawer(
 
     private fun Coordinate.toLatLng() = LatLng.from(latitude.value, longitude.value)
 
-    private fun Context.dpToPx(dp: Float): Float = dp * resources.displayMetrics.density
-
     companion object {
         private const val STYLE_ID = "CoursePickRouteLineStyle"
         private const val LINE_WIDTH_DP = 4f
