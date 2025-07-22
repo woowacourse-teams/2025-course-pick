@@ -20,7 +20,7 @@ import io.coursepick.coursepick.domain.Coordinate
 class KakaoMapDrawer(
     private val context: Context,
 ) {
-    fun drawCourse(
+    fun draw(
         kakaoMap: KakaoMap,
         course: CourseItem,
     ) {
@@ -38,29 +38,29 @@ class KakaoMapDrawer(
         layer.addRouteLine(options)
     }
 
-    fun drawLocation(
+    fun draw(
         map: KakaoMap,
         coordinate: Coordinate,
     ) {
-        drawLocation(
+        draw(
             map,
             coordinate.latitude.value,
             coordinate.longitude.value,
         )
     }
 
-    fun drawLocation(
+    fun draw(
         map: KakaoMap,
         location: Location,
     ) {
-        drawLocation(
+        draw(
             map,
             location.latitude,
             location.longitude,
         )
     }
 
-    private fun drawLocation(
+    private fun draw(
         map: KakaoMap,
         latitude: Double,
         longitude: Double,
