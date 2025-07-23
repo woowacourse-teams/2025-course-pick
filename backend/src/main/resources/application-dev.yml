@@ -18,6 +18,14 @@ management:
       cloudwatch:
         namespace: "EC2/coursepick/dev"
         region: ap-northeast-2
-        batch-size: 20
+        batch-size: 1
+        steps: 30s
+
+logging:
+  level:
+    io.micrometer.cloudwatch2: DEBUG
+    software.amazon.awssdk: DEBUG
+    com.amazonaws: DEBUG
+    org.springframework.boot.actuate.metrics: DEBUG
 
 admin.token: ${ADMIN_TOKEN}
