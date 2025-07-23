@@ -16,9 +16,6 @@ import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.databinding.ActivityMainBinding
-import io.coursepick.coursepick.domain.Coordinate
-import io.coursepick.coursepick.domain.Latitude
-import io.coursepick.coursepick.domain.Longitude
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
@@ -32,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions(),
         ) { permissions: Map<String, @JvmSuppressWildcards Boolean> ->
-            mapManager.showCurrentLocation(DEFAULT_COORDINATE)
+            mapManager.startTrackingCurrentLocation()
         }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -55,6 +52,20 @@ class MainActivity : AppCompatActivity() {
         requestLocationPermissions()
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        mapManager.resume()
+        mapManager.startTrackingCurrentLocation()
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        mapManager.pause()
+        mapManager.stopTrackingCurrentLocation()
+    }
+
     private fun setUpDoubleBackPress() {
         val callback =
             object : OnBackPressedCallback(true) {
@@ -72,18 +83,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         onBackPressedDispatcher.addCallback(this@MainActivity, callback)
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        mapManager.resume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-        mapManager.pause()
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -141,12 +140,5 @@ class MainActivity : AppCompatActivity() {
                 Manifest.permission.ACCESS_COARSE_LOCATION,
             ),
         )
-    }
-
-    companion object {
-        private const val DEFAULT_LATITUDE = 37.5165004
-        private const val DEFAULT_LONGITUDE = 127.1040109
-        private val DEFAULT_COORDINATE =
-            Coordinate(Latitude(DEFAULT_LATITUDE), Longitude(DEFAULT_LONGITUDE))
     }
 }
