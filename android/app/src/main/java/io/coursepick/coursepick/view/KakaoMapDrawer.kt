@@ -68,6 +68,11 @@ class KakaoMapDrawer(
         )
     }
 
+    fun removeAllLabels(map: KakaoMap) {
+        val layer: LabelLayer = map.labelManager?.layer ?: return
+        layer.removeAll()
+    }
+
     private fun draw(
         map: KakaoMap,
         @DrawableRes
