@@ -12,15 +12,12 @@ management:
   endpoints:
     web:
       exposure:
-        include: *
-  cloud:
-    aws:
-      region:
-        static: ap-northeast-2
+        include: "*"
   metrics:
     export:
       cloudwatch:
         namespace: "EC2/coursepick/dev"
+        region: ap-northeast-2
         batch-size: 20
 
 admin.token: ${ADMIN_TOKEN}
