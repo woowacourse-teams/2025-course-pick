@@ -15,9 +15,7 @@
     <!-- 파일 Appender (Rolling) -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_FILE_PATH}/coursepick.log</file>
-        <encoder>
-            <pattern>${LOG_PATTERN}</pattern>
-        </encoder>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${LOG_FILE_PATH}/coursepick.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
