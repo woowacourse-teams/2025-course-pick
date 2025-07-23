@@ -19,6 +19,6 @@ management:
         namespace: "EC2/coursepick/dev"
         region: ap-northeast-2
         batch-size: 1
-        steps: 30s
+        step: 30s
 
 admin.token: ${ADMIN_TOKEN}
