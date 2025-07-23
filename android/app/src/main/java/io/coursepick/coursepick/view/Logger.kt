@@ -34,15 +34,13 @@ object Logger {
         }
     }
 
-    sealed interface Event {
-        val type: String
-        val target: String
-        val name: String get() = "${type}_$target"
+    sealed class Event(
+        target: String,
+    ) {
+        val name: String = "${target}_${javaClass.simpleName}".lowercase()
 
         class Click(
-            override val target: String,
-        ) : Event {
-            override val type: String = "click"
-        }
+            target: String,
+        ) : Event(target)
     }
 }
