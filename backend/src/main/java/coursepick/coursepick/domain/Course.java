@@ -55,18 +55,28 @@ public class Course {
         return total;
     }
 
-    public Meter minDistanceFrom(Coordinate target) {
-        Meter min = Meter.max();
+    public Coordinate minDistanceCoordinate(Coordinate target) {
+        Coordinate minDistanceCoordinate = coordinates.getFirst();
+        Meter minDistance = Meter.max();
 
         for (int i = 0; i < coordinates.size() - 1; i++) {
             Coordinate lineStart = coordinates.get(i);
             Coordinate lineEnd = coordinates.get(i + 1);
 
-            Meter meter = GeoLine.between(lineStart, lineEnd).distanceTo(target);
-            min = min.minimum(meter);
+            Coordinate curMinDistanceCoordinate = GeoLine.between(lineStart, lineEnd).minDistanceCoordinateTo(target);
+            Meter curDistance = GeoLine.between(target, curMinDistanceCoordinate).length();
+            if (curDistance.isWithin(minDistance)) {
+                minDistance = curDistance;
+                minDistanceCoordinate = curMinDistanceCoordinate;
+            }
         }
 
-        return min;
+        return minDistanceCoordinate;
+    }
+
+    public Meter minDistanceFrom(Coordinate target) {
+        Coordinate minDistanceCoordinate = minDistanceCoordinate(target);
+        return GeoLine.between(minDistanceCoordinate, target).length();
     }
 
     public double difficulty() {
