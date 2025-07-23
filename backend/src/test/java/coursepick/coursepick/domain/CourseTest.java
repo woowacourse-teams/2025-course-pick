@@ -197,6 +197,27 @@ class CourseTest {
     }
 
     @ParameterizedTest
+    @CsvSource({
+            "-10, -10, 0, 0",
+            "20, 20, 10, 10",
+            "10, 0, 5, 5",
+            "5, 0, 2.5, 2.5"
+    })
+    void 코스의_좌표_중에서_가장_가까운_좌표를_계산한다(double targetLatitude, double targetLongitude, double latitude, double longitude) {
+        Course course = new Course("왕복코스", List.of(
+                new Coordinate(0, 0),
+                new Coordinate(10, 10.0),
+                new Coordinate(0, 0)
+        ));
+        Coordinate target = new Coordinate(targetLatitude, targetLongitude);
+
+        Coordinate minDistanceCoordinate = course.minDistanceCoordinate(target);
+
+        Coordinate expectedCoordinate = new Coordinate(latitude, longitude);
+        assertThat(minDistanceCoordinate).isEqualTo(expectedCoordinate);
+    }
+
+    @ParameterizedTest
     @MethodSource("createArguments")
     void 코스의_난이도를_계산한다(List<Coordinate> coordinates, RoadType roadType, double expectedDifficulty) {
         Course course = new Course("코스", roadType, coordinates);
@@ -240,4 +261,6 @@ class CourseTest {
                 )
         );
     }
+
+
 }
