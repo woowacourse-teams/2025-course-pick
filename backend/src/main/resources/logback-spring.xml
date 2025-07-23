@@ -1,18 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <!-- 공통 변수 설정 -->
     <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
     <property name="LOG_FILE_PATH" value="./logs"/>
-    <property name="LOG_FILE_NAME" value="application"/>
 
-    <!-- 콘솔 Appender -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>${LOG_PATTERN}</pattern>
         </encoder>
     </appender>
 
-    <!-- 파일 Appender (Rolling) -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_FILE_PATH}/coursepick.log</file>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
@@ -22,14 +18,12 @@
         </rollingPolicy>
     </appender>
 
-    <!-- local 프로필: 콘솔만 -->
     <springProfile name="local">
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
 
-    <!-- dev 프로필: 파일 + CloudWatch -->
     <springProfile name="dev">
         <root level="INFO">
             <appender-ref ref="FILE"/>
