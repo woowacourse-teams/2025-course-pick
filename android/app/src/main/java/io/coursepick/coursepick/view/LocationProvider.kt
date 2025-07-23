@@ -53,6 +53,7 @@ class LocationProvider(
         onUpdate: (Location) -> Unit,
         onError: (Exception) -> Unit,
     ) {
+        stopLocationUpdates()
         if (!hasLocationPermission) {
             onError(IllegalStateException("현재 위치를 불러올 권한이 없습니다."))
             return
@@ -66,6 +67,13 @@ class LocationProvider(
             locationCallback,
             Looper.getMainLooper(),
         )
+    }
+
+    fun stopLocationUpdates() {
+        locationCallback?.let { locationCallback: LocationCallback ->
+            locationClient.removeLocationUpdates(locationCallback)
+        }
+        locationCallback = null
     }
 
     private fun LocationCallback(
@@ -83,13 +91,6 @@ class LocationProvider(
                 }
             }
         }
-
-    fun stopLocationUpdates() {
-        locationCallback?.let { locationCallback: LocationCallback ->
-            locationClient.removeLocationUpdates(locationCallback)
-        }
-        locationCallback = null
-    }
 
     private val hasLocationPermission: Boolean
         get() =
