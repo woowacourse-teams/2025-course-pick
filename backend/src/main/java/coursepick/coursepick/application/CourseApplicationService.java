@@ -2,6 +2,9 @@ package coursepick.coursepick.application;
 
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.domain.*;
+
+import java.io.InputStream;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,10 +21,10 @@ public class CourseApplicationService {
     private final CourseParser courseParser;
 
     @Transactional
-    public void parseAndSaveCourses(String filePath) {
-        log.info("코스 데이터 가져오기 시작: {}", filePath);
+    public void parseAndSaveCourses(InputStream fileStream) {
+        log.info("코스 데이터 가져오기 시작");
 
-        List<Course> parsedCourses = courseParser.parse(filePath);
+        List<Course> parsedCourses = courseParser.parse(fileStream);
         log.info("{} 개의 코스를 파싱했습니다", parsedCourses.size());
 
         List<Course> savedCourses = courseRepository.saveAll(parsedCourses);

@@ -3,6 +3,9 @@ package coursepick.coursepick.infrastructure;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
 import coursepick.coursepick.domain.CourseParser;
+
+import java.io.InputStream;
+
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -15,17 +18,16 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
 public class KmlCourseParser implements CourseParser {
 
     @Override
-    public List<Course> parse(String filePath) {
+    public List<Course> parse(InputStream fileStream) {
         List<Course> courses = new ArrayList<>();
 
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(new File(filePath));
+            Document document = builder.parse(fileStream);
 
             NodeList placemarks = document.getElementsByTagName("Placemark");
 
@@ -85,7 +87,7 @@ public class KmlCourseParser implements CourseParser {
                 try {
                     double longitude = Double.parseDouble(values[0]);
                     double latitude = Double.parseDouble(values[1]);
-                    coordinates.add(new Coordinate(latitude, longitude));
+                    coordinates.add(new Coordinate(latitude, longitude, 0));
                 } catch (NumberFormatException ignored) {
                 }
             }
