@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_COORDINATE_COUNT;
@@ -21,16 +22,17 @@ public class Course {
     private final String name;
 
     @Enumerated(EnumType.STRING)
-    private final RoadType roadType;
+    private final CourseType courseType;
 
     @Enumerated(EnumType.STRING)
-    private final CourseType courseType;
+    private final RoadType roadType;
 
     @ElementCollection
     @CollectionTable(name = "coordinate")
     private final List<Coordinate> coordinates;
 
-    public Course(String name, RoadType roadType, CourseType courseType, List<Coordinate> coordinates) {
+    public Course(String name, CourseType courseType, RoadType roadType, List<Coordinate> coordinates) {
+        coordinates = new ArrayList<>(coordinates);
         String compactName = compactName(name);
         validateNameLength(compactName);
         validateCoordinatesCount(coordinates);
@@ -39,8 +41,8 @@ public class Course {
         }
         this.id = null;
         this.name = compactName;
-        this.roadType = roadType;
         this.courseType = courseType;
+        this.roadType = roadType;
         this.coordinates = coordinates;
     }
 

@@ -1,8 +1,6 @@
 package coursepick.coursepick.infrastructure;
 
-import coursepick.coursepick.domain.Coordinate;
-import coursepick.coursepick.domain.Course;
-import coursepick.coursepick.domain.CourseParser;
+import coursepick.coursepick.domain.*;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -53,7 +51,7 @@ public class KmlCourseParser implements CourseParser {
         if (courseName == null || courseName.isBlank()) return null;
         if (coordinates.isEmpty()) return null;
 
-        return new Course(courseName, coordinates);
+        return new Course(courseName, CourseType.원형, RoadType.알수없음, coordinates);
     }
 
     private String parseCourseName(Element placemark) {
@@ -89,10 +87,6 @@ public class KmlCourseParser implements CourseParser {
                 } catch (NumberFormatException ignored) {
                 }
             }
-        }
-
-        if (!coordinates.getFirst().hasSameLatitudeAndLongitude(coordinates.getLast())) {
-            coordinates.add(coordinates.getFirst());
         }
 
         return coordinates;

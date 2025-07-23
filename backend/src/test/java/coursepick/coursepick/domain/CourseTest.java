@@ -22,13 +22,13 @@ class CourseTest {
 
         @Test
         void 코스를_생성한다() {
-            assertThatCode(() -> new Course("코스이름", getNormalCoordinates()))
+            assertThatCode(() -> new Course("코스이름", CourseType.원형, RoadType.알수없음, getNormalCoordinates()))
                     .doesNotThrowAnyException();
         }
 
         @Test
         void 앞_뒤_공백을_제거하여_생성한다() {
-            Course course = new Course(" 코스이름   ", getNormalCoordinates());
+            Course course = new Course(" 코스이름   ", CourseType.원형, RoadType.알수없음, getNormalCoordinates());
             assertThat(course.name()).isEqualTo("코스이름");
         }
 
@@ -38,7 +38,7 @@ class CourseTest {
                 "짧"
         })
         void 잘못된_길이의_이름으로_코스를_생성하면_예외가_발생한다(String name) {
-            assertThatThrownBy(() -> new Course(name, getNormalCoordinates()))
+            assertThatThrownBy(() -> new Course(name, CourseType.원형, RoadType.알수없음, getNormalCoordinates()))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
@@ -50,20 +50,22 @@ class CourseTest {
                 "코스    이름",
         })
         void 이름의_연속공백을_한_칸으로_변환하여_코스를_생성한다(String name) {
-            Course course = new Course(name, getNormalCoordinates());
+            Course course = new Course(name, CourseType.원형, RoadType.알수없음, getNormalCoordinates());
             assertThat(course.name()).isEqualTo("코스 이름");
         }
 
         @Test
         void 코스의_좌표의_개수가_2보다_적으면_예외가_발생한다() {
-            assertThatThrownBy(() -> new Course("코스이름", List.of(new Coordinate(1d, 1d))))
+            assertThatThrownBy(() -> new Course("코스이름", CourseType.원형, RoadType.알수없음, List.of(new Coordinate(1d, 1d))))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
         @Test
-        void 첫_좌표와_끝_좌표의_위도경도가_동일하지_않으면_예외가_발생한다() {
-            assertThatThrownBy(() -> new Course("코스이름", List.of(new Coordinate(1d, 1d), new Coordinate(2d, 3d))))
-                    .isInstanceOf(IllegalArgumentException.class);
+        void 원형코스는_첫_좌표와_끝_좌표의_위도경도가_동일하지_않으면_첫_코스가_마지막으로_추가된다() {
+            Course course = new Course("코스이름", CourseType.원형, RoadType.알수없음, List.of(new Coordinate(1d, 1d), new Coordinate(2d, 3d)));
+
+            assertThat(course.coordinates()).hasSize(3)
+                    .containsExactly(new Coordinate(1d, 1d), new Coordinate(2d, 3d), new Coordinate(1d, 1d));
         }
 
         private static List<Coordinate> getNormalCoordinates() {
@@ -73,7 +75,7 @@ class CourseTest {
 
     @Test
     void 코스의_총_거리를_계산할_수_있다() {
-        Course course = new Course("한강뛰어보자", List.of(
+        Course course = new Course("한강뛰어보자", CourseType.원형, RoadType.알수없음, List.of(
                 new Coordinate(37.518400, 126.995600),
                 new Coordinate(37.518000, 126.996500),
                 new Coordinate(37.517500, 126.998000),
@@ -102,7 +104,7 @@ class CourseTest {
             "37.516678, 126.997065, 46"
     })
     void 특정_좌표에서_코스까지_가장_가까운_거리를_계산할_수_있다(double latitude, double longitude, int expectedDistance) {
-        Course course = new Course("한강뛰어보자", List.of(
+        Course course = new Course("한강뛰어보자", CourseType.원형, RoadType.알수없음, List.of(
                 new Coordinate(37.519760, 126.995477),
                 new Coordinate(37.517083, 126.997182),
                 new Coordinate(37.519760, 126.995477)
@@ -116,7 +118,7 @@ class CourseTest {
 
     @Test
     void 코스_위의_점에서_코스까지의_거리는_0에_가깝다() {
-        Course course = new Course("직선코스", List.of(
+        Course course = new Course("직선코스", CourseType.원형, RoadType.알수없음, List.of(
                 new Coordinate(37.5, 127.0),
                 new Coordinate(37.5, 127.001),
                 new Coordinate(37.5, 127.0)
@@ -130,7 +132,7 @@ class CourseTest {
 
     @Test
     void 코스_시작점에서_코스까지의_거리는_0이다() {
-        Course course = new Course("삼각형코스", List.of(
+        Course course = new Course("삼각형코스", CourseType.원형, RoadType.알수없음, List.of(
                 new Coordinate(37.5, 127.0),
                 new Coordinate(37.501, 127.0),
                 new Coordinate(37.5005, 127.001),
@@ -145,7 +147,7 @@ class CourseTest {
 
     @Test
     void 코스_내부의_점에서_코스까지의_거리를_계산한다() {
-        Course course = new Course("사각형코스", List.of(
+        Course course = new Course("사각형코스", CourseType.원형, RoadType.알수없음, List.of(
                 new Coordinate(37.5, 127.0),
                 new Coordinate(37.501, 127.0),
                 new Coordinate(37.501, 127.001),
@@ -161,7 +163,7 @@ class CourseTest {
 
     @Test
     void 코스_외부_멀리_떨어진_점에서_코스까지의_거리를_계산한다() {
-        Course course = new Course("작은원형코스", List.of(
+        Course course = new Course("작은원형코스", CourseType.원형, RoadType.알수없음, List.of(
                 new Coordinate(37.5, 127.0),
                 new Coordinate(37.5001, 127.0),
                 new Coordinate(37.5, 127.0001),
@@ -182,7 +184,7 @@ class CourseTest {
             "37.5, 126.999, 88"        // 코스에서 서쪽으로 100m
     })
     void 코스_주변_다양한_위치에서의_거리를_계산한다(double latitude, double longitude, int expectedDistance) {
-        Course course = new Course("정사각형코스", List.of(
+        Course course = new Course("정사각형코스", CourseType.원형, RoadType.알수없음, List.of(
                 new Coordinate(37.5, 127.0),
                 new Coordinate(37.5001, 127.0),
                 new Coordinate(37.5001, 127.0001),
@@ -199,7 +201,7 @@ class CourseTest {
     @ParameterizedTest
     @MethodSource("createArguments")
     void 코스의_난이도를_계산한다(List<Coordinate> coordinates, RoadType roadType, double expectedDifficulty) {
-        Course course = new Course("코스", roadType, coordinates);
+        Course course = new Course("코스", CourseType.원형, roadType, coordinates);
 
         double difficulty = course.difficulty();
 
