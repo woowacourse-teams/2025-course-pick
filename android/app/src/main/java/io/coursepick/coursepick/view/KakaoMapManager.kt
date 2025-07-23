@@ -4,6 +4,7 @@ import android.Manifest
 import android.location.Location
 import androidx.annotation.RequiresPermission
 import com.kakao.vectormap.KakaoMap
+import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.MapGravity
 import com.kakao.vectormap.MapView
 import io.coursepick.coursepick.R
@@ -17,6 +18,8 @@ class KakaoMapManager(
     private val cameraController = KakaoMapCameraController()
     private val drawer = KakaoMapDrawer(mapView.context)
     private var kakaoMap: KakaoMap? = null
+
+    val cameraPosition get(): LatLng? = kakaoMap?.cameraPosition?.position
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     fun start(onMapReady: (KakaoMap) -> Unit) {

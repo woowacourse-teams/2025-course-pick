@@ -27,6 +27,19 @@ class MainActivity : AppCompatActivity() {
     private val doublePressDetector = DoublePressDetector()
     private val mapManager by lazy { KakaoMapManager(binding.mainMap) }
 
+    private val onSearchAreaListener: OnSearchAreaListener =
+        object : OnSearchAreaListener {
+            override fun search() {
+                val mapPosition = mapManager.cameraPosition ?: return
+                viewModel.fetchCourses(
+                    Coordinate(
+                        Latitude(mapPosition.latitude),
+                        Longitude(mapPosition.longitude),
+                    ),
+                )
+            }
+        }
+
     @SuppressLint("MissingPermission")
     private val locationPermissionLauncher: ActivityResultLauncher<Array<String>> =
         registerForActivityResult(
@@ -50,6 +63,7 @@ class MainActivity : AppCompatActivity() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
         binding.adapter = courseAdapter
+        binding.onSearchAreaListener = onSearchAreaListener
         setUpObservers()
         setUpDoubleBackPress()
         requestLocationPermissions()
@@ -103,8 +117,8 @@ class MainActivity : AppCompatActivity() {
         viewModel.event.observe(this) { event: MainUiEvent ->
             when (event) {
                 is MainUiEvent.FetchCourseSuccess -> {
-                    mapManager.start {
-                        event.course?.let { course: CourseItem -> selectCourse(course) }
+                    event.course?.let { course: CourseItem ->
+                        mapManager.start { selectCourse(course) }
                     }
                 }
 
