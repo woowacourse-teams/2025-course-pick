@@ -31,7 +31,10 @@ dependencies {
     // Geographic libraries for comparison
     implementation("org.locationtech.spatial4j:spatial4j:0.8")
 
-    // JVM Metric To CloudWatch
+    // Logback Logstash Encoder (JSON Format)
+    implementation("net.logstash.logback:logstash-logback-encoder:8.1")
+
+    // JVM/Spring Metric To CloudWatch
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("io.micrometer:micrometer-registry-cloudwatch2")
 }
