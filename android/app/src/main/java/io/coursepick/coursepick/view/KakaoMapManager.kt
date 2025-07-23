@@ -72,13 +72,13 @@ class KakaoMapManager(
         locationProvider.fetchCurrentLocation(
             onSuccess = { location: Location ->
                 kakaoMap?.let { map: KakaoMap ->
-                    drawer.draw(map, location)
+                    drawer.draw(map, R.drawable.image_current_location, location)
                     cameraController.moveTo(map, location)
                 }
             },
             onFailure = { exception: Exception ->
                 kakaoMap?.let { map: KakaoMap ->
-                    drawer.draw(map, default)
+                    drawer.draw(map, R.drawable.image_current_location, default)
                     cameraController.moveTo(map, default)
                 }
             },
