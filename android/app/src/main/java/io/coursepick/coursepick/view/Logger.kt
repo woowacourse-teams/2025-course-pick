@@ -10,13 +10,6 @@ object Logger {
 
     fun log(
         event: Event,
-        parameters: Bundle,
-    ) {
-        firebaseAnalytics.logEvent(event.name, parameters)
-    }
-
-    fun log(
-        event: Event,
         vararg parameters: Pair<String, Any>,
     ) {
         val bundle =
