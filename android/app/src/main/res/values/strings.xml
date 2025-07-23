@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CoursePick</string>
+    <string name="app_name">런세권</string>
     <string name="main_course_distance_suffix">%s만큼 떨어짐</string>
     <string name="main_course_unit_meter">%dm</string>
     <string name="main_course_unit_kilometer">%.2fkm</string>
