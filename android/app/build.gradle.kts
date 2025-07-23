@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.serialization)
     id("kotlin-kapt")
+    id("com.google.gms.google-services")
 }
 
 private val localProperties: Properties =
@@ -88,6 +89,7 @@ dependencies {
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.kakao.maps)
     implementation(libs.play.services.location)
+    implementation(libs.firebase.analytics)
     testImplementation(libs.assertj.core)
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
