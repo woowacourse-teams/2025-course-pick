@@ -37,6 +37,7 @@ dependencies {
     // JVM/Spring Metric To CloudWatch
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("io.micrometer:micrometer-registry-cloudwatch2")
+    implementation("software.amazon.awssdk:cloudwatch")
 }
 
 tasks.withType<Test> {
