@@ -87,7 +87,7 @@ class LocationProvider(
 
             override fun onLocationAvailability(availability: LocationAvailability) {
                 if (!availability.isLocationAvailable) {
-                    onError(IllegalStateException("현재 위치를 불러올 권한이 없습니다."))
+                    onError(IllegalStateException("현재 위치를 사용할 수 없습니다."))
                 }
             }
         }
