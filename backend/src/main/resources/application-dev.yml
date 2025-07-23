@@ -9,6 +9,10 @@ spring:
     password: ${DB_PASSWORD}
 
 management:
+  endpoints:
+    web:
+      exposure:
+        include: *
   cloud:
     aws:
       region:
