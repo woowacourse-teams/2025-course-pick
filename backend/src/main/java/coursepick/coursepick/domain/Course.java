@@ -6,7 +6,8 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-import static coursepick.coursepick.application.exception.ErrorType.*;
+import static coursepick.coursepick.application.exception.ErrorType.INVALID_COORDINATE_COUNT;
+import static coursepick.coursepick.application.exception.ErrorType.INVALID_NAME_LENGTH;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
@@ -22,23 +23,25 @@ public class Course {
     @Enumerated(EnumType.STRING)
     private final RoadType roadType;
 
+    @Enumerated(EnumType.STRING)
+    private final CourseType courseType;
+
     @ElementCollection
     @CollectionTable(name = "coordinate")
     private final List<Coordinate> coordinates;
 
-    public Course(String name, RoadType roadType, List<Coordinate> coordinates) {
+    public Course(String name, RoadType roadType, CourseType courseType, List<Coordinate> coordinates) {
         String compactName = compactName(name);
         validateNameLength(compactName);
         validateCoordinatesCount(coordinates);
-        validateFirstLastCoordinateHasSameLatitudeAndLongitude(coordinates);
+        if (courseType == CourseType.원형 && isFirstAndLastCoordinateDifferent(coordinates)) {
+            coordinates.add(coordinates.getFirst());
+        }
         this.id = null;
         this.name = compactName;
         this.roadType = roadType;
+        this.courseType = courseType;
         this.coordinates = coordinates;
-    }
-
-    public Course(String name, List<Coordinate> coordinates) {
-        this(name, RoadType.알수없음, coordinates);
     }
 
     public Meter length() {
@@ -114,11 +117,7 @@ public class Course {
         }
     }
 
-    private static void validateFirstLastCoordinateHasSameLatitudeAndLongitude(List<Coordinate> coordinates) {
-        Coordinate first = coordinates.getFirst();
-        Coordinate last = coordinates.getLast();
-        if (!first.hasSameLatitudeAndLongitude(last)) {
-            throw new IllegalArgumentException(NOT_CONNECTED_COURSE.message(first, last));
-        }
+    private static boolean isFirstAndLastCoordinateDifferent(List<Coordinate> coordinates) {
+        return !coordinates.getFirst().hasSameLatitudeAndLongitude(coordinates.getLast());
     }
 }
