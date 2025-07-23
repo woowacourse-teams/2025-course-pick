@@ -30,6 +30,10 @@ dependencies {
 
     // Geographic libraries for comparison
     implementation("org.locationtech.spatial4j:spatial4j:0.8")
+
+    // JVM Metric To CloudWatch
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("io.micrometer:micrometer-registry-cloudwatch2")
 }
 
 tasks.withType<Test> {

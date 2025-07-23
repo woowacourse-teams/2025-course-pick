@@ -8,4 +8,15 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
 
+management:
+  cloud:
+    aws:
+      region:
+        static: ap-northeast-2
+  metrics:
+    export:
+      cloudwatch:
+        namespace: "EC2/coursepick/dev"
+        batch-size: 20
+
 admin.token: ${ADMIN_TOKEN}
