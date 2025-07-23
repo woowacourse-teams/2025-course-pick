@@ -16,8 +16,8 @@
             type="io.coursepick.coursepick.view.CourseAdapter" />
 
         <variable
-            name="onSearchAreaListener"
-            type="io.coursepick.coursepick.view.OnSearchAreaListener" />
+            name="onSearchThisAreaListener"
+            type="io.coursepick.coursepick.view.OnSearchThisAreaListener" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -37,7 +37,7 @@
             android:layout_marginTop="10dp"
             android:background="@drawable/background_search_this_area"
             android:clickable="true"
-            android:onClick="@{() -> onSearchAreaListener.search()}"
+            android:onClick="@{() -> onSearchThisAreaListener.search()}"
             android:orientation="horizontal"
             android:padding="10dp">
 

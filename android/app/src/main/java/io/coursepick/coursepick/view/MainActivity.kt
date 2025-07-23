@@ -26,9 +26,8 @@ class MainActivity : AppCompatActivity() {
     private val courseAdapter by lazy { CourseAdapter(viewModel::select) }
     private val doublePressDetector = DoublePressDetector()
     private val mapManager by lazy { KakaoMapManager(binding.mainMap) }
-
-    private val onSearchAreaListener: OnSearchAreaListener =
-        object : OnSearchAreaListener {
+    private val onSearchThisAreaListener: OnSearchThisAreaListener =
+        object : OnSearchThisAreaListener {
             override fun search() {
                 val mapPosition = mapManager.cameraPosition ?: return
                 viewModel.fetchCourses(
@@ -63,10 +62,13 @@ class MainActivity : AppCompatActivity() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
         binding.adapter = courseAdapter
-        binding.onSearchAreaListener = onSearchAreaListener
+        binding.onSearchThisAreaListener = onSearchThisAreaListener
+
         setUpObservers()
         setUpDoubleBackPress()
         requestLocationPermissions()
+
+        mapManager.start {}
     }
 
     private fun setUpDoubleBackPress() {
@@ -118,7 +120,8 @@ class MainActivity : AppCompatActivity() {
             when (event) {
                 is MainUiEvent.FetchCourseSuccess -> {
                     event.course?.let { course: CourseItem ->
-                        mapManager.start { selectCourse(course) }
+                        mapManager.draw(course)
+                        mapManager.fitTo(course)
                     }
                 }
 
