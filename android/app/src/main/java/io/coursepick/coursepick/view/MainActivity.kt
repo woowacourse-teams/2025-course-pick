@@ -52,6 +52,7 @@ class MainActivity : AppCompatActivity() {
         requestLocationPermissions()
     }
 
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun onResume() {
         super.onResume()
 
