@@ -30,7 +30,7 @@ dependencies {
 
     // Geographic libraries for comparison
     implementation("org.locationtech.spatial4j:spatial4j:0.8")
-    implementation("net.logstash.logback:logstash-logback-encoder:7.4")
+    implementation("net.logstash.logback:logstash-logback-encoder:8.1")
 }
 
 tasks.withType<Test> {
