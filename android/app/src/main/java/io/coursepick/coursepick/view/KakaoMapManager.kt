@@ -56,7 +56,6 @@ class KakaoMapManager(
         }
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     fun moveTo(course: CourseItem) {
         val coordinate: Coordinate = course.coordinates.firstOrNull() ?: return
         kakaoMap?.let { map: KakaoMap ->
@@ -83,5 +82,25 @@ class KakaoMapManager(
                 }
             },
         )
+    }
+
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+    fun startTrackingCurrentLocation() {
+        locationProvider.startLocationUpdates(
+            onUpdate = { location ->
+                kakaoMap?.let { map: KakaoMap ->
+                    drawer.draw(map, R.drawable.image_current_location, location)
+                }
+            },
+            onError = {
+                kakaoMap?.let { map: KakaoMap ->
+                    drawer.removeAllLabels(map)
+                }
+            },
+        )
+    }
+
+    fun stopTrackingCurrentLocation() {
+        locationProvider.stopLocationUpdates()
     }
 }
