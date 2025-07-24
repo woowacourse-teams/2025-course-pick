@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
                 @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
                 override fun navigate(course: CourseItem) {
                     mapManager.fetchCurrentLocation(
-                        onResult = { latitude, longitude ->
+                        onSuccess = { latitude, longitude ->
                             val url =
                                 viewModel.navigate(
                                     selectedCourse = course,
@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
                             val intent = Intent(Intent.ACTION_VIEW, url.toUri())
                             startActivity(intent)
                         },
-                        onError = {
+                        onFailure = {
                             Toast
                                 .makeText(
                                     this@MainActivity,
