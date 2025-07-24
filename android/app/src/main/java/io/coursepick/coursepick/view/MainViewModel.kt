@@ -44,10 +44,7 @@ class MainViewModel(
     fun navigate(
         selectedCourse: CourseItem,
         location: Coordinate,
-    ): String {
-        val link = KakaoMapUrl().url(location, selectedCourse.coordinates[0], selectedCourse.name)
-        return link
-    }
+    ): String = KakaoMapUrl().url(location, selectedCourse.coordinates[0], selectedCourse.name)
 
     fun fetchCourses(coordinate: Coordinate) {
         viewModelScope.launch {
