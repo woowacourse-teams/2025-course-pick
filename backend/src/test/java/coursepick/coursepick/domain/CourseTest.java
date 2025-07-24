@@ -28,7 +28,7 @@ class CourseTest {
 
         @Test
         void 앞_뒤_공백을_제거하여_생성한다() {
-            Course course = new Course(" 코스이름   ", getNormalCoordinates());
+            var course = new Course(" 코스이름   ", getNormalCoordinates());
             assertThat(course.name()).isEqualTo("코스이름");
         }
 
@@ -50,7 +50,7 @@ class CourseTest {
                 "코스    이름",
         })
         void 이름의_연속공백을_한_칸으로_변환하여_코스를_생성한다(String name) {
-            Course course = new Course(name, getNormalCoordinates());
+            var course = new Course(name, getNormalCoordinates());
             assertThat(course.name()).isEqualTo("코스 이름");
         }
 
@@ -59,7 +59,45 @@ class CourseTest {
             assertThatThrownBy(() -> new Course("코스이름", List.of(new Coordinate(1d, 1d))))
                     .isInstanceOf(IllegalArgumentException.class);
         }
-        
+
+        @Test
+        void 반시계방향이면_그대로_설정된다() {
+            var counter = new Course("코스이름", List.of(
+                    new Coordinate(0d, 0d),
+                    new Coordinate(5d, 5d),
+                    new Coordinate(0d, 10d),
+                    new Coordinate(5d, -5d),
+                    new Coordinate(0d, 0d)
+            ));
+
+            assertThat(counter.coordinates()).containsExactly(
+                    new Coordinate(0d, 0d),
+                    new Coordinate(5d, 5d),
+                    new Coordinate(0d, 10d),
+                    new Coordinate(5d, -5d),
+                    new Coordinate(0d, 0d)
+            );
+        }
+
+        @Test
+        void 시계방향이면_반대로_설정된다() {
+            var clockwiseCourse = new Course("코스이름", List.of(
+                    new Coordinate(0d, 0d),
+                    new Coordinate(5d, -5d),
+                    new Coordinate(0d, 10d),
+                    new Coordinate(5d, 5d),
+                    new Coordinate(0d, 0d)
+            ));
+
+            assertThat(clockwiseCourse.coordinates()).containsExactly(
+                    new Coordinate(0d, 0d),
+                    new Coordinate(5d, 5d),
+                    new Coordinate(0d, 10d),
+                    new Coordinate(5d, -5d),
+                    new Coordinate(0d, 0d)
+            );
+        }
+
         private static List<Coordinate> getNormalCoordinates() {
             return List.of(new Coordinate(1d, 1d), new Coordinate(1d, 1d));
         }
@@ -67,7 +105,7 @@ class CourseTest {
 
     @Test
     void 코스의_총_거리를_계산할_수_있다() {
-        Course course = new Course("한강뛰어보자", List.of(
+        var course = new Course("한강뛰어보자", List.of(
                 new Coordinate(37.518400, 126.995600),
                 new Coordinate(37.518000, 126.996500),
                 new Coordinate(37.517500, 126.998000),
@@ -85,7 +123,7 @@ class CourseTest {
                 new Coordinate(37.518400, 126.995600)
         ));
 
-        Meter totalLength = course.length();
+        var totalLength = course.length();
 
         assertThat((int) totalLength.value()).isEqualTo(2573);
     }
@@ -96,75 +134,75 @@ class CourseTest {
             "37.516678, 126.997065, 46"
     })
     void 특정_좌표에서_코스까지_가장_가까운_거리를_계산할_수_있다(double latitude, double longitude, int expectedDistance) {
-        Course course = new Course("한강뛰어보자", List.of(
+        var course = new Course("한강뛰어보자", List.of(
                 new Coordinate(37.519760, 126.995477),
                 new Coordinate(37.517083, 126.997182),
                 new Coordinate(37.519760, 126.995477)
         ));
-        Coordinate target = new Coordinate(latitude, longitude);
+        var target = new Coordinate(latitude, longitude);
 
-        Meter distance = course.minDistanceFrom(target);
+        var distance = course.minDistanceFrom(target);
 
         assertThat((int) distance.value()).isEqualTo(expectedDistance);
     }
 
     @Test
     void 코스_위의_점에서_코스까지의_거리는_0에_가깝다() {
-        Course course = new Course("직선코스", List.of(
+        var course = new Course("직선코스", List.of(
                 new Coordinate(37.5, 127.0),
                 new Coordinate(37.5, 127.001),
                 new Coordinate(37.5, 127.0)
         ));
-        Coordinate target = new Coordinate(37.5, 127.0005); // 코스 선분의 중점
+        var target = new Coordinate(37.5, 127.0005); // 코스 선분의 중점
 
-        Meter distance = course.minDistanceFrom(target);
+        var distance = course.minDistanceFrom(target);
 
         assertThat(distance.value()).isLessThan(1.0);
     }
 
     @Test
     void 코스_시작점에서_코스까지의_거리는_0이다() {
-        Course course = new Course("삼각형코스", List.of(
+        var course = new Course("삼각형코스", List.of(
                 new Coordinate(37.5, 127.0),
                 new Coordinate(37.501, 127.0),
                 new Coordinate(37.5005, 127.001),
                 new Coordinate(37.5, 127.0)
         ));
-        Coordinate target = new Coordinate(37.5, 127.0);
+        var target = new Coordinate(37.5, 127.0);
 
-        Meter distance = course.minDistanceFrom(target);
+        var distance = course.minDistanceFrom(target);
 
         assertThat(distance.value()).isEqualTo(0.0);
     }
 
     @Test
     void 코스_내부의_점에서_코스까지의_거리를_계산한다() {
-        Course course = new Course("사각형코스", List.of(
+        var course = new Course("사각형코스", List.of(
                 new Coordinate(37.5, 127.0),
                 new Coordinate(37.501, 127.0),
                 new Coordinate(37.501, 127.001),
                 new Coordinate(37.5, 127.001),
                 new Coordinate(37.5, 127.0)
         ));
-        Coordinate target = new Coordinate(37.5005, 127.0005); // 사각형 중앙
+        var target = new Coordinate(37.5005, 127.0005); // 사각형 중앙
 
-        Meter distance = course.minDistanceFrom(target);
+        var distance = course.minDistanceFrom(target);
 
         assertThat((int) distance.value()).isEqualTo(44);
     }
 
     @Test
     void 코스_외부_멀리_떨어진_점에서_코스까지의_거리를_계산한다() {
-        Course course = new Course("작은원형코스", List.of(
+        var course = new Course("작은원형코스", List.of(
                 new Coordinate(37.5, 127.0),
                 new Coordinate(37.5001, 127.0),
                 new Coordinate(37.5, 127.0001),
                 new Coordinate(37.4999, 127.0),
                 new Coordinate(37.5, 127.0)
         ));
-        Coordinate target = new Coordinate(37.52, 127.02); // 매우 멀리 떨어진 점
+        var target = new Coordinate(37.52, 127.02); // 매우 멀리 떨어진 점
 
-        Meter distance = course.minDistanceFrom(target);
+        var distance = course.minDistanceFrom(target);
 
         assertThat((int) distance.value()).isEqualTo(2829);
     }
@@ -176,16 +214,16 @@ class CourseTest {
             "37.5, 126.999, 88"        // 코스에서 서쪽으로 100m
     })
     void 코스_주변_다양한_위치에서의_거리를_계산한다(double latitude, double longitude, int expectedDistance) {
-        Course course = new Course("정사각형코스", List.of(
+        var course = new Course("정사각형코스", List.of(
                 new Coordinate(37.5, 127.0),
                 new Coordinate(37.5001, 127.0),
                 new Coordinate(37.5001, 127.0001),
                 new Coordinate(37.5, 127.0001),
                 new Coordinate(37.5, 127.0)
         ));
-        Coordinate target = new Coordinate(latitude, longitude);
+        var target = new Coordinate(latitude, longitude);
 
-        Meter distance = course.minDistanceFrom(target);
+        var distance = course.minDistanceFrom(target);
 
         assertThat((int) distance.value()).isEqualTo(expectedDistance);
     }
@@ -193,9 +231,9 @@ class CourseTest {
     @ParameterizedTest
     @MethodSource("createArguments")
     void 코스의_난이도를_계산한다(List<Coordinate> coordinates, RoadType roadType, double expectedDifficulty) {
-        Course course = new Course("코스", roadType, coordinates);
+        var course = new Course("코스", roadType, coordinates);
 
-        double difficulty = course.difficulty();
+        var difficulty = course.difficulty();
 
         assertThat(difficulty).isEqualTo(expectedDifficulty);
     }
