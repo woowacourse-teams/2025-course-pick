@@ -36,5 +36,5 @@ public interface CourseWebApi {
     );
 
     @Operation(hidden = true)
-    public void importCourses(String token, MultipartFile file);
+    void importCourses(String token, MultipartFile file);
 }
