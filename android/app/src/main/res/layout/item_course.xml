@@ -144,7 +144,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="@{() -> onSelectCourseListener.navigate(course)}"
-            android:text="@string/main_navigate"
+            android:text="@string/item_course_navigate"
             android:textColor="@color/item_primary"
             android:textSize="16sp"
             android:textStyle="bold"
