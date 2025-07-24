@@ -82,4 +82,9 @@ class MainViewModel(
                 course.copy(selected = false)
             }
         }
+
+    companion object {
+        private const val DEFAULT_LATITUDE_VALUE = 37.5165004
+        private const val DEFAULT_LONGITUDE_VALUE = 127.1040109
+    }
 }

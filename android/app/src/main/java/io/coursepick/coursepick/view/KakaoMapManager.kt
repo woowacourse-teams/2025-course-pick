@@ -9,6 +9,8 @@ import com.kakao.vectormap.MapGravity
 import com.kakao.vectormap.MapView
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.Coordinate
+import io.coursepick.coursepick.domain.Latitude
+import io.coursepick.coursepick.domain.Longitude
 
 class KakaoMapManager(
     private val mapView: MapView,
@@ -37,6 +39,12 @@ class KakaoMapManager(
                 0,
                 0,
                 mapView.context.resources.getDimensionPixelSize(R.dimen.main_bottom_sheet_peek_height),
+            )
+            showCurrentLocation(
+                Coordinate(
+                    Latitude(37.5165004),
+                    Longitude(127.1040109),
+                ),
             )
             onMapReady(map)
         }

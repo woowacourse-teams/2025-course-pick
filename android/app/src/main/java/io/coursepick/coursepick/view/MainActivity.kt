@@ -126,7 +126,6 @@ class MainActivity : AppCompatActivity() {
                 is MainUiEvent.FetchCourseSuccess -> {
                     event.course?.let { course: CourseItem ->
                         mapManager.draw(course)
-                        mapManager.fitTo(course)
                     }
                 }
 
