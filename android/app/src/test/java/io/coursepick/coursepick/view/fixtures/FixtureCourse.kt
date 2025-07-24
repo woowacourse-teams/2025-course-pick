@@ -2,6 +2,7 @@ package io.coursepick.coursepick.view.fixtures
 
 import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.Course
+import io.coursepick.coursepick.domain.CourseDifficulty
 import io.coursepick.coursepick.domain.CourseName
 import io.coursepick.coursepick.domain.Distance
 import io.coursepick.coursepick.domain.Latitude
@@ -15,6 +16,8 @@ fun fakeCourse(
     length: Int,
     latitude: Double,
     longitude: Double,
+    type: String? = null,
+    difficulty: CourseDifficulty = CourseDifficulty.UNKNOWN,
 ): Course =
     Course(
         id = id,
@@ -22,6 +25,8 @@ fun fakeCourse(
         distance = Distance(distance),
         length = Length(length),
         coordinates = listOf(Coordinate(Latitude(latitude), Longitude(longitude))),
+        type = type,
+        difficulty = difficulty,
     )
 
 val COURSE_1 = fakeCourse(1, "코스 1", 10, 100, 1.0, 1.0)
