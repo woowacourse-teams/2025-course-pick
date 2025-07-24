@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 @Tag(name = "코스")
 public interface CourseWebApi {
 
@@ -32,4 +34,7 @@ public interface CourseWebApi {
             @Parameter(example = "37.5165004", required = true) double latitude,
             @Parameter(example = "127.1040109", required = true) double longitude
     );
+
+    @Operation(hidden = true)
+    void importCourses(String token, MultipartFile file);
 }
