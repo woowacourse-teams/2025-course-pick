@@ -16,9 +16,15 @@ management:
   metrics:
     export:
       cloudwatch:
-        namespace: "EC2/coursepick/dev"
+        namespace: "EC2/coursepick/dev/actuator"
         region: ap-northeast-2
-        batch-size: 1
-        step: 30s
+        batch-size: 20
+        step: 60s
+        enabled: true
+
+logging:
+  level:
+    io.micrometer.cloudwatch2: DEBUG
+    software.amazon.awssdk: DEBUG
 
 admin.token: ${ADMIN_TOKEN}
