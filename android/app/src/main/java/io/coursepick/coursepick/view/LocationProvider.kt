@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
+import android.location.LocationManager
 import android.os.Looper
 import androidx.annotation.RequiresPermission
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -29,11 +30,19 @@ class LocationProvider(
                 LOCATION_REQUEST_INTERVAL,
             ).build()
 
+    private val locationManager =
+        context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     fun fetchCurrentLocation(
         onSuccess: (Location) -> Unit,
         onFailure: (Exception) -> Unit,
     ) {
+        if (!locationManager.isLocationEnabled) {
+            onFailure(IllegalStateException("위치 설정이 꺼져있습니다."))
+            return
+        }
+
         if (!hasLocationPermission) {
             onFailure(IllegalStateException("현재 위치를 불러올 권한이 없습니다."))
             return

@@ -68,7 +68,9 @@ class MainActivity : AppCompatActivity() {
         setUpDoubleBackPress()
         requestLocationPermissions()
 
-        mapManager.start {}
+        mapManager.start { coordinate: Coordinate ->
+            viewModel.fetchCourses(coordinate)
+        }
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -124,7 +126,6 @@ class MainActivity : AppCompatActivity() {
                 is MainUiEvent.FetchCourseSuccess -> {
                     event.course?.let { course: CourseItem ->
                         mapManager.draw(course)
-                        mapManager.fitTo(course)
                     }
                 }
 

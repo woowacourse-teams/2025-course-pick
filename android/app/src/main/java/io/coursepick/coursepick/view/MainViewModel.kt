@@ -8,8 +8,6 @@ import io.coursepick.coursepick.data.DefaultCourseRepository
 import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.Course
 import io.coursepick.coursepick.domain.CourseRepository
-import io.coursepick.coursepick.domain.Latitude
-import io.coursepick.coursepick.domain.Longitude
 import kotlinx.coroutines.launch
 
 class MainViewModel(
@@ -27,10 +25,6 @@ class MainViewModel(
     private val _event: MutableSingleLiveData<MainUiEvent> = MutableSingleLiveData()
     val event: SingleLiveData<MainUiEvent> get() = _event
 
-    init {
-        fetchCourses()
-    }
-
     fun select(selectedCourse: CourseItem) {
         if (selectedCourse.selected) {
             _event.value = MainUiEvent.SelectNewCourse(selectedCourse)
@@ -47,13 +41,7 @@ class MainViewModel(
         _event.value = MainUiEvent.SelectNewCourse(selectedCourse)
     }
 
-    fun fetchCourses(
-        coordinate: Coordinate =
-            Coordinate(
-                Latitude(37.5165004),
-                Longitude(127.1040109),
-            ),
-    ) {
+    fun fetchCourses(coordinate: Coordinate) {
         viewModelScope.launch {
             runCatching {
                 courseRepository.courses(coordinate.latitude, coordinate.longitude)
