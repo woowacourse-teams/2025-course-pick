@@ -27,10 +27,6 @@ class MainViewModel(
     private val _event: MutableSingleLiveData<MainUiEvent> = MutableSingleLiveData()
     val event: SingleLiveData<MainUiEvent> get() = _event
 
-    init {
-        fetchCourses()
-    }
-
     fun select(selectedCourse: CourseItem) {
         if (selectedCourse.selected) {
             _event.value = MainUiEvent.SelectNewCourse(selectedCourse)
