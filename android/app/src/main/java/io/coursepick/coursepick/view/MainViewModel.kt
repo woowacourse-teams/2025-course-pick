@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.coursepick.coursepick.data.DefaultCourseRepository
+import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.Course
 import io.coursepick.coursepick.domain.CourseRepository
 import io.coursepick.coursepick.domain.Latitude
@@ -46,13 +47,16 @@ class MainViewModel(
         _event.value = MainUiEvent.SelectNewCourse(selectedCourse)
     }
 
-    private fun fetchCourses() {
+    fun fetchCourses(
+        coordinate: Coordinate =
+            Coordinate(
+                Latitude(37.5165004),
+                Longitude(127.1040109),
+            ),
+    ) {
         viewModelScope.launch {
             runCatching {
-                courseRepository.courses(
-                    Latitude(37.5165004),
-                    Longitude(127.1040109),
-                )
+                courseRepository.courses(coordinate.latitude, coordinate.longitude)
             }.onSuccess { courses: List<Course> ->
                 val courses: List<CourseItem> =
                     courses
