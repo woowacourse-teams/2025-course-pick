@@ -1,6 +1,6 @@
 package io.coursepick.coursepick.view
 
-interface SelectCourseListener {
+interface CourseItemListener {
     fun select(course: CourseItem)
 
     fun navigate(course: CourseItem)

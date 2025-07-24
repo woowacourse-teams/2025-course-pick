@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
     private val courseAdapter by lazy {
         CourseAdapter(
-            object : SelectCourseListener {
+            object : CourseItemListener {
                 override fun select(course: CourseItem) {
                     viewModel.select(course)
                 }
