@@ -1,9 +1,7 @@
 package io.coursepick.coursepick.view
 
 import android.Manifest
-import android.content.Context
 import android.location.Location
-import android.location.LocationManager
 import android.widget.Toast
 import androidx.annotation.RequiresPermission
 import com.kakao.vectormap.KakaoMap
@@ -83,25 +81,6 @@ class KakaoMapManager(
         val padding = mapView.context.resources.getDimensionPixelSize(R.dimen.course_route_padding)
         kakaoMap?.let { map: KakaoMap ->
             cameraController.fitTo(map, course.coordinates, padding)
-        }
-    }
-
-    fun moveTo(coordinate: Coordinate) {
-        kakaoMap?.let { map: KakaoMap ->
-            cameraController.moveTo(
-                map,
-                coordinate,
-            )
-        }
-    }
-
-    fun moveTo(course: CourseItem) {
-        val coordinate: Coordinate = course.coordinates.firstOrNull() ?: return
-        kakaoMap?.let { map: KakaoMap ->
-            cameraController.moveTo(
-                map,
-                coordinate,
-            )
         }
     }
 
