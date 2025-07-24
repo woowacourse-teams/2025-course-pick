@@ -10,15 +10,23 @@ public record Coordinate(
         double latitude,
 
         @Column(nullable = false)
-        double longitude
+        double longitude,
+
+        @Column(nullable = false)
+        double elevation
 ) {
-    public Coordinate(double latitude, double longitude) {
+    public Coordinate(double latitude, double longitude, double elevation) {
         double roundedLatitude = Math.floor(latitude * 1000000.0) / 1000000.0;
         double roundedLongitude = Math.floor(longitude * 1000000.0) / 1000000.0;
         validateLatitudeRange(roundedLatitude);
         validateLongitudeRange(roundedLongitude);
         this.latitude = roundedLatitude;
         this.longitude = roundedLongitude;
+        this.elevation = elevation;
+    }
+
+    public Coordinate(double latitude, double longitude) {
+        this(latitude, longitude, 0);
     }
 
     public boolean hasSameLatitudeAndLongitude(Coordinate other) {
@@ -41,7 +49,7 @@ public record Coordinate(
         double latitudeDelta = (other.latitude - this.latitude) * projectionRatio;
         double longitudeDelta = (other.longitude - this.longitude) * projectionRatio;
 
-        return new Coordinate(this.latitude + latitudeDelta, this.longitude + longitudeDelta);
+        return new Coordinate(this.latitude + latitudeDelta, this.longitude + longitudeDelta, this.elevation);
     }
 
     public boolean isRightOf(Coordinate other) {
