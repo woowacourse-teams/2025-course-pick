@@ -114,13 +114,13 @@ class KakaoMapManager(
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    fun fetchCurrentLatLng(
-        onResult: (Longitude, Latitude) -> Unit,
+    fun fetchCurrentLocation(
+        onResult: (Latitude, Longitude) -> Unit,
         onError: (Throwable) -> Unit = {},
     ) {
         locationProvider.fetchCurrentLocation(
             onSuccess = { location: Location ->
-                onResult(Longitude(location.longitude), Latitude(location.latitude))
+                onResult(Latitude(location.latitude), Longitude(location.longitude))
             },
             onFailure = { e: Exception ->
                 onError(e)

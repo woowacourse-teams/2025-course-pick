@@ -34,15 +34,15 @@ class MainActivity : AppCompatActivity() {
 
                 @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
                 override fun navigate(course: CourseItem) {
-                    mapManager.fetchCurrentLatLng(
-                        onResult = { longitude, latitude ->
+                    mapManager.fetchCurrentLocation(
+                        onResult = { latitude, longitude ->
                             val url =
                                 viewModel.navigate(
                                     selectedCourse = course,
                                     location =
                                         Coordinate(
-                                            longitude = longitude,
                                             latitude = latitude,
+                                            longitude = longitude,
                                         ),
                                 )
 
@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
                                 Toast
                                     .makeText(this@MainActivity, "유효하지 않은 URL", Toast.LENGTH_SHORT)
                                     .show()
-                                return@fetchCurrentLatLng
+                                return@fetchCurrentLocation
                             }
 
                             val intent = Intent(Intent.ACTION_VIEW, url.toUri())
