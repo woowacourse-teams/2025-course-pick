@@ -45,6 +45,12 @@ public interface CourseWebApi {
                     @ExampleObject(
                             name = "경도가 범위 외인 경우",
                             ref = "#/components/examples/INVALID_LONGITUDE_RANGE"
+                    ),
+            })),
+            @ApiResponse(responseCode = "404", content = @Content(examples = {
+                    @ExampleObject(
+                            name = "코스가 존재하지 않는 경우",
+                            ref = "#/components/examples/NOT_EXIST_COURSE"
                     )
             })),
     })
