@@ -35,14 +35,14 @@ class MainActivity : AppCompatActivity() {
                 @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
                 override fun navigate(course: CourseItem) {
                     mapManager.fetchCurrentLatLng(
-                        onResult = { latLng ->
+                        onResult = { longitude, latitude ->
                             val url =
                                 viewModel.navigate(
                                     selectedCourse = course,
                                     location =
                                         Coordinate(
-                                            longitude = Longitude(latLng.longitude),
-                                            latitude = Latitude(latLng.latitude),
+                                            longitude = longitude,
+                                            latitude = latitude,
                                         ),
                                 )
 
