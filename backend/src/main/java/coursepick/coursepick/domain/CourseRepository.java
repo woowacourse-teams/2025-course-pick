@@ -3,16 +3,19 @@ package coursepick.coursepick.domain;
 import org.springframework.data.repository.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CourseRepository extends Repository<Course, Long> {
 
+    List<Course> saveAll(Iterable<Course> courses);
+
     List<Course> findAll();
 
-    List<Course> saveAll(Iterable<Course> courses);
+    Optional<Course> findById(Long id);
 
     default List<Course> findAllHasDistanceWithin(Coordinate target, Meter meter) {
         return findAll().stream()
-                .filter(c -> c.minDistanceFrom(target).isWithin(meter))
+                .filter(c -> c.distanceFrom(target).isWithin(meter))
                 .toList();
     }
 }
