@@ -109,7 +109,7 @@ class CourseTest {
         ));
         Coordinate target = new Coordinate(latitude, longitude);
 
-        Meter distance = course.minDistanceFrom(target);
+        Meter distance = course.distanceFrom(target);
 
         assertThat((int) distance.value()).isEqualTo(expectedDistance);
     }
@@ -123,7 +123,7 @@ class CourseTest {
         ));
         Coordinate target = new Coordinate(37.5, 127.0005); // 코스 선분의 중점
 
-        Meter distance = course.minDistanceFrom(target);
+        Meter distance = course.distanceFrom(target);
 
         assertThat(distance.value()).isLessThan(1.0);
     }
@@ -138,7 +138,7 @@ class CourseTest {
         ));
         Coordinate target = new Coordinate(37.5, 127.0);
 
-        Meter distance = course.minDistanceFrom(target);
+        Meter distance = course.distanceFrom(target);
 
         assertThat(distance.value()).isEqualTo(0.0);
     }
@@ -154,7 +154,7 @@ class CourseTest {
         ));
         Coordinate target = new Coordinate(37.5005, 127.0005); // 사각형 중앙
 
-        Meter distance = course.minDistanceFrom(target);
+        Meter distance = course.distanceFrom(target);
 
         assertThat((int) distance.value()).isEqualTo(44);
     }
@@ -170,7 +170,7 @@ class CourseTest {
         ));
         Coordinate target = new Coordinate(37.52, 127.02); // 매우 멀리 떨어진 점
 
-        Meter distance = course.minDistanceFrom(target);
+        Meter distance = course.distanceFrom(target);
 
         assertThat((int) distance.value()).isEqualTo(2829);
     }
@@ -191,7 +191,7 @@ class CourseTest {
         ));
         Coordinate target = new Coordinate(latitude, longitude);
 
-        Meter distance = course.minDistanceFrom(target);
+        Meter distance = course.distanceFrom(target);
 
         assertThat((int) distance.value()).isEqualTo(expectedDistance);
     }
@@ -211,7 +211,7 @@ class CourseTest {
         ));
         Coordinate target = new Coordinate(targetLatitude, targetLongitude);
 
-        Coordinate minDistanceCoordinate = course.minDistanceCoordinate(target);
+        Coordinate minDistanceCoordinate = course.closestCoordinateFrom(target);
 
         Coordinate expectedCoordinate = new Coordinate(latitude, longitude);
         assertThat(minDistanceCoordinate).isEqualTo(expectedCoordinate);

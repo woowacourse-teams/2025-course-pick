@@ -42,7 +42,7 @@ class GeoLineTest {
             Coordinate target = new Coordinate(-5.0, 0.0);
             GeoLine geoLine = new GeoLine(start, end);
 
-            Coordinate result = geoLine.minDistanceCoordinateTo(target);
+            Coordinate result = geoLine.closestCoordinateFrom(target);
 
             assertThat(start).isEqualTo(result);
         }
@@ -55,7 +55,7 @@ class GeoLineTest {
 
             GeoLine geoLine = new GeoLine(start, end);
 
-            Coordinate result = geoLine.minDistanceCoordinateTo(target);
+            Coordinate result = geoLine.closestCoordinateFrom(target);
 
             assertThat(end).isEqualTo(result);
         }
@@ -72,7 +72,7 @@ class GeoLineTest {
             Coordinate target = new Coordinate(targetLatitude, targetLongitude);
             GeoLine geoLine = new GeoLine(start, end);
 
-            Coordinate result = geoLine.minDistanceCoordinateTo(target);
+            Coordinate result = geoLine.closestCoordinateFrom(target);
 
             Coordinate expectedCoordinate = new Coordinate(latitude, longitude);
             assertThat(result).isEqualTo(expectedCoordinate);

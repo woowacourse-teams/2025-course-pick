@@ -27,7 +27,7 @@ public record GeoLine(
         return new Meter(distanceInMeters);
     }
 
-    public Coordinate minDistanceCoordinateTo(Coordinate target) {
+    public Coordinate closestCoordinateFrom(Coordinate target) {
         double projectionRatio = target.projectionRatioBetween(start, end);
         if (projectionRatio < 0) {
             return start;
