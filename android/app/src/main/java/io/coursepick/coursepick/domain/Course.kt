@@ -6,6 +6,8 @@ data class Course(
     val distance: Distance,
     val length: Length,
     val coordinates: List<Coordinate>,
+    val type: String?,
+    val difficulty: CourseDifficulty,
 ) {
     init {
         require(coordinates.isNotEmpty())
