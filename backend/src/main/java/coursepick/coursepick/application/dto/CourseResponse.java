@@ -21,7 +21,7 @@ public record CourseResponse(
                 course.id(),
                 course.name(),
                 course.coordinates(),
-                course.minDistanceFrom(target),
+                course.distanceFrom(target),
                 course.length(),
                 course.roadType(),
                 course.difficulty()

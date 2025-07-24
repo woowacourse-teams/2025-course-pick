@@ -1,9 +1,13 @@
 package coursepick.coursepick.application;
 
 import coursepick.coursepick.application.dto.CourseResponse;
+import coursepick.coursepick.application.exception.NotFoundException;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
+import coursepick.coursepick.test_util.DatabaseCleaner;
 import coursepick.coursepick.test_util.DatabaseInserter;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,6 +24,14 @@ class CourseApplicationServiceTest {
 
     @Autowired
     DatabaseInserter databaseInserter;
+
+    @Autowired
+    DatabaseCleaner databaseCleaner;
+
+    @AfterEach
+    void tearDown() {
+        databaseCleaner.deleteCourses();
+    }
 
     @Test
     void 가까운_코스들을_조회한다() {
@@ -52,8 +64,27 @@ class CourseApplicationServiceTest {
         assertThat(courses).hasSize(2)
                 .extracting(CourseResponse::name)
                 .containsExactlyInAnyOrder(course1.name(), course2.name());
-        assertThat(course1.minDistanceFrom(new Coordinate(latitude, longitude)).value()).isLessThan(1000.0);
-        assertThat(course2.minDistanceFrom(new Coordinate(latitude, longitude)).value()).isLessThan(1000.0);
-        assertThat(course3.minDistanceFrom(new Coordinate(latitude, longitude)).value()).isGreaterThan(1000.0);
+        assertThat(course1.distanceFrom(new Coordinate(latitude, longitude)).value()).isLessThan(1000.0);
+        assertThat(course2.distanceFrom(new Coordinate(latitude, longitude)).value()).isLessThan(1000.0);
+        assertThat(course3.distanceFrom(new Coordinate(latitude, longitude)).value()).isGreaterThan(1000.0);
+    }
+
+    @Test
+    void 코스의_좌표_중에서_가장_가까운_좌표를_계산한다() {
+        Course course = new Course("한강 러닝 코스", List.of(
+                new Coordinate(0, 0),
+                new Coordinate(10, 10),
+                new Coordinate(0, 0)
+        ));
+        databaseInserter.saveCourse(course);
+        Coordinate result = sut.findClosestCoordinate(course.id(), 5, 0);
+
+        assertThat(result).isEqualTo(new Coordinate(2.5, 2.5));
+    }
+
+    @Test
+    void 코스가_존재하지_않을_경우_예외가_발생한다() {
+        Assertions.assertThatThrownBy(() -> sut.findClosestCoordinate(1L, 0, 0))
+                .isInstanceOf(NotFoundException.class);
     }
 }

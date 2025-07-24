@@ -12,8 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-import static coursepick.coursepick.application.exception.ErrorType.INVALID_LATITUDE_RANGE;
-import static coursepick.coursepick.application.exception.ErrorType.INVALID_LONGITUDE_RANGE;
+import static coursepick.coursepick.application.exception.ErrorType.*;
 
 @OpenAPIDefinition(
         info = @Info(title = "코스픽 API", version = "1.0.0"),
@@ -42,6 +41,13 @@ public class OpenApiConfig {
                             "timestamp", TIMESTAMP
                     ));
             components.addExamples(INVALID_LONGITUDE_RANGE.name(), example);
+
+            example = new Example()
+                    .value(Map.of(
+                            "message", NOT_EXIST_COURSE.message(99999),
+                            "timestamp", TIMESTAMP
+                    ));
+            components.addExamples(NOT_EXIST_COURSE.name(), example);
         };
     }
 }

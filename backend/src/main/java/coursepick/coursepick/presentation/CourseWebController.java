@@ -2,11 +2,14 @@ package coursepick.coursepick.presentation;
 
 import coursepick.coursepick.application.CourseApplicationService;
 import coursepick.coursepick.application.dto.CourseResponse;
+import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.presentation.api.CourseWebApi;
+import coursepick.coursepick.presentation.dto.CoordinateResponse;
 import coursepick.coursepick.presentation.dto.GeoJson;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,6 +55,17 @@ public class CourseWebController implements CourseWebApi {
         return GeoJson.from(responses);
     }
 
+    @Override
+    @GetMapping("/courses/{id}/closest-coordinate")
+    public CoordinateResponse findClosestCoordinate(
+            @PathVariable("id") long id,
+            @RequestParam("lat") double latitude,
+            @RequestParam("lng") double longitude
+    ) {
+        Coordinate coordinate = courseApplicationService.findClosestCoordinate(id, latitude, longitude);
+        return CoordinateResponse.from(coordinate);
+    }
+  
     private void validateAdminToken(String token) {
         if (adminToken.isEmpty() || !adminToken.equals(token)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "올바르지 않은 어드민 토큰값 입니다.");
