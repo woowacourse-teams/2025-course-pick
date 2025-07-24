@@ -15,7 +15,7 @@ object Services {
         } else {
             HttpLoggingInterceptor.Level.NONE
         }
-    private val interceptor = HttpLoggingInterceptor().setLevel(loggingLevel)
+    private val interceptor = HttpLoggingInterceptor(PrettyPrintLogger()).setLevel(loggingLevel)
 
     private val client: OkHttpClient = OkHttpClient.Builder().addInterceptor(interceptor).build()
 
