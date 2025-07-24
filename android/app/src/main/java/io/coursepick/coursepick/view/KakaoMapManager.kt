@@ -41,29 +41,18 @@ class KakaoMapManager(
                 0,
                 mapView.context.resources.getDimensionPixelSize(R.dimen.main_bottom_sheet_peek_height),
             )
-            moveTo(
-                Coordinate(
-                    Latitude(DEFAULT_LATITUDE_VALUE),
-                    Longitude(DEFAULT_LONGITUDE_VALUE),
-                ),
+            showCurrentLocation()
+            locationProvider.fetchCurrentLocation(
+                onSuccess = { location: Location ->
+                    onMapReady(
+                        Coordinate(
+                            Latitude(location.latitude),
+                            Longitude(location.longitude),
+                        ),
+                    )
+                },
+                onFailure = {},
             )
-
-            val locationManager =
-                mapView.context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            if (locationManager.isLocationEnabled) {
-                showCurrentLocation()
-                locationProvider.fetchCurrentLocation(
-                    onSuccess = { location: Location ->
-                        onMapReady(
-                            Coordinate(
-                                Latitude(location.latitude),
-                                Longitude(location.longitude),
-                            ),
-                        )
-                    },
-                    onFailure = {},
-                )
-            }
         }
     }
 
@@ -85,7 +74,7 @@ class KakaoMapManager(
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    fun showCurrentLocation() {
+    private fun showCurrentLocation() {
         locationProvider.fetchCurrentLocation(
             onSuccess = { location: Location ->
                 kakaoMap?.let { map: KakaoMap ->
