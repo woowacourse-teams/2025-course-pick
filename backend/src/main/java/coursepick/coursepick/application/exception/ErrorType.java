@@ -8,6 +8,7 @@ public enum ErrorType {
     INVALID_COORDINATE_COUNT("코스는 2개 이상의 좌표로 구성되어야 합니다. 현재 개수=%s"),
     NOT_CONNECTED_COURSE("코스는 첫 좌표와 끝 좌표가 동일해야 합니다. 첫 좌표=%s, 끝 좌표=%s"),
     NOT_EXIST_COURSE("코스가 존재하지 않습니다. 코스id=%d"),
+    INVALID_FILE_EXTENSION("파싱할 수 없는 파일 확장자입니다."),
     ;
 
     private final String message;

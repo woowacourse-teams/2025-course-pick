@@ -4,9 +4,12 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import static coursepick.coursepick.application.exception.ErrorType.*;
+import static coursepick.coursepick.application.exception.ErrorType.INVALID_COORDINATE_COUNT;
+import static coursepick.coursepick.application.exception.ErrorType.INVALID_NAME_LENGTH;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
@@ -30,11 +33,11 @@ public class Course {
         String compactName = compactName(name);
         validateNameLength(compactName);
         validateCoordinatesCount(coordinates);
-        validateFirstLastCoordinateHasSameLatitudeAndLongitude(coordinates);
+
         this.id = null;
         this.name = compactName;
         this.roadType = roadType;
-        this.coordinates = coordinates;
+        this.coordinates = sortByCounterClockwise(connectStartEndCoordinate(coordinates));
     }
 
     public Course(String name, List<Coordinate> coordinates) {
@@ -123,11 +126,42 @@ public class Course {
         }
     }
 
-    private static void validateFirstLastCoordinateHasSameLatitudeAndLongitude(List<Coordinate> coordinates) {
-        Coordinate first = coordinates.getFirst();
-        Coordinate last = coordinates.getLast();
-        if (!first.hasSameLatitudeAndLongitude(last)) {
-            throw new IllegalArgumentException(NOT_CONNECTED_COURSE.message(first, last));
+    private List<Coordinate> connectStartEndCoordinate(List<Coordinate> coordinates) {
+        if (isFirstAndLastCoordinateDifferent(coordinates)) {
+            coordinates = new ArrayList<>(coordinates);
+            coordinates.add(coordinates.getFirst());
         }
+        return coordinates;
+    }
+
+    private static boolean isFirstAndLastCoordinateDifferent(List<Coordinate> coordinates) {
+        return !coordinates.getFirst().hasSameLatitudeAndLongitude(coordinates.getLast());
+    }
+
+    private static List<Coordinate> sortByCounterClockwise(List<Coordinate> coordinates) {
+        int lowestCoordinateIndex = findLowestCoordinateIndex(coordinates);
+        List<Coordinate> counterClockWiseCoordinates = new ArrayList<>(coordinates);
+        if (isClockwise(coordinates, lowestCoordinateIndex)) {
+            Collections.reverse(counterClockWiseCoordinates);
+        }
+        return counterClockWiseCoordinates;
+    }
+
+    private static int findLowestCoordinateIndex(List<Coordinate> coordinates) {
+        int lowestCoordinateIndex = 0;
+        double lowestLatitude = Double.MAX_VALUE;
+        for (int i = 0; i < coordinates.size(); i++) {
+            Coordinate coordinate = coordinates.get(i);
+            if (coordinate.latitude() < lowestLatitude) {
+                lowestLatitude = coordinate.latitude();
+                lowestCoordinateIndex = i;
+            }
+        }
+        return lowestCoordinateIndex;
+    }
+
+    private static boolean isClockwise(List<Coordinate> coordinates, int lowestCoordinateIndex) {
+        int nextIndex = (lowestCoordinateIndex + 1) % (coordinates.size() - 1);
+        return coordinates.get(lowestCoordinateIndex).isRightOf(coordinates.get(nextIndex));
     }
 }
