@@ -32,28 +32,21 @@ class MainActivity : AppCompatActivity() {
                     viewModel.select(course)
                 }
 
-                @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+                @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
                 override fun navigate(course: CourseItem) {
                     mapManager.fetchCurrentLocation(
-                        onSuccess = { latitude, longitude ->
-                            val url =
-                                viewModel.navigate(
-                                    selectedCourse = course,
-                                    location =
+                        onSuccess = { latitude: Latitude, longitude: Longitude ->
+                            val navigationUri =
+                                viewModel
+                                    .navigationUrl(
+                                        course,
                                         Coordinate(
-                                            latitude = latitude,
-                                            longitude = longitude,
+                                            latitude,
+                                            longitude,
                                         ),
-                                )
+                                    ).toUri()
 
-                            if (url.isBlank()) {
-                                Toast
-                                    .makeText(this@MainActivity, "유효하지 않은 URL", Toast.LENGTH_SHORT)
-                                    .show()
-                                return@fetchCurrentLocation
-                            }
-
-                            val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+                            val intent = Intent(Intent.ACTION_VIEW, navigationUri)
                             startActivity(intent)
                         },
                         onFailure = {

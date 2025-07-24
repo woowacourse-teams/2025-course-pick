@@ -41,7 +41,7 @@ class MainViewModel(
         _event.value = MainUiEvent.SelectNewCourse(selectedCourse)
     }
 
-    fun navigate(
+    fun navigationUrl(
         selectedCourse: CourseItem,
         location: Coordinate,
     ): String {
