@@ -41,6 +41,16 @@ class MainViewModel(
         _event.value = MainUiEvent.SelectNewCourse(selectedCourse)
     }
 
+    fun navigationUrl(
+        selectedCourse: CourseItem,
+        location: Coordinate,
+    ): String {
+        val end: Coordinate = selectedCourse.coordinates[0]
+        val startName = "현재 위치"
+        return "https://map.kakao.com/link/by/walk/" +
+            "$startName,${location.latitude.value},${location.longitude.value}/${selectedCourse.name},${end.latitude.value},${end.longitude.value}"
+    }
+
     fun fetchCourses(coordinate: Coordinate) {
         viewModelScope.launch {
             runCatching {
