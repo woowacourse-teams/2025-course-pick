@@ -36,7 +36,7 @@ public class Course {
         this.id = null;
         this.name = compactName;
         this.roadType = roadType;
-        this.coordinates = arrangeToCounterClockwise(coordinates);
+        this.coordinates = sortByCounterClockwise(coordinates);
     }
 
     public Course(String name, List<Coordinate> coordinates) {
@@ -124,7 +124,7 @@ public class Course {
         }
     }
 
-    private static List<Coordinate> arrangeToCounterClockwise(List<Coordinate> coordinates) {
+    private static List<Coordinate> sortByCounterClockwise(List<Coordinate> coordinates) {
         int lowestCoordinateIndex = findLowestCoordinateIndex(coordinates);
         List<Coordinate> counterClockWiseCoordinates = new ArrayList<>(coordinates);
         if (isClockwise(coordinates, lowestCoordinateIndex)) {
