@@ -44,7 +44,12 @@ class MainViewModel(
     fun navigate(
         selectedCourse: CourseItem,
         location: Coordinate,
-    ): String = url(location, selectedCourse.coordinates[0], selectedCourse.name)
+    ): String {
+        val end: Coordinate = selectedCourse.coordinates[0]
+        val startName = "현재 위치"
+        return "https://map.kakao.com/link/by/walk/" +
+            "$startName,${location.latitude.value},${location.longitude.value}/${selectedCourse.name},${end.latitude.value},${end.longitude.value}"
+    }
 
     fun fetchCourses(coordinate: Coordinate) {
         viewModelScope.launch {
@@ -66,16 +71,6 @@ class MainViewModel(
                 _event.value = MainUiEvent.FetchCourseFailure
             }
         }
-    }
-
-    private fun url(
-        start: Coordinate,
-        end: Coordinate,
-        endName: String,
-    ): String {
-        val startName = "현재 위치"
-        return "https://map.kakao.com/link/by/walk/" +
-            "$startName,${start.latitude.value},${start.longitude.value}/$endName,${end.latitude.value},${end.longitude.value}"
     }
 
     private fun newCourses(
