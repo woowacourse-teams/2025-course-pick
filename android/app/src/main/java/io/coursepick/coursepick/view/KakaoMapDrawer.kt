@@ -2,6 +2,7 @@ package io.coursepick.coursepick.view
 
 import android.content.Context
 import android.location.Location
+import androidx.annotation.DrawableRes
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.label.LabelLayer
@@ -41,10 +42,13 @@ class KakaoMapDrawer(
 
     fun draw(
         map: KakaoMap,
+        @DrawableRes
+        iconResourceId: Int,
         coordinate: Coordinate,
     ) {
         draw(
             map,
+            iconResourceId,
             coordinate.latitude.value,
             coordinate.longitude.value,
         )
@@ -52,23 +56,33 @@ class KakaoMapDrawer(
 
     fun draw(
         map: KakaoMap,
+        @DrawableRes
+        iconResourceId: Int,
         location: Location,
     ) {
         draw(
             map,
+            iconResourceId,
             location.latitude,
             location.longitude,
         )
     }
 
+    fun removeAllLabels(map: KakaoMap) {
+        val layer: LabelLayer = map.labelManager?.layer ?: return
+        layer.removeAll()
+    }
+
     private fun draw(
         map: KakaoMap,
+        @DrawableRes
+        iconResourceId: Int,
         latitude: Double,
         longitude: Double,
     ) {
         val labelManager: LabelManager = map.labelManager ?: return
         val styles: LabelStyles =
-            labelManager.addLabelStyles(LabelStyles.from(LabelStyle.from(R.drawable.image_current_location)))
+            labelManager.addLabelStyles(LabelStyles.from(LabelStyle.from(iconResourceId)))
                 ?: return
         val options: LabelOptions =
             LabelOptions
