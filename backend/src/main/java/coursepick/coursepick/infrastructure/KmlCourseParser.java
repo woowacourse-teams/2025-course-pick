@@ -98,10 +98,6 @@ public class KmlCourseParser implements CourseParser {
             }
         }
 
-        if (!coordinates.getFirst().hasSameLatitudeAndLongitude(coordinates.getLast())) {
-            coordinates.add(coordinates.getFirst());
-        }
-
         return coordinates;
     }
 }
