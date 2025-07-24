@@ -2,6 +2,9 @@ package io.coursepick.coursepick.view
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
+import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -25,7 +28,8 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(viewModel::select) }
     private val doublePressDetector = DoublePressDetector()
-    private val mapManager by lazy { KakaoMapManager(binding.mainMap) }
+    private val locationProvider by lazy { LocationProvider(binding.mainMap.context) }
+    private val mapManager by lazy { KakaoMapManager(binding.mainMap, locationProvider) }
     private val onSearchThisAreaListener: OnSearchThisAreaListener =
         object : OnSearchThisAreaListener {
             override fun search() {
@@ -69,7 +73,21 @@ class MainActivity : AppCompatActivity() {
         requestLocationPermissions()
 
         mapManager.start {
-            viewModel.fetchCourses()
+            val locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            if (locationManager.isLocationEnabled) {
+                mapManager.showCurrentLocation()
+                locationProvider.fetchCurrentLocation(
+                    onSuccess = { location: Location ->
+                        viewModel.fetchCourses(
+                            Coordinate(
+                                Latitude(location.latitude),
+                                Longitude(location.longitude),
+                            ),
+                        )
+                    },
+                    onFailure = {},
+                )
+            }
         }
     }
 

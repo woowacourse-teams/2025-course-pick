@@ -13,7 +13,7 @@ import io.coursepick.coursepick.domain.Coordinate
 
 class KakaoMapManager(
     private val mapView: MapView,
-    private val locationProvider: LocationProvider = LocationProvider(mapView.context),
+    private val locationProvider: LocationProvider,
 ) {
     private val lifecycleHandler = KakaoMapLifecycleHandler(mapView)
     private val cameraController = KakaoMapCameraController()
@@ -39,7 +39,6 @@ class KakaoMapManager(
                 0,
                 mapView.context.resources.getDimensionPixelSize(R.dimen.main_bottom_sheet_peek_height),
             )
-            showCurrentLocation()
             onMapReady(map)
         }
     }
