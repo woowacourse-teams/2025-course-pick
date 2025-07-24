@@ -10,6 +10,8 @@ import com.kakao.vectormap.MapGravity
 import com.kakao.vectormap.MapView
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.Coordinate
+import io.coursepick.coursepick.domain.Latitude
+import io.coursepick.coursepick.domain.Longitude
 
 class KakaoMapManager(
     private val mapView: MapView,
@@ -39,6 +41,12 @@ class KakaoMapManager(
                 0,
                 mapView.context.resources.getDimensionPixelSize(R.dimen.main_bottom_sheet_peek_height),
             )
+            moveTo(
+                Coordinate(
+                    Latitude(DEFAULT_LATITUDE_VALUE),
+                    Longitude(DEFAULT_LONGITUDE_VALUE),
+                ),
+            )
             onMapReady(map)
         }
     }
@@ -57,6 +65,15 @@ class KakaoMapManager(
         val padding = mapView.context.resources.getDimensionPixelSize(R.dimen.course_route_padding)
         kakaoMap?.let { map: KakaoMap ->
             cameraController.fitTo(map, course.coordinates, padding)
+        }
+    }
+
+    fun moveTo(coordinate: Coordinate) {
+        kakaoMap?.let { map: KakaoMap ->
+            cameraController.moveTo(
+                map,
+                coordinate,
+            )
         }
     }
 
@@ -108,5 +125,10 @@ class KakaoMapManager(
 
     fun stopTrackingCurrentLocation() {
         locationProvider.stopLocationUpdates()
+    }
+
+    companion object {
+        private const val DEFAULT_LATITUDE_VALUE = 37.515293
+        private const val DEFAULT_LONGITUDE_VALUE = 127.102987
     }
 }
