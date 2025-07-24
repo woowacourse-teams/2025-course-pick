@@ -44,6 +44,10 @@ public record Coordinate(
         return new Coordinate(this.latitude + latitudeDelta, this.longitude + longitudeDelta);
     }
 
+    public boolean isRightOf(Coordinate other) {
+        return other.longitude < this.longitude;
+    }
+
     private static void validateLatitudeRange(double roundedLatitude) {
         if (roundedLatitude < -90 || roundedLatitude > 90) {
             throw new IllegalArgumentException(ErrorType.INVALID_LATITUDE_RANGE.message(roundedLatitude));
