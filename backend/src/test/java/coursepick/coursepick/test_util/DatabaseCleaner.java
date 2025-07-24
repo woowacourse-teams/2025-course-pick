@@ -13,7 +13,7 @@ public class DatabaseCleaner {
 
     @Transactional
     public void deleteCourses() {
-        entityManager.createQuery("DELETE FROM Course");
+        entityManager.createQuery("DELETE FROM Course").executeUpdate();
     }
 
 }

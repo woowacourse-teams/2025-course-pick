@@ -84,7 +84,7 @@ class CourseApplicationServiceTest {
 
     @Test
     void 코스가_존재하지_않을_경우_예외가_발생한다() {
-        Assertions.assertThatThrownBy(() -> sut.findClosestCoordinate(999999L, 0, 0))
+        Assertions.assertThatThrownBy(() -> sut.findClosestCoordinate(1L, 0, 0))
                 .isInstanceOf(NotFoundException.class);
     }
 }
