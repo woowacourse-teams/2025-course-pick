@@ -6,12 +6,12 @@ import androidx.recyclerview.widget.ListAdapter
 import io.coursepick.coursepick.view.CourseViewHolder.Companion.CourseViewHolder
 
 class CourseAdapter(
-    private val onSelectCourseListener: OnSelectCourseListener,
+    private val selectCourseListener: SelectCourseListener,
 ) : ListAdapter<CourseItem, CourseViewHolder>(diffUtil) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
-    ): CourseViewHolder = CourseViewHolder(parent, onSelectCourseListener)
+    ): CourseViewHolder = CourseViewHolder(parent, selectCourseListener)
 
     override fun onBindViewHolder(
         holder: CourseViewHolder,

@@ -7,10 +7,10 @@ import io.coursepick.coursepick.databinding.ItemCourseBinding
 
 class CourseViewHolder private constructor(
     private val binding: ItemCourseBinding,
-    onSelectCourseListener: OnSelectCourseListener,
+    selectCourseListener: SelectCourseListener,
 ) : RecyclerView.ViewHolder(binding.root) {
     init {
-        binding.onSelectCourseListener = onSelectCourseListener
+        binding.onSelectCourseListener = selectCourseListener
     }
 
     fun bind(course: CourseItem) {
@@ -20,11 +20,11 @@ class CourseViewHolder private constructor(
     companion object {
         fun CourseViewHolder(
             root: ViewGroup,
-            onSelectCourseListener: OnSelectCourseListener,
+            selectCourseListener: SelectCourseListener,
         ): CourseViewHolder {
             val layoutInflater = LayoutInflater.from(root.context)
             val binding = ItemCourseBinding.inflate(layoutInflater, root, false)
-            return CourseViewHolder(binding, onSelectCourseListener)
+            return CourseViewHolder(binding, selectCourseListener)
         }
     }
 }
