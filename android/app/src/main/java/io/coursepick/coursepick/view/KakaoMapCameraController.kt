@@ -11,13 +11,6 @@ import io.coursepick.coursepick.domain.Coordinate
 class KakaoMapCameraController {
     fun moveTo(
         map: KakaoMap,
-        coordinate: Coordinate,
-    ) {
-        moveTo(map, coordinate.latitude.value, coordinate.longitude.value)
-    }
-
-    fun moveTo(
-        map: KakaoMap,
         location: Location,
     ) {
         moveTo(map, location.latitude, location.longitude)
