@@ -28,6 +28,8 @@ data class GetCoursesResponseItem(
         val name: String?,
         val distance: Double?,
         val length: Double?,
+        val roadType: String?,
+        val difficulty: Double?,
     )
 
     fun toCourseOrNull(): Course? {
@@ -46,14 +48,17 @@ data class GetCoursesResponseItem(
             distance = Distance(properties.distance?.toInt() ?: return null),
             length = Length(properties.length?.toInt() ?: return null),
             coordinates = coordinates,
+            type = properties.roadType.takeUnless { type: String? -> type == "알수없음" },
+            difficulty = properties.difficulty.toCourseDifficulty(),
         )
     }
 
-    private fun Double.toCourseDifficultyOrNull(): CourseDifficulty? =
+    private fun Double?.toCourseDifficulty(): CourseDifficulty =
         when {
+            this == null -> CourseDifficulty.UNKNOWN
             this > 0.0 && this < 3.0 -> CourseDifficulty.EASY
             this >= 3.0 && this < 6.0 -> CourseDifficulty.NORMAL
             this >= 6.0 && this < 10.0 -> CourseDifficulty.HARD
-            else -> null
+            else -> CourseDifficulty.UNKNOWN
         }
 }
