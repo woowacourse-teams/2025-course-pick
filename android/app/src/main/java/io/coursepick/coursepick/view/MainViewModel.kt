@@ -8,8 +8,6 @@ import io.coursepick.coursepick.data.DefaultCourseRepository
 import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.Course
 import io.coursepick.coursepick.domain.CourseRepository
-import io.coursepick.coursepick.domain.Latitude
-import io.coursepick.coursepick.domain.Longitude
 import kotlinx.coroutines.launch
 
 class MainViewModel(
@@ -43,13 +41,7 @@ class MainViewModel(
         _event.value = MainUiEvent.SelectNewCourse(selectedCourse)
     }
 
-    fun fetchCourses(
-        coordinate: Coordinate =
-            Coordinate(
-                Latitude(DEFAULT_LATITUDE_VALUE),
-                Longitude(DEFAULT_LONGITUDE_VALUE),
-            ),
-    ) {
+    fun fetchCourses(coordinate: Coordinate) {
         viewModelScope.launch {
             runCatching {
                 courseRepository.courses(coordinate.latitude, coordinate.longitude)
@@ -82,9 +74,4 @@ class MainViewModel(
                 course.copy(selected = false)
             }
         }
-
-    companion object {
-        private const val DEFAULT_LATITUDE_VALUE = 37.5165004
-        private const val DEFAULT_LONGITUDE_VALUE = 127.1040109
-    }
 }
