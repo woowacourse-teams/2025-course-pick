@@ -7,7 +7,8 @@ public enum ErrorType {
     INVALID_NAME_LENGTH("이름은 2-30자 사이이어야 합니다. 입력값=%s"),
     INVALID_COORDINATE_COUNT("코스는 2개 이상의 좌표로 구성되어야 합니다. 현재 개수=%s"),
     NOT_CONNECTED_COURSE("코스는 첫 좌표와 끝 좌표가 동일해야 합니다. 첫 좌표=%s, 끝 좌표=%s"),
-    NOT_EXIST_COURSE("코스가 존재하지 않습니다. 코스id=%d");
+    NOT_EXIST_COURSE("코스가 존재하지 않습니다. 코스id=%d"),
+    ;
 
     private final String message;
 
