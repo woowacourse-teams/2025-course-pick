@@ -147,6 +147,7 @@ public class Course {
     }
 
     private static boolean isClockwise(List<Coordinate> coordinates, int lowestCoordinateIndex) {
-        return coordinates.get(lowestCoordinateIndex).isRightOf(coordinates.get(lowestCoordinateIndex + 1));
+        int nextIndex = (lowestCoordinateIndex + 1) % (coordinates.size() - 1);
+        return coordinates.get(lowestCoordinateIndex).isRightOf(coordinates.get(nextIndex));
     }
 }
