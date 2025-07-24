@@ -27,16 +27,15 @@ public record GeoLine(
         return new Meter(distanceInMeters);
     }
 
-    public Meter distanceTo(Coordinate target) {
+    public Coordinate closestCoordinateFrom(Coordinate target) {
         double projectionRatio = target.projectionRatioBetween(start, end);
         if (projectionRatio < 0) {
-            return GeoLine.between(target, start).length();
+            return start;
         }
         if (projectionRatio > 1) {
-            return GeoLine.between(target, end).length();
+            return end;
         }
-        Coordinate closestCoordinate = start.moveTo(end, projectionRatio);
-        return GeoLine.between(target, closestCoordinate).length();
+        return start.moveTo(end, projectionRatio);
     }
 
     private static double convertDegreeToMeter(double distanceInDegrees) {

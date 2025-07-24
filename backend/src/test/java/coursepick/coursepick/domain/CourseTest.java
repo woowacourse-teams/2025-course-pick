@@ -141,7 +141,7 @@ class CourseTest {
         ));
         var target = new Coordinate(latitude, longitude);
 
-        var distance = course.minDistanceFrom(target);
+        var distance = course.distanceFrom(target);
 
         assertThat((int) distance.value()).isEqualTo(expectedDistance);
     }
@@ -155,7 +155,7 @@ class CourseTest {
         ));
         var target = new Coordinate(37.5, 127.0005); // 코스 선분의 중점
 
-        var distance = course.minDistanceFrom(target);
+        var distance = course.distanceFrom(target);
 
         assertThat(distance.value()).isLessThan(1.0);
     }
@@ -170,7 +170,7 @@ class CourseTest {
         ));
         var target = new Coordinate(37.5, 127.0);
 
-        var distance = course.minDistanceFrom(target);
+        var distance = course.distanceFrom(target);
 
         assertThat(distance.value()).isEqualTo(0.0);
     }
@@ -186,7 +186,7 @@ class CourseTest {
         ));
         var target = new Coordinate(37.5005, 127.0005); // 사각형 중앙
 
-        var distance = course.minDistanceFrom(target);
+        var distance = course.distanceFrom(target);
 
         assertThat((int) distance.value()).isEqualTo(44);
     }
@@ -202,7 +202,7 @@ class CourseTest {
         ));
         var target = new Coordinate(37.52, 127.02); // 매우 멀리 떨어진 점
 
-        var distance = course.minDistanceFrom(target);
+        var distance = course.distanceFrom(target);
 
         assertThat((int) distance.value()).isEqualTo(2829);
     }
@@ -223,9 +223,30 @@ class CourseTest {
         ));
         var target = new Coordinate(latitude, longitude);
 
-        var distance = course.minDistanceFrom(target);
+        var distance = course.distanceFrom(target);
 
         assertThat((int) distance.value()).isEqualTo(expectedDistance);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "-10, -10, 0, 0",
+            "20, 20, 10, 10",
+            "10, 0, 5, 5",
+            "5, 0, 2.5, 2.5"
+    })
+    void 코스의_좌표_중에서_가장_가까운_좌표를_계산한다(double targetLatitude, double targetLongitude, double latitude, double longitude) {
+        Course course = new Course("왕복코스", List.of(
+                new Coordinate(0, 0),
+                new Coordinate(10, 10.0),
+                new Coordinate(0, 0)
+        ));
+        Coordinate target = new Coordinate(targetLatitude, targetLongitude);
+
+        Coordinate minDistanceCoordinate = course.closestCoordinateFrom(target);
+
+        Coordinate expectedCoordinate = new Coordinate(latitude, longitude);
+        assertThat(minDistanceCoordinate).isEqualTo(expectedCoordinate);
     }
 
     @ParameterizedTest

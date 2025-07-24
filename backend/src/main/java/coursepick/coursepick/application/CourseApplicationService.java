@@ -2,6 +2,7 @@ package coursepick.coursepick.application;
 
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.exception.ErrorType;
+import coursepick.coursepick.application.exception.NotFoundException;
 import coursepick.coursepick.domain.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,5 +52,13 @@ public class CourseApplicationService {
         return courseRepository.findAllHasDistanceWithin(target, new Meter(1000)).stream()
                 .map(course -> CourseResponse.from(course, target))
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Coordinate findClosestCoordinate(long id, double latitude, double longitude) {
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorType.NOT_EXIST_COURSE.message(id)));
+
+        return course.closestCoordinateFrom(new Coordinate(latitude, longitude));
     }
 }
