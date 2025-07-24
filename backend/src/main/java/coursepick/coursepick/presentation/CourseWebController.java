@@ -32,9 +32,7 @@ public class CourseWebController implements CourseWebApi {
             @RequestParam("adminToken") String token,
             @RequestParam("file") MultipartFile file
     ) {
-        if (adminToken.isEmpty() || !adminToken.equals(token)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "올바르지 않은 어드민 토큰값 입니다.");
-        }
+        validateAdminToken(token);
 
         try {
             String fileExtension = StringUtils.getFilenameExtension(file.getOriginalFilename());
@@ -52,5 +50,11 @@ public class CourseWebController implements CourseWebApi {
     ) {
         List<CourseResponse> responses = courseApplicationService.findNearbyCourses(latitude, longitude);
         return GeoJson.from(responses);
+    }
+
+    private void validateAdminToken(String token) {
+        if (adminToken.isEmpty() || !adminToken.equals(token)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "올바르지 않은 어드민 토큰값 입니다.");
+        }
     }
 }
