@@ -1,6 +1,7 @@
 package coursepick.coursepick.application;
 
 import coursepick.coursepick.application.dto.CourseResponse;
+import coursepick.coursepick.application.exception.NotFoundException;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
 import coursepick.coursepick.test_util.DatabaseCleaner;
@@ -84,6 +85,6 @@ class CourseApplicationServiceTest {
     @Test
     void 코스가_존재하지_않을_경우_예외가_발생한다() {
         Assertions.assertThatThrownBy(() -> sut.findClosestCoordinate(999999L, 0, 0))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(NotFoundException.class);
     }
 }
