@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static coursepick.coursepick.application.exception.ErrorType.*;
@@ -34,7 +36,7 @@ public class Course {
         this.id = null;
         this.name = compactName;
         this.roadType = roadType;
-        this.coordinates = coordinates;
+        this.coordinates = arrangeToCounterClockwise(coordinates);
     }
 
     public Course(String name, List<Coordinate> coordinates) {
@@ -120,5 +122,31 @@ public class Course {
         if (!first.hasSameLatitudeAndLongitude(last)) {
             throw new IllegalArgumentException(NOT_CONNECTED_COURSE.message(first, last));
         }
+    }
+
+    private static List<Coordinate> arrangeToCounterClockwise(List<Coordinate> coordinates) {
+        int lowestCoordinateIndex = findLowestCoordinateIndex(coordinates);
+        List<Coordinate> counterClockWiseCoordinates = new ArrayList<>(coordinates);
+        if (isClockwise(coordinates, lowestCoordinateIndex)) {
+            Collections.reverse(counterClockWiseCoordinates);
+        }
+        return counterClockWiseCoordinates;
+    }
+
+    private static int findLowestCoordinateIndex(List<Coordinate> coordinates) {
+        int lowestCoordinateIndex = 0;
+        double lowestLatitude = Double.MAX_VALUE;
+        for (int i = 0; i < coordinates.size(); i++) {
+            Coordinate coordinate = coordinates.get(i);
+            if (coordinate.latitude() < lowestLatitude) {
+                lowestLatitude = coordinate.latitude();
+                lowestCoordinateIndex = i;
+            }
+        }
+        return lowestCoordinateIndex;
+    }
+
+    private static boolean isClockwise(List<Coordinate> coordinates, int lowestCoordinateIndex) {
+        return coordinates.get(lowestCoordinateIndex).isRightOf(coordinates.get(lowestCoordinateIndex + 1));
     }
 }
