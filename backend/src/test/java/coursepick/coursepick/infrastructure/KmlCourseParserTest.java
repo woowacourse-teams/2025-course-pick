@@ -5,8 +5,10 @@ import coursepick.coursepick.domain.Course;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -39,10 +41,9 @@ class KmlCourseParserTest {
                 </kml>
                 """;
 
-        Path kmlFile = tempDir.resolve("test.kml");
-        Files.writeString(kmlFile, kmlContent);
+        InputStream inputStream = new ByteArrayInputStream(kmlContent.getBytes(StandardCharsets.UTF_8));
 
-        List<Course> courses = sut.parse(kmlFile.toString());
+        List<Course> courses = sut.parse(inputStream);
 
         assertThat(courses).hasSize(1);
 
@@ -75,11 +76,9 @@ class KmlCourseParserTest {
                 </Document>
                 </kml>
                 """;
+        InputStream inputStream = new ByteArrayInputStream(kmlContent.getBytes(StandardCharsets.UTF_8));
 
-        Path kmlFile = tempDir.resolve("test.kml");
-        Files.writeString(kmlFile, kmlContent);
-
-        List<Course> courses = sut.parse(kmlFile.toString());
+        List<Course> courses = sut.parse(inputStream);
 
         assertThat(courses).isEmpty();
     }
@@ -96,11 +95,9 @@ class KmlCourseParserTest {
                 </Document>
                 </kml>
                 """;
+        InputStream inputStream = new ByteArrayInputStream(kmlContent.getBytes(StandardCharsets.UTF_8));
 
-        Path kmlFile = tempDir.resolve("test.kml");
-        Files.writeString(kmlFile, kmlContent);
-
-        List<Course> courses = sut.parse(kmlFile.toString());
+        List<Course> courses = sut.parse(inputStream);
 
         assertThat(courses).isEmpty();
     }

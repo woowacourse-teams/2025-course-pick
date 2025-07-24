@@ -28,6 +28,8 @@ dependencies {
     runtimeOnly("com.h2database:h2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
+    implementation("io.jenetics:jpx:3.2.1")
+
     // Geographic libraries for comparison
     implementation("org.locationtech.spatial4j:spatial4j:0.8")
 
