@@ -1,7 +1,12 @@
 package io.coursepick.coursepick.view
 
+import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.Course
+import io.coursepick.coursepick.domain.Latitude
+import io.coursepick.coursepick.domain.Longitude
 import io.coursepick.coursepick.view.fixtures.COURSE_20
+import io.coursepick.coursepick.view.fixtures.DEFAULT_LATITUDE_VALUE
+import io.coursepick.coursepick.view.fixtures.DEFAULT_LONGITUDE_VALUE
 import io.coursepick.coursepick.view.fixtures.FAKE_COURSES
 import io.coursepick.coursepick.view.fixtures.FakeRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,6 +25,12 @@ class MainViewModelTest {
     @BeforeEach
     fun setUp() {
         mainViewModel = MainViewModel(fakeRepository)
+        mainViewModel.fetchCourses(
+            Coordinate(
+                Latitude(DEFAULT_LATITUDE_VALUE),
+                Longitude(DEFAULT_LONGITUDE_VALUE),
+            ),
+        )
     }
 
     @Test
