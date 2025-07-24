@@ -16,6 +16,9 @@ import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.databinding.ActivityMainBinding
+import io.coursepick.coursepick.domain.Coordinate
+import io.coursepick.coursepick.domain.Latitude
+import io.coursepick.coursepick.domain.Longitude
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
