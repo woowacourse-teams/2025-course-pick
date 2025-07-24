@@ -139,15 +139,19 @@
             app:layout_constraintTop_toTopOf="@id/courseDivider2"
             tools:text="EASY" />
 
-        <Button
+        <TextView
             android:id="@+id/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="@{() -> onSelectCourseListener.navigate(course)}"
             android:text="@string/main_navigate"
+            android:textColor="@color/item_primary"
+            android:textSize="16sp"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/courseDistance"
-            app:layout_constraintTop_toBottomOf="@id/courseDistance" />
+            app:layout_constraintTop_toBottomOf="@id/courseDistance"
+            app:layout_constraintVertical_bias="0.0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
