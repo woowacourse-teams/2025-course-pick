@@ -14,6 +14,12 @@ import java.util.List;
 
 @Component
 public class GpxCourseParser implements CourseParser {
+
+    @Override
+    public boolean canParse(String fileExtension) {
+        return fileExtension.equals("gpx");
+    }
+
     public List<Course> parse(InputStream fileStream) {
         try {
             GPX gpx = GPX.Reader.of(GPX.Reader.Mode.LENIENT).read(fileStream);
@@ -33,7 +39,7 @@ public class GpxCourseParser implements CourseParser {
                                 point.getLatitude().doubleValue(),
                                 point.getLongitude().doubleValue(),
                                 point.getElevation().orElse(Length.of(0, Length.Unit.METER)).doubleValue())
-                        )
+                        ).distinct()
                 ).toList();
     }
 }

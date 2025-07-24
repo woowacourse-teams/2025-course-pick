@@ -3,9 +3,7 @@ package coursepick.coursepick.infrastructure;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
 import coursepick.coursepick.domain.CourseParser;
-
-import java.io.InputStream;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -14,11 +12,18 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
+@Slf4j
 public class KmlCourseParser implements CourseParser {
+
+    @Override
+    public boolean canParse(String fileExtension) {
+        return fileExtension.equals("kml");
+    }
 
     @Override
     public List<Course> parse(InputStream fileStream) {
