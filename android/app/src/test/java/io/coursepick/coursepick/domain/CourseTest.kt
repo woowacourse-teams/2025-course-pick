@@ -13,6 +13,8 @@ class CourseTest {
                 Distance(300),
                 Length(3000),
                 emptyList(),
+                "",
+                CourseDifficulty.UNKNOWN,
             )
         }
     }
