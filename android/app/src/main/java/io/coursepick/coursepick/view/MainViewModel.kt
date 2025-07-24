@@ -46,8 +46,8 @@ class MainViewModel(
     fun fetchCourses(
         coordinate: Coordinate =
             Coordinate(
-                Latitude(37.5165004),
-                Longitude(127.1040109),
+                Latitude(DEFAULT_LATITUDE_VALUE),
+                Longitude(DEFAULT_LONGITUDE_VALUE),
             ),
     ) {
         viewModelScope.launch {
