@@ -113,8 +113,16 @@ class KakaoMapManager(
         locationProvider.stopLocationUpdates()
     }
 
-    companion object {
-        private const val DEFAULT_LATITUDE_VALUE = 37.515293
-        private const val DEFAULT_LONGITUDE_VALUE = 127.102987
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+    fun fetchCurrentLocation(
+        onSuccess: (Latitude, Longitude) -> Unit,
+        onFailure: (Exception) -> Unit,
+    ) {
+        locationProvider.fetchCurrentLocation(
+            onSuccess = { location: Location ->
+                onSuccess(Latitude(location.latitude), Longitude(location.longitude))
+            },
+            onFailure = onFailure,
+        )
     }
 }

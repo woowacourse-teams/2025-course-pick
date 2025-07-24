@@ -2,6 +2,7 @@ package io.coursepick.coursepick.view
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -11,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -23,7 +25,43 @@ import io.coursepick.coursepick.domain.Longitude
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val viewModel: MainViewModel by viewModels()
-    private val courseAdapter by lazy { CourseAdapter(viewModel::select) }
+    private val courseAdapter by lazy {
+        CourseAdapter(
+            object : CourseItemListener {
+                override fun select(course: CourseItem) {
+                    viewModel.select(course)
+                }
+
+                @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+                override fun navigate(course: CourseItem) {
+                    mapManager.fetchCurrentLocation(
+                        onSuccess = { latitude: Latitude, longitude: Longitude ->
+                            val navigationUri =
+                                viewModel
+                                    .navigationUrl(
+                                        course,
+                                        Coordinate(
+                                            latitude,
+                                            longitude,
+                                        ),
+                                    ).toUri()
+
+                            val intent = Intent(Intent.ACTION_VIEW, navigationUri)
+                            startActivity(intent)
+                        },
+                        onFailure = {
+                            Toast
+                                .makeText(
+                                    this@MainActivity,
+                                    "현재 위치를 가져올 수 없어요.",
+                                    Toast.LENGTH_SHORT,
+                                ).show()
+                        },
+                    )
+                }
+            },
+        )
+    }
     private val doublePressDetector = DoublePressDetector()
     private val mapManager by lazy { KakaoMapManager(binding.mainMap) }
     private val onSearchThisAreaListener: OnSearchThisAreaListener =
