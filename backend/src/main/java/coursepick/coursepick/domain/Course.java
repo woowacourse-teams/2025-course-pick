@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_COORDINATE_COUNT;
@@ -36,7 +37,7 @@ public class Course {
         this.id = null;
         this.name = compactName;
         this.roadType = roadType;
-        this.coordinates = connectStartEndCoordinate(coordinates);
+        this.coordinates = sortByCounterClockwise(connectStartEndCoordinate(coordinates));
     }
 
     public Course(String name, List<Coordinate> coordinates) {
@@ -126,5 +127,32 @@ public class Course {
 
     private static boolean isFirstAndLastCoordinateDifferent(List<Coordinate> coordinates) {
         return !coordinates.getFirst().hasSameLatitudeAndLongitude(coordinates.getLast());
+    }
+
+    private static List<Coordinate> sortByCounterClockwise(List<Coordinate> coordinates) {
+        int lowestCoordinateIndex = findLowestCoordinateIndex(coordinates);
+        List<Coordinate> counterClockWiseCoordinates = new ArrayList<>(coordinates);
+        if (isClockwise(coordinates, lowestCoordinateIndex)) {
+            Collections.reverse(counterClockWiseCoordinates);
+        }
+        return counterClockWiseCoordinates;
+    }
+
+    private static int findLowestCoordinateIndex(List<Coordinate> coordinates) {
+        int lowestCoordinateIndex = 0;
+        double lowestLatitude = Double.MAX_VALUE;
+        for (int i = 0; i < coordinates.size(); i++) {
+            Coordinate coordinate = coordinates.get(i);
+            if (coordinate.latitude() < lowestLatitude) {
+                lowestLatitude = coordinate.latitude();
+                lowestCoordinateIndex = i;
+            }
+        }
+        return lowestCoordinateIndex;
+    }
+
+    private static boolean isClockwise(List<Coordinate> coordinates, int lowestCoordinateIndex) {
+        int nextIndex = (lowestCoordinateIndex + 1) % (coordinates.size() - 1);
+        return coordinates.get(lowestCoordinateIndex).isRightOf(coordinates.get(nextIndex));
     }
 }
