@@ -92,6 +92,7 @@ class KakaoMapDrawer(
                         longitude,
                     ),
                 ).setStyles(styles)
+        options.labelId = CURRENT_LOCATION_LABEL_ID
         val layer: LabelLayer = map.labelManager?.layer ?: return
 
         layer.addLabel(options)
@@ -103,6 +104,7 @@ class KakaoMapDrawer(
 
     companion object {
         private const val STYLE_ID = "CoursePickRouteLineStyle"
+        private const val CURRENT_LOCATION_LABEL_ID = "CurrentLocationLabel"
         private const val LINE_COLOR = 0xFF0000FF.toInt()
     }
 }
