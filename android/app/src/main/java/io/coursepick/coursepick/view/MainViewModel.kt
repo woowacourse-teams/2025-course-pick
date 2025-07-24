@@ -1,6 +1,5 @@
 package io.coursepick.coursepick.view
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -46,9 +45,7 @@ class MainViewModel(
         selectedCourse: CourseItem,
         location: Coordinate,
     ): String {
-        Log.d("TAG", "navigate: ${selectedCourse.coordinates[0]}")
         val link = KakaoMapUrl().url(location, selectedCourse.coordinates[0], selectedCourse.name)
-        Log.d("TAG", "navigate: $link")
         return link
     }
 
