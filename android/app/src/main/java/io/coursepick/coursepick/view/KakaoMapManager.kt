@@ -1,7 +1,9 @@
 package io.coursepick.coursepick.view
 
 import android.Manifest
+import android.content.Context
 import android.location.Location
+import android.location.LocationManager
 import android.widget.Toast
 import androidx.annotation.RequiresPermission
 import com.kakao.vectormap.KakaoMap
@@ -15,7 +17,7 @@ import io.coursepick.coursepick.domain.Longitude
 
 class KakaoMapManager(
     private val mapView: MapView,
-    private val locationProvider: LocationProvider,
+    private val locationProvider: LocationProvider = LocationProvider(mapView.context),
 ) {
     private val lifecycleHandler = KakaoMapLifecycleHandler(mapView)
     private val cameraController = KakaoMapCameraController()
@@ -25,7 +27,7 @@ class KakaoMapManager(
     val cameraPosition get(): LatLng? = kakaoMap?.cameraPosition?.position
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    fun start(onMapReady: (KakaoMap) -> Unit) {
+    fun start(onMapReady: (Coordinate) -> Unit) {
         val offsetPx: Float =
             mapView.context.resources.getDimension(R.dimen.map_logo_position_offset)
         lifecycleHandler.start { map: KakaoMap ->
@@ -47,7 +49,23 @@ class KakaoMapManager(
                     Longitude(DEFAULT_LONGITUDE_VALUE),
                 ),
             )
-            onMapReady(map)
+
+            val locationManager =
+                mapView.context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            if (locationManager.isLocationEnabled) {
+                showCurrentLocation()
+                locationProvider.fetchCurrentLocation(
+                    onSuccess = { location: Location ->
+                        onMapReady(
+                            Coordinate(
+                                Latitude(location.latitude),
+                                Longitude(location.longitude),
+                            ),
+                        )
+                    },
+                    onFailure = {},
+                )
+            }
         }
     }
 
