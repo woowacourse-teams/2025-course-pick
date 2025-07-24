@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="course"
             type="io.coursepick.coursepick.view.CourseItem" />
@@ -83,6 +85,7 @@
             android:layout_marginStart="6dp"
             android:text="@string/item_course_divider"
             android:textColor="@color/item_tertiary"
+            android:visibility="@{course.type != null ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@id/courseLength"
             app:layout_constraintStart_toEndOf="@id/courseLength"
             app:layout_constraintTop_toTopOf="@id/courseLength" />
@@ -92,6 +95,7 @@
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_marginStart="6dp"
+            android:visibility="@{course.type != null ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@id/courseDivider1"
             app:layout_constraintStart_toEndOf="@id/courseDivider1"
             app:layout_constraintTop_toTopOf="@id/courseDivider1"
@@ -102,7 +106,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
+            android:text="@{course.type}"
             android:textColor="@color/item_secondary"
+            android:visibility="@{course.type != null ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@id/courseTypeIcon"
             app:layout_constraintStart_toEndOf="@id/courseTypeIcon"
             app:layout_constraintTop_toTopOf="@id/courseTypeIcon"
@@ -115,6 +121,7 @@
             android:layout_marginStart="6dp"
             android:text="@string/item_course_divider"
             android:textColor="@color/item_tertiary"
+            android:visibility="@{course.difficulty != null ? View.VISIBLE : View.GONE }"
             app:layout_constraintBottom_toBottomOf="@id/courseType"
             app:layout_constraintStart_toEndOf="@id/courseType"
             app:layout_constraintTop_toTopOf="@id/courseType" />
@@ -124,7 +131,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
+            android:text="@{course.difficulty}"
             android:textColor="@color/item_secondary"
+            android:visibility="@{course.difficulty != null ? View.VISIBLE : View.GONE }"
             app:layout_constraintBottom_toBottomOf="@id/courseDivider2"
             app:layout_constraintStart_toEndOf="@id/courseDivider2"
             app:layout_constraintTop_toTopOf="@id/courseDivider2"
