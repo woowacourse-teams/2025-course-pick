@@ -5,6 +5,7 @@ import android.location.Location
 import androidx.annotation.DrawableRes
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.LatLng
+import com.kakao.vectormap.label.Label
 import com.kakao.vectormap.label.LabelLayer
 import com.kakao.vectormap.label.LabelManager
 import com.kakao.vectormap.label.LabelOptions
@@ -81,14 +82,18 @@ class KakaoMapDrawer(
         longitude: Double,
     ) {
         val manager: LabelManager = map.labelManager ?: return
-        val styles: LabelStyles =
-            manager.addLabelStyles(LabelStyles.from(LabelStyle.from(iconResourceId))) ?: return
-        val options: LabelOptions =
-            LabelOptions.from(LatLng.from(latitude, longitude)).setStyles(styles)
-        options.labelId = CURRENT_LOCATION_LABEL_ID
         val layer: LabelLayer = manager.layer ?: return
-        layer.remove(layer.getLabel(CURRENT_LOCATION_LABEL_ID))
-        layer.addLabel(options)
+        val label: Label? = layer.getLabel(CURRENT_LOCATION_LABEL_ID)
+        if (label == null) {
+            val styles: LabelStyles =
+                manager.addLabelStyles(LabelStyles.from(LabelStyle.from(iconResourceId))) ?: return
+            val options: LabelOptions =
+                LabelOptions.from(LatLng.from(latitude, longitude)).setStyles(styles)
+            options.labelId = CURRENT_LOCATION_LABEL_ID
+            layer.addLabel(options)
+            return
+        }
+        label.moveTo(LatLng.from(latitude, longitude), LABEL_MOVE_ANIMATION_DURATION)
     }
 
     private fun CourseItem.toLatLngs() = coordinates.map { coordinate: Coordinate -> coordinate.toLatLng() }
@@ -99,5 +104,6 @@ class KakaoMapDrawer(
         private const val STYLE_ID = "CoursePickRouteLineStyle"
         private const val CURRENT_LOCATION_LABEL_ID = "CurrentLocationLabel"
         private const val LINE_COLOR = 0xFF0000FF.toInt()
+        private const val LABEL_MOVE_ANIMATION_DURATION = 500
     }
 }
