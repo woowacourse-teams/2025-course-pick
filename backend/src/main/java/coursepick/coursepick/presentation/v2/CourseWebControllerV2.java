@@ -23,7 +23,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class CourseWebController implements CourseWebApi {
+public class CourseWebControllerV2 implements CourseWebApiV2 {
 
     private final CourseApplicationService courseApplicationService;
 
