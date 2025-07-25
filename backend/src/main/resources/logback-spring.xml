@@ -29,7 +29,7 @@
     </springProfile>
 
     <springProfile name="dev">
-        <root level="INFO">
+        <root level="DEBUG">
             <appender-ref ref="ASYNC_FILE"/>
         </root>
     </springProfile>
