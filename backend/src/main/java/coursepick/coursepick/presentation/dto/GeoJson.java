@@ -4,7 +4,6 @@ import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.RoadType;
 import io.swagger.v3.oas.annotations.media.Schema;
-
 import java.util.List;
 
 public record GeoJson(
@@ -43,7 +42,8 @@ public record GeoJson(
             @Schema(example = "9.8123")
             double difficulty
     ) {
-        public static PropertiesResponse from(long id, String name, double distance, double length, RoadType roadType, double difficulty) {
+        public static PropertiesResponse from(long id, String name, double distance, double length, RoadType roadType,
+                                              double difficulty) {
             return new PropertiesResponse(id, name, distance, length, roadType, difficulty);
         }
     }
@@ -52,7 +52,8 @@ public record GeoJson(
         return new GeoJson(
                 "Feature",
                 GeometryResponse.from(courseResponse.coordinates()),
-                PropertiesResponse.from(courseResponse.id(), courseResponse.name() + " 코스", courseResponse.meter().value(), courseResponse.length().value(), courseResponse.roadType(), courseResponse.difficulty())
+                PropertiesResponse.from(courseResponse.id(), courseResponse.name(), courseResponse.meter().value(),
+                        courseResponse.length().value(), courseResponse.roadType(), courseResponse.difficulty())
         );
     }
 
