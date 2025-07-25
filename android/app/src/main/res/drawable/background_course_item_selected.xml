@@ -11,7 +11,7 @@
             android:insetLeft="1dp"
             android:insetRight="1dp">
             <shape android:shape="rectangle">
-                <solid android:color="@color/background_secondary" />
+                <solid android:color="@color/background_tertiary" />
             </shape>
         </inset>
     </item>
