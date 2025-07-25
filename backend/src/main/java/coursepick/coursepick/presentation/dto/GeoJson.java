@@ -52,7 +52,7 @@ public record GeoJson(
         return new GeoJson(
                 "Feature",
                 GeometryResponse.from(courseResponse.coordinates()),
-                PropertiesResponse.from(courseResponse.id(), courseResponse.name(), courseResponse.meter().value(), courseResponse.length().value(), courseResponse.roadType(), courseResponse.difficulty())
+                PropertiesResponse.from(courseResponse.id(), courseResponse.name() + " 코스", courseResponse.meter().value(), courseResponse.length().value(), courseResponse.roadType(), courseResponse.difficulty())
         );
     }
 
