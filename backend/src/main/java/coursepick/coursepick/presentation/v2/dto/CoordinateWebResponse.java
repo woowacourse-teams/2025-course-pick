@@ -1,4 +1,4 @@
-package coursepick.coursepick.presentation.dto;
+package coursepick.coursepick.presentation.v2.dto;
 
 import coursepick.coursepick.domain.Coordinate;
 import io.swagger.v3.oas.annotations.media.Schema;

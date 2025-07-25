@@ -1,4 +1,4 @@
-package coursepick.coursepick.presentation.dto;
+package coursepick.coursepick.presentation.v2.dto;
 
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.domain.RoadType;
