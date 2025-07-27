@@ -3,6 +3,7 @@ package coursepick.coursepick.domain;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,6 +26,7 @@ public class Course {
     @Enumerated(EnumType.STRING)
     private final RoadType roadType;
 
+    @BatchSize(size = 30)
     @ElementCollection
     @CollectionTable(name = "coordinate")
     private final List<Coordinate> coordinates;
