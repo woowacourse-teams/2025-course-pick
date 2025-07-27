@@ -62,18 +62,12 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
     }
 
     private static String createLogContent(String method, String uri, long duration, String headers, String requestBody, int status, String responseBody) {
-        StringBuilder logContent = new StringBuilder();
-        logContent.append("[HTTP] ").append(method).append(" ").append(uri).append(" - ").append(duration).append("ms");
-        if (!headers.isEmpty()) {
-            logContent.append("\n\t").append("Request Headers: ").append(headers);
-        }
-        if (!requestBody.isEmpty()) {
-            logContent.append("\n\t").append("Request Body: ").append(requestBody);
-        }
-        logContent.append("\n\t").append("Response Status: ").append(status);
-        if (!responseBody.isEmpty()) {
-            logContent.append("\n\t").append("Response Body: ").append(responseBody);
-        }
-        return logContent.toString();
+        return """
+                [HTTP] %s %s (%dms)
+                    Req Headers: %s
+                    Req Body: %s
+                    Res Status: %d
+                    Res Body: %s
+                """.formatted(method, uri, duration, headers, requestBody, status, responseBody);
     }
 }
