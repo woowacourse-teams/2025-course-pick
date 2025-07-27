@@ -22,6 +22,9 @@ public class Course {
     @Column(nullable = false, length = 50)
     private final String name;
 
+    @Column(nullable = false, length = 50)
+    private final String region;
+
     @Enumerated(EnumType.STRING)
     private final RoadType roadType;
 
@@ -29,19 +32,20 @@ public class Course {
     @CollectionTable(name = "coordinate")
     private final List<Coordinate> coordinates;
 
-    public Course(String name, RoadType roadType, List<Coordinate> coordinates) {
+    public Course(String name, String region, RoadType roadType, List<Coordinate> coordinates) {
         String compactName = compactName(name);
         validateNameLength(compactName);
         validateCoordinatesCount(coordinates);
 
         this.id = null;
         this.name = compactName;
+        this.region = region;
         this.roadType = roadType;
         this.coordinates = sortByCounterClockwise(connectStartEndCoordinate(coordinates));
     }
 
-    public Course(String name, List<Coordinate> coordinates) {
-        this(name, RoadType.알수없음, coordinates);
+    public Course(String name, String region, List<Coordinate> coordinates) {
+        this(name, region, RoadType.알수없음, coordinates);
     }
 
     public Meter length() {
