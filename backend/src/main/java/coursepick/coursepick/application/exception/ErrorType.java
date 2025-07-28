@@ -33,7 +33,10 @@ public enum ErrorType {
             "파싱할 수 없는 파일 확장자입니다.",
             IllegalArgumentException.class
     ),
-    ;
+    INVALID_ADMIN_TOKEN(
+            "올바르지 않은 어드민 토큰값 입니다.",
+            SecurityException.class
+    );
 
     private final String message;
     private final Class<? extends RuntimeException> exceptionType;

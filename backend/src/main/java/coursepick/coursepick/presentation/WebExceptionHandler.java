@@ -31,6 +31,12 @@ public class WebExceptionHandler {
         return ResponseEntity.badRequest().body(ErrorResponse.from(exception));
     }
 
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleSecurityException(SecurityException exception) {
+        log.warn("{}", exception.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorResponse.from(exception));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception exception) {
         log.error("예상치 못한 예외 발생: ", exception);
