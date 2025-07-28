@@ -59,7 +59,7 @@ jobs:
           	sudo kill -15 $PID
           	sleep 5
 
-          	CHECK_PID=$(sudo lsof -t -i :80)
+          	CHECK_PID=$(sudo lsof -t -i :80 || true)
           	if [ -z "$CHECK_PID" ]; then
           		echo "기존 서버 종료됨"
           	else
