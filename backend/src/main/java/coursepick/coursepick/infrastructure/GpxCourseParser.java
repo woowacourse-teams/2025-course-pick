@@ -28,7 +28,7 @@ public class GpxCourseParser implements CourseParser {
                     .map(track -> new Course(track.getName().orElse("Default"), getCoordinates(track)))
                     .toList();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("GPX 파일 파싱 중 오류가 발생했습니다", e);
         }
     }
 
