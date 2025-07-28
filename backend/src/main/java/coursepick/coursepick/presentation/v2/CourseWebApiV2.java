@@ -12,7 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 
-@Tag(name = "코스")
+@Tag(name = "코스 API V2")
 public interface CourseWebApiV2 {
 
     @Operation(summary = "좌표 근처 1km 내 코스 전체 조회")

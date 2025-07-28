@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.examples.Example;
 import org.springdoc.core.customizers.OpenApiCustomizer;
-import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -23,24 +22,6 @@ import static coursepick.coursepick.application.exception.ErrorType.*;
 public class OpenApiConfig {
 
     private static final String TIMESTAMP = LocalDateTime.now().toString();
-
-    @Bean
-    public GroupedOpenApi v1Api() {
-        return GroupedOpenApi.builder()
-                .group("V1")
-                .pathsToMatch("/api/v1/**")
-                .addOpenApiCustomizer(exampleInjector())
-                .build();
-    }
-
-    @Bean
-    public GroupedOpenApi v2Api() {
-        return GroupedOpenApi.builder()
-                .group("V2")
-                .pathsToMatch("/api/v2/**")
-                .addOpenApiCustomizer(exampleInjector())
-                .build();
-    }
 
     @Bean
     public OpenApiCustomizer exampleInjector() {
