@@ -94,6 +94,11 @@ public class Course {
         return Math.clamp(score, 1, 10);
     }
 
+    public List<Segment> segments() {
+        // TODO : 구현
+        return null;
+    }
+
     public Long id() {
         return id;
     }

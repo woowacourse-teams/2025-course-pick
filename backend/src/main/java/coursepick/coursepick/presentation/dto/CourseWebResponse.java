@@ -19,7 +19,7 @@ public record CourseWebResponse(
         RoadType roadType,
         @Schema(example = "1.235")
         double difficulty,
-        List<CoordinateWebResponse> coordinates
+        List<SegmentWebResponse> segments
 ) {
     public static List<CourseWebResponse> from(List<CourseResponse> courseResponses) {
         return courseResponses.stream()
@@ -30,7 +30,7 @@ public record CourseWebResponse(
                         courseResponse.length().value(),
                         courseResponse.roadType(),
                         courseResponse.difficulty(),
-                        CoordinateWebResponse.from(courseResponse.coordinates())
+                        SegmentWebResponse.from(courseResponse.segments())
                 )).toList();
     }
 }
