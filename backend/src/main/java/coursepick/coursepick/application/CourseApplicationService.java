@@ -2,8 +2,8 @@ package coursepick.coursepick.application;
 
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.exception.ErrorType;
-import coursepick.coursepick.application.exception.NotFoundException;
 import coursepick.coursepick.domain.*;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -57,7 +57,7 @@ public class CourseApplicationService {
     @Transactional(readOnly = true)
     public Coordinate findClosestCoordinate(long id, double latitude, double longitude) {
         Course course = courseRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorType.NOT_EXIST_COURSE.message(id)));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorType.NOT_EXIST_COURSE.message(id)));
 
         return course.closestCoordinateFrom(new Coordinate(latitude, longitude));
     }
