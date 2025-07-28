@@ -1,4 +1,4 @@
-package coursepick.coursepick.presentation.common;
+package coursepick.coursepick.presentation.api;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;

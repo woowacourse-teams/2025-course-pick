@@ -1,4 +1,4 @@
-package coursepick.coursepick.presentation.common;
+package coursepick.coursepick.presentation.dto;
 
 import java.time.LocalDateTime;
 
