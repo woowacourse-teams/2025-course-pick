@@ -37,7 +37,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coursepick
-          path: ./build/libs/*SNAPSHOT.jar
+          path: backend/build/libs/*SNAPSHOT.jar
 
   deploy:
     needs: build

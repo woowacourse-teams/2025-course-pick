@@ -34,5 +34,5 @@ jobs:
         if: success() || failure()
         with:
           name: 테스트 결과
-          path: build/test-results/test/*.xml
+          path: backend/build/test-results/test/*.xml
           reporter: java-junit
