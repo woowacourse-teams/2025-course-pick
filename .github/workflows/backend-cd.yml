@@ -52,11 +52,11 @@ jobs:
 
       - name: 기존 80 포트 서버 내리기
         run: |
-          PID=$(sudo lsof -t -i :80)
+          PID=$(sudo lsof -t -i :80 || true)
 
           if [ -n "$PID" ]; then
           	echo "사용중인 포트 80 서버 종료... PID=$PID"
-          	sudo kill -15 $PID
+          	sudo kill -15 $PID || true
           	sleep 5
 
           	CHECK_PID=$(sudo lsof -t -i :80 || true)
@@ -64,7 +64,7 @@ jobs:
           		echo "기존 서버 종료됨"
           	else
           		echo "기존 서버 종료되지 않아 강제 종료 수행... PID=$CHECK_PID"
-          		sudo kill -9 $CHECK_PID
+          		sudo kill -9 $CHECK_PID || true
           		sleep 5
           	fi
           else
