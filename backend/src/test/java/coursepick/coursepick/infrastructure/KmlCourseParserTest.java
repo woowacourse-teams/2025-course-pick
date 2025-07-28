@@ -1,7 +1,7 @@
 package coursepick.coursepick.infrastructure;
 
+import coursepick.coursepick.application.dto.CourseInfo;
 import coursepick.coursepick.domain.Coordinate;
-import coursepick.coursepick.domain.Course;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -43,15 +43,15 @@ class KmlCourseParserTest {
 
         InputStream inputStream = new ByteArrayInputStream(kmlContent.getBytes(StandardCharsets.UTF_8));
 
-        List<Course> courses = sut.parse(inputStream);
+        List<CourseInfo> courses = sut.parse(inputStream);
 
         assertThat(courses).hasSize(1);
 
-        Course course = courses.getFirst();
-        assertThat(course.name()).isEqualTo("테스트 코스");
-        assertThat(course.coordinates()).hasSize(3);
+        CourseInfo courseInfo = courses.getFirst();
+        assertThat(courseInfo.name()).isEqualTo("테스트 코스");
+        assertThat(courseInfo.coordinates()).hasSize(3);
 
-        Coordinate firstCoordinate = course.coordinates().getFirst();
+        Coordinate firstCoordinate = courseInfo.coordinates().getFirst();
         assertThat(firstCoordinate.latitude()).isEqualTo(37.522489);
         assertThat(firstCoordinate.longitude()).isEqualTo(127.099029);
     }
@@ -78,9 +78,9 @@ class KmlCourseParserTest {
                 """;
         InputStream inputStream = new ByteArrayInputStream(kmlContent.getBytes(StandardCharsets.UTF_8));
 
-        List<Course> courses = sut.parse(inputStream);
+        List<CourseInfo> courseInfos = sut.parse(inputStream);
 
-        assertThat(courses).isEmpty();
+        assertThat(courseInfos).isEmpty();
     }
 
     @Test
@@ -97,8 +97,8 @@ class KmlCourseParserTest {
                 """;
         InputStream inputStream = new ByteArrayInputStream(kmlContent.getBytes(StandardCharsets.UTF_8));
 
-        List<Course> courses = sut.parse(inputStream);
+        List<CourseInfo> courseInfos = sut.parse(inputStream);
 
-        assertThat(courses).isEmpty();
+        assertThat(courseInfos).isEmpty();
     }
 }

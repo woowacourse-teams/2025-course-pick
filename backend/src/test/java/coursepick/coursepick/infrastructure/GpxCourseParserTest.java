@@ -1,7 +1,7 @@
 package coursepick.coursepick.infrastructure;
 
+import coursepick.coursepick.application.dto.CourseInfo;
 import coursepick.coursepick.domain.Coordinate;
-import coursepick.coursepick.domain.Course;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GpxCourseParserTest {
@@ -61,18 +60,17 @@ class GpxCourseParserTest {
         InputStream inputStream = new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
         GpxCourseParser gpxCourseParser = new GpxCourseParser();
 
-        List<Course> courses = gpxCourseParser.parse(inputStream);
-
+        List<CourseInfo> courses = gpxCourseParser.parse(inputStream);
+        System.out.println(courses.get(0).coordinates().size());
         assertThat(courses.size()).isEqualTo(1);
         assertThat(courses).extracting(course -> course.name())
                 .contains("test-course");
         assertThat(courses).extracting(course -> course.coordinates().size())
-                .contains(3);
+                .contains(2);
         assertThat(courses).extracting(course -> course.coordinates())
                 .containsExactly(List.of(
                         new Coordinate(37.4869510, 126.9230870, 27.8),
-                        new Coordinate(37.4845100, 126.9255380, 29.2),
-                        new Coordinate(37.4869510, 126.9230870, 27.8)
+                        new Coordinate(37.4845100, 126.9255380, 29.2)
                 ));
     }
 }

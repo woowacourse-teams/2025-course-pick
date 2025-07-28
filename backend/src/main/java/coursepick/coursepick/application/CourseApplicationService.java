@@ -1,9 +1,11 @@
 package coursepick.coursepick.application;
 
+import coursepick.coursepick.application.dto.CourseInfo;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.application.exception.NotFoundException;
 import coursepick.coursepick.domain.*;
+import coursepick.coursepick.infrastructure.RegionClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ public class CourseApplicationService {
 
     private final CourseRepository courseRepository;
     private final List<CourseParser> courseParsers;
+    private final RegionClient regionClient;
 
     @Transactional
     public void parseInputStreamAndSave(InputStream fileStream, String fileExtension) {
@@ -29,7 +32,11 @@ public class CourseApplicationService {
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException(ErrorType.INVALID_FILE_EXTENSION.message()));
 
-        List<Course> courses = parseCoursesFromFile(fileStream, courseParser);
+        List<CourseInfo> courseInfos = parseCourseInfosFromFile(fileStream, courseParser);
+        List<Course> courses = courseInfos.stream().map(course -> {
+            String region = regionClient.convertCoordinateToRegion(course.coordinates().getFirst());
+            return new Course(course.name(), region, course.coordinates());
+        }).toList();
         saveCourses(courses);
     }
 
@@ -39,8 +46,8 @@ public class CourseApplicationService {
         log.info("DB에 {} 개의 코스를 저장했습니다", savedCourses.size());
     }
 
-    private static List<Course> parseCoursesFromFile(InputStream fileStream, CourseParser courseParser) {
-        List<Course> courses = courseParser.parse(fileStream);
+    private static List<CourseInfo> parseCourseInfosFromFile(InputStream fileStream, CourseParser courseParser) {
+        List<CourseInfo> courses = courseParser.parse(fileStream);
 
         log.info("{} 개의 코스를 파싱했습니다", courses.size());
         return courses;

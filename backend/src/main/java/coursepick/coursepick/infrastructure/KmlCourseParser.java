@@ -1,7 +1,7 @@
 package coursepick.coursepick.infrastructure;
 
+import coursepick.coursepick.application.dto.CourseInfo;
 import coursepick.coursepick.domain.Coordinate;
-import coursepick.coursepick.domain.Course;
 import coursepick.coursepick.domain.CourseParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -26,8 +26,8 @@ public class KmlCourseParser implements CourseParser {
     }
 
     @Override
-    public List<Course> parse(InputStream fileStream) {
-        List<Course> courses = new ArrayList<>();
+    public List<CourseInfo> parse(InputStream fileStream) {
+        List<CourseInfo> courses = new ArrayList<>();
 
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -40,9 +40,9 @@ public class KmlCourseParser implements CourseParser {
                 Node placemark = placemarks.item(i);
                 if (placemark.getNodeType() == Node.ELEMENT_NODE) {
                     Element placemarkElement = (Element) placemark;
-                    Course course = parseCourse(placemarkElement);
-                    if (course != null) {
-                        courses.add(course);
+                    CourseInfo courseInfo = parseCourse(placemarkElement);
+                    if (courseInfo != null) {
+                        courses.add(courseInfo);
                     }
                 }
             }
@@ -53,14 +53,14 @@ public class KmlCourseParser implements CourseParser {
         return courses;
     }
 
-    private Course parseCourse(Element placemark) {
+    private CourseInfo parseCourse(Element placemark) {
         String courseName = parseCourseName(placemark);
         List<Coordinate> coordinates = parseCoordinates(placemark);
 
         if (courseName == null || courseName.isBlank()) return null;
         if (coordinates.isEmpty()) return null;
 
-        return new Course(courseName, coordinates);
+        return new CourseInfo(courseName, coordinates);
     }
 
     private String parseCourseName(Element placemark) {

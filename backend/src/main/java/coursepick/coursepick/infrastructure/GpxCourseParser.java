@@ -1,7 +1,7 @@
 package coursepick.coursepick.infrastructure;
 
+import coursepick.coursepick.application.dto.CourseInfo;
 import coursepick.coursepick.domain.Coordinate;
-import coursepick.coursepick.domain.Course;
 import coursepick.coursepick.domain.CourseParser;
 import io.jenetics.jpx.GPX;
 import io.jenetics.jpx.Length;
@@ -20,12 +20,12 @@ public class GpxCourseParser implements CourseParser {
         return fileExtension.equals("gpx");
     }
 
-    public List<Course> parse(InputStream fileStream) {
+    public List<CourseInfo> parse(InputStream fileStream) {
         try {
             GPX gpx = GPX.Reader.of(GPX.Reader.Mode.LENIENT).read(fileStream);
 
             return gpx.tracks()
-                    .map(track -> new Course(track.getName().orElse("Default"), getCoordinates(track)))
+                    .map(track -> new CourseInfo(track.getName().orElse("Default"), getCoordinates(track)))
                     .toList();
         } catch (IOException e) {
             throw new RuntimeException(e);
