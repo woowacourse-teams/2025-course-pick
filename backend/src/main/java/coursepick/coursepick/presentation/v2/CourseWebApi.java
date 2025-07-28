@@ -15,7 +15,7 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "코스")
-public interface CourseWebApiV2 {
+public interface CourseWebApi {
 
     @Operation(summary = "좌표 근처 1km 내 코스 전체 조회")
     @ApiResponses({
