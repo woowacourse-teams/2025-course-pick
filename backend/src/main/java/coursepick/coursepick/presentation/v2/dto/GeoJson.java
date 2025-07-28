@@ -1,10 +1,9 @@
-package coursepick.coursepick.presentation.v1.dto;
+package coursepick.coursepick.presentation.dto;
 
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.RoadType;
 import io.swagger.v3.oas.annotations.media.Schema;
-
 import java.util.List;
 
 public record GeoJson(
@@ -53,13 +52,8 @@ public record GeoJson(
         return new GeoJson(
                 "Feature",
                 GeometryResponse.from(courseResponse.coordinates()),
-                PropertiesResponse.from(
-                        courseResponse.id(),
-                        courseResponse.name(),
-                        courseResponse.distance().value(),
-                        courseResponse.length().value(),
-                        courseResponse.roadType(),
-                        courseResponse.difficulty())
+                PropertiesResponse.from(courseResponse.id(), courseResponse.name(), courseResponse.meter().value(),
+                        courseResponse.length().value(), courseResponse.roadType(), courseResponse.difficulty())
         );
     }
 

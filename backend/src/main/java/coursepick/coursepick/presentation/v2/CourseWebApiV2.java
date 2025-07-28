@@ -1,7 +1,7 @@
-package coursepick.coursepick.presentation.v2;
+package coursepick.coursepick.presentation.api;
 
-import coursepick.coursepick.presentation.v2.dto.CoordinateWebResponse;
-import coursepick.coursepick.presentation.v2.dto.CourseWebResponse;
+import coursepick.coursepick.presentation.dto.CoordinateResponse;
+import coursepick.coursepick.presentation.dto.GeoJson;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,7 +12,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 
-@Tag(name = "코스 API V2")
+import org.springframework.web.multipart.MultipartFile;
+
+@Tag(name = "코스")
 public interface CourseWebApiV2 {
 
     @Operation(summary = "좌표 근처 1km 내 코스 전체 조회")
@@ -29,7 +31,7 @@ public interface CourseWebApiV2 {
                     )
             })),
     })
-    List<CourseWebResponse> findNearbyCourses(
+    List<GeoJson> findNearbyCourses(
             @Parameter(example = "37.5165004", required = true) double latitude,
             @Parameter(example = "127.1040109", required = true) double longitude
     );
@@ -54,9 +56,12 @@ public interface CourseWebApiV2 {
                     )
             })),
     })
-    CoordinateWebResponse findClosestCoordinate(
+    CoordinateResponse findClosestCoordinate(
             @Parameter(example = "1", required = true) long id,
             @Parameter(example = "37.5165004", required = true) double latitude,
             @Parameter(example = "127.1040109", required = true) double longitude
     );
+  
+    @Operation(hidden = true)
+    void importCourses(String token, MultipartFile file);
 }

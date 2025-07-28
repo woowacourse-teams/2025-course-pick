@@ -11,13 +11,9 @@ public record CoordinateWebResponse(
         @Schema(example = "127.103611")
         double longitude
 ) {
-    public static CoordinateWebResponse from(Coordinate coordinate) {
-        return new CoordinateWebResponse(coordinate.latitude(), coordinate.longitude());
-    }
-
     public static List<CoordinateWebResponse> from(List<Coordinate> coordinates) {
         return coordinates.stream()
-                .map(CoordinateWebResponse::from)
+                .map(coordinate -> new CoordinateWebResponse(coordinate.latitude(), coordinate.longitude()))
                 .toList();
     }
 }

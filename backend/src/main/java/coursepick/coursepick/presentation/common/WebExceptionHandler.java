@@ -1,6 +1,7 @@
-package coursepick.coursepick.presentation.common;
+package coursepick.coursepick.presentation;
 
 import coursepick.coursepick.application.exception.NotFoundException;
+import coursepick.coursepick.presentation.dto.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
