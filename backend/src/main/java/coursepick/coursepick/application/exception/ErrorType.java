@@ -36,7 +36,8 @@ public enum ErrorType {
     INVALID_ADMIN_TOKEN(
             "올바르지 않은 어드민 토큰값 입니다.",
             SecurityException.class
-    );
+    ),
+    ;
 
     private final String message;
     private final Class<? extends RuntimeException> exceptionType;
