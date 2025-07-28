@@ -3,6 +3,7 @@ name: Backend CD
 on:
   push:
     branches: [ backend ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -20,35 +21,23 @@ jobs:
         with:
           java-version: '21'
           distribution: 'corretto'
+          cache: 'gradle'
 
-      - name: Gradle 패키지 캐시
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('backend/**/*.gradle*', 'backend/**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+      - name: 프로젝트 gradlew 빌드
+        run: ./gradlew build
 
-      - name: 테스트 실행
-        run: ./gradlew test
-
-      - name: 테스트 리포트 생성
+      - name: 테스트 결과 보고서 작성
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: Gradle Tests
+          name: 테스트 결과
           path: backend/build/test-results/test/*.xml
           reporter: java-junit
 
-      - name: 테스트 및 빌드하기
-        run: ./gradlew clean build
-
-      - name: GitHub Actions의 임시 아티팩트 저장소에 jar 파일 업로드
+      - name: 임시 아티팩트 저장소 업로드
         uses: actions/upload-artifact@v4
         with:
-          name: project
+          name: coursepick
           path: backend/build/libs/*SNAPSHOT.jar
 
   deploy:
@@ -56,27 +45,63 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: GitHub Actions의 임시 아티팩트 저장소에 jar 파일 다운로드
+      - name: 임시 아티팩트 저장소에 저장된 파일 다운로드
         uses: actions/download-artifact@v4
         with:
-          name: project
+          name: coursepick
           path: ./artifacts
 
-      - name: 80 포트 서버 내리기
+      - name: 기존 80 포트 서버 내리기
         run: |
-          sudo lsof -t -i :80 | sudo xargs -r kill -9
-          sleep 5
+          PID=$(sudo lsof -t -i :80 || true)
 
-      - name: 서버 다시 올리기
+          if [ -n "$PID" ]; then
+          	echo "사용중인 포트 80 서버 종료... PID=$PID"
+          	sudo kill -15 $PID || true
+          	sleep 5
+
+          	CHECK_PID=$(sudo lsof -t -i :80 || true)
+          	if [ -z "$CHECK_PID" ]; then
+          		echo "기존 서버 종료됨"
+          	else
+          		echo "기존 서버 종료되지 않아 강제 종료 수행... PID=$CHECK_PID"
+          		sudo kill -9 $CHECK_PID || true
+          		sleep 5
+          	fi
+          else
+          	echo "포트 80은 사용 중이지 않음"
+          fi
+
+      - name: 새로운 서버로 실행
+        env:
+          SPRING_PROFILES_ACTIVE: ${{ secrets.DEV_PROFILE }}
+          SERVER_PORT: 80
+          SPRING_DATASOURCE_URL: ${{ secrets.DEV_DB_URL }}
+          SPRING_DATASOURCE_USERNAME: ${{ secrets.DEV_DB_USERNAME }}
+          SPRING_DATASOURCE_PASSWORD: ${{ secrets.DEV_DB_PASSWORD }}
+          ADMIN_TOKEN: ${{ secrets.DEV_ADMIN_TOKEN }}
         run: |
           JAR_FILE=$(find ./artifacts -name "*.jar" | head -n 1)
-          echo "Starting server with $JAR_FILE"
-          sudo -b sh -c "java -Dspring.profiles.active='${{ secrets.DEV_PROFILE }}' -jar '$JAR_FILE' \
-          --server.port=80 \
-          --DB_URL='${{ secrets.DEV_DB_URL }}' \
-          --DB_USERNAME='${{ secrets.DEV_DB_USERNAME }}' \
-          --DB_PASSWORD='${{ secrets.DEV_DB_PASSWORD }}' \
-          --ADMIN_TOKEN='${{ secrets.DEV_ADMIN_TOKEN }}' \
-          > /var/log/app.log 2>&1"
-          sleep 5
-          echo "Server started successfully"
+          echo "서버 시작 중... =$JAR_FILE"
+
+          sudo -E -b sh -c "java -jar '$JAR_FILE' > /var/log/app.log 2>&1"
+
+          for i in $(seq 1 10)
+          do
+            SERVER_STATUS=$(curl -o /dev/null -w "%{http_code}" http://localhost:80/actuator/health || true)
+
+            if [ "$SERVER_STATUS" -eq 200 ]; then
+              echo "서버 정상적으로 실행됨 status=$SERVER_STATUS"
+              break
+            else
+              echo "헬스체크에 실패함. 5초 후 다시 시도"
+              sleep 5
+            fi
+
+            if [ $i -eq 10 ]; then
+              echo "서버가 정상적으로 실행되지 않아 종료함"
+              exit 1
+            fi
+          done
+
+          echo "-- 배포 종료 --"
