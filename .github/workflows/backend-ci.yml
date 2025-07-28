@@ -8,47 +8,31 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
     defaults:
       run:
         working-directory: backend
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: 레포지토리 불러오기
+        uses: actions/checkout@v4
 
-    - name: Set up JDK 21
-      uses: actions/setup-java@v4
-      with:
-        java-version: '21'
-        distribution: 'corretto'
+      - name: JDK 21 설정
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'corretto'
+          cache: 'gradle'
 
-    - name: Cache Gradle packages
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-${{ hashFiles('backend/**/*.gradle*', 'backend/**/gradle-wrapper.properties') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-
+      - name: gradlew 실행 권한 부여
+        run: chmod +x gradlew
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+      - name: 프로젝트 gradlew 빌드
+        run: ./gradlew build
 
-    - name: Run tests
-      run: ./gradlew test
-
-    - name: Run code quality checks
-      run: ./gradlew check
-
-    - name: Generate test report
-      uses: dorny/test-reporter@v1
-      if: success() || failure()
-      with:
-        name: Gradle Tests
-        path: backend/build/test-results/test/*.xml
-        reporter: java-junit
-
-    - name: Build with Gradle
-      run: ./gradlew build
+      - name: 테스트 결과 보고서 작성
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: 테스트 결과
+          path: build/test-results/test/*.xml
+          reporter: java-junit
