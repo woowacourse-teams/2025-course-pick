@@ -1,7 +1,7 @@
 name: Backend CD
 
 on:
-  pull_request:
+  push:
     branches: [ backend ]
 
 jobs:
@@ -84,11 +84,11 @@ jobs:
           echo "서버 시작 중... =$JAR_FILE"
 
           sudo -E -b sh -c "java -jar '$JAR_FILE' > /var/log/app.log 2>&1"
-          
+
           for i in $(seq 1 10)
           do
             SERVER_STATUS=$(curl -o /dev/null -w "%{http_code}" http://localhost:80/actuator/health || true)
-            
+
             if [ "$SERVER_STATUS" -eq 200 ]; then
               echo "서버 정상적으로 실행됨 status=$SERVER_STATUS"
               break
@@ -96,11 +96,11 @@ jobs:
               echo "헬스체크에 실패함. 5초 후 다시 시도"
               sleep 5
             fi
-          
+
             if [ $i -eq 10 ]; then
               echo "서버가 정상적으로 실행되지 않아 종료함"
               exit 1
             fi
           done
-          
+
           echo "-- 배포 종료 --"
