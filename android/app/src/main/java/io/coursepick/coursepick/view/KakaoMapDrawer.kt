@@ -1,6 +1,7 @@
 package io.coursepick.coursepick.view
 
 import android.content.Context
+import android.graphics.Color
 import android.location.Location
 import androidx.annotation.DrawableRes
 import com.kakao.vectormap.KakaoMap
@@ -13,33 +14,37 @@ import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
 import com.kakao.vectormap.route.RouteLineLayer
 import com.kakao.vectormap.route.RouteLineOptions
+import com.kakao.vectormap.route.RouteLinePattern
 import com.kakao.vectormap.route.RouteLineSegment
 import com.kakao.vectormap.route.RouteLineStyle
 import com.kakao.vectormap.route.RouteLineStyles
 import com.kakao.vectormap.route.RouteLineStylesSet
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.Coordinate
+import io.coursepick.coursepick.domain.InclineType
+import io.coursepick.coursepick.domain.Segment
 
 class KakaoMapDrawer(
     private val context: Context,
 ) {
-    fun draw(
-        kakaoMap: KakaoMap,
-        course: CourseItem,
-    ) {
-        val layer: RouteLineLayer = kakaoMap.routeLineManager?.layer ?: return
-        layer.removeAll()
+    private val patternDistancePx: Float =
+        context.resources.getDimension(R.dimen.course_pattern_between_distance)
+    private val lineWidthPx: Float = context.resources.getDimension(R.dimen.course_route_width)
+    private val uphillStyle =
+        RouteLineStyles.from(RouteLineStyle.from(lineWidthPx, Color.RED).arrowPatternedStyle())
+    private val flatStyle: RouteLineStyles =
+        RouteLineStyles.from(RouteLineStyle.from(lineWidthPx, Color.GREEN).arrowPatternedStyle())
+    private val downhillStyle =
+        RouteLineStyles.from(RouteLineStyle.from(lineWidthPx, Color.BLUE).arrowPatternedStyle())
 
-        val lineWidthPx: Float = context.resources.getDimension(R.dimen.course_route_width)
-        val styleSet =
-            RouteLineStylesSet.from(
-                STYLE_ID,
-                RouteLineStyles.from(RouteLineStyle.from(lineWidthPx, LINE_COLOR)),
-            )
-        val segment = RouteLineSegment.from(course.toLatLngs()).setStyles(styleSet.getStyles(0))
-        val options = RouteLineOptions.from(segment).setStylesSet(styleSet)
-        layer.addRouteLine(options)
-    }
+    private val unknownStyle =
+        RouteLineStyles.from(RouteLineStyle.from(lineWidthPx, Color.GRAY).arrowPatternedStyle())
+
+    private fun RouteLineStyle.arrowPatternedStyle(): RouteLineStyle =
+        setPattern(RouteLinePattern.from(R.drawable.image_arrow, patternDistancePx))
+
+    private val stylesSet =
+        RouteLineStylesSet.from(uphillStyle, flatStyle, downhillStyle, unknownStyle)
 
     fun draw(
         map: KakaoMap,
@@ -69,6 +74,17 @@ class KakaoMapDrawer(
         )
     }
 
+    fun draw(
+        kakaoMap: KakaoMap,
+        course: CourseItem,
+    ) {
+        val layer: RouteLineLayer = kakaoMap.routeLineManager?.layer ?: return
+        layer.removeAll()
+        val segments: List<RouteLineSegment> = course.segments.map { it.toRouteLineSegment() }
+        val options = RouteLineOptions.from(segments).setStylesSet(stylesSet)
+        layer.addRouteLine(options)
+    }
+
     fun removeAllLabels(map: KakaoMap) {
         val layer: LabelLayer = map.labelManager?.layer ?: return
         layer.removeAll()
@@ -96,13 +112,25 @@ class KakaoMapDrawer(
         label.moveTo(LatLng.from(latitude, longitude), LABEL_MOVE_ANIMATION_DURATION)
     }
 
-    private fun CourseItem.toLatLngs() = coordinates.map { coordinate: Coordinate -> coordinate.toLatLng() }
+    private fun Segment.toRouteLineSegment(): RouteLineSegment =
+        RouteLineSegment.from(
+            coordinates.map { it.toLatLng() },
+            when (inclineType) {
+                InclineType.UPHILL -> uphillStyle
+                InclineType.DOWNHILL -> downhillStyle
+                InclineType.FLAT -> flatStyle
+                InclineType.UNKNOWN -> unknownStyle
+            },
+        )
 
     private fun Coordinate.toLatLng() = LatLng.from(latitude.value, longitude.value)
 
     companion object {
         private const val STYLE_ID = "CoursePickRouteLineStyle"
         private const val CURRENT_LOCATION_LABEL_ID = "CurrentLocationLabel"
+        private const val STYLE_INCLINE_TYPE_UPHILL = "STYLE_INCLINE_TYPE_UPHILL"
+        private const val STYLE_INCLINE_TYPE_DOWNHILL = "STYLE_INCLINE_TYPE_DOWNHILL"
+        private const val STYLE_INCLINE_TYPE_FLAT = "STYLE_INCLINE_TYPE_FLAT"
         private const val LINE_COLOR = 0xFF0000FF.toInt()
         private const val LABEL_MOVE_ANIMATION_DURATION = 500
     }

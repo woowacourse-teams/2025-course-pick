@@ -45,7 +45,7 @@ class MainViewModel(
         selectedCourse: CourseItem,
         location: Coordinate,
     ): String {
-        val end: Coordinate = selectedCourse.coordinates[0]
+        val end: Coordinate = selectedCourse.segments.flatMap { it.coordinates }.first()
         val startName = "현재 위치"
         return "https://map.kakao.com/link/by/walk/" +
             "$startName,${location.latitude.value},${location.longitude.value}/${selectedCourse.name},${end.latitude.value},${end.longitude.value}"

@@ -69,7 +69,7 @@ class KakaoMapManager(
     fun fitTo(course: CourseItem) {
         val padding = mapView.context.resources.getDimensionPixelSize(R.dimen.course_route_padding)
         kakaoMap?.let { map: KakaoMap ->
-            cameraController.fitTo(map, course.coordinates, padding)
+            cameraController.fitTo(map, course.segments.flatMap { it.coordinates }, padding)
         }
     }
 
