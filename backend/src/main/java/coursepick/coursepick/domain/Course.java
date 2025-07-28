@@ -106,6 +106,10 @@ public class Course {
         return name;
     }
 
+    public String region() {
+        return region;
+    }
+
     public List<Coordinate> coordinates() {
         return coordinates;
     }
