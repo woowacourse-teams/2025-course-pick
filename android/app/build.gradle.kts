@@ -5,8 +5,9 @@ plugins {
     alias(libs.plugins.android.junit5)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.serialization)
-    id("kotlin-kapt")
-    id("com.google.gms.google-services")
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 private val localProperties: Properties =
@@ -35,8 +36,6 @@ android {
         debug {
             buildConfigField("boolean", "DEBUG", "true")
             buildConfigField("String", "BASE_URL", localProperties["base.url.debug"].toString())
-        }
-        debug {
             buildConfigField(
                 "String",
                 "KAKAO_NATIVE_APP_KEY",
@@ -90,8 +89,10 @@ dependencies {
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.kakao.maps)
     implementation(libs.play.services.location)
+    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.timber)
+    implementation(libs.firebase.crashlytics.ndk)
     testImplementation(libs.assertj.core)
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
