@@ -66,6 +66,12 @@ public record Segment(
         return Collections.unmodifiableList(coordinates);
     }
 
+    private enum Direction {
+        UP,
+        DOWN,
+        STRAIGHT
+    }
+
     private Direction direction() {
         double startElevation = coordinates.getFirst().elevation();
         double endElevation = coordinates.getLast().elevation();
@@ -84,11 +90,5 @@ public record Segment(
         mergedCoordinates.removeLast();
         mergedCoordinates.addAll(other.coordinates);
         return new Segment(mergedCoordinates);
-    }
-
-    private enum Direction {
-        UP,
-        DOWN,
-        STRAIGHT
     }
 }
