@@ -21,3 +21,11 @@ management:
         batch-size: 20
 
 admin.token: ${ADMIN_TOKEN}
+
+region:
+  kakao:
+    base-url: ${REGION_KAKAO_BASE_URL}
+    coord2region-path: ${REGION_KAKAO_COORD_TO_REGION_PATH}
+    app-key: ${REGION_KAKAO_APP_KEY}
+
+
