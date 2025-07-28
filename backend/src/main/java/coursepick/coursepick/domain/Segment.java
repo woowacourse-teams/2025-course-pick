@@ -4,14 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Segment {
-
-    public final List<Coordinate> coordinates;
-
-    private Segment(List<Coordinate> coordinates) {
-        this.coordinates = new ArrayList<>(coordinates);
-    }
-
+public record Segment(
+        List<Coordinate> coordinates
+) {
     // 좌표들을 2개 단위의 세그먼트로 쪼갠다.
     public static List<Segment> split(List<Coordinate> coordinates) {
         List<Segment> segments = new ArrayList<>();
@@ -86,6 +81,7 @@ public class Segment {
     private Segment merge(Segment other) {
         ArrayList<Coordinate> mergedCoordinates = new ArrayList<>();
         mergedCoordinates.addAll(this.coordinates);
+        mergedCoordinates.removeLast();
         mergedCoordinates.addAll(other.coordinates);
         return new Segment(mergedCoordinates);
     }
