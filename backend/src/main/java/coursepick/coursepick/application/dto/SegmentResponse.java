@@ -11,7 +11,8 @@ public record SegmentResponse(
         List<Coordinate> coordinates
 ) {
     public static List<SegmentResponse> from(List<Segment> segments) {
-        // TODO : 구현
-        return null;
+        return segments.stream()
+                .map(segment -> new SegmentResponse(segment.inclineType(), segment.coordinates()))
+                .toList();
     }
 }

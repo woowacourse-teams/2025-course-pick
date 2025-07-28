@@ -11,8 +11,9 @@ public record SegmentWebResponse(
         InclineType inclineType,
         List<CoordinateWebResponse> coordinates
 ) {
-    public static List<SegmentWebResponse> from(List<SegmentResponse> segments) {
-        // TODO : 구현
-        return null;
+    public static List<SegmentWebResponse> from(List<SegmentResponse> segmentResponses) {
+        return segmentResponses.stream()
+                .map(segmentResponse -> new SegmentWebResponse(segmentResponse.inclineType(), CoordinateWebResponse.from(segmentResponse.coordinates())))
+                .toList();
     }
 }

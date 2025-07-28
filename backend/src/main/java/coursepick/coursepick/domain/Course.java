@@ -93,10 +93,10 @@ public class Course {
 
         return Math.clamp(score, 1, 10);
     }
-
+    
     public List<Segment> segments() {
-        // TODO : 구현
-        return null;
+        List<Segment> segments = Segment.split(coordinates);
+        return Segment.mergeSameInclineType(segments);
     }
 
     public Long id() {
