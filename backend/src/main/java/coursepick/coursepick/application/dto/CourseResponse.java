@@ -11,7 +11,7 @@ public record CourseResponse(
         Long id,
         String name,
         List<Coordinate> coordinates,
-        Meter meter,
+        Meter distance,
         Meter length,
         RoadType roadType,
         double difficulty
