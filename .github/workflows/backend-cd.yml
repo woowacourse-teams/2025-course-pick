@@ -97,7 +97,7 @@ jobs:
               sleep 5
             fi
           
-            if [ $i -eq 10]; then
+            if [ $i -eq 10 ]; then
               echo "서버가 정상적으로 실행되지 않아 종료함"
               exit 1
             fi
