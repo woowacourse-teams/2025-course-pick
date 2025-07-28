@@ -3,6 +3,7 @@ name: Backend CD
 on:
   push:
     branches: [ backend ]
+  workflow_dispatch:
 
 jobs:
   build:
