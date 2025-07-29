@@ -76,9 +76,9 @@ public record Segment(
         double startElevation = coordinates.getFirst().elevation();
         double endElevation = coordinates.getLast().elevation();
         if (startElevation < endElevation) {
-            return Direction.DOWN;
-        } else if (startElevation > endElevation) {
             return Direction.UP;
+        } else if (startElevation > endElevation) {
+            return Direction.DOWN;
         } else {
             return Direction.STRAIGHT;
         }
