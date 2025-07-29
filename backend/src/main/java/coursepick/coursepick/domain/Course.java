@@ -8,8 +8,6 @@ import lombok.experimental.Accessors;
 
 import java.util.List;
 
-import static coursepick.coursepick.application.exception.ErrorType.INVALID_NAME_LENGTH;
-
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @Getter
@@ -20,8 +18,8 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private final Long id;
 
-    @Column(nullable = false, length = 50)
-    private final String name;
+    @Embedded
+    private final CourseName name;
 
     @Enumerated(EnumType.STRING)
     private final RoadType roadType;
@@ -31,16 +29,10 @@ public class Course {
     private final List<Segment> segments;
 
     public Course(String name, RoadType roadType, List<Coordinate> coordinates) {
-        String compactName = compactName(name);
-        validateNameLength(compactName);
-        Coordinates sortedCoordinates = new Coordinates(coordinates)
-                .connectStartEnd()
-                .sortByCounterClockwise();
-        List<Segment> segments = Segment.create(sortedCoordinates);
         this.id = null;
-        this.name = compactName;
+        this.name = new CourseName(name);
         this.roadType = roadType;
-        this.segments = segments;
+        this.segments = Segment.create(coordinates);
     }
 
     public Course(String name, List<Coordinate> coordinates) {
@@ -88,15 +80,5 @@ public class Course {
         };
 
         return Math.clamp(score, 1, 10);
-    }
-
-    private static String compactName(String name) {
-        return name.trim().replaceAll("\\s+", " ");
-    }
-
-    private static void validateNameLength(String compactName) {
-        if (compactName.length() < 2 || compactName.length() > 30) {
-            throw new IllegalArgumentException(INVALID_NAME_LENGTH.message(compactName));
-        }
     }
 }
