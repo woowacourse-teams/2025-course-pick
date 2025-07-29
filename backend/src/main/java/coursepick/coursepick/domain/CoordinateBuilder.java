@@ -9,37 +9,37 @@ import java.util.List;
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_COORDINATE_COUNT;
 
 @Helper
-public class CoordinateHelper {
+public class CoordinateBuilder {
 
     private final List<Coordinate> coordinates;
 
-    private CoordinateHelper(List<Coordinate> coordinates) {
+    private CoordinateBuilder(List<Coordinate> coordinates) {
         if (coordinates.size() < 2) {
             throw new IllegalArgumentException(INVALID_COORDINATE_COUNT.message(coordinates.size()));
         }
         this.coordinates = coordinates;
     }
 
-    public static CoordinateHelper fromRowCoordinates(List<Coordinate> coordinates) {
-        return new CoordinateHelper(coordinates);
+    public static CoordinateBuilder fromRowCoordinates(List<Coordinate> coordinates) {
+        return new CoordinateBuilder(coordinates);
     }
 
-    public CoordinateHelper connectStartEnd() {
+    public CoordinateBuilder connectStartEnd() {
         List<Coordinate> connectedCoordinates = new ArrayList<>(coordinates);
         Coordinate start = coordinates.getFirst();
         Coordinate end = coordinates.getLast();
         if (!start.equals(end)) {
             connectedCoordinates.add(coordinates.getFirst());
         }
-        return new CoordinateHelper(connectedCoordinates);
+        return new CoordinateBuilder(connectedCoordinates);
     }
 
-    public CoordinateHelper sortByCounterClockwise() {
+    public CoordinateBuilder sortByCounterClockwise() {
         List<Coordinate> result = new ArrayList<>(coordinates);
         if (isClockwise()) {
             Collections.reverse(result);
         }
-        return new CoordinateHelper(result);
+        return new CoordinateBuilder(result);
     }
 
     public List<Coordinate> build() {

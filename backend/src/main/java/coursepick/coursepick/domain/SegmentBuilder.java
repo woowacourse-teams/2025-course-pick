@@ -7,24 +7,24 @@ import java.util.Collections;
 import java.util.List;
 
 @Helper
-public class SegmentHelper {
+public class SegmentBuilder {
 
     private final List<Segment> segments;
 
-    private SegmentHelper(List<Segment> segments) {
+    private SegmentBuilder(List<Segment> segments) {
         this.segments = segments;
     }
 
-    public static SegmentHelper fromLines(List<GeoLine> geoLines) {
+    public static SegmentBuilder fromGeoLines(List<GeoLine> geoLines) {
         List<Segment> segments = geoLines.stream()
                 .map(GeoLine::toSegment)
                 .toList();
-        
-        return new SegmentHelper(segments);
+
+        return new SegmentBuilder(segments);
     }
 
     // 경향성이 같은 것끼리 합친다.
-    public SegmentHelper mergeSameDirection() {
+    public SegmentBuilder mergeSameDirection() {
         List<Segment> mergedSegments = new ArrayList<>();
         mergedSegments.add(segments.getFirst());
         for (int i = 1; i < segments.size(); i++) {
@@ -38,11 +38,11 @@ public class SegmentHelper {
                 mergedSegments.add(currentSegment);
             }
         }
-        return new SegmentHelper(mergedSegments);
+        return new SegmentBuilder(mergedSegments);
     }
 
     // 경사타입이 같은 것끼리 합친다.
-    public SegmentHelper mergeSameInclineType() {
+    public SegmentBuilder mergeSameInclineType() {
         List<Segment> mergedSegments = new ArrayList<>();
         mergedSegments.add(segments.getFirst());
         for (int i = 1; i < segments.size(); i++) {
@@ -58,7 +58,7 @@ public class SegmentHelper {
                 mergedSegments.add(currentSegment);
             }
         }
-        return new SegmentHelper(mergedSegments);
+        return new SegmentBuilder(mergedSegments);
     }
 
     public List<Segment> build() {
