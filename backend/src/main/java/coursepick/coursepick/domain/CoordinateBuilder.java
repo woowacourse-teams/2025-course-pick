@@ -1,21 +1,18 @@
 package coursepick.coursepick.domain;
 
-import lombok.experimental.Helper;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_COORDINATE_COUNT;
 
-@Helper
 public class CoordinateBuilder {
 
     private final List<Coordinate> coordinates;
 
     private CoordinateBuilder(List<Coordinate> coordinates) {
         if (coordinates.size() < 2) {
-            throw new IllegalArgumentException(INVALID_COORDINATE_COUNT.message(coordinates.size()));
+            throw INVALID_COORDINATE_COUNT.create(coordinates.size());
         }
         this.coordinates = coordinates;
     }

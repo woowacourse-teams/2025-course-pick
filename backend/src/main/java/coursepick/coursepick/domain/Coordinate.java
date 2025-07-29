@@ -50,13 +50,13 @@ public record Coordinate(
 
     private static void validateLatitudeRange(double roundedLatitude) {
         if (roundedLatitude < -90 || roundedLatitude > 90) {
-            throw new IllegalArgumentException(ErrorType.INVALID_LATITUDE_RANGE.message(roundedLatitude));
+            throw ErrorType.INVALID_LATITUDE_RANGE.create(roundedLatitude);
         }
     }
 
     private static void validateLongitudeRange(double roundedLongitude) {
         if (roundedLongitude < -180 || roundedLongitude >= 180) {
-            throw new IllegalArgumentException(ErrorType.INVALID_LONGITUDE_RANGE.message(roundedLongitude));
+            throw ErrorType.INVALID_LONGITUDE_RANGE.create(roundedLongitude);
         }
     }
 }

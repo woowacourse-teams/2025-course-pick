@@ -11,8 +11,8 @@ public record CourseName(
         String value
 ) {
     public CourseName {
-        String compactName = compact(value);
-        validateLength(compactName);
+        value = compact(value);
+        validateLength(value);
     }
 
     private static String compact(String value) {
@@ -21,7 +21,7 @@ public record CourseName(
 
     private static void validateLength(String compactName) {
         if (compactName.length() < 2 || compactName.length() > 30) {
-            throw new IllegalArgumentException(INVALID_NAME_LENGTH.message(compactName));
+            throw INVALID_NAME_LENGTH.create(compactName);
         }
     }
 }

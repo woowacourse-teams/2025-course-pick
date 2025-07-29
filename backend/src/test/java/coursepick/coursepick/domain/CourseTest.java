@@ -29,7 +29,7 @@ class CourseTest {
         @Test
         void 앞_뒤_공백을_제거하여_생성한다() {
             var course = new Course(" 코스이름   ", getNormalCoordinates());
-            assertThat(course.name()).isEqualTo("코스이름");
+            assertThat(course.name().value()).isEqualTo("코스이름");
         }
 
         @ParameterizedTest
@@ -51,7 +51,7 @@ class CourseTest {
         })
         void 이름의_연속공백을_한_칸으로_변환하여_코스를_생성한다(String name) {
             var course = new Course(name, getNormalCoordinates());
-            assertThat(course.name()).isEqualTo("코스 이름");
+            assertThat(course.name().value()).isEqualTo("코스 이름");
         }
 
         @Test

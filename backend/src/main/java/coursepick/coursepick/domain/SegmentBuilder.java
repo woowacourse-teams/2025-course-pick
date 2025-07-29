@@ -1,12 +1,9 @@
 package coursepick.coursepick.domain;
 
-import lombok.experimental.Helper;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Helper
 public class SegmentBuilder {
 
     private final List<Segment> segments;

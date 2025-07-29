@@ -65,7 +65,7 @@ class GpxCourseParserTest {
         assertThat(courses.size()).isEqualTo(1);
         Course course = courses.getFirst();
         Coordinate firstCoordinate = course.segments().getFirst().startCoordinate();
-        assertThat(course.name()).isEqualTo("test-course");
+        assertThat(course.name().value()).isEqualTo("test-course");
         assertThat(firstCoordinate).isEqualTo(new Coordinate(37.4869510, 126.9230870, 27.8));
     }
 }
