@@ -1,36 +1,51 @@
 package coursepick.coursepick.domain;
 
+import lombok.experimental.Helper;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_COORDINATE_COUNT;
 
-public record Coordinates(
-        List<Coordinate> coordinates
-) {
-    public Coordinates {
+@Helper
+public class CoordinateHelper {
+
+    private final List<Coordinate> coordinates;
+
+    public CoordinateHelper(List<Coordinate> coordinates) {
         if (coordinates.size() < 2) {
             throw new IllegalArgumentException(INVALID_COORDINATE_COUNT.message(coordinates.size()));
         }
+        this.coordinates = coordinates;
     }
 
-    public Coordinates connectStartEnd() {
+    public CoordinateHelper connectStartEnd() {
         List<Coordinate> connectedCoordinates = new ArrayList<>(coordinates);
         Coordinate start = coordinates.getFirst();
         Coordinate end = coordinates.getLast();
         if (!start.equals(end)) {
             connectedCoordinates.add(coordinates.getFirst());
         }
-        return new Coordinates(connectedCoordinates);
+        return new CoordinateHelper(connectedCoordinates);
     }
 
-    public Coordinates sortByCounterClockwise() {
+    public CoordinateHelper sortByCounterClockwise() {
         List<Coordinate> result = new ArrayList<>(coordinates);
         if (isClockwise()) {
             Collections.reverse(result);
         }
-        return new Coordinates(result);
+        return new CoordinateHelper(result);
+    }
+
+    public List<GeoLine> toGeoLines() {
+        List<GeoLine> geoLines = new ArrayList<>();
+        for (int i = 0; i < coordinates.size() - 1; i++) {
+            Coordinate front = coordinates.get(i);
+            Coordinate back = coordinates.get(i + 1);
+            geoLines.add(GeoLine.between(front, back));
+        }
+        return geoLines;
     }
 
     private boolean isClockwise() {

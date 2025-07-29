@@ -6,7 +6,6 @@ import org.locationtech.spatial4j.distance.GeodesicSphereDistCalc;
 import org.locationtech.spatial4j.shape.Point;
 import org.locationtech.spatial4j.shape.ShapeFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public record GeoLine(
@@ -17,17 +16,6 @@ public record GeoLine(
 
     public static GeoLine between(Coordinate start, Coordinate end) {
         return new GeoLine(start, end);
-    }
-
-    public static List<GeoLine> split(Coordinates coordinates) {
-        List<Coordinate> coordinateList = coordinates.coordinates();
-        List<GeoLine> geoLines = new ArrayList<>();
-        for (int i = 0; i < coordinateList.size() - 1; i++) {
-            Coordinate front = coordinateList.get(i);
-            Coordinate back = coordinateList.get(i + 1);
-            geoLines.add(GeoLine.between(front, back));
-        }
-        return geoLines;
     }
 
     public Segment toSegment() {

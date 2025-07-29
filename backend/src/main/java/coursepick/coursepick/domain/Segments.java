@@ -16,12 +16,13 @@ public record Segments(
     }
 
     private static Segments create(List<Coordinate> coordinates) {
-        Coordinates sortedCoordinates = new Coordinates(coordinates)
+        List<Segment> segments = new CoordinateHelper(coordinates)
                 .connectStartEnd()
-                .sortByCounterClockwise();
-        List<Segment> segments = GeoLine.split(sortedCoordinates).stream()
-                .map(GeoLine::toSegment)
+                .sortByCounterClockwise()
+                .toGeoLines()
+                .stream().map(GeoLine::toSegment)
                 .toList();
+        
         return new Segments(segments);
     }
 
