@@ -39,3 +39,7 @@ out/
 ### Cloude Code ###
 CLAUDE.md
 /backend/.claude/**
+
+### Log ###
+/logs/**
+/backend/logs/**
