@@ -95,7 +95,11 @@ public class Course {
     }
 
     public List<Segment> segments() {
-        List<Segment> segments = Segment.split(coordinates);
+        List<GeoLine> geoLines = GeoLine.split(coordinates);
+        List<Segment> segments = geoLines.stream()
+                .map(GeoLine::toSegment)
+                .toList();
+
         List<Segment> sameDirectionSegments = Segment.mergeSameDirection(segments);
         return Segment.mergeSameInclineType(sameDirectionSegments);
     }

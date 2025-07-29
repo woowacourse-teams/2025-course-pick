@@ -9,32 +9,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SegmentTest {
 
     @Test
-    void 좌표들을_2개_단위의_세그먼트로_쪼갠다() {
-        List<Coordinate> coordinates = List.of(
-                new Coordinate(0, 0, 0),
-                new Coordinate(1, 1, 10),
-                new Coordinate(2, 2, 20),
-                new Coordinate(3, 3, 30)
-        );
-
-        List<Segment> segments = Segment.split(coordinates);
-
-        assertThat(segments).hasSize(3);
-        assertThat(segments.get(0).coordinates()).containsExactly(
-                new Coordinate(0, 0, 0),
-                new Coordinate(1, 1, 10)
-        );
-        assertThat(segments.get(1).coordinates()).containsExactly(
-                new Coordinate(1, 1, 10),
-                new Coordinate(2, 2, 20)
-        );
-        assertThat(segments.get(2).coordinates()).containsExactly(
-                new Coordinate(2, 2, 20),
-                new Coordinate(3, 3, 30)
-        );
-    }
-
-    @Test
     void 경향성이_같은_세그먼트끼리_합친다() {
         List<Segment> segments = List.of(
                 new Segment(List.of(new Coordinate(0, 0, 0), new Coordinate(1, 1, 10))),    // UP

@@ -7,17 +7,6 @@ import java.util.List;
 public record Segment(
         List<Coordinate> coordinates
 ) {
-    // 좌표들을 2개 단위의 세그먼트로 쪼갠다.
-    public static List<Segment> split(List<Coordinate> coordinates) {
-        List<Segment> segments = new ArrayList<>();
-        for (int i = 0; i < coordinates.size() - 1; i++) {
-            Coordinate front = coordinates.get(i);
-            Coordinate back = coordinates.get(i + 1);
-            segments.add(new Segment(List.of(front, back)));
-        }
-        return segments;
-    }
-
     // 경향성이 같은 것끼리 합친다.
     public static List<Segment> mergeSameDirection(List<Segment> segments) {
         List<Segment> mergedSegments = new ArrayList<>();
