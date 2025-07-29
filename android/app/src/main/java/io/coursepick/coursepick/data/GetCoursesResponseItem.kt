@@ -12,44 +12,37 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GetCoursesResponseItem(
-    val type: String?,
-    val geometry: Geometry?,
-    val properties: Properties?,
+    val id: Long?,
+    val name: String?,
+    val distance: Double?,
+    val length: Double?,
+    val roadType: String?,
+    val difficulty: Double?,
+    val coordinates: List<CoordinateResponse?>?,
 ) {
     @Serializable
-    data class Geometry(
-        val type: String?,
-        val coordinates: List<List<Double?>?>?,
-    )
-
-    @Serializable
-    data class Properties(
-        val id: Long?,
-        val name: String?,
-        val distance: Double?,
-        val length: Double?,
-        val roadType: String?,
-        val difficulty: Double?,
+    data class CoordinateResponse(
+        val latitude: Double?,
+        val longitude: Double?,
     )
 
     fun toCourseOrNull(): Course? {
         val coordinates: List<Coordinate> =
-            geometry?.coordinates?.map { coordinate: List<Double?>? ->
+            coordinates?.map { coordinate: CoordinateResponse? ->
                 if (coordinate == null) return null
                 Coordinate(
-                    Latitude(coordinate[0] ?: return null),
-                    Longitude(coordinate[1] ?: return null),
+                    Latitude(coordinate.latitude ?: return null),
+                    Longitude(coordinate.longitude ?: return null),
                 )
             } ?: return null
-        if (properties == null) return null
         return Course(
-            id = properties.id ?: return null,
-            name = CourseName(properties.name ?: return null),
-            distance = Distance(properties.distance?.toInt() ?: return null),
-            length = Length(properties.length?.toInt() ?: return null),
+            id = id ?: return null,
+            name = CourseName(name ?: return null),
+            distance = Distance(distance?.toInt() ?: return null),
+            length = Length(length?.toInt() ?: return null),
+            type = roadType.takeUnless { type: String? -> type == "알수없음" },
+            difficulty = difficulty.toCourseDifficulty(),
             coordinates = coordinates,
-            type = properties.roadType.takeUnless { type: String? -> type == "알수없음" },
-            difficulty = properties.difficulty.toCourseDifficulty(),
         )
     }
 
