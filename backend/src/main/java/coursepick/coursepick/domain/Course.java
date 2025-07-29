@@ -119,16 +119,21 @@ public class Course {
     }
 
     private static boolean isFirstAndLastCoordinateDifferent(List<Coordinate> coordinates) {
-        return !coordinates.getFirst().hasSameLatitudeAndLongitude(coordinates.getLast());
+        return !coordinates.getFirst().equals(coordinates.getLast());
     }
 
     private static List<Coordinate> sortByCounterClockwise(List<Coordinate> coordinates) {
-        int lowestCoordinateIndex = findLowestCoordinateIndex(coordinates);
-        List<Coordinate> counterClockWiseCoordinates = new ArrayList<>(coordinates);
-        if (isClockwise(coordinates, lowestCoordinateIndex)) {
-            Collections.reverse(counterClockWiseCoordinates);
+        List<Coordinate> result = new ArrayList<>(coordinates);
+        if (isClockwise(coordinates)) {
+            Collections.reverse(result);
         }
-        return counterClockWiseCoordinates;
+        return result;
+    }
+
+    private static boolean isClockwise(List<Coordinate> coordinates) {
+        int lowestCoordinateIndex = findLowestCoordinateIndex(coordinates);
+        int nextIndex = (lowestCoordinateIndex + 1) % (coordinates.size() - 1);
+        return coordinates.get(lowestCoordinateIndex).isRightOf(coordinates.get(nextIndex));
     }
 
     private static int findLowestCoordinateIndex(List<Coordinate> coordinates) {
@@ -142,10 +147,5 @@ public class Course {
             }
         }
         return lowestCoordinateIndex;
-    }
-
-    private static boolean isClockwise(List<Coordinate> coordinates, int lowestCoordinateIndex) {
-        int nextIndex = (lowestCoordinateIndex + 1) % (coordinates.size() - 1);
-        return coordinates.get(lowestCoordinateIndex).isRightOf(coordinates.get(nextIndex));
     }
 }
