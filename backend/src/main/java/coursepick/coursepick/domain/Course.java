@@ -106,13 +106,13 @@ public class Course {
 
     private static void validateNameLength(String compactName) {
         if (compactName.length() < 2 || compactName.length() > 30) {
-            throw new IllegalArgumentException(INVALID_NAME_LENGTH.message(compactName));
+            throw INVALID_NAME_LENGTH.create(compactName);
         }
     }
 
     private static void validateCoordinatesCount(List<Coordinate> coordinates) {
         if (coordinates.size() < 2) {
-            throw new IllegalArgumentException(INVALID_COORDINATE_COUNT.message(coordinates.size()));
+            throw INVALID_COORDINATE_COUNT.create(coordinates.size());
         }
     }
 

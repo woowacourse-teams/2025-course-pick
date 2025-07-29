@@ -1,8 +1,6 @@
 package coursepick.coursepick.application;
 
 import coursepick.coursepick.application.dto.CourseResponse;
-import coursepick.coursepick.application.exception.ErrorType;
-import coursepick.coursepick.application.exception.NotFoundException;
 import coursepick.coursepick.domain.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
 import java.util.List;
+
+import static coursepick.coursepick.application.exception.ErrorType.INVALID_FILE_EXTENSION;
+import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_COURSE;
 
 @Slf4j
 @Service
@@ -27,7 +28,7 @@ public class CourseApplicationService {
         CourseParser courseParser = courseParsers.stream()
                 .filter(parser -> parser.canParse(fileExtension))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(ErrorType.INVALID_FILE_EXTENSION.message()));
+                .orElseThrow(INVALID_FILE_EXTENSION::create);
 
         List<Course> courses = parseCoursesFromFile(fileStream, courseParser);
         saveCourses(courses);
@@ -57,7 +58,7 @@ public class CourseApplicationService {
     @Transactional(readOnly = true)
     public Coordinate findClosestCoordinate(long id, double latitude, double longitude) {
         Course course = courseRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorType.NOT_EXIST_COURSE.message(id)));
+                .orElseThrow(() -> NOT_EXIST_COURSE.create(id));
 
         return course.closestCoordinateFrom(new Coordinate(latitude, longitude));
     }
