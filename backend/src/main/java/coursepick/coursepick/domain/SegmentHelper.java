@@ -3,6 +3,7 @@ package coursepick.coursepick.domain;
 import lombok.experimental.Helper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Helper
@@ -14,14 +15,11 @@ public class SegmentHelper {
         this.segments = segments;
     }
 
-    public static SegmentHelper from(List<Coordinate> coordinates) {
-        List<Segment> segments = new CoordinateHelper(coordinates)
-                .connectStartEnd()
-                .sortByCounterClockwise()
-                .toGeoLines()
-                .stream().map(GeoLine::toSegment)
+    public static SegmentHelper fromLines(List<GeoLine> geoLines) {
+        List<Segment> segments = geoLines.stream()
+                .map(GeoLine::toSegment)
                 .toList();
-
+        
         return new SegmentHelper(segments);
     }
 
@@ -63,7 +61,7 @@ public class SegmentHelper {
         return new SegmentHelper(mergedSegments);
     }
 
-    public List<Segment> segments() {
-        return segments;
+    public List<Segment> build() {
+        return Collections.unmodifiableList(segments);
     }
 }

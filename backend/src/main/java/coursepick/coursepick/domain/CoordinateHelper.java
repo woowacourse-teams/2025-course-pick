@@ -13,11 +13,15 @@ public class CoordinateHelper {
 
     private final List<Coordinate> coordinates;
 
-    public CoordinateHelper(List<Coordinate> coordinates) {
+    private CoordinateHelper(List<Coordinate> coordinates) {
         if (coordinates.size() < 2) {
             throw new IllegalArgumentException(INVALID_COORDINATE_COUNT.message(coordinates.size()));
         }
         this.coordinates = coordinates;
+    }
+
+    public static CoordinateHelper fromRowCoordinates(List<Coordinate> coordinates) {
+        return new CoordinateHelper(coordinates);
     }
 
     public CoordinateHelper connectStartEnd() {
@@ -38,14 +42,8 @@ public class CoordinateHelper {
         return new CoordinateHelper(result);
     }
 
-    public List<GeoLine> toGeoLines() {
-        List<GeoLine> geoLines = new ArrayList<>();
-        for (int i = 0; i < coordinates.size() - 1; i++) {
-            Coordinate front = coordinates.get(i);
-            Coordinate back = coordinates.get(i + 1);
-            geoLines.add(GeoLine.between(front, back));
-        }
-        return geoLines;
+    public List<Coordinate> build() {
+        return Collections.unmodifiableList(coordinates);
     }
 
     private boolean isClockwise() {

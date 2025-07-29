@@ -1,0 +1,31 @@
+package coursepick.coursepick.domain;
+
+import lombok.experimental.Helper;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+@Helper
+public class GeoLineHelper {
+
+    private final List<GeoLine> lines;
+
+    private GeoLineHelper(List<GeoLine> lines) {
+        this.lines = lines;
+    }
+
+    public static GeoLineHelper fromCoordinates(List<Coordinate> coordinates) {
+        List<GeoLine> lines = new ArrayList<>();
+        for (int i = 0; i < coordinates.size() - 1; i++) {
+            Coordinate front = coordinates.get(i);
+            Coordinate back = coordinates.get(i + 1);
+            lines.add(GeoLine.between(front, back));
+        }
+        return new GeoLineHelper(lines);
+    }
+
+    public List<GeoLine> build() {
+        return Collections.unmodifiableList(lines);
+    }
+}

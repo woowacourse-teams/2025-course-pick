@@ -28,14 +28,20 @@ public class Course {
     @CollectionTable(name = "segment")
     private final List<Segment> segments;
 
-    public Course(String name, RoadType roadType, List<Coordinate> coordinates) {
+    public Course(String name, RoadType roadType, List<Coordinate> rowCoordinates) {
         this.id = null;
         this.name = new CourseName(name);
         this.roadType = roadType;
-        this.segments = SegmentHelper.from(coordinates)
+        List<Coordinate> coordinates = CoordinateHelper.fromRowCoordinates(rowCoordinates)
+                .connectStartEnd()
+                .sortByCounterClockwise()
+                .build();
+        List<GeoLine> lines = GeoLineHelper.fromCoordinates(coordinates)
+                .build();
+        this.segments = SegmentHelper.fromLines(lines)
                 .mergeSameDirection()
                 .mergeSameInclineType()
-                .segments();
+                .build();
     }
 
     public Course(String name, List<Coordinate> coordinates) {
