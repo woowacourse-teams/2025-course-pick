@@ -6,9 +6,9 @@ import coursepick.coursepick.domain.CourseParser;
 import io.jenetics.jpx.GPX;
 import io.jenetics.jpx.Length;
 import io.jenetics.jpx.Track;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -20,16 +20,13 @@ public class GpxCourseParser implements CourseParser {
         return fileExtension.equals("gpx");
     }
 
+    @SneakyThrows
     public List<Course> parse(InputStream fileStream) {
-        try {
-            GPX gpx = GPX.Reader.of(GPX.Reader.Mode.LENIENT).read(fileStream);
+        GPX gpx = GPX.Reader.of(GPX.Reader.Mode.LENIENT).read(fileStream);
 
-            return gpx.tracks()
-                    .map(track -> new Course(track.getName().orElse("Default"), getCoordinates(track)))
-                    .toList();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return gpx.tracks()
+                .map(track -> new Course(track.getName().orElse("Default"), getCoordinates(track)))
+                .toList();
     }
 
     private static List<Coordinate> getCoordinates(Track track) {

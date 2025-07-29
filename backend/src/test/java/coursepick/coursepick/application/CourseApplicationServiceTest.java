@@ -1,11 +1,11 @@
 package coursepick.coursepick.application;
 
 import coursepick.coursepick.application.dto.CourseResponse;
-import coursepick.coursepick.application.exception.NotFoundException;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
 import coursepick.coursepick.test_util.DatabaseCleaner;
 import coursepick.coursepick.test_util.DatabaseInserter;
+import jakarta.persistence.EntityNotFoundException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -85,6 +85,6 @@ class CourseApplicationServiceTest {
     @Test
     void 코스가_존재하지_않을_경우_예외가_발생한다() {
         Assertions.assertThatThrownBy(() -> sut.findClosestCoordinate(1L, 0, 0))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(EntityNotFoundException.class);
     }
 }
