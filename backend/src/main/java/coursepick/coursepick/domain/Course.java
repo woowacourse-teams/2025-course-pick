@@ -100,6 +100,16 @@ public class Course {
         return Math.clamp(score, 1, 10);
     }
 
+    public List<Segment> segments() {
+        List<GeoLine> geoLines = GeoLine.split(coordinates);
+        List<Segment> segments = geoLines.stream()
+                .map(GeoLine::toSegment)
+                .toList();
+
+        List<Segment> sameDirectionSegments = Segment.mergeSameDirection(segments);
+        return Segment.mergeSameInclineType(sameDirectionSegments);
+    }
+
     private static String compactName(String name) {
         return name.trim().replaceAll("\\s+", " ");
     }
