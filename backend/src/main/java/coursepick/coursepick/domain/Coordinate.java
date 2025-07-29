@@ -1,8 +1,10 @@
 package coursepick.coursepick.domain;
 
-import coursepick.coursepick.application.exception.ErrorType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+
+import static coursepick.coursepick.application.exception.ErrorType.INVALID_LATITUDE_RANGE;
+import static coursepick.coursepick.application.exception.ErrorType.INVALID_LONGITUDE_RANGE;
 
 @Embeddable
 public record Coordinate(
@@ -58,13 +60,13 @@ public record Coordinate(
 
     private static void validateLatitudeRange(double roundedLatitude) {
         if (roundedLatitude < -90 || roundedLatitude > 90) {
-            throw new IllegalArgumentException(ErrorType.INVALID_LATITUDE_RANGE.message(roundedLatitude));
+            throw INVALID_LATITUDE_RANGE.create(roundedLatitude);
         }
     }
 
     private static void validateLongitudeRange(double roundedLongitude) {
         if (roundedLongitude < -180 || roundedLongitude >= 180) {
-            throw new IllegalArgumentException(ErrorType.INVALID_LONGITUDE_RANGE.message(roundedLongitude));
+            throw INVALID_LONGITUDE_RANGE.create(roundedLongitude);
         }
     }
 }

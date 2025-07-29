@@ -3,6 +3,7 @@ package coursepick.coursepick.infrastructure;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
 import coursepick.coursepick.domain.CourseParser;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -26,28 +27,25 @@ public class KmlCourseParser implements CourseParser {
     }
 
     @Override
+    @SneakyThrows
     public List<Course> parse(InputStream fileStream) {
         List<Course> courses = new ArrayList<>();
 
-        try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(fileStream);
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.parse(fileStream);
 
-            NodeList placemarks = document.getElementsByTagName("Placemark");
+        NodeList placemarks = document.getElementsByTagName("Placemark");
 
-            for (int i = 0; i < placemarks.getLength(); i++) {
-                Node placemark = placemarks.item(i);
-                if (placemark.getNodeType() == Node.ELEMENT_NODE) {
-                    Element placemarkElement = (Element) placemark;
-                    Course course = parseCourse(placemarkElement);
-                    if (course != null) {
-                        courses.add(course);
-                    }
+        for (int i = 0; i < placemarks.getLength(); i++) {
+            Node placemark = placemarks.item(i);
+            if (placemark.getNodeType() == Node.ELEMENT_NODE) {
+                Element placemarkElement = (Element) placemark;
+                Course course = parseCourse(placemarkElement);
+                if (course != null) {
+                    courses.add(course);
                 }
             }
-        } catch (Exception e) {
-            throw new RuntimeException("KML 파일 파싱 중 오류가 발생했습니다", e);
         }
 
         return courses;
