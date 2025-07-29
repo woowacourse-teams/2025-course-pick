@@ -32,7 +32,7 @@ public class Course {
         this.id = null;
         this.name = new CourseName(name);
         this.roadType = roadType;
-        this.segments = Segment.create(coordinates);
+        this.segments = Segments.merge(coordinates).segments();
     }
 
     public Course(String name, List<Coordinate> coordinates) {

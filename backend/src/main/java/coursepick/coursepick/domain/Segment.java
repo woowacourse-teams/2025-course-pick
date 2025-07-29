@@ -14,18 +14,6 @@ public record Segment(
         @Column(columnDefinition = "TEXT")
         List<GeoLine> lines
 ) {
-    public static List<Segment> create(List<Coordinate> coordinates) {
-        Coordinates sortedCoordinates = new Coordinates(coordinates)
-                .connectStartEnd()
-                .sortByCounterClockwise();
-        List<Segment> segments = GeoLine.split(sortedCoordinates).stream()
-                .map(GeoLine::toSegment)
-                .toList();
-
-        List<Segment> sameDirectionSegments = Segment.mergeSameDirection(segments);
-        return Segment.mergeSameInclineType(sameDirectionSegments);
-    }
-
     public InclineType inclineType() {
         return InclineType.of(startCoordinate(), endCoordinate());
     }
@@ -63,40 +51,7 @@ public record Segment(
         return coordinates;
     }
 
-    public Coordinate startCoordinate() {
-        return lines.getFirst().start();
-    }
-
-    private Coordinate endCoordinate() {
-        return lines.getLast().end();
-    }
-
-    private Segment merge(Segment other) {
-        List<GeoLine> mergedCoordinates = new ArrayList<>();
-        mergedCoordinates.addAll(this.lines);
-        mergedCoordinates.addAll(other.lines);
-        return new Segment(mergedCoordinates);
-    }
-
-    // 경향성이 같은 것끼리 합친다.
-    private static List<Segment> mergeSameDirection(List<Segment> segments) {
-        List<Segment> mergedSegments = new ArrayList<>();
-        mergedSegments.add(segments.getFirst());
-        for (int i = 1; i < segments.size(); i++) {
-            Segment beforeSegment = mergedSegments.removeLast();
-            Segment currentSegment = segments.get(i);
-
-            if (beforeSegment.isSameDirection(currentSegment)) {
-                mergedSegments.add(beforeSegment.merge(currentSegment));
-            } else {
-                mergedSegments.add(beforeSegment);
-                mergedSegments.add(currentSegment);
-            }
-        }
-        return mergedSegments;
-    }
-
-    private boolean isSameDirection(Segment other) {
+    public boolean isSameDirection(Segment other) {
         double startElevation = startCoordinate().elevation();
         double endElevation = endCoordinate().elevation();
         double otherStartElevation = other.startCoordinate().elevation();
@@ -108,23 +63,18 @@ public record Segment(
         return Math.signum(elevationDiff) == Math.signum(otherElevationDiff);
     }
 
-    // 경사타입이 같은 것끼리 합친다.
-    private static List<Segment> mergeSameInclineType(List<Segment> segments) {
-        List<Segment> mergedSegments = new ArrayList<>();
-        mergedSegments.add(segments.getFirst());
-        for (int i = 1; i < segments.size(); i++) {
-            Segment beforeSegment = mergedSegments.removeLast();
-            Segment currentSegment = segments.get(i);
-            InclineType beforeInclineType = beforeSegment.inclineType();
-            InclineType currentInclineType = currentSegment.inclineType();
+    public Coordinate startCoordinate() {
+        return lines.getFirst().start();
+    }
 
-            if (beforeInclineType == currentInclineType) {
-                mergedSegments.add(beforeSegment.merge(currentSegment));
-            } else {
-                mergedSegments.add(beforeSegment);
-                mergedSegments.add(currentSegment);
-            }
-        }
-        return mergedSegments;
+    public Segment merge(Segment other) {
+        List<GeoLine> mergedCoordinates = new ArrayList<>();
+        mergedCoordinates.addAll(this.lines);
+        mergedCoordinates.addAll(other.lines);
+        return new Segment(mergedCoordinates);
+    }
+
+    private Coordinate endCoordinate() {
+        return lines.getLast().end();
     }
 }
