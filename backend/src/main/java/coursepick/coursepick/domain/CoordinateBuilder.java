@@ -20,11 +20,11 @@ public class CoordinateBuilder {
         this.coordinates = coordinates;
     }
 
-    public static CoordinateBuilder withRowCoordinates(List<Coordinate> coordinates) {
+    public static CoordinateBuilder 좌표들을_세팅한다(List<Coordinate> coordinates) {
         return new CoordinateBuilder(coordinates);
     }
 
-    public CoordinateBuilder connectStartEnd() {
+    public CoordinateBuilder 첫점과_끝점의_위치가_다르면_첫점을_뒤에_추가한다() {
         List<Coordinate> connectedCoordinates = new ArrayList<>(coordinates);
         Coordinate start = coordinates.getFirst();
         Coordinate end = coordinates.getLast();
@@ -34,7 +34,7 @@ public class CoordinateBuilder {
         return new CoordinateBuilder(connectedCoordinates);
     }
 
-    public CoordinateBuilder sortByCounterClockwise() {
+    public CoordinateBuilder 시계_반대_방향으로_정렬한다() {
         List<Coordinate> result = new ArrayList<>(coordinates);
         if (isClockwise()) {
             Collections.reverse(result);

@@ -15,7 +15,7 @@ public class SegmentBuilder {
         this.segments = segments;
     }
 
-    public static SegmentBuilder withConnectedGeoLines(List<GeoLine> geoLines) {
+    public static SegmentBuilder 연결된_선으로부터_생성한다(List<GeoLine> geoLines) {
         List<Segment> segments = geoLines.stream()
                 .map(GeoLine::toSegment)
                 .toList();
@@ -24,7 +24,7 @@ public class SegmentBuilder {
     }
 
     // 경향성이 같은 것끼리 합친다.
-    public SegmentBuilder mergeSameDirection() {
+    public SegmentBuilder 경사_방향성이_같은_것끼리는_합친다() {
         List<Segment> mergedSegments = new ArrayList<>();
         mergedSegments.add(segments.getFirst());
         for (int i = 1; i < segments.size(); i++) {
@@ -42,7 +42,7 @@ public class SegmentBuilder {
     }
 
     // 경사타입이 같은 것끼리 합친다.
-    public SegmentBuilder mergeSameInclineType() {
+    public SegmentBuilder 경사_유형이_같은_것끼리는_합친다() {
         List<Segment> mergedSegments = new ArrayList<>();
         mergedSegments.add(segments.getFirst());
         for (int i = 1; i < segments.size(); i++) {

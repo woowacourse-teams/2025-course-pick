@@ -32,15 +32,15 @@ public class Course {
         this.id = null;
         this.name = new CourseName(name);
         this.roadType = roadType;
-        List<Coordinate> coordinates = CoordinateBuilder.withRowCoordinates(rowCoordinates)
-                .connectStartEnd()
-                .sortByCounterClockwise()
+        List<Coordinate> coordinates = CoordinateBuilder.좌표들을_세팅한다(rowCoordinates)
+                .첫점과_끝점의_위치가_다르면_첫점을_뒤에_추가한다()
+                .시계_반대_방향으로_정렬한다()
                 .build();
-        List<GeoLine> lines = GeoLineBuilder.withAdjacentCoordinates(coordinates)
+        List<GeoLine> lines = GeoLineBuilder.인접한_점을_2개씩_짝지어_선들을_만든다(coordinates)
                 .build();
-        this.segments = SegmentBuilder.withConnectedGeoLines(lines)
-                .mergeSameDirection()
-                .mergeSameInclineType()
+        this.segments = SegmentBuilder.연결된_선으로부터_생성한다(lines)
+                .경사_방향성이_같은_것끼리는_합친다()
+                .경사_유형이_같은_것끼리는_합친다()
                 .build();
     }
 
