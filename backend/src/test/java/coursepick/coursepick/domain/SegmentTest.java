@@ -11,9 +11,9 @@ class SegmentTest {
     @Test
     void 경향성이_같은_세그먼트끼리_합친다() {
         List<Segment> segments = List.of(
-                new Segment(List.of(new Coordinate(0, 0, 0), new Coordinate(1, 1, 10))),    // UP
-                new Segment(List.of(new Coordinate(1, 1, 10), new Coordinate(2, 2, 20))),   // UP
-                new Segment(List.of(new Coordinate(2, 2, 20), new Coordinate(3, 3, 10)))    // DOWN
+                Segment.create(new Coordinate(0, 0, 0), new Coordinate(1, 1, 10)),    // UP
+                Segment.create(new Coordinate(1, 1, 10), new Coordinate(2, 2, 20)),   // UP
+                Segment.create(new Coordinate(2, 2, 20), new Coordinate(3, 3, 10))    // DOWN
         );
 
         List<Segment> mergedSegments = Segment.mergeSameDirection(segments);
@@ -33,11 +33,11 @@ class SegmentTest {
     @Test
     void 경사타입이_같은_세그먼트끼리_합친다() {
         List<Segment> segments = List.of(
-                new Segment(List.of(new Coordinate(0, 0, 0), new Coordinate(0, 0.0009, 15))),       // UPHILL
-                new Segment(List.of(new Coordinate(0, 0.0009, 15), new Coordinate(0, 0.0018, 30))), // UPHILL
-                new Segment(List.of(new Coordinate(0, 0.0018, 30), new Coordinate(0, 0.0027, 30))), // FLAT
-                new Segment(List.of(new Coordinate(0, 0.0027, 30), new Coordinate(0, 0.0036, 30))), // FLAT
-                new Segment(List.of(new Coordinate(0, 0.0036, 30), new Coordinate(0, 0.0048, 15)))  // DOWNHILL
+                Segment.create(new Coordinate(0, 0, 0), new Coordinate(0, 0.0009, 15)),       // UPHILL
+                Segment.create(new Coordinate(0, 0.0009, 15), new Coordinate(0, 0.0018, 30)), // UPHILL
+                Segment.create(new Coordinate(0, 0.0018, 30), new Coordinate(0, 0.0027, 30)), // FLAT
+                Segment.create(new Coordinate(0, 0.0027, 30), new Coordinate(0, 0.0036, 30)), // FLAT
+                Segment.create(new Coordinate(0, 0.0036, 30), new Coordinate(0, 0.0048, 15))  // DOWNHILL
         );
 
         List<Segment> mergedSegments = Segment.mergeSameInclineType(segments);

@@ -3,7 +3,7 @@ package coursepick.coursepick.infrastructure;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import coursepick.coursepick.domain.Coordinate;
+import coursepick.coursepick.domain.GeoLine;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
@@ -11,12 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Converter
-public class CoordinateListConverter implements AttributeConverter<List<Coordinate>, String> {
+public class GeoLineListConverter implements AttributeConverter<List<GeoLine>, String> {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public String convertToDatabaseColumn(List<Coordinate> attribute) {
+    public String convertToDatabaseColumn(List<GeoLine> attribute) {
         if (attribute == null || attribute.isEmpty()) {
             return null;
         }
@@ -28,7 +28,7 @@ public class CoordinateListConverter implements AttributeConverter<List<Coordina
     }
 
     @Override
-    public List<Coordinate> convertToEntityAttribute(String dbData) {
+    public List<GeoLine> convertToEntityAttribute(String dbData) {
         if (dbData == null || dbData.isBlank()) {
             return new ArrayList<>();
         }

@@ -1,6 +1,6 @@
 package coursepick.coursepick.domain;
 
-import coursepick.coursepick.infrastructure.CoordinateListConverter;
+import coursepick.coursepick.infrastructure.GeoLineListConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embeddable;
@@ -10,10 +10,14 @@ import java.util.List;
 
 @Embeddable
 public record Segment(
-        @Convert(converter = CoordinateListConverter.class)
+        @Convert(converter = GeoLineListConverter.class)
         @Column(columnDefinition = "TEXT")
-        List<Coordinate> coordinates
+        List<GeoLine> lines
 ) {
+    public static Segment create(Coordinate start, Coordinate end) {
+        return new Segment(List.of(GeoLine.between(start, end)));
+    }
+
     public static List<Segment> create(List<Coordinate> coordinates) {
         List<GeoLine> geoLines = GeoLine.split(coordinates);
         List<Segment> segments = geoLines.stream()
@@ -65,29 +69,22 @@ public record Segment(
     }
 
     public InclineType inclineType() {
-        return InclineType.of(coordinates.getFirst(), coordinates.getLast());
+        return InclineType.of(lines.getFirst().start(), lines.getLast().end());
     }
 
     public Meter length() {
         Meter total = Meter.zero();
-        for (int i = 0; i < coordinates.size() - 1; i++) {
-            Coordinate coord1 = coordinates.get(i);
-            Coordinate coord2 = coordinates.get(i + 1);
-
-            Meter meter = GeoLine.between(coord1, coord2).length();
-            total = total.add(meter);
+        for (GeoLine line : lines) {
+            total = total.add(line.length());
         }
-
         return total;
     }
 
     public Coordinate closestCoordinateFrom(Coordinate target) {
-        Coordinate closestCoordinate = coordinates.getFirst();
+        Coordinate closestCoordinate = lines.getFirst().start();
         Meter minDistance = Meter.max();
 
-        for (int i = 0; i < coordinates.size() - 1; i++) {
-            GeoLine line = GeoLine.between(coordinates.get(i), coordinates.get(i + 1));
-
+        for (GeoLine line : lines) {
             Coordinate closestCoordinateOnLine = line.closestCoordinateFrom(target);
             Meter distanceOnLine = GeoLine.between(target, closestCoordinateOnLine).length();
             if (distanceOnLine.isWithin(minDistance)) {
@@ -99,6 +96,15 @@ public record Segment(
         return closestCoordinate;
     }
 
+    public List<Coordinate> coordinates() {
+        List<Coordinate> coordinates = new ArrayList<>();
+        for (GeoLine line : lines) {
+            coordinates.add(line.start());
+        }
+        coordinates.add(lines.getLast().end());
+        return coordinates;
+    }
+
     private enum Direction {
         UP,
         DOWN,
@@ -106,8 +112,8 @@ public record Segment(
     }
 
     private Direction direction() {
-        double startElevation = coordinates.getFirst().elevation();
-        double endElevation = coordinates.getLast().elevation();
+        double startElevation = lines.getFirst().start().elevation();
+        double endElevation = lines.getLast().end().elevation();
         if (startElevation < endElevation) {
             return Direction.UP;
         } else if (startElevation > endElevation) {
@@ -118,10 +124,9 @@ public record Segment(
     }
 
     private Segment merge(Segment other) {
-        ArrayList<Coordinate> mergedCoordinates = new ArrayList<>();
-        mergedCoordinates.addAll(this.coordinates);
-        mergedCoordinates.removeLast();
-        mergedCoordinates.addAll(other.coordinates);
+        List<GeoLine> mergedCoordinates = new ArrayList<>();
+        mergedCoordinates.addAll(this.lines);
+        mergedCoordinates.addAll(other.lines);
         return new Segment(mergedCoordinates);
     }
 }

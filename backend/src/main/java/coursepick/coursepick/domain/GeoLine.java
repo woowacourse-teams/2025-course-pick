@@ -30,7 +30,7 @@ public record GeoLine(
     }
 
     public Segment toSegment() {
-        return new Segment(List.of(start, end));
+        return new Segment(List.of(GeoLine.between(start, end)));
     }
 
     public Meter length() {
