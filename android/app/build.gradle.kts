@@ -90,6 +90,7 @@ dependencies {
     implementation(libs.kakao.maps)
     implementation(libs.play.services.location)
     implementation(libs.firebase.analytics)
+    implementation(libs.timber)
     testImplementation(libs.assertj.core)
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)

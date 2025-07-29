@@ -23,6 +23,7 @@ retrofit2-kotlinx-serialization-converter = "1.0.0"
 kakao-maps = "2.12.8"
 play-services-location = "21.3.0"
 assertj-core = "3.27.3"
+timber = "5.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -47,6 +48,7 @@ retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit
 assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj-core" }
 kakao-maps = { module = "com.kakao.maps.open:android", version.ref = "kakao-maps" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "play-services-location" }
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
