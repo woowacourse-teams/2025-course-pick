@@ -4,11 +4,12 @@ import coursepick.coursepick.application.CourseApplicationService;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.presentation.api.CourseWebApi;
-import coursepick.coursepick.presentation.dto.CoordinateResponse;
-import coursepick.coursepick.presentation.dto.GeoJson;
+import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
+import coursepick.coursepick.presentation.dto.CourseWebResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,23 +42,23 @@ public class CourseWebController implements CourseWebApi {
 
     @Override
     @GetMapping("/courses")
-    public List<GeoJson> findNearbyCourses(
+    public List<CourseWebResponse> findNearbyCourses(
             @RequestParam("lat") double latitude,
             @RequestParam("lng") double longitude
     ) {
         List<CourseResponse> responses = courseApplicationService.findNearbyCourses(latitude, longitude);
-        return GeoJson.from(responses);
+        return CourseWebResponse.from(responses);
     }
 
     @Override
     @GetMapping("/courses/{id}/closest-coordinate")
-    public CoordinateResponse findClosestCoordinate(
+    public CoordinateWebResponse findClosestCoordinate(
             @PathVariable("id") long id,
             @RequestParam("lat") double latitude,
             @RequestParam("lng") double longitude
     ) {
         Coordinate coordinate = courseApplicationService.findClosestCoordinate(id, latitude, longitude);
-        return CoordinateResponse.from(coordinate);
+        return CoordinateWebResponse.from(coordinate);
     }
 
     private void validateAdminToken(String token) {

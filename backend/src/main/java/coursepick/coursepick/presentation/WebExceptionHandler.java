@@ -39,7 +39,7 @@ public class WebExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception exception) {
-        log.error("예상치 못한 예외 발생: ", exception);
+        log.error("{}", exception.getMessage(), exception);
         return ResponseEntity.internalServerError().body(ErrorResponse.from(exception));
     }
 }
