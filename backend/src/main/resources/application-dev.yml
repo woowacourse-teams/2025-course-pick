@@ -25,7 +25,7 @@ admin.token: ${ADMIN_TOKEN}
 region:
   kakao:
     base-url: ${REGION_KAKAO_BASE_URL}
-    coord2region-path: ${REGION_KAKAO_COORD_TO_REGION_PATH}
+    coordinate-to-region-endpoint: ${REGION_KAKAO_COORDINATE_TO_REGION_ENDPOINT}
     app-key: ${REGION_KAKAO_APP_KEY}
 
 

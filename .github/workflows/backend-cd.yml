@@ -79,7 +79,7 @@ jobs:
           --ADMIN_TOKEN='${{ secrets.DEV_ADMIN_TOKEN }}' \
           --REGION_KAKAO_APP_KEY='${{ secrets.DEV_REGION_KAKAO_APP_KEY }}' \
           --REGION_KAKAO_BASE_URL='${{ secrets.DEV_REGION_KAKAO_BASE_URL }}' \
-          --REGION_KAKAO_COORD_TO_REGION_PATH='${{ secrets.DEV_REGION_KAKAO_COORD_TO_REGION_PATH }}' \
+          --REGION_KAKAO_COORDINATE_TO_REGION_ENDPOINT='${{ secrets.DEV_REGION_KAKAO_COORDINATE_TO_REGION_ENDPOINT }}' \
           > /var/log/app.log 2>&1"
           sleep 5
           echo "Server started successfully"

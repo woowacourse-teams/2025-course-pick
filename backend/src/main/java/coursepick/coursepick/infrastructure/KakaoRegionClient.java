@@ -20,24 +20,24 @@ public class KakaoRegionClient implements RegionClient {
     public static final String AUTHORIZATION_HEADER_PREFIX = "KakaoAK ";
     private final RestClient restClient;
     private final String appKey;
-    private final String coord2regionPath;
+    private final String coordinateToRegionEndpoint;
 
     public KakaoRegionClient(
             @Value("${region.kakao.base-url}") String baseUrl,
             @Value("${region.kakao.app-key}") String appKey,
-            @Value("${region.kakao.coord2region-path}") String coord2regionPath
+            @Value("${region.kakao.coordinate-to-region-endpoint}") String coordinateToRegionEndpoint
     ) {
         this.restClient = RestClient.builder()
                 .baseUrl(URI.create(baseUrl))
                 .build();
         this.appKey = appKey;
-        this.coord2regionPath = coord2regionPath;
+        this.coordinateToRegionEndpoint = coordinateToRegionEndpoint;
     }
 
     @Override
     public String convertCoordinateToRegion(Coordinate coordinate) {
         ResponseEntity<RegionResponse> responseEntity = restClient.get().uri(uriBuilder ->
-                        uriBuilder.path(coord2regionPath)
+                        uriBuilder.path(coordinateToRegionEndpoint)
                                 .queryParam("y", coordinate.latitude())
                                 .queryParam("x", coordinate.longitude())
                                 .build()
