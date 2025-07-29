@@ -1,12 +1,29 @@
 package coursepick.coursepick.domain;
 
+import coursepick.coursepick.infrastructure.CoordinateListConverter;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Embeddable;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
+@Embeddable
 public record Segment(
+        @Convert(converter = CoordinateListConverter.class)
+        @Column(columnDefinition = "TEXT")
         List<Coordinate> coordinates
 ) {
+    public static List<Segment> create(List<Coordinate> coordinates) {
+        List<GeoLine> geoLines = GeoLine.split(coordinates);
+        List<Segment> segments = geoLines.stream()
+                .map(GeoLine::toSegment)
+                .toList();
+
+        List<Segment> sameDirectionSegments = Segment.mergeSameDirection(segments);
+        return Segment.mergeSameInclineType(sameDirectionSegments);
+    }
+
     // 경향성이 같은 것끼리 합친다.
     public static List<Segment> mergeSameDirection(List<Segment> segments) {
         List<Segment> mergedSegments = new ArrayList<>();
@@ -51,8 +68,35 @@ public record Segment(
         return InclineType.of(coordinates.getFirst(), coordinates.getLast());
     }
 
-    public List<Coordinate> coordinates() {
-        return Collections.unmodifiableList(coordinates);
+    public Meter length() {
+        Meter total = Meter.zero();
+        for (int i = 0; i < coordinates.size() - 1; i++) {
+            Coordinate coord1 = coordinates.get(i);
+            Coordinate coord2 = coordinates.get(i + 1);
+
+            Meter meter = GeoLine.between(coord1, coord2).length();
+            total = total.add(meter);
+        }
+
+        return total;
+    }
+
+    public Coordinate closestCoordinateFrom(Coordinate target) {
+        Coordinate closestCoordinate = coordinates.getFirst();
+        Meter minDistance = Meter.max();
+
+        for (int i = 0; i < coordinates.size() - 1; i++) {
+            GeoLine line = GeoLine.between(coordinates.get(i), coordinates.get(i + 1));
+
+            Coordinate closestCoordinateOnLine = line.closestCoordinateFrom(target);
+            Meter distanceOnLine = GeoLine.between(target, closestCoordinateOnLine).length();
+            if (distanceOnLine.isWithin(minDistance)) {
+                minDistance = distanceOnLine;
+                closestCoordinate = closestCoordinateOnLine;
+            }
+        }
+
+        return closestCoordinate;
     }
 
     private enum Direction {

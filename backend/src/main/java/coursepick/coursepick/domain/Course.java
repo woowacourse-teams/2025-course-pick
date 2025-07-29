@@ -32,18 +32,19 @@ public class Course {
 
     @BatchSize(size = 30)
     @ElementCollection
-    @CollectionTable(name = "coordinate")
-    private final List<Coordinate> coordinates;
+    @CollectionTable(name = "segment")
+    private final List<Segment> segments;
 
     public Course(String name, RoadType roadType, List<Coordinate> coordinates) {
         String compactName = compactName(name);
         validateNameLength(compactName);
         validateCoordinatesCount(coordinates);
-
+        List<Coordinate> sortedCoordinates = sortByCounterClockwise(connectStartEndCoordinate(coordinates));
+        List<Segment> segments = Segment.create(sortedCoordinates);
         this.id = null;
         this.name = compactName;
         this.roadType = roadType;
-        this.coordinates = sortByCounterClockwise(connectStartEndCoordinate(coordinates));
+        this.segments = segments;
     }
 
     public Course(String name, List<Coordinate> coordinates) {
@@ -52,30 +53,23 @@ public class Course {
 
     public Meter length() {
         Meter total = Meter.zero();
-
-        for (int i = 0; i < coordinates.size() - 1; i++) {
-            Coordinate coord1 = coordinates.get(i);
-            Coordinate coord2 = coordinates.get(i + 1);
-
-            Meter meter = GeoLine.between(coord1, coord2).length();
-            total = total.add(meter);
+        for (Segment segment : segments) {
+            total = total.add(segment.length());
         }
-
         return total;
     }
 
     public Coordinate closestCoordinateFrom(Coordinate target) {
-        Coordinate closestCoordinate = coordinates.getFirst();
+        Coordinate closestCoordinate = segments.getFirst().coordinates().getFirst();
         Meter minDistance = Meter.max();
 
-        for (int i = 0; i < coordinates.size() - 1; i++) {
-            GeoLine line = GeoLine.between(coordinates.get(i), coordinates.get(i + 1));
+        for (Segment segment : segments) {
+            Coordinate currentClosestCoordinate = segment.closestCoordinateFrom(target);
+            Meter distanceOnLine = GeoLine.between(target, currentClosestCoordinate).length();
 
-            Coordinate closestCoordinateOnLine = line.closestCoordinateFrom(target);
-            Meter distanceOnLine = GeoLine.between(target, closestCoordinateOnLine).length();
             if (distanceOnLine.isWithin(minDistance)) {
                 minDistance = distanceOnLine;
-                closestCoordinate = closestCoordinateOnLine;
+                closestCoordinate = currentClosestCoordinate;
             }
         }
 
@@ -100,14 +94,16 @@ public class Course {
         return Math.clamp(score, 1, 10);
     }
 
-    public List<Segment> segments() {
-        List<GeoLine> geoLines = GeoLine.split(coordinates);
-        List<Segment> segments = geoLines.stream()
-                .map(GeoLine::toSegment)
-                .toList();
-
-        List<Segment> sameDirectionSegments = Segment.mergeSameDirection(segments);
-        return Segment.mergeSameInclineType(sameDirectionSegments);
+    public List<Coordinate> coordinates() {
+        List<Coordinate> coordinates = new ArrayList<>();
+        for (int i = 0; i < segments.size(); i++) {
+            Segment segment = segments.get(i);
+            coordinates.addAll(segment.coordinates());
+            if (i != segments.size() - 1) {
+                coordinates.removeLast();
+            }
+        }
+        return coordinates;
     }
 
     private static String compactName(String name) {
