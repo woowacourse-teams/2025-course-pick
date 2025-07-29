@@ -14,7 +14,7 @@ public record Segment(
         @Column(columnDefinition = "TEXT")
         List<GeoLine> lines
 ) {
-    public static List<Segment> create(List<Coordinate> coordinates) {
+    public static List<Segment> create(Coordinates coordinates) {
         List<GeoLine> geoLines = GeoLine.split(coordinates);
         List<Segment> segments = geoLines.stream()
                 .map(GeoLine::toSegment)

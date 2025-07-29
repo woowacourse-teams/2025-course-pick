@@ -19,11 +19,12 @@ public record GeoLine(
         return new GeoLine(start, end);
     }
 
-    public static List<GeoLine> split(List<Coordinate> coordinates) {
+    public static List<GeoLine> split(Coordinates coordinates) {
+        List<Coordinate> coordinateList = coordinates.coordinates();
         List<GeoLine> geoLines = new ArrayList<>();
-        for (int i = 0; i < coordinates.size() - 1; i++) {
-            Coordinate front = coordinates.get(i);
-            Coordinate back = coordinates.get(i + 1);
+        for (int i = 0; i < coordinateList.size() - 1; i++) {
+            Coordinate front = coordinateList.get(i);
+            Coordinate back = coordinateList.get(i + 1);
             geoLines.add(GeoLine.between(front, back));
         }
         return geoLines;
