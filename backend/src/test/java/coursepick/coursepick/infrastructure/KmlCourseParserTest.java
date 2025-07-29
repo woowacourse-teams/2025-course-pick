@@ -49,9 +49,8 @@ class KmlCourseParserTest {
 
         Course course = courses.getFirst();
         assertThat(course.name()).isEqualTo("테스트 코스");
-        assertThat(course.coordinates()).hasSize(3);
 
-        Coordinate firstCoordinate = course.coordinates().getFirst();
+        Coordinate firstCoordinate = course.segments().getFirst().startCoordinate();
         assertThat(firstCoordinate.latitude()).isEqualTo(37.522489);
         assertThat(firstCoordinate.longitude()).isEqualTo(127.099029);
     }

@@ -60,20 +60,20 @@ public class Course {
     }
 
     public Coordinate closestCoordinateFrom(Coordinate target) {
-        Coordinate closestCoordinate = segments.getFirst().coordinates().getFirst();
+        Coordinate minDistanceCoordinate = segments.getFirst().startCoordinate();
         Meter minDistance = Meter.max();
 
         for (Segment segment : segments) {
-            Coordinate currentClosestCoordinate = segment.closestCoordinateFrom(target);
-            Meter distanceOnLine = GeoLine.between(target, currentClosestCoordinate).length();
+            Coordinate currentCoordinate = segment.closestCoordinateFrom(target);
+            Meter currentDistance = GeoLine.between(target, currentCoordinate).length();
 
-            if (distanceOnLine.isWithin(minDistance)) {
-                minDistance = distanceOnLine;
-                closestCoordinate = currentClosestCoordinate;
+            if (currentDistance.isWithin(minDistance)) {
+                minDistance = currentDistance;
+                minDistanceCoordinate = currentCoordinate;
             }
         }
 
-        return closestCoordinate;
+        return minDistanceCoordinate;
     }
 
     public Meter distanceFrom(Coordinate target) {
@@ -92,18 +92,6 @@ public class Course {
         };
 
         return Math.clamp(score, 1, 10);
-    }
-
-    public List<Coordinate> coordinates() {
-        List<Coordinate> coordinates = new ArrayList<>();
-        for (int i = 0; i < segments.size(); i++) {
-            Segment segment = segments.get(i);
-            coordinates.addAll(segment.coordinates());
-            if (i != segments.size() - 1) {
-                coordinates.removeLast();
-            }
-        }
-        return coordinates;
     }
 
     private static String compactName(String name) {

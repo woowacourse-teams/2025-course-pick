@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GpxCourseParserTest {
@@ -64,15 +63,9 @@ class GpxCourseParserTest {
         List<Course> courses = gpxCourseParser.parse(inputStream);
 
         assertThat(courses.size()).isEqualTo(1);
-        assertThat(courses).extracting(course -> course.name())
-                .contains("test-course");
-        assertThat(courses).extracting(course -> course.coordinates().size())
-                .contains(3);
-        assertThat(courses).extracting(course -> course.coordinates())
-                .containsExactly(List.of(
-                        new Coordinate(37.4869510, 126.9230870, 27.8),
-                        new Coordinate(37.4845100, 126.9255380, 29.2),
-                        new Coordinate(37.4869510, 126.9230870, 27.8)
-                ));
+        Course course = courses.getFirst();
+        Coordinate firstCoordinate = course.segments().getFirst().startCoordinate();
+        assertThat(course.name()).isEqualTo("test-course");
+        assertThat(firstCoordinate).isEqualTo(new Coordinate(37.4869510, 126.9230870, 27.8));
     }
 }

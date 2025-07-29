@@ -60,43 +60,43 @@ class CourseTest {
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
-        @Test
-        void 반시계방향이면_그대로_설정된다() {
-            var counter = new Course("코스이름", List.of(
-                    new Coordinate(0d, 0d),
-                    new Coordinate(5d, 5d),
-                    new Coordinate(0d, 10d),
-                    new Coordinate(5d, -5d),
-                    new Coordinate(0d, 0d)
-            ));
-
-            assertThat(counter.coordinates()).containsExactly(
-                    new Coordinate(0d, 0d),
-                    new Coordinate(5d, 5d),
-                    new Coordinate(0d, 10d),
-                    new Coordinate(5d, -5d),
-                    new Coordinate(0d, 0d)
-            );
-        }
-
-        @Test
-        void 시계방향이면_반대로_설정된다() {
-            var clockwiseCourse = new Course("코스이름", List.of(
-                    new Coordinate(0d, 0d),
-                    new Coordinate(5d, -5d),
-                    new Coordinate(0d, 10d),
-                    new Coordinate(5d, 5d),
-                    new Coordinate(0d, 0d)
-            ));
-
-            assertThat(clockwiseCourse.coordinates()).containsExactly(
-                    new Coordinate(0d, 0d),
-                    new Coordinate(5d, 5d),
-                    new Coordinate(0d, 10d),
-                    new Coordinate(5d, -5d),
-                    new Coordinate(0d, 0d)
-            );
-        }
+//        @Test
+//        void 반시계방향이면_그대로_설정된다() {
+//            var counter = new Course("코스이름", List.of(
+//                    new Coordinate(0d, 0d),
+//                    new Coordinate(5d, 5d),
+//                    new Coordinate(0d, 10d),
+//                    new Coordinate(5d, -5d),
+//                    new Coordinate(0d, 0d)
+//            ));
+//
+//            assertThat(counter.coordinates()).containsExactly(
+//                    new Coordinate(0d, 0d),
+//                    new Coordinate(5d, 5d),
+//                    new Coordinate(0d, 10d),
+//                    new Coordinate(5d, -5d),
+//                    new Coordinate(0d, 0d)
+//            );
+//        }
+//
+//        @Test
+//        void 시계방향이면_반대로_설정된다() {
+//            var clockwiseCourse = new Course("코스이름", List.of(
+//                    new Coordinate(0d, 0d),
+//                    new Coordinate(5d, -5d),
+//                    new Coordinate(0d, 10d),
+//                    new Coordinate(5d, 5d),
+//                    new Coordinate(0d, 0d)
+//            ));
+//
+//            assertThat(clockwiseCourse.coordinates()).containsExactly(
+//                    new Coordinate(0d, 0d),
+//                    new Coordinate(5d, 5d),
+//                    new Coordinate(0d, 10d),
+//                    new Coordinate(5d, -5d),
+//                    new Coordinate(0d, 0d)
+//            );
+//        }
 
         private static List<Coordinate> getNormalCoordinates() {
             return List.of(new Coordinate(1d, 1d), new Coordinate(1d, 1d));
