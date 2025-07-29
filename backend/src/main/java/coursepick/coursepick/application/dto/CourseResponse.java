@@ -10,21 +10,21 @@ import java.util.List;
 public record CourseResponse(
         Long id,
         String name,
-        List<Coordinate> coordinates,
         Meter distance,
         Meter length,
         RoadType roadType,
-        double difficulty
+        double difficulty,
+        List<SegmentResponse> segments
 ) {
     public static CourseResponse from(Course course, Coordinate target) {
         return new CourseResponse(
                 course.id(),
                 course.name(),
-                course.coordinates(),
                 course.distanceFrom(target),
                 course.length(),
                 course.roadType(),
-                course.difficulty()
+                course.difficulty(),
+                SegmentResponse.from(course.segments())
         );
     }
 }
