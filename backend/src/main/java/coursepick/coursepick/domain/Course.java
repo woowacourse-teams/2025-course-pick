@@ -2,7 +2,9 @@ package coursepick.coursepick.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,6 +15,8 @@ import static coursepick.coursepick.application.exception.ErrorType.INVALID_NAME
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
+@Getter
+@Accessors(fluent = true)
 public class Course {
 
     @Id
@@ -102,22 +106,6 @@ public class Course {
 
         List<Segment> sameDirectionSegments = Segment.mergeSameDirection(segments);
         return Segment.mergeSameInclineType(sameDirectionSegments);
-    }
-
-    public Long id() {
-        return id;
-    }
-
-    public String name() {
-        return name;
-    }
-
-    public List<Coordinate> coordinates() {
-        return coordinates;
-    }
-
-    public RoadType roadType() {
-        return roadType;
     }
 
     private static String compactName(String name) {
