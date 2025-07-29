@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import lombok.experimental.Accessors;
 
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ public class Course {
     @Enumerated(EnumType.STRING)
     private final RoadType roadType;
 
+    @BatchSize(size = 30)
     @ElementCollection
     @CollectionTable(name = "coordinate")
     private final List<Coordinate> coordinates;
