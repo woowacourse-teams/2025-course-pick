@@ -15,7 +15,7 @@ public class GeoLineBuilder {
         this.lines = lines;
     }
 
-    public static GeoLineBuilder fromCoordinates(List<Coordinate> coordinates) {
+    public static GeoLineBuilder withAdjacentCoordinates(List<Coordinate> coordinates) {
         List<GeoLine> lines = new ArrayList<>();
         for (int i = 0; i < coordinates.size() - 1; i++) {
             Coordinate front = coordinates.get(i);

@@ -20,7 +20,7 @@ public class CoordinateBuilder {
         this.coordinates = coordinates;
     }
 
-    public static CoordinateBuilder fromRowCoordinates(List<Coordinate> coordinates) {
+    public static CoordinateBuilder withRowCoordinates(List<Coordinate> coordinates) {
         return new CoordinateBuilder(coordinates);
     }
 

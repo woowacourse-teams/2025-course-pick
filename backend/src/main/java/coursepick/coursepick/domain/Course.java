@@ -32,13 +32,13 @@ public class Course {
         this.id = null;
         this.name = new CourseName(name);
         this.roadType = roadType;
-        List<Coordinate> coordinates = CoordinateBuilder.fromRowCoordinates(rowCoordinates)
+        List<Coordinate> coordinates = CoordinateBuilder.withRowCoordinates(rowCoordinates)
                 .connectStartEnd()
                 .sortByCounterClockwise()
                 .build();
-        List<GeoLine> lines = GeoLineBuilder.fromCoordinates(coordinates)
+        List<GeoLine> lines = GeoLineBuilder.withAdjacentCoordinates(coordinates)
                 .build();
-        this.segments = SegmentBuilder.fromGeoLines(lines)
+        this.segments = SegmentBuilder.withConnectedGeoLines(lines)
                 .mergeSameDirection()
                 .mergeSameInclineType()
                 .build();

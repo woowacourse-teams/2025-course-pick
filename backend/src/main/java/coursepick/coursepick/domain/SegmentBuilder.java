@@ -15,7 +15,7 @@ public class SegmentBuilder {
         this.segments = segments;
     }
 
-    public static SegmentBuilder fromGeoLines(List<GeoLine> geoLines) {
+    public static SegmentBuilder withConnectedGeoLines(List<GeoLine> geoLines) {
         List<Segment> segments = geoLines.stream()
                 .map(GeoLine::toSegment)
                 .toList();
