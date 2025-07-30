@@ -5,6 +5,6 @@
     <string name="main_course_unit_kilometer">%.2fkm</string>
     <string name="main_back_press_exit">버튼을 한 번 더 누르면 종료됩니다.</string>
     <string name="item_course_divider">|</string>
-    <string name="main_search_this_area">이 위치 재검색</string>
+    <string name="main_search_this_area">이 지역 검색</string>
     <string name="item_course_navigate">길찾기</string>
 </resources>
