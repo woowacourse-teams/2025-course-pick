@@ -62,7 +62,7 @@ class KakaoMapManager(
 
     fun draw(course: CourseItem) {
         kakaoMap?.let { map: KakaoMap ->
-            drawer.draw(map, course)
+            drawer.drawCourse(map, course)
         }
     }
 
@@ -78,7 +78,7 @@ class KakaoMapManager(
         locationProvider.fetchCurrentLocation(
             onSuccess = { location: Location ->
                 kakaoMap?.let { map: KakaoMap ->
-                    drawer.draw(map, R.drawable.image_current_location, location)
+                    drawer.drawLabel(map, R.drawable.image_current_location, location)
                     cameraController.moveTo(map, location)
                 }
             },
@@ -98,7 +98,7 @@ class KakaoMapManager(
         locationProvider.startLocationUpdates(
             onUpdate = { location ->
                 kakaoMap?.let { map: KakaoMap ->
-                    drawer.draw(map, R.drawable.image_current_location, location)
+                    drawer.drawLabel(map, R.drawable.image_current_location, location)
                 }
             },
             onError = {
