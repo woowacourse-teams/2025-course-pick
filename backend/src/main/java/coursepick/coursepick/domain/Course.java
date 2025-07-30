@@ -28,11 +28,11 @@ public class Course {
     @CollectionTable(name = "segment")
     private final List<Segment> segments;
 
-    public Course(String name, RoadType roadType, List<Coordinate> rowCoordinates) {
+    public Course(String name, RoadType roadType, List<Coordinate> rawCoordinates) {
         this.id = null;
         this.name = new CourseName(name);
         this.roadType = roadType;
-        List<Coordinate> coordinates = CoordinateBuilder.좌표들을_세팅한다(rowCoordinates)
+        List<Coordinate> coordinates = CoordinateBuilder.좌표들을_세팅한다(rawCoordinates)
                 .첫점과_끝점의_위치가_다르면_첫점을_뒤에_추가한다()
                 .시계_반대_방향으로_정렬한다()
                 .build();
