@@ -26,7 +26,7 @@ public class LineCourse extends Course {
         Coordinate first = this.coordinates.getFirst();
         Coordinate last = this.coordinates.getLast();
 
-        if (first.equals(first)) {
+        if (first.equals(target)) {
             return first;
         }
 
