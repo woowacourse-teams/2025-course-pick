@@ -26,7 +26,7 @@ class RouteLineOptionsFactory(
                     context.getColor(R.color.course_difficulty_hard),
                 ).arrowPatternedStyle(),
         )
-    private val flatStyle: RouteLineStyles =
+    private val flatStyle =
         RouteLineStyles.from(
             RouteLineStyle
                 .from(
@@ -63,7 +63,7 @@ class RouteLineOptionsFactory(
         return RouteLineOptions.from(segments).setStylesSet(stylesSet)
     }
 
-    private fun Segment.toRouteLineSegment(): RouteLineSegment =
+    private fun Segment.toRouteLineSegment() =
         RouteLineSegment.from(
             coordinates.map { it.toLatLng() },
             when (inclineType) {
