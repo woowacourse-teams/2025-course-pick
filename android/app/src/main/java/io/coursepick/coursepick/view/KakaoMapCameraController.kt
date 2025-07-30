@@ -7,6 +7,7 @@ import com.kakao.vectormap.camera.CameraAnimation
 import com.kakao.vectormap.camera.CameraUpdate
 import com.kakao.vectormap.camera.CameraUpdateFactory
 import io.coursepick.coursepick.domain.Coordinate
+import io.coursepick.coursepick.domain.Segment
 
 class KakaoMapCameraController {
     fun moveTo(
@@ -17,9 +18,19 @@ class KakaoMapCameraController {
     }
 
     fun fitTo(
+        course: CourseItem,
+        padding: Int,
         map: KakaoMap,
+    ) {
+        val coordinates: List<Coordinate> =
+            course.segments.flatMap { segment: Segment -> segment.coordinates }
+        fitTo(coordinates, padding, map)
+    }
+
+    private fun fitTo(
         coordinates: List<Coordinate>,
         padding: Int,
+        map: KakaoMap,
     ) {
         val latLngs: Array<LatLng> =
             coordinates

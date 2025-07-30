@@ -12,7 +12,6 @@ import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.Latitude
 import io.coursepick.coursepick.domain.Longitude
-import io.coursepick.coursepick.domain.Segment
 
 class KakaoMapManager(
     private val mapView: MapView,
@@ -71,9 +70,9 @@ class KakaoMapManager(
         val padding = mapView.context.resources.getDimensionPixelSize(R.dimen.course_route_padding)
         kakaoMap?.let { map: KakaoMap ->
             cameraController.fitTo(
-                map,
-                course.segments.flatMap { segment: Segment -> segment.coordinates },
+                course,
                 padding,
+                map,
             )
         }
     }
