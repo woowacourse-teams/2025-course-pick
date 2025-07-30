@@ -5,9 +5,11 @@ import io.coursepick.coursepick.domain.Course
 import io.coursepick.coursepick.domain.CourseDifficulty
 import io.coursepick.coursepick.domain.CourseName
 import io.coursepick.coursepick.domain.Distance
+import io.coursepick.coursepick.domain.InclineType
 import io.coursepick.coursepick.domain.Latitude
 import io.coursepick.coursepick.domain.Length
 import io.coursepick.coursepick.domain.Longitude
+import io.coursepick.coursepick.domain.Segment
 
 fun fakeCourse(
     id: Long,
@@ -16,7 +18,7 @@ fun fakeCourse(
     length: Int,
     latitude: Double,
     longitude: Double,
-    type: String? = null,
+    type: String = "트랙",
     difficulty: CourseDifficulty = CourseDifficulty.UNKNOWN,
 ): Course =
     Course(
@@ -24,9 +26,15 @@ fun fakeCourse(
         name = CourseName(name),
         distance = Distance(distance),
         length = Length(length),
-        coordinates = listOf(Coordinate(Latitude(latitude), Longitude(longitude))),
-        type = type,
+        roadType = type,
         difficulty = difficulty,
+        segments =
+            listOf(
+                Segment(
+                    InclineType.UNKNOWN,
+                    listOf(Coordinate(Latitude(latitude), Longitude(longitude))),
+                ),
+            ),
     )
 
 val COURSE_1 = fakeCourse(1, "코스 1", 10, 100, 1.0, 1.0)
