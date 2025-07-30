@@ -9,7 +9,6 @@ import coursepick.coursepick.presentation.dto.CourseWebResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,10 +42,12 @@ public class CourseWebController implements CourseWebApi {
     @Override
     @GetMapping("/courses")
     public List<CourseWebResponse> findNearbyCourses(
-            @RequestParam("lat") double latitude,
-            @RequestParam("lng") double longitude
+            @RequestParam("mapLat") double mapLatitude,
+            @RequestParam("mapLng") double mapLongitude,
+            @RequestParam(value = "userLat", required = false) Double userLatitude,
+            @RequestParam(value = "userLng", required = false) Double userLongitude
     ) {
-        List<CourseResponse> responses = courseApplicationService.findNearbyCourses(latitude, longitude);
+        List<CourseResponse> responses = courseApplicationService.findNearbyCourses(mapLatitude, mapLongitude);
         return CourseWebResponse.from(responses);
     }
 
