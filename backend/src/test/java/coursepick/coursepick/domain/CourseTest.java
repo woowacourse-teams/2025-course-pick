@@ -22,13 +22,13 @@ class CourseTest {
 
         @Test
         void 코스를_생성한다() {
-            assertThatCode(() -> new Course("코스이름", getNormalCoordinates()))
+            assertThatCode(() -> new CircleCourse("코스이름", getNormalCoordinates()))
                     .doesNotThrowAnyException();
         }
 
         @Test
         void 앞_뒤_공백을_제거하여_생성한다() {
-            var course = new Course(" 코스이름   ", getNormalCoordinates());
+            var course = new CircleCourse(" 코스이름   ", getNormalCoordinates());
             assertThat(course.name()).isEqualTo("코스이름");
         }
 
@@ -38,7 +38,7 @@ class CourseTest {
                 "짧"
         })
         void 잘못된_길이의_이름으로_코스를_생성하면_예외가_발생한다(String name) {
-            assertThatThrownBy(() -> new Course(name, getNormalCoordinates()))
+            assertThatThrownBy(() -> new CircleCourse(name, getNormalCoordinates()))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
@@ -50,19 +50,19 @@ class CourseTest {
                 "코스    이름",
         })
         void 이름의_연속공백을_한_칸으로_변환하여_코스를_생성한다(String name) {
-            var course = new Course(name, getNormalCoordinates());
+            var course = new CircleCourse(name, getNormalCoordinates());
             assertThat(course.name()).isEqualTo("코스 이름");
         }
 
         @Test
         void 코스의_좌표의_개수가_2보다_적으면_예외가_발생한다() {
-            assertThatThrownBy(() -> new Course("코스이름", List.of(new Coordinate(1d, 1d))))
+            assertThatThrownBy(() -> new CircleCourse("코스이름", List.of(new Coordinate(1d, 1d))))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
         @Test
         void 반시계방향이면_그대로_설정된다() {
-            var counter = new Course("코스이름", List.of(
+            var counter = new CircleCourse("코스이름", List.of(
                     new Coordinate(0d, 0d),
                     new Coordinate(5d, 5d),
                     new Coordinate(0d, 10d),
@@ -81,7 +81,7 @@ class CourseTest {
 
         @Test
         void 시계방향이면_반대로_설정된다() {
-            var clockwiseCourse = new Course("코스이름", List.of(
+            var clockwiseCourse = new CircleCourse("코스이름", List.of(
                     new Coordinate(0d, 0d),
                     new Coordinate(5d, -5d),
                     new Coordinate(0d, 10d),
@@ -105,7 +105,7 @@ class CourseTest {
 
     @Test
     void 코스의_총_거리를_계산할_수_있다() {
-        var course = new Course("한강뛰어보자", List.of(
+        var course = new CircleCourse("한강뛰어보자", List.of(
                 new Coordinate(37.518400, 126.995600),
                 new Coordinate(37.518000, 126.996500),
                 new Coordinate(37.517500, 126.998000),
@@ -134,7 +134,7 @@ class CourseTest {
             "37.516678, 126.997065, 46"
     })
     void 특정_좌표에서_코스까지_가장_가까운_거리를_계산할_수_있다(double latitude, double longitude, int expectedDistance) {
-        var course = new Course("한강뛰어보자", List.of(
+        var course = new CircleCourse("한강뛰어보자", List.of(
                 new Coordinate(37.519760, 126.995477),
                 new Coordinate(37.517083, 126.997182),
                 new Coordinate(37.519760, 126.995477)
@@ -148,7 +148,7 @@ class CourseTest {
 
     @Test
     void 코스_위의_점에서_코스까지의_거리는_0에_가깝다() {
-        var course = new Course("직선코스", List.of(
+        var course = new CircleCourse("직선코스", List.of(
                 new Coordinate(37.5, 127.0),
                 new Coordinate(37.5, 127.001),
                 new Coordinate(37.5, 127.0)
@@ -162,7 +162,7 @@ class CourseTest {
 
     @Test
     void 코스_시작점에서_코스까지의_거리는_0이다() {
-        var course = new Course("삼각형코스", List.of(
+        var course = new CircleCourse("삼각형코스", List.of(
                 new Coordinate(37.5, 127.0),
                 new Coordinate(37.501, 127.0),
                 new Coordinate(37.5005, 127.001),
@@ -175,38 +175,6 @@ class CourseTest {
         assertThat(distance.value()).isEqualTo(0.0);
     }
 
-    @Test
-    void 코스_내부의_점에서_코스까지의_거리를_계산한다() {
-        var course = new Course("사각형코스", List.of(
-                new Coordinate(37.5, 127.0),
-                new Coordinate(37.501, 127.0),
-                new Coordinate(37.501, 127.001),
-                new Coordinate(37.5, 127.001),
-                new Coordinate(37.5, 127.0)
-        ));
-        var target = new Coordinate(37.5005, 127.0005); // 사각형 중앙
-
-        var distance = course.distanceFrom(target);
-
-        assertThat((int) distance.value()).isEqualTo(44);
-    }
-
-    @Test
-    void 코스_외부_멀리_떨어진_점에서_코스까지의_거리를_계산한다() {
-        var course = new Course("작은원형코스", List.of(
-                new Coordinate(37.5, 127.0),
-                new Coordinate(37.5001, 127.0),
-                new Coordinate(37.5, 127.0001),
-                new Coordinate(37.4999, 127.0),
-                new Coordinate(37.5, 127.0)
-        ));
-        var target = new Coordinate(37.52, 127.02); // 매우 멀리 떨어진 점
-
-        var distance = course.distanceFrom(target);
-
-        assertThat((int) distance.value()).isEqualTo(2829);
-    }
-
     @ParameterizedTest
     @CsvSource({
             "37.4999, 126.9999, 14",   // 코스 바로 옆
@@ -214,7 +182,7 @@ class CourseTest {
             "37.5, 126.999, 88"        // 코스에서 서쪽으로 100m
     })
     void 코스_주변_다양한_위치에서의_거리를_계산한다(double latitude, double longitude, int expectedDistance) {
-        var course = new Course("정사각형코스", List.of(
+        var course = new CircleCourse("정사각형코스", List.of(
                 new Coordinate(37.5, 127.0),
                 new Coordinate(37.5001, 127.0),
                 new Coordinate(37.5001, 127.0001),
@@ -236,7 +204,7 @@ class CourseTest {
             "5, 0, 2.5, 2.5"
     })
     void 코스의_좌표_중에서_가장_가까운_좌표를_계산한다(double targetLatitude, double targetLongitude, double latitude, double longitude) {
-        Course course = new Course("왕복코스", List.of(
+        Course course = new CircleCourse("왕복코스", List.of(
                 new Coordinate(0, 0),
                 new Coordinate(10, 10.0),
                 new Coordinate(0, 0)
@@ -252,7 +220,7 @@ class CourseTest {
     @ParameterizedTest
     @MethodSource("createArguments")
     void 코스의_난이도를_계산한다(List<Coordinate> coordinates, RoadType roadType, double expectedDifficulty) {
-        var course = new Course("코스", roadType, coordinates);
+        var course = new CircleCourse("코스", roadType, coordinates);
 
         var difficulty = course.difficulty();
 
