@@ -54,11 +54,11 @@ class KakaoMapDrawer(
         latitude: Double,
         longitude: Double,
     ) {
-        val labelManager: LabelManager = map.labelManager ?: return
+        val manager: LabelManager = map.labelManager ?: return
         val styles: LabelStyles =
-            labelManager.addLabelStyles(LabelStyles.from(LabelStyle.from(iconResourceId)))
+            manager.addLabelStyles(LabelStyles.from(LabelStyle.from(iconResourceId)))
                 ?: return
-        val options: LabelOptions =
+        val options =
             LabelOptions
                 .from(
                     LatLng.from(
