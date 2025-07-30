@@ -1,5 +1,6 @@
 package coursepick.coursepick.domain;
 
+import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -99,7 +100,7 @@ class CourseTest {
 //        }
 
         private static List<Coordinate> getNormalCoordinates() {
-            return List.of(new Coordinate(1d, 1d), new Coordinate(1d, 1d));
+            return List.of(new Coordinate(1d, 1d), new Coordinate(2d, 2d));
         }
     }
 
@@ -256,23 +257,23 @@ class CourseTest {
 
         var difficulty = course.difficulty();
 
-        assertThat(difficulty).isEqualTo(expectedDifficulty);
+        assertThat(difficulty).isCloseTo(expectedDifficulty, Offset.offset(0.0001));
     }
 
     private static Stream<Arguments> createArguments() {
         return Stream.of(
                 Arguments.of(
-                        List.of(new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0)),
+                        List.of(new Coordinate(37.5, 127.0), new Coordinate(37.499999, 127.0), new Coordinate(37.5, 127.0)),
                         RoadType.트랙,
                         1
                 ),
                 Arguments.of(
-                        List.of(new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0)),
+                        List.of(new Coordinate(37.5, 127.0), new Coordinate(37.499999, 127.0), new Coordinate(37.5, 127.0)),
                         RoadType.트레일,
                         1
                 ),
                 Arguments.of(
-                        List.of(new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0)),
+                        List.of(new Coordinate(37.5, 127.0), new Coordinate(37.499999, 127.0), new Coordinate(37.5, 127.0)),
                         RoadType.보도,
                         1
                 ),

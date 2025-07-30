@@ -32,10 +32,16 @@ public class CoordinateBuilder {
     }
 
     public CoordinateBuilder 중복되는_점들을_제거한다() {
-        List<Coordinate> distinctCoordinates = coordinates.stream()
-                .distinct()
-                .toList();
-        return new CoordinateBuilder(distinctCoordinates);
+        List<Coordinate> nonDuplicatedCoordinates = new ArrayList<>();
+        nonDuplicatedCoordinates.add(coordinates.getFirst());
+        for (int i = 1; i < coordinates.size(); i++) {
+            Coordinate lastCoordinate = nonDuplicatedCoordinates.getLast();
+            Coordinate currentCoordinate = this.coordinates.get(i);
+            if (!lastCoordinate.equals(currentCoordinate)) {
+                nonDuplicatedCoordinates.add(currentCoordinate);
+            }
+        }
+        return new CoordinateBuilder(nonDuplicatedCoordinates);
     }
 
     public CoordinateBuilder 시계_반대_방향으로_정렬한다() {
