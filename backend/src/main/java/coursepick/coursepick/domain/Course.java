@@ -34,6 +34,7 @@ public class Course {
         this.roadType = roadType;
         List<Coordinate> coordinates = CoordinateBuilder.좌표들을_세팅한다(rawCoordinates)
                 .첫점과_끝점의_위치가_다르면_첫점을_뒤에_추가한다()
+                .중복되는_점들을_제거한다()
                 .시계_반대_방향으로_정렬한다()
                 .build();
         List<GeoLine> lines = GeoLineBuilder.인접한_점을_2개씩_짝지어_선들을_만든다(coordinates)

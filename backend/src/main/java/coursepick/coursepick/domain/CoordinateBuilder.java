@@ -31,6 +31,13 @@ public class CoordinateBuilder {
         return new CoordinateBuilder(connectedCoordinates);
     }
 
+    public CoordinateBuilder 중복되는_점들을_제거한다() {
+        List<Coordinate> distinctCoordinates = coordinates.stream()
+                .distinct()
+                .toList();
+        return new CoordinateBuilder(distinctCoordinates);
+    }
+
     public CoordinateBuilder 시계_반대_방향으로_정렬한다() {
         List<Coordinate> result = new ArrayList<>(coordinates);
         if (isClockwise()) {
