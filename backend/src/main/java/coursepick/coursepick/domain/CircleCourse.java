@@ -1,5 +1,6 @@
 package coursepick.coursepick.domain;
 
+import coursepick.coursepick.application.exception.ErrorType;
 import jakarta.persistence.DiscriminatorValue;
 
 import jakarta.persistence.Entity;
@@ -17,7 +18,7 @@ public class CircleCourse extends Course {
 
     public CircleCourse(String name, RoadType roadType, List<Coordinate> coordinates) {
         super(name, roadType, sortByCounterClockwise(coordinates));
-        validateIsCircle(coordinates);
+        validateIsCircle(this.coordinates);
     }
 
     public CircleCourse(String name, List<Coordinate> coordinates) {
@@ -45,7 +46,7 @@ public class CircleCourse extends Course {
 
     private void validateIsCircle(List<Coordinate> coordinates) {
         if (!coordinates.getFirst().equals(coordinates.getLast())) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(ErrorType.NOT_CONNECTED_CIRCLE_COURSE.message());
         }
     }
 
