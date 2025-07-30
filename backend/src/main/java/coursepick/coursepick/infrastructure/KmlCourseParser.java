@@ -63,7 +63,7 @@ public class KmlCourseParser implements CourseParser {
         if (courseName == null || courseName.isBlank()) return null;
         if (coordinates.isEmpty()) return null;
 
-        if (coordinates.getFirst().equals(coordinates.getLast())) {
+        if (coordinates.getFirst().hasSameLatitudeAndLongitude(coordinates.getLast())) {
             return new CircleCourse(courseName, RoadType.알수없음, coordinates);
         }
 
