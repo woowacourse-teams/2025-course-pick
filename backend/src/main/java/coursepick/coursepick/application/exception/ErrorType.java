@@ -9,6 +9,7 @@ public enum ErrorType {
     NOT_CONNECTED_CIRCLE_COURSE("원형 코스는 첫 좌표와 끝 좌표가 동일해야 합니다. 첫 좌표=%s, 끝 좌표=%s"),
     NOT_EXIST_COURSE("코스가 존재하지 않습니다. 코스id=%d"),
     INVALID_FILE_EXTENSION("파싱할 수 없는 파일 확장자입니다."),
+    INVALID_FILE("파")
     ;
 
     private final String message;

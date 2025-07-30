@@ -1,5 +1,6 @@
 package coursepick.coursepick.infrastructure;
 
+import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
 import coursepick.coursepick.domain.CourseParser;
@@ -28,7 +29,7 @@ public class GpxCourseParser implements CourseParser {
             GPX gpx = GPX.Reader.of(GPX.Reader.Mode.LENIENT).read(fileStream);
 
             return gpx.tracks()
-                    .map(track -> createCourseBy(track))
+                    .map(GpxCourseParser::createCourseBy)
                     .toList();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -40,7 +41,7 @@ public class GpxCourseParser implements CourseParser {
 
         List<Coordinate> coordinates = getCoordinates(track);
         validateCoordinatesIsEmpty(coordinates);
-        if (coordinates.getFirst().equals(coordinates.getLast())) {
+        if (coordinates.getFirst().hasSameLatitudeAndLongitude(coordinates.getLast())) {
             return new CircleCourse(trackName, RoadType.알수없음, coordinates);
         }
 
@@ -49,7 +50,7 @@ public class GpxCourseParser implements CourseParser {
 
     private static void validateCoordinatesIsEmpty(List<Coordinate> coordinates) {
         if (coordinates.isEmpty()) {
-            throw new IllegalArgumentException("잘못된 GPX 파일입니다.");
+            throw new IllegalArgumentException(ErrorType.INVALID_FILE_EXTENSION.message());
         }
     }
 
