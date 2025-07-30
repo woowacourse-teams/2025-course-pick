@@ -32,7 +32,10 @@ fun fakeCourse(
             listOf(
                 Segment(
                     InclineType.UNKNOWN,
-                    listOf(Coordinate(Latitude(latitude), Longitude(longitude))),
+                    listOf(
+                        Coordinate(Latitude(latitude), Longitude(longitude)),
+                        Coordinate(Latitude(latitude + 0.0001), Longitude(longitude + 0.0001)),
+                    ),
                 ),
             ),
     )
@@ -82,5 +85,5 @@ val FAKE_COURSES: List<Course> =
         COURSE_20,
     )
 
-val DEFAULT_LATITUDE_VALUE = 37.515293
-val DEFAULT_LONGITUDE_VALUE = 127.102987
+const val DEFAULT_LATITUDE_VALUE = 37.515293
+const val DEFAULT_LONGITUDE_VALUE = 127.102987
