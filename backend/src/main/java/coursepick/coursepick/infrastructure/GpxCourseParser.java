@@ -39,11 +39,18 @@ public class GpxCourseParser implements CourseParser {
         String trackName = track.getName().orElse("Default");
 
         List<Coordinate> coordinates = getCoordinates(track);
+        validateCoordinatesIsEmpty(coordinates);
         if (coordinates.getFirst().equals(coordinates.getLast())) {
             return new CircleCourse(trackName, RoadType.알수없음, coordinates);
         }
 
         return new LineCourse(trackName, RoadType.알수없음, coordinates);
+    }
+
+    private static void validateCoordinatesIsEmpty(List<Coordinate> coordinates) {
+        if (coordinates.isEmpty()) {
+            throw new IllegalArgumentException("잘못된 GPX 파일입니다.");
+        }
     }
 
     private static List<Coordinate> getCoordinates(Track track) {
