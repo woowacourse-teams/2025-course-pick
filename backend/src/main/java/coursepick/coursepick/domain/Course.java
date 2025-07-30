@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.BatchSize;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -87,17 +87,8 @@ public class Course {
         return GeoLine.between(minDistanceCoordinate, target).length();
     }
 
-    public double difficulty() {
-        Meter length = length();
-        if (length.isWithin(Meter.zero())) return 1.0;
-
-        double score = switch (roadType) {
-            case RoadType.보도, RoadType.알수없음 -> 1 + (9.0 / 42195) * length.value();
-            case RoadType.트랙 -> 1.0 + (9.0 / 60000) * length.value();
-            case RoadType.트레일 -> 1.0 + (9.0 / 22000) * length.value();
-        };
-
-        return Math.clamp(score, 1, 10);
+    public Difficulty difficulty() {
+        return Difficulty.fromLengthAndRoadType(length(), roadType);
     }
 
     public List<Segment> segments() {
