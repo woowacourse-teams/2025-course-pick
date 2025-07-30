@@ -48,10 +48,20 @@ public class CourseApplicationService {
     }
 
     @Transactional(readOnly = true)
-    public List<CourseResponse> findNearbyCourses(double latitude, double longitude) {
-        final Coordinate target = new Coordinate(latitude, longitude);
-        return courseRepository.findAllHasDistanceWithin(target, new Meter(1000)).stream()
-                .map(course -> CourseResponse.from(course, target))
+    public List<CourseResponse> findNearbyCourses(double mapLatitude, double mapLongitude) {
+        final Coordinate mapPosition = new Coordinate(mapLatitude, mapLongitude);
+        return courseRepository.findAllHasDistanceWithin(mapPosition, new Meter(1000)).stream()
+                .map(CourseResponse::from)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<CourseResponse> findNearbyCourses(double mapLatitude, double mapLongitude, double userLatitude, double userLongitude) {
+        final Coordinate mapPosition = new Coordinate(mapLatitude, mapLongitude);
+        final Coordinate userPosition = new Coordinate(userLatitude, userLongitude);
+
+        return courseRepository.findAllHasDistanceWithin(mapPosition, new Meter(1000)).stream()
+                .map(course -> CourseResponse.from(course, userPosition))
                 .toList();
     }
 

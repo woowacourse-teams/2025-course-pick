@@ -4,18 +4,26 @@ import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
 import coursepick.coursepick.domain.Meter;
 import coursepick.coursepick.domain.RoadType;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 
 import java.util.List;
+import java.util.Optional;
 
-public record CourseResponse(
-        Long id,
-        String name,
-        Meter distance,
-        Meter length,
-        RoadType roadType,
-        double difficulty,
-        List<SegmentResponse> segments
-) {
+@RequiredArgsConstructor
+@Getter
+@Accessors(fluent = true)
+public class CourseResponse {
+
+    private final Long id;
+    private final String name;
+    private final Meter distance;
+    private final Meter length;
+    private final RoadType roadType;
+    private final double difficulty;
+    private final List<SegmentResponse> segments;
+
     public static CourseResponse from(Course course, Coordinate target) {
         return new CourseResponse(
                 course.id(),
@@ -26,5 +34,21 @@ public record CourseResponse(
                 course.difficulty(),
                 SegmentResponse.from(course.segments())
         );
+    }
+
+    public static CourseResponse from(Course course) {
+        return new CourseResponse(
+                course.id(),
+                course.name(),
+                null,
+                course.length(),
+                course.roadType(),
+                course.difficulty(),
+                SegmentResponse.from(course.segments())
+        );
+    }
+
+    public Optional<Meter> distance() {
+        return Optional.ofNullable(distance);
     }
 }
