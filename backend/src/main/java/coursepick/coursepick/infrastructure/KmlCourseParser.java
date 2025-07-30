@@ -1,18 +1,21 @@
 package coursepick.coursepick.infrastructure;
 
+import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
 import coursepick.coursepick.domain.CourseParser;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,15 +30,18 @@ public class KmlCourseParser implements CourseParser {
     }
 
     @Override
-    @SneakyThrows
     public List<Course> parse(InputStream fileStream) {
         List<Course> courses = new ArrayList<>();
-
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document document = builder.parse(fileStream);
+        NodeList placemarks;
 
-        NodeList placemarks = document.getElementsByTagName("Placemark");
+        try {
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = builder.parse(fileStream);
+            placemarks = document.getElementsByTagName("Placemark");
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            throw ErrorType.FILE_PARSING_FAIL.create(e.getMessage());
+        }
 
         for (int i = 0; i < placemarks.getLength(); i++) {
             Node placemark = placemarks.item(i);
@@ -47,7 +53,6 @@ public class KmlCourseParser implements CourseParser {
                 }
             }
         }
-
         return courses;
     }
 

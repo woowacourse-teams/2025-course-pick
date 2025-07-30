@@ -35,6 +35,10 @@ public enum ErrorType {
             "파싱할 수 없는 파일 확장자입니다.",
             IllegalArgumentException::new
     ),
+    FILE_PARSING_FAIL(
+            "파일 파싱에 실패했습니다. 이유=%s",
+            IllegalArgumentException::new
+    ),
     INVALID_ADMIN_TOKEN(
             "올바르지 않은 어드민 토큰값 입니다.",
             SecurityException::new
