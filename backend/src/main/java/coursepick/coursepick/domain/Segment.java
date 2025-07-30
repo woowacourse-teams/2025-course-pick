@@ -11,7 +11,7 @@ import java.util.List;
 @Embeddable
 public record Segment(
         @Convert(converter = GeoLineListConverter.class)
-        @Column(columnDefinition = "TEXT")
+        @Column(name = "geolines", columnDefinition = "TEXT")
         List<GeoLine> lines
 ) {
     public InclineType inclineType() {
