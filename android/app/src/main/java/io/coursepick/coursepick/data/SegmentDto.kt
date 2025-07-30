@@ -6,8 +6,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SegmentDto(
-    val inclineType: String,
-    val coordinates: List<CoordinateDto>,
+    private val inclineType: String,
+    private val coordinates: List<CoordinateDto>,
 ) {
     fun toSegment(): Segment =
         Segment(

@@ -9,13 +9,13 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CourseDto(
-    val id: Long,
-    val name: String,
-    val distance: Double,
-    val length: Double,
-    val roadType: String,
-    val difficulty: Double,
-    val segments: List<SegmentDto>,
+    private val id: Long,
+    private val name: String,
+    private val distance: Double,
+    private val length: Double,
+    private val roadType: String,
+    private val difficulty: Double,
+    private val segments: List<SegmentDto>,
 ) {
     fun toCourse(): Course =
         Course(

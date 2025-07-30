@@ -7,8 +7,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CoordinateDto(
-    val latitude: Double,
-    val longitude: Double,
+    private val latitude: Double,
+    private val longitude: Double,
 ) {
     fun toCoordinate(): Coordinate =
         Coordinate(
