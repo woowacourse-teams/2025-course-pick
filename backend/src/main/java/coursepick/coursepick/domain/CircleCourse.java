@@ -46,7 +46,7 @@ public class CircleCourse extends Course {
 
     private void validateIsCircle(List<Coordinate> coordinates) {
         if (!coordinates.getFirst().hasSameLatitudeAndLongitude(coordinates.getLast())) {
-            throw new IllegalArgumentException(ErrorType.NOT_CONNECTED_CIRCLE_COURSE.message());
+            throw new IllegalArgumentException(ErrorType.NOT_CONNECTED_CIRCLE_COURSE.message(coordinates.getFirst(), coordinates.getLast()));
         }
     }
 
