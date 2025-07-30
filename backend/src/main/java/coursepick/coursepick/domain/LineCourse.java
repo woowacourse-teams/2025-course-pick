@@ -26,7 +26,10 @@ public class LineCourse extends Course {
         Coordinate first = this.coordinates.getFirst();
         Coordinate last = this.coordinates.getLast();
 
-        if (first.equals(target)) {
+        Meter distanceToFirst = GeoLine.between(first, target).length();
+        Meter distanceToLast = GeoLine.between(last, target).length();
+
+        if (distanceToFirst.value() <= distanceToLast.value()) {
             return first;
         }
 
