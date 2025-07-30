@@ -17,65 +17,46 @@ class RouteLineOptionsFactory(
     context: Context,
 ) {
     private val lineWidth: Float = context.resources.getDimension(R.dimen.course_route_width)
-
-    private val uphillStyle =
-        RouteLineStyles.from(
-            RouteLineStyle
-                .from(
-                    lineWidth,
-                    context.getColor(R.color.course_difficulty_hard),
-                ).arrowPatternedStyle(),
-        )
-    private val flatStyle =
-        RouteLineStyles.from(
-            RouteLineStyle
-                .from(
-                    lineWidth,
-                    context.getColor(R.color.course_difficulty_normal),
-                ).arrowPatternedStyle(),
-        )
-    private val downhillStyle =
-        RouteLineStyles.from(
-            RouteLineStyle
-                .from(
-                    lineWidth,
-                    context.getColor(R.color.course_difficulty_easy),
-                ).arrowPatternedStyle(),
-        )
-
-    private val unknownStyle =
-        RouteLineStyles.from(
-            RouteLineStyle
-                .from(
-                    lineWidth,
-                    context.getColor(R.color.course_difficulty_none),
-                ).arrowPatternedStyle(),
-        )
-    private val stylesSet =
-        RouteLineStylesSet.from(uphillStyle, flatStyle, downhillStyle, unknownStyle)
-
     private val patternDistance: Float =
         context.resources.getDimension(R.dimen.course_pattern_between_distance)
 
+    private val uphillStyle = RouteLineStyles(context.getColor(R.color.course_difficulty_hard))
+    private val flatStyle = RouteLineStyles(context.getColor(R.color.course_difficulty_normal))
+    private val downhillStyle = RouteLineStyles(context.getColor(R.color.course_difficulty_easy))
+    private val unknownStyle = RouteLineStyles(context.getColor(R.color.course_difficulty_none))
+
+    private val stylesSet =
+        RouteLineStylesSet.from(uphillStyle, flatStyle, downhillStyle, unknownStyle)
+
     fun routeLineOptions(course: CourseItem): RouteLineOptions {
-        val segments: List<RouteLineSegment> =
+        val segments: List<RouteLineSegment?> =
             course.segments.map { segment: Segment -> segment.toRouteLineSegment() }
         return RouteLineOptions.from(segments).setStylesSet(stylesSet)
     }
 
-    private fun Segment.toRouteLineSegment() =
-        RouteLineSegment.from(
-            coordinates.map { it.toLatLng() },
-            when (inclineType) {
+    private fun RouteLineStyles(color: Int): RouteLineStyles {
+        val baseStyle =
+            RouteLineStyle
+                .from(lineWidth, color)
+                .setPattern(RouteLinePattern.from(R.drawable.image_arrow, patternDistance))
+        return RouteLineStyles.from(baseStyle)
+    }
+
+    private fun Segment.toRouteLineSegment(): RouteLineSegment? {
+        val points: List<LatLng> = coordinates.map { it.toLatLng() }
+        val styles: RouteLineStyles = inclineType.routeLineStyles
+
+        return RouteLineSegment.from(points, styles)
+    }
+
+    private fun Coordinate.toLatLng() = LatLng.from(latitude.value, longitude.value)
+
+    private val InclineType.routeLineStyles
+        get() =
+            when (this) {
                 InclineType.UPHILL -> uphillStyle
                 InclineType.DOWNHILL -> downhillStyle
                 InclineType.FLAT -> flatStyle
                 InclineType.UNKNOWN -> unknownStyle
-            },
-        )
-
-    private fun Coordinate.toLatLng() = LatLng.from(latitude.value, longitude.value)
-
-    private fun RouteLineStyle.arrowPatternedStyle(): RouteLineStyle =
-        setPattern(RouteLinePattern.from(R.drawable.image_arrow, patternDistance))
+            }
 }
