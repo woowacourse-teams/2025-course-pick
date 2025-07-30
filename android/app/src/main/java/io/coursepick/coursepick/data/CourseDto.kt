@@ -11,11 +11,11 @@ import kotlinx.serialization.Serializable
 data class CourseDto(
     val id: Long,
     val name: String,
-    val distance: Int,
-    val length: Int,
+    val distance: Double,
+    val length: Double,
     val roadType: String,
     val difficulty: Double,
-    val segmentDtos: List<SegmentDto>,
+    val segments: List<SegmentDto>,
 ) {
     fun toCourse(): Course =
         Course(
@@ -25,7 +25,7 @@ data class CourseDto(
             length = Length(length),
             roadType = roadType,
             difficulty = CourseDifficulty(difficulty),
-            segments = segmentDtos.map(SegmentDto::toSegment),
+            segments = segments.map(SegmentDto::toSegment),
         )
 
     private fun CourseDifficulty(value: Double): CourseDifficulty =
