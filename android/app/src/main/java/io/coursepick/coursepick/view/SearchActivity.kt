@@ -23,6 +23,7 @@ class SearchActivity : AppCompatActivity() {
         }
         binding.searchView.isIconified = false
         binding.searchView.requestFocus()
+        binding.adapter = SearchAdapter(item)
     }
 
     companion object {
