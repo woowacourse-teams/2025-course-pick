@@ -4,9 +4,6 @@ import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
 import coursepick.coursepick.domain.CourseParser;
-import coursepick.coursepick.domain.RoadType;
-import coursepick.coursepick.domain.CircleCourse;
-import coursepick.coursepick.domain.LineCourse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -33,7 +30,7 @@ public class KmlCourseParser implements CourseParser {
     }
 
     @Override
-    public List<Course> parse(InputStream fileStream) {
+    public List<Course> parse(String filename, InputStream fileStream) {
         List<Course> courses = new ArrayList<>();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         NodeList placemarks;
@@ -66,11 +63,7 @@ public class KmlCourseParser implements CourseParser {
         if (courseName == null || courseName.isBlank()) return null;
         if (coordinates.isEmpty()) return null;
 
-        if (coordinates.getFirst().hasSameLatitudeAndLongitude(coordinates.getLast())) {
-            return new CircleCourse(courseName, RoadType.알수없음, coordinates);
-        }
-
-        return new LineCourse(courseName, RoadType.알수없음, coordinates);
+        return new Course(courseName, coordinates);
     }
 
     private String parseCourseName(Element placemark) {

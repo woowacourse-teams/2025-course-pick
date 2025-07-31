@@ -39,11 +39,11 @@ class GpxCourseParserTest {
         InputStream inputStream = new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
         GpxCourseParser gpxCourseParser = new GpxCourseParser();
 
-        List<Course> courses = gpxCourseParser.parse(inputStream);
+        List<Course> courses = gpxCourseParser.parse("테스트코스", inputStream);
 
         assertThat(courses.size()).isEqualTo(1);
         assertThat(courses).extracting(course -> course.name())
-                .contains("test-course");
+                .contains("테스트코스");
         assertThat(courses).extracting(course -> course.coordinates().size())
                 .contains(2);
         assertThat(courses).extracting(course -> course.coordinates())

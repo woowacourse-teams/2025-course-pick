@@ -28,7 +28,7 @@ class CourseRepositoryTest {
             "600, 1"
     })
     void 거리를_줄여가면서_검색되는_코스_수가_줄어든다(int distance, int expectedSize) {
-        Course course1 = new CircleCourse("잠실 한강 산책길", List.of(
+        Course course1 = new Course("잠실 한강 산책길", List.of(
                 new Coordinate(37.522490, 127.099029),
                 new Coordinate(37.521818, 127.096380),
                 new Coordinate(37.520995, 127.095899),
@@ -45,7 +45,7 @@ class CourseRepositoryTest {
                 new Coordinate(37.522273, 127.099238),
                 new Coordinate(37.522490, 127.099029)
         ));
-        Course course2 = new CircleCourse("잠실 종합운동장", List.of(
+        Course course2 = new Course("잠실 종합운동장", List.of(
                 new Coordinate(37.517802, 127.069576),
                 new Coordinate(37.510638, 127.070661),
                 new Coordinate(37.511926, 127.078170),
@@ -53,7 +53,7 @@ class CourseRepositoryTest {
                 new Coordinate(37.518201, 127.072168),
                 new Coordinate(37.517802, 127.069576)
         ));
-        Course course3 = new CircleCourse("잠실제일교회 둘레길", List.of(
+        Course course3 = new Course("잠실제일교회 둘레길", List.of(
                 new Coordinate(37.517396, 127.092439),
                 new Coordinate(37.512785, 127.094059),
                 new Coordinate(37.513460, 127.097520),
