@@ -47,6 +47,7 @@ public record Coordinate(
         double dotProduct = startToTargetLatitudeDiff * startToEndLatitudeDiff + startToTargetLongitudeDiff * startToEndLongitudeDiff;
         double segmentLengthSquared = startToEndLatitudeDiff * startToEndLatitudeDiff + startToEndLongitudeDiff * startToEndLongitudeDiff;
 
+        if (segmentLengthSquared == 0.0) return 0.0;
         return dotProduct / segmentLengthSquared;
     }
 
