@@ -18,6 +18,14 @@
         <variable
             name="onSearchThisAreaListener"
             type="io.coursepick.coursepick.view.OnSearchThisAreaListener" />
+
+        <variable
+            name="onMenuSelectedListener"
+            type="com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener" />
+
+        <variable
+            name="onMenuButtonClickListener"
+            type="android.view.View.OnClickListener" />
     </data>
 
     <androidx.drawerlayout.widget.DrawerLayout
@@ -44,6 +52,7 @@
                 android:layout_gravity="top|start"
                 android:layout_margin="10dp"
                 android:background="@drawable/background_menu"
+                android:onClickListener="@{onMenuButtonClickListener}"
                 android:padding="10dp"
                 android:src="@drawable/icon_menu" />
 
@@ -115,6 +124,7 @@
 
         <com.google.android.material.navigation.NavigationView
             android:id="@+id/mainNavigation"
+            onNavigationItemSelectedListener="@{onMenuSelectedListener}"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="start"

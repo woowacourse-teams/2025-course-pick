@@ -4,6 +4,8 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
@@ -15,7 +17,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.navigation.NavigationView
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.databinding.ActivityMainBinding
 import io.coursepick.coursepick.domain.Coordinate
@@ -85,6 +89,35 @@ class MainActivity : AppCompatActivity() {
             mapManager.startTrackingCurrentLocation()
         }
 
+    private val onMenuSelectedListener =
+        NavigationView.OnNavigationItemSelectedListener { menu: MenuItem ->
+            when (menu.itemId) {
+                R.id.item_user_feedback -> {
+                }
+
+                R.id.item_privacy_policy -> {
+                    val intent =
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            "https://github.com/woowacourse-teams/2025-course-pick/wiki/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4%EC%B2%98%EB%A6%AC%EB%B0%A9%EC%B9%A8"
+                                .toUri(),
+                        )
+
+                    startActivity(intent)
+                }
+
+                R.id.item_open_source_notice -> {
+                    startActivity(Intent(this, OssLicensesMenuActivity::class.java))
+                }
+            }
+            true
+        }
+
+    private val onMenuButtonClickListener =
+        View.OnClickListener {
+            binding.mainDrawer.open()
+        }
+
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,6 +134,8 @@ class MainActivity : AppCompatActivity() {
         binding.lifecycleOwner = this
         binding.adapter = courseAdapter
         binding.onSearchThisAreaListener = onSearchThisAreaListener
+        binding.onMenuSelectedListener = onMenuSelectedListener
+        binding.onMenuButtonClickListener = onMenuButtonClickListener
 
         setUpObservers()
         setUpDoubleBackPress()
