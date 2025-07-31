@@ -11,8 +11,8 @@ class DefaultCourseRepository : CourseRepository {
         longitude: Longitude,
     ): List<Course> =
         Services.courseService
-            .courses(latitude.value.toString(), longitude.value.toString())
-            .mapNotNull { item: GetCoursesResponseItem ->
-                item.toCourseOrNull()
+            .courses(latitude.value, longitude.value)
+            .map { courseDto: CourseDto ->
+                courseDto.toCourse()
             }
 }

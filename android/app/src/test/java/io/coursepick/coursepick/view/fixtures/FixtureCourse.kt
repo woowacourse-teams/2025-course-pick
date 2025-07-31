@@ -2,12 +2,13 @@ package io.coursepick.coursepick.view.fixtures
 
 import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.Course
-import io.coursepick.coursepick.domain.CourseDifficulty
 import io.coursepick.coursepick.domain.CourseName
 import io.coursepick.coursepick.domain.Distance
+import io.coursepick.coursepick.domain.InclineType
 import io.coursepick.coursepick.domain.Latitude
 import io.coursepick.coursepick.domain.Length
 import io.coursepick.coursepick.domain.Longitude
+import io.coursepick.coursepick.domain.Segment
 
 fun fakeCourse(
     id: Long,
@@ -16,17 +17,26 @@ fun fakeCourse(
     length: Int,
     latitude: Double,
     longitude: Double,
-    type: String? = null,
-    difficulty: CourseDifficulty = CourseDifficulty.UNKNOWN,
+    type: String = "트랙",
+    difficulty: String = "쉬움",
 ): Course =
     Course(
         id = id,
         name = CourseName(name),
         distance = Distance(distance),
         length = Length(length),
-        coordinates = listOf(Coordinate(Latitude(latitude), Longitude(longitude))),
-        type = type,
+        roadType = type,
         difficulty = difficulty,
+        segments =
+            listOf(
+                Segment(
+                    InclineType.UNKNOWN,
+                    listOf(
+                        Coordinate(Latitude(latitude), Longitude(longitude)),
+                        Coordinate(Latitude(latitude + 0.0001), Longitude(longitude + 0.0001)),
+                    ),
+                ),
+            ),
     )
 
 val COURSE_1 = fakeCourse(1, "코스 1", 10, 100, 1.0, 1.0)
@@ -74,5 +84,5 @@ val FAKE_COURSES: List<Course> =
         COURSE_20,
     )
 
-val DEFAULT_LATITUDE_VALUE = 37.515293
-val DEFAULT_LONGITUDE_VALUE = 127.102987
+const val DEFAULT_LATITUDE_VALUE = 37.515293
+const val DEFAULT_LONGITUDE_VALUE = 127.102987

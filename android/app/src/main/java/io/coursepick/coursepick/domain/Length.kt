@@ -7,4 +7,6 @@ value class Length(
     init {
         require(meter >= 0)
     }
+
+    constructor(meter: Double) : this(meter.toInt())
 }
