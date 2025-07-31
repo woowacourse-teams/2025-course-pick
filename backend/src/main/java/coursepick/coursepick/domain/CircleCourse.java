@@ -18,7 +18,7 @@ public class CircleCourse extends Course {
 
     public CircleCourse(String name, RoadType roadType, List<Coordinate> coordinates) {
         super(name, roadType, sortByCounterClockwise(coordinates));
-        validateIsCircle(this.coordinates);
+        validateIsCircle(this.coordinates());
     }
 
     public CircleCourse(String name, List<Coordinate> coordinates) {
@@ -27,11 +27,11 @@ public class CircleCourse extends Course {
 
     @Override
     public Coordinate closestCoordinateFrom(Coordinate target) {
-        Coordinate closestCoordinate = coordinates.getFirst();
+        Coordinate closestCoordinate = coordinates().getFirst();
         Meter minDistance = Meter.max();
 
-        for (int i = 0; i < coordinates.size() - 1; i++) {
-            GeoLine line = GeoLine.between(coordinates.get(i), coordinates.get(i + 1));
+        for (int i = 0; i < coordinates().size() - 1; i++) {
+            GeoLine line = GeoLine.between(coordinates().get(i), coordinates().get(i + 1));
 
             Coordinate closestCoordinateOnLine = line.closestCoordinateFrom(target);
             Meter distanceOnLine = GeoLine.between(target, closestCoordinateOnLine).length();

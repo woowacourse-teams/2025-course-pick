@@ -33,7 +33,7 @@ public class KmlCourseParser implements CourseParser {
     }
 
     @Override
-    public List<Course> parse(String filename, InputStream fileStream) {
+    public List<Course> parse(InputStream fileStream) {
         List<Course> courses = new ArrayList<>();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         NodeList placemarks;

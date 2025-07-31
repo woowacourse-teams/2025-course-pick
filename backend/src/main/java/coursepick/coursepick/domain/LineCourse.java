@@ -23,8 +23,8 @@ public class LineCourse extends Course {
 
     @Override
     public Coordinate closestCoordinateFrom(Coordinate target) {
-        Coordinate first = this.coordinates.getFirst();
-        Coordinate last = this.coordinates.getLast();
+        Coordinate first = this.coordinates().getFirst();
+        Coordinate last = this.coordinates().getLast();
 
         Meter distanceToFirst = GeoLine.between(first, target).length();
         Meter distanceToLast = GeoLine.between(last, target).length();

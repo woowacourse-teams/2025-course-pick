@@ -43,7 +43,7 @@ class KmlCourseParserTest {
 
         InputStream inputStream = new ByteArrayInputStream(kmlContent.getBytes(StandardCharsets.UTF_8));
 
-        List<Course> courses = sut.parse("테스트코스", inputStream);
+        List<Course> courses = sut.parse(inputStream);
 
         assertThat(courses).hasSize(1);
 
@@ -70,7 +70,7 @@ class KmlCourseParserTest {
                 """;
         InputStream inputStream = new ByteArrayInputStream(kmlContent.getBytes(StandardCharsets.UTF_8));
 
-        List<Course> courses = sut.parse("테스트코스", inputStream);
+        List<Course> courses = sut.parse(inputStream);
 
         assertThat(courses).isEmpty();
     }
