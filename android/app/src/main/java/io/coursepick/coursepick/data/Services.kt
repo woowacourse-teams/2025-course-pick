@@ -33,4 +33,29 @@ object Services {
             .build()
 
     val courseService: CourseService = retrofit.create(CourseService::class.java)
+
+    private val kakaoClient: OkHttpClient =
+        OkHttpClient
+            .Builder()
+            .addInterceptor { chain ->
+                val request =
+                    chain
+                        .request()
+                        .newBuilder()
+                        .addHeader("Authorization", "KakaoAK ${BuildConfig.KAKAO_REST_API_KEY}")
+                        .build()
+                chain.proceed(request)
+            }.addInterceptor(interceptor)
+            .build()
+
+    private val kakaoRetrofit =
+        Retrofit
+            .Builder()
+            .baseUrl(BuildConfig.KAKAO_BASE_URL)
+            .client(kakaoClient)
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .build()
+
+    val searchKeywordService: SearchKeywordService =
+        kakaoRetrofit.create(SearchKeywordService::class.java)
 }
