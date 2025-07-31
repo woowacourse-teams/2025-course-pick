@@ -8,7 +8,6 @@ import io.coursepick.coursepick.data.DefaultCourseRepository
 import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.Course
 import io.coursepick.coursepick.domain.CourseRepository
-import io.coursepick.coursepick.domain.Segment
 import kotlinx.coroutines.launch
 
 class MainViewModel(
@@ -47,7 +46,10 @@ class MainViewModel(
         location: Coordinate,
     ): String {
         val end: Coordinate =
-            selectedCourse.segments.flatMap { segment: Segment -> segment.coordinates }.first()
+            selectedCourse.segments
+                .first()
+                .coordinates
+                .first()
         val startName = "현재 위치"
         return "https://map.kakao.com/link/by/walk/" +
             "$startName,${location.latitude.value},${location.longitude.value}/${selectedCourse.name},${end.latitude.value},${end.longitude.value}"
