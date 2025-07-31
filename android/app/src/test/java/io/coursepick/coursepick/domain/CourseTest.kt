@@ -13,7 +13,7 @@ class CourseTest {
                 Distance(300),
                 Length(3000),
                 "트랙",
-                CourseDifficulty.UNKNOWN,
+                "쉬움",
                 emptyList(),
             )
         }

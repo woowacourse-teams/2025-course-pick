@@ -2,7 +2,6 @@ package io.coursepick.coursepick.view.fixtures
 
 import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.Course
-import io.coursepick.coursepick.domain.CourseDifficulty
 import io.coursepick.coursepick.domain.CourseName
 import io.coursepick.coursepick.domain.Distance
 import io.coursepick.coursepick.domain.InclineType
@@ -19,7 +18,7 @@ fun fakeCourse(
     latitude: Double,
     longitude: Double,
     type: String = "트랙",
-    difficulty: CourseDifficulty = CourseDifficulty.UNKNOWN,
+    difficulty: String = "쉬움",
 ): Course =
     Course(
         id = id,
