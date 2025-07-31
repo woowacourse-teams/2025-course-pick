@@ -93,6 +93,14 @@ class MainActivity : AppCompatActivity() {
         NavigationView.OnNavigationItemSelectedListener { menu: MenuItem ->
             when (menu.itemId) {
                 R.id.item_user_feedback -> {
+                    val intent =
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            "https://forms.gle/W9Uwwgq2acW2y7Q99"
+                                .toUri(),
+                        )
+
+                    startActivity(intent)
                 }
 
                 R.id.item_privacy_policy -> {
