@@ -22,7 +22,7 @@ public class GpxCourseParser implements CourseParser {
     }
 
     @Override
-    public List<Course> parse(InputStream fileStream) {
+    public List<Course> parse(String filename, InputStream fileStream) {
         GPX gpx;
 
         try {
@@ -32,7 +32,7 @@ public class GpxCourseParser implements CourseParser {
         }
 
         return gpx.tracks()
-                .map(track -> new Course(track.getName().orElse("Default"), getCoordinates(track)))
+                .map(track -> new Course(filename, getCoordinates(track)))
                 .toList();
     }
 
