@@ -16,16 +16,8 @@
             type="io.coursepick.coursepick.view.CourseAdapter" />
 
         <variable
-            name="onSearchThisAreaListener"
-            type="io.coursepick.coursepick.view.OnSearchThisAreaListener" />
-
-        <variable
-            name="onMenuSelectedListener"
-            type="com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener" />
-
-        <variable
-            name="onMenuButtonClickListener"
-            type="android.view.View.OnClickListener" />
+            name="listener"
+            type="io.coursepick.coursepick.view.MainActivityEventListener" />
     </data>
 
     <androidx.drawerlayout.widget.DrawerLayout
@@ -52,7 +44,7 @@
                 android:layout_gravity="top|start"
                 android:layout_margin="10dp"
                 android:background="@drawable/background_menu"
-                android:onClickListener="@{onMenuButtonClickListener}"
+                android:onClick="@{() -> listener.onMenuButtonClicked()}"
                 android:padding="10dp"
                 android:src="@drawable/icon_menu" />
 
@@ -64,7 +56,7 @@
                 android:layout_marginTop="10dp"
                 android:background="@drawable/background_search_this_area"
                 android:clickable="true"
-                android:onClick="@{() -> onSearchThisAreaListener.search()}"
+                android:onClick="@{() -> listener.onClickSearchThisAreaButton()}"
                 android:orientation="horizontal"
                 android:padding="10dp">
 
@@ -124,7 +116,7 @@
 
         <com.google.android.material.navigation.NavigationView
             android:id="@+id/mainNavigation"
-            onNavigationItemSelectedListener="@{onMenuSelectedListener}"
+            onNavigationItemSelectedListener="@{listener.onMenuSelectedListener}"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="start"
