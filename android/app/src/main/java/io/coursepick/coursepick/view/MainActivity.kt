@@ -165,6 +165,11 @@ class MainActivity : AppCompatActivity() {
         val callback =
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
+                    if (binding.mainDrawer.isOpen) {
+                        binding.mainDrawer.close()
+                        return
+                    }
+
                     if (doublePressDetector.doublePressed()) {
                         finish()
                     } else {
