@@ -107,23 +107,13 @@ class MainActivity :
     }
 
     private fun onUserFeedbackMenuSelected() {
-        val intent =
-            Intent(
-                Intent.ACTION_VIEW,
-                "https://forms.gle/W9Uwwgq2acW2y7Q99"
-                    .toUri(),
-            )
+        val intent = Intent(Intent.ACTION_VIEW, getString(R.string.feedback_url).toUri())
 
         startActivity(intent)
     }
 
     private fun onPrivacyPolicySelected() {
-        val intent =
-            Intent(
-                Intent.ACTION_VIEW,
-                "https://github.com/woowacourse-teams/2025-course-pick/wiki/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4%EC%B2%98%EB%A6%AC%EB%B0%A9%EC%B9%A8"
-                    .toUri(),
-            )
+        val intent = Intent(Intent.ACTION_VIEW, getString(R.string.privacy_policy_url).toUri())
 
         startActivity(intent)
     }
