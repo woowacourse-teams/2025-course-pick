@@ -6,7 +6,7 @@ data class Course(
     val distance: Distance,
     val length: Length,
     val roadType: String,
-    val difficulty: CourseDifficulty,
+    val difficulty: String,
     val segments: List<Segment>,
 ) {
     init {

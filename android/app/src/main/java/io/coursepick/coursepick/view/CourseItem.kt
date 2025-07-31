@@ -1,7 +1,6 @@
 package io.coursepick.coursepick.view
 
 import io.coursepick.coursepick.domain.Course
-import io.coursepick.coursepick.domain.CourseDifficulty
 import io.coursepick.coursepick.domain.Segment
 
 data class CourseItem(
@@ -14,6 +13,5 @@ data class CourseItem(
     val length: Int = course.length.meter
     val segments: List<Segment> = course.segments
     val roadType: String? = course.roadType
-    val difficulty: String? =
-        if (course.difficulty == CourseDifficulty.UNKNOWN) null else course.difficulty.name
+    val difficulty: String = course.difficulty
 }
