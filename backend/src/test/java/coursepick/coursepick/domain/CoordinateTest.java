@@ -35,11 +35,11 @@ class CoordinateTest {
         }
 
         @Test
-        void 생성하면_위도와_경도가_소수점_이하_6자리까지만_남는다() {
+        void 생성하면_위도와_경도가_소수점_이하_7자리까지만_남는다() {
             Coordinate coordinate = new Coordinate(80.123456789, 100.123456789);
 
-            assertThat(coordinate.latitude()).isEqualTo(80.123456);
-            assertThat(coordinate.longitude()).isEqualTo(100.123456);
+            assertThat(coordinate.latitude()).isEqualTo(80.1234567);
+            assertThat(coordinate.longitude()).isEqualTo(100.1234567);
         }
     }
 
