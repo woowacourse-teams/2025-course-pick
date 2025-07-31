@@ -21,12 +21,16 @@
     </data>
 
     <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/mainDrawer"
+        swipeable="@{false}"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true">
 
             <com.kakao.vectormap.MapView
                 android:id="@+id/mainMap"
@@ -34,6 +38,7 @@
                 android:layout_height="match_parent" />
 
             <ImageView
+                android:id="@+id/mainMenuButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|start"
@@ -113,6 +118,9 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="start"
+            android:background="@color/background_primary"
+            android:fitsSystemWindows="true"
+            app:itemTextColor="@color/item_primary"
             app:menu="@menu/menu_navigation_main" />
 
     </androidx.drawerlayout.widget.DrawerLayout>
