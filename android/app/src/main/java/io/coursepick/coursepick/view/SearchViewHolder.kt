@@ -8,7 +8,7 @@ import io.coursepick.coursepick.databinding.ItemSearchBinding
 class SearchViewHolder private constructor(
     private val binding: ItemSearchBinding,
 ) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(search: SearchItem) {
+    fun bind(search: SearchKeywordItem) {
         binding.search = search
     }
 
