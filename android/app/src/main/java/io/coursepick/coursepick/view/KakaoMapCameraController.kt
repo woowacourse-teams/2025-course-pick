@@ -1,14 +1,22 @@
 package io.coursepick.coursepick.view
 
+import android.content.Context
 import android.location.Location
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.camera.CameraAnimation
 import com.kakao.vectormap.camera.CameraUpdate
 import com.kakao.vectormap.camera.CameraUpdateFactory
+import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.Coordinate
+import io.coursepick.coursepick.domain.Segment
 
-class KakaoMapCameraController {
+class KakaoMapCameraController(
+    context: Context,
+) {
+    private val fitMapPadding =
+        context.resources.getDimensionPixelSize(R.dimen.course_route_padding)
+
     fun moveTo(
         map: KakaoMap,
         location: Location,
@@ -17,16 +25,24 @@ class KakaoMapCameraController {
     }
 
     fun fitTo(
+        course: CourseItem,
         map: KakaoMap,
+    ) {
+        val coordinates: List<Coordinate> =
+            course.segments.flatMap { segment: Segment -> segment.coordinates }
+        fitTo(coordinates, map)
+    }
+
+    private fun fitTo(
         coordinates: List<Coordinate>,
-        padding: Int,
+        map: KakaoMap,
     ) {
         val latLngs: Array<LatLng> =
             coordinates
                 .map { coordinate: Coordinate ->
                     LatLng.from(coordinate.latitude.value, coordinate.longitude.value)
                 }.toTypedArray()
-        val cameraUpdate: CameraUpdate = CameraUpdateFactory.fitMapPoints(latLngs, padding)
+        val cameraUpdate: CameraUpdate = CameraUpdateFactory.fitMapPoints(latLngs, fitMapPadding)
         val cameraAnimation = CameraAnimation.from(MOVE_ANIMATION_DURATION, true, false)
         map.moveCamera(cameraUpdate, cameraAnimation)
     }

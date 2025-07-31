@@ -8,5 +8,7 @@ value class Distance(
         require(meter >= 0)
     }
 
+    constructor(meter: Double) : this(meter.toInt())
+
     override fun compareTo(other: Distance): Int = this.meter.compareTo(other.meter)
 }

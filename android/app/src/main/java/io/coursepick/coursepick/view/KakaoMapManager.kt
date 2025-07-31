@@ -18,7 +18,7 @@ class KakaoMapManager(
     private val locationProvider: LocationProvider = LocationProvider(mapView.context),
 ) {
     private val lifecycleHandler = KakaoMapLifecycleHandler(mapView)
-    private val cameraController = KakaoMapCameraController()
+    private val cameraController = KakaoMapCameraController(mapView.context)
     private val drawer = KakaoMapDrawer(mapView.context)
     private var kakaoMap: KakaoMap? = null
 
@@ -62,14 +62,16 @@ class KakaoMapManager(
 
     fun draw(course: CourseItem) {
         kakaoMap?.let { map: KakaoMap ->
-            drawer.draw(map, course)
+            drawer.drawCourse(map, course)
         }
     }
 
     fun fitTo(course: CourseItem) {
-        val padding = mapView.context.resources.getDimensionPixelSize(R.dimen.course_route_padding)
         kakaoMap?.let { map: KakaoMap ->
-            cameraController.fitTo(map, course.coordinates, padding)
+            cameraController.fitTo(
+                course,
+                map,
+            )
         }
     }
 
@@ -78,7 +80,7 @@ class KakaoMapManager(
         locationProvider.fetchCurrentLocation(
             onSuccess = { location: Location ->
                 kakaoMap?.let { map: KakaoMap ->
-                    drawer.draw(map, R.drawable.image_current_location, location)
+                    drawer.drawLabel(map, R.drawable.image_current_location, location)
                     cameraController.moveTo(map, location)
                 }
             },
@@ -98,7 +100,7 @@ class KakaoMapManager(
         locationProvider.startLocationUpdates(
             onUpdate = { location ->
                 kakaoMap?.let { map: KakaoMap ->
-                    drawer.draw(map, R.drawable.image_current_location, location)
+                    drawer.drawLabel(map, R.drawable.image_current_location, location)
                 }
             },
             onError = {

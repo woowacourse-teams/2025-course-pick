@@ -5,11 +5,11 @@ data class Course(
     val name: CourseName,
     val distance: Distance,
     val length: Length,
-    val coordinates: List<Coordinate>,
-    val type: String?,
-    val difficulty: CourseDifficulty,
+    val roadType: String,
+    val difficulty: String,
+    val segments: List<Segment>,
 ) {
     init {
-        require(coordinates.isNotEmpty())
+        require(segments.isNotEmpty())
     }
 }
