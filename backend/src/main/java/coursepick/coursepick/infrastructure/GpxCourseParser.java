@@ -49,7 +49,7 @@ public class GpxCourseParser implements CourseParser {
                                 point.getLatitude().doubleValue(),
                                 point.getLongitude().doubleValue(),
                                 point.getElevation().orElse(Length.of(0, Length.Unit.METER)).doubleValue())
-                        ).distinct()
+                        )
                 ).toList();
     }
 }
