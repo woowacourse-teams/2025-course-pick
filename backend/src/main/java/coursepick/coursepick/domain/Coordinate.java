@@ -63,7 +63,7 @@ public record Coordinate(
 
     private static double truncated(double value) {
         final int SCALE = 7;
-        return new BigDecimal(String.valueOf(value)).setScale(SCALE, RoundingMode.DOWN).doubleValue();
+        return BigDecimal.valueOf(value).setScale(SCALE, RoundingMode.DOWN).doubleValue();
     }
 
     private static void validateLatitudeRange(double roundedLatitude) {
