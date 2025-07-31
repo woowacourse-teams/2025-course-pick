@@ -12,7 +12,7 @@ public class GeoLineBuilder {
         this.lines = lines;
     }
 
-    public static GeoLineBuilder 인접한_점을_2개씩_짝지어_선들을_만든다(List<Coordinate> coordinates) {
+    public static GeoLineBuilder fromCoordinates(List<Coordinate> coordinates) {
         List<GeoLine> lines = new ArrayList<>();
         for (int i = 0; i < coordinates.size() - 1; i++) {
             Coordinate front = coordinates.get(i);

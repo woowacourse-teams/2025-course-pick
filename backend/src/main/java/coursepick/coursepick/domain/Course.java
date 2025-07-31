@@ -39,16 +39,16 @@ public class Course {
         this.id = null;
         this.name = new CourseName(name);
         this.roadType = roadType;
-        List<Coordinate> coordinates = CoordinateBuilder.좌표들을_세팅한다(rawCoordinates)
-                .첫점과_끝점의_위치가_다르면_첫점을_뒤에_추가한다()
-                .중복되는_점들을_제거한다()
-                .시계_반대_방향으로_정렬한다()
+        List<Coordinate> coordinates = CoordinateBuilder.fromRawCoordinates(rawCoordinates)
+                .addFirstCoordinateIfNotConnected()
+                .removeDuplicatedCoordinate()
+                .sortByCounterClockwise()
                 .build();
-        List<GeoLine> lines = GeoLineBuilder.인접한_점을_2개씩_짝지어_선들을_만든다(coordinates)
+        List<GeoLine> geoLines = GeoLineBuilder.fromCoordinates(coordinates)
                 .build();
-        this.segments = SegmentBuilder.연결된_선으로부터_생성한다(lines)
-                .경사_방향성이_같은_것끼리는_합친다()
-                .경사_유형이_같은_것끼리는_합친다()
+        this.segments = SegmentBuilder.fromGeoLines(geoLines)
+                .mergeSameElevationDirection()
+                .mergeSameInclineType()
                 .build();
         this.length = calculateLength(segments);
         this.difficulty = Difficulty.fromLengthAndRoadType(length(), roadType);
