@@ -183,6 +183,11 @@ class MainActivity : AppCompatActivity() {
                     val behavior = BottomSheetBehavior.from(binding.mainBottomSheet)
                     behavior.state = BottomSheetBehavior.STATE_COLLAPSED
                 }
+
+                MainUiEvent.Search -> {
+                    val intent = SearchActivity.intent(this)
+                    startActivity(intent)
+                }
             }
         }
     }
