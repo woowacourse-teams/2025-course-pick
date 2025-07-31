@@ -1,6 +1,5 @@
 package coursepick.coursepick.domain;
 
-import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -257,7 +256,7 @@ class CourseTest {
 
         var difficulty = course.difficulty();
 
-        assertThat(difficulty).isCloseTo(expectedDifficulty, Offset.offset(0.0001));
+        assertThat(difficulty).isEqualTo(expectedDifficulty);
     }
 
     private static Stream<Arguments> createArguments() {
