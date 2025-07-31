@@ -29,7 +29,7 @@ fun TextView.setCourseDistance(meter: Int) {
 
 @BindingAdapter("swipeable")
 fun DrawerLayout.setSwipeable(swipeable: Boolean) {
-    val mode =
+    val mode: Int =
         if (swipeable) {
             DrawerLayout.LOCK_MODE_UNLOCKED
         } else {
