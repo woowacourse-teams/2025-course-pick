@@ -40,7 +40,7 @@ fun DrawerLayout.setSwipeable(swipeable: Boolean) {
 
 @BindingAdapter("onNavigationItemSelectedListener")
 fun NavigationView.setOnNavigationItemSelectedListener(listener: NavigationView.OnNavigationItemSelectedListener) {
-    setNavigationItemSelectedListener(listener)
+    this.setNavigationItemSelectedListener(listener)
 }
 
 private fun formattedMeter(
