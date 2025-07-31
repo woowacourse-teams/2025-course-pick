@@ -47,11 +47,6 @@ public class CourseWebController implements CourseWebApi {
             @RequestParam(value = "userLat", required = false) Double userLatitude,
             @RequestParam(value = "userLng", required = false) Double userLongitude
     ) {
-        if (userLatitude == null || userLongitude == null) {
-            List<CourseResponse> responses = courseApplicationService.findNearbyCourses(mapLatitude, mapLongitude);
-            return CourseWebResponse.from(responses);
-        }
-
         List<CourseResponse> responses = courseApplicationService.findNearbyCourses(mapLatitude, mapLongitude, userLatitude, userLongitude);
         return CourseWebResponse.from(responses);
     }

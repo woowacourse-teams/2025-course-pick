@@ -18,6 +18,8 @@ import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_CO
 @RequiredArgsConstructor
 public class CourseApplicationService {
 
+    private static final Meter SEARCH_RADIUS = new Meter(1000);
+
     private final CourseRepository courseRepository;
     private final List<CourseParser> courseParsers;
 
@@ -48,19 +50,18 @@ public class CourseApplicationService {
     }
 
     @Transactional(readOnly = true)
-    public List<CourseResponse> findNearbyCourses(double mapLatitude, double mapLongitude) {
+    public List<CourseResponse> findNearbyCourses(double mapLatitude, double mapLongitude, Double userLatitude, Double userLongitude) {
         final Coordinate mapPosition = new Coordinate(mapLatitude, mapLongitude);
-        return courseRepository.findAllHasDistanceWithin(mapPosition, new Meter(1000)).stream()
-                .map(CourseResponse::from)
-                .toList();
-    }
+        if (userLatitude == null || userLongitude == null) {
+            return courseRepository.findAllHasDistanceWithin(mapPosition, SEARCH_RADIUS)
+                    .stream()
+                    .map(CourseResponse::from)
+                    .toList();
+        }
 
-    @Transactional(readOnly = true)
-    public List<CourseResponse> findNearbyCourses(double mapLatitude, double mapLongitude, double userLatitude, double userLongitude) {
-        final Coordinate mapPosition = new Coordinate(mapLatitude, mapLongitude);
         final Coordinate userPosition = new Coordinate(userLatitude, userLongitude);
-
-        return courseRepository.findAllHasDistanceWithin(mapPosition, new Meter(1000)).stream()
+        return courseRepository.findAllHasDistanceWithin(mapPosition, SEARCH_RADIUS)
+                .stream()
                 .map(course -> CourseResponse.from(course, userPosition))
                 .toList();
     }

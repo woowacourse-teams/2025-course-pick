@@ -61,7 +61,7 @@ class CourseApplicationServiceTest {
         double latitude = 37.5172;
         double longitude = 127.0276;
 
-        List<CourseResponse> courses = sut.findNearbyCourses(latitude, longitude);
+        List<CourseResponse> courses = sut.findNearbyCourses(latitude, longitude, null, null);
 
         assertThat(courses).hasSize(2)
                 .extracting(CourseResponse::name)
