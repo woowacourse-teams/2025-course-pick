@@ -4,4 +4,5 @@
     <dimen name="map_logo_position_offset">10dp</dimen>
     <dimen name="course_route_padding">10dp</dimen>
     <dimen name="course_route_width">4dp</dimen>
+    <dimen name="course_pattern_between_distance">12dp</dimen>
 </resources>

@@ -16,4 +16,9 @@
     <color name="background_secondary">#FAF8FF</color>
     <color name="background_tertiary">#EEEDF4</color>
     <color name="background_border">#C5C6D0</color>
+
+    <color name="course_difficulty_easy">#5B8DEF</color>
+    <color name="course_difficulty_normal">#6BBE92</color>
+    <color name="course_difficulty_hard">#E75B64</color>
+    <color name="course_difficulty_none">#B4B4B4</color>
 </resources>
