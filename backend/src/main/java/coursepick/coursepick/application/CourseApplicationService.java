@@ -22,7 +22,7 @@ public class CourseApplicationService {
     private final List<CourseParser> courseParsers;
 
     @Transactional
-    public void parseInputStreamAndSave(InputStream fileStream, String fileExtension) {
+    public void parseInputStreamAndSave(InputStream fileStream, String filename, String fileExtension) {
         log.info("코스 데이터 가져오기 시작");
 
         CourseParser courseParser = courseParsers.stream()
@@ -30,21 +30,11 @@ public class CourseApplicationService {
                 .findAny()
                 .orElseThrow(INVALID_FILE_EXTENSION::create);
 
-        List<Course> courses = parseCoursesFromFile(fileStream, courseParser);
-        saveCourses(courses);
-    }
-
-    private void saveCourses(List<Course> courses) {
-        List<Course> savedCourses = courseRepository.saveAll(courses);
-
-        log.info("DB에 {} 개의 코스를 저장했습니다", savedCourses.size());
-    }
-
-    private static List<Course> parseCoursesFromFile(InputStream fileStream, CourseParser courseParser) {
-        List<Course> courses = courseParser.parse(fileStream);
-
+        List<Course> courses = courseParser.parse(filename, fileStream);
         log.info("{} 개의 코스를 파싱했습니다", courses.size());
-        return courses;
+
+        List<Course> savedCourses = courseRepository.saveAll(courses);
+        log.info("DB에 {} 개의 코스를 저장했습니다", savedCourses.size());
     }
 
     @Transactional(readOnly = true)

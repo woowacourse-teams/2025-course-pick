@@ -9,7 +9,6 @@ import coursepick.coursepick.presentation.dto.CourseWebResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,8 +35,9 @@ public class CourseWebController implements CourseWebApi {
     ) {
         validateAdminToken(token);
 
+        String filename = file.getOriginalFilename();
         String fileExtension = StringUtils.getFilenameExtension(file.getOriginalFilename());
-        courseApplicationService.parseInputStreamAndSave(file.getInputStream(), fileExtension);
+        courseApplicationService.parseInputStreamAndSave(file.getInputStream(), filename, fileExtension);
     }
 
     @Override
