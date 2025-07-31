@@ -55,11 +55,7 @@ class MainActivity :
             insets
         }
 
-        binding.viewModel = viewModel
-        binding.lifecycleOwner = this
-        binding.adapter = courseAdapter
-        binding.listener = this
-
+        setUpBindingVariables()
         setUpObservers()
         setUpDoubleBackPress()
         requestLocationPermissions()
@@ -67,6 +63,13 @@ class MainActivity :
         mapManager.start { coordinate: Coordinate ->
             viewModel.fetchCourses(coordinate)
         }
+    }
+
+    private fun setUpBindingVariables() {
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = this
+        binding.adapter = courseAdapter
+        binding.listener = this
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
