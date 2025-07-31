@@ -8,8 +8,6 @@ import com.kakao.vectormap.MapView
 class KakaoMapLifecycleHandler(
     private val mapView: MapView,
 ) {
-    private var kakaoMap: KakaoMap? = null
-
     fun start(onMapReady: (KakaoMap) -> Unit) {
         mapView.start(
             object : MapLifeCycleCallback() {
@@ -19,7 +17,6 @@ class KakaoMapLifecycleHandler(
             },
             object : KakaoMapReadyCallback() {
                 override fun onMapReady(map: KakaoMap) {
-                    kakaoMap = map
                     onMapReady(map)
                 }
             },
