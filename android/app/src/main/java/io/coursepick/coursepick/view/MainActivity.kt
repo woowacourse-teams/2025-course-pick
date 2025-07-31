@@ -288,6 +288,11 @@ class MainActivity :
                             Toast.LENGTH_SHORT,
                         ).show()
                 }
+
+                MainUiEvent.Search -> {
+                    val intent = SearchActivity.intent(this)
+                    startActivity(intent)
+                }
             }
         }
     }
