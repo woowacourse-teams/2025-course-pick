@@ -3,9 +3,11 @@ package io.coursepick.coursepick.view
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.res.Resources
 import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
@@ -14,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.Insets
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -48,10 +51,10 @@ class MainActivity :
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            binding.mainCourses.setPadding(0, 0, 0, systemBars.bottom)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view: View, insets: WindowInsetsCompat ->
+            val systemBars: Insets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            binding.mainBottomSheet.setPadding(0, 0, 0, systemBars.bottom)
             insets
         }
 
@@ -59,6 +62,10 @@ class MainActivity :
         setUpObservers()
         setUpDoubleBackPress()
         requestLocationPermissions()
+
+        val screenHeight: Int = Resources.getSystem().displayMetrics.heightPixels
+        binding.mainBottomSheet.layoutParams.height = screenHeight / 2
+        BottomSheetBehavior.from(binding.mainBottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
 
         mapManager.start { coordinate: Coordinate ->
             viewModel.fetchCourses(coordinate)
