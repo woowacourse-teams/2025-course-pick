@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
 import io.coursepick.coursepick.R
 
 @BindingAdapter("isSelected")
@@ -35,6 +36,11 @@ fun DrawerLayout.setSwipeable(swipeable: Boolean) {
             DrawerLayout.LOCK_MODE_LOCKED_CLOSED
         }
     this.setDrawerLockMode(mode)
+}
+
+@BindingAdapter("onNavigationItemSelectedListener")
+fun NavigationView.setOnNavigationItemSelectedListener(listener: NavigationView.OnNavigationItemSelectedListener) {
+    setNavigationItemSelectedListener(listener)
 }
 
 private fun formattedMeter(
