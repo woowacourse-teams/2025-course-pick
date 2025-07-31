@@ -11,7 +11,7 @@
 
         <variable
             name="search"
-            type="io.coursepick.coursepick.domain.SearchKeyword" />
+            type="io.coursepick.coursepick.view.SearchItem" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -24,8 +24,8 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginHorizontal="20dp"
-            android:layout_marginVertical="20dp"
-            android:text="@{search.placeName}"
+            android:layout_marginVertical="10dp"
+            android:text="@{search.word}"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
