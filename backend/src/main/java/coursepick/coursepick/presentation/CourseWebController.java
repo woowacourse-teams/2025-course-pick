@@ -31,13 +31,15 @@ public class CourseWebController implements CourseWebApi {
     @PostMapping("/admin/courses/import")
     public void importCourses(
             @RequestParam("adminToken") String token,
-            @RequestParam("file") MultipartFile file
+            @RequestParam("file") List<MultipartFile> files
     ) {
         validateAdminToken(token);
 
-        String filename = file.getOriginalFilename();
-        String fileExtension = StringUtils.getFilenameExtension(file.getOriginalFilename());
-        courseApplicationService.parseInputStreamAndSave(file.getInputStream(), filename, fileExtension);
+        for (MultipartFile file : files) {
+            String filename = file.getOriginalFilename();
+            String fileExtension = StringUtils.getFilenameExtension(file.getOriginalFilename());
+            courseApplicationService.parseInputStreamAndSave(file.getInputStream(), filename, fileExtension);
+        }
     }
 
     @Override
