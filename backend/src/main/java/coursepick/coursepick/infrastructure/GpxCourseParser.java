@@ -24,16 +24,19 @@ public class GpxCourseParser implements CourseParser {
         return fileExtension.equals("gpx");
     }
 
+    @Override
     public List<Course> parse(InputStream fileStream) {
-        try {
-            GPX gpx = GPX.Reader.of(GPX.Reader.Mode.LENIENT).read(fileStream);
+        GPX gpx;
 
-            return gpx.tracks()
-                    .map(GpxCourseParser::createCourseBy)
-                    .toList();
+        try {
+            gpx = GPX.Reader.of(GPX.Reader.Mode.LENIENT).read(fileStream);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw ErrorType.FILE_PARSING_FAIL.create(e.getMessage());
         }
+
+        return gpx.tracks()
+            .map(GpxCourseParser::createCourseBy)
+            .toList();
     }
 
     private static Course createCourseBy(Track track) {

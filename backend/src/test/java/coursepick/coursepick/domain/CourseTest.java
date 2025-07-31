@@ -219,7 +219,7 @@ class CourseTest {
 
     @ParameterizedTest
     @MethodSource("createArguments")
-    void 코스의_난이도를_계산한다(List<Coordinate> coordinates, RoadType roadType, double expectedDifficulty) {
+    void 코스의_난이도를_계산한다(List<Coordinate> coordinates, RoadType roadType, Difficulty expectedDifficulty) {
         var course = new CircleCourse("코스", roadType, coordinates);
 
         var difficulty = course.difficulty();
@@ -232,33 +232,89 @@ class CourseTest {
                 Arguments.of(
                         List.of(new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0)),
                         RoadType.트랙,
-                        1
+                        Difficulty.쉬움
                 ),
                 Arguments.of(
                         List.of(new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0)),
                         RoadType.트레일,
-                        1
+                        Difficulty.쉬움
                 ),
                 Arguments.of(
                         List.of(new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0)),
                         RoadType.보도,
-                        1
+                        Difficulty.쉬움
                 ),
                 Arguments.of(
                         List.of(new Coordinate(37.499384, 126.999433), new Coordinate(37.501806, 127.239550), new Coordinate(37.499384, 126.999433)),
                         RoadType.보도,
-                        10
+                        Difficulty.어려움
                 ),
                 Arguments.of(
                         List.of(new Coordinate(37.506591, 127.145630), new Coordinate(37.311405, 127.383810), new Coordinate(37.506591, 127.145630)),
                         RoadType.트랙,
-                        10
+                        Difficulty.어려움
                 ),
                 Arguments.of(
                         List.of(new Coordinate(37.486225, 127.063228), new Coordinate(37.486557, 127.187908), new Coordinate(37.486225, 127.063228)),
                         RoadType.트레일,
-                        10
+                        Difficulty.어려움
                 )
         );
+    }
+
+    @Nested
+    class 세그먼트_분리_테스트 {
+
+        @Test
+        void 코스의_세그먼트를_생성한다() {
+            Course course = new CircleCourse("테스트코스", List.of(
+                    new Coordinate(0, 0, 0),        // 시작점
+                    new Coordinate(0, 0.0001, 10),  // 오르막 (UPHILL)
+                    new Coordinate(0, 0.0002, 20),  // 오르막 (UPHILL)
+                    new Coordinate(0, 0.0003, 20),  // 평지 (FLAT)
+                    new Coordinate(0, 0.0002, 10),  // 내리막 (DOWNHILL)
+                    new Coordinate(0, 0, 0)         // 시작점으로 돌아옴
+            ));
+
+            List<Segment> segments = course.segments();
+
+            assertThat(segments).hasSize(3);
+
+            assertThat(segments.get(0).inclineType()).isEqualTo(InclineType.UPHILL);
+            assertThat(segments.get(0).coordinates()).hasSize(3).containsExactly(
+                    new Coordinate(0, 0, 0),        // 시작점
+                    new Coordinate(0, 0.0001, 10),  // 오르막 (UPHILL)
+                    new Coordinate(0, 0.0002, 20)   // 오르막 (UPHILL)
+            );
+
+            assertThat(segments.get(1).inclineType()).isEqualTo(InclineType.FLAT);
+            assertThat(segments.get(1).coordinates()).hasSize(2).containsExactly(
+                    new Coordinate(0, 0.0002, 20),  // 오르막 (UPHILL)
+                    new Coordinate(0, 0.0003, 20)   // 평지 (FLAT)
+            );
+
+            assertThat(segments.get(2).inclineType()).isEqualTo(InclineType.DOWNHILL);
+            assertThat(segments.get(2).coordinates()).hasSize(3).containsExactly(
+                    new Coordinate(0, 0.0003, 20),  // 평지 (FLAT)
+                    new Coordinate(0, 0.0002, 10),  // 내리막 (DOWNHILL)
+                    new Coordinate(0, 0, 0)         // 시작점으로 돌아옴
+            );
+        }
+
+        @Test
+        void 동일한_경사타입과_방향의_세그먼트들이_올바르게_병합된다() {
+            Course course = new CircleCourse("병합테스트코스", List.of(
+                    new Coordinate(0, 0, 0),
+                    new Coordinate(0, 0.0010, 8),   // 오르막 (약 4.5도)
+                    new Coordinate(0, 0.0020, 16),  // 오르막 (약 4.5도)
+                    new Coordinate(0, 0.0010, 8),   // 내리막 (약 -4.5도)
+                    new Coordinate(0, 0, 0)         // 내리막 (약 -4.5도)
+            ));
+
+            List<Segment> segments = course.segments();
+
+            // 같은 방향과 경사타입의 세그먼트들이 병합되어야 함
+            assertThat(segments).hasSize(1);
+        }
     }
 }

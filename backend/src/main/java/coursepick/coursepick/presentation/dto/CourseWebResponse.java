@@ -17,9 +17,9 @@ public record CourseWebResponse(
         double length,
         @Schema(example = "트랙")
         RoadType roadType,
-        @Schema(example = "1.235")
-        double difficulty,
-        List<CoordinateWebResponse> coordinates
+        @Schema(example = "쉬움")
+        String difficulty,
+        List<SegmentWebResponse> segments
 ) {
     public static List<CourseWebResponse> from(List<CourseResponse> courseResponses) {
         return courseResponses.stream()
@@ -29,8 +29,8 @@ public record CourseWebResponse(
                         courseResponse.distance().value(),
                         courseResponse.length().value(),
                         courseResponse.roadType(),
-                        courseResponse.difficulty(),
-                        CoordinateWebResponse.from(courseResponse.coordinates())
+                        courseResponse.difficulty().name(),
+                        SegmentWebResponse.from(courseResponse.segments())
                 )).toList();
     }
 }

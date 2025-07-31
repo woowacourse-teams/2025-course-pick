@@ -5,7 +5,12 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 
 import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+import org.hibernate.annotations.BatchSize;
+import lombok.experimental.Accessors;
 
 import java.util.List;
 
@@ -16,6 +21,8 @@ import static coursepick.coursepick.application.exception.ErrorType.INVALID_NAME
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "DTYPE")
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
+@Getter
+@Accessors(fluent = true)
 public abstract class Course {
 
     @Id
@@ -28,6 +35,7 @@ public abstract class Course {
     @Enumerated(EnumType.STRING)
     protected final RoadType roadType;
 
+    @BatchSize(size = 30)
     @ElementCollection
     @CollectionTable(name = "coordinate")
     protected final List<Coordinate> coordinates;
@@ -64,33 +72,18 @@ public abstract class Course {
         return GeoLine.between(minDistanceCoordinate, target).length();
     }
 
-    public double difficulty() {
-        Meter length = length();
-        if (length.isWithin(Meter.zero())) return 1.0;
-
-        double score = switch (roadType) {
-            case RoadType.보도, RoadType.알수없음 -> 1 + (9.0 / 42195) * length.value();
-            case RoadType.트랙 -> 1.0 + (9.0 / 60000) * length.value();
-            case RoadType.트레일 -> 1.0 + (9.0 / 22000) * length.value();
-        };
-
-        return Math.clamp(score, 1, 10);
+    public Difficulty difficulty() {
+        return Difficulty.fromLengthAndRoadType(length(), roadType);
     }
 
-    public Long id() {
-        return id;
-    }
+    public List<Segment> segments() {
+        List<GeoLine> geoLines = GeoLine.split(coordinates);
+        List<Segment> segments = geoLines.stream()
+                .map(GeoLine::toSegment)
+                .toList();
 
-    public String name() {
-        return name;
-    }
-
-    public List<Coordinate> coordinates() {
-        return coordinates;
-    }
-
-    public RoadType roadType() {
-        return roadType;
+        List<Segment> sameDirectionSegments = Segment.mergeSameDirection(segments);
+        return Segment.mergeSameInclineType(sameDirectionSegments);
     }
 
     private static String compactName(String name) {
@@ -99,13 +92,13 @@ public abstract class Course {
 
     private static void validateNameLength(String compactName) {
         if (compactName.length() < 2 || compactName.length() > 30) {
-            throw new IllegalArgumentException(INVALID_NAME_LENGTH.message(compactName));
+            throw INVALID_NAME_LENGTH.create(compactName);
         }
     }
 
     private static void validateCoordinatesCount(List<Coordinate> coordinates) {
         if (coordinates.size() < 2) {
-            throw new IllegalArgumentException(INVALID_COORDINATE_COUNT.message(coordinates.size()));
+            throw INVALID_COORDINATE_COUNT.create(coordinates.size());
         }
     }
 }
