@@ -26,7 +26,7 @@ class KmlCourseParserTest {
                 <kml xmlns="http://www.opengis.net/kml/2.2">
                 <Document>
                     <Placemark>
-                        <name>테스트 코스</name>
+                        <name>테스트코스</name>
                         <Polygon>
                             <outerBoundaryIs>
                                 <LinearRing>
