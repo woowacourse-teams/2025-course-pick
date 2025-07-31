@@ -8,8 +8,8 @@
 <h1>파일 업로드 폼</h1>
 <form action="/admin/courses/import" method="post" enctype="multipart/form-data">
     <p>admin token = <input type="text" name="adminToken"></p>
-    <label for="file">파싱할 파일 전송:</label>
-    <input type="file" id="file" name="file" required/>
+    <label for="file">파싱할 파일 전송 (다중 선택 가능):</label>
+    <input type="file" id="file" name="file" multiple required/>
 
     <button type="submit">전송</button>
 </form>

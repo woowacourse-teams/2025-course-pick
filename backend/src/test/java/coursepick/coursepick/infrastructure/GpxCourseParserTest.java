@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GpxCourseParserTest {
@@ -61,11 +60,11 @@ class GpxCourseParserTest {
         InputStream inputStream = new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
         GpxCourseParser gpxCourseParser = new GpxCourseParser();
 
-        List<Course> courses = gpxCourseParser.parse(inputStream);
+        List<Course> courses = gpxCourseParser.parse("테스트코스", inputStream);
 
         assertThat(courses.size()).isEqualTo(1);
         assertThat(courses).extracting(course -> course.name())
-                .contains("test-course");
+                .contains("테스트코스");
         assertThat(courses).extracting(course -> course.coordinates().size())
                 .contains(3);
         assertThat(courses).extracting(course -> course.coordinates())
