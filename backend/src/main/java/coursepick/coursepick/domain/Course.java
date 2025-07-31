@@ -40,6 +40,10 @@ public class Course {
         validateNameLength(compactName);
         validateCoordinatesCount(coordinates);
 
+        if (isCircle(coordinates)) {
+            coordinates = sortByCounterClockwise(coordinates);
+        }
+
         this.id = null;
         this.name = compactName;
         this.roadType = roadType;
@@ -99,6 +103,14 @@ public class Course {
 
         List<Segment> sameDirectionSegments = Segment.mergeSameDirection(segments);
         return Segment.mergeSameInclineType(sameDirectionSegments);
+    }
+
+    private boolean isCircle(List<Coordinate> coordinates) {
+        if (coordinates.getFirst().hasSameLatitudeAndLongitude(coordinates.getLast())) {
+            return true;
+        }
+
+        return false;
     }
 
     private static List<Coordinate> sortByCounterClockwise(List<Coordinate> coordinates) {
