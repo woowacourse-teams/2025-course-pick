@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.text.Normalizer;
 import java.util.List;
 
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_ADMIN_TOKEN;
@@ -36,7 +37,7 @@ public class CourseWebController implements CourseWebApi {
         validateAdminToken(token);
 
         for (MultipartFile file : files) {
-            String filename = file.getOriginalFilename();
+            String filename = Normalizer.normalize(file.getOriginalFilename(), Normalizer.Form.NFC);
             String fileExtension = StringUtils.getFilenameExtension(file.getOriginalFilename());
             courseApplicationService.parseInputStreamAndSave(file.getInputStream(), filename, fileExtension);
         }
