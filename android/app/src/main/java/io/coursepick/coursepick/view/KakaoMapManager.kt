@@ -18,7 +18,7 @@ class KakaoMapManager(
     private val locationProvider: LocationProvider = LocationProvider(mapView.context),
 ) {
     private val lifecycleHandler = KakaoMapLifecycleHandler(mapView)
-    private val cameraController = KakaoMapCameraController()
+    private val cameraController = KakaoMapCameraController(mapView.context)
     private val drawer = KakaoMapDrawer(mapView.context)
     private var kakaoMap: KakaoMap? = null
 
@@ -67,11 +67,9 @@ class KakaoMapManager(
     }
 
     fun fitTo(course: CourseItem) {
-        val padding = mapView.context.resources.getDimensionPixelSize(R.dimen.course_route_padding)
         kakaoMap?.let { map: KakaoMap ->
             cameraController.fitTo(
                 course,
-                padding,
                 map,
             )
         }
