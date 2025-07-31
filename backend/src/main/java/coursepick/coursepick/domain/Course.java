@@ -28,6 +28,12 @@ public class Course {
     @CollectionTable(name = "segment")
     private final List<Segment> segments;
 
+    @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "length"))
+    private final Meter length;
+
+    private final double difficulty;
+
     public Course(String name, RoadType roadType, List<Coordinate> rawCoordinates) {
         this.id = null;
         this.name = new CourseName(name);
@@ -43,18 +49,32 @@ public class Course {
                 .경사_방향성이_같은_것끼리는_합친다()
                 .경사_유형이_같은_것끼리는_합친다()
                 .build();
+        this.length = calculateLength(segments);
+        this.difficulty = calculateDifficulty(length, roadType);
     }
 
     public Course(String name, List<Coordinate> coordinates) {
         this(name, RoadType.알수없음, coordinates);
     }
 
-    public Meter length() {
+    private static Meter calculateLength(List<Segment> segments) {
         Meter total = Meter.zero();
         for (Segment segment : segments) {
             total = total.add(segment.length());
         }
         return total;
+    }
+
+    private static double calculateDifficulty(Meter length, RoadType roadType) {
+        if (length.isWithin(Meter.zero())) return 1.0;
+
+        double score = switch (roadType) {
+            case RoadType.보도, RoadType.알수없음 -> 1 + (9.0 / 42195) * length.value();
+            case RoadType.트랙 -> 1.0 + (9.0 / 60000) * length.value();
+            case RoadType.트레일 -> 1.0 + (9.0 / 22000) * length.value();
+        };
+
+        return Math.clamp(score, 1, 10);
     }
 
     public Coordinate closestCoordinateFrom(Coordinate target) {
@@ -77,18 +97,5 @@ public class Course {
     public Meter distanceFrom(Coordinate target) {
         Coordinate minDistanceCoordinate = closestCoordinateFrom(target);
         return GeoLine.between(minDistanceCoordinate, target).length();
-    }
-
-    public double difficulty() {
-        Meter length = length();
-        if (length.isWithin(Meter.zero())) return 1.0;
-
-        double score = switch (roadType) {
-            case RoadType.보도, RoadType.알수없음 -> 1 + (9.0 / 42195) * length.value();
-            case RoadType.트랙 -> 1.0 + (9.0 / 60000) * length.value();
-            case RoadType.트레일 -> 1.0 + (9.0 / 22000) * length.value();
-        };
-
-        return Math.clamp(score, 1, 10);
     }
 }
