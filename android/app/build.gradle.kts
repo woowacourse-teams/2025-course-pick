@@ -39,8 +39,20 @@ android {
             buildConfigField("String", "BASE_URL", localProperties["base.url.debug"].toString())
             buildConfigField(
                 "String",
+                "KAKAO_BASE_URL",
+                localProperties["kakao.base.url"].toString(),
+            )
+        }
+        debug {
+            buildConfigField(
+                "String",
                 "KAKAO_NATIVE_APP_KEY",
                 localProperties["kakao.native.app.key"].toString(),
+            )
+            buildConfigField(
+                "String",
+                "KAKAO_REST_API_KEY",
+                localProperties["kakao.rest.api.key"].toString(),
             )
         }
         release {
@@ -55,6 +67,16 @@ android {
                 "String",
                 "KAKAO_NATIVE_APP_KEY",
                 localProperties["kakao.native.app.key"].toString(),
+            )
+            buildConfigField(
+                "String",
+                "KAKAO_BASE_URL",
+                localProperties["kakao.base.url"].toString(),
+            )
+            buildConfigField(
+                "String",
+                "KAKAO_REST_API_KEY",
+                localProperties["kakao.rest.api.key"].toString(),
             )
         }
     }
