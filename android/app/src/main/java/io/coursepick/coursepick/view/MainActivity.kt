@@ -3,6 +3,7 @@ package io.coursepick.coursepick.view
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
@@ -104,7 +105,7 @@ class MainActivity :
 
     private fun onFetchCurrentLocationSuccess(course: CourseItem): (Latitude, Longitude) -> Unit =
         { latitude: Latitude, longitude: Longitude ->
-            val navigationUri =
+            val navigationUri: Uri =
                 viewModel
                     .navigationUrl(
                         course,
@@ -122,7 +123,7 @@ class MainActivity :
         {
             Toast
                 .makeText(
-                    this@MainActivity,
+                    this,
                     "현재 위치를 가져올 수 없어요.",
                     Toast.LENGTH_SHORT,
                 ).show()
@@ -149,7 +150,7 @@ class MainActivity :
                     }
                 }
             }
-        onBackPressedDispatcher.addCallback(this@MainActivity, callback)
+        onBackPressedDispatcher.addCallback(this, callback)
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
