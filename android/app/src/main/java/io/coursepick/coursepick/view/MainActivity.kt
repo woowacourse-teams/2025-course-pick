@@ -29,6 +29,17 @@ import io.coursepick.coursepick.domain.Longitude
 class MainActivity :
     AppCompatActivity(),
     MainActivityEventListener {
+    override val onMenuSelectedListener: NavigationView.OnNavigationItemSelectedListener =
+        NavigationView.OnNavigationItemSelectedListener { menu: MenuItem ->
+            when (menu.itemId) {
+                R.id.item_user_feedback -> onUserFeedbackMenuSelected()
+                R.id.item_privacy_policy -> onPrivacyPolicySelected()
+                R.id.item_open_source_notice -> onOpenSourceNoticeSelected()
+            }
+
+            true
+        }
+
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val viewModel: MainViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(CourseItemListener()) }
@@ -66,13 +77,6 @@ class MainActivity :
         }
     }
 
-    private fun setUpBindingVariables() {
-        binding.viewModel = viewModel
-        binding.lifecycleOwner = this
-        binding.adapter = courseAdapter
-        binding.listener = this
-    }
-
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun onResume() {
         super.onResume()
@@ -86,6 +90,46 @@ class MainActivity :
 
         mapManager.pause()
         mapManager.stopTrackingCurrentLocation()
+    }
+
+    override fun onClickSearchThisAreaButton() {
+        val mapPosition = mapManager.cameraPosition ?: return
+        viewModel.fetchCourses(
+            Coordinate(
+                Latitude(mapPosition.latitude),
+                Longitude(mapPosition.longitude),
+            ),
+        )
+    }
+
+    override fun onMenuButtonClicked() {
+        binding.mainDrawer.open()
+    }
+
+    private fun onUserFeedbackMenuSelected() {
+        val intent =
+            Intent(
+                Intent.ACTION_VIEW,
+                "https://forms.gle/W9Uwwgq2acW2y7Q99"
+                    .toUri(),
+            )
+
+        startActivity(intent)
+    }
+
+    private fun onPrivacyPolicySelected() {
+        val intent =
+            Intent(
+                Intent.ACTION_VIEW,
+                "https://github.com/woowacourse-teams/2025-course-pick/wiki/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4%EC%B2%98%EB%A6%AC%EB%B0%A9%EC%B9%A8"
+                    .toUri(),
+            )
+
+        startActivity(intent)
+    }
+
+    private fun onOpenSourceNoticeSelected() {
+        startActivity(Intent(this, OssLicensesMenuActivity::class.java))
     }
 
     private fun CourseItemListener(): CourseItemListener =
@@ -102,6 +146,13 @@ class MainActivity :
                 )
             }
         }
+
+    private fun setUpBindingVariables() {
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = this
+        binding.adapter = courseAdapter
+        binding.listener = this
+    }
 
     private fun onFetchCurrentLocationSuccess(course: CourseItem): (Latitude, Longitude) -> Unit =
         { latitude: Latitude, longitude: Longitude ->
@@ -208,52 +259,5 @@ class MainActivity :
                 Manifest.permission.ACCESS_COARSE_LOCATION,
             ),
         )
-    }
-
-    override val onMenuSelectedListener: NavigationView.OnNavigationItemSelectedListener =
-        NavigationView.OnNavigationItemSelectedListener { menu: MenuItem ->
-            when (menu.itemId) {
-                R.id.item_user_feedback -> {
-                    val intent =
-                        Intent(
-                            Intent.ACTION_VIEW,
-                            "https://forms.gle/W9Uwwgq2acW2y7Q99"
-                                .toUri(),
-                        )
-
-                    startActivity(intent)
-                }
-
-                R.id.item_privacy_policy -> {
-                    val intent =
-                        Intent(
-                            Intent.ACTION_VIEW,
-                            "https://github.com/woowacourse-teams/2025-course-pick/wiki/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4%EC%B2%98%EB%A6%AC%EB%B0%A9%EC%B9%A8"
-                                .toUri(),
-                        )
-
-                    startActivity(intent)
-                }
-
-                R.id.item_open_source_notice -> {
-                    startActivity(Intent(this, OssLicensesMenuActivity::class.java))
-                }
-            }
-
-            true
-        }
-
-    override fun onClickSearchThisAreaButton() {
-        val mapPosition = mapManager.cameraPosition ?: return
-        viewModel.fetchCourses(
-            Coordinate(
-                Latitude(mapPosition.latitude),
-                Longitude(mapPosition.longitude),
-            ),
-        )
-    }
-
-    override fun onMenuButtonClicked() {
-        binding.mainDrawer.open()
     }
 }
