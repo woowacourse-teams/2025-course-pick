@@ -25,7 +25,7 @@ class GpxCourseParserTest {
                    <trkpt lat="37.4869510" lon="126.9230870">
                     <ele>27.8</ele>
                    </trkpt>
-                   <trkpt lat="37.4869510" lon="126.9230870">
+                   <trkpt lat="37.4869515" lon="126.9230875">
                     <ele>27.8</ele>
                    </trkpt>
                    <trkpt lat="37.4845100" lon="126.9255380">
@@ -45,10 +45,11 @@ class GpxCourseParserTest {
         assertThat(courses).extracting(course -> course.name())
                 .contains("테스트코스");
         assertThat(courses).extracting(course -> course.coordinates().size())
-                .contains(2);
+                .contains(3);
         assertThat(courses).extracting(course -> course.coordinates())
                 .containsExactly(List.of(
                         new Coordinate(37.4869510, 126.9230870, 27.8),
+                        new Coordinate(37.4869515, 126.9230875, 27.8),
                         new Coordinate(37.4845100, 126.9255380, 29.2)
                 ));
     }
