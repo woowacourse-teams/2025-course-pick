@@ -32,7 +32,8 @@ public class Course {
     @AttributeOverride(name = "value", column = @Column(name = "length"))
     private final Meter length;
 
-    private final double difficulty;
+    @Enumerated(EnumType.STRING)
+    private final Difficulty difficulty;
 
     public Course(String name, RoadType roadType, List<Coordinate> rawCoordinates) {
         this.id = null;
@@ -50,7 +51,7 @@ public class Course {
                 .경사_유형이_같은_것끼리는_합친다()
                 .build();
         this.length = calculateLength(segments);
-        this.difficulty = calculateDifficulty(length, roadType);
+        this.difficulty = Difficulty.fromLengthAndRoadType(length(), roadType);
     }
 
     public Course(String name, List<Coordinate> coordinates) {
@@ -63,18 +64,6 @@ public class Course {
             total = total.add(segment.length());
         }
         return total;
-    }
-
-    private static double calculateDifficulty(Meter length, RoadType roadType) {
-        if (length.isWithin(Meter.zero())) return 1.0;
-
-        double score = switch (roadType) {
-            case RoadType.보도, RoadType.알수없음 -> 1 + (9.0 / 42195) * length.value();
-            case RoadType.트랙 -> 1.0 + (9.0 / 60000) * length.value();
-            case RoadType.트레일 -> 1.0 + (9.0 / 22000) * length.value();
-        };
-
-        return Math.clamp(score, 1, 10);
     }
 
     public Coordinate closestCoordinateFrom(Coordinate target) {

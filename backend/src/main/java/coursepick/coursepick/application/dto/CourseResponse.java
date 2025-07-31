@@ -1,9 +1,6 @@
 package coursepick.coursepick.application.dto;
 
-import coursepick.coursepick.domain.Coordinate;
-import coursepick.coursepick.domain.Course;
-import coursepick.coursepick.domain.Meter;
-import coursepick.coursepick.domain.RoadType;
+import coursepick.coursepick.domain.*;
 
 import java.util.List;
 
@@ -13,7 +10,7 @@ public record CourseResponse(
         Meter distance,
         Meter length,
         RoadType roadType,
-        double difficulty,
+        Difficulty difficulty,
         List<SegmentResponse> segments
 ) {
     public static CourseResponse from(Course course, Coordinate target) {
