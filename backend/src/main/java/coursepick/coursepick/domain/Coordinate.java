@@ -3,6 +3,9 @@ package coursepick.coursepick.domain;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_LATITUDE_RANGE;
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_LONGITUDE_RANGE;
 
@@ -18,8 +21,8 @@ public record Coordinate(
         double elevation
 ) {
     public Coordinate(double latitude, double longitude, double elevation) {
-        double roundedLatitude = Math.floor(latitude * 1000000.0) / 1000000.0;
-        double roundedLongitude = Math.floor(longitude * 1000000.0) / 1000000.0;
+        double roundedLatitude = truncated(latitude);
+        double roundedLongitude = truncated(longitude);
         validateLatitudeRange(roundedLatitude);
         validateLongitudeRange(roundedLongitude);
         this.latitude = roundedLatitude;
@@ -56,6 +59,11 @@ public record Coordinate(
 
     public boolean isRightOf(Coordinate other) {
         return other.longitude < this.longitude;
+    }
+
+    private static double truncated(double value) {
+        final int SCALE = 7;
+        return new BigDecimal(String.valueOf(value)).setScale(SCALE, RoundingMode.DOWN).doubleValue();
     }
 
     private static void validateLatitudeRange(double roundedLatitude) {
