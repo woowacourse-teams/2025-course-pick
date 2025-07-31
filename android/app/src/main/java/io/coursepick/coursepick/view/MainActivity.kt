@@ -246,6 +246,11 @@ class MainActivity :
                     Toast
                         .makeText(this, "코스까지 가는 길을 찾지 못했습니다.", Toast.LENGTH_SHORT)
                         .show()
+
+                MainUiEvent.Search -> {
+                    val intent = SearchActivity.intent(this)
+                    startActivity(intent)
+                }
             }
         }
     }
