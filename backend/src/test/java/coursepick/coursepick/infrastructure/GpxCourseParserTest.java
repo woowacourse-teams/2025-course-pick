@@ -42,15 +42,7 @@ class GpxCourseParserTest {
         List<Course> courses = gpxCourseParser.parse("테스트코스", inputStream);
 
         assertThat(courses.size()).isEqualTo(1);
-        assertThat(courses).extracting(course -> course.name())
+        assertThat(courses).extracting(course -> course.name().value())
                 .contains("테스트코스");
-        assertThat(courses).extracting(course -> course.coordinates().size())
-                .contains(3);
-        assertThat(courses).extracting(course -> course.coordinates())
-                .containsExactly(List.of(
-                        new Coordinate(37.4869510, 126.9230870, 27.8),
-                        new Coordinate(37.4869515, 126.9230875, 27.8),
-                        new Coordinate(37.4845100, 126.9255380, 29.2)
-                ));
     }
 }

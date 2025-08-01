@@ -1,23 +1,14 @@
 package coursepick.coursepick.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_LATITUDE_RANGE;
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_LONGITUDE_RANGE;
 
-@Embeddable
 public record Coordinate(
-        @Column(nullable = false)
         double latitude,
-
-        @Column(nullable = false)
         double longitude,
-
-        @Column(nullable = false)
         double elevation
 ) {
     public Coordinate(double latitude, double longitude, double elevation) {

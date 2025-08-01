@@ -16,7 +16,7 @@ public record CourseResponse(
     public static CourseResponse from(Course course, Coordinate target) {
         return new CourseResponse(
                 course.id(),
-                course.name(),
+                course.name().value(),
                 course.distanceFrom(target),
                 course.length(),
                 course.roadType(),
