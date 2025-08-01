@@ -27,10 +27,6 @@ public enum ErrorType {
             "시작과 끝 좌표만 존재할 때 둘은 중복될 수 없습니다.",
             IllegalArgumentException::new
     ),
-    NOT_CONNECTED_CIRCLE_COURSE(
-            "원형 코스는 첫 좌표와 끝 좌표가 동일해야 합니다. 첫 좌표=%s, 끝 좌표=%s",
-            IllegalArgumentException::new
-    ),
     NOT_EXIST_COURSE(
             "코스가 존재하지 않습니다. 코스id=%d",
             EntityNotFoundException::new
