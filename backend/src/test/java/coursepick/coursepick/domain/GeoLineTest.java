@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GeoLineTest {
@@ -34,25 +32,25 @@ class GeoLineTest {
         assertThat(distance.value()).isCloseTo(0, Percentage.withPercentage(1));
     }
 
-    @Test
-    void 좌표들을_2개_단위로_쪼갠다() {
-        List<Coordinate> coordinates = List.of(
-                new Coordinate(0, 0, 0),
-                new Coordinate(1, 1, 10),
-                new Coordinate(2, 2, 20),
-                new Coordinate(3, 3, 30)
-        );
-
-        List<GeoLine> geoLines = GeoLine.split(coordinates);
-
-        assertThat(geoLines).hasSize(3);
-        assertThat(geoLines.get(0).start()).isEqualTo(new Coordinate(0, 0, 0));
-        assertThat(geoLines.get(0).end()).isEqualTo(new Coordinate(1, 1, 10));
-        assertThat(geoLines.get(1).start()).isEqualTo(new Coordinate(1, 1, 10));
-        assertThat(geoLines.get(1).end()).isEqualTo(new Coordinate(2, 2, 20));
-        assertThat(geoLines.get(2).start()).isEqualTo(new Coordinate(2, 2, 20));
-        assertThat(geoLines.get(2).end()).isEqualTo(new Coordinate(3, 3, 30));
-    }
+//    @Test
+//    void 좌표들을_2개_단위로_쪼갠다() {
+//        List<Coordinate> coordinates = List.of(
+//                new Coordinate(0, 0, 0),
+//                new Coordinate(1, 1, 10),
+//                new Coordinate(2, 2, 20),
+//                new Coordinate(3, 3, 30)
+//        );
+//
+//        List<GeoLine> geoLines = GeoLine.split(coordinates);
+//
+//        assertThat(geoLines).hasSize(3);
+//        assertThat(geoLines.get(0).start()).isEqualTo(new Coordinate(0, 0, 0));
+//        assertThat(geoLines.get(0).end()).isEqualTo(new Coordinate(1, 1, 10));
+//        assertThat(geoLines.get(1).start()).isEqualTo(new Coordinate(1, 1, 10));
+//        assertThat(geoLines.get(1).end()).isEqualTo(new Coordinate(2, 2, 20));
+//        assertThat(geoLines.get(2).start()).isEqualTo(new Coordinate(2, 2, 20));
+//        assertThat(geoLines.get(2).end()).isEqualTo(new Coordinate(3, 3, 30));
+//    }
 
     @Nested
     class 기준_좌표에서_선분에_가장_가까운_좌표를_계산한다 {

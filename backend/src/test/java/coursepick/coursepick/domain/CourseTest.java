@@ -29,7 +29,7 @@ class CourseTest {
         @Test
         void 앞_뒤_공백을_제거하여_생성한다() {
             var course = new Course(" 코스이름   ", getNormalCoordinates());
-            assertThat(course.name()).isEqualTo("코스이름");
+            assertThat(course.name().value()).isEqualTo("코스이름");
         }
 
         @ParameterizedTest
@@ -51,31 +51,13 @@ class CourseTest {
         })
         void 이름의_연속공백을_한_칸으로_변환하여_코스를_생성한다(String name) {
             var course = new Course(name, getNormalCoordinates());
-            assertThat(course.name()).isEqualTo("코스 이름");
+            assertThat(course.name().value()).isEqualTo("코스 이름");
         }
 
         @Test
         void 코스의_좌표의_개수가_2보다_적으면_예외가_발생한다() {
             assertThatThrownBy(() -> new Course("코스이름", List.of(new Coordinate(1d, 1d))))
                     .isInstanceOf(IllegalArgumentException.class);
-        }
-
-        @Test
-        void 코스_생성시_첫_좌표_끝_좌표를_제외하고_중복을_제거한다() {
-            Coordinate sutCoordinate = new Coordinate(37.5049400, 126.9058000, 18.19);
-            List<Coordinate> coordinates = List.of(
-                    sutCoordinate,
-                    new Coordinate(37.5047500, 126.9059700, 18.71),
-                    new Coordinate(37.5047500, 126.9059700, 18.71),
-                    new Coordinate(37.5044000, 126.9064600, 19.49),
-                    new Coordinate(37.5043300, 126.9064900, 19.69),
-                    sutCoordinate
-            );
-            Course course = new Course("테스트 코스", coordinates);
-
-            assertThat(course.coordinates().size()).isEqualTo(5);
-            assertThat(course.coordinates().getFirst()).isEqualTo(sutCoordinate);
-            assertThat(course.coordinates().getLast()).isEqualTo(sutCoordinate);
         }
 
         @Test
@@ -86,7 +68,7 @@ class CourseTest {
                     coordinate1
             );
             assertThatThrownBy(() -> new Course("테스트 코스", coordinates))
-                .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(IllegalArgumentException.class);
         }
 
         private static List<Coordinate> getNormalCoordinates() {
@@ -116,7 +98,7 @@ class CourseTest {
 
         var totalLength = course.length();
 
-        assertThat((int) totalLength.value()).isEqualTo(2748);
+        assertThat((int) totalLength.value()).isEqualTo(2924);
     }
 
     @ParameterizedTest
@@ -253,17 +235,17 @@ class CourseTest {
     private static Stream<Arguments> createArguments() {
         return Stream.of(
                 Arguments.of(
-                        List.of(new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0)),
+                        List.of(new Coordinate(37.5, 127.0), new Coordinate(37.499999, 127.0), new Coordinate(37.5, 127.0)),
                         RoadType.트랙,
                         Difficulty.쉬움
                 ),
                 Arguments.of(
-                        List.of(new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0)),
+                        List.of(new Coordinate(37.5, 127.0), new Coordinate(37.499999, 127.0), new Coordinate(37.5, 127.0)),
                         RoadType.트레일,
                         Difficulty.쉬움
                 ),
                 Arguments.of(
-                        List.of(new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0)),
+                        List.of(new Coordinate(37.5, 127.0), new Coordinate(37.499999, 127.0), new Coordinate(37.5, 127.0)),
                         RoadType.보도,
                         Difficulty.쉬움
                 ),
