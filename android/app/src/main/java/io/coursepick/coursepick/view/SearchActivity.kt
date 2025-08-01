@@ -16,6 +16,14 @@ class SearchActivity : AppCompatActivity() {
     private val binding by lazy { ActivitySearchBinding.inflate(layoutInflater) }
     private val viewModel: SearchViewModel by viewModels()
     private val adapter: SearchAdapter by lazy { SearchAdapter() }
+    private val adapter: SearchAdapter by lazy {
+        SearchAdapter(
+            object : OnSearchKeywordListener {
+                override fun search(place: SearchKeyword) {
+                }
+            },
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

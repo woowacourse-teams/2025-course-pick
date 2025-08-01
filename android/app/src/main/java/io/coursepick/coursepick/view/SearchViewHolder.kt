@@ -8,16 +8,24 @@ import io.coursepick.coursepick.domain.SearchKeyword
 
 class SearchViewHolder private constructor(
     private val binding: ItemSearchBinding,
+    onSearchKeywordListener: OnSearchKeywordListener,
 ) : RecyclerView.ViewHolder(binding.root) {
+    init {
+        binding.onSearchKeywordListener = onSearchKeywordListener
+    }
+
     fun bind(search: SearchKeyword) {
-        binding.search = search
+        binding.searchKeyword = search
     }
 
     companion object {
-        fun SearchViewHolder(root: ViewGroup): SearchViewHolder {
+        fun SearchViewHolder(
+            root: ViewGroup,
+            onSearchKeywordListener: OnSearchKeywordListener,
+        ): SearchViewHolder {
             val layoutInflater = LayoutInflater.from(root.context)
             val binding = ItemSearchBinding.inflate(layoutInflater, root, false)
-            return SearchViewHolder(binding)
+            return SearchViewHolder(binding, onSearchKeywordListener)
         }
     }
 }
