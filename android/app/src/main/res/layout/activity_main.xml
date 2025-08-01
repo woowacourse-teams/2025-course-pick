@@ -16,81 +16,114 @@
             type="io.coursepick.coursepick.view.CourseAdapter" />
 
         <variable
-            name="onSearchThisAreaListener"
-            type="io.coursepick.coursepick.view.OnSearchThisAreaListener" />
+            name="action"
+            type="io.coursepick.coursepick.view.MainAction" />
     </data>
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/mainDrawer"
+        swipeable="@{false}"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
 
-        <com.kakao.vectormap.MapView
-            android:id="@+id/mainMap"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <LinearLayout
-            android:id="@+id/mainSearchThisAreaButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top|center"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/background_search_this_area"
-            android:clickable="true"
-            android:onClick="@{() -> onSearchThisAreaListener.search()}"
-            android:orientation="horizontal"
-            android:padding="10dp">
-
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_gravity="center"
-                android:layout_marginEnd="5dp"
-                android:src="@drawable/icon_search_this_area" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/main_search_this_area"
-                android:textColor="@color/item_primary"
-                android:textSize="14sp" />
-
-        </LinearLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/mainBottomSheet"
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/background_courses"
-            android:paddingBottom="10dp"
-            android:visibility="@{viewModel.state.areCoursesEmpty ? View.GONE : View.VISIBLE}"
-            app:behavior_hideable="false"
-            app:behavior_peekHeight="@dimen/main_bottom_sheet_peek_height"
-            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+            android:fitsSystemWindows="true">
 
-            <View
-                android:id="@+id/mainCoursesHandle"
-                android:layout_width="160dp"
-                android:layout_height="4dp"
-                android:layout_marginVertical="10dp"
-                android:background="@drawable/background_courses_handle"
-                app:layout_constraintBottom_toTopOf="@id/mainCourses"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/mainCourses"
+            <com.kakao.vectormap.MapView
+                android:id="@+id/mainMap"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:adapter="@{adapter}"
-                android:orientation="vertical"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/mainCoursesHandle"
-                tools:listitem="@layout/item_course" />
+                android:layout_height="match_parent" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+            <ImageView
+                android:id="@+id/mainMenuButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|start"
+                android:layout_margin="10dp"
+                android:background="@drawable/background_menu"
+                android:onClick="@{() -> action.openMenu()}"
+                android:padding="10dp"
+                android:src="@drawable/icon_menu" />
+
+            <LinearLayout
+                android:id="@+id/mainSearchThisAreaButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|center"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/background_search_this_area"
+                android:clickable="true"
+                android:onClick="@{() -> action.searchThisArea()}"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="5dp"
+                    android:src="@drawable/icon_search_this_area" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/main_search_this_area"
+                    android:textColor="@color/item_primary"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/mainBottomSheet"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/background_courses"
+                android:paddingBottom="10dp"
+                android:visibility="@{viewModel.state.areCoursesEmpty ? View.GONE : View.VISIBLE}"
+                app:behavior_hideable="false"
+                app:behavior_peekHeight="@dimen/main_bottom_sheet_peek_height"
+                app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+                <View
+                    android:id="@+id/mainCoursesHandle"
+                    android:layout_width="160dp"
+                    android:layout_height="4dp"
+                    android:layout_marginVertical="10dp"
+                    android:background="@drawable/background_courses_handle"
+                    app:layout_constraintBottom_toTopOf="@id/mainCourses"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/mainCourses"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:adapter="@{adapter}"
+                    android:orientation="vertical"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHandle"
+                    tools:listitem="@layout/item_course" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/mainNavigation"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:background="@color/background_primary"
+            android:fitsSystemWindows="true"
+            android:onClick="@{}"
+            app:itemTextColor="@color/item_primary"
+            app:menu="@menu/menu_navigation_main"
+            app:onNavigationItemSelected="@{(menuItem) -> action.navigate(menuItem)}" />
+    </androidx.drawerlayout.widget.DrawerLayout>
 </layout>

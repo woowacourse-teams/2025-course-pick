@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/item_user_feedback"
+        android:title="사용자 피드백 창구" />
+    <item
+        android:id="@+id/item_privacy_policy"
+        android:title="개인정보처리방침" />
+    <item
+        android:id="@+id/item_open_source_notice"
+        android:title="오픈소스 라이선스 고지" />
+</menu>
