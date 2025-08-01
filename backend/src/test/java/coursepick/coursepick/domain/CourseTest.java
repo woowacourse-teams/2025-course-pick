@@ -106,18 +106,18 @@ class CourseTest {
                 new Coordinate(37.516000, 127.004500),
                 new Coordinate(37.515500, 127.007000),
                 new Coordinate(37.515000, 127.009500),
-                new Coordinate(37.515500, 127.007000),
-                new Coordinate(37.516000, 127.004500),
-                new Coordinate(37.516500, 127.002000),
-                new Coordinate(37.517000, 127.000000),
-                new Coordinate(37.517500, 126.998000),
-                new Coordinate(37.518000, 126.996500),
-                new Coordinate(37.518400, 126.995600)
+                new Coordinate(37.515500, 127.008000),
+                new Coordinate(37.516000, 127.004700),
+                new Coordinate(37.516500, 127.002300),
+                new Coordinate(37.517000, 127.001000),
+                new Coordinate(37.517500, 126.997000),
+                new Coordinate(37.518000, 126.994500),
+                new Coordinate(37.518400, 126.993600)
         ));
 
         var totalLength = course.length();
 
-        assertThat((int) totalLength.value()).isEqualTo(2573);
+        assertThat((int) totalLength.value()).isEqualTo(2748);
     }
 
     @ParameterizedTest
