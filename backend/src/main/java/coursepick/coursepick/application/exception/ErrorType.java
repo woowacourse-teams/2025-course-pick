@@ -23,6 +23,10 @@ public enum ErrorType {
             "코스는 2개 이상의 좌표로 구성되어야 합니다. 현재 개수=%s",
             IllegalArgumentException::new
     ),
+    INVALID_DUPLICATE_COORDINATE_ONLY_START_END(
+            "시작과 끝 좌표만 존재할 때 둘은 중복될 수 없습니다.",
+            IllegalArgumentException::new
+    ),
     NOT_CONNECTED_CIRCLE_COURSE(
             "원형 코스는 첫 좌표와 끝 좌표가 동일해야 합니다. 첫 좌표=%s, 끝 좌표=%s",
             IllegalArgumentException::new
@@ -53,7 +57,6 @@ public enum ErrorType {
         this.exceptionConstructor = exceptionConstructor;
     }
 
-    @SneakyThrows
     public RuntimeException create(Object... messageArgs) {
         return exceptionConstructor.apply(message(messageArgs));
     }

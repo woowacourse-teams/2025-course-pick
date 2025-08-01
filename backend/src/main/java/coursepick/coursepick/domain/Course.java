@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.BatchSize;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static coursepick.coursepick.application.exception.ErrorType.INVALID_COORDINATE_COUNT;
-import static coursepick.coursepick.application.exception.ErrorType.INVALID_NAME_LENGTH;
+import static coursepick.coursepick.application.exception.ErrorType.*;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
@@ -38,11 +38,12 @@ public class Course {
         String compactName = compactName(name);
         validateNameLength(compactName);
         validateCoordinatesCount(coordinates);
+        validateCoordinateOnlyStartEndDuplicate(coordinates);
 
         this.id = null;
         this.name = compactName;
         this.roadType = roadType;
-        this.coordinates = new ArrayList<>(coordinates);
+        this.coordinates = distinctCoordinates(coordinates);
     }
 
     public Course(String name, List<Coordinate> coordinates) {
@@ -100,8 +101,24 @@ public class Course {
         return Segment.mergeSameInclineType(sameDirectionSegments);
     }
 
+    private static List<Coordinate> distinctCoordinates(List<Coordinate> coordinates) {
+        List<Coordinate> collect = coordinates.subList(1, coordinates.size() - 1).stream()
+                .distinct()
+                .collect(Collectors.toList());
+        collect.addFirst(coordinates.getFirst());
+        collect.add(coordinates.getLast());
+
+        return Collections.unmodifiableList(collect);
+    }
+
     private static String compactName(String name) {
         return name.trim().replaceAll("\\s+", " ");
+    }
+
+    private static void validateCoordinateOnlyStartEndDuplicate(List<Coordinate> coordinates) {
+        if (coordinates.size() == 2 && coordinates.getFirst().equals(coordinates.getLast())) {
+            throw INVALID_DUPLICATE_COORDINATE_ONLY_START_END.create();
+        }
     }
 
     private static void validateNameLength(String compactName) {

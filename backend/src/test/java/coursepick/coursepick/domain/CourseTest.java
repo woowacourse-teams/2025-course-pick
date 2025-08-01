@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CourseTest {
 
@@ -60,8 +61,37 @@ class CourseTest {
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
+        @Test
+        void 코스_생성시_첫_좌표_끝_좌표를_제외하고_중복을_제거한다() {
+            Coordinate sutCoordinate = new Coordinate(37.5049400, 126.9058000, 18.19);
+            List<Coordinate> coordinates = List.of(
+                    sutCoordinate,
+                    new Coordinate(37.5047500, 126.9059700, 18.71),
+                    new Coordinate(37.5047500, 126.9059700, 18.71),
+                    new Coordinate(37.5044000, 126.9064600, 19.49),
+                    new Coordinate(37.5043300, 126.9064900, 19.69),
+                    sutCoordinate
+            );
+            Course course = new Course("테스트 코스", coordinates);
+
+            assertThat(course.coordinates().size()).isEqualTo(5);
+            assertThat(course.coordinates().getFirst()).isEqualTo(sutCoordinate);
+            assertThat(course.coordinates().getLast()).isEqualTo(sutCoordinate);
+        }
+
+        @Test
+        void 코스_생성시_첫_좌표_끝_좌표만_존재할때_둘은_중복될_수_없다() {
+            Coordinate coordinate1 = new Coordinate(37.5049400, 126.9058000, 18.19);
+            List<Coordinate> coordinates = List.of(
+                    coordinate1,
+                    coordinate1
+            );
+            assertThatThrownBy(() -> new Course("테스트 코스", coordinates))
+                .isInstanceOf(IllegalArgumentException.class);
+        }
+
         private static List<Coordinate> getNormalCoordinates() {
-            return List.of(new Coordinate(1d, 1d), new Coordinate(1d, 1d));
+            return List.of(new Coordinate(1d, 1d), new Coordinate(2d, 2d));
         }
     }
 
