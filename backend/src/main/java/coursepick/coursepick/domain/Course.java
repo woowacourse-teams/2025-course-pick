@@ -11,8 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static coursepick.coursepick.application.exception.ErrorType.INVALID_COORDINATE_COUNT;
-import static coursepick.coursepick.application.exception.ErrorType.INVALID_NAME_LENGTH;
+import static coursepick.coursepick.application.exception.ErrorType.*;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
@@ -39,15 +38,34 @@ public class Course {
         String compactName = compactName(name);
         validateNameLength(compactName);
         validateCoordinatesCount(coordinates);
+        validateCoordinateOnlyStartEndDuplicate(coordinates);
 
         this.id = null;
         this.name = compactName;
         this.roadType = roadType;
-        this.coordinates = sortByCounterClockwise(connectStartEndCoordinate(coordinates));
+        this.coordinates = distinctCoordinates(coordinates);
     }
 
     public Course(String name, List<Coordinate> coordinates) {
         this(name, RoadType.알수없음, coordinates);
+    }
+
+    public Coordinate closestCoordinateFrom(Coordinate target) {
+        Coordinate closestCoordinate = coordinates.getFirst();
+        Meter minDistance = Meter.max();
+
+        for (int i = 0; i < coordinates.size() - 1; i++) {
+            GeoLine line = GeoLine.between(coordinates.get(i), coordinates().get(i + 1));
+
+            Coordinate closestCoordinateOnLine = line.closestCoordinateFrom(target);
+            Meter distanceOnLine = GeoLine.between(target, closestCoordinateOnLine).length();
+            if (distanceOnLine.isWithin(minDistance)) {
+                minDistance = distanceOnLine;
+                closestCoordinate = closestCoordinateOnLine;
+            }
+        }
+
+        return closestCoordinate;
     }
 
     public Meter length() {
@@ -62,24 +80,6 @@ public class Course {
         }
 
         return total;
-    }
-
-    public Coordinate closestCoordinateFrom(Coordinate target) {
-        Coordinate closestCoordinate = coordinates.getFirst();
-        Meter minDistance = Meter.max();
-
-        for (int i = 0; i < coordinates.size() - 1; i++) {
-            GeoLine line = GeoLine.between(coordinates.get(i), coordinates.get(i + 1));
-
-            Coordinate closestCoordinateOnLine = line.closestCoordinateFrom(target);
-            Meter distanceOnLine = GeoLine.between(target, closestCoordinateOnLine).length();
-            if (distanceOnLine.isWithin(minDistance)) {
-                minDistance = distanceOnLine;
-                closestCoordinate = closestCoordinateOnLine;
-            }
-        }
-
-        return closestCoordinate;
     }
 
     public Meter distanceFrom(Coordinate target) {
@@ -101,8 +101,32 @@ public class Course {
         return Segment.mergeSameInclineType(sameDirectionSegments);
     }
 
+    private static List<Coordinate> distinctCoordinates(List<Coordinate> coordinates) {
+        ArrayList<Coordinate> distinctCoordinates = new ArrayList<>();
+        distinctCoordinates.add(coordinates.getFirst());
+        Coordinate current = coordinates.getFirst();
+
+        for (int idx = 1; idx < coordinates.size(); idx++) {
+            Coordinate next = coordinates.get(idx);
+            if (current.hasSameLatitudeAndLongitude(next)) {
+                continue;
+            }
+
+            current = next;
+            distinctCoordinates.add(current);
+        }
+
+        return Collections.unmodifiableList(distinctCoordinates);
+    }
+
     private static String compactName(String name) {
         return name.trim().replaceAll("\\s+", " ");
+    }
+
+    private static void validateCoordinateOnlyStartEndDuplicate(List<Coordinate> coordinates) {
+        if (coordinates.size() == 2 && coordinates.getFirst().equals(coordinates.getLast())) {
+            throw INVALID_DUPLICATE_COORDINATE_ONLY_START_END.create();
+        }
     }
 
     private static void validateNameLength(String compactName) {
@@ -115,44 +139,5 @@ public class Course {
         if (coordinates.size() < 2) {
             throw INVALID_COORDINATE_COUNT.create(coordinates.size());
         }
-    }
-
-    private List<Coordinate> connectStartEndCoordinate(List<Coordinate> coordinates) {
-        if (isFirstAndLastCoordinateDifferent(coordinates)) {
-            coordinates = new ArrayList<>(coordinates);
-            coordinates.add(coordinates.getFirst());
-        }
-        return coordinates;
-    }
-
-    private static boolean isFirstAndLastCoordinateDifferent(List<Coordinate> coordinates) {
-        return !coordinates.getFirst().hasSameLatitudeAndLongitude(coordinates.getLast());
-    }
-
-    private static List<Coordinate> sortByCounterClockwise(List<Coordinate> coordinates) {
-        int lowestCoordinateIndex = findLowestCoordinateIndex(coordinates);
-        List<Coordinate> counterClockWiseCoordinates = new ArrayList<>(coordinates);
-        if (isClockwise(coordinates, lowestCoordinateIndex)) {
-            Collections.reverse(counterClockWiseCoordinates);
-        }
-        return counterClockWiseCoordinates;
-    }
-
-    private static int findLowestCoordinateIndex(List<Coordinate> coordinates) {
-        int lowestCoordinateIndex = 0;
-        double lowestLatitude = Double.MAX_VALUE;
-        for (int i = 0; i < coordinates.size(); i++) {
-            Coordinate coordinate = coordinates.get(i);
-            if (coordinate.latitude() < lowestLatitude) {
-                lowestLatitude = coordinate.latitude();
-                lowestCoordinateIndex = i;
-            }
-        }
-        return lowestCoordinateIndex;
-    }
-
-    private static boolean isClockwise(List<Coordinate> coordinates, int lowestCoordinateIndex) {
-        int nextIndex = (lowestCoordinateIndex + 1) % (coordinates.size() - 1);
-        return coordinates.get(lowestCoordinateIndex).isRightOf(coordinates.get(nextIndex));
     }
 }
