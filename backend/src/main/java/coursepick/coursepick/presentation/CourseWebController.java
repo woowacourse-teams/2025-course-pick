@@ -44,10 +44,12 @@ public class CourseWebController implements CourseWebApi {
     @Override
     @GetMapping("/courses")
     public List<CourseWebResponse> findNearbyCourses(
-            @RequestParam("lat") double latitude,
-            @RequestParam("lng") double longitude
+            @RequestParam("mapLat") double mapLatitude,
+            @RequestParam("mapLng") double mapLongitude,
+            @RequestParam(value = "userLat", required = false) Double userLatitude,
+            @RequestParam(value = "userLng", required = false) Double userLongitude
     ) {
-        List<CourseResponse> responses = courseApplicationService.findNearbyCourses(latitude, longitude);
+        List<CourseResponse> responses = courseApplicationService.findNearbyCourses(mapLatitude, mapLongitude, userLatitude, userLongitude);
         return CourseWebResponse.from(responses);
     }
 
