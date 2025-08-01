@@ -291,7 +291,7 @@ class MainActivity :
 
                 MainUiEvent.Search -> {
                     val intent = SearchActivity.intent(this)
-                    startActivity(intent)
+                    searchLauncher.launch(intent)
                 }
             }
         }
