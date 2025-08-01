@@ -7,11 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.BatchSize;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-
-import static coursepick.coursepick.application.exception.ErrorType.*;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
@@ -23,121 +19,73 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private final Long id;
 
-    @Column(nullable = false, length = 50)
-    private final String name;
+    @Embedded
+    private final CourseName name;
 
     @Enumerated(EnumType.STRING)
     private final RoadType roadType;
 
     @BatchSize(size = 30)
     @ElementCollection
-    @CollectionTable(name = "coordinate")
-    private final List<Coordinate> coordinates;
+    @CollectionTable(name = "segment")
+    private final List<Segment> segments;
 
-    public Course(String name, RoadType roadType, List<Coordinate> coordinates) {
-        String compactName = compactName(name);
-        validateNameLength(compactName);
-        validateCoordinatesCount(coordinates);
-        validateCoordinateOnlyStartEndDuplicate(coordinates);
+    @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "length"))
+    private final Meter length;
 
+    @Enumerated(EnumType.STRING)
+    private final Difficulty difficulty;
+
+    public Course(String name, RoadType roadType, List<Coordinate> rawCoordinates) {
         this.id = null;
-        this.name = compactName;
+        this.name = new CourseName(name);
         this.roadType = roadType;
-        this.coordinates = distinctCoordinates(coordinates);
+        List<Coordinate> coordinates = CoordinateBuilder.fromRawCoordinates(rawCoordinates)
+                .addFirstCoordinateIfNotConnected()
+                .removeDuplicatedCoordinate()
+                .build();
+        List<GeoLine> geoLines = GeoLineBuilder.fromCoordinates(coordinates)
+                .build();
+        this.segments = SegmentBuilder.fromGeoLines(geoLines)
+                .mergeSameElevationDirection()
+                .mergeSameInclineType()
+                .build();
+        this.length = calculateLength(segments);
+        this.difficulty = Difficulty.fromLengthAndRoadType(length(), roadType);
     }
 
     public Course(String name, List<Coordinate> coordinates) {
         this(name, RoadType.알수없음, coordinates);
     }
 
+    private static Meter calculateLength(List<Segment> segments) {
+        Meter total = Meter.zero();
+        for (Segment segment : segments) {
+            total = total.add(segment.length());
+        }
+        return total;
+    }
+
     public Coordinate closestCoordinateFrom(Coordinate target) {
-        Coordinate closestCoordinate = coordinates.getFirst();
+        Coordinate minDistanceCoordinate = segments.getFirst().startCoordinate();
         Meter minDistance = Meter.max();
 
-        for (int i = 0; i < coordinates.size() - 1; i++) {
-            GeoLine line = GeoLine.between(coordinates.get(i), coordinates().get(i + 1));
+        for (Segment segment : segments) {
+            Coordinate currentCoordinate = segment.closestCoordinateFrom(target);
+            Meter currentDistance = GeoLine.between(target, currentCoordinate).length();
 
-            Coordinate closestCoordinateOnLine = line.closestCoordinateFrom(target);
-            Meter distanceOnLine = GeoLine.between(target, closestCoordinateOnLine).length();
-            if (distanceOnLine.isWithin(minDistance)) {
-                minDistance = distanceOnLine;
-                closestCoordinate = closestCoordinateOnLine;
+            if (currentDistance.isWithin(minDistance)) {
+                minDistance = currentDistance;
+                minDistanceCoordinate = currentCoordinate;
             }
         }
 
-        return closestCoordinate;
-    }
-
-    public Meter length() {
-        Meter total = Meter.zero();
-
-        for (int i = 0; i < coordinates.size() - 1; i++) {
-            Coordinate coord1 = coordinates.get(i);
-            Coordinate coord2 = coordinates.get(i + 1);
-
-            Meter meter = GeoLine.between(coord1, coord2).length();
-            total = total.add(meter);
-        }
-
-        return total;
+        return minDistanceCoordinate;
     }
 
     public Meter distanceFrom(Coordinate target) {
         Coordinate minDistanceCoordinate = closestCoordinateFrom(target);
         return GeoLine.between(minDistanceCoordinate, target).length();
-    }
-
-    public Difficulty difficulty() {
-        return Difficulty.fromLengthAndRoadType(length(), roadType);
-    }
-
-    public List<Segment> segments() {
-        List<GeoLine> geoLines = GeoLine.split(coordinates);
-        List<Segment> segments = geoLines.stream()
-                .map(GeoLine::toSegment)
-                .toList();
-
-        List<Segment> sameDirectionSegments = Segment.mergeSameDirection(segments);
-        return Segment.mergeSameInclineType(sameDirectionSegments);
-    }
-
-    private static List<Coordinate> distinctCoordinates(List<Coordinate> coordinates) {
-        ArrayList<Coordinate> distinctCoordinates = new ArrayList<>();
-        distinctCoordinates.add(coordinates.getFirst());
-        Coordinate current = coordinates.getFirst();
-
-        for (int idx = 1; idx < coordinates.size(); idx++) {
-            Coordinate next = coordinates.get(idx);
-            if (current.hasSameLatitudeAndLongitude(next)) {
-                continue;
-            }
-
-            current = next;
-            distinctCoordinates.add(current);
-        }
-
-        return Collections.unmodifiableList(distinctCoordinates);
-    }
-
-    private static String compactName(String name) {
-        return name.trim().replaceAll("\\s+", " ");
-    }
-
-    private static void validateCoordinateOnlyStartEndDuplicate(List<Coordinate> coordinates) {
-        if (coordinates.size() == 2 && coordinates.getFirst().equals(coordinates.getLast())) {
-            throw INVALID_DUPLICATE_COORDINATE_ONLY_START_END.create();
-        }
-    }
-
-    private static void validateNameLength(String compactName) {
-        if (compactName.length() < 2 || compactName.length() > 30) {
-            throw INVALID_NAME_LENGTH.create(compactName);
-        }
-    }
-
-    private static void validateCoordinatesCount(List<Coordinate> coordinates) {
-        if (coordinates.size() < 2) {
-            throw INVALID_COORDINATE_COUNT.create(coordinates.size());
-        }
     }
 }
