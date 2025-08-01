@@ -1,7 +1,7 @@
 spring:
   application.name: coursepick
   jpa:
-    open-in-view: true
+    open-in-view: false
     properties:
       hibernate:
         jdbc.batch_size: 50 # 한 번에 처리할 배치 크기

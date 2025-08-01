@@ -68,10 +68,10 @@ public class Course {
     }
 
     public Coordinate closestCoordinateFrom(Coordinate target) {
-        Coordinate minDistanceCoordinate = segments.getFirst().startCoordinate();
+        Coordinate minDistanceCoordinate = segments().getFirst().startCoordinate();
         Meter minDistance = Meter.max();
 
-        for (Segment segment : segments) {
+        for (Segment segment : segments()) {
             Coordinate currentCoordinate = segment.closestCoordinateFrom(target);
             Meter currentDistance = GeoLine.between(target, currentCoordinate).length();
 
