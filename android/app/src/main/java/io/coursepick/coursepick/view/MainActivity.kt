@@ -188,9 +188,6 @@ class MainActivity :
 
     private fun setUpStateObserver() {
         viewModel.state.observe(this) { state: MainUiState ->
-            if (state.areCoursesEmpty) {
-                Toast.makeText(this, "이 지역에 코스가 없습니다.", Toast.LENGTH_SHORT).show()
-            }
             courseAdapter.submitList(state.courses)
         }
     }
@@ -202,7 +199,7 @@ class MainActivity :
                 is MainUiEvent.FetchCourseSuccess -> {
                     event.course?.let { course: CourseItem ->
                         mapManager.draw(course)
-                    }
+                    } ?: Toast.makeText(this, "이 지역에 코스가 없습니다.", Toast.LENGTH_SHORT).show()
                 }
 
                 MainUiEvent.FetchCourseFailure -> {
