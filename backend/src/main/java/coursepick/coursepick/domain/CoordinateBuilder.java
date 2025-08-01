@@ -44,34 +44,7 @@ public class CoordinateBuilder {
         return new CoordinateBuilder(nonDuplicatedCoordinates);
     }
 
-    public CoordinateBuilder sortByCounterClockwise() {
-        List<Coordinate> result = new ArrayList<>(coordinates);
-        if (isClockwise()) {
-            Collections.reverse(result);
-        }
-        return new CoordinateBuilder(result);
-    }
-
     public List<Coordinate> build() {
         return Collections.unmodifiableList(coordinates);
-    }
-
-    private boolean isClockwise() {
-        int lowestCoordinateIndex = findLowestCoordinateIndex();
-        int nextIndex = (lowestCoordinateIndex + 1) % coordinates.size();
-        return coordinates.get(lowestCoordinateIndex).isRightOf(coordinates.get(nextIndex));
-    }
-
-    private int findLowestCoordinateIndex() {
-        int lowestCoordinateIndex = 0;
-        double lowestLatitude = Double.MAX_VALUE;
-        for (int i = 0; i < coordinates.size() - 1; i++) {
-            Coordinate coordinate = coordinates.get(i);
-            if (coordinate.latitude() < lowestLatitude) {
-                lowestLatitude = coordinate.latitude();
-                lowestCoordinateIndex = i;
-            }
-        }
-        return lowestCoordinateIndex;
     }
 }

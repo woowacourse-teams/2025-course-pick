@@ -30,7 +30,7 @@ public class CourseApplicationService {
                 .findAny()
                 .orElseThrow(INVALID_FILE_EXTENSION::create);
 
-        List<Course> courses = courseParser.parse(filename.replace("." + fileExtension, ""), fileStream);
+        List<Course> courses = courseParser.parse(filename, fileStream);
         log.info("{} 개의 코스를 파싱했습니다", courses.size());
 
         List<Course> savedCourses = courseRepository.saveAll(courses);

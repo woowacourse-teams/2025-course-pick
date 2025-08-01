@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.List;
 
@@ -24,6 +25,7 @@ public class Course {
     @Enumerated(EnumType.STRING)
     private final RoadType roadType;
 
+    @BatchSize(size = 30)
     @ElementCollection
     @CollectionTable(name = "segment")
     private final List<Segment> segments;
@@ -42,7 +44,6 @@ public class Course {
         List<Coordinate> coordinates = CoordinateBuilder.fromRawCoordinates(rawCoordinates)
                 .addFirstCoordinateIfNotConnected()
                 .removeDuplicatedCoordinate()
-                .sortByCounterClockwise()
                 .build();
         List<GeoLine> geoLines = GeoLineBuilder.fromCoordinates(coordinates)
                 .build();
