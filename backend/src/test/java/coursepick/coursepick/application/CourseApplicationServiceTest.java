@@ -108,7 +108,7 @@ class CourseApplicationServiceTest {
 
         assertThat(courses).hasSize(2)
                 .extracting(CourseResponse::name)
-                .containsExactlyInAnyOrder(course1.name(), course2.name());
+                .containsExactlyInAnyOrder(course1.name().value(), course2.name().value());
 
         assertThat(courses).extracting(CourseResponse::distance).allMatch(Optional::isPresent);
         assertThat(courses.get(0).distance().get().value()).isCloseTo(6640, Percentage.withPercentage(1));

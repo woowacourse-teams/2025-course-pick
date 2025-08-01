@@ -1,9 +1,9 @@
 package coursepick.coursepick.application.dto;
 
+import coursepick.coursepick.domain.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
-import coursepick.coursepick.domain.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +36,7 @@ public class CourseResponse {
     public static CourseResponse from(Course course) {
         return new CourseResponse(
                 course.id(),
-                course.name(),
+                course.name().value(),
                 null,
                 course.length(),
                 course.roadType(),
