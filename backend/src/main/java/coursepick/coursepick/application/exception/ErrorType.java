@@ -1,7 +1,6 @@
 package coursepick.coursepick.application.exception;
 
 import jakarta.persistence.EntityNotFoundException;
-import lombok.SneakyThrows;
 
 import java.util.function.Function;
 

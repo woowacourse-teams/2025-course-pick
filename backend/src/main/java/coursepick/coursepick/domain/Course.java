@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.BatchSize;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static coursepick.coursepick.application.exception.ErrorType.*;
 
@@ -102,11 +102,19 @@ public class Course {
     }
 
     private static List<Coordinate> distinctCoordinates(List<Coordinate> coordinates) {
-        List<Coordinate> distinctCoordinates = coordinates.subList(1, coordinates.size() - 1).stream()
-                .distinct()
-                .collect(Collectors.toList());
-        distinctCoordinates.addFirst(coordinates.getFirst());
-        distinctCoordinates.add(coordinates.getLast());
+        ArrayList<Coordinate> distinctCoordinates = new ArrayList<>();
+        distinctCoordinates.add(coordinates.getFirst());
+        Coordinate current = coordinates.getFirst();
+
+        for (int idx = 1; idx < coordinates.size(); idx++) {
+            Coordinate next = coordinates.get(idx);
+            if (current.hasSameLatitudeAndLongitude(next)) {
+                continue;
+            }
+
+            current = next;
+            distinctCoordinates.add(current);
+        }
 
         return Collections.unmodifiableList(distinctCoordinates);
     }

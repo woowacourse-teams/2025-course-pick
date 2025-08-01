@@ -32,8 +32,8 @@ public class GpxCourseParser implements CourseParser {
         }
 
         return gpx.tracks()
-            .map(track -> new Course(filename, getCoordinates(track)))
-            .toList();
+                .map(track -> new Course(filename, getCoordinates(track)))
+                .toList();
     }
 
     private static List<Coordinate> getCoordinates(Track track) {
