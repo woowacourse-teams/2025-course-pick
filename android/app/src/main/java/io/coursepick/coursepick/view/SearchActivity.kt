@@ -10,6 +10,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import io.coursepick.coursepick.databinding.ActivitySearchBinding
+import io.coursepick.coursepick.domain.SearchKeyword
 
 class SearchActivity : AppCompatActivity() {
     private val binding by lazy { ActivitySearchBinding.inflate(layoutInflater) }
@@ -30,7 +31,7 @@ class SearchActivity : AppCompatActivity() {
         binding.searchView.requestFocus()
         binding.adapter = adapter
 
-        viewModel.state.observe(this) { state: List<SearchKeywordItem> ->
+        viewModel.state.observe(this) { state: List<SearchKeyword> ->
             adapter.submitList(state)
         }
 

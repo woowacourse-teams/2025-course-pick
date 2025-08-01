@@ -1,7 +1,7 @@
 package io.coursepick.coursepick.data
 
+import io.coursepick.coursepick.domain.SearchKeyword
 import io.coursepick.coursepick.domain.SearchKeywordRepository
-import io.coursepick.coursepick.domain.SearchKeywords
 
 class DefaultSearchKeywordRepository : SearchKeywordRepository {
     override suspend fun searchKeywords(
@@ -9,8 +9,8 @@ class DefaultSearchKeywordRepository : SearchKeywordRepository {
         page: Int?,
         size: Int?,
         sort: String?,
-    ): SearchKeywords =
+    ): List<SearchKeyword> =
         Services.searchKeywordService
             .searchKeywords(query, page, size, sort)
-            .toSearchKeywordsOrNull() ?: SearchKeywords(emptyList())
+            .toSearchKeywordsOrNull() ?: emptyList()
 }

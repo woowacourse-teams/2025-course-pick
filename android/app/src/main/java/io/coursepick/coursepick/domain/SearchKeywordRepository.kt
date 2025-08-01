@@ -6,5 +6,5 @@ interface SearchKeywordRepository {
         page: Int? = null,
         size: Int? = null,
         sort: String? = null,
-    ): SearchKeywords
+    ): List<SearchKeyword>
 }

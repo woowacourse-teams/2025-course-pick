@@ -4,7 +4,6 @@ import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.Latitude
 import io.coursepick.coursepick.domain.Longitude
 import io.coursepick.coursepick.domain.SearchKeyword
-import io.coursepick.coursepick.domain.SearchKeywords
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -65,23 +64,21 @@ data class SearchKeywordsResponseItem(
         val selectedRegion: String?,
     )
 
-    fun toSearchKeywordsOrNull(): SearchKeywords? {
-        val searchKeywords: List<SearchKeyword> =
-            documents?.mapNotNull { document ->
-                val addressName = document?.addressName ?: return@mapNotNull null
-                val placeName = document.placeName ?: return@mapNotNull null
-                val lat = document.y?.toDoubleOrNull() ?: return@mapNotNull null
-                val lng = document.x?.toDoubleOrNull() ?: return@mapNotNull null
+    fun toSearchKeywordsOrNull(): List<SearchKeyword>? {
+        return documents?.mapNotNull { document ->
+            val addressName = document?.addressName ?: return@mapNotNull null
+            val placeName = document.placeName ?: return@mapNotNull null
+            val lat = document.y?.toDoubleOrNull() ?: return@mapNotNull null
+            val lng = document.x?.toDoubleOrNull() ?: return@mapNotNull null
 
-                val latitude = runCatching { Latitude(lat) }.getOrNull() ?: return@mapNotNull null
-                val longitude = runCatching { Longitude(lng) }.getOrNull() ?: return@mapNotNull null
+            val latitude = runCatching { Latitude(lat) }.getOrNull() ?: return@mapNotNull null
+            val longitude = runCatching { Longitude(lng) }.getOrNull() ?: return@mapNotNull null
 
-                SearchKeyword(
-                    addressName,
-                    placeName,
-                    Coordinate(latitude, longitude),
-                )
-            } ?: return null
-        return SearchKeywords(searchKeywords)
+            SearchKeyword(
+                addressName,
+                placeName,
+                Coordinate(latitude, longitude),
+            )
+        } ?: return null
     }
 }
