@@ -1,11 +1,11 @@
 package coursepick.coursepick.infrastructure;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import coursepick.coursepick.domain.GeoLine;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-import lombok.SneakyThrows;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,21 +16,27 @@ public class GeoLineListConverter implements AttributeConverter<List<GeoLine>, S
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    @SneakyThrows
     public String convertToDatabaseColumn(List<GeoLine> attribute) {
         if (attribute == null || attribute.isEmpty()) {
             return null;
         }
-        return objectMapper.writeValueAsString(attribute);
+        try {
+            return objectMapper.writeValueAsString(attribute);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    @SneakyThrows
     public List<GeoLine> convertToEntityAttribute(String dbData) {
         if (dbData == null || dbData.isBlank()) {
             return new ArrayList<>();
         }
-        return objectMapper.readValue(dbData, new TypeReference<>() {
-        });
+        try {
+            return objectMapper.readValue(dbData, new TypeReference<>() {
+            });
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
