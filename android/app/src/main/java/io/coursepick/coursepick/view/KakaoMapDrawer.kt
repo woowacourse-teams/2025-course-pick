@@ -5,6 +5,7 @@ import android.location.Location
 import androidx.annotation.DrawableRes
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.LatLng
+import com.kakao.vectormap.label.Label
 import com.kakao.vectormap.label.LabelLayer
 import com.kakao.vectormap.label.LabelManager
 import com.kakao.vectormap.label.LabelOptions
@@ -55,19 +56,22 @@ class KakaoMapDrawer(
         longitude: Double,
     ) {
         val manager: LabelManager = map.labelManager ?: return
-        val styles: LabelStyles =
-            manager.addLabelStyles(LabelStyles.from(LabelStyle.from(iconResourceId)))
-                ?: return
-        val options =
-            LabelOptions
-                .from(
-                    LatLng.from(
-                        latitude,
-                        longitude,
-                    ),
-                ).setStyles(styles)
-        val layer: LabelLayer = map.labelManager?.layer ?: return
+        val layer: LabelLayer = manager.layer ?: return
+        val labelId: String = iconResourceId.toString()
+        val label: Label? = layer.getLabel(labelId)
+        if (label == null) {
+            val styles: LabelStyles =
+                manager.addLabelStyles(LabelStyles.from(LabelStyle.from(iconResourceId))) ?: return
+            val options: LabelOptions =
+                LabelOptions.from(LatLng.from(latitude, longitude)).setStyles(styles)
+            options.labelId = labelId
+            layer.addLabel(options)
+            return
+        }
+        label.moveTo(LatLng.from(latitude, longitude), LABEL_MOVE_ANIMATION_DURATION)
+    }
 
-        layer.addLabel(options)
+    companion object {
+        private const val LABEL_MOVE_ANIMATION_DURATION = 500
     }
 }
