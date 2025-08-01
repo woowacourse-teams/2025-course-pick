@@ -36,12 +36,6 @@ public class GpxCourseParser implements CourseParser {
             .toList();
     }
 
-    private static void validateCoordinatesIsEmpty(List<Coordinate> coordinates) {
-        if (coordinates.isEmpty()) {
-            throw new IllegalArgumentException(ErrorType.INVALID_FILE_EXTENSION.message());
-        }
-    }
-
     private static List<Coordinate> getCoordinates(Track track) {
         return track.getSegments().stream()
                 .flatMap(segment -> segment.getPoints().stream()
