@@ -101,6 +101,22 @@ class KakaoMapManager(
         }
     }
 
+    fun showSearchLocation(
+        latitude: Latitude,
+        longitude: Longitude,
+    ) {
+        kakaoMap?.let { map ->
+            val location =
+                Location("search").apply {
+                    this.latitude = latitude.value
+                    this.longitude = longitude.value
+                }
+
+            drawer.drawLabel(map, R.drawable.image_current_location, location)
+            cameraController.moveTo(map, location)
+        }
+    }
+
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun showCurrentLocation() {
         locationProvider.fetchCurrentLocation(

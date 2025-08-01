@@ -31,6 +31,7 @@ import io.coursepick.coursepick.domain.Longitude
 class MainActivity :
     AppCompatActivity(),
     MainAction {
+    private lateinit var searchLauncher: ActivityResultLauncher<Intent>
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val viewModel: MainViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(CourseItemListener()) }
@@ -72,6 +73,27 @@ class MainActivity :
             }
             fetchCourses(coordinate)
         }
+
+        searchLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == RESULT_OK) {
+                    val latitude: Double? = result.data?.getDoubleExtra("latitude", 0.0)
+                    val longitude: Double? = result.data?.getDoubleExtra("longitude", 0.0)
+
+                    if (latitude != null && longitude != null) {
+                        mapManager.showSearchLocation(
+                            Latitude(latitude),
+                            Longitude(longitude),
+                        )
+                        viewModel.fetchCourses(
+                            Coordinate(
+                                Latitude(latitude),
+                                Longitude(longitude),
+                            ),
+                        )
+                    }
+                }
+            }
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -249,7 +271,7 @@ class MainActivity :
 
                 MainUiEvent.Search -> {
                     val intent = SearchActivity.intent(this)
-                    startActivity(intent)
+                    searchLauncher.launch(intent)
                 }
             }
         }
