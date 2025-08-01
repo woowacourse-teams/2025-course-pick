@@ -7,7 +7,6 @@ import coursepick.coursepick.presentation.api.CourseWebApi;
 import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
 import coursepick.coursepick.presentation.dto.CourseWebResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -28,12 +27,11 @@ public class CourseWebController implements CourseWebApi {
     @Value("${admin.token}")
     private String adminToken;
 
-    @SneakyThrows(IOException.class)
     @PostMapping("/admin/courses/import")
     public void importCourses(
             @RequestParam("adminToken") String token,
             @RequestParam("file") List<MultipartFile> files
-    ) {
+    ) throws IOException {
         validateAdminToken(token);
 
         for (MultipartFile file : files) {

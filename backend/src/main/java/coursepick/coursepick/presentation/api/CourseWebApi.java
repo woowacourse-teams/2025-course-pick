@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Tag(name = "코스")
@@ -62,5 +63,5 @@ public interface CourseWebApi {
     );
 
     @Operation(hidden = true)
-    void importCourses(String token, List<MultipartFile> files);
+    void importCourses(String token, List<MultipartFile> files) throws IOException;
 }
