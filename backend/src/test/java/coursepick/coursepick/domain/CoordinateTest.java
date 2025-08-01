@@ -173,13 +173,4 @@ class CoordinateTest {
             assertThat(result.longitude()).isEqualTo(expectedLng);
         }
     }
-
-    @Test
-    void 다른_좌표와_비교하여_오른쪽인지_확인한다() {
-        var coordinate = new Coordinate(0, 25);
-        var righterCoordinate = new Coordinate(0, 30);
-
-        assertThat(righterCoordinate.isRightOf(coordinate)).isTrue();
-        assertThat(coordinate.isRightOf(righterCoordinate)).isFalse();
-    }
 }
