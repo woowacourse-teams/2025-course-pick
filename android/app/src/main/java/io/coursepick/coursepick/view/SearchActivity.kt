@@ -39,7 +39,7 @@ class SearchActivity : AppCompatActivity() {
                 override fun onQueryTextSubmit(query: String?): Boolean = true
 
                 override fun onQueryTextChange(newText: String?): Boolean {
-                    viewModel.searchWithDebounce(newText.orEmpty())
+                    viewModel.search(newText.orEmpty())
                     return true
                 }
             },

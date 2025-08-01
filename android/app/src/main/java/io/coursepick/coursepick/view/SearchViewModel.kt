@@ -19,7 +19,7 @@ class SearchViewModel(
         MutableLiveData<List<SearchKeywordItem>>()
     val state: LiveData<List<SearchKeywordItem>> get() = _state
 
-    fun searchWithDebounce(query: String) {
+    fun search(query: String) {
         searchJob?.cancel()
 
         searchJob =
