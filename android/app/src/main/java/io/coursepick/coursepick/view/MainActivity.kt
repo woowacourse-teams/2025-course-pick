@@ -145,14 +145,7 @@ class MainActivity :
     private fun onFetchCurrentLocationSuccess(course: CourseItem): (Latitude, Longitude) -> Unit =
         { latitude: Latitude, longitude: Longitude ->
             val navigationUri: Uri =
-                viewModel
-                    .navigationUrl(
-                        course,
-                        Coordinate(
-                            latitude,
-                            longitude,
-                        ),
-                    ).toUri()
+                viewModel.navigationUrl(course, Coordinate(latitude, longitude)).toUri()
 
             val intent = Intent(Intent.ACTION_VIEW, navigationUri)
             startActivity(intent)
@@ -160,12 +153,7 @@ class MainActivity :
 
     private fun onFetchCurrentLocationFailure(): (Exception) -> Unit =
         {
-            Toast
-                .makeText(
-                    this,
-                    "현재 위치를 가져올 수 없어요.",
-                    Toast.LENGTH_SHORT,
-                ).show()
+            Toast.makeText(this, "현재 위치를 가져올 수 없어요.", Toast.LENGTH_SHORT).show()
         }
 
     private fun setUpDoubleBackPress() {
@@ -200,6 +188,9 @@ class MainActivity :
 
     private fun setUpStateObserver() {
         viewModel.state.observe(this) { state: MainUiState ->
+            if (state.areCoursesEmpty) {
+                Toast.makeText(this, "이 지역에 코스가 없습니다.", Toast.LENGTH_SHORT).show()
+            }
             courseAdapter.submitList(state.courses)
         }
     }
@@ -215,12 +206,7 @@ class MainActivity :
                 }
 
                 MainUiEvent.FetchCourseFailure -> {
-                    Toast
-                        .makeText(
-                            this,
-                            "코스 정보를 불러오지 못했습니다.",
-                            Toast.LENGTH_SHORT,
-                        ).show()
+                    Toast.makeText(this, "코스 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
 
                     mapManager.start {}
                 }
