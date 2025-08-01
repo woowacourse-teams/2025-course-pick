@@ -1,6 +1,7 @@
 package coursepick.coursepick.presentation.dto;
 
 import coursepick.coursepick.application.dto.CourseResponse;
+import coursepick.coursepick.domain.Meter;
 import coursepick.coursepick.domain.RoadType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -12,7 +13,7 @@ public record CourseWebResponse(
         @Schema(example = "석촌호수")
         String name,
         @Schema(example = "200.123")
-        double distance,
+        Double distance,
         @Schema(example = "2146.123")
         double length,
         @Schema(example = "트랙")
@@ -26,7 +27,9 @@ public record CourseWebResponse(
                 .map(courseResponse -> new CourseWebResponse(
                         courseResponse.id(),
                         courseResponse.name(),
-                        courseResponse.distance().value(),
+                        courseResponse.distance()
+                                .map(Meter::value)
+                                .orElse(null),
                         courseResponse.length().value(),
                         courseResponse.roadType(),
                         courseResponse.difficulty().name(),
