@@ -16,8 +16,8 @@
             type="io.coursepick.coursepick.view.CourseAdapter" />
 
         <variable
-            name="listener"
-            type="io.coursepick.coursepick.view.MainActivityEventListener" />
+            name="action"
+            type="io.coursepick.coursepick.view.MainAction" />
     </data>
 
     <androidx.drawerlayout.widget.DrawerLayout
@@ -44,7 +44,7 @@
                 android:layout_gravity="top|start"
                 android:layout_margin="10dp"
                 android:background="@drawable/background_menu"
-                android:onClick="@{() -> listener.onMenuButtonClicked()}"
+                android:onClick="@{() -> action.openMenu()}"
                 android:padding="10dp"
                 android:src="@drawable/icon_menu" />
 
@@ -56,7 +56,7 @@
                 android:layout_marginTop="10dp"
                 android:background="@drawable/background_search_this_area"
                 android:clickable="true"
-                android:onClick="@{() -> listener.onClickSearchThisAreaButton()}"
+                android:onClick="@{() -> action.searchThisArea()}"
                 android:orientation="horizontal"
                 android:padding="10dp">
 
@@ -116,14 +116,14 @@
 
         <com.google.android.material.navigation.NavigationView
             android:id="@+id/mainNavigation"
-            onNavigationItemSelectedListener="@{listener.onMenuSelectedListener}"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:background="@color/background_primary"
             android:fitsSystemWindows="true"
+            android:onClick="@{}"
             app:itemTextColor="@color/item_primary"
-            app:menu="@menu/menu_navigation_main" />
-
+            app:menu="@menu/menu_navigation_main"
+            app:onNavigationItemSelected="@{(menuItem) -> action.navigate(menuItem)}" />
     </androidx.drawerlayout.widget.DrawerLayout>
 </layout>

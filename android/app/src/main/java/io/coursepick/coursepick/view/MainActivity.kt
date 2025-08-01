@@ -19,7 +19,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.navigation.NavigationView
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.databinding.ActivityMainBinding
 import io.coursepick.coursepick.domain.Coordinate
@@ -28,18 +27,7 @@ import io.coursepick.coursepick.domain.Longitude
 
 class MainActivity :
     AppCompatActivity(),
-    MainActivityEventListener {
-    override val onMenuSelectedListener: NavigationView.OnNavigationItemSelectedListener =
-        NavigationView.OnNavigationItemSelectedListener { menu: MenuItem ->
-            when (menu.itemId) {
-                R.id.item_user_feedback -> onUserFeedbackMenuSelected()
-                R.id.item_privacy_policy -> onPrivacyPolicySelected()
-                R.id.item_open_source_notice -> onOpenSourceNoticeSelected()
-            }
-
-            true
-        }
-
+    MainAction {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val viewModel: MainViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(CourseItemListener()) }
@@ -92,7 +80,7 @@ class MainActivity :
         mapManager.stopTrackingCurrentLocation()
     }
 
-    override fun onClickSearchThisAreaButton() {
+    override fun searchThisArea() {
         val mapPosition = mapManager.cameraPosition ?: return
         viewModel.fetchCourses(
             Coordinate(
@@ -102,8 +90,18 @@ class MainActivity :
         )
     }
 
-    override fun onMenuButtonClicked() {
+    override fun openMenu() {
         binding.mainDrawer.open()
+    }
+
+    override fun navigate(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.item_user_feedback -> onUserFeedbackMenuSelected()
+            R.id.item_privacy_policy -> onPrivacyPolicySelected()
+            R.id.item_open_source_notice -> onOpenSourceNoticeSelected()
+        }
+
+        return true
     }
 
     private fun onUserFeedbackMenuSelected() {
@@ -141,7 +139,7 @@ class MainActivity :
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
         binding.adapter = courseAdapter
-        binding.listener = this
+        binding.action = this
     }
 
     private fun onFetchCurrentLocationSuccess(course: CourseItem): (Latitude, Longitude) -> Unit =

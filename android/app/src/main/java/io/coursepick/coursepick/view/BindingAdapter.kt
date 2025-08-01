@@ -38,8 +38,8 @@ fun DrawerLayout.setSwipeable(swipeable: Boolean) {
     this.setDrawerLockMode(mode)
 }
 
-@BindingAdapter("onNavigationItemSelectedListener")
-fun NavigationView.setOnNavigationItemSelectedListener(listener: NavigationView.OnNavigationItemSelectedListener) {
+@BindingAdapter("onNavigationItemSelected")
+fun NavigationView.setOnNavigationItemSelected(listener: NavigationView.OnNavigationItemSelectedListener) {
     this.setNavigationItemSelectedListener(listener)
 }
 
