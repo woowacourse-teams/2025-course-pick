@@ -6,11 +6,13 @@ import androidx.recyclerview.widget.ListAdapter
 import io.coursepick.coursepick.domain.SearchKeyword
 import io.coursepick.coursepick.view.SearchViewHolder.Companion.SearchViewHolder
 
-class SearchAdapter : ListAdapter<SearchKeyword, SearchViewHolder>(diffUtil) {
+class SearchAdapter(
+    private val onSearchKeywordListener: OnSearchKeywordListener,
+) : ListAdapter<SearchKeyword, SearchViewHolder>(diffUtil) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
-    ): SearchViewHolder = SearchViewHolder(parent)
+    ): SearchViewHolder = SearchViewHolder(parent, onSearchKeywordListener)
 
     override fun onBindViewHolder(
         holder: SearchViewHolder,
