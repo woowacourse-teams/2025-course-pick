@@ -15,7 +15,7 @@ class SearchViewHolder private constructor(
     }
 
     fun bind(search: SearchKeyword) {
-        binding.search = search
+        binding.searchKeyword = search
     }
 
     companion object {
