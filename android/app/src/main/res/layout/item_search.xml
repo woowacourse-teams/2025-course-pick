@@ -10,27 +10,41 @@
             type="io.coursepick.coursepick.view.OnSearchKeywordListener" />
 
         <variable
-            name="searchKeyword"
+            name="search"
             type="io.coursepick.coursepick.domain.SearchKeyword" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{() -> onSearchKeywordListener.search(searchKeyword)}">
+        android:onClick="@{() -> onSearchKeywordListener.search(search)}">
 
         <TextView
+            android:id="@+id/searchKeyword"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginHorizontal="20dp"
             android:layout_marginVertical="20dp"
-            android:text="@{searchKeyword.placeName}"
+            android:text="@{search.placeName}"
             android:textSize="18sp"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="검색어" />
+
+        <TextView
+            android:id="@+id/searchAddress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@{search.addressName}"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/searchKeyword"
+            app:layout_constraintStart_toStartOf="@id/searchKeyword"
+            app:layout_constraintTop_toBottomOf="@id/searchKeyword"
+            tools:text="서울 송파구 신천동 7-20" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
