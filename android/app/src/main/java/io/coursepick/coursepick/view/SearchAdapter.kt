@@ -3,9 +3,10 @@ package io.coursepick.coursepick.view
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import io.coursepick.coursepick.domain.SearchKeyword
 import io.coursepick.coursepick.view.SearchViewHolder.Companion.SearchViewHolder
 
-class SearchAdapter : ListAdapter<SearchKeywordItem, SearchViewHolder>(diffUtil) {
+class SearchAdapter : ListAdapter<SearchKeyword, SearchViewHolder>(diffUtil) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
@@ -20,15 +21,15 @@ class SearchAdapter : ListAdapter<SearchKeywordItem, SearchViewHolder>(diffUtil)
 
     companion object {
         private val diffUtil =
-            object : DiffUtil.ItemCallback<SearchKeywordItem>() {
+            object : DiffUtil.ItemCallback<SearchKeyword>() {
                 override fun areItemsTheSame(
-                    oldItem: SearchKeywordItem,
-                    newItem: SearchKeywordItem,
-                ): Boolean = oldItem.keyword == newItem.keyword
+                    oldItem: SearchKeyword,
+                    newItem: SearchKeyword,
+                ): Boolean = oldItem.placeName == newItem.placeName
 
                 override fun areContentsTheSame(
-                    oldItem: SearchKeywordItem,
-                    newItem: SearchKeywordItem,
+                    oldItem: SearchKeyword,
+                    newItem: SearchKeyword,
                 ): Boolean = oldItem == newItem
             }
     }
