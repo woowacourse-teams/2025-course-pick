@@ -2,7 +2,7 @@ package io.coursepick.coursepick.view
 
 sealed interface MainUiEvent {
     class FetchCourseSuccess(
-        val course: CourseItem?,
+        val nearestCourse: CourseItem?,
     ) : MainUiEvent
 
     object FetchCourseFailure : MainUiEvent
