@@ -1,6 +1,10 @@
 package coursepick.coursepick.domain;
 
-import coursepick.coursepick.application.exception.ErrorType;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
+import static coursepick.coursepick.application.exception.ErrorType.INVALID_LATITUDE_RANGE;
+import static coursepick.coursepick.application.exception.ErrorType.INVALID_LONGITUDE_RANGE;
 
 public record Coordinate(
         double latitude,
@@ -8,8 +12,8 @@ public record Coordinate(
         double elevation
 ) {
     public Coordinate(double latitude, double longitude, double elevation) {
-        double roundedLatitude = Math.floor(latitude * 1000000.0) / 1000000.0;
-        double roundedLongitude = Math.floor(longitude * 1000000.0) / 1000000.0;
+        double roundedLatitude = truncated(latitude);
+        double roundedLongitude = truncated(longitude);
         validateLatitudeRange(roundedLatitude);
         validateLongitudeRange(roundedLongitude);
         this.latitude = roundedLatitude;
@@ -34,6 +38,7 @@ public record Coordinate(
         double dotProduct = startToTargetLatitudeDiff * startToEndLatitudeDiff + startToTargetLongitudeDiff * startToEndLongitudeDiff;
         double segmentLengthSquared = startToEndLatitudeDiff * startToEndLatitudeDiff + startToEndLongitudeDiff * startToEndLongitudeDiff;
 
+        if (segmentLengthSquared == 0.0) return 0.0;
         return dotProduct / segmentLengthSquared;
     }
 
@@ -48,15 +53,20 @@ public record Coordinate(
         return other.longitude < this.longitude;
     }
 
+    private static double truncated(double value) {
+        final int SCALE = 7;
+        return BigDecimal.valueOf(value).setScale(SCALE, RoundingMode.DOWN).doubleValue();
+    }
+
     private static void validateLatitudeRange(double roundedLatitude) {
         if (roundedLatitude < -90 || roundedLatitude > 90) {
-            throw ErrorType.INVALID_LATITUDE_RANGE.create(roundedLatitude);
+            throw INVALID_LATITUDE_RANGE.create(roundedLatitude);
         }
     }
 
     private static void validateLongitudeRange(double roundedLongitude) {
         if (roundedLongitude < -180 || roundedLongitude >= 180) {
-            throw ErrorType.INVALID_LONGITUDE_RANGE.create(roundedLongitude);
+            throw INVALID_LONGITUDE_RANGE.create(roundedLongitude);
         }
     }
 }

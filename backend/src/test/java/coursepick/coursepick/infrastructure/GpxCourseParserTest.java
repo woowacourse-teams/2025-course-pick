@@ -60,12 +60,12 @@ class GpxCourseParserTest {
         InputStream inputStream = new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
         GpxCourseParser gpxCourseParser = new GpxCourseParser();
 
-        List<Course> courses = gpxCourseParser.parse(inputStream);
+        List<Course> courses = gpxCourseParser.parse("테스트코스", inputStream);
 
         assertThat(courses.size()).isEqualTo(1);
         Course course = courses.getFirst();
         Coordinate firstCoordinate = course.segments().getFirst().startCoordinate();
-        assertThat(course.name().value()).isEqualTo("test-course");
+        assertThat(course.name().value()).isEqualTo("테스트코스");
         assertThat(firstCoordinate).isEqualTo(new Coordinate(37.4869510, 126.9230870, 27.8));
     }
 }

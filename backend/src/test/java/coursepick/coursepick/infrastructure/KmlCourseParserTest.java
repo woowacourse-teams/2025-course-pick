@@ -26,7 +26,7 @@ class KmlCourseParserTest {
                 <kml xmlns="http://www.opengis.net/kml/2.2">
                 <Document>
                     <Placemark>
-                        <name>테스트 코스</name>
+                        <name>테스트코스</name>
                         <Polygon>
                             <outerBoundaryIs>
                                 <LinearRing>
@@ -43,43 +43,16 @@ class KmlCourseParserTest {
 
         InputStream inputStream = new ByteArrayInputStream(kmlContent.getBytes(StandardCharsets.UTF_8));
 
-        List<Course> courses = sut.parse(inputStream);
+        List<Course> courses = sut.parse("테스트코스", inputStream);
 
         assertThat(courses).hasSize(1);
 
         Course course = courses.getFirst();
-        assertThat(course.name().value()).isEqualTo("테스트 코스");
+        assertThat(course.name().value()).isEqualTo("테스트코스");
 
         Coordinate firstCoordinate = course.segments().getFirst().startCoordinate();
-        assertThat(firstCoordinate.latitude()).isEqualTo(37.522489);
-        assertThat(firstCoordinate.longitude()).isEqualTo(127.099029);
-    }
-
-    @Test
-    void 이름이_없는_Placemark는_무시한다(@TempDir Path tempDir) throws IOException {
-        String kmlContent = """
-                <?xml version="1.0" encoding="UTF-8"?>
-                <kml xmlns="http://www.opengis.net/kml/2.2">
-                <Document>
-                    <Placemark>
-                        <Polygon>
-                            <outerBoundaryIs>
-                                <LinearRing>
-                                    <coordinates>
-                                        127.0990294928381,37.52248985670181,0 127.0963796423111,37.52181839278625,0
-                                    </coordinates>
-                                </LinearRing>
-                            </outerBoundaryIs>
-                        </Polygon>
-                    </Placemark>
-                </Document>
-                </kml>
-                """;
-        InputStream inputStream = new ByteArrayInputStream(kmlContent.getBytes(StandardCharsets.UTF_8));
-
-        List<Course> courses = sut.parse(inputStream);
-
-        assertThat(courses).isEmpty();
+        assertThat(firstCoordinate.latitude()).isEqualTo(37.5224898);
+        assertThat(firstCoordinate.longitude()).isEqualTo(127.0990294);
     }
 
     @Test
@@ -96,7 +69,7 @@ class KmlCourseParserTest {
                 """;
         InputStream inputStream = new ByteArrayInputStream(kmlContent.getBytes(StandardCharsets.UTF_8));
 
-        List<Course> courses = sut.parse(inputStream);
+        List<Course> courses = sut.parse("테스트코스", inputStream);
 
         assertThat(courses).isEmpty();
     }
