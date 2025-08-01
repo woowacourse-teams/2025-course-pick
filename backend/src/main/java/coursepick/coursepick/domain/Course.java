@@ -8,7 +8,6 @@ import lombok.experimental.Accessors;
 import org.hibernate.annotations.BatchSize;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_COORDINATE_COUNT;
@@ -40,10 +39,6 @@ public class Course {
         validateNameLength(compactName);
         validateCoordinatesCount(coordinates);
 
-        if (isCircle(coordinates)) {
-            coordinates = sortByCounterClockwise(coordinates);
-        }
-
         this.id = null;
         this.name = compactName;
         this.roadType = roadType;
@@ -55,11 +50,11 @@ public class Course {
     }
 
     public Coordinate closestCoordinateFrom(Coordinate target) {
-        Coordinate closestCoordinate = coordinates().getFirst();
+        Coordinate closestCoordinate = coordinates.getFirst();
         Meter minDistance = Meter.max();
 
-        for (int i = 0; i < coordinates().size() - 1; i++) {
-            GeoLine line = GeoLine.between(coordinates().get(i), coordinates().get(i + 1));
+        for (int i = 0; i < coordinates.size() - 1; i++) {
+            GeoLine line = GeoLine.between(coordinates.get(i), coordinates().get(i + 1));
 
             Coordinate closestCoordinateOnLine = line.closestCoordinateFrom(target);
             Meter distanceOnLine = GeoLine.between(target, closestCoordinateOnLine).length();
@@ -103,41 +98,6 @@ public class Course {
 
         List<Segment> sameDirectionSegments = Segment.mergeSameDirection(segments);
         return Segment.mergeSameInclineType(sameDirectionSegments);
-    }
-
-    private boolean isCircle(List<Coordinate> coordinates) {
-        if (coordinates.getFirst().hasSameLatitudeAndLongitude(coordinates.getLast())) {
-            return true;
-        }
-
-        return false;
-    }
-
-    private static List<Coordinate> sortByCounterClockwise(List<Coordinate> coordinates) {
-        int lowestCoordinateIndex = findLowestCoordinateIndex(coordinates);
-        List<Coordinate> counterClockWiseCoordinates = new ArrayList<>(coordinates);
-        if (isClockwise(coordinates, lowestCoordinateIndex)) {
-            Collections.reverse(counterClockWiseCoordinates);
-        }
-        return counterClockWiseCoordinates;
-    }
-
-    private static int findLowestCoordinateIndex(List<Coordinate> coordinates) {
-        int lowestCoordinateIndex = 0;
-        double lowestLatitude = Double.MAX_VALUE;
-        for (int i = 0; i < coordinates.size(); i++) {
-            Coordinate coordinate = coordinates.get(i);
-            if (coordinate.latitude() < lowestLatitude) {
-                lowestLatitude = coordinate.latitude();
-                lowestCoordinateIndex = i;
-            }
-        }
-        return lowestCoordinateIndex;
-    }
-
-    private static boolean isClockwise(List<Coordinate> coordinates, int lowestCoordinateIndex) {
-        int nextIndex = (lowestCoordinateIndex + 1) % coordinates.size();
-        return coordinates.get(lowestCoordinateIndex).isRightOf(coordinates.get(nextIndex));
     }
 
     private static String compactName(String name) {
