@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.oss.licenses.plugin)
 }
 
 private val localProperties: Properties =
@@ -93,6 +94,7 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.timber)
     implementation(libs.firebase.crashlytics.ndk)
+    implementation(libs.play.services.oss.licenses)
     testImplementation(libs.assertj.core)
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)

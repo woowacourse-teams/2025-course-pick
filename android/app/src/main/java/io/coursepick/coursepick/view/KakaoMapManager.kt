@@ -31,7 +31,7 @@ class KakaoMapManager(
         lifecycleHandler.start { map: KakaoMap ->
             kakaoMap = map
             map.logo?.setPosition(
-                MapGravity.TOP or MapGravity.LEFT,
+                MapGravity.TOP or MapGravity.RIGHT,
                 offsetPx,
                 offsetPx,
             )

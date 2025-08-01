@@ -3,7 +3,9 @@ package io.coursepick.coursepick.view
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
@@ -15,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.databinding.ActivityMainBinding
@@ -22,60 +25,15 @@ import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.Latitude
 import io.coursepick.coursepick.domain.Longitude
 
-class MainActivity : AppCompatActivity() {
+class MainActivity :
+    AppCompatActivity(),
+    MainAction {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val viewModel: MainViewModel by viewModels()
-    private val courseAdapter by lazy {
-        CourseAdapter(
-            object : CourseItemListener {
-                override fun select(course: CourseItem) {
-                    viewModel.select(course)
-                }
+    private val courseAdapter by lazy { CourseAdapter(CourseItemListener()) }
 
-                @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-                override fun navigate(course: CourseItem) {
-                    mapManager.fetchCurrentLocation(
-                        onSuccess = { latitude: Latitude, longitude: Longitude ->
-                            val navigationUri =
-                                viewModel
-                                    .navigationUrl(
-                                        course,
-                                        Coordinate(
-                                            latitude,
-                                            longitude,
-                                        ),
-                                    ).toUri()
-
-                            val intent = Intent(Intent.ACTION_VIEW, navigationUri)
-                            startActivity(intent)
-                        },
-                        onFailure = {
-                            Toast
-                                .makeText(
-                                    this@MainActivity,
-                                    "현재 위치를 가져올 수 없어요.",
-                                    Toast.LENGTH_SHORT,
-                                ).show()
-                        },
-                    )
-                }
-            },
-        )
-    }
     private val doublePressDetector = DoublePressDetector()
     private val mapManager by lazy { KakaoMapManager(binding.mainMap) }
-    private val onSearchThisAreaListener: OnSearchThisAreaListener =
-        object : OnSearchThisAreaListener {
-            override fun search() {
-                val mapPosition = mapManager.cameraPosition ?: return
-                viewModel.fetchCourses(
-                    Coordinate(
-                        Latitude(mapPosition.latitude),
-                        Longitude(mapPosition.longitude),
-                    ),
-                )
-            }
-        }
 
     @SuppressLint("MissingPermission")
     private val locationPermissionLauncher: ActivityResultLauncher<Array<String>> =
@@ -97,11 +55,7 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        binding.viewModel = viewModel
-        binding.lifecycleOwner = this
-        binding.adapter = courseAdapter
-        binding.onSearchThisAreaListener = onSearchThisAreaListener
-
+        setUpBindingVariables()
         setUpObservers()
         setUpDoubleBackPress()
         requestLocationPermissions()
@@ -126,10 +80,103 @@ class MainActivity : AppCompatActivity() {
         mapManager.stopTrackingCurrentLocation()
     }
 
+    override fun searchThisArea() {
+        val mapPosition = mapManager.cameraPosition ?: return
+        viewModel.fetchCourses(
+            Coordinate(
+                Latitude(mapPosition.latitude),
+                Longitude(mapPosition.longitude),
+            ),
+        )
+    }
+
+    override fun openMenu() {
+        binding.mainDrawer.open()
+    }
+
+    override fun navigate(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.item_user_feedback -> onUserFeedbackMenuSelected()
+            R.id.item_privacy_policy -> onPrivacyPolicySelected()
+            R.id.item_open_source_notice -> onOpenSourceNoticeSelected()
+        }
+
+        return true
+    }
+
+    private fun onUserFeedbackMenuSelected() {
+        val intent = Intent(Intent.ACTION_VIEW, getString(R.string.feedback_url).toUri())
+
+        startActivity(intent)
+    }
+
+    private fun onPrivacyPolicySelected() {
+        val intent = Intent(Intent.ACTION_VIEW, getString(R.string.privacy_policy_url).toUri())
+
+        startActivity(intent)
+    }
+
+    private fun onOpenSourceNoticeSelected() {
+        startActivity(Intent(this, OssLicensesMenuActivity::class.java))
+    }
+
+    private fun CourseItemListener(): CourseItemListener =
+        object : CourseItemListener {
+            override fun select(course: CourseItem) {
+                viewModel.select(course)
+            }
+
+            @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+            override fun navigate(course: CourseItem) {
+                mapManager.fetchCurrentLocation(
+                    onSuccess = onFetchCurrentLocationSuccess(course),
+                    onFailure = onFetchCurrentLocationFailure(),
+                )
+            }
+        }
+
+    private fun setUpBindingVariables() {
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = this
+        binding.adapter = courseAdapter
+        binding.action = this
+    }
+
+    private fun onFetchCurrentLocationSuccess(course: CourseItem): (Latitude, Longitude) -> Unit =
+        { latitude: Latitude, longitude: Longitude ->
+            val navigationUri: Uri =
+                viewModel
+                    .navigationUrl(
+                        course,
+                        Coordinate(
+                            latitude,
+                            longitude,
+                        ),
+                    ).toUri()
+
+            val intent = Intent(Intent.ACTION_VIEW, navigationUri)
+            startActivity(intent)
+        }
+
+    private fun onFetchCurrentLocationFailure(): (Exception) -> Unit =
+        {
+            Toast
+                .makeText(
+                    this,
+                    "현재 위치를 가져올 수 없어요.",
+                    Toast.LENGTH_SHORT,
+                ).show()
+        }
+
     private fun setUpDoubleBackPress() {
         val callback =
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
+                    if (binding.mainDrawer.isOpen) {
+                        binding.mainDrawer.close()
+                        return
+                    }
+
                     if (doublePressDetector.doublePressed()) {
                         finish()
                     } else {
@@ -142,7 +189,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-        onBackPressedDispatcher.addCallback(this@MainActivity, callback)
+        onBackPressedDispatcher.addCallback(this, callback)
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
