@@ -8,6 +8,7 @@ import android.location.LocationManager
 import android.os.Looper
 import androidx.annotation.RequiresPermission
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationAvailability
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -67,7 +68,7 @@ class LocationProvider(
             return
         }
 
-        val locationCallback = LocationCallback(onUpdate)
+        val locationCallback = LocationCallback(onUpdate, onError)
         this.locationCallback = locationCallback
 
         locationClient.requestLocationUpdates(
@@ -84,10 +85,19 @@ class LocationProvider(
         locationCallback = null
     }
 
-    private fun LocationCallback(onUpdate: (Location) -> Unit): LocationCallback =
+    private fun LocationCallback(
+        onUpdate: (Location) -> Unit,
+        onError: (Exception) -> Unit,
+    ): LocationCallback =
         object : LocationCallback() {
             override fun onLocationResult(result: LocationResult) {
                 result.lastLocation?.let { location: Location -> onUpdate(location) }
+            }
+
+            override fun onLocationAvailability(availability: LocationAvailability) {
+                if (!locationManager.isLocationEnabled) {
+                    onError(IllegalStateException("현재 위치를 사용할 수 없습니다."))
+                }
             }
         }
 
