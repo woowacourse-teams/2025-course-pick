@@ -197,7 +197,7 @@ class MainActivity :
         viewModel.event.observe(this) { event: MainUiEvent ->
             when (event) {
                 is MainUiEvent.FetchCourseSuccess -> {
-                    event.course?.let { course: CourseItem ->
+                    event.nearestCourse?.let { course: CourseItem ->
                         mapManager.draw(course)
                     } ?: Toast.makeText(this, "이 지역에 코스가 없습니다.", Toast.LENGTH_SHORT).show()
                 }
