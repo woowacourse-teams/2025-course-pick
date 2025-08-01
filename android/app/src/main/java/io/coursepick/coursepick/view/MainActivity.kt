@@ -145,14 +145,7 @@ class MainActivity :
     private fun onFetchCurrentLocationSuccess(course: CourseItem): (Latitude, Longitude) -> Unit =
         { latitude: Latitude, longitude: Longitude ->
             val navigationUri: Uri =
-                viewModel
-                    .navigationUrl(
-                        course,
-                        Coordinate(
-                            latitude,
-                            longitude,
-                        ),
-                    ).toUri()
+                viewModel.navigationUrl(course, Coordinate(latitude, longitude)).toUri()
 
             val intent = Intent(Intent.ACTION_VIEW, navigationUri)
             startActivity(intent)
@@ -160,12 +153,7 @@ class MainActivity :
 
     private fun onFetchCurrentLocationFailure(): (Exception) -> Unit =
         {
-            Toast
-                .makeText(
-                    this,
-                    "현재 위치를 가져올 수 없어요.",
-                    Toast.LENGTH_SHORT,
-                ).show()
+            Toast.makeText(this, "현재 위치를 가져올 수 없어요.", Toast.LENGTH_SHORT).show()
         }
 
     private fun setUpDoubleBackPress() {
@@ -209,20 +197,13 @@ class MainActivity :
         viewModel.event.observe(this) { event: MainUiEvent ->
             when (event) {
                 is MainUiEvent.FetchCourseSuccess -> {
-                    event.course?.let { course: CourseItem ->
+                    event.nearestCourse?.let { course: CourseItem ->
                         mapManager.draw(course)
-                    }
+                    } ?: Toast.makeText(this, "이 지역에 코스가 없습니다.", Toast.LENGTH_SHORT).show()
                 }
 
                 MainUiEvent.FetchCourseFailure -> {
-                    Toast
-                        .makeText(
-                            this,
-                            "코스 정보를 불러오지 못했습니다.",
-                            Toast.LENGTH_SHORT,
-                        ).show()
-
-                    mapManager.start {}
+                    Toast.makeText(this, "코스 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
                 }
 
                 is MainUiEvent.SelectNewCourse -> {
