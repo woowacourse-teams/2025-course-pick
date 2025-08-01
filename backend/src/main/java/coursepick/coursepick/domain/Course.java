@@ -102,13 +102,13 @@ public class Course {
     }
 
     private static List<Coordinate> distinctCoordinates(List<Coordinate> coordinates) {
-        List<Coordinate> collect = coordinates.subList(1, coordinates.size() - 1).stream()
+        List<Coordinate> distinctCoordinates = coordinates.subList(1, coordinates.size() - 1).stream()
                 .distinct()
                 .collect(Collectors.toList());
-        collect.addFirst(coordinates.getFirst());
-        collect.add(coordinates.getLast());
+        distinctCoordinates.addFirst(coordinates.getFirst());
+        distinctCoordinates.add(coordinates.getLast());
 
-        return Collections.unmodifiableList(collect);
+        return Collections.unmodifiableList(distinctCoordinates);
     }
 
     private static String compactName(String name) {
