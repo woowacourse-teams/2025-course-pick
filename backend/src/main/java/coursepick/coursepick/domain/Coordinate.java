@@ -58,10 +58,6 @@ public record Coordinate(
         return new Coordinate(this.latitude + latitudeDelta, this.longitude + longitudeDelta, this.elevation);
     }
 
-    public boolean isRightOf(Coordinate other) {
-        return other.longitude < this.longitude;
-    }
-
     private static double truncated(double value) {
         final int SCALE = 7;
         return BigDecimal.valueOf(value).setScale(SCALE, RoundingMode.DOWN).doubleValue();
