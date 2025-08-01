@@ -4,11 +4,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import io.coursepick.coursepick.databinding.ItemSearchBinding
+import io.coursepick.coursepick.domain.SearchKeyword
 
 class SearchViewHolder private constructor(
     private val binding: ItemSearchBinding,
 ) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(search: SearchKeywordItem) {
+    fun bind(search: SearchKeyword) {
         binding.search = search
     }
 
