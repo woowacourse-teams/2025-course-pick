@@ -15,11 +15,17 @@ import io.coursepick.coursepick.domain.SearchKeyword
 class SearchActivity : AppCompatActivity() {
     private val binding by lazy { ActivitySearchBinding.inflate(layoutInflater) }
     private val viewModel: SearchViewModel by viewModels()
-    private val adapter: SearchAdapter by lazy { SearchAdapter() }
     private val adapter: SearchAdapter by lazy {
         SearchAdapter(
             object : OnSearchKeywordListener {
                 override fun search(place: SearchKeyword) {
+                    val resultIntent =
+                        Intent().apply {
+                            putExtra("latitude", place.coordinate.latitude.value)
+                            putExtra("longitude", place.coordinate.longitude.value)
+                        }
+                    setResult(RESULT_OK, resultIntent)
+                    finish()
                 }
             },
         )
