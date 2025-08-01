@@ -25,7 +25,7 @@ class SearchViewModel(
 
         searchJob =
             viewModelScope.launch {
-                delay(2000)
+                delay(500)
 
                 if (query.isNotBlank()) {
                     _state.value = searchRepository.searchKeywords(query)
