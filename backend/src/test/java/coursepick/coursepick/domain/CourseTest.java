@@ -251,7 +251,7 @@ class CourseTest {
 
     @ParameterizedTest
     @MethodSource("createArguments")
-    void 코스의_난이도를_계산한다(List<Coordinate> coordinates, RoadType roadType, double expectedDifficulty) {
+    void 코스의_난이도를_계산한다(List<Coordinate> coordinates, RoadType roadType, Difficulty expectedDifficulty) {
         var course = new Course("코스", roadType, coordinates);
 
         var difficulty = course.difficulty();
@@ -264,32 +264,32 @@ class CourseTest {
                 Arguments.of(
                         List.of(new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0)),
                         RoadType.트랙,
-                        1
+                        Difficulty.쉬움
                 ),
                 Arguments.of(
                         List.of(new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0)),
                         RoadType.트레일,
-                        1
+                        Difficulty.쉬움
                 ),
                 Arguments.of(
                         List.of(new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0), new Coordinate(37.5, 127.0)),
                         RoadType.보도,
-                        1
+                        Difficulty.쉬움
                 ),
                 Arguments.of(
                         List.of(new Coordinate(37.499384, 126.999433), new Coordinate(37.501806, 127.239550), new Coordinate(37.499384, 126.999433)),
                         RoadType.보도,
-                        10
+                        Difficulty.어려움
                 ),
                 Arguments.of(
                         List.of(new Coordinate(37.506591, 127.145630), new Coordinate(37.311405, 127.383810), new Coordinate(37.506591, 127.145630)),
                         RoadType.트랙,
-                        10
+                        Difficulty.어려움
                 ),
                 Arguments.of(
                         List.of(new Coordinate(37.486225, 127.063228), new Coordinate(37.486557, 127.187908), new Coordinate(37.486225, 127.063228)),
                         RoadType.트레일,
-                        10
+                        Difficulty.어려움
                 )
         );
     }

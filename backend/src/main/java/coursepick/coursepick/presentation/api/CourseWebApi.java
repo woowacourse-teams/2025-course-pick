@@ -64,5 +64,5 @@ public interface CourseWebApi {
     );
 
     @Operation(hidden = true)
-    void importCourses(String token, MultipartFile file);
+    void importCourses(String token, List<MultipartFile> files);
 }

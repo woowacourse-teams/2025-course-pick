@@ -1,12 +1,9 @@
 package coursepick.coursepick.application.dto;
 
-import coursepick.coursepick.domain.Coordinate;
-import coursepick.coursepick.domain.Course;
-import coursepick.coursepick.domain.Meter;
-import coursepick.coursepick.domain.RoadType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
+import coursepick.coursepick.domain.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +18,7 @@ public class CourseResponse {
     private final Meter distance;
     private final Meter length;
     private final RoadType roadType;
-    private final double difficulty;
+    private final Difficulty difficulty;
     private final List<SegmentResponse> segments;
 
     public static CourseResponse from(Course course, Coordinate target) {
