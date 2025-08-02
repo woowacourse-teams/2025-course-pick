@@ -31,15 +31,18 @@ dependencies {
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
 
-    // Geographic libraries for comparison
+    // Spatial4J
     implementation("org.locationtech.spatial4j:spatial4j:0.8")
+
+    // GPX Parser
+    implementation("io.jenetics:jpx:3.2.1")
 
     // Logback Logstash Encoder (JSON Format)
     implementation("net.logstash.logback:logstash-logback-encoder:8.1")
 
     // JVM/Spring Metric
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-
+    
     // Test
     testImplementation("org.springframework.batch:spring-batch-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
