@@ -12,12 +12,6 @@ management:
   endpoints:
     web:
       exposure:
-        include: "health, info, metrics"
-  metrics:
-    export:
-      cloudwatch:
-        namespace: "EC2/coursepick/dev"
-        region: ap-northeast-2
-        batch-size: 20
+        include: "health, metrics"
 
 admin.token: ${ADMIN_TOKEN}
