@@ -1,6 +1,7 @@
 package coursepick.coursepick.infrastructure;
 
-import coursepick.coursepick.domain.Coordinate;
+import coursepick.coursepick.application.dto.CourseFile;
+import coursepick.coursepick.application.dto.CourseFileExtension;
 import coursepick.coursepick.domain.Course;
 import org.junit.jupiter.api.Test;
 
@@ -39,7 +40,7 @@ class GpxCourseParserTest {
         InputStream inputStream = new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
         GpxCourseParser gpxCourseParser = new GpxCourseParser();
 
-        List<Course> courses = gpxCourseParser.parse("테스트코스", inputStream);
+        List<Course> courses = gpxCourseParser.parse(new CourseFile("테스트코스", CourseFileExtension.KML, inputStream));
 
         assertThat(courses.size()).isEqualTo(1);
         assertThat(courses).extracting(course -> course.name().value())
