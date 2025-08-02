@@ -18,4 +18,6 @@ public interface CourseRepository extends Repository<Course, Long> {
                 .filter(c -> c.distanceFrom(target).isWithin(meter))
                 .toList();
     }
+
+    boolean existsByName(CourseName courseName);
 }
