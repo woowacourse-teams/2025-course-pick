@@ -1,6 +1,5 @@
 package coursepick.coursepick.application;
 
-import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
@@ -22,15 +21,8 @@ public class CourseApplicationService {
 
     private static final Meter SEARCH_RADIUS = new Meter(1000);
 
-    private final CourseParserService courseParserService;
     private final CourseRepository courseRepository;
-
-    @Transactional
-    public void parseCourseFile(CourseFile file) {
-        List<Course> courses = courseParserService.parse(file);
-        courseRepository.saveAll(courses);
-    }
-
+    
     @Transactional(readOnly = true)
     public List<CourseResponse> findNearbyCourses(double mapLatitude, double mapLongitude, Double userLatitude, Double userLongitude) {
         final Coordinate mapPosition = new Coordinate(mapLatitude, mapLongitude);
