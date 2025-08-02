@@ -1,6 +1,7 @@
 package coursepick.coursepick.presentation;
 
 import coursepick.coursepick.application.CourseApplicationService;
+import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.presentation.api.CourseWebApi;
@@ -8,12 +9,10 @@ import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
 import coursepick.coursepick.presentation.dto.CourseWebResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.text.Normalizer;
 import java.util.List;
 
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_ADMIN_TOKEN;
@@ -35,9 +34,7 @@ public class CourseWebController implements CourseWebApi {
         validateAdminToken(token);
 
         for (MultipartFile file : files) {
-            String filename = Normalizer.normalize(file.getOriginalFilename(), Normalizer.Form.NFC);
-            String fileExtension = StringUtils.getFilenameExtension(file.getOriginalFilename());
-            courseApplicationService.parseInputStreamAndSave(file.getInputStream(), filename, fileExtension);
+            courseApplicationService.parseCourseFile(CourseFile.fromMultipartFile(file));
         }
     }
 

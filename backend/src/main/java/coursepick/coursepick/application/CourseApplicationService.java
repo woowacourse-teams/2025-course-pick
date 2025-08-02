@@ -1,5 +1,6 @@
 package coursepick.coursepick.application;
 
+import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
@@ -10,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.InputStream;
 import java.util.List;
 
 import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_COURSE;
@@ -26,8 +26,8 @@ public class CourseApplicationService {
     private final CourseRepository courseRepository;
 
     @Transactional
-    public void parseInputStreamAndSave(InputStream fileStream, String filename, String fileExtension) {
-        List<Course> courses = courseParserService.parse(fileStream, filename, fileExtension);
+    public void parseCourseFile(CourseFile file) {
+        List<Course> courses = courseParserService.parse(file);
         courseRepository.saveAll(courses);
     }
 
