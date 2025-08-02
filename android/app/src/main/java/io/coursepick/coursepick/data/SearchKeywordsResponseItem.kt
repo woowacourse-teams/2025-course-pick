@@ -64,21 +64,23 @@ data class SearchKeywordsResponseItem(
         val selectedRegion: String?,
     )
 
-    fun toSearchKeywordsOrNull(): List<SearchKeyword>? {
-        return documents?.mapNotNull { document ->
-            val addressName = document?.addressName ?: return@mapNotNull null
-            val placeName = document.placeName ?: return@mapNotNull null
-            val lat = document.y?.toDoubleOrNull() ?: return@mapNotNull null
-            val lng = document.x?.toDoubleOrNull() ?: return@mapNotNull null
+    fun toSearchKeywordsOrNull(): List<SearchKeyword>? = documents?.mapNotNull { it?.toSearchKeywordOrNull() }
 
-            val latitude = runCatching { Latitude(lat) }.getOrNull() ?: return@mapNotNull null
-            val longitude = runCatching { Longitude(lng) }.getOrNull() ?: return@mapNotNull null
+    private fun Document.toSearchKeywordOrNull(): SearchKeyword? {
+        val address = addressName ?: return null
+        val place = placeName ?: return null
+        val coordinate = toCoordinateOrNull(x, y) ?: return null
+        return SearchKeyword(address, place, coordinate)
+    }
 
-            SearchKeyword(
-                addressName,
-                placeName,
-                Coordinate(latitude, longitude),
-            )
-        } ?: return null
+    private fun toCoordinateOrNull(
+        x: String?,
+        y: String?,
+    ): Coordinate? {
+        val lat = y?.toDoubleOrNull() ?: return null
+        val lng = x?.toDoubleOrNull() ?: return null
+        val latitude = runCatching { Latitude(lat) }.getOrNull() ?: return null
+        val longitude = runCatching { Longitude(lng) }.getOrNull() ?: return null
+        return Coordinate(latitude, longitude)
     }
 }
