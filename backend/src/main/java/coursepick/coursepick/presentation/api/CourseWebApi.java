@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -17,7 +16,7 @@ import java.util.List;
 public interface CourseWebApi {
 
     @Operation(hidden = true)
-    ResponseEntity<String> syncCourses(String token) throws Exception;
+    String syncCourses(String token) throws Exception;
 
     @Operation(summary = "좌표 근처 1km 내 코스 전체 조회")
     @ApiResponses({
