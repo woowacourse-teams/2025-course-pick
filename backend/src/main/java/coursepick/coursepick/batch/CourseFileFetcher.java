@@ -1,9 +1,10 @@
 package coursepick.coursepick.batch;
 
-import java.io.File;
+import coursepick.coursepick.application.dto.CourseFile;
+
 import java.util.List;
 
 public interface CourseFileFetcher {
 
-    List<File> fetchAllGpxFiles();
+    List<CourseFile> fetchAll();
 }

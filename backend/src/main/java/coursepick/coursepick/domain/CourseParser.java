@@ -1,11 +1,12 @@
 package coursepick.coursepick.domain;
 
-import java.io.InputStream;
+import coursepick.coursepick.application.dto.CourseFile;
+
 import java.util.List;
 
 public interface CourseParser {
 
-    boolean canParse(String fileExtension);
+    boolean canParse(CourseFile file);
 
-    List<Course> parse(String filename, InputStream fileStream);
+    List<Course> parse(CourseFile file);
 }
