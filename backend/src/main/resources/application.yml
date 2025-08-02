@@ -7,10 +7,6 @@ spring:
         jdbc.batch_size: 50 # 한 번에 처리할 배치 크기
         order_inserts: true  # INSERT 순서 최적화
         order_updates: true  # UPDATE 순서 최적화
-  servlet:
-    multipart:
-      max-file-size: 10MB
-      max-request-size: 100MB
 
 springdoc:
   default-consumes-media-type: application/json
