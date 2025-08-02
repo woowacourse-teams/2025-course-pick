@@ -1,18 +1,20 @@
 package coursepick.coursepick.presentation;
 
 import coursepick.coursepick.application.CourseApplicationService;
-import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.presentation.api.CourseWebApi;
 import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
 import coursepick.coursepick.presentation.dto.CourseWebResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersBuilder;
+import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_ADMIN_TOKEN;
@@ -22,20 +24,22 @@ import static coursepick.coursepick.application.exception.ErrorType.INVALID_ADMI
 public class CourseWebController implements CourseWebApi {
 
     private final CourseApplicationService courseApplicationService;
+    private final JobLauncher jobLauncher;
+    private final Job courseSyncJob;
 
     @Value("${admin.token}")
     private String adminToken;
 
-    @PostMapping("/admin/courses/import")
-    public void importCourses(
-            @RequestParam("adminToken") String token,
-            @RequestParam("file") List<MultipartFile> files
-    ) throws IOException {
+    @Override
+    @PostMapping("/admin/courses/sync")
+    public ResponseEntity<String> syncCourses(@RequestParam("adminToken") String token) throws Exception {
         validateAdminToken(token);
 
-        for (MultipartFile file : files) {
-            courseApplicationService.parseCourseFile(CourseFile.fromMultipartFile(file));
-        }
+        JobParameters jobParameters = new JobParametersBuilder()
+                .addString("run.id", "manual-" + System.currentTimeMillis())
+                .toJobParameters();
+        jobLauncher.run(courseSyncJob, jobParameters);
+        return org.springframework.http.ResponseEntity.ok("Course Sync Job을 성공적으로 실행했습니다.");
     }
 
     @Override
