@@ -34,7 +34,7 @@ dependencies {
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
 
-    // Geographic libraries for comparison
+    // Spatial4J
     implementation("org.locationtech.spatial4j:spatial4j:0.8")
 
     // Logback Logstash Encoder (JSON Format)
