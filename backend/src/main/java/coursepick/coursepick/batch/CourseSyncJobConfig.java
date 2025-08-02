@@ -1,6 +1,7 @@
 package coursepick.coursepick.batch;
 
 import coursepick.coursepick.domain.Course;
+import io.jenetics.jpx.format.ParseException;
 import jakarta.persistence.EntityManagerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -13,7 +14,13 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.transaction.PlatformTransactionManager;
+
+import javax.xml.stream.XMLStreamException;
+import java.io.IOException;
 
 @Configuration
 public class CourseSyncJobConfig {
@@ -38,6 +45,17 @@ public class CourseSyncJobConfig {
                 .reader(gpxFileReader)
                 .processor(gpxToCourseProcessor)
                 .writer(courseItemWriter)
+                .faultTolerant()
+                .retryLimit(3)
+                .retry(OptimisticLockingFailureException.class)
+                .retry(PessimisticLockingFailureException.class)
+                .retry(IOException.class)
+                .skipLimit(15)
+                .skip(ParseException.class)
+                .skip(XMLStreamException.class)
+                .skip(NumberFormatException.class)
+                .skip(IllegalArgumentException.class)
+                .skip(DataIntegrityViolationException.class)
                 .build();
     }
 
