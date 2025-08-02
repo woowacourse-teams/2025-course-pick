@@ -6,10 +6,10 @@
 </head>
 <body>
 <h1>파일 업로드 폼</h1>
-<form action="/admin/courses/import" method="post" enctype="multipart/form-data">
-    <p>admin token = <input type="text" name="adminToken"></p>
+<form action="/admin/courses/import" enctype="multipart/form-data" method="post">
+    <p>admin token = <input name="adminToken" type="text"></p>
     <label for="file">파싱할 파일 전송 (다중 선택 가능):</label>
-    <input type="file" id="file" name="file" multiple required/>
+    <input id="file" multiple name="file" required type="file"/>
 
     <button type="submit">전송</button>
 </form>
