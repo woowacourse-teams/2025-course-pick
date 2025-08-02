@@ -1,5 +1,7 @@
 package coursepick.coursepick.infrastructure;
 
+import coursepick.coursepick.application.dto.CourseFile;
+import coursepick.coursepick.application.dto.CourseFileExtension;
 import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
@@ -16,7 +18,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,19 +26,19 @@ import java.util.List;
 public class KmlCourseParser implements CourseParser {
 
     @Override
-    public boolean canParse(String fileExtension) {
-        return fileExtension.equals("kml");
+    public boolean canParse(CourseFile file) {
+        return file.extension() == CourseFileExtension.KML;
     }
 
     @Override
-    public List<Course> parse(String filename, InputStream fileStream) {
+    public List<Course> parse(CourseFile file) {
         List<Course> courses = new ArrayList<>();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         NodeList placemarks;
 
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(fileStream);
+            Document document = builder.parse(file.inputStream());
             placemarks = document.getElementsByTagName("Placemark");
         } catch (ParserConfigurationException | SAXException | IOException e) {
             throw ErrorType.FILE_PARSING_FAIL.create(e.getMessage());

@@ -1,5 +1,7 @@
 package coursepick.coursepick.infrastructure;
 
+import coursepick.coursepick.application.dto.CourseFile;
+import coursepick.coursepick.application.dto.CourseFileExtension;
 import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
@@ -10,29 +12,28 @@ import io.jenetics.jpx.Track;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 @Component
 public class GpxCourseParser implements CourseParser {
 
     @Override
-    public boolean canParse(String fileExtension) {
-        return fileExtension.equals("gpx");
+    public boolean canParse(CourseFile file) {
+        return file.extension() == CourseFileExtension.GPX;
     }
 
     @Override
-    public List<Course> parse(String filename, InputStream fileStream) {
+    public List<Course> parse(CourseFile file) {
         GPX gpx;
 
         try {
-            gpx = GPX.Reader.of(GPX.Reader.Mode.LENIENT).read(fileStream);
+            gpx = GPX.Reader.of(GPX.Reader.Mode.LENIENT).read(file.inputStream());
         } catch (IOException e) {
             throw ErrorType.FILE_PARSING_FAIL.create(e.getMessage());
         }
 
         return gpx.tracks()
-                .map(track -> new Course(filename, getCoordinates(track)))
+                .map(track -> new Course(file.name(), getCoordinates(track)))
                 .toList();
     }
 
