@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 data class CourseDto(
     private val id: Long,
     private val name: String,
-    private val distance: Double,
+    private val distance: Double?,
     private val length: Double,
     private val roadType: String,
     private val difficulty: String,
@@ -20,7 +20,7 @@ data class CourseDto(
         Course(
             id = id,
             name = CourseName(name),
-            distance = Distance(distance),
+            distance = distance?.let(::Distance),
             length = Length(length),
             roadType = roadType,
             difficulty = difficulty,
