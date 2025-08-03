@@ -29,6 +29,7 @@ class CourseSyncServiceTest extends IntegrationTest {
 
         sut.runCourseSyncJob();
 
+        // TODO : @Async 사용시 어떻게 테스트하는 것이 좋을지 고민
         Thread.sleep(1000);
         assertThat(dbUtil.countCourses()).isEqualTo(2);
     }

@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class KmlCourseParserTest {
 
-    private static final KmlCourseParser sut = new KmlCourseParser();
+    KmlCourseParser sut = new KmlCourseParser();
 
     @Test
     void KML_파일을_파싱하여_코스_정보를_추출한다(@TempDir Path tempDir) throws IOException {
