@@ -22,6 +22,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.kakao.vectormap.LatLng
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.databinding.ActivityMainBinding
 import io.coursepick.coursepick.domain.Coordinate
@@ -42,7 +43,7 @@ class MainActivity :
     private val locationPermissionLauncher: ActivityResultLauncher<Array<String>> =
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions(),
-        ) { permissions: Map<String, @JvmSuppressWildcards Boolean> ->
+        ) {
             mapManager.startTrackingCurrentLocation()
         }
 
@@ -89,7 +90,7 @@ class MainActivity :
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun searchThisArea() {
-        val mapPosition = mapManager.cameraPosition ?: return
+        val mapPosition: LatLng = mapManager.cameraPosition ?: return
         fetchCourses(
             Coordinate(
                 Latitude(mapPosition.latitude),
