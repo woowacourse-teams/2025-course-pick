@@ -211,6 +211,7 @@ class MainActivity :
     private fun setUpStateObserver() {
         viewModel.state.observe(this) { state: MainUiState ->
             courseAdapter.submitList(state.courses)
+            mapManager.draw(state.courses)
         }
     }
 
@@ -219,9 +220,12 @@ class MainActivity :
         viewModel.event.observe(this) { event: MainUiEvent ->
             when (event) {
                 is MainUiEvent.FetchCourseSuccess -> {
-                    event.nearestCourse?.let { course: CourseItem ->
-                        mapManager.draw(course)
-                    } ?: Toast.makeText(this, "이 지역에 코스가 없습니다.", Toast.LENGTH_SHORT).show()
+                    event.nearestCourse ?: Toast
+                        .makeText(
+                            this,
+                            "이 지역에 코스가 없습니다.",
+                            Toast.LENGTH_SHORT,
+                        ).show()
                 }
 
                 MainUiEvent.FetchCourseFailure -> {
@@ -239,7 +243,6 @@ class MainActivity :
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun selectCourse(course: CourseItem) {
-        mapManager.draw(course)
         mapManager.fitTo(course)
     }
 

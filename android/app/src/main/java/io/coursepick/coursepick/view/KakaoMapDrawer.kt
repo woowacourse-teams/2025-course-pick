@@ -29,6 +29,18 @@ class KakaoMapDrawer(
         layer.addRouteLine(options)
     }
 
+    fun drawCourses(
+        map: KakaoMap,
+        courses: List<CourseItem>,
+    ) {
+        val layer: RouteLineLayer = map.routeLineManager?.layer ?: return
+        layer.removeAll()
+        courses.forEach { course: CourseItem ->
+            val options: RouteLineOptions = routeLineOptionsFactory.routeLineOptions(course)
+            layer.addRouteLine(options)
+        }
+    }
+
     fun drawLabel(
         map: KakaoMap,
         @DrawableRes

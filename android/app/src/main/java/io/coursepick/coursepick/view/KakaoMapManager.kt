@@ -66,6 +66,12 @@ class KakaoMapManager(
         }
     }
 
+    fun draw(courses: List<CourseItem>) {
+        kakaoMap?.let { map: KakaoMap ->
+            drawer.drawCourses(map, courses)
+        }
+    }
+
     fun fitTo(course: CourseItem) {
         kakaoMap?.let { map: KakaoMap ->
             cameraController.fitTo(
