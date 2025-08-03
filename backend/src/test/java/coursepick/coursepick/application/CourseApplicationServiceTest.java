@@ -4,35 +4,22 @@ import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
 import coursepick.coursepick.domain.RoadType;
-import coursepick.coursepick.test_util.DatabaseTestUtil;
+import coursepick.coursepick.test_util.IntegrationTest;
 import jakarta.persistence.EntityNotFoundException;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.data.Percentage;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Import(DatabaseTestUtil.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-class CourseApplicationServiceTest {
+class CourseApplicationServiceTest extends IntegrationTest {
 
     @Autowired
     CourseApplicationService sut;
-
-    @Autowired
-    DatabaseTestUtil dbUtil;
-
-    @AfterEach
-    void tearDown() {
-        dbUtil.deleteCourses();
-    }
 
     @Test
     void 가까운_코스들을_조회한다() {
