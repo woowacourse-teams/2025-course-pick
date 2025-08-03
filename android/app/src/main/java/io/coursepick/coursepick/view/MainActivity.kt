@@ -68,7 +68,7 @@ class MainActivity :
         BottomSheetBehavior.from(binding.mainBottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
 
         mapManager.start { coordinate: Coordinate ->
-            viewModel.fetchCourses(coordinate)
+            fetchCourses(coordinate)
         }
     }
 
@@ -87,9 +87,10 @@ class MainActivity :
         mapManager.stopTrackingCurrentLocation()
     }
 
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun searchThisArea() {
         val mapPosition = mapManager.cameraPosition ?: return
-        viewModel.fetchCourses(
+        fetchCourses(
             Coordinate(
                 Latitude(mapPosition.latitude),
                 Longitude(mapPosition.longitude),
@@ -147,6 +148,19 @@ class MainActivity :
         binding.lifecycleOwner = this
         binding.adapter = courseAdapter
         binding.action = this
+    }
+
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+    private fun fetchCourses(mapCoordinate: Coordinate) {
+        mapManager.fetchCurrentLocation(
+            onSuccess = { userLatitude: Latitude, userLongitude: Longitude ->
+                val userCoordinate = Coordinate(userLatitude, userLongitude)
+                viewModel.fetchCourses(mapCoordinate, userCoordinate)
+            },
+            onFailure = {
+                viewModel.fetchCourses(mapCoordinate)
+            },
+        )
     }
 
     private fun onFetchCurrentLocationSuccess(course: CourseItem): (Latitude, Longitude) -> Unit =
