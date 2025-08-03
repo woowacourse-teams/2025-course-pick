@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CourseRepository extends Repository<Course, Long> {
-    
+
     List<Course> findAll();
 
     Optional<Course> findById(Long id);

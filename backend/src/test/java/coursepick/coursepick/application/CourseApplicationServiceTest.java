@@ -4,8 +4,7 @@ import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
 import coursepick.coursepick.domain.RoadType;
-import coursepick.coursepick.test_util.DatabaseCleaner;
-import coursepick.coursepick.test_util.DatabaseInserter;
+import coursepick.coursepick.test_util.DatabaseTestUtil;
 import jakarta.persistence.EntityNotFoundException;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.data.Percentage;
@@ -26,14 +25,11 @@ class CourseApplicationServiceTest {
     CourseApplicationService sut;
 
     @Autowired
-    DatabaseInserter databaseInserter;
-
-    @Autowired
-    DatabaseCleaner databaseCleaner;
+    DatabaseTestUtil dbUtil;
 
     @AfterEach
     void tearDown() {
-        databaseCleaner.deleteCourses();
+        dbUtil.deleteCourses();
     }
 
     @Test
@@ -56,9 +52,9 @@ class CourseApplicationServiceTest {
                 new Coordinate(37.603500, 126.969000),
                 new Coordinate(37.602500, 126.967000)
         ));
-        databaseInserter.saveCourse(course1);
-        databaseInserter.saveCourse(course2);
-        databaseInserter.saveCourse(course3);
+        dbUtil.saveCourse(course1);
+        dbUtil.saveCourse(course2);
+        dbUtil.saveCourse(course3);
         double latitude = 37.5172;
         double longitude = 127.0276;
 
@@ -92,9 +88,9 @@ class CourseApplicationServiceTest {
                 new Coordinate(37.603500, 126.969000),
                 new Coordinate(37.602500, 126.967000)
         ));
-        databaseInserter.saveCourse(course1);
-        databaseInserter.saveCourse(course2);
-        databaseInserter.saveCourse(course3);
+        dbUtil.saveCourse(course1);
+        dbUtil.saveCourse(course2);
+        dbUtil.saveCourse(course3);
         double mapLatitude = 37.5172;
         double mapLongitude = 127.0276;
         double userLatitude = 37.5153291;
@@ -122,7 +118,7 @@ class CourseApplicationServiceTest {
                 new Coordinate(10, 10),
                 new Coordinate(0, 0)
         ));
-        databaseInserter.saveCourse(course);
+        dbUtil.saveCourse(course);
         Coordinate result = sut.findClosestCoordinate(course.id(), 5, 0);
 
         assertThat(result).isEqualTo(new Coordinate(2.5, 2.5));

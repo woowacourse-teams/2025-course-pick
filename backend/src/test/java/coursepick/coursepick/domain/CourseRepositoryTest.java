@@ -1,6 +1,6 @@
 package coursepick.coursepick.domain;
 
-import coursepick.coursepick.test_util.DatabaseInserter;
+import coursepick.coursepick.test_util.DatabaseTestUtil;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +12,14 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@Import(DatabaseInserter.class)
+@Import(DatabaseTestUtil.class)
 class CourseRepositoryTest {
 
     @Autowired
     private CourseRepository courseRepository;
 
     @Autowired
-    private DatabaseInserter databaseInserter;
+    private DatabaseTestUtil dbUtil;
 
     @ParameterizedTest
     @CsvSource({
@@ -62,9 +62,9 @@ class CourseRepositoryTest {
                 new Coordinate(37.517897, 127.094506),
                 new Coordinate(37.517396, 127.092439)
         ));
-        databaseInserter.saveCourse(course1);
-        databaseInserter.saveCourse(course2);
-        databaseInserter.saveCourse(course3);
+        dbUtil.saveCourse(course1);
+        dbUtil.saveCourse(course2);
+        dbUtil.saveCourse(course3);
         Coordinate target = new Coordinate(37.514647, 127.086592);
 
         List<Course> courses = courseRepository.findAllHasDistanceWithin(target, new Meter(distance));
