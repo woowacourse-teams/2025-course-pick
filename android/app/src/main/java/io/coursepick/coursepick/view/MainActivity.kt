@@ -202,7 +202,6 @@ class MainActivity :
         onBackPressedDispatcher.addCallback(this, callback)
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun setUpObservers() {
         setUpStateObserver()
         setUpEventObserver()
@@ -218,7 +217,6 @@ class MainActivity :
         }
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun setUpEventObserver() {
         viewModel.event.observe(this) { event: MainUiEvent ->
             when (event) {
@@ -244,7 +242,6 @@ class MainActivity :
         }
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun selectCourse(course: CourseItem) {
         mapManager.fitTo(course)
     }
