@@ -80,6 +80,8 @@ jobs:
           SPRING_DATASOURCE_USERNAME: ${{ secrets.DEV_DB_USERNAME }}
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.DEV_DB_PASSWORD }}
           ADMIN_TOKEN: ${{ secrets.DEV_ADMIN_TOKEN }}
+          GCP_DRIVE_FORDER_ID: ${{ secrets.DEV_GCP_DRIVE_FORDER_ID }}
+          GCP_CREDENTIALS_PATH: ${{ secrets.DEV_GCP_CREDENTIALS_PATH }}
         run: |
           JAR_FILE=$(find ./artifacts -name "*.jar" | head -n 1)
           echo "서버 시작 중... =$JAR_FILE"
