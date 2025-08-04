@@ -34,6 +34,7 @@ class KakaoMapDrawer(
             val options: RouteLineOptions = routeLineOptionsFactory.routeLineOptions(course)
             manager.layer?.addRouteLine(options)
         }
+        manager.layer?.removeAll()
         oldRouteLines.forEach { routeLine: RouteLine ->
             manager.remove(routeLine)
         }
