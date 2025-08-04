@@ -59,6 +59,7 @@ class MainViewModel(
         mapCoordinate: Coordinate,
         userCoordinate: Coordinate? = null,
     ) {
+        _state.value = _state.value?.copy(isNewPosition = false)
         viewModelScope.launch {
             runCatching {
                 courseRepository.courses(mapCoordinate, userCoordinate)
@@ -72,12 +73,17 @@ class MainViewModel(
                                 index == 0,
                             )
                         }
-                _state.value = MainUiState(courseItems)
+                _state.value = MainUiState(courseItems, isNewPosition = false)
                 _event.value = MainUiEvent.FetchCourseSuccess(courseItems.firstOrNull())
             }.onFailure {
+                _state.value = _state.value?.copy(isNewPosition = true)
                 _event.value = MainUiEvent.FetchCourseFailure
             }
         }
+    }
+
+    fun onPositionChanged() {
+        _state.value = _state.value?.copy(isNewPosition = true)
     }
 
     private fun newCourses(

@@ -70,6 +70,9 @@ class MainActivity :
 
         mapManager.start { coordinate: Coordinate ->
             fetchCourses(coordinate)
+            mapManager.setOnCameraMoveListener {
+                viewModel.onPositionChanged()
+            }
         }
     }
 

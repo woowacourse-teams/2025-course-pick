@@ -112,6 +112,12 @@ class KakaoMapManager(
         }
     }
 
+    fun setOnCameraMoveListener(onCameraMove: () -> Unit) {
+        kakaoMap?.setOnCameraMoveStartListener { _, _ ->
+            onCameraMove()
+        }
+    }
+
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun showCurrentLocation() {
         locationProvider.fetchCurrentLocation(
