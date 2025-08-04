@@ -12,6 +12,7 @@ import org.springframework.batch.item.UnexpectedInputException;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -52,12 +53,20 @@ public class CourseReader implements ItemReader<Course> {
     }
 
     private static void closeInputStreamOf(List<CourseFile> courseFiles) {
+        List<Exception> exceptions = new ArrayList<>();
+        
         courseFiles.forEach(file -> {
             try {
                 file.inputStream().close();
             } catch (IOException e) {
-                throw new RuntimeException("파일 스트림을 닫는 중 예외가 발생했습니다.", e);
+                exceptions.add(e);
             }
         });
+
+        if (!exceptions.isEmpty()) {
+            RuntimeException aggregated = new RuntimeException("일부 파일 스트림을 닫는 중 예외가 발생했습니다.");
+            exceptions.forEach(aggregated::addSuppressed);
+            throw aggregated;
+        }
     }
 }
