@@ -28,7 +28,7 @@ data class SearchKeywordsDto(
         val y: String?,
     )
 
-    fun toSearchKeywordsOrNull(): List<SearchKeyword>? = documents?.mapNotNull { it?.toSearchKeywordOrNull() }
+    fun toSearchKeywordsOrNull(): List<SearchKeyword>? = documents?.mapNotNull { document: Document? -> document?.toSearchKeywordOrNull() }
 
     private fun Document.toSearchKeywordOrNull(): SearchKeyword? {
         val id = this.id?.toLongOrNull() ?: return null
