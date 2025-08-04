@@ -211,6 +211,9 @@ class MainActivity :
     private fun setUpStateObserver() {
         viewModel.state.observe(this) { state: MainUiState ->
             courseAdapter.submitList(state.courses)
+            mapManager.setOnCourseClickListener(state.courses) { course: CourseItem ->
+                viewModel.select(course)
+            }
             mapManager.draw(state.courses)
         }
     }

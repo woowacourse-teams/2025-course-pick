@@ -1,6 +1,8 @@
 package io.coursepick.coursepick.view
 
 import android.Manifest
+import android.graphics.Point
+import android.graphics.PointF
 import android.location.Location
 import android.widget.Toast
 import androidx.annotation.RequiresPermission
@@ -12,6 +14,9 @@ import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.Latitude
 import io.coursepick.coursepick.domain.Longitude
+import io.coursepick.coursepick.domain.Segment
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 class KakaoMapManager(
     private val mapView: MapView,
@@ -81,6 +86,29 @@ class KakaoMapManager(
         }
     }
 
+    fun setOnCourseClickListener(
+        courses: List<CourseItem>,
+        onClick: (CourseItem) -> Unit,
+    ) {
+        kakaoMap?.setOnMapClickListener { kakaoMap: KakaoMap, _, clickedPosition: PointF, _ ->
+            courses.forEach { course: CourseItem ->
+                val points: List<Point?> =
+                    course.segments.flatMap(Segment::coordinates).map { coordinate: Coordinate ->
+                        kakaoMap.toScreenPoint(
+                            LatLng.from(
+                                coordinate.latitude.value,
+                                coordinate.longitude.value,
+                            ),
+                        )
+                    }
+                if (points.any { point -> point != null && point.isNear(clickedPosition) }) {
+                    onClick(course)
+                    return@forEach
+                }
+            }
+        }
+    }
+
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun showCurrentLocation() {
         locationProvider.fetchCurrentLocation(
@@ -132,5 +160,18 @@ class KakaoMapManager(
             },
             onFailure = onFailure,
         )
+    }
+
+    private fun Point.isNear(point: PointF): Boolean {
+        val distance =
+            sqrt(
+                (this.x - point.x).pow(2) +
+                    (this.y - point.y).pow(2),
+            )
+        return distance <= NEAR_TOUCH_THRESHOLD
+    }
+
+    companion object {
+        private const val NEAR_TOUCH_THRESHOLD = 50
     }
 }
