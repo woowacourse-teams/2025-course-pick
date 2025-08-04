@@ -22,7 +22,8 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:queryHint="장소를 검색하세요" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"

@@ -45,6 +45,7 @@
                     android:id="@+id/mainSearchBar"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:hint="@string/search_query_hint"
                     android:onClick="@{() -> viewModel.navigationSearch()}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/mainMenuButton"
