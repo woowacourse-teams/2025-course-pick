@@ -27,12 +27,13 @@ class KakaoMapDrawer(
         map: KakaoMap,
         courses: List<CourseItem>,
     ) {
-        val layer: RouteLineLayer = map.routeLineManager?.layer ?: return
-        layer.removeAll()
+        val oldLayer: RouteLineLayer = map.routeLineManager?.layer ?: return
+        val newLayer: RouteLineLayer = map.routeLineManager?.addLayer() ?: return
         courses.forEach { course: CourseItem ->
             val options: RouteLineOptions = routeLineOptionsFactory.routeLineOptions(course)
-            layer.addRouteLine(options)
+            newLayer.addRouteLine(options)
         }
+        oldLayer.removeAll()
     }
 
     fun showUserPosition(
