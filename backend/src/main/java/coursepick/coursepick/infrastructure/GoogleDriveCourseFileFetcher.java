@@ -60,8 +60,15 @@ public class GoogleDriveCourseFileFetcher implements CourseFileFetcher {
                 .toList();
     }
 
+    /**
+     * 다음 페이지의 File 들을 조회한다.
+     * 만약 다음 페이지가 없는 경우, 빈 리스트가 응답되며, 페이지 상태가 초기화된다.
+     *
+     * @return 조회한 File 리스트
+     */
     private List<File> listNextPageFiles() {
-        if (!isInitialRequest && nextPageToken == null) {
+        if (isListingOver()) {
+            isInitialRequest = true;
             return Collections.emptyList();
         }
 
@@ -71,6 +78,10 @@ public class GoogleDriveCourseFileFetcher implements CourseFileFetcher {
         nextPageToken = result.getNextPageToken();
 
         return result.getFiles();
+    }
+
+    private boolean isListingOver() {
+        return !isInitialRequest && nextPageToken == null;
     }
 
     private FileList getFileList(String pageToken) {
