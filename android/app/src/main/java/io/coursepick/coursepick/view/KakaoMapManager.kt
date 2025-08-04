@@ -105,7 +105,7 @@ class KakaoMapManager(
         latitude: Latitude,
         longitude: Longitude,
     ) {
-        kakaoMap?.let { map ->
+        kakaoMap?.let { map: KakaoMap ->
             val location =
                 Location("search").apply {
                     this.latitude = latitude.value
