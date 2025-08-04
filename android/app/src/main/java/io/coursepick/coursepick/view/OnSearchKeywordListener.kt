@@ -1,7 +1,7 @@
 package io.coursepick.coursepick.view
 
-import io.coursepick.coursepick.domain.SearchKeyword
+import io.coursepick.coursepick.domain.SearchPlace
 
 fun interface OnSearchKeywordListener {
-    fun search(place: SearchKeyword)
+    fun search(place: SearchPlace)
 }

@@ -3,12 +3,12 @@ package io.coursepick.coursepick.data
 import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.Latitude
 import io.coursepick.coursepick.domain.Longitude
-import io.coursepick.coursepick.domain.SearchKeyword
+import io.coursepick.coursepick.domain.SearchPlace
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class SearchKeywordsDto(
+data class SearchPlacesDto(
     @SerialName("documents")
     val documents: List<Document?>?,
 ) {
@@ -28,14 +28,14 @@ data class SearchKeywordsDto(
         val y: String?,
     )
 
-    fun toSearchKeywordsOrNull(): List<SearchKeyword>? = documents?.mapNotNull { document: Document? -> document?.toSearchKeywordOrNull() }
+    fun toSearchPlacesOrNull(): List<SearchPlace>? = documents?.mapNotNull { document: Document? -> document?.toSearchPlaceOrNull() }
 
-    private fun Document.toSearchKeywordOrNull(): SearchKeyword? {
+    private fun Document.toSearchPlaceOrNull(): SearchPlace? {
         val id = this.id?.toLongOrNull() ?: return null
         val addressName = this.addressName ?: return null
         val placeName = this.placeName ?: return null
         val coordinate = coordinateOrNull(x, y) ?: return null
-        return SearchKeyword(id, addressName, placeName, coordinate)
+        return SearchPlace(id, addressName, placeName, coordinate)
     }
 
     private fun coordinateOrNull(

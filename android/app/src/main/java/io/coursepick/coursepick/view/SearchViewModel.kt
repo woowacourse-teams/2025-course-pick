@@ -4,21 +4,21 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.coursepick.coursepick.data.DefaultSearchKeywordRepository
-import io.coursepick.coursepick.domain.SearchKeyword
-import io.coursepick.coursepick.domain.SearchKeywordRepository
+import io.coursepick.coursepick.data.DefaultSearchRepository
+import io.coursepick.coursepick.domain.SearchPlace
+import io.coursepick.coursepick.domain.SearchRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
-    private val searchRepository: SearchKeywordRepository = DefaultSearchKeywordRepository(),
+    private val searchRepository: SearchRepository = DefaultSearchRepository(),
 ) : ViewModel() {
     private var searchJob: Job? = null
 
-    private val _state: MutableLiveData<List<SearchKeyword>> =
-        MutableLiveData<List<SearchKeyword>>()
-    val state: LiveData<List<SearchKeyword>> get() = _state
+    private val _state: MutableLiveData<List<SearchPlace>> =
+        MutableLiveData<List<SearchPlace>>()
+    val state: LiveData<List<SearchPlace>> get() = _state
 
     fun search(query: String) {
         searchJob?.cancel()
@@ -28,7 +28,7 @@ class SearchViewModel(
                 delay(DEBOUNCE_LIMIT_TIME)
 
                 if (query.isNotBlank()) {
-                    _state.value = searchRepository.searchKeywords(query)
+                    _state.value = searchRepository.searchPlaces(query)
                 } else {
                     _state.value = emptyList()
                 }

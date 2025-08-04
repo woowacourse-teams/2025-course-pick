@@ -11,7 +11,7 @@
 
         <variable
             name="search"
-            type="io.coursepick.coursepick.domain.SearchKeyword" />
+            type="io.coursepick.coursepick.domain.SearchPlace" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

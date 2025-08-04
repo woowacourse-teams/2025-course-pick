@@ -56,6 +56,6 @@ object Services {
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
 
-    val searchKeywordService: SearchKeywordService =
-        kakaoRetrofit.create(SearchKeywordService::class.java)
+    val searchService: SearchService =
+        kakaoRetrofit.create(SearchService::class.java)
 }

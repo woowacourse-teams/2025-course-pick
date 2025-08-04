@@ -1,6 +1,6 @@
 package io.coursepick.coursepick.domain
 
-data class SearchKeyword(
+data class SearchPlace(
     val id: Long,
     val addressName: String,
     val placeName: String,

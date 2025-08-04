@@ -1,10 +1,10 @@
 package io.coursepick.coursepick.domain
 
-interface SearchKeywordRepository {
-    suspend fun searchKeywords(
+interface SearchRepository {
+    suspend fun searchPlaces(
         query: String,
         page: Int? = null,
         size: Int? = null,
         sort: String? = null,
-    ): List<SearchKeyword>
+    ): List<SearchPlace>
 }
