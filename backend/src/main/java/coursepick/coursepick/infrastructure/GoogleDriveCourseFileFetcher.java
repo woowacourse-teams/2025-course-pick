@@ -13,6 +13,7 @@ import com.google.auth.oauth2.GoogleCredentials;
 import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.dto.CourseFileExtension;
 import coursepick.coursepick.batch.CourseFileFetcher;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
@@ -24,14 +25,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static coursepick.coursepick.application.exception.ErrorType.GCP_DRIVE_FETCH_FAIL;
-import static coursepick.coursepick.application.exception.ErrorType.GCP_DRIVE_FILE_NOT_EXIST;
-
 @Component
 @Profile({"dev"})
 public class GoogleDriveCourseFileFetcher implements CourseFileFetcher {
 
     private static final String APPLICATION_NAME = "coursepick";
+    private static final String QUERY_FORMAT = "'%s' in parents and name contains '.gpx' and trashed = false";
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
     @Value("${gcp.credentials.path}")
@@ -40,43 +39,47 @@ public class GoogleDriveCourseFileFetcher implements CourseFileFetcher {
     @Value("${gcp.drive.folder-id}")
     private String folderId;
 
-    @Override
-    public List<CourseFile> fetchAll() {
+    private Drive drive;
+
+    @PostConstruct
+    public void init() {
         try {
-            Drive service = getDriveService();
-            List<File> files = listGpxMetaData(service);
-            if (files.isEmpty()) {
-                throw GCP_DRIVE_FILE_NOT_EXIST.create();
-            }
-
-            List<CourseFile> results = new ArrayList<>();
-
-            for (File file : files) {
-                results.add(new CourseFile(
-                        file.getName(),
-                        CourseFileExtension.GPX,
-                        service.files().get(file.getId()).executeMediaAsInputStream()
-                ));
-            }
-
-            return results;
-        } catch (Exception e) {
-            throw GCP_DRIVE_FETCH_FAIL.create(e.getMessage());
+            this.drive = getDrive();
+        } catch (GeneralSecurityException | IOException e) {
+            throw new IllegalStateException("구글 드라이브 서비스 초기화에 실패했습니다.", e);
         }
     }
 
-    private List<File> listGpxMetaData(Drive service) throws IOException {
+    @Override
+    public List<CourseFile> fetchAll() {
+        List<File> files = listGpxMetaData(drive);
+
+        if (files.isEmpty()) {
+            throw new IllegalStateException("구글 드라이브에 파일이 존재하지 않습니다.");
+        }
+
+        return files.parallelStream()
+                .map(this::fetchDriveFileToCourseFile)
+                .toList();
+    }
+
+    private List<File> listGpxMetaData(Drive service) {
         List<File> gpxFiles = new ArrayList<>();
-        String query = String.format("'%s' in parents and name contains '.gpx' and trashed = false", folderId);
+        String query = QUERY_FORMAT.formatted(folderId);
         String pageToken = null;
 
         do {
-            FileList result = service.files().list()
-                    .setQ(query)
-                    .setSpaces("drive")
-                    .setFields("nextPageToken, files(id, name)")
-                    .setPageToken(pageToken)
-                    .execute();
+            FileList result;
+            try {
+                result = service.files().list()
+                        .setQ(query)
+                        .setSpaces("drive")
+                        .setFields("nextPageToken, files(id, name)")
+                        .setPageToken(pageToken)
+                        .execute();
+            } catch (IOException e) {
+                throw new RuntimeException("파일 메타데이터 가져오기에 실패했씁니다.", e);
+            }
 
             gpxFiles.addAll(result.getFiles());
             pageToken = result.getNextPageToken();
@@ -85,7 +88,19 @@ public class GoogleDriveCourseFileFetcher implements CourseFileFetcher {
         return gpxFiles;
     }
 
-    private Drive getDriveService() throws GeneralSecurityException, IOException {
+    private CourseFile fetchDriveFileToCourseFile(File file) {
+        try {
+            return new CourseFile(
+                    file.getName(),
+                    CourseFileExtension.GPX,
+                    drive.files().get(file.getId()).executeMediaAsInputStream()
+            );
+        } catch (IOException e) {
+            throw new RuntimeException("파일 다운로드에 실패했습니다. 파일명=" + file.getName(), e);
+        }
+    }
+
+    private Drive getDrive() throws GeneralSecurityException, IOException {
         NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
         return new Drive.Builder(httpTransport, JSON_FACTORY, new HttpCredentialsAdapter(getCredentials()))
                 .setApplicationName(APPLICATION_NAME)
