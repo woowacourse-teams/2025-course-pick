@@ -4,7 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.Resources
-import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -35,7 +34,7 @@ class MainActivity :
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val viewModel: MainViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(CourseItemListener()) }
-
+    private val mapChoiceDialog = MapChoiceDialog(this)
     private val doublePressDetector = DoublePressDetector()
     private val mapManager by lazy { KakaoMapManager(binding.mainMap) }
 
@@ -138,8 +137,21 @@ class MainActivity :
             @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
             override fun navigate(course: CourseItem) {
                 mapManager.fetchCurrentLocation(
-                    onSuccess = onFetchCurrentLocationSuccess(course),
-                    onFailure = onFetchCurrentLocationFailure(),
+                    onSuccess = { latitude: Latitude, longitude: Longitude ->
+                        val origin = Coordinate(latitude, longitude)
+                        val destination: Coordinate =
+                            course.segments
+                                .first()
+                                .coordinates
+                                .first()
+
+                        mapChoiceDialog.show(origin, destination, course.name)
+                    },
+                    onFailure = {
+                        Toast
+                            .makeText(this@MainActivity, "현재 위치를 가져올 수 없어요.", Toast.LENGTH_SHORT)
+                            .show()
+                    },
                 )
             }
         }
@@ -163,20 +175,6 @@ class MainActivity :
             },
         )
     }
-
-    private fun onFetchCurrentLocationSuccess(course: CourseItem): (Latitude, Longitude) -> Unit =
-        { latitude: Latitude, longitude: Longitude ->
-            val navigationUri: Uri =
-                viewModel.navigationUrl(course, Coordinate(latitude, longitude)).toUri()
-
-            val intent = Intent(Intent.ACTION_VIEW, navigationUri)
-            startActivity(intent)
-        }
-
-    private fun onFetchCurrentLocationFailure(): (Exception) -> Unit =
-        {
-            Toast.makeText(this, "현재 위치를 가져올 수 없어요.", Toast.LENGTH_SHORT).show()
-        }
 
     private fun setUpDoubleBackPress() {
         val callback =

@@ -7,8 +7,10 @@ import io.coursepick.coursepick.domain.Coordinate
 import kotlin.math.ln
 import kotlin.math.tan
 
-enum class MapApplication {
-    KAKAO_MAP {
+enum class MapApplication(
+    val appName: String,
+) {
+    KAKAO_MAP("카카오맵") {
         override fun navigationUrl(
             origin: Coordinate,
             destination: Coordinate,
@@ -19,7 +21,7 @@ enum class MapApplication {
                 "$destinationName,${destination.latitude.value},${destination.longitude.value}/"
     },
 
-    NAVER_MAP {
+    NAVER_MAP("네이버 지도") {
         override fun navigationUrl(
             origin: Coordinate,
             destination: Coordinate,
