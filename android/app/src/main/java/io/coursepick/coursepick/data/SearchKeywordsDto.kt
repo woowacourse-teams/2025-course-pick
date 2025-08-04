@@ -32,10 +32,10 @@ data class SearchKeywordsDto(
 
     private fun Document.toSearchKeywordOrNull(): SearchKeyword? {
         val id = this.id?.toLongOrNull() ?: return null
-        val address = addressName ?: return null
-        val place = placeName ?: return null
+        val addressName = this.addressName ?: return null
+        val placeName = this.placeName ?: return null
         val coordinate = coordinateOrNull(x, y) ?: return null
-        return SearchKeyword(id, address, place, coordinate)
+        return SearchKeyword(id, addressName, placeName, coordinate)
     }
 
     private fun coordinateOrNull(
