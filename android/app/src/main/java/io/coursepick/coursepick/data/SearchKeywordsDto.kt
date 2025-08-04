@@ -42,10 +42,10 @@ data class SearchKeywordsDto(
         x: String?,
         y: String?,
     ): Coordinate? {
-        val lat = y?.toDoubleOrNull() ?: return null
-        val lng = x?.toDoubleOrNull() ?: return null
-        val latitude = runCatching { Latitude(lat) }.getOrNull() ?: return null
-        val longitude = runCatching { Longitude(lng) }.getOrNull() ?: return null
+        val latitudeValue = y?.toDoubleOrNull() ?: return null
+        val longitudeValue = x?.toDoubleOrNull() ?: return null
+        val latitude = runCatching { Latitude(latitudeValue) }.getOrNull() ?: return null
+        val longitude = runCatching { Longitude(longitudeValue) }.getOrNull() ?: return null
         return Coordinate(latitude, longitude)
     }
 }
