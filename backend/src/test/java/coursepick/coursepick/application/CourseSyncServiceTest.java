@@ -8,9 +8,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.InputStream;
+import java.time.Duration;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.mockito.Mockito.when;
 
 class CourseSyncServiceTest extends IntegrationTest {
@@ -19,7 +21,7 @@ class CourseSyncServiceTest extends IntegrationTest {
     CourseSyncService sut;
 
     @Test
-    void 코스의_싱크를_맞춘다() throws InterruptedException {
+    void 코스의_싱크를_맞춘다() {
         InputStream gpxInputStream1 = gpxUtil.createGpxInputStreamOf(new Coordinate(1, 1, 1), new Coordinate(2, 2, 2), new Coordinate(3, 3, 3));
         InputStream gpxInputStream2 = gpxUtil.createGpxInputStreamOf(new Coordinate(1, 1, 1), new Coordinate(2, 2, 2), new Coordinate(3, 3, 3), new Coordinate(1, 1, 1));
         when(courseFileFetcher.fetchAll()).thenReturn(List.of(
@@ -29,8 +31,7 @@ class CourseSyncServiceTest extends IntegrationTest {
 
         sut.runCourseSyncJob();
 
-        // TODO : @Async 사용시 어떻게 테스트하는 것이 좋을지 고민
-        Thread.sleep(1000);
-        assertThat(dbUtil.countCourses()).isEqualTo(2);
+        await().atMost(Duration.ofSeconds(5))
+                .untilAsserted(() -> assertThat(dbUtil.countCourses()).isEqualTo(2));
     }
 }
