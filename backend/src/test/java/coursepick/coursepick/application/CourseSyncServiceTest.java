@@ -24,10 +24,12 @@ class CourseSyncServiceTest extends IntegrationTest {
     void 코스의_싱크를_맞춘다() {
         InputStream gpxInputStream1 = gpxUtil.createGpxInputStreamOf(new Coordinate(1, 1, 1), new Coordinate(2, 2, 2), new Coordinate(3, 3, 3));
         InputStream gpxInputStream2 = gpxUtil.createGpxInputStreamOf(new Coordinate(1, 1, 1), new Coordinate(2, 2, 2), new Coordinate(3, 3, 3), new Coordinate(1, 1, 1));
-        when(courseFileFetcher.fetchAll()).thenReturn(List.of(
-                new CourseFile("코스1", CourseFileExtension.GPX, gpxInputStream1),
-                new CourseFile("코스2", CourseFileExtension.GPX, gpxInputStream2)
-        ));
+        when(courseFileFetcher.fetchNextPage())
+                .thenReturn(List.of(
+                        new CourseFile("코스1", CourseFileExtension.GPX, gpxInputStream1),
+                        new CourseFile("코스2", CourseFileExtension.GPX, gpxInputStream2)
+                ))
+                .thenReturn(List.of());
 
         sut.runCourseSyncJob();
 
