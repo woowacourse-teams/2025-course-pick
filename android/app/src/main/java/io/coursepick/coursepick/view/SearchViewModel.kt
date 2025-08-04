@@ -25,7 +25,7 @@ class SearchViewModel(
 
         searchJob =
             viewModelScope.launch {
-                delay(500)
+                delay(DEBOUNCE_LIMIT_TIME)
 
                 if (query.isNotBlank()) {
                     _state.value = searchRepository.searchKeywords(query)
@@ -33,5 +33,9 @@ class SearchViewModel(
                     _state.value = emptyList()
                 }
             }
+    }
+
+    companion object {
+        private const val DEBOUNCE_LIMIT_TIME = 500L
     }
 }
