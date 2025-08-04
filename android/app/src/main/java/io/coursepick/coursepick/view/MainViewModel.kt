@@ -73,7 +73,7 @@ class MainViewModel(
                                 index == 0,
                             )
                         }
-                _state.value = MainUiState(courseItems, isNewPosition = false)
+                _state.value = MainUiState(courseItems, isNewPosition = courseItems.isEmpty())
                 _event.value = MainUiEvent.FetchCourseSuccess(courseItems.firstOrNull())
             }.onFailure {
                 _state.value = _state.value?.copy(isNewPosition = true)
