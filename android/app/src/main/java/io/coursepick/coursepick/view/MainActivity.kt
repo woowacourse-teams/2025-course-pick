@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -75,7 +76,7 @@ class MainActivity :
         }
 
         searchLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
                 if (result.resultCode == RESULT_OK) {
                     val latitude: Double? = result.data?.getDoubleExtra("latitude", 0.0)
                     val longitude: Double? = result.data?.getDoubleExtra("longitude", 0.0)
