@@ -38,14 +38,6 @@ public enum ErrorType {
             "파일 파싱에 실패했습니다. 이유=%s",
             IllegalArgumentException::new
     ),
-    GCP_DRIVE_FILE_NOT_EXIST(
-            "구글 드라이브에 파일이 존재하지 않습니다.",
-            IllegalArgumentException::new
-    ),
-    GCP_DRIVE_FETCH_FAIL(
-            "구글 드라이브에서 파일을 불러오는 중 문제가 발생했습니다. 이유=%s",
-            IllegalArgumentException::new
-    ),
     INVALID_ADMIN_TOKEN(
             "올바르지 않은 어드민 토큰값 입니다.",
             SecurityException::new
