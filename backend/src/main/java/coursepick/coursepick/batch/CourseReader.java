@@ -35,17 +35,17 @@ public class CourseReader implements ItemReader<Course> {
 
     @Override
     public Course read() throws UnexpectedInputException, ParseException, NonTransientResourceException {
-        if (courseIterator.hasNext()) {
-            return courseIterator.next();
+        while (true) {
+            if (courseIterator.hasNext()) {
+                return courseIterator.next();
+            }
+
+            if (!fileIterator.hasNext()) {
+                return null;
+            }
+
+            moveToNextFile();
         }
-
-        if (!fileIterator.hasNext()) {
-            return null;
-        }
-
-        moveToNextFile();
-
-        return read();
     }
 
     private void moveToNextFile() {
