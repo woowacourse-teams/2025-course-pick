@@ -14,5 +14,7 @@ class CoursePickApplication : Application() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
+
+        CoursePickPreferences.init(this)
     }
 }

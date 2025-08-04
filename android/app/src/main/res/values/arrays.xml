@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="selected_map_application_entries">
+        <item>@string/selected_map_application_entry_kakao_map</item>
+        <item>@string/selected_map_application_entry_naver_map</item>
+        <item>@string/selected_map_application_entry_none_map</item>
+    </string-array>
+
+    <string-array name="selected_map_application_values">
+        <item>@string/selected_map_application_value_kakao</item>
+        <item>@string/selected_map_application_value_naver</item>
+        <item>@string/selected_map_application_value_none</item>
+    </string-array>
+</resources>

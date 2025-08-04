@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="state"
+            type="io.coursepick.coursepick.view.MapChoiceUiState" />
+
+        <variable
+            name="onChosenListener"
+            type="io.coursepick.coursepick.view.OnChosenListener" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="24dp">
+
+        <TextView
+            android:id="@+id/mapChoiceTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="길찾기 앱 선택"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/mapChoiceDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="목적지까지 길찾기에 사용할 앱을 선택하세요."
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@id/mapChoiceTitle" />
+
+        <ListView
+            android:id="@+id/mapChoiceMaps"
+            onItemClick="@{(parent, view, position, id) -> onChosenListener.onChosen(position)}"
+            simpleListItems="@{state.mapApplicationNames}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            app:layout_constraintTop_toBottomOf="@id/mapChoiceDescription"
+            tools:layout_editor_absoluteX="25dp"
+            tools:layout_height="300dp"
+            tools:listitem="@android:layout/simple_list_item_1" />
+
+        <CheckBox
+            android:id="@+id/mapChoiceDefaultCheckbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:checked="@={state.defaultAppChecked}"
+            android:text="기본 앱으로 설정하기"
+            app:layout_constraintTop_toBottomOf="@id/mapChoiceMaps" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -116,6 +116,7 @@ dependencies {
     implementation(libs.timber)
     implementation(libs.firebase.crashlytics.ndk)
     implementation(libs.play.services.oss.licenses)
+    implementation(libs.androidx.preference.ktx)
     testImplementation(libs.assertj.core)
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
