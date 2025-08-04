@@ -14,6 +14,9 @@ management:
       exposure:
         include: "health, info, metrics"
   metrics:
+    enable:
+      all: false
+      http.server.requests: true
     export:
       cloudwatch:
         namespace: "EC2/coursepick/dev"

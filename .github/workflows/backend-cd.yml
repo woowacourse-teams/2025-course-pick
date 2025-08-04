@@ -1,8 +1,8 @@
 name: Backend CD
 
 on:
-  push:
-    branches: [ backend ]
+  pull_request:
+    branches: [ backend, cloudwatch-test ]
   workflow_dispatch:
 
 jobs:
