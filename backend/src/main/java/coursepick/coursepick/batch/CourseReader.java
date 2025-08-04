@@ -54,7 +54,7 @@ public class CourseReader implements ItemReader<Course> {
 
     private static void closeInputStreamOf(List<CourseFile> courseFiles) {
         List<Exception> exceptions = new ArrayList<>();
-        
+
         courseFiles.forEach(file -> {
             try {
                 file.inputStream().close();
