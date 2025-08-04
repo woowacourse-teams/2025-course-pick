@@ -6,7 +6,9 @@ import retrofit2.http.Query
 interface CourseService {
     @GET("/courses")
     suspend fun courses(
-        @Query("lat") latitude: Double,
-        @Query("lng") longitude: Double,
+        @Query("mapLat") mapLatitude: Double,
+        @Query("mapLng") mapLongitude: Double,
+        @Query("userLat") userLatitude: Double?,
+        @Query("userLng") userLongitude: Double?,
     ): List<CourseDto>
 }
