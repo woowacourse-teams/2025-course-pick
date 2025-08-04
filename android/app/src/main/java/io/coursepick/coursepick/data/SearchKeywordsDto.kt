@@ -34,11 +34,11 @@ data class SearchKeywordsDto(
         val id = this.id?.toLongOrNull() ?: return null
         val address = addressName ?: return null
         val place = placeName ?: return null
-        val coordinate = toCoordinateOrNull(x, y) ?: return null
+        val coordinate = coordinateOrNull(x, y) ?: return null
         return SearchKeyword(id, address, place, coordinate)
     }
 
-    private fun toCoordinateOrNull(
+    private fun coordinateOrNull(
         x: String?,
         y: String?,
     ): Coordinate? {
