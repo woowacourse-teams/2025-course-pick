@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,6 +39,8 @@ public class GoogleDriveCourseFileFetcher implements CourseFileFetcher {
     private String folderId;
 
     private Drive drive;
+    private String nextPageToken = null;
+    private boolean isInitialRequest = true;
 
     @PostConstruct
     public void init() {
@@ -51,41 +52,41 @@ public class GoogleDriveCourseFileFetcher implements CourseFileFetcher {
     }
 
     @Override
-    public List<CourseFile> fetchAll() {
-        List<File> files = listGpxMetaData(drive);
-
-        if (files.isEmpty()) {
-            throw new IllegalStateException("구글 드라이브에 파일이 존재하지 않습니다.");
-        }
+    public List<CourseFile> fetchNextPage() {
+        List<File> files = listNextPageFiles();
 
         return files.parallelStream()
                 .map(this::fetchDriveFileToCourseFile)
                 .toList();
     }
 
-    private List<File> listGpxMetaData(Drive service) {
-        List<File> gpxFiles = new ArrayList<>();
+    private List<File> listNextPageFiles() {
+        if (!isInitialRequest && nextPageToken == null) {
+            return Collections.emptyList();
+        }
+
+        FileList result = getFileList(nextPageToken);
+
+        isInitialRequest = false;
+        nextPageToken = result.getNextPageToken();
+
+        return result.getFiles();
+    }
+
+    private FileList getFileList(String pageToken) {
         String query = QUERY_FORMAT.formatted(folderId);
-        String pageToken = null;
-
-        do {
-            FileList result;
-            try {
-                result = service.files().list()
-                        .setQ(query)
-                        .setSpaces("drive")
-                        .setFields("nextPageToken, files(id, name)")
-                        .setPageToken(pageToken)
-                        .execute();
-            } catch (IOException e) {
-                throw new RuntimeException("파일 메타데이터 가져오기에 실패했씁니다.", e);
-            }
-
-            gpxFiles.addAll(result.getFiles());
-            pageToken = result.getNextPageToken();
-        } while (pageToken != null);
-
-        return gpxFiles;
+        FileList result;
+        try {
+            result = drive.files().list()
+                    .setQ(query)
+                    .setSpaces("drive")
+                    .setFields("nextPageToken, files(id, name)")
+                    .setPageToken(pageToken)
+                    .execute();
+        } catch (IOException e) {
+            throw new RuntimeException("파일 메타데이터 가져오기에 실패했습니다.", e);
+        }
+        return result;
     }
 
     private CourseFile fetchDriveFileToCourseFile(File file) {
