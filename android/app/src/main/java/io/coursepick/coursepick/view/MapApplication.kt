@@ -4,7 +4,8 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.net.toUri
 import io.coursepick.coursepick.domain.Coordinate
-import timber.log.Timber
+import kotlin.math.ln
+import kotlin.math.tan
 
 enum class MapApplication {
     KAKAO_MAP {
@@ -14,10 +15,39 @@ enum class MapApplication {
             destinationName: String,
         ): String =
             "https://map.kakao.com/link/by/walk/" +
-                "현위치,${origin.latitude.value},${origin.longitude.value}/" +
+                "$ORIGIN_NAME,${origin.latitude.value},${origin.longitude.value}/" +
                 "$destinationName,${destination.latitude.value},${destination.longitude.value}/"
     },
 
+    NAVER_MAP {
+        override fun navigationUrl(
+            origin: Coordinate,
+            destination: Coordinate,
+            destinationName: String,
+        ): String {
+            val (originX: Double, originY: Double) = origin.toWebMercatorPair()
+            val (destinationX: Double, destinationY: Double) = destination.toWebMercatorPair()
+
+            val encodedName: String = java.net.URLEncoder.encode(destinationName, "UTF-8")
+
+            return "https://map.naver.com/p/directions/" +
+                "$originX,$originY,$ORIGIN_NAME,0,PLACE_POI/" +
+                "$destinationX,$destinationY,$encodedName,0,PLACE_POI/" +
+                "-/walk?c=16.00,0,0,0,dh"
+        }
+
+        private fun Coordinate.toWebMercatorPair(): Pair<Double, Double> {
+            val longitude: Double = longitude.value
+            val webMercatorX: Double = longitude * 20037508.34 / 180.0
+
+            val latitude: Double = latitude.value
+            var webMercatorY: Double =
+                ln(tan((90.0 + latitude) * Math.PI / 360.0)) / (Math.PI / 180.0)
+
+            webMercatorY = webMercatorY * 20037508.34 / 180.0
+            return Pair(webMercatorX, webMercatorY)
+        }
+    },
     ;
 
     protected abstract fun navigationUrl(
@@ -32,9 +62,12 @@ enum class MapApplication {
         destination: Coordinate,
         destinationName: String,
     ) {
-        Timber.e(navigationUrl(origin, destination, destinationName))
         val intent =
             Intent(Intent.ACTION_VIEW, navigationUrl(origin, destination, destinationName).toUri())
         context.startActivity(intent)
+    }
+
+    companion object {
+        private const val ORIGIN_NAME = "현위치"
     }
 }
