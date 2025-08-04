@@ -27,7 +27,7 @@ class SearchAdapter(
                 override fun areItemsTheSame(
                     oldItem: SearchKeyword,
                     newItem: SearchKeyword,
-                ): Boolean = oldItem.placeName == newItem.placeName
+                ): Boolean = oldItem.id == newItem.id
 
                 override fun areContentsTheSame(
                     oldItem: SearchKeyword,
