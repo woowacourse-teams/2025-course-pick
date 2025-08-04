@@ -34,7 +34,7 @@ android {
     }
 
     buildTypes {
-        debug {
+        getByName("debug") {
             buildConfigField("boolean", "DEBUG", "true")
             buildConfigField("String", "BASE_URL", localProperties["base.url.debug"].toString())
             buildConfigField(
@@ -42,8 +42,6 @@ android {
                 "KAKAO_BASE_URL",
                 localProperties["kakao.base.url"].toString(),
             )
-        }
-        debug {
             buildConfigField(
                 "String",
                 "KAKAO_NATIVE_APP_KEY",
@@ -55,7 +53,8 @@ android {
                 localProperties["kakao.rest.api.key"].toString(),
             )
         }
-        release {
+
+        getByName("release") {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -90,7 +89,7 @@ android {
         jvmTarget = "21"
     }
 
-    buildFeatures {
+    buildFeatures.apply {
         buildConfig = true
         dataBinding = true
     }
