@@ -8,7 +8,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class SearchKeywordsResponseItem(
+data class SearchKeywordsDto(
     @SerialName("documents")
     val documents: List<Document?>?,
 ) {
