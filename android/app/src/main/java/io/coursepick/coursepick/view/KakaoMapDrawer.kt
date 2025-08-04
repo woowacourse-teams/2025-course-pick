@@ -23,16 +23,6 @@ class KakaoMapDrawer(
 ) {
     private val routeLineOptionsFactory = RouteLineOptionsFactory(context)
 
-    fun drawCourse(
-        kakaoMap: KakaoMap,
-        course: CourseItem,
-    ) {
-        val layer: RouteLineLayer = kakaoMap.routeLineManager?.layer ?: return
-        layer.removeAll()
-        val options: RouteLineOptions = routeLineOptionsFactory.routeLineOptions(course)
-        layer.addRouteLine(options)
-    }
-
     fun drawCourses(
         map: KakaoMap,
         courses: List<CourseItem>,
@@ -49,16 +39,21 @@ class KakaoMapDrawer(
         map: KakaoMap,
         location: Location,
     ) {
-        showUserPosition(
-            map,
-            location.latitude,
-            location.longitude,
-        )
-    }
-
-    fun removeAllLabels(map: KakaoMap) {
-        val layer: LabelLayer = map.labelManager?.layer ?: return
-        layer.removeAll()
+        val manager: LabelManager = map.labelManager ?: return
+        val layer: LabelLayer = manager.layer ?: return
+        val labelId: Int = R.drawable.image_current_location
+        val latLng = LatLng.from(location.latitude, location.longitude)
+        val label: Label? = layer.getLabel(labelId.toString())
+        if (label == null) {
+            val styles: LabelStyles =
+                manager.addLabelStyles(LabelStyles.from(LabelStyle.from(labelId))) ?: return
+            val options: LabelOptions =
+                LabelOptions.from(latLng).setStyles(styles)
+            options.labelId = labelId.toString()
+            layer.addLabel(options)
+            return
+        }
+        label.moveTo(latLng, LABEL_MOVE_ANIMATION_DURATION)
     }
 
     fun showSearchPosition(
@@ -88,25 +83,9 @@ class KakaoMapDrawer(
         layer.addLabel(options)
     }
 
-    private fun showUserPosition(
-        map: KakaoMap,
-        latitude: Double,
-        longitude: Double,
-    ) {
-        val manager: LabelManager = map.labelManager ?: return
-        val layer: LabelLayer = manager.layer ?: return
-        val labelId: Int = R.drawable.image_current_location
-        val label: Label? = layer.getLabel(labelId.toString())
-        if (label == null) {
-            val styles: LabelStyles =
-                manager.addLabelStyles(LabelStyles.from(LabelStyle.from(labelId))) ?: return
-            val options: LabelOptions =
-                LabelOptions.from(LatLng.from(latitude, longitude)).setStyles(styles)
-            options.labelId = labelId.toString()
-            layer.addLabel(options)
-            return
-        }
-        label.moveTo(LatLng.from(latitude, longitude), LABEL_MOVE_ANIMATION_DURATION)
+    fun removeAllLabels(map: KakaoMap) {
+        val layer: LabelLayer = map.labelManager?.layer ?: return
+        layer.removeAll()
     }
 
     companion object {

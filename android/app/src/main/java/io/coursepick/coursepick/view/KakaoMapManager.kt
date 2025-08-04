@@ -65,12 +65,6 @@ class KakaoMapManager(
 
     fun pause() = lifecycleHandler.pause()
 
-    fun draw(course: CourseItem) {
-        kakaoMap?.let { map: KakaoMap ->
-            drawer.drawCourse(map, course)
-        }
-    }
-
     fun draw(courses: List<CourseItem>) {
         kakaoMap?.let { map: KakaoMap ->
             drawer.drawCourses(map, courses)
