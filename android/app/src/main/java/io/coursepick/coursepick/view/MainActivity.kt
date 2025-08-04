@@ -22,6 +22,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.kakao.vectormap.LatLng
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.databinding.ActivityMainBinding
 import io.coursepick.coursepick.domain.Coordinate
@@ -42,7 +43,7 @@ class MainActivity :
     private val locationPermissionLauncher: ActivityResultLauncher<Array<String>> =
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions(),
-        ) { permissions: Map<String, @JvmSuppressWildcards Boolean> ->
+        ) {
             mapManager.startTrackingCurrentLocation()
         }
 
@@ -68,7 +69,7 @@ class MainActivity :
         BottomSheetBehavior.from(binding.mainBottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
 
         mapManager.start { coordinate: Coordinate ->
-            viewModel.fetchCourses(coordinate)
+            fetchCourses(coordinate)
         }
     }
 
@@ -87,9 +88,10 @@ class MainActivity :
         mapManager.stopTrackingCurrentLocation()
     }
 
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun searchThisArea() {
-        val mapPosition = mapManager.cameraPosition ?: return
-        viewModel.fetchCourses(
+        val mapPosition: LatLng = mapManager.cameraPosition ?: return
+        fetchCourses(
             Coordinate(
                 Latitude(mapPosition.latitude),
                 Longitude(mapPosition.longitude),
@@ -147,6 +149,19 @@ class MainActivity :
         binding.lifecycleOwner = this
         binding.adapter = courseAdapter
         binding.action = this
+    }
+
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+    private fun fetchCourses(mapCoordinate: Coordinate) {
+        mapManager.fetchCurrentLocation(
+            onSuccess = { userLatitude: Latitude, userLongitude: Longitude ->
+                val userCoordinate = Coordinate(userLatitude, userLongitude)
+                viewModel.fetchCourses(mapCoordinate, userCoordinate)
+            },
+            onFailure = {
+                viewModel.fetchCourses(mapCoordinate)
+            },
+        )
     }
 
     private fun onFetchCurrentLocationSuccess(course: CourseItem): (Latitude, Longitude) -> Unit =

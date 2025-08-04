@@ -55,12 +55,15 @@ class MainViewModel(
             "$startName,${location.latitude.value},${location.longitude.value}/${selectedCourse.name},${end.latitude.value},${end.longitude.value}"
     }
 
-    fun fetchCourses(coordinate: Coordinate) {
+    fun fetchCourses(
+        mapCoordinate: Coordinate,
+        userCoordinate: Coordinate? = null,
+    ) {
         viewModelScope.launch {
             runCatching {
-                courseRepository.courses(coordinate.latitude, coordinate.longitude)
+                courseRepository.courses(mapCoordinate, userCoordinate)
             }.onSuccess { courses: List<Course> ->
-                val courses: List<CourseItem> =
+                val courseItems: List<CourseItem> =
                     courses
                         .sortedBy { course: Course -> course.distance }
                         .mapIndexed { index: Int, course: Course ->
@@ -69,9 +72,9 @@ class MainViewModel(
                                 index == 0,
                             )
                         }
-                _state.value = MainUiState(courses)
-                _event.value = MainUiEvent.FetchCourseSuccess(courses.firstOrNull())
-            }.onFailure { error: Throwable ->
+                _state.value = MainUiState(courseItems)
+                _event.value = MainUiEvent.FetchCourseSuccess(courseItems.firstOrNull())
+            }.onFailure {
                 _event.value = MainUiEvent.FetchCourseFailure
             }
         }
