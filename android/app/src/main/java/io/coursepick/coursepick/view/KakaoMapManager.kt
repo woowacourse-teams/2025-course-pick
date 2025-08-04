@@ -77,6 +77,15 @@ class KakaoMapManager(
         }
     }
 
+    fun showSearchPosition(
+        latitude: Latitude,
+        longitude: Longitude,
+    ) {
+        kakaoMap?.let { map: KakaoMap ->
+            drawer.showSearchPosition(map, latitude, longitude)
+        }
+    }
+
     fun fitTo(course: CourseItem) {
         kakaoMap?.let { map: KakaoMap ->
             cameraController.fitTo(
@@ -101,7 +110,7 @@ class KakaoMapManager(
                             ),
                         )
                     }
-                if (points.any { point -> point != null && point.isNear(clickedPosition) }) {
+                if (points.any { point: Point? -> point != null && point.isNear(clickedPosition) }) {
                     onClick(course)
                     return@forEach
                 }
@@ -163,11 +172,7 @@ class KakaoMapManager(
     }
 
     private fun Point.isNear(point: PointF): Boolean {
-        val distance =
-            sqrt(
-                (this.x - point.x).pow(2) +
-                    (this.y - point.y).pow(2),
-            )
+        val distance = sqrt((this.x - point.x).pow(2) + (this.y - point.y).pow(2))
         return distance <= NEAR_TOUCH_THRESHOLD
     }
 

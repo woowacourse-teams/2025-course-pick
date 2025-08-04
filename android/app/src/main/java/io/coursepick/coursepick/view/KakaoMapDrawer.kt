@@ -11,8 +11,13 @@ import com.kakao.vectormap.label.LabelManager
 import com.kakao.vectormap.label.LabelOptions
 import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
+import com.kakao.vectormap.label.LabelTransition
+import com.kakao.vectormap.label.Transition
 import com.kakao.vectormap.route.RouteLineLayer
 import com.kakao.vectormap.route.RouteLineOptions
+import io.coursepick.coursepick.R
+import io.coursepick.coursepick.domain.Latitude
+import io.coursepick.coursepick.domain.Longitude
 
 class KakaoMapDrawer(
     context: Context,
@@ -58,6 +63,33 @@ class KakaoMapDrawer(
     fun removeAllLabels(map: KakaoMap) {
         val layer: LabelLayer = map.labelManager?.layer ?: return
         layer.removeAll()
+    }
+
+    fun showSearchPosition(
+        map: KakaoMap,
+        latitude: Latitude,
+        longitude: Longitude,
+    ) {
+        val manager: LabelManager = map.labelManager ?: return
+        val layer: LabelLayer = manager.layer ?: return
+        val labelId: Int = R.drawable.image_search_location
+        val label: Label? = layer.getLabel(labelId.toString())
+        val styles: LabelStyles =
+            manager.addLabelStyles(
+                LabelStyles.from(
+                    LabelStyle
+                        .from(labelId)
+                        .setAnchorPoint(0.5F, 0.5F)
+                        .setIconTransition(
+                            LabelTransition.from(Transition.None, Transition.None),
+                        ),
+                ),
+            ) ?: return
+        val options: LabelOptions =
+            LabelOptions.from(LatLng.from(latitude.value, longitude.value)).setStyles(styles)
+        options.labelId = labelId.toString()
+        layer.remove(label)
+        layer.addLabel(options)
     }
 
     private fun drawLabel(
