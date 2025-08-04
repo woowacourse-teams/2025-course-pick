@@ -45,9 +45,9 @@ dependencies {
     implementation("io.awspring.cloud:spring-cloud-aws-starter-metrics:3.4.0")
 
     // Google Drive
-    implementation("com.google.api-client:google-api-client:2.8.0")
+    implementation("com.google.api-client:google-api-client:2.7.2")
     implementation("com.google.auth:google-auth-library-oauth2-http:1.37.1")
-    implementation("com.google.apis:google-api-services-drive:v3-rev197-1.25.0")
+    implementation("com.google.apis:google-api-services-drive:v3-rev20220815-2.0.0")
 
     // Test
     testImplementation("org.springframework.batch:spring-batch-test")
