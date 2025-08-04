@@ -123,7 +123,7 @@ class KakaoMapManager(
         locationProvider.fetchCurrentLocation(
             onSuccess = { location: Location ->
                 kakaoMap?.let { map: KakaoMap ->
-                    drawer.drawLabel(map, R.drawable.image_current_location, location)
+                    drawer.showUserPosition(map, location)
                     cameraController.moveTo(map, location)
                 }
             },
@@ -143,7 +143,7 @@ class KakaoMapManager(
         locationProvider.startLocationUpdates(
             onUpdate = { location ->
                 kakaoMap?.let { map: KakaoMap ->
-                    drawer.drawLabel(map, R.drawable.image_current_location, location)
+                    drawer.showUserPosition(map, location)
                 }
             },
             onError = {

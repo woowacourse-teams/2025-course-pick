@@ -2,7 +2,6 @@ package io.coursepick.coursepick.view
 
 import android.content.Context
 import android.location.Location
-import androidx.annotation.DrawableRes
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.label.Label
@@ -46,15 +45,12 @@ class KakaoMapDrawer(
         }
     }
 
-    fun drawLabel(
+    fun showUserPosition(
         map: KakaoMap,
-        @DrawableRes
-        iconResourceId: Int,
         location: Location,
     ) {
-        drawLabel(
+        showUserPosition(
             map,
-            iconResourceId,
             location.latitude,
             location.longitude,
         )
@@ -92,23 +88,21 @@ class KakaoMapDrawer(
         layer.addLabel(options)
     }
 
-    private fun drawLabel(
+    private fun showUserPosition(
         map: KakaoMap,
-        @DrawableRes
-        iconResourceId: Int,
         latitude: Double,
         longitude: Double,
     ) {
         val manager: LabelManager = map.labelManager ?: return
         val layer: LabelLayer = manager.layer ?: return
-        val labelId: String = iconResourceId.toString()
-        val label: Label? = layer.getLabel(labelId)
+        val labelId: Int = R.drawable.image_current_location
+        val label: Label? = layer.getLabel(labelId.toString())
         if (label == null) {
             val styles: LabelStyles =
-                manager.addLabelStyles(LabelStyles.from(LabelStyle.from(iconResourceId))) ?: return
+                manager.addLabelStyles(LabelStyles.from(LabelStyle.from(labelId))) ?: return
             val options: LabelOptions =
                 LabelOptions.from(LatLng.from(latitude, longitude)).setStyles(styles)
-            options.labelId = labelId
+            options.labelId = labelId.toString()
             layer.addLabel(options)
             return
         }
