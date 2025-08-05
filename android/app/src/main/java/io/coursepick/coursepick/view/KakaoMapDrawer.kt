@@ -12,8 +12,7 @@ import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
 import com.kakao.vectormap.label.LabelTransition
 import com.kakao.vectormap.label.Transition
-import com.kakao.vectormap.route.RouteLine
-import com.kakao.vectormap.route.RouteLineManager
+import com.kakao.vectormap.route.RouteLineLayer
 import com.kakao.vectormap.route.RouteLineOptions
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.Latitude
@@ -28,15 +27,11 @@ class KakaoMapDrawer(
         map: KakaoMap,
         courses: List<CourseItem>,
     ) {
-        val manager: RouteLineManager = map.routeLineManager ?: return
-        val oldRouteLines: Array<RouteLine> = manager.layer?.allRouteLines ?: return
+        val layer: RouteLineLayer = map.routeLineManager?.layer ?: return
+        layer.removeAll()
         courses.forEach { course: CourseItem ->
             val options: RouteLineOptions = routeLineOptionsFactory.routeLineOptions(course)
-            manager.layer?.addRouteLine(options)
-        }
-        manager.layer?.removeAll()
-        oldRouteLines.forEach { routeLine: RouteLine ->
-            manager.remove(routeLine)
+            layer.addRouteLine(options)
         }
     }
 
