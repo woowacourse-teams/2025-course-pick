@@ -34,7 +34,6 @@ class MainActivity :
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val viewModel: MainViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(CourseItemListener()) }
-    private val mapChoiceDialog = MapChoiceDialog(this)
     private val doublePressDetector = DoublePressDetector()
     private val mapManager by lazy { KakaoMapManager(binding.mainMap) }
 
@@ -226,7 +225,11 @@ class MainActivity :
                 }
 
                 is MainUiEvent.FetchNearestCoordinateSuccess -> {
-                    mapChoiceDialog.show(event.origin, event.destination, event.destinationName)
+                    MapChoiceDialog(this).show(
+                        event.origin,
+                        event.destination,
+                        event.destinationName,
+                    )
                 }
 
                 MainUiEvent.FetchNearestCoordinateFailure ->
