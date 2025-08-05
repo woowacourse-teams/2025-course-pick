@@ -78,10 +78,12 @@ class MainActivity :
         searchLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
                 if (result.resultCode == RESULT_OK) {
-                    val latitude: Double? = result.data?.getDoubleExtra("latitude", 0.0)
-                    val longitude: Double? = result.data?.getDoubleExtra("longitude", 0.0)
+                    val intent: Intent? = result.data
 
-                    if (latitude != null && longitude != null) {
+                    if (intent?.hasExtra("latitude") == true && intent.hasExtra("longitude")) {
+                        val latitude = intent.getDoubleExtra("latitude", 0.0)
+                        val longitude = intent.getDoubleExtra("longitude", 0.0)
+
                         mapManager.showSearchLocation(
                             Latitude(latitude),
                             Longitude(longitude),
@@ -92,6 +94,13 @@ class MainActivity :
                                 Longitude(longitude),
                             ),
                         )
+                    } else {
+                        Toast
+                            .makeText(
+                                this,
+                                "위치 정보가 전달되지 않았습니다.",
+                                Toast.LENGTH_SHORT,
+                            ).show()
                     }
                 }
             }
