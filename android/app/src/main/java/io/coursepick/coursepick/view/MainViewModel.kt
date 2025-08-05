@@ -41,20 +41,6 @@ class MainViewModel(
         _event.value = MainUiEvent.SelectNewCourse(selectedCourse)
     }
 
-    fun navigationUrl(
-        selectedCourse: CourseItem,
-        location: Coordinate,
-    ): String {
-        val end: Coordinate =
-            selectedCourse.segments
-                .first()
-                .coordinates
-                .first()
-        val startName = "현재 위치"
-        return "https://map.kakao.com/link/by/walk/" +
-            "$startName,${location.latitude.value},${location.longitude.value}/${selectedCourse.name},${end.latitude.value},${end.longitude.value}"
-    }
-
     fun fetchCourses(
         mapCoordinate: Coordinate,
         userCoordinate: Coordinate? = null,
@@ -76,6 +62,26 @@ class MainViewModel(
                 _event.value = MainUiEvent.FetchCourseSuccess(courseItems.firstOrNull())
             }.onFailure {
                 _event.value = MainUiEvent.FetchCourseFailure
+            }
+        }
+    }
+
+    fun fetchNearestCoordinate(
+        selectedCourse: CourseItem,
+        location: Coordinate,
+    ) {
+        viewModelScope.launch {
+            runCatching {
+                courseRepository.nearestCoordinate(selectedCourse.course, location)
+            }.onSuccess { nearest: Coordinate ->
+                _event.value =
+                    MainUiEvent.FetchNearestCoordinateSuccess(
+                        origin = location,
+                        destination = nearest,
+                        destinationName = selectedCourse.name,
+                    )
+            }.onFailure {
+                _event.value = MainUiEvent.FetchNearestCoordinateFailure
             }
         }
     }

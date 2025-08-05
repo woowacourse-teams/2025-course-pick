@@ -138,14 +138,7 @@ class MainActivity :
             override fun launchMap(course: CourseItem) {
                 mapManager.fetchCurrentLocation(
                     onSuccess = { latitude: Latitude, longitude: Longitude ->
-                        val origin = Coordinate(latitude, longitude)
-                        val destination: Coordinate =
-                            course.segments
-                                .first()
-                                .coordinates
-                                .first()
-
-                        mapChoiceDialog.show(origin, destination, course.name)
+                        viewModel.fetchNearestCoordinate(course, Coordinate(latitude, longitude))
                     },
                     onFailure = {
                         Toast
@@ -231,6 +224,15 @@ class MainActivity :
                     val behavior = BottomSheetBehavior.from(binding.mainBottomSheet)
                     behavior.state = BottomSheetBehavior.STATE_COLLAPSED
                 }
+
+                is MainUiEvent.FetchNearestCoordinateSuccess -> {
+                    mapChoiceDialog.show(event.origin, event.destination, event.destinationName)
+                }
+
+                MainUiEvent.FetchNearestCoordinateFailure ->
+                    Toast
+                        .makeText(this, "코스까지 가는 길을 찾지 못했습니다.", Toast.LENGTH_SHORT)
+                        .show()
             }
         }
     }
