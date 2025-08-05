@@ -31,11 +31,9 @@ enum class MapApplication(
             val (originX: Double, originY: Double) = origin.toWebMercatorPair()
             val (destinationX: Double, destinationY: Double) = destination.toWebMercatorPair()
 
-            val encodedName: String = java.net.URLEncoder.encode(destinationName, "UTF-8")
-
             return "https://map.naver.com/p/directions/" +
                 "$originX,$originY,$ORIGIN_NAME,0,PLACE_POI/" +
-                "$destinationX,$destinationY,$encodedName,0,PLACE_POI/" +
+                "$destinationX,$destinationY,$destinationName,0,PLACE_POI/" +
                 "-/walk?c=16.00,0,0,0,dh"
         }
 
