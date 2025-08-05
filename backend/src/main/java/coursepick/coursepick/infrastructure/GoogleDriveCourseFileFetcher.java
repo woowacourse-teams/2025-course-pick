@@ -13,7 +13,6 @@ import com.google.auth.oauth2.GoogleCredentials;
 import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.dto.CourseFileExtension;
 import coursepick.coursepick.batch.CourseFileFetcher;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
@@ -32,23 +31,20 @@ public class GoogleDriveCourseFileFetcher implements CourseFileFetcher {
     private static final String QUERY_FORMAT = "'%s' in parents and name contains '.gpx' and trashed = false";
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
-    @Value("${gcp.credentials.path}")
-    private Resource credentialsResource;
+    private final String folderId;
+    private final Drive drive;
+    
+    private String nextPageToken;
+    private boolean isInitialRequest;
 
-    @Value("${gcp.drive.folder-id}")
-    private String folderId;
-
-    private Drive drive;
-    private String nextPageToken = null;
-    private boolean isInitialRequest = true;
-
-    @PostConstruct
-    public void init() {
-        try {
-            this.drive = getDrive();
-        } catch (GeneralSecurityException | IOException e) {
-            throw new IllegalStateException("구글 드라이브 서비스 초기화에 실패했습니다.", e);
-        }
+    public GoogleDriveCourseFileFetcher(
+            @Value("${gcp.credentials.path}") Resource credentialsResource,
+            @Value("${gcp.drive.folder-id}") String folderId
+    ) {
+        this.folderId = folderId;
+        this.drive = initDrive(credentialsResource);
+        this.nextPageToken = null;
+        this.isInitialRequest = true;
     }
 
     @Override
@@ -112,15 +108,17 @@ public class GoogleDriveCourseFileFetcher implements CourseFileFetcher {
         }
     }
 
-    private Drive getDrive() throws GeneralSecurityException, IOException {
-        NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-        return new Drive.Builder(httpTransport, JSON_FACTORY, new HttpCredentialsAdapter(getCredentials()))
-                .setApplicationName(APPLICATION_NAME)
-                .build();
-    }
+    private static Drive initDrive(Resource credentialsResource) {
+        try {
+            GoogleCredentials credentials = GoogleCredentials.fromStream(credentialsResource.getInputStream())
+                    .createScoped(Collections.singleton(DriveScopes.DRIVE_READONLY));
 
-    private GoogleCredentials getCredentials() throws IOException {
-        return GoogleCredentials.fromStream(credentialsResource.getInputStream())
-                .createScoped(Collections.singleton(DriveScopes.DRIVE_READONLY));
+            NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+            return new Drive.Builder(httpTransport, JSON_FACTORY, new HttpCredentialsAdapter(credentials))
+                    .setApplicationName(APPLICATION_NAME)
+                    .build();
+        } catch (GeneralSecurityException | IOException e) {
+            throw new IllegalStateException("구글 드라이브 서비스 초기화에 실패했습니다.", e);
+        }
     }
 }
