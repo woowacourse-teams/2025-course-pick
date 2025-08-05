@@ -3,7 +3,7 @@ package io.coursepick.coursepick.data
 import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.Latitude
 import io.coursepick.coursepick.domain.Longitude
-import io.coursepick.coursepick.domain.SearchPlace
+import io.coursepick.coursepick.domain.Place
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -28,14 +28,14 @@ data class SearchPlacesDto(
         val y: String?,
     )
 
-    fun toSearchPlacesOrNull(): List<SearchPlace>? = documents?.mapNotNull { document: Document? -> document?.toSearchPlaceOrNull() }
+    fun toSearchPlacesOrNull(): List<Place>? = documents?.mapNotNull { document: Document? -> document?.toSearchPlaceOrNull() }
 
-    private fun Document.toSearchPlaceOrNull(): SearchPlace? {
+    private fun Document.toSearchPlaceOrNull(): Place? {
         val id = this.id?.toLongOrNull() ?: return null
         val addressName = this.addressName ?: return null
         val placeName = this.placeName ?: return null
         val coordinate = coordinateOrNull(x, y) ?: return null
-        return SearchPlace(id, addressName, placeName, coordinate)
+        return Place(id, addressName, placeName, coordinate)
     }
 
     private fun coordinateOrNull(

@@ -4,28 +4,28 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import io.coursepick.coursepick.databinding.ItemSearchBinding
-import io.coursepick.coursepick.domain.SearchPlace
+import io.coursepick.coursepick.domain.Place
 
 class SearchViewHolder private constructor(
     private val binding: ItemSearchBinding,
-    onSearchKeywordListener: OnSearchKeywordListener,
+    onSearchListener: OnSearchListener,
 ) : RecyclerView.ViewHolder(binding.root) {
     init {
-        binding.onSearchKeywordListener = onSearchKeywordListener
+        binding.onSearchKeywordListener = onSearchListener
     }
 
-    fun bind(search: SearchPlace) {
-        binding.search = search
+    fun bind(place: Place) {
+        binding.place = place
     }
 
     companion object {
         fun SearchViewHolder(
             root: ViewGroup,
-            onSearchKeywordListener: OnSearchKeywordListener,
+            onSearchListener: OnSearchListener,
         ): SearchViewHolder {
             val layoutInflater = LayoutInflater.from(root.context)
             val binding = ItemSearchBinding.inflate(layoutInflater, root, false)
-            return SearchViewHolder(binding, onSearchKeywordListener)
+            return SearchViewHolder(binding, onSearchListener)
         }
     }
 }

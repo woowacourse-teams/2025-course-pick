@@ -10,15 +10,15 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import io.coursepick.coursepick.databinding.ActivitySearchBinding
-import io.coursepick.coursepick.domain.SearchPlace
+import io.coursepick.coursepick.domain.Place
 
 class SearchActivity : AppCompatActivity() {
     private val binding by lazy { ActivitySearchBinding.inflate(layoutInflater) }
     private val viewModel: SearchViewModel by viewModels()
     private val adapter: SearchAdapter by lazy {
         SearchAdapter(
-            object : OnSearchKeywordListener {
-                override fun search(place: SearchPlace) {
+            object : OnSearchListener {
+                override fun select(place: Place) {
                     val resultIntent =
                         Intent().apply {
                             putExtra("latitude", place.coordinate.latitude.value)
@@ -45,7 +45,7 @@ class SearchActivity : AppCompatActivity() {
         binding.searchView.requestFocus()
         binding.adapter = adapter
 
-        viewModel.state.observe(this) { state: List<SearchPlace> ->
+        viewModel.state.observe(this) { state: List<Place> ->
             adapter.submitList(state)
         }
 

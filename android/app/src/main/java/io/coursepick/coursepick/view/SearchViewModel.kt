@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.coursepick.coursepick.data.DefaultSearchRepository
-import io.coursepick.coursepick.domain.SearchPlace
+import io.coursepick.coursepick.domain.Place
 import io.coursepick.coursepick.domain.SearchRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -16,9 +16,9 @@ class SearchViewModel(
 ) : ViewModel() {
     private var searchJob: Job? = null
 
-    private val _state: MutableLiveData<List<SearchPlace>> =
-        MutableLiveData<List<SearchPlace>>()
-    val state: LiveData<List<SearchPlace>> get() = _state
+    private val _state: MutableLiveData<List<Place>> =
+        MutableLiveData<List<Place>>()
+    val state: LiveData<List<Place>> get() = _state
 
     fun search(query: String) {
         searchJob?.cancel()

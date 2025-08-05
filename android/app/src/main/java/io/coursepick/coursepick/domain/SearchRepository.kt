@@ -6,5 +6,5 @@ interface SearchRepository {
         page: Int? = null,
         size: Int? = null,
         sort: String? = null,
-    ): List<SearchPlace>
+    ): List<Place>
 }
