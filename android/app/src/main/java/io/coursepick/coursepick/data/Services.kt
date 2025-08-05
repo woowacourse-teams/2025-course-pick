@@ -34,8 +34,6 @@ object Services {
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
 
-    val courseService: CourseService = retrofit.create(CourseService::class.java)
-
     private val kakaoClient: OkHttpClient =
         OkHttpClient
             .Builder()
@@ -50,6 +48,8 @@ object Services {
             .client(kakaoClient)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
+
+    val courseService: CourseService = retrofit.create(CourseService::class.java)
 
     val searchService: SearchService =
         kakaoRetrofit.create(SearchService::class.java)
