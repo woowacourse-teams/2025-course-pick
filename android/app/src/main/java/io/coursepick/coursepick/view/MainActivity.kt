@@ -84,16 +84,8 @@ class MainActivity :
                         val latitude = intent.getDoubleExtra("latitude", 0.0)
                         val longitude = intent.getDoubleExtra("longitude", 0.0)
 
-                        mapManager.moveTo(
-                            Latitude(latitude),
-                            Longitude(longitude),
-                        )
-                        viewModel.fetchCourses(
-                            Coordinate(
-                                Latitude(latitude),
-                                Longitude(longitude),
-                            ),
-                        )
+                        mapManager.moveTo(latitude, longitude)
+                        viewModel.fetchCourses(latitude, longitude)
                     } else {
                         Toast
                             .makeText(
@@ -280,8 +272,6 @@ class MainActivity :
                         .show()
 
                 MainUiEvent.Search -> {
-                    val intent = SearchActivity.intent(this)
-                    searchLauncher.launch(intent)
                 }
             }
         }

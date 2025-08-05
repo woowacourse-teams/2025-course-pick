@@ -102,6 +102,13 @@ class KakaoMapManager(
     }
 
     fun moveTo(
+        latitude: Double,
+        longitude: Double,
+    ) {
+        moveTo(Latitude(latitude), Longitude(longitude))
+    }
+
+    private fun moveTo(
         latitude: Latitude,
         longitude: Longitude,
     ) {
