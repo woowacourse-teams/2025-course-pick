@@ -26,8 +26,13 @@ class RouteLineOptionsFactory(
     private val unselectedStyle = RouteLineStyles(context.getColor(R.color.course_unselected))
 
     fun routeLineOptions(course: CourseItem): RouteLineOptions {
-        val segments: List<RouteLineSegment?> =
-            course.segments.map { segment: Segment -> segment.toRouteLineSegment(course.selected) }
+        val segments: List<RouteLineSegment> =
+            course.segments.map { segment: Segment ->
+                routeLineSegmentWithStyle(
+                    segment,
+                    course.selected,
+                )
+            }
         return RouteLineOptions.from(segments)
     }
 
@@ -39,10 +44,14 @@ class RouteLineOptionsFactory(
         return RouteLineStyles.from(baseStyle)
     }
 
-    private fun Segment.toRouteLineSegment(selected: Boolean): RouteLineSegment? {
+    private fun routeLineSegmentWithStyle(
+        segment: Segment,
+        selected: Boolean,
+    ): RouteLineSegment {
         val points: List<LatLng> =
-            coordinates.map { coordinate: Coordinate -> coordinate.toLatLng() }
-        val styles: RouteLineStyles = if (selected) inclineType.routeLineStyles else unselectedStyle
+            segment.coordinates.map { coordinate: Coordinate -> coordinate.toLatLng() }
+        val styles: RouteLineStyles =
+            if (selected) segment.inclineType.routeLineStyles else unselectedStyle
 
         return RouteLineSegment.from(points, styles)
     }
