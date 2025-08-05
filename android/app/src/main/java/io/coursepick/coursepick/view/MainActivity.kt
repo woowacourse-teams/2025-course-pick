@@ -290,8 +290,6 @@ class MainActivity :
                 }
 
                 MainUiEvent.Search -> {
-                    val intent = SearchActivity.intent(this)
-                    searchLauncher.launch(intent)
                 }
             }
         }
