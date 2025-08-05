@@ -47,8 +47,6 @@ class RouteLineOptionsFactory(
         return RouteLineSegment.from(points, styles)
     }
 
-    private fun Coordinate.toLatLng() = LatLng.from(latitude.value, longitude.value)
-
     private val InclineType.routeLineStyles
         get() =
             when (this) {

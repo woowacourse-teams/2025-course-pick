@@ -94,10 +94,9 @@ class MainActivity :
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun searchThisArea() {
         val mapPosition: LatLng = mapManager.cameraPosition ?: return
-        val latitude = Latitude(mapPosition.latitude)
-        val longitude = Longitude(mapPosition.longitude)
-        mapManager.showSearchPosition(latitude, longitude)
-        fetchCourses(Coordinate(latitude, longitude))
+        val coordinate = mapPosition.toCoordinate()
+        mapManager.showSearchPosition(coordinate)
+        fetchCourses(coordinate)
     }
 
     override fun openMenu() {

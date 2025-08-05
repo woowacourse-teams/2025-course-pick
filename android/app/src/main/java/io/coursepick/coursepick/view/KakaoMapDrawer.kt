@@ -3,7 +3,6 @@ package io.coursepick.coursepick.view
 import android.content.Context
 import android.location.Location
 import com.kakao.vectormap.KakaoMap
-import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.label.Label
 import com.kakao.vectormap.label.LabelLayer
 import com.kakao.vectormap.label.LabelManager
@@ -15,8 +14,7 @@ import com.kakao.vectormap.label.Transition
 import com.kakao.vectormap.route.RouteLineLayer
 import com.kakao.vectormap.route.RouteLineOptions
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.domain.Latitude
-import io.coursepick.coursepick.domain.Longitude
+import io.coursepick.coursepick.domain.Coordinate
 
 class KakaoMapDrawer(
     context: Context,
@@ -42,7 +40,7 @@ class KakaoMapDrawer(
         val manager: LabelManager = map.labelManager ?: return
         val layer: LabelLayer = manager.layer ?: return
         val labelId: Int = R.drawable.image_current_location
-        val latLng = LatLng.from(location.latitude, location.longitude)
+        val latLng = location.toLatLng()
         val label: Label? = layer.getLabel(labelId.toString())
         if (label == null) {
             val styles: LabelStyles =
@@ -58,8 +56,7 @@ class KakaoMapDrawer(
 
     fun showSearchPosition(
         map: KakaoMap,
-        latitude: Latitude,
-        longitude: Longitude,
+        coordinate: Coordinate,
     ) {
         val manager: LabelManager = map.labelManager ?: return
         val layer: LabelLayer = manager.layer ?: return
@@ -76,8 +73,7 @@ class KakaoMapDrawer(
                         ),
                 ),
             ) ?: return
-        val options: LabelOptions =
-            LabelOptions.from(LatLng.from(latitude.value, longitude.value)).setStyles(styles)
+        val options: LabelOptions = LabelOptions.from(coordinate.toLatLng()).setStyles(styles)
         options.labelId = labelId.toString()
         layer.remove(label)
         layer.addLabel(options)

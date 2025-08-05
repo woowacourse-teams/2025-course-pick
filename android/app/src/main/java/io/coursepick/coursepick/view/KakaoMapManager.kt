@@ -71,12 +71,9 @@ class KakaoMapManager(
         }
     }
 
-    fun showSearchPosition(
-        latitude: Latitude,
-        longitude: Longitude,
-    ) {
+    fun showSearchPosition(coordinate: Coordinate) {
         kakaoMap?.let { map: KakaoMap ->
-            drawer.showSearchPosition(map, latitude, longitude)
+            drawer.showSearchPosition(map, coordinate)
         }
     }
 
@@ -168,9 +165,7 @@ class KakaoMapManager(
     ): Boolean {
         val points: List<Point?> =
             segments.flatMap(Segment::coordinates).map { coordinate: Coordinate ->
-                map.toScreenPoint(
-                    LatLng.from(coordinate.latitude.value, coordinate.longitude.value),
-                )
+                map.toScreenPoint(coordinate.toLatLng())
             }
         return (points.any { point: Point? -> point != null && point.isNear(target) })
     }
