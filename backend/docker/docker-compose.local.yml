@@ -1,4 +1,5 @@
 name: coursepick-local
+
 services:
   mysql:
     image: 'mysql:8.4.5'
