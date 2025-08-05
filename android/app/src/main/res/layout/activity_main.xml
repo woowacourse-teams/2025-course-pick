@@ -58,8 +58,7 @@
                 android:clickable="true"
                 android:onClick="@{() -> action.searchThisArea()}"
                 android:orientation="horizontal"
-                android:padding="10dp"
-                android:visibility="@{viewModel.state.newPosition ? View.VISIBLE : View.GONE}">
+                android:padding="10dp">
 
                 <ImageView
                     android:layout_width="16dp"

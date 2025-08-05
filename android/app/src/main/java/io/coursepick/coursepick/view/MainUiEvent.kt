@@ -10,4 +10,6 @@ sealed interface MainUiEvent {
     class SelectNewCourse(
         val course: CourseItem,
     ) : MainUiEvent
+
+    object CameraMoved : MainUiEvent
 }

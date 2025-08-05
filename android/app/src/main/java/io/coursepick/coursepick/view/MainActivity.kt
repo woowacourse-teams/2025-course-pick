@@ -69,10 +69,10 @@ class MainActivity :
         BottomSheetBehavior.from(binding.mainBottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
 
         mapManager.start { coordinate: Coordinate ->
-            fetchCourses(coordinate)
             mapManager.setOnCameraMoveListener {
-                viewModel.onPositionChanged()
+                viewModel.onMapMove()
             }
+            fetchCourses(coordinate)
         }
     }
 
@@ -95,6 +95,7 @@ class MainActivity :
     override fun searchThisArea() {
         val mapPosition: LatLng = mapManager.cameraPosition ?: return
         val coordinate = mapPosition.toCoordinate()
+        binding.mainSearchThisAreaButton.visibility = View.GONE
         mapManager.showSearchPosition(coordinate)
         fetchCourses(coordinate)
     }
@@ -221,15 +222,19 @@ class MainActivity :
         viewModel.event.observe(this) { event: MainUiEvent ->
             when (event) {
                 is MainUiEvent.FetchCourseSuccess -> {
-                    event.nearestCourse ?: Toast
-                        .makeText(
-                            this,
-                            "이 지역에 코스가 없습니다.",
-                            Toast.LENGTH_SHORT,
-                        ).show()
+                    event.nearestCourse ?: {
+                        binding.mainSearchThisAreaButton.visibility = View.VISIBLE
+                        Toast
+                            .makeText(
+                                this,
+                                "이 지역에 코스가 없습니다.",
+                                Toast.LENGTH_SHORT,
+                            ).show()
+                    }
                 }
 
                 MainUiEvent.FetchCourseFailure -> {
+                    binding.mainSearchThisAreaButton.visibility = View.VISIBLE
                     Toast.makeText(this, "코스 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
                 }
 
@@ -237,6 +242,10 @@ class MainActivity :
                     selectCourse(event.course)
                     val behavior = BottomSheetBehavior.from(binding.mainBottomSheet)
                     behavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                }
+
+                MainUiEvent.CameraMoved -> {
+                    binding.mainSearchThisAreaButton.visibility = View.VISIBLE
                 }
             }
         }
