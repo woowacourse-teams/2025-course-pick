@@ -15,9 +15,11 @@ object Services {
         } else {
             HttpLoggingInterceptor.Level.NONE
         }
-    private val interceptor = HttpLoggingInterceptor(PrettyPrintLogger()).setLevel(loggingLevel)
+    private val loggingInterceptor =
+        HttpLoggingInterceptor(PrettyPrintLogger()).setLevel(loggingLevel)
 
-    private val client: OkHttpClient = OkHttpClient.Builder().addInterceptor(interceptor).build()
+    private val client: OkHttpClient =
+        OkHttpClient.Builder().addInterceptor(loggingInterceptor).build()
 
     private val json =
         Json {
@@ -37,15 +39,8 @@ object Services {
     private val kakaoClient: OkHttpClient =
         OkHttpClient
             .Builder()
-            .addInterceptor { chain ->
-                val request =
-                    chain
-                        .request()
-                        .newBuilder()
-                        .addHeader("Authorization", "KakaoAK ${BuildConfig.KAKAO_REST_API_KEY}")
-                        .build()
-                chain.proceed(request)
-            }.addInterceptor(interceptor)
+            .addInterceptor(KakaoAuthInterceptor)
+            .addInterceptor(loggingInterceptor)
             .build()
 
     private val kakaoRetrofit =
