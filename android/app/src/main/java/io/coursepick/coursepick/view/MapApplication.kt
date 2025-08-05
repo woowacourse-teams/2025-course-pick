@@ -39,13 +39,14 @@ enum class MapApplication(
 
         private fun Coordinate.toWebMercatorPair(): Pair<Double, Double> {
             val longitude: Double = longitude.value
-            val webMercatorX: Double = longitude * 20037508.34 / 180.0
+            val webMercatorX: Double =
+                longitude * WEB_MERCATOR_HALF_CIRCUMFERENCE / HALF_CIRCLE_DEGREES
 
             val latitude: Double = latitude.value
             var webMercatorY: Double =
-                ln(tan((90.0 + latitude) * Math.PI / 360.0)) / (Math.PI / 180.0)
+                ln(tan((QUARTER_CIRCLE_DEGREES + latitude) * Math.PI / FULL_CIRCLE_DEGREES)) / (Math.PI / HALF_CIRCLE_DEGREES)
 
-            webMercatorY = webMercatorY * 20037508.34 / 180.0
+            webMercatorY = webMercatorY * WEB_MERCATOR_HALF_CIRCUMFERENCE / HALF_CIRCLE_DEGREES
             return Pair(webMercatorX, webMercatorY)
         }
     },
@@ -78,5 +79,9 @@ enum class MapApplication(
 
     companion object {
         private const val ORIGIN_NAME = "현위치"
+        private const val WEB_MERCATOR_HALF_CIRCUMFERENCE = 20037508.34
+        private const val FULL_CIRCLE_DEGREES = 360.0
+        private const val HALF_CIRCLE_DEGREES = 180.0
+        private const val QUARTER_CIRCLE_DEGREES = 90.0
     }
 }
