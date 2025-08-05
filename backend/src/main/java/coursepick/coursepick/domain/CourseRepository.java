@@ -1,21 +1,16 @@
 package coursepick.coursepick.domain;
 
-import org.springframework.data.repository.Repository;
+import coursepick.coursepick.infrastructure.repository.CourseCustomRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface CourseRepository extends Repository<Course, Long> {
+public interface CourseRepository extends MongoRepository<Course, Long>, CourseCustomRepository {
 
-    List<Course> findAll();
+    List<Course> findAllHasDistanceWithin(Coordinate target, Meter length);
 
-    Optional<Course> findById(Long id);
+    Optional<Course> findById(String id);
 
-    default List<Course> findAllHasDistanceWithin(Coordinate target, Meter meter) {
-        return findAll().stream()
-                .filter(c -> c.distanceFrom(target).isWithin(meter))
-                .toList();
-    }
-
-    boolean existsByName(CourseName courseName);
+    boolean existsByName(CourseName name);
 }

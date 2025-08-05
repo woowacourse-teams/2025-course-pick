@@ -1,15 +1,11 @@
 spring:
   config.activate.on-profile: dev
-  jpa:
-    hibernate:
-      ddl-auto: update
+  data.mongodb:
+    uri: ${DB_URL}
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-  batch:
-    jdbc.initialize-schema: never
-    job.enabled: false
+    url: jdbc:mysql://localhost:3307/coursepick
+    username: user
+    password: secret
   cloud:
     aws:
       cloudwatch:

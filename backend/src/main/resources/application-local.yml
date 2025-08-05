@@ -1,9 +1,7 @@
 spring:
   config.activate.on-profile: local
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
+  data.mongodb:
+    uri: mongodb://root:secret@localhost:27017/coursepick?authSource=admin
   datasource:
     url: jdbc:mysql://localhost:3307/coursepick
     username: user

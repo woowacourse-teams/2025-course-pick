@@ -18,14 +18,10 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
     implementation("org.springframework.boot:spring-boot-starter-batch")
-
-    // DB Connector
-    runtimeOnly("com.mysql:mysql-connector-j")
-    runtimeOnly("com.h2database:h2")
+    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
 
     // Lombok
     compileOnly("org.projectlombok:lombok")
@@ -49,9 +45,14 @@ dependencies {
     implementation("com.google.auth:google-auth-library-oauth2-http:1.37.1")
     implementation("com.google.apis:google-api-services-drive:v3-rev20241027-2.0.0")
 
+    // RDB Drivers For Spring Batch
+    runtimeOnly("com.mysql:mysql-connector-j")
+    runtimeOnly("com.h2database:h2")
+
     // Test
     testImplementation("org.springframework.batch:spring-batch-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring3x:4.21.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

@@ -37,7 +37,7 @@ public class CoordinateBuilder {
         for (int i = 1; i < coordinates.size(); i++) {
             Coordinate lastCoordinate = nonDuplicatedCoordinates.getLast();
             Coordinate currentCoordinate = this.coordinates.get(i);
-            if (!lastCoordinate.equals(currentCoordinate)) {
+            if (!lastCoordinate.hasSameLatitudeAndLongitude(currentCoordinate)) {
                 nonDuplicatedCoordinates.add(currentCoordinate);
             }
         }

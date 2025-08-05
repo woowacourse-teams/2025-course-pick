@@ -1,0 +1,33 @@
+name: mongo
+services:
+  # MongoDB 서비스 정의
+  mongodb:
+    image: mongo:latest # 최신 버전의 mongo 이미지 사용
+    container_name: mongodb
+    ports:
+      - "27017:27017" # 로컬 PC의 27017 포트와 컨테이너의 27017 포트를 연결
+    #    volumes:
+    #      - mongo-data:/data/db # 데이터를 영속적으로 보관하기 위해 볼륨 사용
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root # 관리자 계정 ID
+      - MONGO_INITDB_ROOT_PASSWORD=secret # 관리자 계정 비밀번호
+
+  # Mongo Express (웹 UI) 서비스 정의
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    ports:
+      - "8081:8081" # Spring Boot 기본 포트(8080)와의 충돌을 피해 8081 포트 사용
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb # 연결할 MongoDB 서비스 이름 (위 서비스 이름과 동일)
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+      - ME_CONFIG_MONGODB_AUTH_USERNAME=root # 관리자 계정 ID
+      - ME_CONFIG_MONGODB_AUTH_PASSWORD=secret # 관리자 계성 비밀번호
+      - ME_CONFIG_BASICAUTH_USERNAME=user # Mongo Express 웹 UI 로그인 ID
+      - ME_CONFIG_BASICAUTH_PASSWORD=password # Mongo Express 웹 UI 로그인 비밀번호
+    depends_on:
+      - mongodb # mongodb 서비스가 실행된 후에 실행되도록 의존성 설정
+
+#volumes:
+#  mongo-data: # 위에서 사용한 볼륨 정의

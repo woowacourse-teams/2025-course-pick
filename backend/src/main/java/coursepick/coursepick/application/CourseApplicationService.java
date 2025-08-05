@@ -22,7 +22,7 @@ public class CourseApplicationService {
     private static final Meter SEARCH_RADIUS = new Meter(1000);
 
     private final CourseRepository courseRepository;
-    
+
     @Transactional(readOnly = true)
     public List<CourseResponse> findNearbyCourses(double mapLatitude, double mapLongitude, Double userLatitude, Double userLongitude) {
         final Coordinate mapPosition = new Coordinate(mapLatitude, mapLongitude);
@@ -41,7 +41,7 @@ public class CourseApplicationService {
     }
 
     @Transactional(readOnly = true)
-    public Coordinate findClosestCoordinate(long id, double latitude, double longitude) {
+    public Coordinate findClosestCoordinate(String id, double latitude, double longitude) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> NOT_EXIST_COURSE.create(id));
 

@@ -4,6 +4,7 @@ import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.dto.CourseFileExtension;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
+import coursepick.coursepick.infrastructure.parser.GpxCourseParser;
 import coursepick.coursepick.test_util.GpxTestUtil;
 import org.junit.jupiter.api.Test;
 

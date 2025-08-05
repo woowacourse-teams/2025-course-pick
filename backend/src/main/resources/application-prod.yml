@@ -1,11 +1,30 @@
 spring:
   config.activate.on-profile: prod
-  jpa:
-    hibernate:
-      ddl-auto: update
+  data.mongodb:
+    uri: ${DB_URL}
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health, info, metrics"
+  metrics:
+    enable:
+      all: false
+      health.status: true
+      hikaricp.connections: true
+      http.server.requests: true
+      system.cpu.usage: true
+      spring.data.repository.invocations: true
+      jvm.memory.used: true
+      tomcat.threads: true
+
+gcp:
+  drive.folder-id: ${GCP_DRIVE_FOLDER_ID}
+  credentials.path: ${GCP_CREDENTIALS_PATH}
 
 admin.token: ${ADMIN_TOKEN}

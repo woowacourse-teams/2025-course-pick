@@ -1,40 +1,30 @@
 package coursepick.coursepick.domain;
 
-import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import org.hibernate.annotations.BatchSize;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceCreator;
+import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
+import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-@Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
+@Document
 @Getter
 @Accessors(fluent = true)
+@AllArgsConstructor(access = AccessLevel.PRIVATE, onConstructor_ = @PersistenceCreator)
 public class Course {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private final Long id;
-
-    @Embedded
+    private final String id;
     private final CourseName name;
-
-    @Enumerated(EnumType.STRING)
     private final RoadType roadType;
-
-    @BatchSize(size = 30)
-    @ElementCollection
-    @CollectionTable(name = "segment")
+    @GeoSpatialIndexed(name = "idx_geo_segments", type = GeoSpatialIndexType.GEO_2DSPHERE)
     private final List<Segment> segments;
-
-    @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "length"))
     private final Meter length;
-
-    @Enumerated(EnumType.STRING)
     private final Difficulty difficulty;
 
     public Course(String name, RoadType roadType, List<Coordinate> rawCoordinates) {

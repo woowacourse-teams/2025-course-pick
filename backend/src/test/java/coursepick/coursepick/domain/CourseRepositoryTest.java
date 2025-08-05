@@ -1,31 +1,24 @@
 package coursepick.coursepick.domain;
 
-import coursepick.coursepick.test_util.DatabaseTestUtil;
+import coursepick.coursepick.test_util.IntegrationTest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
-@Import(DatabaseTestUtil.class)
-class CourseRepositoryTest {
+class CourseRepositoryTest extends IntegrationTest {
 
     @Autowired
-    private CourseRepository courseRepository;
-
-    @Autowired
-    private DatabaseTestUtil dbUtil;
+    CourseRepository sut;
 
     @ParameterizedTest
     @CsvSource({
-            "800, 3",
-            "700, 2",
-            "600, 1"
+            "2000, 3",
+            "1500, 2",
+            "1000, 1"
     })
     void 거리를_줄여가면서_검색되는_코스_수가_줄어든다(int distance, int expectedSize) {
         Course course1 = new Course("잠실 한강 산책길", List.of(
@@ -67,7 +60,7 @@ class CourseRepositoryTest {
         dbUtil.saveCourse(course3);
         Coordinate target = new Coordinate(37.514647, 127.086592);
 
-        List<Course> courses = courseRepository.findAllHasDistanceWithin(target, new Meter(distance));
+        List<Course> courses = sut.findAllHasDistanceWithin(target, new Meter(distance));
 
         assertThat(courses).hasSize(expectedSize);
     }

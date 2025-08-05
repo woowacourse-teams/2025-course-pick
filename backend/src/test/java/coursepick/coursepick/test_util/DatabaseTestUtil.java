@@ -1,34 +1,28 @@
 package coursepick.coursepick.test_util;
 
 import coursepick.coursepick.domain.Course;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestComponent;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 
 @TestComponent
 public class DatabaseTestUtil {
 
-    @PersistenceContext
-    EntityManager entityManager;
-
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    MongoTemplate mongoTemplate;
 
-    @Transactional
-    public void saveCourse(Course course) {
-        entityManager.persist(course);
+    public String saveCourse(Course course) {
+        return mongoTemplate.insert(course, "course").id();
     }
 
-    @Transactional
-    public void deleteCourses() {
-        entityManager.createQuery("DELETE FROM Course").executeUpdate();
-    }
-
-    @Transactional(readOnly = true)
     public long countCourses() {
-        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM course", Long.class);
+        return mongoTemplate.count(new Query(), Course.class);
+    }
+
+    public void deleteAll() {
+        for (String collectionName : mongoTemplate.getCollectionNames()) {
+            mongoTemplate.dropCollection(collectionName);
+        }
     }
 }
