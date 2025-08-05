@@ -40,18 +40,16 @@ class KakaoMapDrawer(
         val manager: LabelManager = map.labelManager ?: return
         val layer: LabelLayer = manager.layer ?: return
         val labelId: Int = R.drawable.image_current_location
-        val latLng = location.toLatLng()
         val label: Label? = layer.getLabel(labelId.toString())
-        if (label == null) {
-            val styles: LabelStyles =
-                manager.addLabelStyles(LabelStyles.from(LabelStyle.from(labelId))) ?: return
-            val options: LabelOptions =
-                LabelOptions.from(latLng).setStyles(styles)
-            options.labelId = labelId.toString()
-            layer.addLabel(options)
+        if (label != null) {
+            label.moveTo(location.toLatLng(), LABEL_MOVE_ANIMATION_DURATION)
             return
         }
-        label.moveTo(latLng, LABEL_MOVE_ANIMATION_DURATION)
+        val styles: LabelStyles =
+            manager.addLabelStyles(LabelStyles.from(LabelStyle.from(labelId))) ?: return
+        val options: LabelOptions = LabelOptions.from(location.toLatLng()).setStyles(styles)
+        options.labelId = labelId.toString()
+        layer.addLabel(options)
     }
 
     fun showSearchPosition(
