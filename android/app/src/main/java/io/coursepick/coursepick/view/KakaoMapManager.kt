@@ -132,8 +132,6 @@ class KakaoMapManager(
                     this.latitude = latitude.value
                     this.longitude = longitude.value
                 }
-
-            drawer.drawLabel(map, R.drawable.image_current_location, location)
             cameraController.moveTo(map, location)
         }
     }
