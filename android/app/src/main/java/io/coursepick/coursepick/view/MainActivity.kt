@@ -32,7 +32,7 @@ import io.coursepick.coursepick.domain.Longitude
 class MainActivity :
     AppCompatActivity(),
     MainAction {
-    private lateinit var searchLauncher: ActivityResultLauncher<Intent>
+    private var searchLauncher: ActivityResultLauncher<Intent>? = null
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val viewModel: MainViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(CourseItemListener()) }
@@ -75,27 +75,7 @@ class MainActivity :
             fetchCourses(coordinate)
         }
 
-        searchLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-                if (result.resultCode == RESULT_OK) {
-                    val intent: Intent? = result.data
-
-                    if (intent?.hasExtra("latitude") == true && intent.hasExtra("longitude")) {
-                        val latitude = intent.getDoubleExtra("latitude", 0.0)
-                        val longitude = intent.getDoubleExtra("longitude", 0.0)
-
-                        mapManager.moveTo(latitude, longitude)
-                        viewModel.fetchCourses(latitude, longitude)
-                    } else {
-                        Toast
-                            .makeText(
-                                this,
-                                "위치 정보가 전달되지 않았습니다.",
-                                Toast.LENGTH_SHORT,
-                            ).show()
-                    }
-                }
-            }
+        searchLauncher = searchActivityResultLauncher()
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -134,6 +114,26 @@ class MainActivity :
         }
 
         return true
+    }
+
+    private fun searchActivityResultLauncher(): ActivityResultLauncher<Intent> =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == RESULT_OK) {
+                handleLocationResult(result.data)
+            }
+        }
+
+    private fun handleLocationResult(intent: Intent?) {
+        if (intent == null || !intent.hasExtra("latitude") || !intent.hasExtra("longitude")) {
+            Toast.makeText(this, "위치 정보가 전달되지 않았습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val latitude = intent.getDoubleExtra("latitude", 0.0)
+        val longitude = intent.getDoubleExtra("longitude", 0.0)
+
+        mapManager.moveTo(latitude, longitude)
+        viewModel.fetchCourses(latitude, longitude)
     }
 
     private fun onUserFeedbackMenuSelected() {
@@ -272,6 +272,13 @@ class MainActivity :
                         .show()
 
                 MainUiEvent.Search -> {
+                    val intent = SearchActivity.intent(this)
+                    searchLauncher?.launch(intent) ?: Toast
+                        .makeText(
+                            this,
+                            "현재 검색 기능을 사용할 수 없습니다.",
+                            Toast.LENGTH_SHORT,
+                        ).show()
                 }
             }
         }
