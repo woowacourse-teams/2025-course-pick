@@ -101,7 +101,7 @@ class KakaoMapManager(
         }
     }
 
-    fun showSearchLocation(
+    fun moveTo(
         latitude: Latitude,
         longitude: Longitude,
     ) {

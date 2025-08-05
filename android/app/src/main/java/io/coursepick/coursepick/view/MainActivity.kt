@@ -84,7 +84,7 @@ class MainActivity :
                         val latitude = intent.getDoubleExtra("latitude", 0.0)
                         val longitude = intent.getDoubleExtra("longitude", 0.0)
 
-                        mapManager.showSearchLocation(
+                        mapManager.moveTo(
                             Latitude(latitude),
                             Longitude(longitude),
                         )
