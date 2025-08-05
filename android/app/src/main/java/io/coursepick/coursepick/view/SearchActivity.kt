@@ -41,7 +41,6 @@ class SearchActivity : AppCompatActivity() {
             insets
         }
 
-        binding.searchView.isIconified = false
         binding.searchView.requestFocus()
         binding.adapter = adapter
 
