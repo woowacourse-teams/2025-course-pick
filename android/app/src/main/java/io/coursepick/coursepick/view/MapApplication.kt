@@ -30,11 +30,10 @@ enum class MapApplication(
         ): String {
             val (originX: Double, originY: Double) = origin.toWebMercatorPair()
             val (destinationX: Double, destinationY: Double) = destination.toWebMercatorPair()
-
             return "https://map.naver.com/p/directions/" +
-                "$originX,$originY,$ORIGIN_NAME,0,PLACE_POI/" +
-                "$destinationX,$destinationY,$destinationName,0,PLACE_POI/" +
-                "-/walk?c=16.00,0,0,0,dh"
+                "$originX,$originY,$ORIGIN_NAME/" +
+                "$destinationX,$destinationY,$destinationName/" +
+                "-/walk"
         }
 
         private fun Coordinate.toWebMercatorPair(): Pair<Double, Double> {
