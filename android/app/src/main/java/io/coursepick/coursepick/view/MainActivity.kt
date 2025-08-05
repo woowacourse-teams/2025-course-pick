@@ -135,7 +135,7 @@ class MainActivity :
             }
 
             @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-            override fun navigate(course: CourseItem) {
+            override fun launchMap(course: CourseItem) {
                 mapManager.fetchCurrentLocation(
                     onSuccess = { latitude: Latitude, longitude: Longitude ->
                         val origin = Coordinate(latitude, longitude)
