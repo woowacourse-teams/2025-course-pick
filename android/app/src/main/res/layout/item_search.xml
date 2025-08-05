@@ -7,17 +7,17 @@
 
         <variable
             name="onSearchKeywordListener"
-            type="io.coursepick.coursepick.view.OnSearchKeywordListener" />
+            type="io.coursepick.coursepick.view.OnSearchListener" />
 
         <variable
-            name="search"
-            type="io.coursepick.coursepick.view.SearchItem" />
+            name="place"
+            type="io.coursepick.coursepick.domain.Place" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{() -> onSearchKeywordListener.search(search)}">
+        android:onClick="@{() -> onSearchKeywordListener.select(place)}">
 
         <TextView
             android:id="@+id/searchKeyword"
@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
             android:layout_marginVertical="10dp"
-            android:text="@{search.placeName}"
+            android:text="@{place.placeName}"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@id/searchAddress"
@@ -39,7 +39,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginVertical="10dp"
-            android:text="@{search.addressName}"
+            android:text="@{place.addressName}"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/searchKeyword"
