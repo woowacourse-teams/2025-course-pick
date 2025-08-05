@@ -17,10 +17,14 @@ management:
     enable:
       all: false
       http.server.requests: true
-    export:
-      cloudwatch:
-        namespace: "EC2/coursepick/dev"
-        region: ap-northeast-2
-        batch-size: 20
+      system.cpu.usage: true
+      jvm.memory.used: true
+      tomcat.threads: true
+    cloudwatch:
+      metrics:
+        export:
+          namespace: "EC2/coursepick/dev"
+          region: ap-northeast-2
+          batch-size: 20
 
 admin.token: ${ADMIN_TOKEN}
