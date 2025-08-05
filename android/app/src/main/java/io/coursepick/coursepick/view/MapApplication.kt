@@ -2,6 +2,7 @@ package io.coursepick.coursepick.view
 
 import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import androidx.core.net.toUri
 import io.coursepick.coursepick.domain.Coordinate
 import kotlin.math.ln
@@ -64,9 +65,17 @@ enum class MapApplication(
         destination: Coordinate,
         destinationName: String,
     ) {
-        val intent =
-            Intent(Intent.ACTION_VIEW, navigationUrl(origin, destination, destinationName).toUri())
-        context.startActivity(intent)
+        runCatching {
+            val intent =
+                Intent(
+                    Intent.ACTION_VIEW,
+                    navigationUrl(origin, destination, destinationName).toUri(),
+                )
+
+            context.startActivity(intent)
+        }.onFailure {
+            Toast.makeText(context, "길찾기 앱을 실행할 수 없습니다.", Toast.LENGTH_SHORT).show()
+        }
     }
 
     companion object {
