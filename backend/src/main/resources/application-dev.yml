@@ -7,6 +7,10 @@ spring:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+  cloud:
+    aws:
+      cloudwatch:
+        region: ap-northeast-2
 
 management:
   endpoints:
@@ -20,11 +24,11 @@ management:
       system.cpu.usage: true
       jvm.memory.used: true
       tomcat.threads: true
-    cloudwatch:
-      metrics:
-        export:
-          namespace: "EC2/coursepick/dev"
-          region: ap-northeast-2
-          batch-size: 20
+
+  cloudwatch:
+    metrics:
+      export:
+        namespace: EC2/coursepick/dev
+        batch-size: 20
 
 admin.token: ${ADMIN_TOKEN}
