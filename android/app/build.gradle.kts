@@ -89,7 +89,7 @@ android {
         jvmTarget = "21"
     }
 
-    buildFeatures.apply {
+    buildFeatures {
         buildConfig = true
         dataBinding = true
     }
