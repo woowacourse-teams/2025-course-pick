@@ -93,18 +93,9 @@ class KakaoMapManager(
         courses: List<CourseItem>,
         onClick: (CourseItem) -> Unit,
     ) {
-        kakaoMap?.setOnMapClickListener { kakaoMap: KakaoMap, _, clickedPosition: PointF, _ ->
+        kakaoMap?.setOnMapClickListener { map: KakaoMap, _, target: PointF, _ ->
             courses.forEach { course: CourseItem ->
-                val points: List<Point?> =
-                    course.segments.flatMap(Segment::coordinates).map { coordinate: Coordinate ->
-                        kakaoMap.toScreenPoint(
-                            LatLng.from(
-                                coordinate.latitude.value,
-                                coordinate.longitude.value,
-                            ),
-                        )
-                    }
-                if (points.any { point: Point? -> point != null && point.isNear(clickedPosition) }) {
+                if (course.isNear(map, target)) {
                     onClick(course)
                     return@forEach
                 }
@@ -169,6 +160,19 @@ class KakaoMapManager(
             },
             onFailure = onFailure,
         )
+    }
+
+    private fun CourseItem.isNear(
+        map: KakaoMap,
+        target: PointF,
+    ): Boolean {
+        val points: List<Point?> =
+            segments.flatMap(Segment::coordinates).map { coordinate: Coordinate ->
+                map.toScreenPoint(
+                    LatLng.from(coordinate.latitude.value, coordinate.longitude.value),
+                )
+            }
+        return (points.any { point: Point? -> point != null && point.isNear(target) })
     }
 
     private fun Point.isNear(point: PointF): Boolean {
