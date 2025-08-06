@@ -73,6 +73,11 @@ class KakaoMapManager(
         }
     }
 
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+    fun moveToCurrentLocation() {
+        showCurrentLocation()
+    }
+
     fun fitTo(course: CourseItem) {
         kakaoMap?.let { map: KakaoMap ->
             cameraController.fitTo(

@@ -171,6 +171,11 @@ class MainActivity :
         startActivity(intent)
     }
 
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+    override fun moveToCurrentLocation() {
+        mapManager.moveToCurrentLocation()
+    }
+
     private fun navigateToFeedback() {
         val intent = Intent(Intent.ACTION_VIEW, getString(R.string.feedback_url).toUri())
 
