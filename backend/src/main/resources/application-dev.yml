@@ -25,6 +25,7 @@ management:
   metrics:
     enable:
       all: false
+      health.status: true
       hikaricp.connections: true
       http.server.requests: true
       system.cpu.usage: true
