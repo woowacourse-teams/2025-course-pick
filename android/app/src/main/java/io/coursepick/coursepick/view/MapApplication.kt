@@ -28,25 +28,23 @@ enum class MapApplication(
             destination: Coordinate,
             destinationName: String,
         ): String {
-            val (originX: Double, originY: Double) = origin.toWebMercatorPair()
-            val (destinationX: Double, destinationY: Double) = destination.toWebMercatorPair()
+            val (originX: Double, originY: Double) = origin.toWebMercator()
+            val (destinationX: Double, destinationY: Double) = destination.toWebMercator()
+
             return "https://map.naver.com/p/directions/" +
                 "$originX,$originY,$ORIGIN_NAME/" +
                 "$destinationX,$destinationY,$destinationName/" +
                 "-/walk"
         }
 
-        private fun Coordinate.toWebMercatorPair(): Pair<Double, Double> {
-            val longitude: Double = longitude.value
-            val webMercatorX: Double =
-                longitude * WEB_MERCATOR_HALF_CIRCUMFERENCE / HALF_CIRCLE_DEGREES
+        private fun Coordinate.toWebMercator(): Pair<Double, Double> {
+            val longitudeRadians: Double = Math.toRadians(longitude.value)
+            val latitudeRadians: Double = Math.toRadians(latitude.value)
 
-            val latitude: Double = latitude.value
-            var webMercatorY: Double =
-                ln(tan((QUARTER_CIRCLE_DEGREES + latitude) * Math.PI / FULL_CIRCLE_DEGREES)) / (Math.PI / HALF_CIRCLE_DEGREES)
+            val x: Double = EARTH_RADIUS_METERS * longitudeRadians
+            val y: Double = EARTH_RADIUS_METERS * ln(tan(Math.PI / 4 + latitudeRadians / 2))
 
-            webMercatorY = webMercatorY * WEB_MERCATOR_HALF_CIRCUMFERENCE / HALF_CIRCLE_DEGREES
-            return Pair(webMercatorX, webMercatorY)
+            return x to y
         }
     },
     ;
@@ -78,9 +76,6 @@ enum class MapApplication(
 
     companion object {
         private const val ORIGIN_NAME = "현위치"
-        private const val WEB_MERCATOR_HALF_CIRCUMFERENCE = 20037508.34
-        private const val FULL_CIRCLE_DEGREES = 360.0
-        private const val HALF_CIRCLE_DEGREES = 180.0
-        private const val QUARTER_CIRCLE_DEGREES = 90.0
+        private const val EARTH_RADIUS_METERS = 6378137
     }
 }
