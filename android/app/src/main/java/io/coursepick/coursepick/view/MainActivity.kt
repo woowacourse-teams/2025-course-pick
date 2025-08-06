@@ -28,6 +28,7 @@ import io.coursepick.coursepick.databinding.ActivityMainBinding
 import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.Latitude
 import io.coursepick.coursepick.domain.Longitude
+import io.coursepick.coursepick.util.CoordinateKeys
 
 class MainActivity :
     AppCompatActivity(),
@@ -124,13 +125,20 @@ class MainActivity :
         }
 
     private fun handleLocationResult(intent: Intent?) {
-        if (intent == null || !intent.hasExtra("latitude") || !intent.hasExtra("longitude")) {
+        val latitudeExtraKey = CoordinateKeys.EXTRA_KEYS_LATITUDE
+        val longitudeExtraKey = CoordinateKeys.EXTRA_KEYS_LONGITUDE
+        if (intent == null ||
+            !intent.hasExtra(latitudeExtraKey) ||
+            !intent.hasExtra(
+                longitudeExtraKey,
+            )
+        ) {
             Toast.makeText(this, "위치 정보가 전달되지 않았습니다.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val latitude = intent.getDoubleExtra("latitude", 0.0)
-        val longitude = intent.getDoubleExtra("longitude", 0.0)
+        val latitude = intent.getDoubleExtra(latitudeExtraKey, 0.0)
+        val longitude = intent.getDoubleExtra(longitudeExtraKey, 0.0)
 
         mapManager.moveTo(latitude, longitude)
         viewModel.fetchCourses(latitude, longitude)

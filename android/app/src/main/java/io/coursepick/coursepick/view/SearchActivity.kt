@@ -12,6 +12,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import io.coursepick.coursepick.databinding.ActivitySearchBinding
 import io.coursepick.coursepick.domain.Place
+import io.coursepick.coursepick.util.CoordinateKeys
 
 class SearchActivity : AppCompatActivity() {
     private val binding by lazy { ActivitySearchBinding.inflate(layoutInflater) }
@@ -56,8 +57,8 @@ class SearchActivity : AppCompatActivity() {
     private fun submitPlace(place: Place) {
         val resultIntent =
             Intent().apply {
-                putExtra("latitude", place.latitude)
-                putExtra("longitude", place.longitude)
+                putExtra(CoordinateKeys.EXTRA_KEYS_LATITUDE, place.latitude)
+                putExtra(CoordinateKeys.EXTRA_KEYS_LONGITUDE, place.longitude)
             }
         setResult(RESULT_OK, resultIntent)
         finish()
