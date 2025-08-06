@@ -134,7 +134,7 @@ class MainActivity :
             }
 
             @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-            override fun launchMap(course: CourseItem) {
+            override fun navigateToMap(course: CourseItem) {
                 mapManager.fetchCurrentLocation(
                     onSuccess = { latitude: Latitude, longitude: Longitude ->
                         viewModel.fetchNearestCoordinate(course, Coordinate(latitude, longitude))
