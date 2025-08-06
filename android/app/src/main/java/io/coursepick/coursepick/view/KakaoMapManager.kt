@@ -20,6 +20,7 @@ class KakaoMapManager(
     private val lifecycleHandler = KakaoMapLifecycleHandler(mapView)
     private val cameraController = KakaoMapCameraController(mapView.context)
     private val drawer = KakaoMapDrawer(mapView.context)
+    private val eventHandler = KakaoMapEventHandler()
     private var kakaoMap: KakaoMap? = null
 
     val cameraPosition get(): LatLng? = kakaoMap?.cameraPosition?.position
@@ -60,9 +61,15 @@ class KakaoMapManager(
 
     fun pause() = lifecycleHandler.pause()
 
-    fun draw(course: CourseItem) {
+    fun draw(courses: List<CourseItem>) {
         kakaoMap?.let { map: KakaoMap ->
-            drawer.drawCourse(map, course)
+            drawer.drawCourses(map, courses)
+        }
+    }
+
+    fun showSearchPosition(coordinate: Coordinate) {
+        kakaoMap?.let { map: KakaoMap ->
+            drawer.showSearchPosition(map, coordinate)
         }
     }
 
@@ -75,12 +82,31 @@ class KakaoMapManager(
         }
     }
 
+    fun setOnCourseClickListener(
+        courses: List<CourseItem>,
+        onClick: (CourseItem) -> Unit,
+    ) {
+        kakaoMap?.let { map: KakaoMap ->
+            eventHandler.setOnCourseClickListener(map, courses) { course: CourseItem ->
+                onClick(course)
+            }
+        }
+    }
+
+    fun setOnCameraMoveListener(onCameraMove: () -> Unit) {
+        kakaoMap?.let { map: KakaoMap ->
+            eventHandler.setOnCameraMoveListener(map) {
+                onCameraMove()
+            }
+        }
+    }
+
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun showCurrentLocation() {
         locationProvider.fetchCurrentLocation(
             onSuccess = { location: Location ->
                 kakaoMap?.let { map: KakaoMap ->
-                    drawer.drawLabel(map, R.drawable.image_current_location, location)
+                    drawer.showUserPosition(map, location)
                     cameraController.moveTo(map, location)
                 }
             },
@@ -100,7 +126,7 @@ class KakaoMapManager(
         locationProvider.startLocationUpdates(
             onUpdate = { location ->
                 kakaoMap?.let { map: KakaoMap ->
-                    drawer.drawLabel(map, R.drawable.image_current_location, location)
+                    drawer.showUserPosition(map, location)
                 }
             },
             onError = {

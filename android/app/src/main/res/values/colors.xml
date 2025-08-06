@@ -21,4 +21,5 @@
     <color name="course_difficulty_normal">#6BBE92</color>
     <color name="course_difficulty_hard">#E75B64</color>
     <color name="course_difficulty_none">#B4B4B4</color>
+    <color name="course_unselected">#B4B4B4</color>
 </resources>
