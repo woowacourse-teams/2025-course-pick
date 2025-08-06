@@ -15,21 +15,7 @@ import io.coursepick.coursepick.domain.Place
 class SearchActivity : AppCompatActivity() {
     private val binding by lazy { ActivitySearchBinding.inflate(layoutInflater) }
     private val viewModel: SearchViewModel by viewModels()
-    private val adapter: SearchAdapter by lazy {
-        SearchAdapter(
-            object : OnSearchListener {
-                override fun select(place: Place) {
-                    val resultIntent =
-                        Intent().apply {
-                            putExtra("latitude", place.latitude)
-                            putExtra("longitude", place.longitude)
-                        }
-                    setResult(RESULT_OK, resultIntent)
-                    finish()
-                }
-            },
-        )
-    }
+    private val adapter: SearchAdapter by lazy { SearchAdapter(::submitPlace) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +44,16 @@ class SearchActivity : AppCompatActivity() {
                 }
             },
         )
+    }
+
+    private fun submitPlace(place: Place) {
+        val resultIntent =
+            Intent().apply {
+                putExtra("latitude", place.latitude)
+                putExtra("longitude", place.longitude)
+            }
+        setResult(RESULT_OK, resultIntent)
+        finish()
     }
 
     companion object {
