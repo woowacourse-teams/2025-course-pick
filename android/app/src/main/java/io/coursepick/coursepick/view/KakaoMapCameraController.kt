@@ -21,7 +21,8 @@ class KakaoMapCameraController(
         map: KakaoMap,
         location: Location,
     ) {
-        moveTo(map, location.latitude, location.longitude)
+        val cameraUpdate: CameraUpdate = CameraUpdateFactory.newCenterPosition(location.toLatLng())
+        map.moveCamera(cameraUpdate)
     }
 
     fun fitTo(
@@ -38,23 +39,10 @@ class KakaoMapCameraController(
         map: KakaoMap,
     ) {
         val latLngs: Array<LatLng> =
-            coordinates
-                .map { coordinate: Coordinate ->
-                    LatLng.from(coordinate.latitude.value, coordinate.longitude.value)
-                }.toTypedArray()
+            coordinates.map(Coordinate::toLatLng).toTypedArray()
         val cameraUpdate: CameraUpdate = CameraUpdateFactory.fitMapPoints(latLngs, fitMapPadding)
         val cameraAnimation = CameraAnimation.from(MOVE_ANIMATION_DURATION, true, false)
         map.moveCamera(cameraUpdate, cameraAnimation)
-    }
-
-    private fun moveTo(
-        map: KakaoMap,
-        latitude: Double,
-        longitude: Double,
-    ) {
-        val latLng = LatLng.from(latitude, longitude)
-        val cameraUpdate: CameraUpdate = CameraUpdateFactory.newCenterPosition(latLng)
-        map.moveCamera(cameraUpdate)
     }
 
     companion object {
