@@ -70,7 +70,7 @@ class MainActivity :
 
         mapManager.start { coordinate: Coordinate ->
             mapManager.setOnCameraMoveListener {
-                viewModel.onMapMove()
+                binding.mainSearchThisAreaButton.visibility = View.VISIBLE
             }
             fetchCourses(coordinate)
         }
@@ -242,10 +242,6 @@ class MainActivity :
                     selectCourse(event.course)
                     val behavior = BottomSheetBehavior.from(binding.mainBottomSheet)
                     behavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                }
-
-                MainUiEvent.CameraMoved -> {
-                    binding.mainSearchThisAreaButton.visibility = View.VISIBLE
                 }
             }
         }

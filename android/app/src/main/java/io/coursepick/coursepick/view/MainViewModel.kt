@@ -80,10 +80,6 @@ class MainViewModel(
         }
     }
 
-    fun onMapMove() {
-        _event.value = MainUiEvent.CameraMoved
-    }
-
     private fun newCourses(
         oldCourses: List<CourseItem>,
         selectedCourse: CourseItem,
