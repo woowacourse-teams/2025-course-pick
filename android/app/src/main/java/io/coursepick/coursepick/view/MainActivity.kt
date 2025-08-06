@@ -69,6 +69,9 @@ class MainActivity :
         BottomSheetBehavior.from(binding.mainBottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
 
         mapManager.start { coordinate: Coordinate ->
+            mapManager.setOnCameraMoveListener {
+                binding.mainSearchThisAreaButton.visibility = View.VISIBLE
+            }
             fetchCourses(coordinate)
         }
     }
@@ -91,12 +94,10 @@ class MainActivity :
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun searchThisArea() {
         val mapPosition: LatLng = mapManager.cameraPosition ?: return
-        fetchCourses(
-            Coordinate(
-                Latitude(mapPosition.latitude),
-                Longitude(mapPosition.longitude),
-            ),
-        )
+        val coordinate = mapPosition.toCoordinate()
+        binding.mainSearchThisAreaButton.visibility = View.GONE
+        mapManager.showSearchPosition(coordinate)
+        fetchCourses(coordinate)
     }
 
     override fun openMenu() {
@@ -202,7 +203,6 @@ class MainActivity :
         onBackPressedDispatcher.addCallback(this, callback)
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun setUpObservers() {
         setUpStateObserver()
         setUpEventObserver()
@@ -211,20 +211,30 @@ class MainActivity :
     private fun setUpStateObserver() {
         viewModel.state.observe(this) { state: MainUiState ->
             courseAdapter.submitList(state.courses)
+            mapManager.setOnCourseClickListener(state.courses) { course: CourseItem ->
+                viewModel.select(course)
+            }
+            mapManager.draw(state.courses)
         }
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun setUpEventObserver() {
         viewModel.event.observe(this) { event: MainUiEvent ->
             when (event) {
                 is MainUiEvent.FetchCourseSuccess -> {
-                    event.nearestCourse?.let { course: CourseItem ->
-                        mapManager.draw(course)
-                    } ?: Toast.makeText(this, "이 지역에 코스가 없습니다.", Toast.LENGTH_SHORT).show()
+                    event.nearestCourse ?: {
+                        binding.mainSearchThisAreaButton.visibility = View.VISIBLE
+                        Toast
+                            .makeText(
+                                this,
+                                "이 지역에 코스가 없습니다.",
+                                Toast.LENGTH_SHORT,
+                            ).show()
+                    }
                 }
 
                 MainUiEvent.FetchCourseFailure -> {
+                    binding.mainSearchThisAreaButton.visibility = View.VISIBLE
                     Toast.makeText(this, "코스 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
                 }
 
@@ -237,9 +247,7 @@ class MainActivity :
         }
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun selectCourse(course: CourseItem) {
-        mapManager.draw(course)
         mapManager.fitTo(course)
     }
 

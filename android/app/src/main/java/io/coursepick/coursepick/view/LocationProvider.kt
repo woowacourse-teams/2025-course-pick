@@ -95,7 +95,7 @@ class LocationProvider(
             }
 
             override fun onLocationAvailability(availability: LocationAvailability) {
-                if (!availability.isLocationAvailable) {
+                if (!locationManager.isLocationEnabled) {
                     onError(IllegalStateException("현재 위치를 사용할 수 없습니다."))
                 }
             }
