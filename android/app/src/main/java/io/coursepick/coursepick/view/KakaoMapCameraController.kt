@@ -22,7 +22,8 @@ class KakaoMapCameraController(
         location: Location,
     ) {
         val cameraUpdate: CameraUpdate = CameraUpdateFactory.newCenterPosition(location.toLatLng())
-        map.moveCamera(cameraUpdate)
+        val cameraAnimation = CameraAnimation.from(MOVE_ANIMATION_DURATION, true, false)
+        map.moveCamera(cameraUpdate, cameraAnimation)
     }
 
     fun fitTo(
