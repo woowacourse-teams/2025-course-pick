@@ -117,6 +117,17 @@ class MainActivity :
         return true
     }
 
+    override fun search() {
+        val intent = SearchActivity.intent(this)
+        searchLauncher?.launch(intent) ?: Toast
+            .makeText(
+                this,
+                "현재 검색 기능을 사용할 수 없습니다.",
+                Toast.LENGTH_SHORT,
+            ).show()
+    }
+
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun searchActivityResultLauncher(): ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == RESULT_OK) {
@@ -124,6 +135,7 @@ class MainActivity :
             }
         }
 
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun handleLocationResult(intent: Intent?) {
         val latitudeExtraKey = CoordinateKeys.EXTRA_KEYS_LATITUDE
         val longitudeExtraKey = CoordinateKeys.EXTRA_KEYS_LONGITUDE
@@ -137,11 +149,14 @@ class MainActivity :
             return
         }
 
-        val latitude = intent.getDoubleExtra(latitudeExtraKey, 0.0)
-        val longitude = intent.getDoubleExtra(longitudeExtraKey, 0.0)
+        val latitudeValue = intent.getDoubleExtra(latitudeExtraKey, 0.0)
+        val longitudeValue = intent.getDoubleExtra(longitudeExtraKey, 0.0)
+
+        val latitude = Latitude(latitudeValue)
+        val longitude = Longitude(longitudeValue)
 
         mapManager.moveTo(latitude, longitude)
-        viewModel.fetchCourses(latitude, longitude)
+        fetchCourses(Coordinate(latitude, longitude))
     }
 
     private fun onUserFeedbackMenuSelected() {

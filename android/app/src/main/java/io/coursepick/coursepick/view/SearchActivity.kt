@@ -30,10 +30,10 @@ class SearchActivity : AppCompatActivity() {
         }
 
         setUpBindingVariables()
-        setUpObserve()
+        setUpObserves()
     }
 
-    private fun setUpObserve() {
+    private fun setUpObserves() {
         viewModel.state.observe(this) { state: List<Place> ->
             adapter.submitList(state)
         }

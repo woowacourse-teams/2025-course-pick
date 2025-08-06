@@ -6,12 +6,12 @@ import androidx.recyclerview.widget.ListAdapter
 import io.coursepick.coursepick.domain.Place
 
 class SearchAdapter(
-    private val onSearchListener: OnSearchListener,
+    private val onSelectListener: OnSelectListener,
 ) : ListAdapter<Place, SearchViewHolder>(diffUtil) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
-    ): SearchViewHolder = SearchViewHolder(parent, onSearchListener)
+    ): SearchViewHolder = SearchViewHolder(parent, onSelectListener)
 
     override fun onBindViewHolder(
         holder: SearchViewHolder,

@@ -8,10 +8,10 @@ import io.coursepick.coursepick.domain.Place
 
 class SearchViewHolder private constructor(
     private val binding: ItemPlaceBinding,
-    onSearchListener: OnSearchListener,
+    onSelectListener: OnSelectListener,
 ) : RecyclerView.ViewHolder(binding.root) {
     init {
-        binding.onSearchKeywordListener = onSearchListener
+        binding.onSearchKeywordListener = onSelectListener
     }
 
     fun bind(place: Place) {
@@ -21,11 +21,11 @@ class SearchViewHolder private constructor(
     companion object {
         operator fun invoke(
             root: ViewGroup,
-            onSearchListener: OnSearchListener,
+            onSelectListener: OnSelectListener,
         ): SearchViewHolder {
             val layoutInflater = LayoutInflater.from(root.context)
             val binding = ItemPlaceBinding.inflate(layoutInflater, root, false)
-            return SearchViewHolder(binding, onSearchListener)
+            return SearchViewHolder(binding, onSelectListener)
         }
     }
 }

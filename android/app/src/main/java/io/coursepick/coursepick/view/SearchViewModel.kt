@@ -28,7 +28,11 @@ class SearchViewModel(
                 delay(DEBOUNCE_LIMIT_TIME)
 
                 if (query.isNotBlank()) {
-                    _state.value = searchRepository.searchPlaces(query)
+                    try {
+                        _state.value = searchRepository.searchPlaces(query)
+                    } catch (e: Exception) {
+                        _state.value = emptyList()
+                    }
                 } else {
                     _state.value = emptyList()
                 }

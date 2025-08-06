@@ -7,7 +7,7 @@
 
         <variable
             name="onSearchKeywordListener"
-            type="io.coursepick.coursepick.view.OnSearchListener" />
+            type="io.coursepick.coursepick.view.OnSelectListener" />
 
         <variable
             name="place"
