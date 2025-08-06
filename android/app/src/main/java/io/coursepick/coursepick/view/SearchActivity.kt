@@ -21,8 +21,8 @@ class SearchActivity : AppCompatActivity() {
                 override fun select(place: Place) {
                     val resultIntent =
                         Intent().apply {
-                            putExtra("latitude", place.coordinate.latitude.value)
-                            putExtra("longitude", place.coordinate.longitude.value)
+                            putExtra("latitude", place.latitude)
+                            putExtra("longitude", place.longitude)
                         }
                     setResult(RESULT_OK, resultIntent)
                     finish()
