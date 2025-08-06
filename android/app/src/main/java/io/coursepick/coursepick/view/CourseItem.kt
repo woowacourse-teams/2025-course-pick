@@ -4,7 +4,7 @@ import io.coursepick.coursepick.domain.Course
 import io.coursepick.coursepick.domain.Segment
 
 data class CourseItem(
-    private val course: Course,
+    val course: Course,
     val selected: Boolean,
 ) {
     val id: Long = course.id

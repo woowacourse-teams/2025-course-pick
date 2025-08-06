@@ -10,7 +10,7 @@ class CourseViewHolder private constructor(
     courseItemListener: CourseItemListener,
 ) : RecyclerView.ViewHolder(binding.root) {
     init {
-        binding.onSelectCourseListener = courseItemListener
+        binding.courseItemListener = courseItemListener
     }
 
     fun bind(course: CourseItem) {

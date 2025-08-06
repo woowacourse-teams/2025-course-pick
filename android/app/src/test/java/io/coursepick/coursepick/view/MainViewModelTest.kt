@@ -1,13 +1,9 @@
 package io.coursepick.coursepick.view
 
-import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.Course
-import io.coursepick.coursepick.domain.Latitude
-import io.coursepick.coursepick.domain.Longitude
-import io.coursepick.coursepick.view.fixtures.COURSE_20
-import io.coursepick.coursepick.view.fixtures.DEFAULT_LATITUDE_VALUE
-import io.coursepick.coursepick.view.fixtures.DEFAULT_LONGITUDE_VALUE
-import io.coursepick.coursepick.view.fixtures.FAKE_COURSES
+import io.coursepick.coursepick.domain.fixture.COORDINATE_FIXTURE
+import io.coursepick.coursepick.domain.fixture.COURSE_FIXTURE_20
+import io.coursepick.coursepick.domain.fixture.FAKE_COURSES
 import io.coursepick.coursepick.view.fixtures.FakeRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -25,12 +21,7 @@ class MainViewModelTest {
     @BeforeEach
     fun setUp() {
         mainViewModel = MainViewModel(fakeRepository)
-        mainViewModel.fetchCourses(
-            Coordinate(
-                Latitude(DEFAULT_LATITUDE_VALUE),
-                Longitude(DEFAULT_LONGITUDE_VALUE),
-            ),
-        )
+        mainViewModel.fetchCourses(COORDINATE_FIXTURE)
     }
 
     @Test
@@ -54,12 +45,12 @@ class MainViewModelTest {
         val expected =
             MainUiState(
                 FAKE_COURSES.map { course: Course ->
-                    CourseItem(course, selected = course == COURSE_20)
+                    CourseItem(course, selected = course == COURSE_FIXTURE_20)
                 },
             )
 
         // when
-        mainViewModel.select(CourseItem(COURSE_20, selected = false))
+        mainViewModel.select(CourseItem(COURSE_FIXTURE_20, selected = false))
 
         // then
         assertThat(mainViewModel.state.getOrAwaitValue()).isEqualTo(expected)
@@ -68,17 +59,17 @@ class MainViewModelTest {
     @Test
     fun `이미 선택된 코스가 선택되면 해당 코스가 유지된다`() {
         // given
-        mainViewModel.select(CourseItem(COURSE_20, selected = false))
+        mainViewModel.select(CourseItem(COURSE_FIXTURE_20, selected = false))
 
         val expected =
             MainUiState(
                 FAKE_COURSES.map { course: Course ->
-                    CourseItem(course, selected = course == COURSE_20)
+                    CourseItem(course, selected = course == COURSE_FIXTURE_20)
                 },
             )
 
         // when
-        mainViewModel.select(CourseItem(COURSE_20, selected = true))
+        mainViewModel.select(CourseItem(COURSE_FIXTURE_20, selected = true))
 
         // then
         assertThat(mainViewModel.state.getOrAwaitValue()).isEqualTo(expected)
