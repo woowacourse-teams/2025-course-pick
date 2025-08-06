@@ -3,7 +3,6 @@ package io.coursepick.coursepick.view
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import io.coursepick.coursepick.view.CourseViewHolder.Companion.CourseViewHolder
 
 class CourseAdapter(
     private val courseItemListener: CourseItemListener,

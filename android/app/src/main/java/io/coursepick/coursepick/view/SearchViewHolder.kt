@@ -19,7 +19,7 @@ class SearchViewHolder private constructor(
     }
 
     companion object {
-        fun SearchViewHolder(
+        operator fun invoke(
             root: ViewGroup,
             onSearchListener: OnSearchListener,
         ): SearchViewHolder {

@@ -4,7 +4,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import io.coursepick.coursepick.domain.Place
-import io.coursepick.coursepick.view.SearchViewHolder.Companion.SearchViewHolder
 
 class SearchAdapter(
     private val onSearchListener: OnSearchListener,
