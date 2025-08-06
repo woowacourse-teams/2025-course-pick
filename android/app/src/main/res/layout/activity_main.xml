@@ -30,6 +30,7 @@
         <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:clipChildren="false"
             android:fitsSystemWindows="true">
 
             <com.kakao.vectormap.MapView
@@ -105,6 +106,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/background_courses"
+                android:clipToPadding="false"
                 android:visibility="@{viewModel.state.areCoursesEmpty ? View.GONE : View.VISIBLE}"
                 app:behavior_fitToContents="true"
                 app:behavior_peekHeight="@dimen/main_bottom_sheet_peek_height"
@@ -120,6 +122,18 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/background_go_to_current_location"
+                    android:clickable="true"
+                    android:padding="8dp"
+                    android:src="@drawable/icon_go_to_current_location"
+                    android:translationX="-10dp"
+                    android:translationY="-10dp"
+                    app:layout_constraintBottom_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
 
                 <TextView
                     android:id="@+id/mainCoursesHeader"
