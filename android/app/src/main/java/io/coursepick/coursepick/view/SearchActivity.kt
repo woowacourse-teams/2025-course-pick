@@ -28,13 +28,19 @@ class SearchActivity : AppCompatActivity() {
             insets
         }
 
-        binding.searchView.requestFocus()
-        binding.adapter = adapter
+        setUpBindingVariables()
+        setUpObserve()
+    }
 
+    private fun setUpObserve() {
         viewModel.state.observe(this) { state: List<Place> ->
             adapter.submitList(state)
         }
+    }
 
+    private fun setUpBindingVariables() {
+        binding.searchView.requestFocus()
+        binding.adapter = adapter
         binding.searchView.setOnQueryTextListener(
             object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean = true
