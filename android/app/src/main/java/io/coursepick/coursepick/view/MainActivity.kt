@@ -60,7 +60,7 @@ class MainActivity :
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view: View, insets: WindowInsetsCompat ->
             val systemBars: Insets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            binding.mainBottomSheet.setPadding(0, 0, 0, systemBars.bottom)
+            setUpBottomSheet(systemBars.bottom)
             insets
         }
 
@@ -68,10 +68,6 @@ class MainActivity :
         setUpObservers()
         setUpDoubleBackPress()
         requestLocationPermissions()
-
-        val screenHeight: Int = Resources.getSystem().displayMetrics.heightPixels
-        binding.mainBottomSheet.layoutParams.height = screenHeight / 2
-        BottomSheetBehavior.from(binding.mainBottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
 
         mapManager.start { coordinate: Coordinate ->
             mapManager.setOnCameraMoveListener {
@@ -212,6 +208,33 @@ class MainActivity :
                 )
             }
         }
+
+    private fun setUpBottomSheet(baseBottomPadding: Int) {
+        val screenHeight: Int = Resources.getSystem().displayMetrics.heightPixels
+        binding.mainBottomSheet.layoutParams.height = screenHeight / 2
+        binding.mainBottomSheet.setPadding(0, 0, 0, baseBottomPadding)
+        mapManager.setBottomPadding(binding.mainBottomSheet.layoutParams.height)
+
+        val behavior = BottomSheetBehavior.from(binding.mainBottomSheet)
+        behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        behavior.addBottomSheetCallback(
+            object : BottomSheetBehavior.BottomSheetCallback() {
+                override fun onStateChanged(
+                    bottomSheet: View,
+                    newState: Int,
+                ) = Unit
+
+                override fun onSlide(
+                    bottomSheet: View,
+                    slideOffset: Float,
+                ) {
+                    mapManager.setBottomPadding(
+                        screenHeight - baseBottomPadding - binding.mainBottomSheet.y.toInt(),
+                    )
+                }
+            },
+        )
+    }
 
     private fun setUpBindingVariables() {
         binding.viewModel = viewModel

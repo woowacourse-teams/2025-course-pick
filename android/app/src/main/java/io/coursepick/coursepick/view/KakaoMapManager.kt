@@ -32,15 +32,9 @@ class KakaoMapManager(
         lifecycleHandler.start { map: KakaoMap ->
             kakaoMap = map
             map.logo?.setPosition(
-                MapGravity.TOP or MapGravity.LEFT,
+                MapGravity.BOTTOM or MapGravity.LEFT,
                 offsetPx,
                 offsetPx,
-            )
-            map.setPadding(
-                0,
-                0,
-                0,
-                mapView.context.resources.getDimensionPixelSize(R.dimen.main_bottom_sheet_peek_height),
             )
             showCurrentLocation()
             locationProvider.fetchCurrentLocation(
@@ -131,6 +125,12 @@ class KakaoMapManager(
                     this.longitude = longitude.value
                 }
             cameraController.moveTo(map, location)
+        }
+    }
+
+    fun setBottomPadding(size: Int) {
+        kakaoMap?.let { map: KakaoMap ->
+            map.setPadding(0, 0, 0, size)
         }
     }
 
