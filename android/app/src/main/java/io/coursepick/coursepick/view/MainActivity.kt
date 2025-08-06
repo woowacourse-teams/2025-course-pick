@@ -60,7 +60,7 @@ class MainActivity :
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view: View, insets: WindowInsetsCompat ->
             val systemBars: Insets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            setUpBottomSheet(systemBars.bottom)
+            setUpBottomSheet(insets)
             insets
         }
 
@@ -209,13 +209,16 @@ class MainActivity :
             }
         }
 
-    private fun setUpBottomSheet(baseBottomPadding: Int) {
-        val screenHeight: Int = Resources.getSystem().displayMetrics.heightPixels
-        binding.mainBottomSheet.layoutParams.height = screenHeight / 2
-        binding.mainBottomSheet.setPadding(0, 0, 0, baseBottomPadding)
-        mapManager.setBottomPadding(binding.mainBottomSheet.layoutParams.height)
+    private fun setUpBottomSheet(insets: WindowInsetsCompat) {
+        val bottomSheet = binding.mainBottomSheet
+        val screenHeight = Resources.getSystem().displayMetrics.heightPixels
+        val systemBars: Insets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
 
-        val behavior = BottomSheetBehavior.from(binding.mainBottomSheet)
+        bottomSheet.layoutParams.height = screenHeight / 2
+        bottomSheet.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom)
+        mapManager.setBottomPadding(screenHeight - systemBars.bottom - bottomSheet.y.toInt())
+
+        val behavior = BottomSheetBehavior.from(bottomSheet)
         behavior.state = BottomSheetBehavior.STATE_EXPANDED
         behavior.addBottomSheetCallback(
             object : BottomSheetBehavior.BottomSheetCallback() {
@@ -229,7 +232,7 @@ class MainActivity :
                     slideOffset: Float,
                 ) {
                     mapManager.setBottomPadding(
-                        screenHeight - baseBottomPadding - binding.mainBottomSheet.y.toInt(),
+                        screenHeight - systemBars.bottom - bottomSheet.y.toInt(),
                     )
                 }
             },
