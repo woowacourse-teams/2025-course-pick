@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Component
-@Profile({"dev"})
+@Profile({"dev", "prod"})
 public class GoogleDriveCourseFileFetcher implements CourseFileFetcher {
 
     private static final String APPLICATION_NAME = "coursepick";
@@ -33,7 +33,7 @@ public class GoogleDriveCourseFileFetcher implements CourseFileFetcher {
 
     private final String folderId;
     private final Drive drive;
-    
+
     private String nextPageToken;
     private boolean isInitialRequest;
 
