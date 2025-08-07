@@ -1,7 +1,7 @@
 name: Backend Prod Server CD
 
 on:
-  pull_request:
+  push:
     branches: [ main ]
     paths:
       - 'backend/**'
@@ -11,6 +11,7 @@ on:
 jobs:
   # 0) 프로젝트 빌드
   build:
+    name: Build And Upload Artifact
     runs-on: ubuntu-latest
     defaults:
       run:
