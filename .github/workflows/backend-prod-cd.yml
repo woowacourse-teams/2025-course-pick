@@ -238,7 +238,7 @@ jobs:
   # 2) 구버전 서버 종료 (server1 / server2 중 하나만 실행)
   shutdown-app-server1:
     name: Shutdown App Server 1
-    needs: update-nginx
+    needs: [ update-nginx, detect-idle ]
     if: needs.detect-idle.outputs.idle-server == 'server2'
     runs-on: [ self-hosted, prod-app-1 ]
     steps:
@@ -265,7 +265,7 @@ jobs:
 
   shutdown-app-server2:
     name: Shutdown App Server 2
-    needs: update-nginx
+    needs: [ update-nginx, detect-idle ]
     if: needs.detect-idle.outputs.idle-server == 'server1'
     runs-on: [ self-hosted, prod-app-2 ]
     steps:
