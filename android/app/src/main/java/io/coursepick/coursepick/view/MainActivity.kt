@@ -77,6 +77,8 @@ class MainActivity :
         }
 
         searchLauncher = searchActivityResultLauncher()
+
+        CoursePickUpdateManager(this).checkForUpdate()
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
