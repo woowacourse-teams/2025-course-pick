@@ -33,4 +33,10 @@
             <appender-ref ref="ASYNC_FILE"/>
         </root>
     </springProfile>
+
+    <springProfile name="prod">
+        <root level="INFO">
+            <appender-ref ref="ASYNC_FILE"/>
+        </root>
+    </springProfile>
 </configuration>

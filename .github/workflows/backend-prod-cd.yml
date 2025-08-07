@@ -1,7 +1,7 @@
 name: Backend Prod Server CD
 
 on:
-  pull_request:
+  push:
     branches: [ main ]
     paths:
       - 'backend/**'
@@ -11,6 +11,7 @@ on:
 jobs:
   # 0) 프로젝트 빌드
   build:
+    name: Build And Upload Artifact
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -47,6 +48,7 @@ jobs:
   # 1) 유휴 서버 탐지
   detect-idle:
     name: Detect Idle App Server
+    needs: build
     runs-on: [ self-hosted, prod-lb ]
     outputs:
       idle-server: ${{ steps.find.outputs.idle }}
@@ -82,9 +84,6 @@ jobs:
     needs: detect-idle
     if: needs.detect-idle.outputs.idle-server == 'server1'
     runs-on: [ self-hosted, prod-app-1 ]
-    defaults:
-      run:
-        working-directory: backend
     steps:
       - name: 임시 아티팩트 저장소에 저장된 파일 다운로드
         uses: actions/download-artifact@v4
@@ -152,9 +151,6 @@ jobs:
     needs: detect-idle
     if: needs.detect-idle.outputs.idle-server == 'server2'
     runs-on: [ self-hosted, prod-app-2 ]
-    defaults:
-      run:
-        working-directory: backend
     steps:
       - name: 임시 아티팩트 저장소에 저장된 파일 다운로드
         uses: actions/download-artifact@v4
@@ -218,9 +214,29 @@ jobs:
           echo "-- 배포 종료 --"
 
   # 3) 로드밸런서에 nginx 설정 반영
-  update-nginx:
-    name: Update nginx on Load Balancer
-    needs: [ deploy-app-server1, deploy-app-server2 ]
+  update-nginx-1:
+    name: Update nginx on Load Balancer 1
+    needs: [ deploy-app-server1 ]
+    if: ${{ needs.deploy-app-server1.result == 'success' || needs.deploy-app-server2.result == 'success' }}
+    runs-on: [ self-hosted, prod-lb ]
+    steps:
+      - name: nginx.conf 갱신
+        run: |
+          docker exec nginx sh -c " \
+            cd /etc/nginx && \
+            cat nginx.conf > nginx-temp.conf && \
+            cat nginx-sub.conf > nginx.conf && \
+            cat nginx-temp.conf > nginx-sub.conf \
+          "
+
+      - name: nginx 리로드
+        run: |
+          docker exec nginx nginx -s reload
+
+  update-nginx-2:
+    name: Update nginx on Load Balancer 2
+    needs: [ deploy-app-server2 ]
+    if: ${{ needs.deploy-app-server1.result == 'success' || needs.deploy-app-server2.result == 'success' }}
     runs-on: [ self-hosted, prod-lb ]
     steps:
       - name: nginx.conf 갱신
@@ -240,8 +256,7 @@ jobs:
   # 2) 구버전 서버 종료 (server1 / server2 중 하나만 실행)
   shutdown-app-server1:
     name: Shutdown App Server 1
-    needs: update-nginx
-    if: needs.detect-idle.outputs.idle-server == 'server2'
+    needs: [ update-nginx-2 ]
     runs-on: [ self-hosted, prod-app-1 ]
     steps:
       - name: 기존 80 포트 서버 내리기
@@ -267,8 +282,7 @@ jobs:
 
   shutdown-app-server2:
     name: Shutdown App Server 2
-    needs: update-nginx
-    if: needs.detect-idle.outputs.idle-server == 'server1'
+    needs: [ update-nginx-1 ]
     runs-on: [ self-hosted, prod-app-2 ]
     steps:
       - name: 기존 80 포트 서버 내리기

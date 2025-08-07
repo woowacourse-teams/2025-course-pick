@@ -1,0 +1,11 @@
+spring:
+  config.activate.on-profile: prod
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+admin.token: ${ADMIN_TOKEN}
