@@ -42,7 +42,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: self-hosted
+    runs-on: [ self-hosted, dev-app ]
 
     steps:
       - name: 임시 아티팩트 저장소에 저장된 파일 다운로드
