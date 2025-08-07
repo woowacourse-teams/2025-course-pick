@@ -74,7 +74,7 @@ jobs:
             exit 1
           fi
 
-          echo "::set-output name=idle::$idle"
+          echo "idle=$idle" >> $GITHUB_OUTPUT
 
   # 2) 유휴 서버에 배포 (server1 / server2 중 하나만 실행)
   deploy-app-server1:
