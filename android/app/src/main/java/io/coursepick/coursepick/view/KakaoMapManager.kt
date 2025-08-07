@@ -32,7 +32,7 @@ class KakaoMapManager(
         lifecycleHandler.start { map: KakaoMap ->
             kakaoMap = map
             map.logo?.setPosition(
-                MapGravity.TOP or MapGravity.RIGHT,
+                MapGravity.TOP or MapGravity.LEFT,
                 offsetPx,
                 offsetPx,
             )
@@ -98,6 +98,34 @@ class KakaoMapManager(
             eventHandler.setOnCameraMoveListener(map) {
                 onCameraMove()
             }
+        }
+    }
+
+    fun moveTo(
+        latitude: Latitude,
+        longitude: Longitude,
+    ) {
+        kakaoMap?.let { map: KakaoMap ->
+            val location =
+                Location("search").apply {
+                    this.latitude = latitude.value
+                    this.longitude = longitude.value
+                }
+            cameraController.moveTo(map, location)
+        }
+    }
+
+    fun showSearchLocation(
+        latitude: Latitude,
+        longitude: Longitude,
+    ) {
+        kakaoMap?.let { map: KakaoMap ->
+            val location =
+                Location("search").apply {
+                    this.latitude = latitude.value
+                    this.longitude = longitude.value
+                }
+            cameraController.moveTo(map, location)
         }
     }
 

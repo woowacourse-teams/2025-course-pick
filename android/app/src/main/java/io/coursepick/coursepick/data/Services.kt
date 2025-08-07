@@ -15,9 +15,11 @@ object Services {
         } else {
             HttpLoggingInterceptor.Level.NONE
         }
-    private val interceptor = HttpLoggingInterceptor(PrettyPrintLogger()).setLevel(loggingLevel)
+    private val loggingInterceptor =
+        HttpLoggingInterceptor(PrettyPrintLogger()).setLevel(loggingLevel)
 
-    private val client: OkHttpClient = OkHttpClient.Builder().addInterceptor(interceptor).build()
+    private val client: OkHttpClient =
+        OkHttpClient.Builder().addInterceptor(loggingInterceptor).build()
 
     private val json =
         Json {
@@ -32,5 +34,23 @@ object Services {
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
 
+    private val kakaoClient: OkHttpClient =
+        OkHttpClient
+            .Builder()
+            .addInterceptor(KakaoAuthInterceptor)
+            .addInterceptor(loggingInterceptor)
+            .build()
+
+    private val kakaoRetrofit =
+        Retrofit
+            .Builder()
+            .baseUrl(BuildConfig.KAKAO_BASE_URL)
+            .client(kakaoClient)
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .build()
+
     val courseService: CourseService = retrofit.create(CourseService::class.java)
+
+    val searchService: SearchService =
+        kakaoRetrofit.create(SearchService::class.java)
 }
