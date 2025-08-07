@@ -34,16 +34,27 @@ android {
     }
 
     buildTypes {
-        debug {
+        getByName("debug") {
             buildConfigField("boolean", "DEBUG", "true")
             buildConfigField("String", "BASE_URL", localProperties["base.url.debug"].toString())
+            buildConfigField(
+                "String",
+                "KAKAO_BASE_URL",
+                localProperties["kakao.base.url"].toString(),
+            )
             buildConfigField(
                 "String",
                 "KAKAO_NATIVE_APP_KEY",
                 localProperties["kakao.native.app.key"].toString(),
             )
+            buildConfigField(
+                "String",
+                "KAKAO_REST_API_KEY",
+                localProperties["kakao.rest.api.key"].toString(),
+            )
         }
-        release {
+
+        getByName("release") {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -55,6 +66,16 @@ android {
                 "String",
                 "KAKAO_NATIVE_APP_KEY",
                 localProperties["kakao.native.app.key"].toString(),
+            )
+            buildConfigField(
+                "String",
+                "KAKAO_BASE_URL",
+                localProperties["kakao.base.url"].toString(),
+            )
+            buildConfigField(
+                "String",
+                "KAKAO_REST_API_KEY",
+                localProperties["kakao.rest.api.key"].toString(),
             )
         }
     }

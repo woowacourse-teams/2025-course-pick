@@ -37,45 +37,68 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-            <ImageView
-                android:id="@+id/mainMenuButton"
-                android:layout_width="wrap_content"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="top|start"
-                android:layout_margin="10dp"
-                android:background="@drawable/background_menu"
-                android:onClick="@{() -> action.openMenu()}"
-                android:padding="10dp"
-                android:src="@drawable/icon_menu" />
+                android:layout_marginTop="10dp">
 
-            <LinearLayout
-                android:id="@+id/mainSearchThisAreaButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top|center"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/background_search_this_area"
-                android:clickable="true"
-                android:onClick="@{() -> action.searchThisArea()}"
-                android:orientation="horizontal"
-                android:padding="10dp">
+                <com.google.android.material.search.SearchBar
+                    android:id="@+id/mainSearchBar"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/search_query_hint"
+                    android:onClick="@{() -> action.search()}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/mainMenuButton"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_gravity="center"
-                    android:layout_marginEnd="5dp"
-                    android:src="@drawable/icon_search_this_area" />
-
-                <TextView
+                    android:id="@+id/mainMenuButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="@string/main_search_this_area"
-                    android:textColor="@color/item_primary"
-                    android:textSize="14sp" />
+                    android:layout_gravity="top|start"
+                    android:layout_margin="10dp"
+                    android:background="@drawable/background_menu"
+                    android:onClick="@{() -> action.openMenu()}"
+                    android:padding="10dp"
+                    android:src="@drawable/icon_menu"
+                    app:layout_constraintBottom_toBottomOf="@id/mainSearchBar"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/mainSearchBar" />
 
-            </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/mainSearchThisAreaButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|center"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/background_search_this_area"
+                    android:clickable="true"
+                    android:onClick="@{() -> action.searchThisArea()}"
+                    android:orientation="horizontal"
+                    android:padding="10dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/mainSearchBar">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="5dp"
+                        android:src="@drawable/icon_search_this_area" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/main_search_this_area"
+                        android:textColor="@color/item_primary"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/mainBottomSheet"
@@ -124,7 +147,6 @@
                     tools:listitem="@layout/item_course" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
         <com.google.android.material.navigation.NavigationView
