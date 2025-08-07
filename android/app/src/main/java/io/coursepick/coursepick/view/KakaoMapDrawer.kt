@@ -2,9 +2,7 @@ package io.coursepick.coursepick.view
 
 import android.content.Context
 import android.location.Location
-import androidx.annotation.DrawableRes
 import com.kakao.vectormap.KakaoMap
-import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.label.Label
 import com.kakao.vectormap.label.LabelLayer
 import com.kakao.vectormap.label.LabelOptions
@@ -41,7 +39,9 @@ class KakaoMapDrawer(
         val labelId: Int = R.drawable.image_current_location
         val styles = LabelStyles.from(LabelStyle.from(labelId))
         val latLng = location.toLatLng()
-        updateLabel(map, latLng, labelId, styles) { _, label: Label ->
+        val options: LabelOptions = LabelOptions.from(latLng).setStyles(styles)
+        options.labelId = labelId.toString()
+        updateLabel(map, options) { label: Label ->
             label.moveTo(latLng, LABEL_MOVE_ANIMATION_DURATION)
         }
     }
@@ -60,11 +60,11 @@ class KakaoMapDrawer(
                         LabelTransition.from(Transition.None, Transition.None),
                     ),
             )
-        updateLabel(map, coordinate.toLatLng(), labelId, styles) {
-            layer: LabelLayer,
-            label: Label,
-            ->
-            layer.remove(label)
+        val latLng = coordinate.toLatLng()
+        val options: LabelOptions = LabelOptions.from(latLng).setStyles(styles)
+        options.labelId = labelId.toString()
+        updateLabel(map, options) { label: Label ->
+            label.moveTo(latLng)
         }
     }
 
@@ -75,21 +75,14 @@ class KakaoMapDrawer(
 
     private fun updateLabel(
         map: KakaoMap,
-        position: LatLng,
-        @DrawableRes labelIdRes: Int,
-        styles: LabelStyles,
-        handleOldLabel: (LabelLayer, Label) -> Unit,
+        options: LabelOptions,
+        handleOldLabel: (Label) -> Unit,
     ) {
-        val manager = map.labelManager ?: return
-        val layer = manager.layer ?: return
-
-        layer.getLabel(labelIdRes.toString())?.let { existingLabel ->
-            handleOldLabel(layer, existingLabel)
+        val layer = map.labelManager?.layer ?: return
+        layer.getLabel(options.labelId)?.let { existingLabel ->
+            handleOldLabel(existingLabel)
             return
         }
-
-        val options: LabelOptions = LabelOptions.from(position).setStyles(styles)
-        options.labelId = labelIdRes.toString()
         layer.addLabel(options)
     }
 
