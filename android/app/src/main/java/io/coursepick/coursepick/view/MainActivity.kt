@@ -20,6 +20,7 @@ import androidx.core.graphics.Insets
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.kakao.vectormap.LatLng
@@ -29,6 +30,9 @@ import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.Latitude
 import io.coursepick.coursepick.domain.Longitude
 import io.coursepick.coursepick.util.CoordinateKeys
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity :
     AppCompatActivity(),
@@ -109,10 +113,13 @@ class MainActivity :
 
     override fun navigate(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.item_user_feedback -> onUserFeedbackMenuSelected()
-            R.id.item_privacy_policy -> onPrivacyPolicySelected()
-            R.id.item_open_source_notice -> onOpenSourceNoticeSelected()
+            R.id.item_preferences -> navigateToPreferences()
+            R.id.item_user_feedback -> navigateToFeedback()
+            R.id.item_privacy_policy -> navigateToPrivacyPolicy()
+            R.id.item_open_source_notice -> navigateToOpenSourceNotice()
         }
+
+        binding.mainDrawer.close()
 
         return true
     }
@@ -159,19 +166,24 @@ class MainActivity :
         fetchCourses(Coordinate(latitude, longitude))
     }
 
-    private fun onUserFeedbackMenuSelected() {
+    private fun navigateToPreferences() {
+        val intent = Intent(this, PreferencesActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun navigateToFeedback() {
         val intent = Intent(Intent.ACTION_VIEW, getString(R.string.feedback_url).toUri())
 
         startActivity(intent)
     }
 
-    private fun onPrivacyPolicySelected() {
+    private fun navigateToPrivacyPolicy() {
         val intent = Intent(Intent.ACTION_VIEW, getString(R.string.privacy_policy_url).toUri())
 
         startActivity(intent)
     }
 
-    private fun onOpenSourceNoticeSelected() {
+    private fun navigateToOpenSourceNotice() {
         startActivity(Intent(this, OssLicensesMenuActivity::class.java))
     }
 
@@ -282,11 +294,24 @@ class MainActivity :
                 }
 
                 is MainUiEvent.FetchNearestCoordinateSuccess -> {
-                    MapChoiceDialog(this).show(
-                        event.origin,
-                        event.destination,
-                        event.destinationName,
-                    )
+                    lifecycleScope.launch {
+                        val selectedApp: MapApplication? =
+                            withContext(Dispatchers.IO) {
+                                CoursePickPreferences.selectedMapApplication
+                            }
+
+                        selectedApp?.launch(
+                            this@MainActivity,
+                            event.origin,
+                            event.destination,
+                            event.destinationName,
+                        ) ?: MapChoiceDialogFragment
+                            .newInstance(
+                                event.origin,
+                                event.destination,
+                                event.destinationName,
+                            ).show(supportFragmentManager, null)
+                    }
                 }
 
                 MainUiEvent.FetchNearestCoordinateFailure ->
