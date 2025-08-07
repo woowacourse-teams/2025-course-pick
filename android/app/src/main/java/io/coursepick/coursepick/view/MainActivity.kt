@@ -216,7 +216,7 @@ class MainActivity :
 
         bottomSheet.layoutParams.height = screenHeight / 2
         bottomSheet.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom)
-        mapManager.setBottomPadding(screenHeight - systemBars.bottom - bottomSheet.y.toInt())
+        mapManager.setBottomPadding(screenHeight - systemBars.bottom - bottomSheet.height)
 
         val behavior = BottomSheetBehavior.from(bottomSheet)
         behavior.state = BottomSheetBehavior.STATE_EXPANDED
