@@ -21,23 +21,33 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    runtimeOnly("com.mysql:mysql-connector-j")
-    runtimeOnly("com.h2database:h2")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    implementation("org.springframework.boot:spring-boot-starter-batch")
 
+    // GPX Parser
     implementation("io.jenetics:jpx:3.2.1")
 
-    // Geographic libraries for comparison
+    // DB Connector
+    runtimeOnly("com.mysql:mysql-connector-j")
+    runtimeOnly("com.h2database:h2")
+
+    // Lombok
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
+
+    // Spatial4J
     implementation("org.locationtech.spatial4j:spatial4j:0.8")
 
     // Logback Logstash Encoder (JSON Format)
     implementation("net.logstash.logback:logstash-logback-encoder:8.1")
 
     // JVM/Spring Metric To CloudWatch
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-metrics:3.4.0")
+
+    // Test
+    testImplementation("org.springframework.batch:spring-batch-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 tasks.withType<Test> {

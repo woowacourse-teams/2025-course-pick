@@ -7,8 +7,6 @@ import java.util.Optional;
 
 public interface CourseRepository extends Repository<Course, Long> {
 
-    List<Course> saveAll(Iterable<Course> courses);
-
     List<Course> findAll();
 
     Optional<Course> findById(Long id);
@@ -18,4 +16,6 @@ public interface CourseRepository extends Repository<Course, Long> {
                 .filter(c -> c.distanceFrom(target).isWithin(meter))
                 .toList();
     }
+
+    boolean existsByName(CourseName courseName);
 }

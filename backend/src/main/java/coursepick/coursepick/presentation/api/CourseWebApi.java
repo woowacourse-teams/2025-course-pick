@@ -9,13 +9,14 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @Tag(name = "코스")
 public interface CourseWebApi {
+
+    @Operation(hidden = true)
+    String syncCourses(String token) throws Exception;
 
     @Operation(summary = "좌표 근처 1km 내 코스 전체 조회")
     @ApiResponses({
@@ -63,7 +64,4 @@ public interface CourseWebApi {
             @Parameter(example = "37.5165004", required = true) double latitude,
             @Parameter(example = "127.1040109", required = true) double longitude
     );
-
-    @Operation(hidden = true)
-    void importCourses(String token, List<MultipartFile> files) throws IOException;
 }

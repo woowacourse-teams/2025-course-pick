@@ -8,5 +8,8 @@ spring:
     url: jdbc:mysql://localhost:3307/coursepick
     username: user
     password: secret
+  batch:
+    jdbc.initialize-schema: always
+    job.enabled: false
 
 admin.token: secret
