@@ -10,7 +10,7 @@ import java.util.List;
 @Component
 @Fallback
 public class DummyCourseFileFetcher implements CourseFileFetcher {
-    
+
     @Override
     public List<CourseFile> fetchNextPage() {
         return List.of();

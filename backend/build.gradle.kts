@@ -23,9 +23,6 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
     implementation("org.springframework.boot:spring-boot-starter-batch")
 
-    // GPX Parser
-    implementation("io.jenetics:jpx:3.2.1")
-
     // DB Connector
     runtimeOnly("com.mysql:mysql-connector-j")
     runtimeOnly("com.h2database:h2")
@@ -37,12 +34,20 @@ dependencies {
     // Spatial4J
     implementation("org.locationtech.spatial4j:spatial4j:0.8")
 
+    // GPX Parser
+    implementation("io.jenetics:jpx:3.2.1")
+
     // Logback Logstash Encoder (JSON Format)
     implementation("net.logstash.logback:logstash-logback-encoder:8.1")
 
     // JVM/Spring Metric To CloudWatch
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-metrics:3.4.0")
+
+    // Google Drive
+    implementation("com.google.api-client:google-api-client:2.8.0")
+    implementation("com.google.auth:google-auth-library-oauth2-http:1.37.1")
+    implementation("com.google.apis:google-api-services-drive:v3-rev20241027-2.0.0")
 
     // Test
     testImplementation("org.springframework.batch:spring-batch-test")
