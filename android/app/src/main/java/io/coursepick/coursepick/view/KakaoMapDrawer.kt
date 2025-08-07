@@ -37,7 +37,12 @@ class KakaoMapDrawer(
         location: Location,
     ) {
         val labelId: Int = R.drawable.image_current_location
-        val styles = LabelStyles.from(LabelStyle.from(labelId))
+        val styles =
+            LabelStyles.from(
+                LabelStyle
+                    .from(labelId)
+                    .setAnchorPoint(0.5F, 0.5F),
+            )
         val latLng = location.toLatLng()
         val options: LabelOptions = LabelOptions.from(latLng).setStyles(styles)
         options.labelId = labelId.toString()
