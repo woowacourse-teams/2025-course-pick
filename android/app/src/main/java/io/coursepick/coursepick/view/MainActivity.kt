@@ -43,6 +43,7 @@ class MainActivity :
     private val courseAdapter by lazy { CourseAdapter(CourseItemListener()) }
     private val doublePressDetector = DoublePressDetector()
     private val mapManager by lazy { KakaoMapManager(binding.mainMap) }
+    private val updateManager = CoursePickUpdateManager(this)
 
     @SuppressLint("MissingPermission")
     private val locationPermissionLauncher: ActivityResultLauncher<Array<String>> =
@@ -78,7 +79,7 @@ class MainActivity :
 
         searchLauncher = searchActivityResultLauncher()
 
-        CoursePickUpdateManager(this).checkForUpdate()
+        updateManager.checkForUpdate()
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -87,6 +88,8 @@ class MainActivity :
 
         mapManager.resume()
         mapManager.startTrackingCurrentLocation()
+
+        updateManager.onResume()
     }
 
     override fun onPause() {
@@ -94,6 +97,12 @@ class MainActivity :
 
         mapManager.pause()
         mapManager.stopTrackingCurrentLocation()
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        updateManager.onStop()
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
