@@ -1,6 +1,7 @@
 [versions]
 android-junit5 = "1.12.0.0"
 agp = "8.10.0"
+appUpdate = "2.1.0"
 firebaseBom = "34.0.0"
 kotlin = "2.0.21"
 coreKtx = "1.16.0"
@@ -33,6 +34,7 @@ firebase-crashlytics = "3.0.5"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preferenceKtx" }
+app-update = { module = "com.google.android.play:app-update", version.ref = "appUpdate" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-crashlytics-ndk = { module = "com.google.firebase:firebase-crashlytics-ndk" }

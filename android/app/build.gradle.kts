@@ -27,7 +27,7 @@ android {
         applicationId = "io.coursepick.coursepick"
         minSdk = 28
         targetSdk = 35
-        versionCode = 1
+        versionCode = 3
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -117,6 +117,7 @@ dependencies {
     implementation(libs.firebase.crashlytics.ndk)
     implementation(libs.play.services.oss.licenses)
     implementation(libs.androidx.preference.ktx)
+    implementation(libs.app.update)
     testImplementation(libs.assertj.core)
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
