@@ -47,6 +47,7 @@ jobs:
   # 1) 유휴 서버 탐지
   detect-idle:
     name: Detect Idle App Server
+    needs: build
     runs-on: [ self-hosted, prod-lb ]
     outputs:
       idle-server: ${{ steps.find.outputs.idle }}
