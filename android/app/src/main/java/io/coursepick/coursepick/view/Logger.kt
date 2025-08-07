@@ -35,11 +35,32 @@ object Logger {
     }
 
     sealed class Event(
-        target: String,
+        target: String? = null,
     ) {
-        val name: String = "${target}_${javaClass.simpleName}".lowercase()
+        val name: String =
+            if (target == null) {
+                javaClass.simpleName.lowercase()
+            } else {
+                "${target}_${javaClass.simpleName.lowercase()}"
+            }
+
+        class Enter(
+            target: String,
+        ) : Event(target)
+
+        class Exit(
+            target: String,
+        ) : Event(target)
 
         class Click(
+            target: String,
+        ) : Event(target)
+
+        object ZoomIn : Event()
+
+        object ZoomOut : Event()
+
+        class Search(
             target: String,
         ) : Event(target)
     }
