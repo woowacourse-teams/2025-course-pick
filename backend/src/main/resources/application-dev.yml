@@ -39,4 +39,16 @@ management:
         namespace: EC2/coursepick/dev
         batch-size: 20
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health, info, metrics"
+  metrics:
+    export:
+      cloudwatch:
+        namespace: "EC2/coursepick/dev"
+        region: ap-northeast-2
+        batch-size: 20
+
 admin.token: ${ADMIN_TOKEN}
