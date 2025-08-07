@@ -2,6 +2,9 @@ package io.coursepick.coursepick.view
 
 import android.content.Context
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.ListView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.drawerlayout.widget.DrawerLayout
@@ -41,6 +44,23 @@ fun DrawerLayout.setSwipeable(swipeable: Boolean) {
 @BindingAdapter("onNavigationItemSelected")
 fun NavigationView.setOnNavigationItemSelected(listener: NavigationView.OnNavigationItemSelectedListener) {
     this.setNavigationItemSelectedListener(listener)
+}
+
+@BindingAdapter("simpleListItems")
+fun ListView.setSimpleListItems(items: List<String>) {
+    val adapter =
+        ArrayAdapter(
+            context,
+            android.R.layout.simple_list_item_1,
+            items,
+        )
+
+    this.adapter = adapter
+}
+
+@BindingAdapter("onItemClick")
+fun ListView.setOnItemClick(listener: AdapterView.OnItemClickListener) {
+    this.onItemClickListener = listener
 }
 
 private fun formattedMeter(

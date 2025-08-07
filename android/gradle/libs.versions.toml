@@ -17,6 +17,7 @@ constraintlayout = "2.2.1"
 ktlint = "13.0.0"
 okhttp = "4.12.0"
 playServicesOssLicenses = "17.2.1"
+preferenceKtx = "1.2.1"
 retrofit = "3.0.0"
 kotlinx-serialization-json = "1.8.1"
 kotlinx-coroutines-android = "1.8.0"
@@ -31,6 +32,7 @@ firebase-crashlytics = "3.0.5"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preferenceKtx" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-crashlytics-ndk = { module = "com.google.firebase:firebase-crashlytics-ndk" }
