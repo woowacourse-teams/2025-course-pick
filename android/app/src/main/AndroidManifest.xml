@@ -17,6 +17,9 @@
         android:theme="@style/Theme.CoursePick"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".view.SearchActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.MainActivity"
             android:exported="true">
             <intent-filter>

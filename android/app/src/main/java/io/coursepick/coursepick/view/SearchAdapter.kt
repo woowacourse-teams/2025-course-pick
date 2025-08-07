@@ -3,33 +3,34 @@ package io.coursepick.coursepick.view
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import io.coursepick.coursepick.domain.Place
 
-class CourseAdapter(
-    private val courseItemListener: CourseItemListener,
-) : ListAdapter<CourseItem, CourseViewHolder>(diffUtil) {
+class SearchAdapter(
+    private val onSelectListener: OnSelectListener,
+) : ListAdapter<Place, SearchViewHolder>(diffUtil) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
-    ): CourseViewHolder = CourseViewHolder(parent, courseItemListener)
+    ): SearchViewHolder = SearchViewHolder(parent, onSelectListener)
 
     override fun onBindViewHolder(
-        holder: CourseViewHolder,
+        holder: SearchViewHolder,
         position: Int,
     ) {
-        holder.bind(currentList[position])
+        holder.bind(getItem(position))
     }
 
     companion object {
         private val diffUtil =
-            object : DiffUtil.ItemCallback<CourseItem>() {
+            object : DiffUtil.ItemCallback<Place>() {
                 override fun areItemsTheSame(
-                    oldItem: CourseItem,
-                    newItem: CourseItem,
+                    oldItem: Place,
+                    newItem: Place,
                 ): Boolean = oldItem.id == newItem.id
 
                 override fun areContentsTheSame(
-                    oldItem: CourseItem,
-                    newItem: CourseItem,
+                    oldItem: Place,
+                    newItem: Place,
                 ): Boolean = oldItem == newItem
             }
     }

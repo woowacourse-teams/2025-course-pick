@@ -18,7 +18,7 @@ class CourseViewHolder private constructor(
     }
 
     companion object {
-        fun CourseViewHolder(
+        operator fun invoke(
             root: ViewGroup,
             courseItemListener: CourseItemListener,
         ): CourseViewHolder {

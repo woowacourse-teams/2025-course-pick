@@ -8,4 +8,6 @@ interface MainAction {
     fun openMenu()
 
     fun navigate(item: MenuItem): Boolean
+
+    fun search()
 }
