@@ -86,10 +86,6 @@ class MainViewModel(
         }
     }
 
-    fun navigationSearch() {
-        _event.value = MainUiEvent.Search
-    }
-
     private fun newCourses(
         oldCourses: List<CourseItem>,
         selectedCourse: CourseItem,

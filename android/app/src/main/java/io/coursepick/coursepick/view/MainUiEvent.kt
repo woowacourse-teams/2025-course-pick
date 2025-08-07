@@ -20,6 +20,4 @@ sealed interface MainUiEvent {
     ) : MainUiEvent
 
     object FetchNearestCoordinateFailure : MainUiEvent
-
-    object Search : MainUiEvent
 }
