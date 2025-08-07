@@ -59,14 +59,6 @@ public class Course {
         this(name, RoadType.알수없음, coordinates);
     }
 
-    private static Meter calculateLength(List<Segment> segments) {
-        Meter total = Meter.zero();
-        for (Segment segment : segments) {
-            total = total.add(segment.length());
-        }
-        return total;
-    }
-
     public Coordinate closestCoordinateFrom(Coordinate target) {
         Coordinate minDistanceCoordinate = segments().getFirst().startCoordinate();
         Meter minDistance = Meter.max();
@@ -87,5 +79,13 @@ public class Course {
     public Meter distanceFrom(Coordinate target) {
         Coordinate minDistanceCoordinate = closestCoordinateFrom(target);
         return GeoLine.between(minDistanceCoordinate, target).length();
+    }
+
+    private static Meter calculateLength(List<Segment> segments) {
+        Meter total = Meter.zero();
+        for (Segment segment : segments) {
+            total = total.add(segment.length());
+        }
+        return total;
     }
 }

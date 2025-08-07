@@ -1,5 +1,7 @@
 package coursepick.coursepick.infrastructure;
 
+import coursepick.coursepick.application.dto.CourseFile;
+import coursepick.coursepick.application.dto.CourseFileExtension;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
 import org.junit.jupiter.api.Test;
@@ -16,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class KmlCourseParserTest {
 
-    private static final KmlCourseParser sut = new KmlCourseParser();
+    KmlCourseParser sut = new KmlCourseParser();
 
     @Test
     void KML_파일을_파싱하여_코스_정보를_추출한다(@TempDir Path tempDir) throws IOException {
@@ -43,7 +45,7 @@ class KmlCourseParserTest {
 
         InputStream inputStream = new ByteArrayInputStream(kmlContent.getBytes(StandardCharsets.UTF_8));
 
-        List<Course> courses = sut.parse("테스트코스", inputStream);
+        List<Course> courses = sut.parse(new CourseFile("테스트코스", CourseFileExtension.KML, inputStream));
 
         assertThat(courses).hasSize(1);
 
@@ -69,7 +71,7 @@ class KmlCourseParserTest {
                 """;
         InputStream inputStream = new ByteArrayInputStream(kmlContent.getBytes(StandardCharsets.UTF_8));
 
-        List<Course> courses = sut.parse("테스트코스", inputStream);
+        List<Course> courses = sut.parse(new CourseFile("테스트코스", CourseFileExtension.KML, inputStream));
 
         assertThat(courses).isEmpty();
     }
