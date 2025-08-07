@@ -30,7 +30,6 @@
         <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clipChildren="false"
             android:fitsSystemWindows="true">
 
             <com.kakao.vectormap.MapView
@@ -120,7 +119,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/background_courses"
-                android:clipToPadding="false"
                 android:visibility="@{viewModel.state.areCoursesEmpty ? View.GONE : View.VISIBLE}"
                 app:behavior_fitToContents="true"
                 app:behavior_peekHeight="@dimen/main_bottom_sheet_peek_height"
