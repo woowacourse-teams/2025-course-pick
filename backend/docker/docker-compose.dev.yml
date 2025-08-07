@@ -1,0 +1,23 @@
+name: coursepick-dev
+
+services:
+  mysql:
+    image: 'mysql:8.4.5'
+    environment:
+      - 'MYSQL_DATABASE=???'
+      - 'MYSQL_ROOT_PASSWORD=???'
+      - 'MYSQL_USER=???'
+      - 'MYSQL_PASSWORD=???'
+      - 'LANG=C.UTF-8'
+      - 'LC_ALL=C.UTF-8'
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
