@@ -10,4 +10,6 @@ interface MainAction {
     fun navigate(item: MenuItem): Boolean
 
     fun search()
+
+    fun moveToCurrentLocation()
 }

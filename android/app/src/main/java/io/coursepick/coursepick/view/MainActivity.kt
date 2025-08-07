@@ -60,7 +60,7 @@ class MainActivity :
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view: View, insets: WindowInsetsCompat ->
             val systemBars: Insets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            binding.mainBottomSheet.setPadding(0, 0, 0, systemBars.bottom)
+            setUpBottomSheet(insets)
             insets
         }
 
@@ -68,10 +68,6 @@ class MainActivity :
         setUpObservers()
         setUpDoubleBackPress()
         requestLocationPermissions()
-
-        val screenHeight: Int = Resources.getSystem().displayMetrics.heightPixels
-        binding.mainBottomSheet.layoutParams.height = screenHeight / 2
-        BottomSheetBehavior.from(binding.mainBottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
 
         mapManager.start { coordinate: Coordinate ->
             mapManager.setOnCameraMoveListener {
@@ -171,6 +167,11 @@ class MainActivity :
         startActivity(intent)
     }
 
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+    override fun moveToCurrentLocation() {
+        mapManager.moveToCurrentLocation()
+    }
+
     private fun navigateToFeedback() {
         val intent = Intent(Intent.ACTION_VIEW, getString(R.string.feedback_url).toUri())
 
@@ -207,6 +208,36 @@ class MainActivity :
                 )
             }
         }
+
+    private fun setUpBottomSheet(insets: WindowInsetsCompat) {
+        val bottomSheet = binding.mainBottomSheet
+        val screenHeight = Resources.getSystem().displayMetrics.heightPixels
+        val systemBars: Insets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+        bottomSheet.layoutParams.height = screenHeight / 2
+        bottomSheet.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom)
+        mapManager.setBottomPadding(screenHeight - systemBars.bottom - bottomSheet.height)
+
+        val behavior = BottomSheetBehavior.from(bottomSheet)
+        behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        behavior.addBottomSheetCallback(
+            object : BottomSheetBehavior.BottomSheetCallback() {
+                override fun onStateChanged(
+                    bottomSheet: View,
+                    newState: Int,
+                ) = Unit
+
+                override fun onSlide(
+                    bottomSheet: View,
+                    slideOffset: Float,
+                ) {
+                    mapManager.setBottomPadding(
+                        screenHeight - systemBars.bottom - bottomSheet.y.toInt(),
+                    )
+                }
+            },
+        )
+    }
 
     private fun setUpBindingVariables() {
         binding.viewModel = viewModel
