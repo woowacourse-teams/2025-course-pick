@@ -1,3 +1,8 @@
+server:
+  tomcat:
+    mbean-registry:
+      enabled: true
+
 spring:
   config.activate.on-profile: dev
   jpa:
@@ -7,6 +12,10 @@ spring:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+  cloud:
+    aws:
+      cloudwatch:
+        region: ap-northeast-2
 
 management:
   endpoints:
@@ -14,10 +23,20 @@ management:
       exposure:
         include: "health, info, metrics"
   metrics:
-    export:
-      cloudwatch:
-        namespace: "EC2/coursepick/dev"
-        region: ap-northeast-2
+    enable:
+      all: false
+      health.status: true
+      hikaricp.connections: true
+      http.server.requests: true
+      system.cpu.usage: true
+      spring.data.repository.invocations: true
+      jvm.memory.used: true
+      tomcat.threads: true
+
+  cloudwatch:
+    metrics:
+      export:
+        namespace: EC2/coursepick/dev
         batch-size: 20
 
 admin.token: ${ADMIN_TOKEN}
