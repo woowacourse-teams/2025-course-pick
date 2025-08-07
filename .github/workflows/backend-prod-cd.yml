@@ -225,14 +225,16 @@ jobs:
     steps:
       - name: nginx.conf 갱신
         run: |
-          docker exec -it nginx sh;
-          cd etc/nginx;
-          cat nginx.conf > nginx-temp.conf;
-          cat nginx-sub.conf > nginx.conf;
-          cat nginx-temp.conf > nginx-sub.conf;
+          docker exec nginx sh -c " \
+            cd /etc/nginx && \
+            cat nginx.conf > nginx-temp.conf && \
+            cat nginx-sub.conf > nginx.conf && \
+            cat nginx-temp.conf > nginx-sub.conf \
+          "
 
       - name: nginx 리로드
-        run: nginx -s reload;
+        run: |
+          docker exec nginx nginx -s reload
 
 
   # 2) 구버전 서버 종료 (server1 / server2 중 하나만 실행)
