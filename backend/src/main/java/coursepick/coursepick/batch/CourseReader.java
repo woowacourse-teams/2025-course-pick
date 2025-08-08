@@ -12,7 +12,6 @@ import org.springframework.batch.item.UnexpectedInputException;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -25,48 +24,42 @@ public class CourseReader implements ItemReader<Course> {
     private final CourseFileFetcher courseFileFetcher;
     private final CourseParserService courseParserService;
 
+    private Iterator<CourseFile> courseFileIterator = Collections.emptyIterator();
     private Iterator<Course> courseIterator = Collections.emptyIterator();
 
     @Override
-    public Course read() throws UnexpectedInputException, ParseException, NonTransientResourceException {
-        if (!courseIterator.hasNext()) {
-            fetchAndPrepareNextCourses();
-        }
-
+    public Course read() throws UnexpectedInputException, ParseException, NonTransientResourceException, IOException {
         if (courseIterator.hasNext()) {
             return courseIterator.next();
-        } else {
-            return null;
         }
+
+        if (this.readNextCourseFile()) {
+            return read();
+        }
+
+        return null;
     }
 
-    private void fetchAndPrepareNextCourses() {
-        List<CourseFile> courseFiles = courseFileFetcher.fetchNextPage();
+    private boolean readNextCourseFile() throws IOException {
+        // CourseFileIterator가 비어있다면, 새로운 파일 목록을 fetch한다.
+        if (!courseFileIterator.hasNext()) {
+            List<CourseFile> nextCourseFiles = courseFileFetcher.fetchNextPage();
 
-        List<Course> nextCourses = courseFiles.stream()
-                .flatMap(file -> courseParserService.parse(file).stream())
-                .toList();
-
-        closeInputStreamOf(courseFiles);
-
-        this.courseIterator = nextCourses.iterator();
-    }
-
-    private static void closeInputStreamOf(List<CourseFile> courseFiles) {
-        List<Exception> exceptions = new ArrayList<>();
-
-        courseFiles.forEach(file -> {
-            try {
-                file.inputStream().close();
-            } catch (IOException e) {
-                exceptions.add(e);
+            if (nextCourseFiles.isEmpty()) {
+                return false; // 더 이상 가져올 파일이 없음
             }
-        });
 
-        if (!exceptions.isEmpty()) {
-            RuntimeException aggregated = new RuntimeException("일부 파일 스트림을 닫는 중 예외가 발생했습니다.");
-            exceptions.forEach(aggregated::addSuppressed);
-            throw aggregated;
+            this.courseFileIterator = nextCourseFiles.iterator();
         }
+
+        // 다음 CourseFile을 가져와서 Courses로 파싱한다.
+        CourseFile courseFile = courseFileIterator.next();
+        List<Course> nextCourses = courseParserService.parse(courseFile);
+        this.courseIterator = nextCourses.iterator();
+
+        // 파싱 후 현재 파일 스트림을 닫는다.
+        courseFile.inputStream().close();
+
+        return true; // 성공적으로 다음 CourseFile을 읽었음
     }
 }
