@@ -33,7 +33,7 @@ public class GpxCourseParser implements CourseParser {
         }
 
         return gpx.tracks()
-                .map(track -> new Course(file.name(), getCoordinates(track)))
+                .map(track -> new Course(file.name().replaceAll("gpx", ""), getCoordinates(track)))
                 .toList();
     }
 
