@@ -42,7 +42,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: self-hosted
+    runs-on: [ self-hosted, dev-app ]
 
     steps:
       - name: 임시 아티팩트 저장소에 저장된 파일 다운로드
@@ -80,6 +80,8 @@ jobs:
           SPRING_DATASOURCE_USERNAME: ${{ secrets.DEV_DB_USERNAME }}
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.DEV_DB_PASSWORD }}
           ADMIN_TOKEN: ${{ secrets.DEV_ADMIN_TOKEN }}
+          GCP_DRIVE_FOLDER_ID: ${{ secrets.GCP_DRIVE_FOLDER_ID }}
+          GCP_CREDENTIALS_PATH: ${{ secrets.GCP_CREDENTIALS_PATH }}
         run: |
           JAR_FILE=$(find ./artifacts -name "*.jar" | head -n 1)
           echo "서버 시작 중... =$JAR_FILE"

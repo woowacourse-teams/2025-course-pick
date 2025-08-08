@@ -8,4 +8,8 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
 
+gcp:
+  drive.folder-id: ${GCP_DRIVE_FOLDER_ID}
+  credentials.path: ${GCP_CREDENTIALS_PATH}
+
 admin.token: ${ADMIN_TOKEN}
