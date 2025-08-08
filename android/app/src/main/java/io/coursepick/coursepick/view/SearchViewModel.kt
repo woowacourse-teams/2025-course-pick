@@ -29,6 +29,7 @@ class SearchViewModel(
 
                 if (query.isNotBlank()) {
                     try {
+                        Logger.log(Logger.Event.Search("place"), "query" to query)
                         _state.value = searchRepository.searchPlaces(query)
                     } catch (e: Exception) {
                         _state.value = emptyList()
