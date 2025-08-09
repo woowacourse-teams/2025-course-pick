@@ -25,8 +25,7 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
         filterChain.doFilter(requestWrapper, responseWrapper);
         long duration = System.currentTimeMillis() - startTime;
 
-        String content = LogContentCreator.http(requestWrapper, responseWrapper, duration);
-        log.info(content);
+        log.info(LogContentCreator.http(requestWrapper, responseWrapper, duration));
 
         responseWrapper.copyBodyToResponse();
     }
