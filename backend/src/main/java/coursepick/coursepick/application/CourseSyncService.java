@@ -1,6 +1,6 @@
 package coursepick.coursepick.application;
 
-import coursepick.coursepick.logging.LogContentCreator;
+import coursepick.coursepick.logging.LogContent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -21,27 +21,27 @@ public class CourseSyncService {
 
     @Scheduled(cron = "0 0 2 * * *", zone = "Asia/Seoul")
     public void runScheduledCourseSyncJob() {
-        log.info(LogContentCreator.business("CourseSyncJob 자동 시작"));
+        log.info(LogContent.business("CourseSyncJob 자동 시작"));
         try {
             JobParameters jobParameters = new JobParametersBuilder()
                     .addString("run.id", "scheduled-" + System.currentTimeMillis())
                     .toJobParameters();
             jobLauncher.run(courseSyncJob, jobParameters);
         } catch (Exception e) {
-            log.warn(LogContentCreator.exception(e), e);
+            log.warn("[EXCEPTION] CourseSyncJob 자동 실행 중 예외 발생", LogContent.exception(e));
         }
     }
 
     @Async
     public void runCourseSyncJob() {
-        log.info(LogContentCreator.business("CourseSyncJob 수동 시작"));
+        log.info(LogContent.business("CourseSyncJob 수동 시작"));
         try {
             JobParameters jobParameters = new JobParametersBuilder()
                     .addString("run.id", "manual-" + System.currentTimeMillis())
                     .toJobParameters();
             jobLauncher.run(courseSyncJob, jobParameters);
         } catch (Exception e) {
-            log.warn(LogContentCreator.exception(e), e);
+            log.warn("[EXCEPTION] CourseSyncJob 수동 실행 중 예외 발생", LogContent.exception(e));
         }
     }
 }

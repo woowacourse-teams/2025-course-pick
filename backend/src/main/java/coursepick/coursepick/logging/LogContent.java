@@ -11,10 +11,6 @@ import static org.apache.commons.lang3.StringUtils.left;
 
 public class LogContent {
 
-    private static final String EXCEPTION_LOG_FORMAT = """
-            [EXCEPTION] %s: %s
-            """;
-
     private static final String BUSINESS_LOG_FORMAT = """
             [BUSINESS] %s
             """;
@@ -38,8 +34,11 @@ public class LogContent {
         };
     }
 
-    public static String exception(Exception e) {
-        return EXCEPTION_LOG_FORMAT.formatted(e.getClass().getSimpleName(), e.getMessage());
+    public static Object[] exception(Exception e) {
+        return new Object[]{
+                kv("exception_class", e.getClass().getName()),
+                kv("exception_message", e.getMessage())
+        };
     }
 
     public static String business(String content) {
