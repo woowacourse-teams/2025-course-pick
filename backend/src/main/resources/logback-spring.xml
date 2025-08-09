@@ -14,6 +14,21 @@
             <maxFileSize>10MB</maxFileSize>
             <totalSizeCap>1GB</totalSizeCap>
         </rollingPolicy>
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp/>
+                <loggerName/>
+                <logLevel/>
+                <mdc/>
+                <logstashMarkers/>
+                <message/>
+                <arguments>
+                    <includeStructuredArguments>true</includeStructuredArguments>
+                    <includeNonStructuredArguments>false</includeNonStructuredArguments>
+                </arguments>
+                <stackTrace/>
+            </providers>
+        </encoder>
     </appender>
 
     <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">

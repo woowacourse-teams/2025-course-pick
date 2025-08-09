@@ -6,15 +6,10 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 
-public class LogContentCreator {
+import static net.logstash.logback.argument.StructuredArguments.kv;
+import static org.apache.commons.lang3.StringUtils.left;
 
-    private static final String HTTP_LOG_FORMAT = """
-            [HTTP] %s %s (%dms)
-                Req Headers: %s
-                Req Body: %s
-                Res Status: %d
-                Res Body: %s
-            """;
+public class LogContent {
 
     private static final String EXCEPTION_LOG_FORMAT = """
             [EXCEPTION] %s: %s
@@ -24,21 +19,23 @@ public class LogContentCreator {
             [BUSINESS] %s
             """;
 
-    public static String http(ContentCachingRequestWrapper request, ContentCachingResponseWrapper response, long duration) {
+    public static Object[] http(ContentCachingRequestWrapper request, ContentCachingResponseWrapper response, long duration) {
         String method = request.getMethod();
         String uri = extractUriWithQueryString(request);
         String headers = extractHeaderString(request);
         String requestBody = new String(request.getContentAsByteArray(), StandardCharsets.UTF_8).strip();
-        if (requestBody.length() >= 100) {
-            requestBody = requestBody.substring(0, 100) + "...";
-        }
         int status = response.getStatus();
         String responseBody = new String(response.getContentAsByteArray(), StandardCharsets.UTF_8).strip();
-        if (responseBody.length() >= 100) {
-            responseBody = responseBody.substring(0, 100) + "...";
-        }
 
-        return HTTP_LOG_FORMAT.formatted(method, uri, duration, headers, requestBody, status, responseBody);
+        return new Object[]{
+                kv("method", method),
+                kv("uri", uri),
+                kv("status", status),
+                kv("duration_ms", duration),
+                kv("req_headers", headers),
+                kv("req_body", left(requestBody, 100)),
+                kv("res_body", left(responseBody, 100))
+        };
     }
 
     public static String exception(Exception e) {
