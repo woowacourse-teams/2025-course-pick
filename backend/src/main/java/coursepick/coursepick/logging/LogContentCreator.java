@@ -16,6 +16,10 @@ public class LogContentCreator {
                 Res Body: %s
             """;
 
+    private static final String EXCEPTION_LOG_FORMAT = """
+            [EXCEPTION] %s: %s
+            """;
+
     public static String http(ContentCachingRequestWrapper request, ContentCachingResponseWrapper response, long duration) {
         String method = request.getMethod();
         String uri = extractUriWithQueryString(request);
@@ -31,6 +35,10 @@ public class LogContentCreator {
         }
 
         return HTTP_LOG_FORMAT.formatted(method, uri, duration, headers, requestBody, status, responseBody);
+    }
+
+    public static String exception(Exception e) {
+        return EXCEPTION_LOG_FORMAT.formatted(e.getClass().getSimpleName(), e.getMessage());
     }
 
     private static String extractUriWithQueryString(ContentCachingRequestWrapper request) {
