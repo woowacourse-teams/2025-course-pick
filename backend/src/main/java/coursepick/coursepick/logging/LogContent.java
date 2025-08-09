@@ -11,10 +11,6 @@ import static org.apache.commons.lang3.StringUtils.left;
 
 public class LogContent {
 
-    private static final String BUSINESS_LOG_FORMAT = """
-            [BUSINESS] %s
-            """;
-
     public static Object[] http(ContentCachingRequestWrapper request, ContentCachingResponseWrapper response, long duration) {
         String method = request.getMethod();
         String uri = extractUriWithQueryString(request);
@@ -40,11 +36,7 @@ public class LogContent {
                 kv("exception_message", e.getMessage())
         };
     }
-
-    public static String business(String content) {
-        return BUSINESS_LOG_FORMAT.formatted(content);
-    }
-
+    
     private static String extractUriWithQueryString(ContentCachingRequestWrapper request) {
         String requestURI = request.getRequestURI();
         String queryString = request.getQueryString();

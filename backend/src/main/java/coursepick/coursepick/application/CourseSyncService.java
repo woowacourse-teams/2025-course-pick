@@ -21,7 +21,7 @@ public class CourseSyncService {
 
     @Scheduled(cron = "0 0 2 * * *", zone = "Asia/Seoul")
     public void runScheduledCourseSyncJob() {
-        log.info(LogContent.business("CourseSyncJob 자동 시작"));
+        log.info("CourseSyncJob 자동 시작");
         try {
             JobParameters jobParameters = new JobParametersBuilder()
                     .addString("run.id", "scheduled-" + System.currentTimeMillis())
@@ -34,7 +34,7 @@ public class CourseSyncService {
 
     @Async
     public void runCourseSyncJob() {
-        log.info(LogContent.business("CourseSyncJob 수동 시작"));
+        log.info(("CourseSyncJob 수동 시작"));
         try {
             JobParameters jobParameters = new JobParametersBuilder()
                     .addString("run.id", "manual-" + System.currentTimeMillis())
