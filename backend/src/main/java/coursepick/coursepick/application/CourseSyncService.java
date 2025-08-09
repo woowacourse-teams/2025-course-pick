@@ -1,5 +1,6 @@
 package coursepick.coursepick.application;
 
+import coursepick.coursepick.logging.LogContentCreator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -20,27 +21,27 @@ public class CourseSyncService {
 
     @Scheduled(cron = "0 0 2 * * *", zone = "Asia/Seoul")
     public void runScheduledCourseSyncJob() {
-        log.info("CourseSyncJob 자동 시작");
+        log.info(LogContentCreator.business("CourseSyncJob 자동 시작"));
         try {
             JobParameters jobParameters = new JobParametersBuilder()
                     .addString("run.id", "scheduled-" + System.currentTimeMillis())
                     .toJobParameters();
             jobLauncher.run(courseSyncJob, jobParameters);
         } catch (Exception e) {
-            log.warn("CourseSyncJob 실패", e);
+            log.warn(LogContentCreator.exception(e), e);
         }
     }
 
     @Async
     public void runCourseSyncJob() {
-        log.info("CourseSyncJob 수동 시작");
+        log.info(LogContentCreator.business("CourseSyncJob 수동 시작"));
         try {
             JobParameters jobParameters = new JobParametersBuilder()
                     .addString("run.id", "manual-" + System.currentTimeMillis())
                     .toJobParameters();
             jobLauncher.run(courseSyncJob, jobParameters);
         } catch (Exception e) {
-            log.warn("CourseSyncJob 실패", e);
+            log.warn(LogContentCreator.exception(e), e);
         }
     }
 }

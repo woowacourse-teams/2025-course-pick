@@ -20,6 +20,10 @@ public class LogContentCreator {
             [EXCEPTION] %s: %s
             """;
 
+    private static final String BUSINESS_LOG_FORMAT = """
+            [BUSINESS] %s
+            """;
+
     public static String http(ContentCachingRequestWrapper request, ContentCachingResponseWrapper response, long duration) {
         String method = request.getMethod();
         String uri = extractUriWithQueryString(request);
@@ -39,6 +43,10 @@ public class LogContentCreator {
 
     public static String exception(Exception e) {
         return EXCEPTION_LOG_FORMAT.formatted(e.getClass().getSimpleName(), e.getMessage());
+    }
+
+    public static String business(String content) {
+        return BUSINESS_LOG_FORMAT.formatted(content);
     }
 
     private static String extractUriWithQueryString(ContentCachingRequestWrapper request) {
