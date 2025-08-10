@@ -33,15 +33,8 @@ public class GpxCourseParser implements CourseParser {
         }
 
         return gpx.tracks()
-                .map(track -> new Course(removeExtension(file.name()), getCoordinates(track)))
+                .map(track -> new Course(file.name(), getCoordinates(track)))
                 .toList();
-    }
-
-    private static String removeExtension(String fileName) {
-        if (fileName.toLowerCase().endsWith(".gpx")) {
-            fileName = fileName.substring(0, fileName.length() - 4);
-        }
-        return fileName;
     }
 
     private static List<Coordinate> getCoordinates(Track track) {
