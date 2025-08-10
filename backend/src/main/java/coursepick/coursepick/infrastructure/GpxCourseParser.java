@@ -38,7 +38,7 @@ public class GpxCourseParser implements CourseParser {
     }
 
     private static String removeExtension(String fileName) {
-        if (fileName.endsWith(".gpx")) {
+        if (fileName.toLowerCase().endsWith(".gpx")) {
             fileName = fileName.substring(0, fileName.length() - 4);
         }
         return fileName;
