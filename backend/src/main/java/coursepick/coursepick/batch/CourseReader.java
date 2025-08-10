@@ -54,11 +54,8 @@ public class CourseReader implements ItemReader<Course> {
 
         // 다음 CourseFile을 가져와서 Courses로 파싱한다.
         CourseFile courseFile = courseFileIterator.next();
-        List<Course> nextCourses = courseParserService.parse(courseFile);
+        List<Course> nextCourses = courseParserService.parseAndCloseInputStream(courseFile);
         this.courseIterator = nextCourses.iterator();
-
-        // 파싱 후 현재 파일 스트림을 닫는다.
-        courseFile.inputStream().close();
 
         return true; // 성공적으로 다음 CourseFile을 읽었음
     }
