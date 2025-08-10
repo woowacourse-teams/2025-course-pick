@@ -233,7 +233,7 @@ jobs:
           docker exec nginx nginx -s reload
 
   update-nginx-2:
-    name: nginx 로드밸런서 설정 파일 nginx-app-1으로 변경
+    name: nginx 로드밸런서 설정 파일 nginx-app-2으로 변경
     needs: [ deploy-prod-app-2 ]
     if: ${{ needs.deploy-prod-app-2.result == 'success' }}
     runs-on: [ self-hosted, prod-lb ]
