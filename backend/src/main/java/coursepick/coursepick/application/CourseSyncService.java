@@ -34,7 +34,7 @@ public class CourseSyncService {
 
     @Async
     public void runCourseSyncJob() {
-        log.info(("CourseSyncJob 수동 시작"));
+        log.info("CourseSyncJob 수동 시작");
         try {
             JobParameters jobParameters = new JobParametersBuilder()
                     .addString("run.id", "manual-" + System.currentTimeMillis())
