@@ -40,7 +40,7 @@ public class WebExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception e) {
-        log.warn("[EXCEPTION] Exception 예외 응답 반환", LogContent.exception(e));
+        log.error("[EXCEPTION] 핸들링 하지 못한 Exception 예외 응답 반환", LogContent.exception(e));
         return ResponseEntity.internalServerError().body(ErrorResponse.from(e));
     }
 }
