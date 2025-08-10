@@ -33,7 +33,7 @@ public class CourseReader implements ItemReader<Course> {
             return courseIterator.next();
         }
 
-        if (this.readNextCourseFile()) {
+        if (readNextCourseFile()) {
             return read();
         }
 
