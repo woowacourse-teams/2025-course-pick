@@ -33,10 +33,11 @@ public class LogContent {
     public static Object[] exception(Exception e) {
         return new Object[]{
                 kv("exception_class", e.getClass().getName()),
-                kv("exception_message", e.getMessage())
+                kv("exception_message", e.getMessage()),
+                e
         };
     }
-    
+
     private static String extractUriWithQueryString(ContentCachingRequestWrapper request) {
         String requestURI = request.getRequestURI();
         String queryString = request.getQueryString();
