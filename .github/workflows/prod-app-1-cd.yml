@@ -5,7 +5,7 @@ on:
       run_id:
         required: true
         type: string
-    secrets:
+    secrets: inherit
 
 jobs:
   deploy-prod-app-1:
