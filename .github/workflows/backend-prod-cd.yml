@@ -83,30 +83,16 @@ jobs:
     name: prod-app-1 서버에 배포
     needs: detect-idle
     if: needs.detect-idle.outputs.idle-server == 'prod-app-1'
-    uses: .github/workflows/prod-app-1-cd.yml
+    uses: ./.github/workflows/prod-app-1-cd.yml
     with:
       run_id: ${{ github.run_id }}
-    secrets:
-      SPRING_PROFILES_ACTIVE: ${{ secrets.PROD_PROFILE }}
-      SPRING_DATASOURCE_URL: ${{ secrets.PROD_DB_URL }}
-      SPRING_DATASOURCE_USERNAME: ${{ secrets.PROD_DB_USERNAME }}
-      SPRING_DATASOURCE_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
-      ADMIN_TOKEN: ${{ secrets.PROD_ADMIN_TOKEN }}
-      GCP_DRIVE_FOLDER_ID: ${{ secrets.GCP_DRIVE_FOLDER_ID }}
-      GCP_CREDENTIALS_PATH: ${{ secrets.GCP_CREDENTIALS_PATH }}
+    secrets: inherit
 
   deploy-prod-app-2:
     name: prod-app-2 서버에 배포
     needs: detect-idle
     if: needs.detect-idle.outputs.idle-server == 'prod-app-2'
-    uses: .github/workflows/prod-app-2-cd.yml
+    uses: ./.github/workflows/prod-app-2-cd.yml
     with:
       run_id: ${{ github.run_id }}
-    secrets:
-      SPRING_PROFILES_ACTIVE: ${{ secrets.PROD_PROFILE }}
-      SPRING_DATASOURCE_URL: ${{ secrets.PROD_DB_URL }}
-      SPRING_DATASOURCE_USERNAME: ${{ secrets.PROD_DB_USERNAME }}
-      SPRING_DATASOURCE_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
-      ADMIN_TOKEN: ${{ secrets.PROD_ADMIN_TOKEN }}
-      GCP_DRIVE_FOLDER_ID: ${{ secrets.GCP_DRIVE_FOLDER_ID }}
-      GCP_CREDENTIALS_PATH: ${{ secrets.GCP_CREDENTIALS_PATH }}
+    secrets: inherit
