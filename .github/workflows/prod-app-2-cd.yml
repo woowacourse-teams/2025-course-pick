@@ -1,7 +1,7 @@
 name: Prod App 2 CD
 on:
   workflow_call:
-    with:
+    inputs:
       run_id:
         required: true
         type: string
