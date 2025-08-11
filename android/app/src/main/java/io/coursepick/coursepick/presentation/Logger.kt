@@ -1,12 +1,13 @@
 package io.coursepick.coursepick.presentation
 
 import android.os.Bundle
-import com.google.firebase.Firebase
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.analytics
 
 object Logger {
-    private val firebaseAnalytics: FirebaseAnalytics by lazy { Firebase.analytics }
+    private var analyticsService: AnalyticsService? = null
+
+    fun init(analyticsService: AnalyticsService) {
+        this.analyticsService = analyticsService
+    }
 
     fun log(
         event: Event,
@@ -16,7 +17,7 @@ object Logger {
             Bundle().apply {
                 parameters.forEach { (key: String, value: Any) -> putAny(key, value) }
             }
-        firebaseAnalytics.logEvent(event.name, bundle)
+        analyticsService?.log(event, bundle)
     }
 
     private fun Bundle.putAny(

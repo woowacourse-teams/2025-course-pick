@@ -6,13 +6,17 @@ import io.coursepick.coursepick.data.course.CourseService
 import io.coursepick.coursepick.data.interceptor.KakaoAuthInterceptor
 import io.coursepick.coursepick.data.interceptor.PrettyPrintLogger
 import io.coursepick.coursepick.data.search.SearchService
+import io.coursepick.coursepick.util.ClientId
+import io.coursepick.coursepick.view.ClientIdInterceptor
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 
-object Services {
+class Services(
+    clientId: ClientId,
+) {
     private val loggingLevel =
         if (BuildConfig.DEBUG) {
             HttpLoggingInterceptor.Level.BODY
@@ -21,9 +25,12 @@ object Services {
         }
     private val loggingInterceptor =
         HttpLoggingInterceptor(PrettyPrintLogger()).setLevel(loggingLevel)
-
     private val client: OkHttpClient =
-        OkHttpClient.Builder().addInterceptor(loggingInterceptor).build()
+        OkHttpClient
+            .Builder()
+            .addInterceptor(ClientIdInterceptor(clientId))
+            .addInterceptor(loggingInterceptor)
+            .build()
 
     private val json =
         Json {

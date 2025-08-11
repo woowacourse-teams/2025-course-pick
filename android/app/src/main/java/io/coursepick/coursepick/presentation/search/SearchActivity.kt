@@ -17,7 +17,7 @@ import io.coursepick.coursepick.presentation.Logger
 
 class SearchActivity : AppCompatActivity() {
     private val binding by lazy { ActivitySearchBinding.inflate(layoutInflater) }
-    private val viewModel: SearchViewModel by viewModels()
+    private val viewModel: SearchViewModel by viewModels { SearchViewModel.Factory }
     private val adapter: SearchAdapter by lazy { SearchAdapter(::submitPlace) }
 
     override fun onCreate(savedInstanceState: Bundle?) {

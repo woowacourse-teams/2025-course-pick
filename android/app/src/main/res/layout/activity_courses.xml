@@ -18,6 +18,10 @@
         <variable
             name="action"
             type="io.coursepick.coursepick.presentation.course.CoursesAction" />
+
+        <variable
+            name="clientId"
+            type="String" />
     </data>
 
     <androidx.drawerlayout.widget.DrawerLayout
@@ -185,6 +189,19 @@
             android:onClick="@{}"
             app:itemTextColor="@color/item_primary"
             app:menu="@menu/menu_navigation_courses"
-            app:onNavigationItemSelected="@{(menuItem) -> action.navigate(menuItem)}" />
+            app:onNavigationItemSelected="@{(menuItem) -> action.navigate(menuItem)}">
+
+            <TextView
+                android:id="@+id/mainClientId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginBottom="40dp"
+                android:onClick="@{() -> action.copyClientId()}"
+                android:text="@{@string/main_client_id(clientId)}"
+                android:textColor="@color/item_secondary"
+                android:textSize="14sp" />
+
+        </com.google.android.material.navigation.NavigationView>
     </androidx.drawerlayout.widget.DrawerLayout>
 </layout>
