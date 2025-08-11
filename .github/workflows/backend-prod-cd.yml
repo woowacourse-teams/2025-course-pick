@@ -1,8 +1,8 @@
 name: Backend Prod Server CD
 
 on:
-  push:
-    branches: [ main ]
+  pull_request:
+    branches: [ backend ]
     paths:
       - 'backend/**'
       - '.github/workflows/backend-prod-cd.yml'
@@ -84,6 +84,8 @@ jobs:
     needs: detect-idle
     if: needs.detect-idle.outputs.idle-server == 'prod-app-1'
     uses: ./.github/workflows/prod-app-1-cd.yml
+    with:
+      run_id: ${{ github.run_id }}
     secrets:
       SPRING_PROFILES_ACTIVE: ${{ secrets.PROD_PROFILE }}
       SPRING_DATASOURCE_URL: ${{ secrets.PROD_DB_URL }}
@@ -98,6 +100,8 @@ jobs:
     needs: detect-idle
     if: needs.detect-idle.outputs.idle-server == 'prod-app-2'
     uses: ./.github/workflows/prod-app-2-cd.yml
+    with:
+      run_id: ${{ github.run_id }}
     secrets:
       SPRING_PROFILES_ACTIVE: ${{ secrets.PROD_PROFILE }}
       SPRING_DATASOURCE_URL: ${{ secrets.PROD_DB_URL }}

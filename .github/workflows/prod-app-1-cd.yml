@@ -1,6 +1,10 @@
 name: Prod App 1 CD
 on:
   workflow_call:
+    with:
+      run_id:
+        required: true
+        type: string
     secrets:
       SPRING_PROFILES_ACTIVE:
         required: true
@@ -27,6 +31,9 @@ jobs:
         with:
           name: coursepick
           path: ./artifacts
+          repository: '${{ github.repository }}'
+          run-id: '${{ inputs.run_id }}'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 기존 80 포트 서버 내리기
         run: |
@@ -121,6 +128,4 @@ jobs:
           		sudo kill -9 $CHECK_PID || true
           		sleep 5
           	fi
-          else
-          	echo "포트 80은 사용 중이지 않음"
           fi
