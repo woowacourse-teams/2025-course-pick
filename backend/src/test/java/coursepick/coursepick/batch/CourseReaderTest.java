@@ -17,14 +17,14 @@ import static org.mockito.Mockito.when;
 
 class CourseReaderTest {
 
+    final CourseFileFetcher courseFileFetcher = mock(CourseFileFetcher.class);
+    final CourseReader sut = new CourseReader(
+            courseFileFetcher,
+            new CourseParserService(List.of(new GpxCourseParser()))
+    );
+
     @Test
     void 코스를_하나씩_읽어들인다() {
-        var courseFileFetcher = mock(CourseFileFetcher.class);
-        var sut = new CourseReader(
-                courseFileFetcher,
-                new CourseParserService(List.of(new GpxCourseParser()))
-        );
-
         var file1 = new CourseFile("파일1", CourseFileExtension.GPX, createGpxInputStreamOf(new Coordinate(1, 1, 1), new Coordinate(2, 2, 2)));
         var file2 = new CourseFile("파일2", CourseFileExtension.GPX, createGpxInputStreamOf(new Coordinate(2, 2, 2), new Coordinate(3, 3, 3)));
         var file3 = new CourseFile("파일3", CourseFileExtension.GPX, createGpxInputStreamOf(new Coordinate(3, 3, 3), new Coordinate(4, 4, 4)));
@@ -50,12 +50,6 @@ class CourseReaderTest {
 
     @Test
     void 각_페이지의_파일_개수가_달라도_정상적으로_읽는다() {
-        var courseFileFetcher = mock(CourseFileFetcher.class);
-        var sut = new CourseReader(
-                courseFileFetcher,
-                new CourseParserService(List.of(new GpxCourseParser()))
-        );
-
         var file1 = new CourseFile("파일1", CourseFileExtension.GPX, createGpxInputStreamOf(new Coordinate(1, 1, 1), new Coordinate(2, 2, 2)));
         var file2 = new CourseFile("파일2", CourseFileExtension.GPX, createGpxInputStreamOf(new Coordinate(2, 2, 2), new Coordinate(3, 3, 3)));
         var file3 = new CourseFile("파일3", CourseFileExtension.GPX, createGpxInputStreamOf(new Coordinate(3, 3, 3), new Coordinate(4, 4, 4)));
@@ -81,12 +75,6 @@ class CourseReaderTest {
 
     @Test
     void 코스_파일을_읽을_때에는_끝까지_읽는다() throws IOException {
-        var courseFileFetcher = mock(CourseFileFetcher.class);
-        var sut = new CourseReader(
-                courseFileFetcher,
-                new CourseParserService(List.of(new GpxCourseParser()))
-        );
-
         var file1 = new CourseFile("파일1", CourseFileExtension.GPX, createGpxInputStreamOf(new Coordinate(1, 1, 1), new Coordinate(2, 2, 2)));
         var file2 = new CourseFile("파일2", CourseFileExtension.GPX, createGpxInputStreamOf(new Coordinate(2, 2, 2), new Coordinate(3, 3, 3)));
         when(courseFileFetcher.fetchNextPage())
