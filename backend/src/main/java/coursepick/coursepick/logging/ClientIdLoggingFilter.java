@@ -23,14 +23,12 @@ public class ClientIdLoggingFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String clientId = request.getHeader(HEADER_NAME);
+        if (clientId != null && !clientId.isBlank()) {
+            clientId = "Unknown";
+        }
 
         try {
-            if (clientId != null && !clientId.isBlank()) {
-                MDC.put(MDC_KEY, clientId);
-            } else {
-                MDC.put(MDC_KEY, "Unknown");
-            }
-            filterChain.doFilter(request, response);
+            MDC.put(MDC_KEY, clientId);
         } finally {
             MDC.remove(MDC_KEY);
         }
