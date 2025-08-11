@@ -216,7 +216,7 @@ jobs:
           echo "-- 배포 종료 --"
 
   # 3) 로드밸런서에 nginx 설정 반영
-  update-nginx-1:
+  update-nginx-to-prod-app-1:
     name: nginx 로드밸런서 설정 파일 nginx-app-1으로 변경
     needs: [ deploy-prod-app-1 ]
     if: ${{ needs.deploy-prod-app-1.result == 'success' }}
@@ -232,7 +232,7 @@ jobs:
         run: |
           docker exec nginx nginx -s reload
 
-  update-nginx-2:
+  update-nginx-to-prod-app-2:
     name: nginx 로드밸런서 설정 파일 nginx-app-2으로 변경
     needs: [ deploy-prod-app-2 ]
     if: ${{ needs.deploy-prod-app-2.result == 'success' }}
@@ -252,7 +252,7 @@ jobs:
   # 4) 구버전 서버 종료 (server1 / server2 중 하나만 실행)
   shutdown-prod-app-1:
     name: prod-app-1 종료
-    needs: [ update-nginx-2 ]
+    needs: [ update-nginx-to-prod-app-2 ]
     runs-on: [ self-hosted, prod-app-1 ]
     steps:
       - name: 기존 80 포트 서버 내리기
@@ -263,10 +263,22 @@ jobs:
           	echo "사용중인 포트 80 서버 종료... PID=$PID"
           	sudo kill -15 $PID || true
           	sleep 5
+          
+            CHECK_PID=$(sudo lsof -t -i :80 || true)
+          	if [ -z "$CHECK_PID" ]; then
+          		echo "기존 서버 종료됨"
+          	else
+          		echo "기존 서버 종료되지 않아 강제 종료 수행... PID=$CHECK_PID"
+          		sudo kill -9 $CHECK_PID || true
+          		sleep 5
+          	fi
+          else
+          	echo "포트 80은 사용 중이지 않음"
+          fi
 
   shutdown-prod-app-2:
     name: prod-app-2 종료
-    needs: [ update-nginx-1 ]
+    needs: [ update-nginx-to-prod-app-1 ]
     runs-on: [ self-hosted, prod-app-2 ]
     steps:
       - name: 기존 80 포트 서버 내리기
