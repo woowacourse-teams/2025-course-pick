@@ -33,6 +33,7 @@ public interface CourseWebApi {
             })),
     })
     List<CourseWebResponse> findNearbyCourses(
+            @Parameter(example = "1000", required = true) int scope,
             @Parameter(example = "37.5165004", required = true) double mapLatitude,
             @Parameter(example = "127.1040109", required = true) double mapLongitude,
             @Parameter(example = "38.5165004") Double userLatitude,
