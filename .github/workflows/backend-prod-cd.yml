@@ -83,221 +83,26 @@ jobs:
     name: prod-app-1 서버에 배포
     needs: detect-idle
     if: needs.detect-idle.outputs.idle-server == 'prod-app-1'
-    runs-on: [ self-hosted, prod-app-1 ]
-    steps:
-      - name: 임시 아티팩트 저장소에 저장된 파일 다운로드
-        uses: actions/download-artifact@v4
-        with:
-          name: coursepick
-          path: ./artifacts
-
-      - name: 기존 80 포트 서버 내리기
-        run: |
-          PID=$(sudo lsof -t -i :80 || true)
-
-          if [ -n "$PID" ]; then
-          	echo "사용중인 포트 80 서버 종료... PID=$PID"
-          	sudo kill -15 $PID || true
-          	sleep 5
-
-          	CHECK_PID=$(sudo lsof -t -i :80 || true)
-          	if [ -z "$CHECK_PID" ]; then
-          		echo "기존 서버 종료됨"
-          	else
-          		echo "기존 서버 종료되지 않아 강제 종료 수행... PID=$CHECK_PID"
-          		sudo kill -9 $CHECK_PID || true
-          		sleep 5
-          	fi
-          else
-          	echo "포트 80은 사용 중이지 않음"
-          fi
-
-      - name: 새로운 서버로 실행
-        env:
-          SPRING_PROFILES_ACTIVE: ${{ secrets.PROD_PROFILE }}
-          SERVER_PORT: 80
-          SPRING_DATASOURCE_URL: ${{ secrets.PROD_DB_URL }}
-          SPRING_DATASOURCE_USERNAME: ${{ secrets.PROD_DB_USERNAME }}
-          SPRING_DATASOURCE_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
-          ADMIN_TOKEN: ${{ secrets.PROD_ADMIN_TOKEN }}
-          GCP_DRIVE_FOLDER_ID: ${{ secrets.GCP_DRIVE_FOLDER_ID }}
-          GCP_CREDENTIALS_PATH: ${{ secrets.GCP_CREDENTIALS_PATH }}
-        run: |
-          JAR_FILE=$(find ./artifacts -name "*.jar" | head -n 1)
-          echo "서버 시작 중... =$JAR_FILE"
-
-          sudo -E -b sh -c "java -jar '$JAR_FILE' > /var/log/app.log 2>&1"
-
-          for i in $(seq 1 10)
-          do
-            SERVER_STATUS=$(curl -o /dev/null -w "%{http_code}" http://localhost:80/actuator/health || true)
-
-            if [ "$SERVER_STATUS" -eq 200 ]; then
-              echo "서버 정상적으로 실행됨 status=$SERVER_STATUS"
-              break
-            else
-              echo "헬스체크에 실패함. 5초 후 다시 시도"
-              sleep 5
-            fi
-
-            if [ $i -eq 10 ]; then
-              echo "서버가 정상적으로 실행되지 않아 종료함"
-              exit 1
-            fi
-          done
+    uses: ./.github/workflows/prod-app-1-cd.yml
+    secrets:
+      SPRING_PROFILES_ACTIVE: ${{ secrets.PROD_PROFILE }}
+      SPRING_DATASOURCE_URL: ${{ secrets.PROD_DB_URL }}
+      SPRING_DATASOURCE_USERNAME: ${{ secrets.PROD_DB_USERNAME }}
+      SPRING_DATASOURCE_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
+      ADMIN_TOKEN: ${{ secrets.PROD_ADMIN_TOKEN }}
+      GCP_DRIVE_FOLDER_ID: ${{ secrets.GCP_DRIVE_FOLDER_ID }}
+      GCP_CREDENTIALS_PATH: ${{ secrets.GCP_CREDENTIALS_PATH }}
 
   deploy-prod-app-2:
     name: prod-app-2 서버에 배포
     needs: detect-idle
     if: needs.detect-idle.outputs.idle-server == 'prod-app-2'
-    runs-on: [ self-hosted, prod-app-2 ]
-    steps:
-      - name: 임시 아티팩트 저장소에 저장된 파일 다운로드
-        uses: actions/download-artifact@v4
-        with:
-          name: coursepick
-          path: ./artifacts
-
-      - name: 기존 80 포트 서버 내리기
-        run: |
-          PID=$(sudo lsof -t -i :80 || true)
-
-          if [ -n "$PID" ]; then
-          	echo "사용중인 포트 80 서버 종료... PID=$PID"
-          	sudo kill -15 $PID || true
-          	sleep 5
-
-          	CHECK_PID=$(sudo lsof -t -i :80 || true)
-          	if [ -z "$CHECK_PID" ]; then
-          		echo "기존 서버 종료됨"
-          	else
-          		echo "기존 서버 종료되지 않아 강제 종료 수행... PID=$CHECK_PID"
-          		sudo kill -9 $CHECK_PID || true
-          		sleep 5
-          	fi
-          else
-          	echo "포트 80은 사용 중이지 않음"
-          fi
-
-      - name: 새로운 서버로 실행
-        env:
-          SPRING_PROFILES_ACTIVE: ${{ secrets.PROD_PROFILE }}
-          SERVER_PORT: 80
-          SPRING_DATASOURCE_URL: ${{ secrets.PROD_DB_URL }}
-          SPRING_DATASOURCE_USERNAME: ${{ secrets.PROD_DB_USERNAME }}
-          SPRING_DATASOURCE_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
-          ADMIN_TOKEN: ${{ secrets.PROD_ADMIN_TOKEN }}
-          GCP_DRIVE_FOLDER_ID: ${{ secrets.GCP_DRIVE_FOLDER_ID }}
-          GCP_CREDENTIALS_PATH: ${{ secrets.GCP_CREDENTIALS_PATH }}
-        run: |
-          JAR_FILE=$(find ./artifacts -name "*.jar" | head -n 1)
-          echo "서버 시작 중... =$JAR_FILE"
-
-          sudo -E -b sh -c "java -jar '$JAR_FILE' > /var/log/app.log 2>&1"
-
-          for i in $(seq 1 10)
-          do
-            SERVER_STATUS=$(curl -o /dev/null -w "%{http_code}" http://localhost:80/actuator/health || true)
-
-            if [ "$SERVER_STATUS" -eq 200 ]; then
-              echo "서버 정상적으로 실행됨 status=$SERVER_STATUS"
-              break
-            else
-              echo "헬스체크에 실패함. 5초 후 다시 시도"
-              sleep 5
-            fi
-
-            if [ $i -eq 10 ]; then
-              echo "서버가 정상적으로 실행되지 않아 종료함"
-              exit 1
-            fi
-          done
-
-          echo "-- 배포 종료 --"
-
-  # 3) 로드밸런서에 nginx 설정 반영
-  update-nginx-to-prod-app-1:
-    name: nginx 로드밸런서 설정 파일 nginx-app-1으로 변경
-    needs: [ deploy-prod-app-1 ]
-    if: ${{ needs.deploy-prod-app-1.result == 'success' }}
-    runs-on: [ self-hosted, prod-lb ]
-    steps:
-      - name: nginx.conf 갱신
-        run: |
-          docker exec nginx sh -c " \
-            cd /etc/nginx && \
-            cat nginx-app-1.conf > nginx.conf"
-
-      - name: nginx 리로드
-        run: |
-          docker exec nginx nginx -s reload
-
-  update-nginx-to-prod-app-2:
-    name: nginx 로드밸런서 설정 파일 nginx-app-2으로 변경
-    needs: [ deploy-prod-app-2 ]
-    if: ${{ needs.deploy-prod-app-2.result == 'success' }}
-    runs-on: [ self-hosted, prod-lb ]
-    steps:
-      - name: nginx.conf 갱신
-        run: |
-          docker exec nginx sh -c " \
-            cd /etc/nginx && \
-            cat nginx-app-2.conf > nginx.conf"
-
-      - name: nginx 리로드
-        run: |
-          docker exec nginx nginx -s reload
-
-
-  # 4) 구버전 서버 종료 (server1 / server2 중 하나만 실행)
-  shutdown-prod-app-1:
-    name: prod-app-1 종료
-    needs: [ update-nginx-to-prod-app-2 ]
-    runs-on: [ self-hosted, prod-app-1 ]
-    steps:
-      - name: 기존 80 포트 서버 내리기
-        run: |
-          PID=$(sudo lsof -t -i :80 || true)
-
-          if [ -n "$PID" ]; then
-          	echo "사용중인 포트 80 서버 종료... PID=$PID"
-          	sudo kill -15 $PID || true
-          	sleep 5
-          
-            CHECK_PID=$(sudo lsof -t -i :80 || true)
-          	if [ -z "$CHECK_PID" ]; then
-          		echo "기존 서버 종료됨"
-          	else
-          		echo "기존 서버 종료되지 않아 강제 종료 수행... PID=$CHECK_PID"
-          		sudo kill -9 $CHECK_PID || true
-          		sleep 5
-          	fi
-          else
-          	echo "포트 80은 사용 중이지 않음"
-          fi
-
-  shutdown-prod-app-2:
-    name: prod-app-2 종료
-    needs: [ update-nginx-to-prod-app-1 ]
-    runs-on: [ self-hosted, prod-app-2 ]
-    steps:
-      - name: 기존 80 포트 서버 내리기
-        run: |
-          PID=$(sudo lsof -t -i :80 || true)
-
-          if [ -n "$PID" ]; then
-          	echo "사용중인 포트 80 서버 종료... PID=$PID"
-          	sudo kill -15 $PID || true
-          	sleep 5
-
-          	CHECK_PID=$(sudo lsof -t -i :80 || true)
-          	if [ -z "$CHECK_PID" ]; then
-          		echo "기존 서버 종료됨"
-          	else
-          		echo "기존 서버 종료되지 않아 강제 종료 수행... PID=$CHECK_PID"
-          		sudo kill -9 $CHECK_PID || true
-          		sleep 5
-          	fi
-          else
-          	echo "포트 80은 사용 중이지 않음"
-          fi
+    uses: ./.github/workflows/prod-app-2-cd.yml
+    secrets:
+      SPRING_PROFILES_ACTIVE: ${{ secrets.PROD_PROFILE }}
+      SPRING_DATASOURCE_URL: ${{ secrets.PROD_DB_URL }}
+      SPRING_DATASOURCE_USERNAME: ${{ secrets.PROD_DB_USERNAME }}
+      SPRING_DATASOURCE_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
+      ADMIN_TOKEN: ${{ secrets.PROD_ADMIN_TOKEN }}
+      GCP_DRIVE_FOLDER_ID: ${{ secrets.GCP_DRIVE_FOLDER_ID }}
+      GCP_CREDENTIALS_PATH: ${{ secrets.GCP_CREDENTIALS_PATH }}
