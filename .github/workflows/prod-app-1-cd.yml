@@ -20,7 +20,6 @@ on:
 jobs:
   deploy-prod-app-1:
     name: prod-app-1 서버에 배포
-    if: needs.detect-idle.outputs.idle-server == 'prod-app-1'
     runs-on: [ self-hosted, prod-app-1 ]
     steps:
       - name: 임시 아티팩트 저장소에 저장된 파일 다운로드
