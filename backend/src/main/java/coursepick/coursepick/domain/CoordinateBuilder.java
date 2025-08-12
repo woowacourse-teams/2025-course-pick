@@ -26,7 +26,7 @@ public class CoordinateBuilder {
      * <br>
      * 비슷하다는 것은, 두 좌표의 거리가 1m 이하인 것을 말합니다.
      */
-    public CoordinateBuilder removeSimilarCoordinate() {
+    public CoordinateBuilder removeSimilar() {
         List<Coordinate> nonSimilarCoordinates = new ArrayList<>();
         nonSimilarCoordinates.add(coordinates.getFirst());
 
@@ -47,8 +47,8 @@ public class CoordinateBuilder {
      * <br>
      * 튄다는 것은, 갑자기 5m 이상 벌어지는 점을 말합니다.
      */
-    public CoordinateBuilder smoothCoordinates() {
-        final int maxJumpMeter = 50;
+    public CoordinateBuilder smooth() {
+        final int maxJumpMeter = 100;
         List<Coordinate> smoothCoordinates = new ArrayList<>();
         smoothCoordinates.add(coordinates.getFirst());
 
