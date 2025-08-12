@@ -24,15 +24,21 @@ public class CourseApplicationService {
     @Transactional(readOnly = true)
     public List<CourseResponse> findNearbyCourses(int scope, double mapLatitude, double mapLongitude, Double userLatitude, Double userLongitude) {
         final Coordinate mapPosition = new Coordinate(mapLatitude, mapLongitude);
+        if (scope < 1000 || scope > 3000) {
+            scope = 1000;
+        }
+
+        List<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(mapPosition, new Meter(scope));
+
         if (userLatitude == null || userLongitude == null) {
-            return courseRepository.findAllHasDistanceWithin(mapPosition, new Meter(scope))
+            return coursesWithinScope
                     .stream()
                     .map(CourseResponse::from)
                     .toList();
         }
 
         final Coordinate userPosition = new Coordinate(userLatitude, userLongitude);
-        return courseRepository.findAllHasDistanceWithin(mapPosition, new Meter(scope))
+        return coursesWithinScope
                 .stream()
                 .map(course -> CourseResponse.from(course, userPosition))
                 .toList();
