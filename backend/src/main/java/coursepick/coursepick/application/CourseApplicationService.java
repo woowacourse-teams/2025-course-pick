@@ -25,8 +25,11 @@ public class CourseApplicationService {
     public List<CourseResponse> findNearbyCourses(int scope, double mapLatitude, double mapLongitude, Double userLatitude, Double userLongitude) {
         final Coordinate mapPosition = new Coordinate(mapLatitude, mapLongitude);
         Meter meter = new Meter(scope);
-        if (!meter.isAtLeast(new Meter(1000)) || !meter.isWithin(new Meter(3000))) {
+        if (!meter.isAtLeast(new Meter(1000))) {
             meter = new Meter(1000);
+        }
+        if (!meter.isWithin(new Meter(3000))) {
+            meter = new Meter(3000);
         }
 
         List<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(mapPosition, meter);
