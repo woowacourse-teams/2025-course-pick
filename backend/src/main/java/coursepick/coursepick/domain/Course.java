@@ -43,6 +43,7 @@ public class Course {
         this.roadType = roadType;
         List<Coordinate> coordinates = CoordinateBuilder.fromRawCoordinates(rawCoordinates)
                 .removeSimilarCoordinate()
+                .smoothCoordinates()
                 .build();
         List<GeoLine> geoLines = GeoLineBuilder.fromCoordinates(coordinates)
                 .build();

@@ -29,6 +29,7 @@ public class CoordinateBuilder {
     public CoordinateBuilder removeSimilarCoordinate() {
         List<Coordinate> nonSimilarCoordinates = new ArrayList<>();
         nonSimilarCoordinates.add(coordinates.getFirst());
+
         for (int i = 1; i < coordinates.size(); i++) {
             Coordinate lastCoordinate = nonSimilarCoordinates.getLast();
             Coordinate currentCoordinate = coordinates.get(i);
@@ -37,7 +38,32 @@ public class CoordinateBuilder {
                 nonSimilarCoordinates.add(currentCoordinate);
             }
         }
+
         return new CoordinateBuilder(nonSimilarCoordinates);
+    }
+
+    /**
+     * 갑자기 튀는 점에 대하여 최근 점들의 평균으로 부드럽게 만듭니다.
+     * <br>
+     * 튄다는 것은, 갑자기 5m 이상 벌어지는 점을 말합니다.
+     */
+    public CoordinateBuilder smoothCoordinates() {
+        List<Coordinate> smoothCoordinates = new ArrayList<>();
+        smoothCoordinates.add(coordinates.getFirst());
+
+        for (int i = 1; i < coordinates.size(); i++) {
+            Coordinate lastCoordinate = smoothCoordinates.getLast();
+            Coordinate currentCoordinate = coordinates.get(i);
+            Meter distance = GeoLine.between(lastCoordinate, currentCoordinate).length();
+            if (new Meter(50).isWithin(distance)) {
+                Coordinate averageCoordinate = Coordinate.average(smoothCoordinates, 5);
+                smoothCoordinates.add(averageCoordinate);
+            } else {
+                smoothCoordinates.add(currentCoordinate);
+            }
+        }
+
+        return new CoordinateBuilder(smoothCoordinates);
     }
 
     /**

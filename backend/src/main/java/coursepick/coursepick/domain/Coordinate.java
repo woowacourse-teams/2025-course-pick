@@ -2,6 +2,7 @@ package coursepick.coursepick.domain;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_LATITUDE_RANGE;
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_LONGITUDE_RANGE;
@@ -23,6 +24,11 @@ public record Coordinate(
 
     public Coordinate(double latitude, double longitude) {
         this(latitude, longitude, 0);
+    }
+
+    public static Coordinate average(List<Coordinate> coordinates, int maxSampleSize) {
+        // TODO : 구현
+        return null;
     }
 
     public boolean hasSameLatitudeAndLongitude(Coordinate other) {
