@@ -3,7 +3,7 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
 
-    <property name="LOG_FILE_PATH" value="./logs"/>
+    <property name="LOG_FILE_PATH" value="/var/lib/coursepick/logs"/>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_FILE_PATH}/coursepick.log</file>
