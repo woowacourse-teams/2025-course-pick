@@ -21,7 +21,7 @@ public record CourseWebResponse(
         RoadType roadType,
         @Schema(example = "쉬움")
         String difficulty,
-        String summary,
+        String description,
         List<SegmentWebResponse> segments
 ) {
     public static List<CourseWebResponse> from(List<CourseResponse> courseResponses) {
