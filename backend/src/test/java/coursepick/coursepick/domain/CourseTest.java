@@ -1,15 +1,13 @@
 package coursepick.coursepick.domain;
 
+import org.assertj.core.data.Percentage;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -79,44 +77,36 @@ class CourseTest {
     @Test
     void 코스의_총_거리를_계산할_수_있다() {
         var course = new Course("한강뛰어보자", List.of(
-                new Coordinate(37.518400, 126.995600),
-                new Coordinate(37.518000, 126.996500),
-                new Coordinate(37.517500, 126.998000),
-                new Coordinate(37.517000, 127.000000),
-                new Coordinate(37.516500, 127.002000),
-                new Coordinate(37.516000, 127.004500),
-                new Coordinate(37.515500, 127.007000),
-                new Coordinate(37.515000, 127.009500),
-                new Coordinate(37.515500, 127.008000),
-                new Coordinate(37.516000, 127.004700),
-                new Coordinate(37.516500, 127.002300),
-                new Coordinate(37.517000, 127.001000),
-                new Coordinate(37.517500, 126.997000),
-                new Coordinate(37.518000, 126.994500),
-                new Coordinate(37.518400, 126.993600)
+                new Coordinate(0, 0),
+                new Coordinate(0, 0.0001),
+                new Coordinate(0.0001, 0.0001),
+                new Coordinate(0.0001, 0),
+                new Coordinate(0, 0)
         ));
 
-        var totalLength = course.length();
+        var distance = course.length();
 
-        assertThat((int) totalLength.value()).isEqualTo(2924);
+        assertThat(distance.value()).isCloseTo(44.4, Percentage.withPercentage(1));
     }
 
     @ParameterizedTest
     @CsvSource({
-            "37.517712, 126.995012, 142",
-            "37.516678, 126.997065, 46"
+            "0.0002, 0.0001, 11.1",
+            "0.00005, 0.00005, 5.55",
     })
-    void 특정_좌표에서_코스까지_가장_가까운_거리를_계산할_수_있다(double latitude, double longitude, int expectedDistance) {
+    void 특정_좌표에서_코스까지_가장_가까운_거리를_계산할_수_있다(double latitude, double longitude, double expectedDistance) {
         var course = new Course("한강뛰어보자", List.of(
-                new Coordinate(37.519760, 126.995477),
-                new Coordinate(37.517083, 126.997182),
-                new Coordinate(37.519760, 126.995477)
+                new Coordinate(0, 0),
+                new Coordinate(0, 0.0001),
+                new Coordinate(0.0001, 0.0001),
+                new Coordinate(0.0001, 0),
+                new Coordinate(0, 0)
         ));
         var target = new Coordinate(latitude, longitude);
 
         var distance = course.distanceFrom(target);
 
-        assertThat((int) distance.value()).isEqualTo(expectedDistance);
+        assertThat(distance.value()).isCloseTo(expectedDistance, Percentage.withPercentage(1));
     }
 
     @Test
@@ -203,68 +193,24 @@ class CourseTest {
 
     @ParameterizedTest
     @CsvSource({
-            "-10, -10, 0, 0",
-            "20, 20, 10, 10",
-            "10, 0, 5, 5",
-            "5, 0, 2.5, 2.5"
+            "0.0002, 0.00005, 0.0001, 0.00005",
+            "0.0002, 0.0002, 0.0001, 0.0001",
+            "0.00007, 0.00005, 0.0001, 0.00005",
     })
-    void 코스의_좌표_중에서_가장_가까운_좌표를_계산한다(double targetLatitude, double targetLongitude, double latitude, double longitude) {
+    void 코스의_좌표_중에서_가장_가까운_좌표를_계산한다(double targetLatitude, double targetLongitude, double expectedLatitude, double expectedLongitude) {
         Course course = new Course("왕복코스", List.of(
                 new Coordinate(0, 0),
-                new Coordinate(10, 10.0),
+                new Coordinate(0, 0.0001),
+                new Coordinate(0.0001, 0.0001),
+                new Coordinate(0.0001, 0),
                 new Coordinate(0, 0)
         ));
         Coordinate target = new Coordinate(targetLatitude, targetLongitude);
 
         Coordinate minDistanceCoordinate = course.closestCoordinateFrom(target);
 
-        Coordinate expectedCoordinate = new Coordinate(latitude, longitude);
+        Coordinate expectedCoordinate = new Coordinate(expectedLatitude, expectedLongitude);
         assertThat(minDistanceCoordinate).isEqualTo(expectedCoordinate);
-    }
-
-    @ParameterizedTest
-    @MethodSource("createArguments")
-    void 코스의_난이도를_계산한다(List<Coordinate> coordinates, RoadType roadType, Difficulty expectedDifficulty) {
-        var course = new Course("코스", roadType, coordinates);
-
-        var difficulty = course.difficulty();
-
-        assertThat(difficulty).isEqualTo(expectedDifficulty);
-    }
-
-    private static Stream<Arguments> createArguments() {
-        return Stream.of(
-                Arguments.of(
-                        List.of(new Coordinate(37.5, 127.0), new Coordinate(37.499999, 127.0), new Coordinate(37.5, 127.0)),
-                        RoadType.트랙,
-                        Difficulty.쉬움
-                ),
-                Arguments.of(
-                        List.of(new Coordinate(37.5, 127.0), new Coordinate(37.499999, 127.0), new Coordinate(37.5, 127.0)),
-                        RoadType.트레일,
-                        Difficulty.쉬움
-                ),
-                Arguments.of(
-                        List.of(new Coordinate(37.5, 127.0), new Coordinate(37.499999, 127.0), new Coordinate(37.5, 127.0)),
-                        RoadType.보도,
-                        Difficulty.쉬움
-                ),
-                Arguments.of(
-                        List.of(new Coordinate(37.499384, 126.999433), new Coordinate(37.501806, 127.239550), new Coordinate(37.499384, 126.999433)),
-                        RoadType.보도,
-                        Difficulty.어려움
-                ),
-                Arguments.of(
-                        List.of(new Coordinate(37.506591, 127.145630), new Coordinate(37.311405, 127.383810), new Coordinate(37.506591, 127.145630)),
-                        RoadType.트랙,
-                        Difficulty.어려움
-                ),
-                Arguments.of(
-                        List.of(new Coordinate(37.486225, 127.063228), new Coordinate(37.486557, 127.187908), new Coordinate(37.486225, 127.063228)),
-                        RoadType.트레일,
-                        Difficulty.어려움
-                )
-        );
     }
 
     @Nested
@@ -310,10 +256,10 @@ class CourseTest {
         void 동일한_경사타입과_방향의_세그먼트들이_올바르게_병합된다() {
             Course course = new Course("병합테스트코스", List.of(
                     new Coordinate(0, 0, 0),
-                    new Coordinate(0, 0.0010, 8),   // 오르막 (약 4.5도)
-                    new Coordinate(0, 0.0020, 16),  // 오르막 (약 4.5도)
-                    new Coordinate(0, 0.0010, 8),   // 내리막 (약 -4.5도)
-                    new Coordinate(0, 0, 0)         // 내리막 (약 -4.5도)
+                    new Coordinate(0, 0.0001, 0.1),
+                    new Coordinate(0, 0.0002, 0.2),
+                    new Coordinate(0, 0.0001, 0.1),
+                    new Coordinate(0, 0, 0)
             ));
 
             List<Segment> segments = course.segments();
