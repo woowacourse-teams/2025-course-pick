@@ -113,12 +113,18 @@ class CoursesActivity :
     override fun searchThisArea() {
         val mapPosition: LatLng = mapManager.cameraPosition ?: return
         val coordinate = mapPosition.toCoordinate()
+        Logger.log(
+            Logger.Event.Click("search this area"),
+            "latitude" to coordinate.latitude.value,
+            "longitude" to coordinate.longitude.value,
+        )
         binding.mainSearchThisAreaButton.visibility = View.GONE
         mapManager.showSearchPosition(coordinate)
         fetchCourses(coordinate)
     }
 
     override fun openMenu() {
+        Logger.log(Logger.Event.Click("main menu"))
         binding.mainDrawer.open()
     }
 
@@ -191,6 +197,7 @@ class CoursesActivity :
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun moveToCurrentLocation() {
+        Logger.log(Logger.Event.Click("move to current location"))
         mapManager.moveToCurrentLocation()
     }
 
@@ -225,11 +232,13 @@ class CoursesActivity :
     private fun CourseItemListener(): CourseItemListener =
         object : CourseItemListener {
             override fun select(course: CourseItem) {
+                Logger.log(Logger.Event.Click("course on list"), "course" to course)
                 viewModel.select(course)
             }
 
             @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
             override fun navigateToMap(course: CourseItem) {
+                Logger.log(Logger.Event.Click("navigate"), "course" to course)
                 mapManager.fetchCurrentLocation(
                     onSuccess = { latitude: Latitude, longitude: Longitude ->
                         viewModel.fetchNearestCoordinate(course, Coordinate(latitude, longitude))

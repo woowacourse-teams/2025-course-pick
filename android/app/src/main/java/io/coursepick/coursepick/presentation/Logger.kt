@@ -82,5 +82,13 @@ object Logger {
         class Search(
             target: String,
         ) : Event(target)
+
+        class Success(
+            target: String,
+        ) : Event(target)
+
+        class Failure(
+            target: String,
+        ) : Event(target)
     }
 }

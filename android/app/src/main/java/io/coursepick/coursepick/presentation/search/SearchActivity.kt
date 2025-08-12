@@ -62,6 +62,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun submitPlace(place: Place) {
+        Logger.log(Logger.Event.Click("place"), "place" to place)
         val resultIntent =
             Intent().apply {
                 putExtra(CoordinateKeys.EXTRA_KEYS_LATITUDE, place.latitude)
