@@ -1,13 +1,17 @@
 package io.coursepick.coursepick.presentation.map.kakao
 
 import android.Manifest
+import android.graphics.PointF
 import android.location.Location
 import android.widget.Toast
 import androidx.annotation.RequiresPermission
+import com.kakao.vectormap.GestureType
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.MapGravity
 import com.kakao.vectormap.MapView
+import com.kakao.vectormap.Poi
+import com.kakao.vectormap.camera.CameraPosition
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Latitude
@@ -50,6 +54,7 @@ class KakaoMapManager(
                 },
                 onFailure = {},
             )
+            setUpMapListeners(map)
         }
     }
 
@@ -187,5 +192,37 @@ class KakaoMapManager(
             },
             onFailure = onFailure,
         )
+    }
+
+    private fun setUpMapListeners(map: KakaoMap) {
+        map.setOnMapClickListener { _, latLng: LatLng, pointF: PointF, poi: Poi ->
+            Logger.log(
+                Logger.Event.Click("map"),
+                "latitude" to latLng.latitude,
+                "longitude" to latLng.longitude,
+                "x" to pointF.x,
+                "y" to pointF.y,
+                "poi" to poi.name,
+            )
+        }
+
+        map.setOnCameraMoveStartListener { _, gestureType: GestureType ->
+            Logger.log(
+                Logger.Event.MapMoveStart("map"),
+                "gestureType" to gestureType,
+            )
+        }
+
+        map.setOnCameraMoveEndListener { _, cameraPosition: CameraPosition, gestureType: GestureType ->
+            Logger.log(
+                Logger.Event.MapMoveEnd("map"),
+                "position" to cameraPosition.position,
+                "height" to cameraPosition.height,
+                "tiltAngle" to cameraPosition.tiltAngle,
+                "rotationAngle" to cameraPosition.rotationAngle,
+                "zoomLevel" to cameraPosition.zoomLevel,
+                "gestureType" to gestureType,
+            )
+        }
     }
 }

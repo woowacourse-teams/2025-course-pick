@@ -57,9 +57,13 @@ object Logger {
             target: String,
         ) : Event(target)
 
-        object ZoomIn : Event()
+        class MapMoveStart(
+            target: String,
+        ) : Event(target)
 
-        object ZoomOut : Event()
+        class MapMoveEnd(
+            target: String,
+        ) : Event(target)
 
         class Search(
             target: String,

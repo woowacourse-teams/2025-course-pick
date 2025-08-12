@@ -28,37 +28,23 @@ class CoursePickApplication : Application() {
                     activity: Activity,
                     savedInstanceState: Bundle?,
                 ) {
-                    Timber.tag("debug logger").d("${activity.javaClass.simpleName} Created")
                     Logger.log(Logger.Event.Enter(activity.javaClass.simpleName))
                 }
 
-                override fun onActivityStarted(activity: Activity) {
-                    Timber.tag("debug logger").d("${activity.javaClass.simpleName} Started")
-                }
+                override fun onActivityStarted(activity: Activity) = Unit
 
-                override fun onActivityResumed(activity: Activity) {
-                    Timber.tag("debug logger").d("${activity.javaClass.simpleName} Resumed")
-                }
+                override fun onActivityResumed(activity: Activity) = Unit
 
-                override fun onActivityPaused(activity: Activity) {
-                    Timber.tag("debug logger").d("${activity.javaClass.simpleName} Paused")
-                }
+                override fun onActivityPaused(activity: Activity) = Unit
 
-                override fun onActivityStopped(activity: Activity) {
-                    Timber.tag("debug logger").d("${activity.javaClass.simpleName} Stopped")
-                }
+                override fun onActivityStopped(activity: Activity) = Unit
 
                 override fun onActivitySaveInstanceState(
                     activity: Activity,
                     outState: Bundle,
-                ) {
-                    Timber
-                        .tag("debug logger")
-                        .d("${activity.javaClass.simpleName} SaveInstanceState")
-                }
+                ) = Unit
 
                 override fun onActivityDestroyed(activity: Activity) {
-                    Timber.tag("debug logger").d("${activity.javaClass.simpleName} Destroyed")
                     Logger.log(Logger.Event.Exit(activity.javaClass.simpleName))
                 }
             },
