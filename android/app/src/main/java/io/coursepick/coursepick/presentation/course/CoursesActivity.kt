@@ -33,6 +33,7 @@ import io.coursepick.coursepick.databinding.ActivityCoursesBinding
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Longitude
+import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.presentation.CoordinateKeys
 import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.Logger
@@ -89,7 +90,7 @@ class CoursesActivity :
             mapManager.setOnCameraMoveListener {
                 binding.mainSearchThisAreaButton.visibility = View.VISIBLE
             }
-            fetchCourses(coordinate)
+            fetchCourses(coordinate, Scope.default())
         }
 
         searchLauncher = searchActivityResultLauncher()
@@ -112,7 +113,12 @@ class CoursesActivity :
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun searchThisArea() {
-        val mapPosition: LatLng = mapManager.cameraPosition ?: return
+        val mapPosition: LatLng =
+            mapManager.cameraPosition ?: run {
+                Toast.makeText(this, "지도 위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
+                return
+            }
+
         val coordinate = mapPosition.toCoordinate()
         Logger.log(
             Logger.Event.Click("search_this_area"),
@@ -122,6 +128,20 @@ class CoursesActivity :
         binding.mainSearchThisAreaButton.visibility = View.GONE
         mapManager.showSearchPosition(coordinate)
         fetchCourses(coordinate)
+        val scope =
+            try {
+                mapManager.scope(coordinate)
+            } catch (e: IllegalStateException) {
+                Toast
+                    .makeText(
+                        this,
+                        e.message ?: "지도를 불러올 수 없어 코스를 탐색할 수 없습니다.",
+                        Toast.LENGTH_SHORT,
+                    ).show()
+                return
+            }
+
+        fetchCourses(coordinate, scope)
     }
 
     override fun openMenu() {
@@ -193,7 +213,7 @@ class CoursesActivity :
         val longitude = Longitude(longitudeValue)
 
         mapManager.moveTo(latitude, longitude)
-        fetchCourses(Coordinate(latitude, longitude))
+        fetchCourses(Coordinate(latitude, longitude), Scope.default())
     }
 
     private fun navigateToPreferences() {
@@ -312,14 +332,17 @@ class CoursesActivity :
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    private fun fetchCourses(mapCoordinate: Coordinate) {
+    private fun fetchCourses(
+        mapCenter: Coordinate,
+        scope: Scope,
+    ) {
         mapManager.fetchCurrentLocation(
             onSuccess = { userLatitude: Latitude, userLongitude: Longitude ->
                 val userCoordinate = Coordinate(userLatitude, userLongitude)
-                viewModel.fetchCourses(mapCoordinate, userCoordinate)
+                viewModel.fetchCourses(mapCenter, userCoordinate, scope)
             },
             onFailure = {
-                viewModel.fetchCourses(mapCoordinate)
+                viewModel.fetchCourses(mapCenter, null, scope)
             },
         )
     }

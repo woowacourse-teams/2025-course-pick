@@ -10,6 +10,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseRepository
+import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
@@ -49,7 +50,8 @@ class CoursesViewModel(
 
     fun fetchCourses(
         mapCoordinate: Coordinate,
-        userCoordinate: Coordinate? = null,
+        userCoordinate: Coordinate?,
+        scope: Scope = Scope.default(),
     ) {
         _state.value =
             state.value?.copy(
@@ -58,7 +60,7 @@ class CoursesViewModel(
             )
         viewModelScope.launch {
             runCatching {
-                courseRepository.courses(mapCoordinate, userCoordinate)
+                courseRepository.courses(mapCoordinate, userCoordinate, scope)
             }.onSuccess { courses: List<Course> ->
                 Logger.log(Logger.Event.Success("fetch_courses"))
                 val courseItems: List<CourseItem> =

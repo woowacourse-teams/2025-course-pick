@@ -3,6 +3,7 @@ package io.coursepick.coursepick.data.course
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseRepository
+import io.coursepick.coursepick.domain.course.Scope
 
 class DefaultCourseRepository(
     private val service: CourseService,
@@ -10,6 +11,7 @@ class DefaultCourseRepository(
     override suspend fun courses(
         mapCoordinate: Coordinate,
         userCoordinate: Coordinate?,
+        scope: Scope,
     ): List<Course> =
         service
             .courses(
@@ -17,6 +19,7 @@ class DefaultCourseRepository(
                 mapCoordinate.longitude.value,
                 userCoordinate?.latitude?.value,
                 userCoordinate?.longitude?.value,
+                scope.meter,
             ).map(CourseDto::toCourse)
 
     override suspend fun nearestCoordinate(
