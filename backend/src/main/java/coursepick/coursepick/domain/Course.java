@@ -42,7 +42,6 @@ public class Course {
         this.name = new CourseName(name);
         this.roadType = roadType;
         List<Coordinate> coordinates = CoordinateBuilder.fromRawCoordinates(rawCoordinates)
-                .addFirstCoordinateIfNotConnected()
                 .removeDuplicatedCoordinate()
                 .build();
         List<GeoLine> geoLines = GeoLineBuilder.fromCoordinates(coordinates)

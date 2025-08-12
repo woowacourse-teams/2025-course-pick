@@ -21,16 +21,6 @@ public class CoordinateBuilder {
         return new CoordinateBuilder(coordinates);
     }
 
-    public CoordinateBuilder addFirstCoordinateIfNotConnected() {
-        List<Coordinate> connectedCoordinates = new ArrayList<>(coordinates);
-        Coordinate start = coordinates.getFirst();
-        Coordinate end = coordinates.getLast();
-        if (!start.equals(end)) {
-            connectedCoordinates.add(coordinates.getFirst());
-        }
-        return new CoordinateBuilder(connectedCoordinates);
-    }
-
     public CoordinateBuilder removeDuplicatedCoordinate() {
         List<Coordinate> nonDuplicatedCoordinates = new ArrayList<>();
         nonDuplicatedCoordinates.add(coordinates.getFirst());
@@ -42,6 +32,20 @@ public class CoordinateBuilder {
             }
         }
         return new CoordinateBuilder(nonDuplicatedCoordinates);
+    }
+
+    /**
+     * 원형 코스를 위한 기능이었으나, GPX 파일을 미리 보정하여 넣기로 합의되며 제거됨 - @yeezy-com
+     */
+    @Deprecated
+    public CoordinateBuilder addFirstCoordinateIfNotConnected() {
+        List<Coordinate> connectedCoordinates = new ArrayList<>(coordinates);
+        Coordinate start = coordinates.getFirst();
+        Coordinate end = coordinates.getLast();
+        if (!start.equals(end)) {
+            connectedCoordinates.add(coordinates.getFirst());
+        }
+        return new CoordinateBuilder(connectedCoordinates);
     }
 
     public List<Coordinate> build() {
