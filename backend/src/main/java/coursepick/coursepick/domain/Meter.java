@@ -25,4 +25,9 @@ public record Meter(
     public boolean isWithin(Meter other) {
         return this.value() <= other.value();
     }
+
+    public boolean isAtLeast(Meter other) {
+        return this.value() >= other.value();
+    }
+
 }

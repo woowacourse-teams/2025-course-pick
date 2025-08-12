@@ -24,11 +24,12 @@ public class CourseApplicationService {
     @Transactional(readOnly = true)
     public List<CourseResponse> findNearbyCourses(int scope, double mapLatitude, double mapLongitude, Double userLatitude, Double userLongitude) {
         final Coordinate mapPosition = new Coordinate(mapLatitude, mapLongitude);
-        if (scope < 1000 || scope > 3000) {
-            scope = 1000;
+        Meter meter = new Meter(scope);
+        if (!meter.isAtLeast(new Meter(1000)) || !meter.isWithin(new Meter(3000))) {
+            meter = new Meter(1000);
         }
 
-        List<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(mapPosition, new Meter(scope));
+        List<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(mapPosition, meter);
 
         if (userLatitude == null || userLongitude == null) {
             return coursesWithinScope
