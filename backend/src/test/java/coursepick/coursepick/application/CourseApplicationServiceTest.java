@@ -48,7 +48,7 @@ class CourseApplicationServiceTest extends IntegrationTest {
         double latitude = 37.5122;
         double longitude = 127.0276;
 
-        List<CourseResponse> nearbyCourses = sut.findNearbyCourses(300, latitude, longitude, null, null);
+        List<CourseResponse> nearbyCourses = sut.findNearbyCourses(latitude, longitude, null, null, 300);
 
         assertThat(nearbyCourses).hasSize(2)
                 .extracting(CourseResponse::name)
@@ -78,7 +78,7 @@ class CourseApplicationServiceTest extends IntegrationTest {
         double latitude = 37.5122;
         double longitude = 127.0276;
 
-        List<CourseResponse> nearbyCourses = sut.findNearbyCourses(15000, latitude, longitude, null, null);
+        List<CourseResponse> nearbyCourses = sut.findNearbyCourses(latitude, longitude, null, null, 15000);
 
         assertThat(nearbyCourses).hasSize(1)
                 .extracting(CourseResponse::name)
@@ -113,7 +113,7 @@ class CourseApplicationServiceTest extends IntegrationTest {
         double latitude = 37.5172;
         double longitude = 127.0276;
 
-        List<CourseResponse> courses = sut.findNearbyCourses(1000, latitude, longitude, null, null);
+        List<CourseResponse> courses = sut.findNearbyCourses(latitude, longitude, null, null, 1000);
 
         assertThat(courses).hasSize(2)
                 .extracting(CourseResponse::name)
@@ -151,7 +151,7 @@ class CourseApplicationServiceTest extends IntegrationTest {
         double userLatitude = 37.5153291;
         double userLongitude = 127.1031347;
 
-        List<CourseResponse> courses = sut.findNearbyCourses(1000, mapLatitude, mapLongitude, userLatitude, userLongitude);
+        List<CourseResponse> courses = sut.findNearbyCourses(mapLatitude, mapLongitude, userLatitude, userLongitude, 1000);
 
         assertThat(course1.distanceFrom(new Coordinate(mapLatitude, mapLongitude)).value()).isLessThan(1000.0);
         assertThat(course2.distanceFrom(new Coordinate(mapLatitude, mapLongitude)).value()).isLessThan(1000.0);

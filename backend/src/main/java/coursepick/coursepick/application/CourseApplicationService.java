@@ -22,7 +22,7 @@ public class CourseApplicationService {
     private final CourseRepository courseRepository;
 
     @Transactional(readOnly = true)
-    public List<CourseResponse> findNearbyCourses(int scope, double mapLatitude, double mapLongitude, Double userLatitude, Double userLongitude) {
+    public List<CourseResponse> findNearbyCourses(double mapLatitude, double mapLongitude, Double userLatitude, Double userLongitude, int scope) {
         final Coordinate mapPosition = new Coordinate(mapLatitude, mapLongitude);
         Meter meter = new Meter(scope).clamp(1000, 3000);
 
