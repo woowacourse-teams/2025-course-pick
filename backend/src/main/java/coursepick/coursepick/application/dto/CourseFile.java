@@ -7,4 +7,10 @@ public record CourseFile(
         CourseFileExtension extension,
         InputStream inputStream
 ) {
+    public CourseFile {
+        String extensionSuffix = "." + extension.name().toLowerCase();
+        if (name.toLowerCase().endsWith(extensionSuffix)) {
+            name = name.substring(0, name.length() - extensionSuffix.length());
+        }
+    }
 }
