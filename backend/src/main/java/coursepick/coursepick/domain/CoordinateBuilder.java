@@ -45,7 +45,7 @@ public class CoordinateBuilder {
     /**
      * 갑자기 튀는 점에 대하여 최근 점들의 선형보간으로 부드럽게 만듭니다.
      * <br>
-     * 튄다는 것은, 갑자기 5m 이상 벌어지는 점을 말합니다.
+     * 튄다는 것은, 갑자기 100m 이상 벌어지는 점을 말합니다.
      */
     public CoordinateBuilder smooth() {
         final int maxJumpMeter = 100;
