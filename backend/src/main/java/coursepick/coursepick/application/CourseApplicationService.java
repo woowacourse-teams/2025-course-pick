@@ -24,7 +24,7 @@ public class CourseApplicationService {
     @Transactional(readOnly = true)
     public List<CourseResponse> findNearbyCourses(int scope, double mapLatitude, double mapLongitude, Double userLatitude, Double userLongitude) {
         final Coordinate mapPosition = new Coordinate(mapLatitude, mapLongitude);
-        Meter meter = clampScope(new Meter(scope));
+        Meter meter = new Meter(scope).clamp(1000, 3000);
 
         List<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(mapPosition, meter);
 
@@ -48,15 +48,5 @@ public class CourseApplicationService {
                 .orElseThrow(() -> NOT_EXIST_COURSE.create(id));
 
         return course.closestCoordinateFrom(new Coordinate(latitude, longitude));
-    }
-
-    private static Meter clampScope(Meter meter) {
-        if (!meter.isAtLeast(new Meter(1000))) {
-            meter = new Meter(1000);
-        }
-        if (!meter.isWithin(new Meter(3000))) {
-            meter = new Meter(3000);
-        }
-        return meter;
     }
 }
