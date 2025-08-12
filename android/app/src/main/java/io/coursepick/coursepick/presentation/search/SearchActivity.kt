@@ -29,7 +29,6 @@ class SearchActivity : AppCompatActivity() {
             view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        Logger.log(Logger.Event.Enter("search"))
 
         setUpBindingVariables()
         setUpViews()
@@ -70,12 +69,6 @@ class SearchActivity : AppCompatActivity() {
             }
         setResult(RESULT_OK, resultIntent)
         finish()
-    }
-
-    override fun onDestroy() {
-        Logger.log(Logger.Event.Exit("search"))
-
-        super.onDestroy()
     }
 
     companion object {
