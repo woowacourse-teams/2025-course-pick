@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface CourseRepository extends Repository<Course, Long> {
 
-    List<Course> saveAll(Iterable<Course> courses);
+    void saveAll(Iterable<Course> courses);
 
     List<Course> findAll();
 
