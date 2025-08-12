@@ -2,7 +2,6 @@ package coursepick.coursepick.domain;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.List;
 
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_LATITUDE_RANGE;
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_LONGITUDE_RANGE;
@@ -26,9 +25,14 @@ public record Coordinate(
         this(latitude, longitude, 0);
     }
 
-    public static Coordinate average(List<Coordinate> coordinates, int maxSampleSize) {
-        // TODO : 구현
-        return null;
+    /**
+     * 두 좌표에 대한 선형보간 좌표를 구합니다.
+     * <a href="https://ko.wikipedia.org/wiki/%EC%84%A0%ED%98%95_%EB%B3%B4%EA%B0%84%EB%B2%95">선형보간</a>
+     */
+    public static Coordinate lerp(Coordinate start, Coordinate end, double lerpRatio) {
+        double latitude = start.latitude + (end.latitude - start.latitude) * lerpRatio;
+        double longitude = start.longitude + (end.longitude - start.longitude) * lerpRatio;
+        return new Coordinate(latitude, longitude);
     }
 
     public boolean hasSameLatitudeAndLongitude(Coordinate other) {

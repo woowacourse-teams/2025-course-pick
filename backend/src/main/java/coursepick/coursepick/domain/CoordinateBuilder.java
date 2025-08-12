@@ -43,11 +43,12 @@ public class CoordinateBuilder {
     }
 
     /**
-     * 갑자기 튀는 점에 대하여 최근 점들의 평균으로 부드럽게 만듭니다.
+     * 갑자기 튀는 점에 대하여 최근 점들의 선형보간으로 부드럽게 만듭니다.
      * <br>
      * 튄다는 것은, 갑자기 5m 이상 벌어지는 점을 말합니다.
      */
     public CoordinateBuilder smoothCoordinates() {
+        final int maxJumpMeter = 50;
         List<Coordinate> smoothCoordinates = new ArrayList<>();
         smoothCoordinates.add(coordinates.getFirst());
 
@@ -55,9 +56,9 @@ public class CoordinateBuilder {
             Coordinate lastCoordinate = smoothCoordinates.getLast();
             Coordinate currentCoordinate = coordinates.get(i);
             Meter distance = GeoLine.between(lastCoordinate, currentCoordinate).length();
-            if (new Meter(50).isWithin(distance)) {
-                Coordinate averageCoordinate = Coordinate.average(smoothCoordinates, 5);
-                smoothCoordinates.add(averageCoordinate);
+            if (new Meter(maxJumpMeter).isWithin(distance)) {
+                Coordinate lerpedCoordinate = Coordinate.lerp(lastCoordinate, currentCoordinate, maxJumpMeter / distance.value());
+                smoothCoordinates.add(lerpedCoordinate);
             } else {
                 smoothCoordinates.add(currentCoordinate);
             }
