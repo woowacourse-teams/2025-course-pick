@@ -19,7 +19,7 @@ public record Meter(
     }
 
     public Meter clamp(double min, double max) {
-        return new Meter(Math.clamp(this.value, min, max));
+        return new Meter(Math.clamp(this.value(), min, max));
     }
 
     public boolean isWithin(Meter other) {
