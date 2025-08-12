@@ -21,21 +21,27 @@ public class CoordinateBuilder {
         return new CoordinateBuilder(coordinates);
     }
 
-    public CoordinateBuilder removeDuplicatedCoordinate() {
-        List<Coordinate> nonDuplicatedCoordinates = new ArrayList<>();
-        nonDuplicatedCoordinates.add(coordinates.getFirst());
+    /**
+     * 비슷한 좌표들을 제거하여 좌표의 밀집도를 줄입니다.
+     * <br>
+     * 비슷하다는 것은, 두 좌표의 거리가 1m 이하인 것을 말합니다.
+     */
+    public CoordinateBuilder removeSimilarCoordinate() {
+        List<Coordinate> nonSimilarCoordinates = new ArrayList<>();
+        nonSimilarCoordinates.add(coordinates.getFirst());
         for (int i = 1; i < coordinates.size(); i++) {
-            Coordinate lastCoordinate = nonDuplicatedCoordinates.getLast();
-            Coordinate currentCoordinate = this.coordinates.get(i);
-            if (!lastCoordinate.equals(currentCoordinate)) {
-                nonDuplicatedCoordinates.add(currentCoordinate);
+            Coordinate lastCoordinate = nonSimilarCoordinates.getLast();
+            Coordinate currentCoordinate = coordinates.get(i);
+            Meter distance = GeoLine.between(lastCoordinate, currentCoordinate).length();
+            if (new Meter(1).isWithin(distance)) {
+                nonSimilarCoordinates.add(currentCoordinate);
             }
         }
-        return new CoordinateBuilder(nonDuplicatedCoordinates);
+        return new CoordinateBuilder(nonSimilarCoordinates);
     }
 
     /**
-     * 원형 코스를 위한 기능이었으나, GPX 파일을 미리 보정하여 넣기로 합의되며 제거됨 - @yeezy-com
+     * 원형 코스를 위한 기능이었으나, GPX 파일을 미리 보정하여 넣기로 합의되며 제거되었습니다. - @yeezy-com
      */
     @Deprecated
     public CoordinateBuilder addFirstCoordinateIfNotConnected() {
