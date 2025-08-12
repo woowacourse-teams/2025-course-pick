@@ -119,7 +119,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/background_courses"
-                android:visibility="@{viewModel.state.areCoursesEmpty ? View.GONE : View.VISIBLE}"
                 app:behavior_fitToContents="true"
                 app:behavior_peekHeight="@dimen/main_bottom_sheet_peek_height"
                 app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
@@ -148,6 +147,18 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/mainCoursesHandle" />
 
+                <androidx.core.widget.ContentLoadingProgressBar
+                    android:id="@+id/mainLoadingIndicator"
+                    style="?android:attr/progressBarStyleLarge"
+                    loading="@{viewModel.state.loading}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader" />
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/mainCourses"
                     android:layout_width="match_parent"
@@ -155,6 +166,7 @@
                     android:layout_marginTop="10dp"
                     android:adapter="@{adapter}"
                     android:orientation="vertical"
+                    android:visibility="@{viewModel.state.isLoading ? View.GONE : View.VISIBLE}"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
