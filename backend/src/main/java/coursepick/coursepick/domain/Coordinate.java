@@ -32,7 +32,8 @@ public record Coordinate(
     public static Coordinate lerp(Coordinate start, Coordinate end, double lerpRatio) {
         double latitude = start.latitude + (end.latitude - start.latitude) * lerpRatio;
         double longitude = start.longitude + (end.longitude - start.longitude) * lerpRatio;
-        return new Coordinate(latitude, longitude);
+        double elevation = start.elevation + (end.elevation - start.elevation) * lerpRatio;
+        return new Coordinate(latitude, longitude, elevation);
     }
 
     public boolean hasSameLatitudeAndLongitude(Coordinate other) {
