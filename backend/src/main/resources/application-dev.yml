@@ -14,6 +14,9 @@ spring:
     aws:
       cloudwatch:
         region: ap-northeast-2
+  web:
+    resources:
+      static-locations: none
 
 management:
   endpoints:
