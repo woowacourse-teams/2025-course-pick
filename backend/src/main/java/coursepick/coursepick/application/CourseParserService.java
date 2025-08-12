@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.List;
 
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_FILE_EXTENSION;
@@ -18,12 +19,13 @@ public class CourseParserService {
 
     private final List<CourseParser> parsers;
 
-    public List<Course> parse(CourseFile file) {
+    public List<Course> parseAndCloseInputStream(CourseFile file) throws IOException {
         log.debug("코스를 파싱을 시작합니다.");
         CourseParser parser = findParser(file);
         log.debug("선택된 CourseParse 구현체={}", parser.getClass().getSimpleName());
         List<Course> result = parser.parse(file);
         log.info("{}개의 코스를 파싱했습니다", result.size());
+        file.inputStream().close();
         return result;
     }
 
