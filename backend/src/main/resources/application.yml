@@ -8,6 +8,9 @@ spring:
         order_inserts: true  # INSERT 순서 최적화
         order_updates: true  # UPDATE 순서 최적화
 
+server:
+  forward-headers-strategy: framework
+  
 springdoc:
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
