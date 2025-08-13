@@ -11,13 +11,13 @@
     <string name="feedback_url">https://forms.gle/W9Uwwgq2acW2y7Q99</string>
     <string name="privacy_policy_url">https://github.com/woowacourse-teams/2025-course-pick/wiki/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4%EC%B2%98%EB%A6%AC%EB%B0%A9%EC%B9%A8</string>
     <string name="search_query_hint">장소를 검색하세요</string>
-    <string name="selected_map_application_key">selected_map_application</string>
-    <string name="selected_map_application_value_kakao">kakao map</string>
-    <string name="selected_map_application_value_naver">naver map</string>
-    <string name="selected_map_application_value_none">none</string>
-    <string name="selected_map_application_entry_kakao_map">카카오맵</string>
-    <string name="selected_map_application_entry_naver_map">네이버 지도</string>
-    <string name="selected_map_application_entry_none_map">선택 안 함</string>
-    <string name="selected_map_application_summary">사용할 기본 길찾기 앱을 선택하세요.</string>
-    <string name="selected_map_application_title">기본 길찾기 앱 선택</string>
+    <string name="selected_route_finder_application_key">selected_route_finder_application</string>
+    <string name="selected_route_finder_application_value_kakao">kakao map</string>
+    <string name="selected_route_finder_application_value_naver">naver map</string>
+    <string name="selected_route_finder_application_value_none">none</string>
+    <string name="selected_route_finder_application_entry_kakao_map">카카오맵</string>
+    <string name="selected_route_finder_application_entry_naver_map">네이버 지도</string>
+    <string name="selected_route_finder_application_entry_none_map">선택 안 함</string>
+    <string name="selected_route_finder_application_summary">사용할 기본 길찾기 앱을 선택하세요.</string>
+    <string name="selected_route_finder_application_title">기본 길찾기 앱 선택</string>
 </resources>

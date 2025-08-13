@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
     alias(libs.plugins.oss.licenses.plugin)
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 private val localProperties: Properties =
