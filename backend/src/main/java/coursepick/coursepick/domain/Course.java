@@ -1,40 +1,31 @@
 package coursepick.coursepick.domain;
 
-import jakarta.persistence.*;
-import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import org.hibernate.annotations.BatchSize;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceCreator;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-@Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
+@Document
+@AllArgsConstructor(onConstructor_ = @PersistenceCreator)
 @Getter
 @Accessors(fluent = true)
 public class Course {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private final Long id;
+    private final String id;
 
-    @Embedded
     private final CourseName name;
 
-    @Enumerated(EnumType.STRING)
     private final RoadType roadType;
 
-    @BatchSize(size = 30)
-    @ElementCollection
-    @CollectionTable(name = "segment")
     private final List<Segment> segments;
 
-    @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "length"))
     private final Meter length;
 
-    @Enumerated(EnumType.STRING)
     private final Difficulty difficulty;
 
     public Course(String name, RoadType roadType, List<Coordinate> rawCoordinates) {

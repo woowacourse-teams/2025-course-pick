@@ -9,7 +9,7 @@ import java.util.List;
 
 public record CourseWebResponse(
         @Schema(example = "1")
-        long id,
+        String id,
         @Schema(example = "석촌호수")
         String name,
         @Schema(example = "200.123")
