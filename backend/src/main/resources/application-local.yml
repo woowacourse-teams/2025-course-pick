@@ -11,5 +11,8 @@ spring:
   batch:
     jdbc.initialize-schema: always
     job.enabled: false
+  web:
+    resources:
+      static-locations: classpath:/META-INF/resources/, classpath:/resources/, classpath:/static/, classpath:/public/, classpath:/local/
 
 admin.token: secret
