@@ -7,13 +7,13 @@
 
         <variable
             name="adapter"
-            type="io.coursepick.coursepick.view.SearchAdapter" />
+            type="io.coursepick.coursepick.presentation.SearchAdapter" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".view.SearchActivity">
+        tools:context=".presentation.SearchActivity">
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/searchView"

@@ -9,15 +9,15 @@
 
         <variable
             name="viewModel"
-            type="io.coursepick.coursepick.view.MainViewModel" />
+            type="io.coursepick.coursepick.presentation.MainViewModel" />
 
         <variable
             name="adapter"
-            type="io.coursepick.coursepick.view.CourseAdapter" />
+            type="io.coursepick.coursepick.presentation.CourseAdapter" />
 
         <variable
             name="action"
-            type="io.coursepick.coursepick.view.MainAction" />
+            type="io.coursepick.coursepick.presentation.MainAction" />
     </data>
 
     <androidx.drawerlayout.widget.DrawerLayout

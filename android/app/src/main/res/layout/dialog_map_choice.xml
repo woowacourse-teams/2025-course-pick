@@ -7,11 +7,11 @@
 
         <variable
             name="state"
-            type="io.coursepick.coursepick.view.MapChoiceUiState" />
+            type="io.coursepick.coursepick.presentation.MapChoiceUiState" />
 
         <variable
             name="onChosenListener"
-            type="io.coursepick.coursepick.view.OnChosenListener" />
+            type="io.coursepick.coursepick.presentation.OnChosenListener" />
 
     </data>
 
