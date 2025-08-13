@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation
+package io.coursepick.coursepick.presentation.view.routetfinder
 
 import android.content.Context
 import android.content.Intent
@@ -8,7 +8,7 @@ import io.coursepick.coursepick.domain.Coordinate
 import kotlin.math.ln
 import kotlin.math.tan
 
-enum class MapApplication(
+enum class RouteFinderApplication(
     val appName: String,
 ) {
     KAKAO_MAP("카카오맵") {

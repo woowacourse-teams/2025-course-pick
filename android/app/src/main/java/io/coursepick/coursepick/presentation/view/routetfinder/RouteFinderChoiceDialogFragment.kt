@@ -1,27 +1,29 @@
-package io.coursepick.coursepick.presentation
+package io.coursepick.coursepick.presentation.view.routetfinder
 
 import android.app.Dialog
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
-import io.coursepick.coursepick.databinding.DialogMapChoiceBinding
+import io.coursepick.coursepick.databinding.DialogRouteFinderChoiceBinding
 import io.coursepick.coursepick.domain.Coordinate
+import io.coursepick.coursepick.presentation.CoursePickPreferences
+import io.coursepick.coursepick.presentation.getSerializableCompat
 
-class MapChoiceDialogFragment :
+class RouteFinderChoiceDialogFragment :
     DialogFragment(),
     OnChosenListener {
     @Suppress("ktlint:standard:backing-property-naming")
-    private var _binding: DialogMapChoiceBinding? = null
+    private var _binding: DialogRouteFinderChoiceBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var origin: Coordinate
     private lateinit var destination: Coordinate
     private lateinit var destinationName: String
-    private lateinit var state: MapChoiceUiState
+    private lateinit var state: RouteFinderChoiceUiState
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         setUpProperties()
-        _binding = DialogMapChoiceBinding.inflate(layoutInflater)
+        _binding = DialogRouteFinderChoiceBinding.inflate(layoutInflater)
         setUpBindingVariables()
 
         return AlertDialog
@@ -36,10 +38,10 @@ class MapChoiceDialogFragment :
     }
 
     override fun onChosen(position: Int) {
-        val selectedMap: MapApplication = state.mapApplications[position]
+        val selectedMap: RouteFinderApplication = state.routeFinders[position]
 
         if (state.defaultAppChecked) {
-            CoursePickPreferences.selectedMapApplication = selectedMap
+            CoursePickPreferences.selectedRouteFinder = selectedMap
         }
 
         selectedMap.launch(
@@ -76,9 +78,9 @@ class MapChoiceDialogFragment :
             origin: Coordinate,
             destination: Coordinate,
             destinationName: String,
-            state: MapChoiceUiState = MapChoiceUiState(),
-        ): MapChoiceDialogFragment {
-            val fragment = MapChoiceDialogFragment()
+            state: RouteFinderChoiceUiState = RouteFinderChoiceUiState(),
+        ): RouteFinderChoiceDialogFragment {
+            val fragment = RouteFinderChoiceDialogFragment()
             val arguments: Bundle =
                 Bundle().apply {
                     putSerializable(ARGUMENT_ORIGIN, origin)
