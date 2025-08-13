@@ -17,7 +17,7 @@
         android:theme="@style/Theme.CoursePick"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".presentation.PreferencesActivity"
+            android:name=".presentation.view.preference.PreferencesActivity"
             android:exported="false" />
         <activity
             android:name=".presentation.SearchActivity"

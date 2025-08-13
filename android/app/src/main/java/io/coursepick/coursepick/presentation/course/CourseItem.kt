@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.model.course
+package io.coursepick.coursepick.presentation.course
 
 import io.coursepick.coursepick.domain.Course
 import io.coursepick.coursepick.domain.Segment

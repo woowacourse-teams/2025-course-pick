@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.view.course
+package io.coursepick.coursepick.presentation.course
 
 import android.view.MenuItem
 

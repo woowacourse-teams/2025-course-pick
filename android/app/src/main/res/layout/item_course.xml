@@ -9,7 +9,7 @@
 
         <variable
             name="course"
-            type="io.coursepick.coursepick.presentation.model.course.CourseItem" />
+            type="io.coursepick.coursepick.presentation.course.CourseItem" />
 
         <variable
             name="courseItemListener"

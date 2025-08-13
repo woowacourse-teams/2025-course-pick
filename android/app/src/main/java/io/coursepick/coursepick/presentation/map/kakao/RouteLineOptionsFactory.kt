@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.view.map.kakao
+package io.coursepick.coursepick.presentation.map.kakao
 
 import android.content.Context
 import com.kakao.vectormap.LatLng
@@ -11,7 +11,7 @@ import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.InclineType
 import io.coursepick.coursepick.domain.Segment
-import io.coursepick.coursepick.presentation.model.course.CourseItem
+import io.coursepick.coursepick.presentation.course.CourseItem
 
 class RouteLineOptionsFactory(
     context: Context,

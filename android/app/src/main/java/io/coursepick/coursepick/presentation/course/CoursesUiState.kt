@@ -1,6 +1,4 @@
-package io.coursepick.coursepick.presentation.view.course
-
-import io.coursepick.coursepick.presentation.model.course.CourseItem
+package io.coursepick.coursepick.presentation.course
 
 data class CoursesUiState(
     val courses: List<CourseItem>,

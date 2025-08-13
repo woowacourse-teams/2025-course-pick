@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.view.routetfinder
+package io.coursepick.coursepick.presentation.routetfinder
 
 import java.io.Serializable
 

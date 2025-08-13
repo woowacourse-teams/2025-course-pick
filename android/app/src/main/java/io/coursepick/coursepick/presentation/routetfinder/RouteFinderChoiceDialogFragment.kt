@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.view.routetfinder
+package io.coursepick.coursepick.presentation.routetfinder
 
 import android.app.Dialog
 import android.os.Bundle
@@ -6,8 +6,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import io.coursepick.coursepick.databinding.DialogRouteFinderChoiceBinding
 import io.coursepick.coursepick.domain.Coordinate
-import io.coursepick.coursepick.presentation.CoursePickPreferences
 import io.coursepick.coursepick.presentation.getSerializableCompat
+import io.coursepick.coursepick.presentation.view.preference.CoursePickPreferences
 
 class RouteFinderChoiceDialogFragment :
     DialogFragment(),

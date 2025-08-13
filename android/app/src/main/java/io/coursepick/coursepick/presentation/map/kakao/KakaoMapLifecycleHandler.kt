@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.view.map.kakao
+package io.coursepick.coursepick.presentation.map.kakao
 
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback

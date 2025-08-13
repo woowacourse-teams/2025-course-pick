@@ -4,8 +4,8 @@ import io.coursepick.coursepick.domain.Course
 import io.coursepick.coursepick.domain.fixture.COORDINATE_FIXTURE
 import io.coursepick.coursepick.domain.fixture.COURSE_FIXTURE_20
 import io.coursepick.coursepick.domain.fixture.FAKE_COURSES
+import io.coursepick.coursepick.presentation.course.CourseItem
 import io.coursepick.coursepick.presentation.fixtures.FakeRepository
-import io.coursepick.coursepick.presentation.model.course.CourseItem
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach

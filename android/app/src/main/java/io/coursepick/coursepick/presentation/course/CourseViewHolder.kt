@@ -1,10 +1,9 @@
-package io.coursepick.coursepick.presentation.view.course
+package io.coursepick.coursepick.presentation.course
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import io.coursepick.coursepick.databinding.ItemCourseBinding
-import io.coursepick.coursepick.presentation.model.course.CourseItem
 
 class CourseViewHolder private constructor(
     private val binding: ItemCourseBinding,

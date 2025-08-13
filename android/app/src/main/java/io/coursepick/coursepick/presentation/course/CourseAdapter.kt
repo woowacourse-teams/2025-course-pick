@@ -1,9 +1,8 @@
-package io.coursepick.coursepick.presentation.view.course
+package io.coursepick.coursepick.presentation.course
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import io.coursepick.coursepick.presentation.model.course.CourseItem
 
 class CourseAdapter(
     private val courseItemListener: CourseItemListener,

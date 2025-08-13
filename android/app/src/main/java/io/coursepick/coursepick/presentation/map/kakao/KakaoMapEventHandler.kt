@@ -1,11 +1,11 @@
-package io.coursepick.coursepick.presentation.view.map.kakao
+package io.coursepick.coursepick.presentation.map.kakao
 
 import android.graphics.Point
 import android.graphics.PointF
 import com.kakao.vectormap.KakaoMap
 import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.Segment
-import io.coursepick.coursepick.presentation.model.course.CourseItem
+import io.coursepick.coursepick.presentation.course.CourseItem
 import kotlin.math.pow
 import kotlin.math.sqrt
 

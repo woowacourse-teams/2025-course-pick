@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation
+package io.coursepick.coursepick.presentation.preference
 
 import android.content.Context
 import android.content.SharedPreferences

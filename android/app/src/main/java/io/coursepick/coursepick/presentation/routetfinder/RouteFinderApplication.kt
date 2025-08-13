@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.view.routetfinder
+package io.coursepick.coursepick.presentation.routetfinder
 
 import android.content.Context
 import android.content.Intent

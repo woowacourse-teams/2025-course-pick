@@ -1,7 +1,6 @@
-package io.coursepick.coursepick.presentation.view.course
+package io.coursepick.coursepick.presentation.course
 
 import io.coursepick.coursepick.domain.Coordinate
-import io.coursepick.coursepick.presentation.model.course.CourseItem
 
 sealed interface CoursesUiEvent {
     class FetchCourseSuccess(

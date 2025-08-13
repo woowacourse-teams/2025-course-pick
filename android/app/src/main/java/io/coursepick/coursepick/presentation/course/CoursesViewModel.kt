@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.view.course
+package io.coursepick.coursepick.presentation.course
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -10,7 +10,6 @@ import io.coursepick.coursepick.domain.Course
 import io.coursepick.coursepick.domain.CourseRepository
 import io.coursepick.coursepick.presentation.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.SingleLiveData
-import io.coursepick.coursepick.presentation.model.course.CourseItem
 import kotlinx.coroutines.launch
 
 class CoursesViewModel(
