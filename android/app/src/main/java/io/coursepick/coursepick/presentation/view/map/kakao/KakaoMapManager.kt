@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation
+package io.coursepick.coursepick.presentation.view.map.kakao
 
 import android.Manifest
 import android.location.Location
@@ -12,6 +12,7 @@ import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.Latitude
 import io.coursepick.coursepick.domain.Longitude
+import io.coursepick.coursepick.presentation.LocationProvider
 import io.coursepick.coursepick.presentation.model.course.CourseItem
 
 class KakaoMapManager(

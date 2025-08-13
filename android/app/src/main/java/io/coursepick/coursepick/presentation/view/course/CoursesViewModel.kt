@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.view.courses
+package io.coursepick.coursepick.presentation.view.course
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.view.courses
+package io.coursepick.coursepick.presentation.view.course
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -31,13 +31,13 @@ import io.coursepick.coursepick.domain.Latitude
 import io.coursepick.coursepick.domain.Longitude
 import io.coursepick.coursepick.presentation.CoursePickPreferences
 import io.coursepick.coursepick.presentation.DoublePressDetector
-import io.coursepick.coursepick.presentation.KakaoMapManager
 import io.coursepick.coursepick.presentation.MapApplication
 import io.coursepick.coursepick.presentation.MapChoiceDialogFragment
 import io.coursepick.coursepick.presentation.PreferencesActivity
 import io.coursepick.coursepick.presentation.SearchActivity
 import io.coursepick.coursepick.presentation.model.course.CourseItem
-import io.coursepick.coursepick.presentation.toCoordinate
+import io.coursepick.coursepick.presentation.view.map.kakao.KakaoMapManager
+import io.coursepick.coursepick.presentation.view.map.kakao.toCoordinate
 import io.coursepick.coursepick.util.CoordinateKeys
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

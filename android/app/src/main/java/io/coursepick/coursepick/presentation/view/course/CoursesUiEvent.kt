@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.view.courses
+package io.coursepick.coursepick.presentation.view.course
 
 import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.presentation.model.course.CourseItem

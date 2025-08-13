@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation
+package io.coursepick.coursepick.presentation.view.map.kakao
 
 import android.graphics.Point
 import android.graphics.PointF
