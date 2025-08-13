@@ -9,11 +9,11 @@
 
         <variable
             name="course"
-            type="io.coursepick.coursepick.presentation.CourseItem" />
+            type="io.coursepick.coursepick.presentation.model.course.CourseItem" />
 
         <variable
             name="courseItemListener"
-            type="io.coursepick.coursepick.presentation.CourseItemListener" />
+            type="io.coursepick.coursepick.presentation.view.courses.CourseItemListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -1,8 +1,8 @@
-package io.coursepick.coursepick.presentation
+package io.coursepick.coursepick.presentation.view.courses
 
 import android.view.MenuItem
 
-interface MainAction {
+interface CoursesAction {
     fun searchThisArea()
 
     fun openMenu()

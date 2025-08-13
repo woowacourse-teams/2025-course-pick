@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation
+package io.coursepick.coursepick.presentation.view.courses
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,26 +8,29 @@ import io.coursepick.coursepick.data.DefaultCourseRepository
 import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.Course
 import io.coursepick.coursepick.domain.CourseRepository
+import io.coursepick.coursepick.presentation.MutableSingleLiveData
+import io.coursepick.coursepick.presentation.SingleLiveData
+import io.coursepick.coursepick.presentation.model.course.CourseItem
 import kotlinx.coroutines.launch
 
-class MainViewModel(
+class CoursesViewModel(
     private val courseRepository: CourseRepository = DefaultCourseRepository(),
 ) : ViewModel() {
-    private val _state: MutableLiveData<MainUiState> =
+    private val _state: MutableLiveData<CoursesUiState> =
         MutableLiveData(
-            MainUiState(
+            CoursesUiState(
                 courses = emptyList(),
                 isLoading = true,
             ),
         )
-    val state: LiveData<MainUiState> get() = _state
+    val state: LiveData<CoursesUiState> get() = _state
 
-    private val _event: MutableSingleLiveData<MainUiEvent> = MutableSingleLiveData()
-    val event: SingleLiveData<MainUiEvent> get() = _event
+    private val _event: MutableSingleLiveData<CoursesUiEvent> = MutableSingleLiveData()
+    val event: SingleLiveData<CoursesUiEvent> get() = _event
 
     fun select(selectedCourse: CourseItem) {
         if (selectedCourse.selected) {
-            _event.value = MainUiEvent.SelectNewCourse(selectedCourse)
+            _event.value = CoursesUiEvent.SelectNewCourse(selectedCourse)
             return
         }
 
@@ -38,7 +41,7 @@ class MainViewModel(
 
         val newCourses: List<CourseItem> = newCourses(oldCourses, selectedCourse)
         _state.value = state.value?.copy(courses = newCourses)
-        _event.value = MainUiEvent.SelectNewCourse(selectedCourse)
+        _event.value = CoursesUiEvent.SelectNewCourse(selectedCourse)
     }
 
     fun fetchCourses(
@@ -58,10 +61,10 @@ class MainViewModel(
                                 index == 0,
                             )
                         }
-                _state.value = MainUiState(courseItems)
-                _event.value = MainUiEvent.FetchCourseSuccess(courseItems.firstOrNull())
+                _state.value = CoursesUiState(courseItems)
+                _event.value = CoursesUiEvent.FetchCourseSuccess(courseItems.firstOrNull())
             }.onFailure {
-                _event.value = MainUiEvent.FetchCourseFailure
+                _event.value = CoursesUiEvent.FetchCourseFailure
             }
         }
     }
@@ -75,13 +78,13 @@ class MainViewModel(
                 courseRepository.nearestCoordinate(selectedCourse.course, location)
             }.onSuccess { nearest: Coordinate ->
                 _event.value =
-                    MainUiEvent.FetchNearestCoordinateSuccess(
+                    CoursesUiEvent.FetchNearestCoordinateSuccess(
                         origin = location,
                         destination = nearest,
                         destinationName = selectedCourse.name,
                     )
             }.onFailure {
-                _event.value = MainUiEvent.FetchNearestCoordinateFailure
+                _event.value = CoursesUiEvent.FetchNearestCoordinateFailure
             }
         }
     }

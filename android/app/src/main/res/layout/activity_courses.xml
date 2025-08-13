@@ -9,15 +9,15 @@
 
         <variable
             name="viewModel"
-            type="io.coursepick.coursepick.presentation.MainViewModel" />
+            type="io.coursepick.coursepick.presentation.view.courses.CoursesViewModel" />
 
         <variable
             name="adapter"
-            type="io.coursepick.coursepick.presentation.CourseAdapter" />
+            type="io.coursepick.coursepick.presentation.view.courses.CourseAdapter" />
 
         <variable
             name="action"
-            type="io.coursepick.coursepick.presentation.MainAction" />
+            type="io.coursepick.coursepick.presentation.view.courses.CoursesAction" />
     </data>
 
     <androidx.drawerlayout.widget.DrawerLayout
@@ -172,7 +172,7 @@
             android:fitsSystemWindows="true"
             android:onClick="@{}"
             app:itemTextColor="@color/item_primary"
-            app:menu="@menu/menu_navigation_main"
+            app:menu="@menu/menu_navigation_courses"
             app:onNavigationItemSelected="@{(menuItem) -> action.navigate(menuItem)}" />
     </androidx.drawerlayout.widget.DrawerLayout>
 </layout>

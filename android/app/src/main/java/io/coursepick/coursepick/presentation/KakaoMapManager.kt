@@ -12,6 +12,7 @@ import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.Latitude
 import io.coursepick.coursepick.domain.Longitude
+import io.coursepick.coursepick.presentation.model.course.CourseItem
 
 class KakaoMapManager(
     private val mapView: MapView,

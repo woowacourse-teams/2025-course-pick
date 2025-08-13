@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation
+package io.coursepick.coursepick.presentation.view.courses
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -25,21 +25,30 @@ import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.kakao.vectormap.LatLng
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.databinding.ActivityMainBinding
+import io.coursepick.coursepick.databinding.ActivityCoursesBinding
 import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.Latitude
 import io.coursepick.coursepick.domain.Longitude
+import io.coursepick.coursepick.presentation.CoursePickPreferences
+import io.coursepick.coursepick.presentation.DoublePressDetector
+import io.coursepick.coursepick.presentation.KakaoMapManager
+import io.coursepick.coursepick.presentation.MapApplication
+import io.coursepick.coursepick.presentation.MapChoiceDialogFragment
+import io.coursepick.coursepick.presentation.PreferencesActivity
+import io.coursepick.coursepick.presentation.SearchActivity
+import io.coursepick.coursepick.presentation.model.course.CourseItem
+import io.coursepick.coursepick.presentation.toCoordinate
 import io.coursepick.coursepick.util.CoordinateKeys
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MainActivity :
+class CoursesActivity :
     AppCompatActivity(),
-    MainAction {
+    CoursesAction {
     private var searchLauncher: ActivityResultLauncher<Intent>? = null
-    private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
-    private val viewModel: MainViewModel by viewModels()
+    private val binding by lazy { ActivityCoursesBinding.inflate(layoutInflater) }
+    private val viewModel: CoursesViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(CourseItemListener()) }
     private val doublePressDetector = DoublePressDetector()
     private val mapManager by lazy { KakaoMapManager(binding.mainMap) }
@@ -121,7 +130,7 @@ class MainActivity :
     }
 
     override fun search() {
-        val intent = SearchActivity.intent(this)
+        val intent = SearchActivity.Companion.intent(this)
         searchLauncher?.launch(intent) ?: Toast
             .makeText(
                 this,
@@ -202,7 +211,7 @@ class MainActivity :
                     },
                     onFailure = {
                         Toast
-                            .makeText(this@MainActivity, "현재 위치를 가져올 수 없어요.", Toast.LENGTH_SHORT)
+                            .makeText(this@CoursesActivity, "현재 위치를 가져올 수 없어요.", Toast.LENGTH_SHORT)
                             .show()
                     },
                 )
@@ -273,7 +282,7 @@ class MainActivity :
                     } else {
                         Toast
                             .makeText(
-                                this@MainActivity,
+                                this@CoursesActivity,
                                 getString(R.string.main_back_press_exit),
                                 Toast.LENGTH_SHORT,
                             ).show()
@@ -289,7 +298,7 @@ class MainActivity :
     }
 
     private fun setUpStateObserver() {
-        viewModel.state.observe(this) { state: MainUiState ->
+        viewModel.state.observe(this) { state: CoursesUiState ->
             courseAdapter.submitList(state.courses)
             mapManager.setOnCourseClickListener(state.courses) { course: CourseItem ->
                 viewModel.select(course)
@@ -299,9 +308,9 @@ class MainActivity :
     }
 
     private fun setUpEventObserver() {
-        viewModel.event.observe(this) { event: MainUiEvent ->
+        viewModel.event.observe(this) { event: CoursesUiEvent ->
             when (event) {
-                is MainUiEvent.FetchCourseSuccess -> {
+                is CoursesUiEvent.FetchCourseSuccess -> {
                     event.nearestCourse ?: {
                         binding.mainSearchThisAreaButton.visibility = View.VISIBLE
                         Toast
@@ -313,18 +322,18 @@ class MainActivity :
                     }
                 }
 
-                MainUiEvent.FetchCourseFailure -> {
+                CoursesUiEvent.FetchCourseFailure -> {
                     binding.mainSearchThisAreaButton.visibility = View.VISIBLE
                     Toast.makeText(this, "코스 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
                 }
 
-                is MainUiEvent.SelectNewCourse -> {
+                is CoursesUiEvent.SelectNewCourse -> {
                     selectCourse(event.course)
                     val behavior = BottomSheetBehavior.from(binding.mainBottomSheet)
                     behavior.state = BottomSheetBehavior.STATE_COLLAPSED
                 }
 
-                is MainUiEvent.FetchNearestCoordinateSuccess -> {
+                is CoursesUiEvent.FetchNearestCoordinateSuccess -> {
                     lifecycleScope.launch {
                         val selectedApp: MapApplication? =
                             withContext(Dispatchers.IO) {
@@ -332,11 +341,11 @@ class MainActivity :
                             }
 
                         selectedApp?.launch(
-                            this@MainActivity,
+                            this@CoursesActivity,
                             event.origin,
                             event.destination,
                             event.destinationName,
-                        ) ?: MapChoiceDialogFragment
+                        ) ?: MapChoiceDialogFragment.Companion
                             .newInstance(
                                 event.origin,
                                 event.destination,
@@ -345,7 +354,7 @@ class MainActivity :
                     }
                 }
 
-                MainUiEvent.FetchNearestCoordinateFailure ->
+                CoursesUiEvent.FetchNearestCoordinateFailure ->
                     Toast
                         .makeText(this, "코스까지 가는 길을 찾지 못했습니다.", Toast.LENGTH_SHORT)
                         .show()

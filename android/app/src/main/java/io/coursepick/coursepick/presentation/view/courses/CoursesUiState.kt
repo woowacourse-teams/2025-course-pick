@@ -1,6 +1,8 @@
-package io.coursepick.coursepick.presentation
+package io.coursepick.coursepick.presentation.view.courses
 
-data class MainUiState(
+import io.coursepick.coursepick.presentation.model.course.CourseItem
+
+data class CoursesUiState(
     val courses: List<CourseItem>,
     val isLoading: Boolean = false,
     val isFailure: Boolean = false,

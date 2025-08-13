@@ -11,6 +11,7 @@ import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.InclineType
 import io.coursepick.coursepick.domain.Segment
+import io.coursepick.coursepick.presentation.model.course.CourseItem
 
 class RouteLineOptionsFactory(
     context: Context,

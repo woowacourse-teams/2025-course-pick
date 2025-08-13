@@ -1,8 +1,9 @@
-package io.coursepick.coursepick.presentation
+package io.coursepick.coursepick.presentation.view.courses
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import io.coursepick.coursepick.presentation.model.course.CourseItem
 
 class CourseAdapter(
     private val courseItemListener: CourseItemListener,
@@ -10,7 +11,7 @@ class CourseAdapter(
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
-    ): CourseViewHolder = CourseViewHolder(parent, courseItemListener)
+    ): CourseViewHolder = CourseViewHolder.Companion(parent, courseItemListener)
 
     override fun onBindViewHolder(
         holder: CourseViewHolder,

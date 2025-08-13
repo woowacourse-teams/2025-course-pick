@@ -14,6 +14,7 @@ import com.kakao.vectormap.route.RouteLineLayer
 import com.kakao.vectormap.route.RouteLineOptions
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.Coordinate
+import io.coursepick.coursepick.presentation.model.course.CourseItem
 
 class KakaoMapDrawer(
     context: Context,

@@ -10,6 +10,7 @@ import com.kakao.vectormap.camera.CameraUpdateFactory
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.Segment
+import io.coursepick.coursepick.presentation.model.course.CourseItem
 
 class KakaoMapCameraController(
     context: Context,
