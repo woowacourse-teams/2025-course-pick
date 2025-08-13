@@ -1,5 +1,13 @@
 spring:
   datasource:
     url: jdbc:h2:mem:test-coursepick;MODE=MySQL
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: coursepick
+      username: root
+      password: secret
+      authentication-database: admin
 
 admin.token: secret
