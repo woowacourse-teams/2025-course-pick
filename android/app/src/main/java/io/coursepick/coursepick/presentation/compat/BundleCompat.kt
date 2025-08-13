@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation
+package io.coursepick.coursepick.presentation.compat
 
 import android.os.Build
 import android.os.Bundle
