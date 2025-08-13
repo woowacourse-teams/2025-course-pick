@@ -29,14 +29,8 @@ public class CourseLocalService {
     @Transactional
     public void parse(List<MultipartFile> files) throws IOException {
         for (MultipartFile file : files) {
-            List<Course> courses = courseParserService.parse(FileToCourseFile(file));
+            List<Course> courses = courseParserService.parse(CourseFile.from(file));
             courseRepository.saveAll(courses);
         }
-    }
-
-    private CourseFile FileToCourseFile(MultipartFile file) throws IOException {
-        String fileName = file.getOriginalFilename().split("\\.")[0];
-        String extension = file.getOriginalFilename().split("\\.")[1];
-        return new CourseFile(fileName, CourseFileExtension.valueOf(extension.toUpperCase()), file.getInputStream());
     }
 }
