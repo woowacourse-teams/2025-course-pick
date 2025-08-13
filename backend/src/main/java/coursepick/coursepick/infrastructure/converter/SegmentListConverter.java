@@ -1,52 +1,64 @@
 package coursepick.coursepick.infrastructure.converter;
 
-import com.mongodb.client.model.geojson.MultiLineString;
-import com.mongodb.client.model.geojson.Position;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.GeoLine;
 import coursepick.coursepick.domain.GeoLineBuilder;
 import coursepick.coursepick.domain.Segment;
+import org.bson.Document;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.data.convert.WritingConverter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SegmentListConverter {
 
     @WritingConverter
-    public static class Writer implements Converter<List<Segment>, MultiLineString> {
+    public static class Writer implements Converter<List<Segment>, Document> {
         @Override
-        public MultiLineString convert(List<Segment> source) {
-            if (source == null || source.isEmpty()) {
-                return new MultiLineString(List.of());
-            }
-
-            List<List<Position>> positions = source.stream()
-                    .map(segment -> segment.coordinates().stream()
-                            .map(coordinate -> new Position(coordinate.longitude(), coordinate.latitude(), coordinate.elevation()))
-                            .toList())
+        public Document convert(List<Segment> source) {
+            List<List<List<Double>>> segmentsData = source.stream()
+                    .map(Writer::parseSegment)
                     .toList();
 
-            return new MultiLineString(positions);
+            Document document = new Document();
+            document.put("type", "MultiLineString");
+            document.put("coordinates", segmentsData);
+
+            return document;
+        }
+
+        private static List<List<Double>> parseSegment(Segment segment) {
+            List<GeoLine> lines = segment.lines();
+            List<List<Double>> lineStringCoordinates = new ArrayList<>();
+            lines.forEach(line ->
+                    lineStringCoordinates.add(List.of(line.start().longitude(), line.start().latitude(), line.start().elevation()))
+            );
+            GeoLine lastLine = lines.getLast();
+            lineStringCoordinates.add(List.of(lastLine.end().longitude(), lastLine.end().latitude(), lastLine.end().elevation()));
+
+            return lineStringCoordinates;
         }
     }
 
     @ReadingConverter
-    public static class Reader implements Converter<MultiLineString, List<Segment>> {
+    public static class Reader implements Converter<Document, List<Segment>> {
         @Override
-        public List<Segment> convert(MultiLineString source) {
-            if (source == null || source.getCoordinates().isEmpty()) {
-                return List.of();
-            }
+        public List<Segment> convert(Document source) {
+            List<List<List<Double>>> segmentsData = (List<List<List<Double>>>) source.get("coordinates");
 
-            return source.getCoordinates().stream()
-                    .map(positions -> {
-                        List<Coordinate> coordinates = positions.stream().map(position -> new Coordinate(position.getValues().get(0), position.getValues().get(1), position.getValues().get(2))).toList();
-                        List<GeoLine> geoLines = GeoLineBuilder.fromCoordinates(coordinates).build();
-                        return new Segment(geoLines);
-                    })
+            return segmentsData.stream()
+                    .map(Reader::parseSegment)
                     .toList();
+        }
+
+        private static Segment parseSegment(List<List<Double>> lineStringCoordinates) {
+            List<Coordinate> coordinates = lineStringCoordinates.stream()
+                    .map(coordinate -> new Coordinate(coordinate.get(1), coordinate.get(0), coordinate.get(2))) // lat, lng, ele
+                    .toList();
+
+            return new Segment(GeoLineBuilder.fromCoordinates(coordinates).build());
         }
     }
 }
