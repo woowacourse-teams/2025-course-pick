@@ -2,7 +2,7 @@ name: coursepick-local
 
 services:
   mongodb:
-    image: mongo:latest
+    image: mongo:8.0.12
     container_name: mongoDB
     ports:
       - "27017:27017"
