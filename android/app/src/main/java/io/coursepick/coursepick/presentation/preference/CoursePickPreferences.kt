@@ -20,7 +20,7 @@ object CoursePickPreferences {
         OnSharedPreferenceChangeListener { _, key: String? ->
             Logger.log(
                 Logger.Event.PreferenceChange(key.toString()),
-                "new preference" to preferences.getString(key, null).toString(),
+                "new_preference" to preferences.getString(key, null).toString(),
             )
         }
 

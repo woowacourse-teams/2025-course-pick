@@ -51,10 +51,10 @@ class LocationProvider(
         locationClient
             .getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
             .addOnSuccessListener { location: Location ->
-                Logger.log(Logger.Event.Success("get current location"))
+                Logger.log(Logger.Event.Success("get_current_location"))
                 onSuccess(location)
             }.addOnFailureListener { exception: Exception ->
-                Logger.log(Logger.Event.Failure("get current location"))
+                Logger.log(Logger.Event.Failure("get_current_location"))
                 onFailure(exception)
             }
     }

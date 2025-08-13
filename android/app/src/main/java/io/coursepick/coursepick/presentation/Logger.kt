@@ -14,14 +14,14 @@ object Logger {
         event: Event,
         vararg parameters: Pair<String, Any>,
     ) {
-        Timber.tag("debug logger").d(
+        Timber.tag("debug_logger").d(
             buildString {
                 append(event.name)
                 if (parameters.isNotEmpty()) {
-                    append(": (")
+                    append(" : (")
                     parameters.forEachIndexed { index: Int, (key: String, value: Any) ->
                         if (index != 0) append(", ")
-                        append("$key: $value")
+                        append("$key=$value")
                     }
                     append(")")
                 }

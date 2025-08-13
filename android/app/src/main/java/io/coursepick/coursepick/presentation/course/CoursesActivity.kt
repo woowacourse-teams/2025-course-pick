@@ -115,7 +115,7 @@ class CoursesActivity :
         val mapPosition: LatLng = mapManager.cameraPosition ?: return
         val coordinate = mapPosition.toCoordinate()
         Logger.log(
-            Logger.Event.Click("search this area"),
+            Logger.Event.Click("search_this_area"),
             "latitude" to coordinate.latitude.value,
             "longitude" to coordinate.longitude.value,
         )
@@ -125,7 +125,7 @@ class CoursesActivity :
     }
 
     override fun openMenu() {
-        Logger.log(Logger.Event.Click("main menu"))
+        Logger.log(Logger.Event.Click("drawer_menu"))
         binding.mainDrawer.open()
     }
 
@@ -198,7 +198,7 @@ class CoursesActivity :
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun moveToCurrentLocation() {
-        Logger.log(Logger.Event.Click("move to current location"))
+        Logger.log(Logger.Event.Click("move_to_current_location"))
         mapManager.moveToCurrentLocation()
     }
 
@@ -233,7 +233,7 @@ class CoursesActivity :
     private fun CourseItemListener(): CourseItemListener =
         object : CourseItemListener {
             override fun select(course: CourseItem) {
-                Logger.log(Logger.Event.Click("course on list"), "course" to course)
+                Logger.log(Logger.Event.Click("course_on_list"), "course" to course)
                 viewModel.select(course)
             }
 
