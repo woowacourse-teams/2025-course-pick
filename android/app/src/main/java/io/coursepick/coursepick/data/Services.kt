@@ -3,11 +3,11 @@ package io.coursepick.coursepick.data
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import io.coursepick.coursepick.BuildConfig
 import io.coursepick.coursepick.data.course.CourseService
+import io.coursepick.coursepick.data.interceptor.ClientIdInterceptor
 import io.coursepick.coursepick.data.interceptor.KakaoAuthInterceptor
 import io.coursepick.coursepick.data.interceptor.PrettyPrintLogger
 import io.coursepick.coursepick.data.search.SearchService
 import io.coursepick.coursepick.presentation.ClientId
-import io.coursepick.coursepick.presentation.course.ClientIdInterceptor
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
