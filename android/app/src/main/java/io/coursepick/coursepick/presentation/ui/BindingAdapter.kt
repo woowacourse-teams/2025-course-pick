@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.view
+package io.coursepick.coursepick.presentation.ui
 
 import android.content.Context
 import android.view.View

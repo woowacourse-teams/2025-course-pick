@@ -8,8 +8,8 @@ import io.coursepick.coursepick.data.DefaultCourseRepository
 import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.Course
 import io.coursepick.coursepick.domain.CourseRepository
-import io.coursepick.coursepick.presentation.MutableSingleLiveData
-import io.coursepick.coursepick.presentation.SingleLiveData
+import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
+import io.coursepick.coursepick.presentation.ui.SingleLiveData
 import kotlinx.coroutines.launch
 
 class CoursesViewModel(

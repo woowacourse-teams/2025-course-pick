@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation
+package io.coursepick.coursepick.presentation.ui
 
 class MutableSingleLiveData<T> : SingleLiveData<T> {
     constructor() : super()

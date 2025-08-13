@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation
+package io.coursepick.coursepick.presentation.ui
 
 class DoublePressDetector(
     private val intervalTime: Long = 2000L,
