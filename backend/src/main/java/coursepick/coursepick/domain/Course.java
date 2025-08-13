@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceCreator;
+import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
+import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
@@ -22,6 +24,7 @@ public class Course {
 
     private final RoadType roadType;
 
+    @GeoSpatialIndexed(name = "idx_geo_segments", type = GeoSpatialIndexType.GEO_2DSPHERE)
     private final List<Segment> segments;
 
     private final Meter length;
