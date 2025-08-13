@@ -11,6 +11,7 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseRepository
 import io.coursepick.coursepick.presentation.CoursePickApplication
+import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
 import kotlinx.coroutines.launch
@@ -59,6 +60,7 @@ class CoursesViewModel(
             runCatching {
                 courseRepository.courses(mapCoordinate, userCoordinate)
             }.onSuccess { courses: List<Course> ->
+                Logger.log(Logger.Event.Success("fetch_courses"))
                 val courseItems: List<CourseItem> =
                     courses
                         .sortedBy { course: Course -> course.distance }
@@ -72,6 +74,7 @@ class CoursesViewModel(
                     state.value?.copy(courses = courseItems, isLoading = false, isFailure = false)
                 _event.value = CoursesUiEvent.FetchCourseSuccess(courseItems.firstOrNull())
             }.onFailure {
+                Logger.log(Logger.Event.Failure("fetch_courses"))
                 _state.value =
                     state.value?.copy(courses = emptyList(), isLoading = false, isFailure = true)
                 _event.value = CoursesUiEvent.FetchCourseFailure
@@ -87,6 +90,7 @@ class CoursesViewModel(
             runCatching {
                 courseRepository.nearestCoordinate(selectedCourse.course, location)
             }.onSuccess { nearest: Coordinate ->
+                Logger.log(Logger.Event.Success("fetch_nearest_coordinate"))
                 _event.value =
                     CoursesUiEvent.FetchNearestCoordinateSuccess(
                         origin = location,
@@ -94,6 +98,7 @@ class CoursesViewModel(
                         destinationName = selectedCourse.name,
                     )
             }.onFailure {
+                Logger.log(Logger.Event.Failure("fetch_nearest_coordinate"))
                 _event.value = CoursesUiEvent.FetchNearestCoordinateFailure
             }
         }
