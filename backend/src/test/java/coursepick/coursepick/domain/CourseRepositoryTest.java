@@ -1,31 +1,18 @@
 package coursepick.coursepick.domain;
 
-import coursepick.coursepick.test_util.DatabaseTestUtil;
-import org.junit.jupiter.api.AfterEach;
+import coursepick.coursepick.test_util.IntegrationTest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.context.annotation.Import;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataMongoTest
-@Import(DatabaseTestUtil.class)
-class CourseRepositoryTest {
+class CourseRepositoryTest extends IntegrationTest {
 
     @Autowired
-    private CourseRepository courseRepository;
-
-    @Autowired
-    private DatabaseTestUtil dbUtil;
-
-    @AfterEach
-    void tearDown() {
-        dbUtil.deleteCourses();
-    }
+    CourseRepository sut;
 
     @ParameterizedTest
     @CsvSource({
@@ -73,12 +60,7 @@ class CourseRepositoryTest {
         dbUtil.saveCourse(course3);
         Coordinate target = new Coordinate(37.514647, 127.086592);
 
-        List<Course> courses = courseRepository.findAllHasDistanceWithin(target, new Meter(distance));
-
-        for (Course course : courses) {
-            System.out.println(course.name());
-            System.out.println(course.length());
-        }
+        List<Course> courses = sut.findAllHasDistanceWithin(target, new Meter(distance));
 
         assertThat(courses).hasSize(expectedSize);
     }

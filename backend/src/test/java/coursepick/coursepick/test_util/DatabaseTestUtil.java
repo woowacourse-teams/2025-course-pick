@@ -13,7 +13,7 @@ public class DatabaseTestUtil {
     MongoTemplate mongoTemplate;
 
     public Course saveCourse(Course course) {
-        return mongoTemplate.save(course);
+        return mongoTemplate.insert(course, "course");
     }
 
     public void deleteCourses() {
