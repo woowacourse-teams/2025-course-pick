@@ -1,8 +1,10 @@
 package coursepick.coursepick.application.exception;
 
-import jakarta.persistence.EntityNotFoundException;
+import com.mongodb.MongoException;
 
 import java.util.function.Function;
+
+import org.springframework.dao.EmptyResultDataAccessException;
 
 public enum ErrorType {
 
@@ -28,7 +30,7 @@ public enum ErrorType {
     ),
     NOT_EXIST_COURSE(
             "코스가 존재하지 않습니다. 코스id=%d",
-            EntityNotFoundException::new
+            MongoException::new
     ),
     INVALID_FILE_EXTENSION(
             "파싱할 수 없는 파일 확장자입니다.",
