@@ -6,6 +6,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import io.coursepick.coursepick.databinding.DialogRouteFinderChoiceBinding
 import io.coursepick.coursepick.domain.course.Coordinate
+import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.compat.getSerializableCompat
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 
@@ -59,7 +60,7 @@ class RouteFinderChoiceDialogFragment :
             origin = arguments.getSerializableCompat(ARGUMENT_ORIGIN)!!
             destination = arguments.getSerializableCompat(ARGUMENT_DESTINATION)!!
             destinationName = arguments.getString(ARGUMENT_DESTINATION_NAME)!!
-            state = arguments.getSerializableCompat(ARGUMENT_STATE)!!
+            state = arguments.getParcelableCompat(ARGUMENT_STATE)!!
         }
     }
 
@@ -86,7 +87,7 @@ class RouteFinderChoiceDialogFragment :
                     putSerializable(ARGUMENT_ORIGIN, origin)
                     putSerializable(ARGUMENT_DESTINATION, destination)
                     putString(ARGUMENT_DESTINATION_NAME, destinationName)
-                    putSerializable(ARGUMENT_STATE, state)
+                    putParcelable(ARGUMENT_STATE, state)
                 }
             fragment.arguments = arguments
             return fragment
