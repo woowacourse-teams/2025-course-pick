@@ -88,7 +88,7 @@ jobs:
         run: |
           docker exec nginx sh -c " \
             cd /etc/nginx && \
-            cat nginx-app-2.conf > nginx.conf"
+            cat nginx-prod-app-2.conf > nginx.conf"
 
       - name: nginx 리로드
         run: |
