@@ -150,7 +150,7 @@
                 <androidx.core.widget.ContentLoadingProgressBar
                     android:id="@+id/mainCoursesLoadingIndicator"
                     style="?android:attr/progressBarStyleLarge"
-                    loading="@{viewModel.state.loading}"
+                    loading="@{viewModel.state.isLoading}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
