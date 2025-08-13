@@ -20,7 +20,7 @@
             android:name=".presentation.view.preference.PreferencesActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.SearchActivity"
+            android:name=".presentation.search.SearchActivity"
             android:exported="false" />
         <activity
             android:name=".presentation.view.course.CoursesActivity"

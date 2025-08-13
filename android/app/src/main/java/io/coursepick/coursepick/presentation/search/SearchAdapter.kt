@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation
+package io.coursepick.coursepick.presentation.search
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil

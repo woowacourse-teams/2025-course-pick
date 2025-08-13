@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation
+package io.coursepick.coursepick.presentation.search
 
 import android.content.Context
 import android.content.Intent
@@ -12,6 +12,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import io.coursepick.coursepick.databinding.ActivitySearchBinding
 import io.coursepick.coursepick.domain.Place
+import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.util.CoordinateKeys
 
 class SearchActivity : AppCompatActivity() {

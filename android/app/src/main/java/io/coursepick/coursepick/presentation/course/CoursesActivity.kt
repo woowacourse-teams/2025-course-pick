@@ -30,13 +30,13 @@ import io.coursepick.coursepick.domain.Coordinate
 import io.coursepick.coursepick.domain.Latitude
 import io.coursepick.coursepick.domain.Longitude
 import io.coursepick.coursepick.presentation.DoublePressDetector
-import io.coursepick.coursepick.presentation.SearchActivity
 import io.coursepick.coursepick.presentation.map.kakao.KakaoMapManager
 import io.coursepick.coursepick.presentation.map.kakao.toCoordinate
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 import io.coursepick.coursepick.presentation.preference.PreferencesActivity
 import io.coursepick.coursepick.presentation.routetfinder.RouteFinderApplication
 import io.coursepick.coursepick.presentation.routetfinder.RouteFinderChoiceDialogFragment
+import io.coursepick.coursepick.presentation.search.SearchActivity
 import io.coursepick.coursepick.util.CoordinateKeys
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
