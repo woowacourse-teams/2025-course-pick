@@ -7,6 +7,10 @@ import java.util.Optional;
 
 public interface CourseRepository extends Repository<Course, Long> {
 
+    void save(Course course);
+
+    void saveAll(Iterable<Course> courses);
+
     List<Course> findAll();
 
     Optional<Course> findById(Long id);
