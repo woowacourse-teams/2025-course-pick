@@ -1,11 +1,11 @@
 package coursepick.coursepick.application;
 
+import com.mongodb.MongoException;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
 import coursepick.coursepick.domain.RoadType;
 import coursepick.coursepick.test_util.IntegrationTest;
-import jakarta.persistence.EntityNotFoundException;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.data.Percentage;
 import org.junit.jupiter.api.Test;
@@ -173,15 +173,16 @@ class CourseApplicationServiceTest extends IntegrationTest {
                 new Coordinate(10, 10),
                 new Coordinate(0, 0)
         ));
-        dbUtil.saveCourse(course);
-        Coordinate result = sut.findClosestCoordinate(course.id(), 5, 0);
+        Course insertCourse = dbUtil.saveCourse(course);
+
+        Coordinate result = sut.findClosestCoordinate(insertCourse.id(), 5, 0);
 
         assertThat(result).isEqualTo(new Coordinate(2.5, 2.5));
     }
 
     @Test
     void 코스가_존재하지_않을_경우_예외가_발생한다() {
-        Assertions.assertThatThrownBy(() -> sut.findClosestCoordinate(1L, 0, 0))
-                .isInstanceOf(EntityNotFoundException.class);
+        Assertions.assertThatThrownBy(() -> sut.findClosestCoordinate("notId", 0, 0))
+                .isInstanceOf(MongoException.class);
     }
 }
