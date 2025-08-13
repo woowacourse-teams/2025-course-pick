@@ -1,8 +1,8 @@
 name: Backend Prod Server CD
 
 on:
-  pull_request:
-    branches: [ backend ]
+  push:
+    branches: [ main ]
     paths:
       - 'backend/**'
       - '.github/workflows/backend-prod-cd.yml'
