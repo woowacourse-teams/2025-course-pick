@@ -71,3 +71,4 @@ kotlin-kapt = { id = "kotlin-kapt" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics" }
 oss-licenses-plugin = { id = "com.google.android.gms.oss-licenses-plugin" }
+kotlin-parcelize = { id = "kotlin-parcelize" }

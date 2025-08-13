@@ -1,6 +1,6 @@
 package io.coursepick.coursepick.domain.fixture
 
-import io.coursepick.coursepick.domain.Latitude
+import io.coursepick.coursepick.domain.course.Latitude
 
 val LATITUDE_FIXTURE = Latitude(DEFAULT_LATITUDE_VALUE)
 

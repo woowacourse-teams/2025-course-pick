@@ -1,6 +1,6 @@
 package io.coursepick.coursepick.domain.fixture
 
-import io.coursepick.coursepick.domain.Longitude
+import io.coursepick.coursepick.domain.course.Longitude
 
 val LONGITUDE_FIXTURE = Longitude(DEFAULT_LONGITUDE_VALUE)
 
