@@ -29,7 +29,7 @@ public enum ErrorType {
             IllegalArgumentException::new
     ),
     NOT_EXIST_COURSE(
-            "코스가 존재하지 않습니다. 코스id=%d",
+            "코스가 존재하지 않습니다. 코스id=%s",
             MongoException::new
     ),
     INVALID_FILE_EXTENSION(

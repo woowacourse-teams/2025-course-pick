@@ -49,7 +49,7 @@ public class CourseWebController implements CourseWebApi {
     @Override
     @GetMapping("/courses/{id}/closest-coordinate")
     public CoordinateWebResponse findClosestCoordinate(
-            @PathVariable("id") long id,
+            @PathVariable("id") String id,
             @RequestParam("lat") double latitude,
             @RequestParam("lng") double longitude
     ) {
