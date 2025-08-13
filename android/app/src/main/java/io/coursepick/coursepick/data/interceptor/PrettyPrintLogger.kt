@@ -10,12 +10,12 @@ class PrettyPrintLogger : HttpLoggingInterceptor.Logger {
 
     override fun log(message: String) {
         val formattedMessage: String = message.toPrettyJsonStringOrThis()
-        Platform.Companion.get().log(formattedMessage)
+        Platform.get().log(formattedMessage)
     }
 
     private fun String.toPrettyJsonStringOrThis(): String =
         runCatching {
             val element: JsonElement = json.parseToJsonElement(this)
-            json.encodeToString(JsonElement.Companion.serializer(), element)
+            json.encodeToString(JsonElement.serializer(), element)
         }.getOrElse { this }
 }
