@@ -7,11 +7,11 @@
 
         <variable
             name="onSearchKeywordListener"
-            type="io.coursepick.coursepick.view.OnSelectListener" />
+            type="io.coursepick.coursepick.presentation.search.OnSelectListener" />
 
         <variable
             name="place"
-            type="io.coursepick.coursepick.domain.Place" />
+            type="io.coursepick.coursepick.domain.search.Place" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -2,11 +2,11 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ListPreference
-        android:defaultValue="@string/selected_map_application_value_none"
-        android:entries="@array/selected_map_application_entries"
-        android:entryValues="@array/selected_map_application_values"
-        android:key="@string/selected_map_application_key"
-        android:summary="@string/selected_map_application_summary"
-        android:title="@string/selected_map_application_title" />
+        android:defaultValue="@string/selected_route_finder_application_value_none"
+        android:entries="@array/selected_route_finder_application_entries"
+        android:entryValues="@array/selected_route_finder_application_values"
+        android:key="@string/selected_route_finder_application_key"
+        android:summary="@string/selected_route_finder_application_summary"
+        android:title="@string/selected_route_finder_application_title" />
 
 </PreferenceScreen>

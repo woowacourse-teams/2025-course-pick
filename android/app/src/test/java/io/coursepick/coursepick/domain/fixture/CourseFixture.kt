@@ -1,14 +1,14 @@
 package io.coursepick.coursepick.domain.fixture
 
-import io.coursepick.coursepick.domain.Coordinate
-import io.coursepick.coursepick.domain.Course
-import io.coursepick.coursepick.domain.CourseName
-import io.coursepick.coursepick.domain.Distance
-import io.coursepick.coursepick.domain.InclineType
-import io.coursepick.coursepick.domain.Latitude
-import io.coursepick.coursepick.domain.Length
-import io.coursepick.coursepick.domain.Longitude
-import io.coursepick.coursepick.domain.Segment
+import io.coursepick.coursepick.domain.course.Coordinate
+import io.coursepick.coursepick.domain.course.Course
+import io.coursepick.coursepick.domain.course.CourseName
+import io.coursepick.coursepick.domain.course.Distance
+import io.coursepick.coursepick.domain.course.InclineType
+import io.coursepick.coursepick.domain.course.Latitude
+import io.coursepick.coursepick.domain.course.Length
+import io.coursepick.coursepick.domain.course.Longitude
+import io.coursepick.coursepick.domain.course.Segment
 
 val COURSE_FIXTURE_1 = Course(1, "코스 1", 10, 100, 1.0, 1.0)
 val COURSE_FIXTURE_2 = Course(2, "코스 2", 20, 200, 2.0, 2.0)
