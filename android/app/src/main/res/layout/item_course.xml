@@ -13,7 +13,7 @@
 
         <variable
             name="courseItemListener"
-            type="io.coursepick.coursepick.presentation.view.course.CourseItemListener" />
+            type="io.coursepick.coursepick.presentation.course.CourseItemListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

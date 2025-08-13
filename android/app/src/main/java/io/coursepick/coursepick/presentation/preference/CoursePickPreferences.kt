@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.presentation.view.routetfinder.RouteFinderApplication
+import io.coursepick.coursepick.presentation.routetfinder.RouteFinderApplication
 
 object CoursePickPreferences {
     private lateinit var preferences: SharedPreferences

@@ -3,7 +3,7 @@ package io.coursepick.coursepick.presentation
 import android.app.Application
 import com.kakao.vectormap.KakaoMapSdk
 import io.coursepick.coursepick.BuildConfig
-import io.coursepick.coursepick.presentation.view.preference.CoursePickPreferences
+import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 import timber.log.Timber
 
 class CoursePickApplication : Application() {

@@ -7,11 +7,11 @@
 
         <variable
             name="state"
-            type="io.coursepick.coursepick.presentation.view.routetfinder.RouteFinderChoiceUiState" />
+            type="io.coursepick.coursepick.presentation.routetfinder.RouteFinderChoiceUiState" />
 
         <variable
             name="onChosenListener"
-            type="io.coursepick.coursepick.presentation.view.routetfinder.OnChosenListener" />
+            type="io.coursepick.coursepick.presentation.routetfinder.OnChosenListener" />
 
     </data>
 
