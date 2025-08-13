@@ -9,6 +9,7 @@ import com.kakao.vectormap.Poi
 import com.kakao.vectormap.camera.CameraPosition
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Segment
+import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.course.CourseItem
 import kotlin.math.pow
 import kotlin.math.sqrt
