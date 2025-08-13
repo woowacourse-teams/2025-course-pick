@@ -1,10 +1,5 @@
-package io.coursepick.coursepick.domain
+package io.coursepick.coursepick.domain.course
 
-import io.coursepick.coursepick.domain.course.Coordinate
-import io.coursepick.coursepick.domain.course.InclineType
-import io.coursepick.coursepick.domain.course.Latitude
-import io.coursepick.coursepick.domain.course.Longitude
-import io.coursepick.coursepick.domain.course.Segment
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource

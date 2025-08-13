@@ -1,9 +1,5 @@
-package io.coursepick.coursepick.domain
+package io.coursepick.coursepick.domain.course
 
-import io.coursepick.coursepick.domain.course.Course
-import io.coursepick.coursepick.domain.course.CourseName
-import io.coursepick.coursepick.domain.course.Distance
-import io.coursepick.coursepick.domain.course.Length
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
