@@ -3,13 +3,14 @@ package io.coursepick.coursepick.presentation
 import android.app.Application
 import com.kakao.vectormap.KakaoMapSdk
 import io.coursepick.coursepick.BuildConfig
-import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
-import io.coursepick.coursepick.data.DefaultCourseRepository
-import io.coursepick.coursepick.data.DefaultSearchRepository
 import io.coursepick.coursepick.data.Services
-import io.coursepick.coursepick.domain.CourseRepository
-import io.coursepick.coursepick.domain.SearchRepository
-import io.coursepick.coursepick.util.ClientId
+import io.coursepick.coursepick.data.course.DefaultCourseRepository
+import io.coursepick.coursepick.data.search.DefaultSearchRepository
+import io.coursepick.coursepick.domain.course.CourseRepository
+import io.coursepick.coursepick.domain.search.SearchRepository
+import io.coursepick.coursepick.presentation.course.ClientUuid
+import io.coursepick.coursepick.presentation.course.FirebaseAnalyticsService
+import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 import timber.log.Timber
 
 class CoursePickApplication : Application() {

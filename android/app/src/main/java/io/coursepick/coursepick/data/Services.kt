@@ -6,8 +6,8 @@ import io.coursepick.coursepick.data.course.CourseService
 import io.coursepick.coursepick.data.interceptor.KakaoAuthInterceptor
 import io.coursepick.coursepick.data.interceptor.PrettyPrintLogger
 import io.coursepick.coursepick.data.search.SearchService
-import io.coursepick.coursepick.util.ClientId
-import io.coursepick.coursepick.view.ClientIdInterceptor
+import io.coursepick.coursepick.presentation.ClientId
+import io.coursepick.coursepick.presentation.course.ClientIdInterceptor
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient

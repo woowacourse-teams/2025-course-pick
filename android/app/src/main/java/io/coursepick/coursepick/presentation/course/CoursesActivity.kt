@@ -34,6 +34,7 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.presentation.CoordinateKeys
+import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.map.kakao.KakaoMapManager
 import io.coursepick.coursepick.presentation.map.kakao.toCoordinate
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences

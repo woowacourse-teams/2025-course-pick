@@ -1,11 +1,11 @@
-package io.coursepick.coursepick.view
+package io.coursepick.coursepick.presentation.course
 
 import android.os.Bundle
-import io.coursepick.coursepick.view.Logger.Event
+import io.coursepick.coursepick.presentation.Logger
 
 interface AnalyticsService {
     fun log(
-        event: Event,
+        event: Logger.Event,
         bundle: Bundle,
     )
 }

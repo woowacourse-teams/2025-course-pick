@@ -6,11 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
-import io.coursepick.coursepick.data.search.DefaultSearchRepository
+import androidx.lifecycle.viewmodel.CreationExtras
 import io.coursepick.coursepick.domain.search.Place
 import io.coursepick.coursepick.domain.search.SearchRepository
+import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.Logger
-import androidx.lifecycle.viewmodel.CreationExtras
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

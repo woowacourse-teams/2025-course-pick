@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.util
+package io.coursepick.coursepick.presentation
 
 interface ClientId {
     val value: String

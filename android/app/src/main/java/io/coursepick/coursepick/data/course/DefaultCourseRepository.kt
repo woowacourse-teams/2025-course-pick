@@ -1,6 +1,5 @@
 package io.coursepick.coursepick.data.course
 
-import io.coursepick.coursepick.data.Services
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseRepository

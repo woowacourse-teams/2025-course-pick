@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.view
+package io.coursepick.coursepick.presentation.course
 
 import android.os.Bundle
 import com.google.firebase.Firebase
@@ -6,8 +6,8 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.crashlytics.crashlytics
-import io.coursepick.coursepick.util.ClientId
-import io.coursepick.coursepick.view.Logger.Event
+import io.coursepick.coursepick.presentation.ClientId
+import io.coursepick.coursepick.presentation.Logger
 
 class FirebaseAnalyticsService(
     clientId: ClientId,
@@ -21,7 +21,7 @@ class FirebaseAnalyticsService(
     }
 
     override fun log(
-        event: Event,
+        event: Logger.Event,
         bundle: Bundle,
     ) {
         firebaseAnalytics.logEvent(event.name, bundle)

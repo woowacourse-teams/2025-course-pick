@@ -1,6 +1,6 @@
-package io.coursepick.coursepick.view
+package io.coursepick.coursepick.presentation.course
 
-import io.coursepick.coursepick.util.ClientId
+import io.coursepick.coursepick.presentation.ClientId
 import okhttp3.Interceptor
 import okhttp3.Response
 

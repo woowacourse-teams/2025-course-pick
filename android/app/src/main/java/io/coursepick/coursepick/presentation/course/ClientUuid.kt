@@ -1,10 +1,10 @@
-package io.coursepick.coursepick.view
+package io.coursepick.coursepick.presentation.course
 
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
-import io.coursepick.coursepick.util.ClientId
+import io.coursepick.coursepick.presentation.ClientId
 import java.util.UUID
 
 class ClientUuid(

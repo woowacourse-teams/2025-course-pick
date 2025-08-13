@@ -6,16 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
-import io.coursepick.coursepick.data.course.DefaultCourseRepository
+import androidx.lifecycle.viewmodel.CreationExtras
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseRepository
+import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
-import androidx.lifecycle.viewmodel.CreationExtras
-import io.coursepick.coursepick.domain.Coordinate
-import io.coursepick.coursepick.domain.Course
-import io.coursepick.coursepick.domain.CourseRepository
 import kotlinx.coroutines.launch
 
 class CoursesViewModel(
@@ -123,7 +120,7 @@ class CoursesViewModel(
                     extras: CreationExtras,
                 ): T {
                     val application = checkNotNull(extras[APPLICATION_KEY]) as CoursePickApplication
-                    return MainViewModel(application.courseRepository) as T
+                    return CoursesViewModel(application.courseRepository) as T
                 }
             }
     }
