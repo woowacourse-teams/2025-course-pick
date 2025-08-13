@@ -83,7 +83,7 @@ jobs:
     name: prod-app-1 서버에 배포
     needs: detect-idle
     if: needs.detect-idle.outputs.idle-server == 'prod-app-1'
-    uses: prod-app-1-cd.yml
+    uses: ./.github/workflows/prod-app-1-cd.yml
     with:
       run_id: ${{ github.run_id }}
     secrets: inherit
@@ -92,7 +92,7 @@ jobs:
     name: prod-app-2 서버에 배포
     needs: detect-idle
     if: needs.detect-idle.outputs.idle-server == 'prod-app-2'
-    uses: prod-app-2-cd.yml
+    uses: ./.github/workflows/prod-app-2-cd.yml
     with:
       run_id: ${{ github.run_id }}
     secrets: inherit
