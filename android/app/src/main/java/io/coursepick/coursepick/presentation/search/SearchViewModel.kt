@@ -24,12 +24,12 @@ class SearchViewModel(
     fun search(query: String) {
         searchJob?.cancel()
 
-        _state.value = state.value?.copy(isLoading = true)
-
         if (query.isBlank()) {
             _state.value = state.value?.copy(emptyList(), false)
             return
         }
+
+        _state.value = state.value?.copy(isLoading = true)
 
         searchJob =
             viewModelScope.launch {
