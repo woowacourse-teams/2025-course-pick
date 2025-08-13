@@ -9,6 +9,7 @@ import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.Map;
 
 import static coursepick.coursepick.application.exception.ErrorType.*;
 
+@Profile("!prod")
 @OpenAPIDefinition(info = @Info(title = "코스픽 API", version = "1.0.0"))
 @Configuration
 public class OpenApiConfig {

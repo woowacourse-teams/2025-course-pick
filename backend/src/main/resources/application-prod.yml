@@ -9,8 +9,8 @@ spring:
     password: ${DB_PASSWORD}
 
 springdoc:
-  dev-server-url: ${DEV_SERVER_URL}
-  prod-server-url: ${PROD_SERVER_URL}
+  api-docs.enabled: false
+  swagger-ui.enabled: false
 
 gcp:
   drive.folder-id: ${GCP_DRIVE_FOLDER_ID}
