@@ -24,18 +24,20 @@ class SearchViewModel(
     fun search(query: String) {
         searchJob?.cancel()
 
+        if (query.isBlank()) {
+            _state.value = emptyList()
+            return
+        }
+
         searchJob =
             viewModelScope.launch {
                 delay(DEBOUNCE_LIMIT_TIME)
-
-                if (query.isNotBlank()) {
-                    try {
-                        Logger.log(Logger.Event.Search("place"), "query" to query)
-                        _state.value = searchRepository.searchPlaces(query)
-                    } catch (e: Exception) {
-                        _state.value = emptyList()
-                    }
-                } else {
+                Logger.log(Logger.Event.Search("place"), "query" to query)
+                runCatching {
+                    searchRepository.searchPlaces(query)
+                }.onSuccess { places: List<Place> ->
+                    _state.value = places
+                }.onFailure {
                     _state.value = emptyList()
                 }
             }
