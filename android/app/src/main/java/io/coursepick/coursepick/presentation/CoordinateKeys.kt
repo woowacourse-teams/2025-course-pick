@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.util
+package io.coursepick.coursepick.presentation
 
 object CoordinateKeys {
     const val EXTRA_KEYS_LATITUDE = "latitude"
