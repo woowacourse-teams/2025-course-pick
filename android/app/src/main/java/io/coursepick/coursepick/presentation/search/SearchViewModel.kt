@@ -17,15 +17,17 @@ class SearchViewModel(
 ) : ViewModel() {
     private var searchJob: Job? = null
 
-    private val _state: MutableLiveData<List<Place>> =
-        MutableLiveData<List<Place>>()
-    val state: LiveData<List<Place>> get() = _state
+    private val _state: MutableLiveData<SearchUiState> =
+        MutableLiveData<SearchUiState>(SearchUiState(emptyList(), false))
+    val state: LiveData<SearchUiState> get() = _state
 
     fun search(query: String) {
         searchJob?.cancel()
 
+        _state.value = state.value?.copy(isLoading = true)
+
         if (query.isBlank()) {
-            _state.value = emptyList()
+            _state.value = state.value?.copy(emptyList(), false)
             return
         }
 
@@ -36,9 +38,9 @@ class SearchViewModel(
                 runCatching {
                     searchRepository.searchPlaces(query)
                 }.onSuccess { places: List<Place> ->
-                    _state.value = places
+                    _state.value = state.value?.copy(places, false)
                 }.onFailure {
-                    _state.value = emptyList()
+                    _state.value = state.value?.copy(emptyList(), false)
                 }
             }
     }

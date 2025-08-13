@@ -36,8 +36,8 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun setUpObserves() {
-        viewModel.state.observe(this) { state: List<Place> ->
-            adapter.submitList(state)
+        viewModel.state.observe(this) { state: SearchUiState ->
+            adapter.submitList(state.places)
         }
     }
 
