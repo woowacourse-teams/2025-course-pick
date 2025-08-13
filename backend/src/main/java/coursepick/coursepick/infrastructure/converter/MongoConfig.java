@@ -10,7 +10,10 @@ import java.util.List;
 public class MongoConfig {
 
     @Bean
-    public MongoCustomConversions mongoCustomConversions(SegmentConverter segmentConverter) {
-        return new MongoCustomConversions(List.of(segmentConverter));
+    public MongoCustomConversions mongoCustomConversions() {
+        return new MongoCustomConversions(List.of(
+                new SegmentListConverter.Reader(),
+                new SegmentListConverter.Writer()
+        ));
     }
 }
