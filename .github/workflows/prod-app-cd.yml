@@ -1,15 +1,21 @@
-name: Prod App 2 CD
+name: Prod App CD
 on:
   workflow_call:
     inputs:
       run_id:
         required: true
         type: string
+      main_runner:
+        required: true
+        type: string
+      sub_runner:
+        required: true
+        type: string
 
 jobs:
-  deploy-prod-app-2:
-    name: prod-app-2 서버에 배포
-    runs-on: [ self-hosted, prod-app-2 ]
+  deploy-prod-main:
+    name: main runner에 서버 배포
+    runs-on: [ self-hosted, "${{ inputs.main_runner }}" ]
     steps:
       - name: 임시 아티팩트 저장소에 저장된 파일 다운로드
         uses: actions/download-artifact@v4
@@ -75,30 +81,26 @@ jobs:
             fi
           done
 
-          echo "-- 배포 종료 --"
-
-  # 3) 로드밸런서에 nginx 설정 반영
-  update-nginx-to-prod-app-2:
-    name: nginx 로드밸런서 설정 파일 nginx-app-2으로 변경
-    needs: [ deploy-prod-app-2 ]
-    if: ${{ needs.deploy-prod-app-2.result == 'success' }}
+  update-nginx-to-prod-main:
+    name: nginx 로드밸런서 설정 파일 main runner 설정으로 변경
+    needs: [ deploy-prod-main ]
+    if: ${{ needs.deploy-prod-main.result == 'success' }}
     runs-on: [ self-hosted, prod-lb ]
     steps:
       - name: nginx.conf 갱신
         run: |
           docker exec nginx sh -c " \
             cd /etc/nginx && \
-            cat nginx-prod-app-2.conf > nginx.conf"
+            cat nginx-prod-app-1.conf > nginx.conf"
 
       - name: nginx 리로드
         run: |
           docker exec nginx nginx -s reload
 
-  # 4) 구버전 서버 종료 (server1 / server2 중 하나만 실행)
-  shutdown-prod-app-1:
-    name: prod-app-1 종료
-    needs: [ update-nginx-to-prod-app-2 ]
-    runs-on: [ self-hosted, prod-app-1 ]
+  shutdown-prod-sub:
+    name: sub runner 서버 종료
+    needs: [ update-nginx-to-prod-main ]
+    runs-on: [ self-hosted, "${{ inputs.sub_runner }}" ]
     steps:
       - name: 기존 80 포트 서버 내리기
         run: |
@@ -109,7 +111,7 @@ jobs:
           	sudo kill -15 $PID || true
           	sleep 5
 
-            CHECK_PID=$(sudo lsof -t -i :80 || true)
+          	CHECK_PID=$(sudo lsof -t -i :80 || true)
           	if [ -z "$CHECK_PID" ]; then
           		echo "기존 서버 종료됨"
           	else
