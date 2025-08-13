@@ -90,5 +90,9 @@ object Logger {
         class Failure(
             target: String,
         ) : Event(target)
+
+        class PreferenceChange(
+            target: String,
+        ) : Event(target)
     }
 }
