@@ -47,6 +47,11 @@ class CoursesViewModel(
         mapCoordinate: Coordinate,
         userCoordinate: Coordinate? = null,
     ) {
+        _state.value =
+            state.value?.copy(
+                isLoading = true,
+                isFailure = false,
+            )
         viewModelScope.launch {
             runCatching {
                 courseRepository.courses(mapCoordinate, userCoordinate)
@@ -60,9 +65,12 @@ class CoursesViewModel(
                                 index == 0,
                             )
                         }
-                _state.value = CoursesUiState(courseItems)
+                _state.value =
+                    state.value?.copy(courses = courseItems, isLoading = false, isFailure = false)
                 _event.value = CoursesUiEvent.FetchCourseSuccess(courseItems.firstOrNull())
             }.onFailure {
+                _state.value =
+                    state.value?.copy(courses = emptyList(), isLoading = false, isFailure = true)
                 _event.value = CoursesUiEvent.FetchCourseFailure
             }
         }
