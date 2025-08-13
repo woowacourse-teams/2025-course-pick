@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.coursepick.coursepick.data.DefaultSearchRepository
+import io.coursepick.coursepick.data.search.DefaultSearchRepository
 import io.coursepick.coursepick.domain.search.Place
 import io.coursepick.coursepick.domain.search.SearchRepository
 import io.coursepick.coursepick.presentation.Logger

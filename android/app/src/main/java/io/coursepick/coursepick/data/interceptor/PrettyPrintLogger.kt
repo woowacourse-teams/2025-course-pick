@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.data
+package io.coursepick.coursepick.data.interceptor
 
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -10,12 +10,12 @@ class PrettyPrintLogger : HttpLoggingInterceptor.Logger {
 
     override fun log(message: String) {
         val formattedMessage: String = message.toPrettyJsonStringOrThis()
-        Platform.get().log(formattedMessage)
+        Platform.Companion.get().log(formattedMessage)
     }
 
     private fun String.toPrettyJsonStringOrThis(): String =
         runCatching {
             val element: JsonElement = json.parseToJsonElement(this)
-            json.encodeToString(JsonElement.serializer(), element)
+            json.encodeToString(JsonElement.Companion.serializer(), element)
         }.getOrElse { this }
 }

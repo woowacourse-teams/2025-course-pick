@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.data
+package io.coursepick.coursepick.data.course
 
 import io.coursepick.coursepick.domain.course.InclineType
 import io.coursepick.coursepick.domain.course.Segment

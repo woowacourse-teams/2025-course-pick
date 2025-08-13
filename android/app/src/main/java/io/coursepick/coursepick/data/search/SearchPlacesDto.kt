@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.data
+package io.coursepick.coursepick.data.search
 
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Latitude

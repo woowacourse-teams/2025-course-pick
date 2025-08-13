@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.data
+package io.coursepick.coursepick.data.search
 
 import retrofit2.http.GET
 import retrofit2.http.Query

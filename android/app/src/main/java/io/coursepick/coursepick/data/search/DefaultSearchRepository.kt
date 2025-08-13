@@ -1,5 +1,6 @@
-package io.coursepick.coursepick.data
+package io.coursepick.coursepick.data.search
 
+import io.coursepick.coursepick.data.Services
 import io.coursepick.coursepick.domain.search.Place
 import io.coursepick.coursepick.domain.search.SearchRepository
 

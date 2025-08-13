@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.data
+package io.coursepick.coursepick.data.interceptor
 
 import io.coursepick.coursepick.BuildConfig
 import okhttp3.Interceptor
