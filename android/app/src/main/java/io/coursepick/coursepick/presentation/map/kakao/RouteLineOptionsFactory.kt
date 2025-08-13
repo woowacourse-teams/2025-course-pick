@@ -8,9 +8,9 @@ import com.kakao.vectormap.route.RouteLineSegment
 import com.kakao.vectormap.route.RouteLineStyle
 import com.kakao.vectormap.route.RouteLineStyles
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.domain.Coordinate
-import io.coursepick.coursepick.domain.InclineType
-import io.coursepick.coursepick.domain.Segment
+import io.coursepick.coursepick.domain.course.Coordinate
+import io.coursepick.coursepick.domain.course.InclineType
+import io.coursepick.coursepick.domain.course.Segment
 import io.coursepick.coursepick.presentation.course.CourseItem
 
 class RouteLineOptionsFactory(

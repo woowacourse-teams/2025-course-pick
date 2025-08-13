@@ -26,9 +26,9 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.kakao.vectormap.LatLng
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.databinding.ActivityCoursesBinding
-import io.coursepick.coursepick.domain.Coordinate
-import io.coursepick.coursepick.domain.Latitude
-import io.coursepick.coursepick.domain.Longitude
+import io.coursepick.coursepick.domain.course.Coordinate
+import io.coursepick.coursepick.domain.course.Latitude
+import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.presentation.CoordinateKeys
 import io.coursepick.coursepick.presentation.map.kakao.KakaoMapManager
 import io.coursepick.coursepick.presentation.map.kakao.toCoordinate

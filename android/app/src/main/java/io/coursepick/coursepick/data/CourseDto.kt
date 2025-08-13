@@ -1,9 +1,9 @@
 package io.coursepick.coursepick.data
 
-import io.coursepick.coursepick.domain.Course
-import io.coursepick.coursepick.domain.CourseName
-import io.coursepick.coursepick.domain.Distance
-import io.coursepick.coursepick.domain.Length
+import io.coursepick.coursepick.domain.course.Course
+import io.coursepick.coursepick.domain.course.CourseName
+import io.coursepick.coursepick.domain.course.Distance
+import io.coursepick.coursepick.domain.course.Length
 import kotlinx.serialization.Serializable
 
 @Serializable

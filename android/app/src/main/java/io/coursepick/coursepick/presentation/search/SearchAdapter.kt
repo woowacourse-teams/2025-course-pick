@@ -3,7 +3,7 @@ package io.coursepick.coursepick.presentation.search
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import io.coursepick.coursepick.domain.Place
+import io.coursepick.coursepick.domain.search.Place
 
 class SearchAdapter(
     private val onSelectListener: OnSelectListener,

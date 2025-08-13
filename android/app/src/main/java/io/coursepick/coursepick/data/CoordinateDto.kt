@@ -1,8 +1,8 @@
 package io.coursepick.coursepick.data
 
-import io.coursepick.coursepick.domain.Coordinate
-import io.coursepick.coursepick.domain.Latitude
-import io.coursepick.coursepick.domain.Longitude
+import io.coursepick.coursepick.domain.course.Coordinate
+import io.coursepick.coursepick.domain.course.Latitude
+import io.coursepick.coursepick.domain.course.Longitude
 import kotlinx.serialization.Serializable
 
 @Serializable

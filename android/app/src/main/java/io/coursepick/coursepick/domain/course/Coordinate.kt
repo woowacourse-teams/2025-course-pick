@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.domain
+package io.coursepick.coursepick.domain.course
 
 import java.io.Serializable
 

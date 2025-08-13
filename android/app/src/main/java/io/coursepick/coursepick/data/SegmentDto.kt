@@ -1,7 +1,7 @@
 package io.coursepick.coursepick.data
 
-import io.coursepick.coursepick.domain.InclineType
-import io.coursepick.coursepick.domain.Segment
+import io.coursepick.coursepick.domain.course.InclineType
+import io.coursepick.coursepick.domain.course.Segment
 import kotlinx.serialization.Serializable
 
 @Serializable

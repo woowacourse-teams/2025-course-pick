@@ -1,4 +1,6 @@
-package io.coursepick.coursepick.domain
+package io.coursepick.coursepick.domain.search
+
+import io.coursepick.coursepick.domain.course.Coordinate
 
 data class Place(
     val id: Long,

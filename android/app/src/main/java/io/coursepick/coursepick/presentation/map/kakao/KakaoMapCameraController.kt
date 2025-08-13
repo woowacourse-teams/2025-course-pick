@@ -8,8 +8,8 @@ import com.kakao.vectormap.camera.CameraAnimation
 import com.kakao.vectormap.camera.CameraUpdate
 import com.kakao.vectormap.camera.CameraUpdateFactory
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.domain.Coordinate
-import io.coursepick.coursepick.domain.Segment
+import io.coursepick.coursepick.domain.course.Coordinate
+import io.coursepick.coursepick.domain.course.Segment
 import io.coursepick.coursepick.presentation.course.CourseItem
 
 class KakaoMapCameraController(

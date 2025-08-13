@@ -1,5 +1,6 @@
 package io.coursepick.coursepick.domain
 
+import io.coursepick.coursepick.domain.course.Distance
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 

@@ -1,7 +1,7 @@
 package io.coursepick.coursepick.data
 
-import io.coursepick.coursepick.domain.Place
-import io.coursepick.coursepick.domain.SearchRepository
+import io.coursepick.coursepick.domain.search.Place
+import io.coursepick.coursepick.domain.search.SearchRepository
 
 class DefaultSearchRepository : SearchRepository {
     override suspend fun searchPlaces(

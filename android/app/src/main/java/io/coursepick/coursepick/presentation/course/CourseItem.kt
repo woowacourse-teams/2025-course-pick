@@ -1,7 +1,7 @@
 package io.coursepick.coursepick.presentation.course
 
-import io.coursepick.coursepick.domain.Course
-import io.coursepick.coursepick.domain.Segment
+import io.coursepick.coursepick.domain.course.Course
+import io.coursepick.coursepick.domain.course.Segment
 
 data class CourseItem(
     val course: Course,

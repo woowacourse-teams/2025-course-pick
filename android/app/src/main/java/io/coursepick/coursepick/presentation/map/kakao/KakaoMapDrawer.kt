@@ -13,7 +13,7 @@ import com.kakao.vectormap.label.Transition
 import com.kakao.vectormap.route.RouteLineLayer
 import com.kakao.vectormap.route.RouteLineOptions
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.domain.Coordinate
+import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.presentation.course.CourseItem
 
 class KakaoMapDrawer(

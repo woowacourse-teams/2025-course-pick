@@ -1,6 +1,6 @@
 package io.coursepick.coursepick.presentation
 
-import io.coursepick.coursepick.domain.Course
+import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.fixture.COORDINATE_FIXTURE
 import io.coursepick.coursepick.domain.fixture.COURSE_FIXTURE_20
 import io.coursepick.coursepick.domain.fixture.FAKE_COURSES

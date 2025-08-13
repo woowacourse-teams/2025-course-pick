@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.domain
+package io.coursepick.coursepick.domain.course
 
 interface CourseRepository {
     suspend fun courses(

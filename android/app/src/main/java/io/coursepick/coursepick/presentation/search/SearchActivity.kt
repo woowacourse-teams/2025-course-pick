@@ -11,7 +11,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import io.coursepick.coursepick.databinding.ActivitySearchBinding
-import io.coursepick.coursepick.domain.Place
+import io.coursepick.coursepick.domain.search.Place
 import io.coursepick.coursepick.presentation.CoordinateKeys
 import io.coursepick.coursepick.presentation.Logger
 

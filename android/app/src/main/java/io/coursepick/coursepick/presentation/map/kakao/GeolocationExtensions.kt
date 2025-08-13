@@ -2,9 +2,9 @@ package io.coursepick.coursepick.presentation.map.kakao
 
 import android.location.Location
 import com.kakao.vectormap.LatLng
-import io.coursepick.coursepick.domain.Coordinate
-import io.coursepick.coursepick.domain.Latitude
-import io.coursepick.coursepick.domain.Longitude
+import io.coursepick.coursepick.domain.course.Coordinate
+import io.coursepick.coursepick.domain.course.Latitude
+import io.coursepick.coursepick.domain.course.Longitude
 
 fun LatLng.toCoordinate(): Coordinate = Coordinate(Latitude(latitude), Longitude(longitude))
 

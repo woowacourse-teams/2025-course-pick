@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.domain
+package io.coursepick.coursepick.domain.search
 
 interface SearchRepository {
     suspend fun searchPlaces(

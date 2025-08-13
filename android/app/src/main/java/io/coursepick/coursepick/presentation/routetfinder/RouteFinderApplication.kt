@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import androidx.core.net.toUri
-import io.coursepick.coursepick.domain.Coordinate
+import io.coursepick.coursepick.domain.course.Coordinate
 import kotlin.math.ln
 import kotlin.math.tan
 

@@ -5,8 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.coursepick.coursepick.data.DefaultSearchRepository
-import io.coursepick.coursepick.domain.Place
-import io.coursepick.coursepick.domain.SearchRepository
+import io.coursepick.coursepick.domain.search.Place
+import io.coursepick.coursepick.domain.search.SearchRepository
 import io.coursepick.coursepick.presentation.Logger
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

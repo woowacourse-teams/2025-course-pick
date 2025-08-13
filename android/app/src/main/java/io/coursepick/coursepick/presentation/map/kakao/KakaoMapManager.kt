@@ -9,9 +9,9 @@ import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.MapGravity
 import com.kakao.vectormap.MapView
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.domain.Coordinate
-import io.coursepick.coursepick.domain.Latitude
-import io.coursepick.coursepick.domain.Longitude
+import io.coursepick.coursepick.domain.course.Coordinate
+import io.coursepick.coursepick.domain.course.Latitude
+import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.presentation.LocationProvider
 import io.coursepick.coursepick.presentation.course.CourseItem
 

@@ -1,8 +1,8 @@
 package io.coursepick.coursepick.data
 
-import io.coursepick.coursepick.domain.Coordinate
-import io.coursepick.coursepick.domain.Course
-import io.coursepick.coursepick.domain.CourseRepository
+import io.coursepick.coursepick.domain.course.Coordinate
+import io.coursepick.coursepick.domain.course.Course
+import io.coursepick.coursepick.domain.course.CourseRepository
 
 class DefaultCourseRepository : CourseRepository {
     override suspend fun courses(
