@@ -25,7 +25,7 @@ class SearchViewModel(
         searchJob?.cancel()
 
         if (query.isBlank()) {
-            _state.value = state.value?.copy(emptyList(), false)
+            _state.value = state.value?.copy(places = emptyList(), isLoading = false)
             return
         }
 
@@ -38,9 +38,9 @@ class SearchViewModel(
                 runCatching {
                     searchRepository.searchPlaces(query)
                 }.onSuccess { places: List<Place> ->
-                    _state.value = state.value?.copy(places, false)
+                    _state.value = state.value?.copy(places = places, isLoading = false)
                 }.onFailure {
-                    _state.value = state.value?.copy(emptyList(), false)
+                    _state.value = state.value?.copy(places = emptyList(), isLoading = false)
                 }
             }
     }
