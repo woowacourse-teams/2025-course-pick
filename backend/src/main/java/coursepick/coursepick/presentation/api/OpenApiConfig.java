@@ -2,7 +2,6 @@ package coursepick.coursepick.presentation.api;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
-import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.examples.Example;
 import org.springdoc.core.customizers.OpenApiCustomizer;
@@ -14,10 +13,7 @@ import java.util.Map;
 
 import static coursepick.coursepick.application.exception.ErrorType.*;
 
-@OpenAPIDefinition(
-        info = @Info(title = "코스픽 API", version = "1.0.0"),
-        servers = @Server(url = "http://54.180.213.93", description = "개발 서버")
-)
+@OpenAPIDefinition(info = @Info(title = "코스픽 API", version = "1.0.0"))
 @Configuration
 public class OpenApiConfig {
 
