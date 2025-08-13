@@ -67,6 +67,14 @@ object Logger {
             target: String,
         ) : Event(target)
 
+        class Pause(
+            target: String,
+        ) : Event(target)
+
+        class Resume(
+            target: String,
+        ) : Event(target)
+
         class Click(
             target: String,
         ) : Event(target)

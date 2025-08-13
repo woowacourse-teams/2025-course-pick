@@ -43,9 +43,13 @@ class CoursePickApplication : Application() {
 
                 override fun onActivityStarted(activity: Activity) = Unit
 
-                override fun onActivityResumed(activity: Activity) = Unit
+                override fun onActivityResumed(activity: Activity) {
+                    Logger.log(Logger.Event.Resume(activity.javaClass.simpleName))
+                }
 
-                override fun onActivityPaused(activity: Activity) = Unit
+                override fun onActivityPaused(activity: Activity) {
+                    Logger.log(Logger.Event.Pause(activity.javaClass.simpleName))
+                }
 
                 override fun onActivityStopped(activity: Activity) = Unit
 
