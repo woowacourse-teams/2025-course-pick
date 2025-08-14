@@ -1,5 +1,6 @@
 package coursepick.coursepick.domain;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -12,7 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.List;
 
 @Document
-@AllArgsConstructor(onConstructor_ = @PersistenceCreator)
+@AllArgsConstructor(access = AccessLevel.PRIVATE, onConstructor_ = @PersistenceCreator)
 @Getter
 @Accessors(fluent = true)
 public class Course {
