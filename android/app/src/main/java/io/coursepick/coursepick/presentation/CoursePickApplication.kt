@@ -26,9 +26,15 @@ class CoursePickApplication : Application() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
+        Logger.log(Logger.Event.Enter(javaClass.simpleName))
         KakaoMapSdk.init(this, BuildConfig.KAKAO_NATIVE_APP_KEY)
         CoursePickPreferences.init(this)
         setUpCallbacks()
+    }
+
+    override fun onTerminate() {
+        Logger.log(Logger.Event.Exit(javaClass.simpleName))
+        super.onTerminate()
     }
 
     private fun setUpCallbacks() {
