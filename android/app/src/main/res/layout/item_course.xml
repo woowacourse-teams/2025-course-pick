@@ -21,16 +21,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/background_course_item_selector"
-        android:onClick="@{() -> courseItemListener.select(course)}">
+        android:onClick="@{() -> courseItemListener.select(course)}"
+        android:padding="16dp">
 
         <TextView
             android:id="@+id/courseName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="15dp"
-            android:layout_marginTop="15dp"
-            android:ellipsize="end"
-            android:maxLines="1"
+            android:layout_marginEnd="16dp"
             android:text="@{course.name}"
             android:textColor="@color/item_primary"
             android:textSize="16sp"
@@ -38,30 +36,32 @@
             app:layout_constraintEnd_toStartOf="@id/courseDistance"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="석촌 호수 뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑이" />
+            tools:text="석촌 호수 뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑이" />
 
         <TextView
             android:id="@+id/courseDistance"
             courseDistance="@{course.distance}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="15dp"
-            android:textColor="@color/item_secondary"
+            android:textColor="@color/point_primary"
             android:textSize="12sp"
+            android:textStyle="bold"
             android:visibility="@{course.distance != null ? View.VISIBLE : View.GONE}"
-            app:layout_constraintBottom_toBottomOf="@id/courseName"
+            app:layout_constraintBottom_toTopOf="@id/courseNavigationButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/courseName"
-            app:layout_constraintTop_toTopOf="@id/courseName"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="spread_inside"
             tools:text="10m만큼 떨어짐" />
 
         <ImageView
             android:id="@+id/courseLengthIcon"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:src="@drawable/icon_length"
             app:layout_constraintBottom_toBottomOf="@id/courseLength"
-            app:layout_constraintStart_toStartOf="@id/courseName"
+            app:layout_constraintEnd_toStartOf="@id/courseLength"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/courseLength" />
 
         <TextView
@@ -71,36 +71,23 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
             android:layout_marginTop="10dp"
-            android:layout_marginBottom="15dp"
-            android:textColor="@color/item_secondary"
+            android:textColor="@color/item_primary"
             android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/courseLengthIcon"
             app:layout_constraintTop_toBottomOf="@id/courseName"
             tools:text="5km" />
 
-        <TextView
-            android:id="@+id/courseDivider1"
+        <ImageView
+            android:id="@+id/courseTypeIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
-            android:text="@string/item_course_divider"
-            android:textColor="@color/item_tertiary"
+            android:src="@drawable/icon_road_type"
             android:visibility="@{course.roadType != null ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@id/courseLength"
             app:layout_constraintStart_toEndOf="@id/courseLength"
             app:layout_constraintTop_toTopOf="@id/courseLength" />
-
-        <ImageView
-            android:id="@+id/courseTypeIcon"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_marginStart="6dp"
-            android:visibility="@{course.roadType != null ? View.VISIBLE : View.GONE}"
-            app:layout_constraintBottom_toBottomOf="@id/courseDivider1"
-            app:layout_constraintStart_toEndOf="@id/courseDivider1"
-            app:layout_constraintTop_toTopOf="@id/courseDivider1"
-            app:srcCompat="@drawable/icon_course_type" />
 
         <TextView
             android:id="@+id/courseType"
@@ -108,7 +95,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
             android:text="@{course.roadType}"
-            android:textColor="@color/item_secondary"
+            android:textColor="@color/item_primary"
+            android:textSize="14sp"
+            android:textStyle="bold"
             android:visibility="@{course.roadType != null ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@id/courseTypeIcon"
             app:layout_constraintStart_toEndOf="@id/courseTypeIcon"
@@ -116,45 +105,35 @@
             tools:text="트랙" />
 
         <TextView
-            android:id="@+id/courseDivider2"
-            android:layout_width="wrap_content"
+            android:id="@+id/courseDescription"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
-            android:text="@string/item_course_divider"
-            android:textColor="@color/item_tertiary"
-            android:visibility="@{course.difficulty != null ? View.VISIBLE : View.GONE }"
-            app:layout_constraintBottom_toBottomOf="@id/courseType"
-            app:layout_constraintStart_toEndOf="@id/courseType"
-            app:layout_constraintTop_toTopOf="@id/courseType" />
-
-        <TextView
-            android:id="@+id/courseDifficulty"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
-            android:text="@{course.difficulty}"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="16dp"
+            android:text="@{@string/item_course_summary_format(course.difficulty, context.getString(course.inclineSummaryStringResourceId))}"
             android:textColor="@color/item_secondary"
-            android:visibility="@{course.difficulty != null ? View.VISIBLE : View.GONE }"
-            app:layout_constraintBottom_toBottomOf="@id/courseDivider2"
-            app:layout_constraintStart_toEndOf="@id/courseDivider2"
-            app:layout_constraintTop_toTopOf="@id/courseDivider2"
-            tools:text="EASY" />
+            android:textSize="12sp"
+            app:layout_constraintEnd_toStartOf="@id/courseNavigationButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/courseLength"
+            tools:text="EASY • 대체로 평탄해요" />
 
         <TextView
             android:id="@+id/courseNavigationButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/background_navigate"
+            android:gravity="center"
             android:onClick="@{() -> courseItemListener.navigateToMap(course)}"
-            android:paddingVertical="4dp"
+            android:paddingVertical="6dp"
             android:paddingStart="2dp"
             android:paddingEnd="8dp"
             android:text="@string/item_course_navigate"
             android:textColor="@color/item_primary"
-            android:textSize="16sp"
+            android:textSize="12sp"
             app:drawableStartCompat="@drawable/icon_navigate"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/courseDistance"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/courseDistance" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
