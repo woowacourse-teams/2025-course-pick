@@ -3,17 +3,20 @@ package io.coursepick.coursepick.presentation.course
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
-import io.coursepick.coursepick.data.course.DefaultCourseRepository
+import androidx.lifecycle.viewmodel.CreationExtras
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseRepository
+import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
 import kotlinx.coroutines.launch
 
 class CoursesViewModel(
-    private val courseRepository: CourseRepository = DefaultCourseRepository(),
+    private val courseRepository: CourseRepository,
 ) : ViewModel() {
     private val _state: MutableLiveData<CoursesUiState> =
         MutableLiveData(
@@ -107,4 +110,18 @@ class CoursesViewModel(
                 course.copy(selected = false)
             }
         }
+
+    companion object {
+        val Factory =
+            object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(
+                    modelClass: Class<T>,
+                    extras: CreationExtras,
+                ): T {
+                    val application = checkNotNull(extras[APPLICATION_KEY]) as CoursePickApplication
+                    return CoursesViewModel(application.courseRepository) as T
+                }
+            }
+    }
 }

@@ -2,8 +2,11 @@ package io.coursepick.coursepick.presentation.course
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Intent
 import android.content.res.Resources
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -24,12 +27,14 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.kakao.vectormap.LatLng
+import io.coursepick.coursepick.BuildConfig
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.databinding.ActivityCoursesBinding
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.presentation.CoordinateKeys
+import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.map.kakao.KakaoMapManager
 import io.coursepick.coursepick.presentation.map.kakao.toCoordinate
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
@@ -45,9 +50,10 @@ import kotlinx.coroutines.withContext
 class CoursesActivity :
     AppCompatActivity(),
     CoursesAction {
+    private val coursePickApplication by lazy { application as CoursePickApplication }
     private var searchLauncher: ActivityResultLauncher<Intent>? = null
     private val binding by lazy { ActivityCoursesBinding.inflate(layoutInflater) }
-    private val viewModel: CoursesViewModel by viewModels()
+    private val viewModel: CoursesViewModel by viewModels { CoursesViewModel.Factory }
     private val courseAdapter by lazy { CourseAdapter(CourseItemListener()) }
     private val doublePressDetector = DoublePressDetector()
     private val mapManager by lazy { KakaoMapManager(binding.mainMap) }
@@ -68,7 +74,8 @@ class CoursesActivity :
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view: View, insets: WindowInsetsCompat ->
             val systemBars: Insets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            setUpBottomSheet(insets)
+            setUpNavigation(systemBars)
+            setUpBottomSheet(systemBars)
             insets
         }
 
@@ -138,6 +145,13 @@ class CoursesActivity :
             ).show()
     }
 
+    override fun copyClientId() {
+        val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+        val clip: ClipData = ClipData.newPlainText(null, coursePickApplication.installationId.value)
+        clipboard.setPrimaryClip(clip)
+        Toast.makeText(this, "사용자 ID가 복사됐습니다.", Toast.LENGTH_SHORT).show()
+    }
+
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun searchActivityResultLauncher(): ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -181,8 +195,20 @@ class CoursesActivity :
     }
 
     private fun navigateToFeedback() {
-        val intent = Intent(Intent.ACTION_VIEW, getString(R.string.feedback_url).toUri())
-
+        val intent =
+            Intent(
+                Intent.ACTION_VIEW,
+                getString(
+                    R.string.feedback_url,
+                    """
+                    사용자 ID: ${coursePickApplication.installationId.value}%0A
+                    앱 버전: ${BuildConfig.VERSION_NAME}%0A
+                    안드로이드 버전: ${Build.VERSION.RELEASE} (SDK ${Build.VERSION.SDK_INT})%0A
+                    사용 기기: ${Build.MANUFACTURER} ${Build.MODEL}%0A
+                    발생한 버그:%0A
+                    """.trimIndent(),
+                ).toUri(),
+            )
         startActivity(intent)
     }
 
@@ -217,10 +243,13 @@ class CoursesActivity :
             }
         }
 
-    private fun setUpBottomSheet(insets: WindowInsetsCompat) {
+    private fun setUpNavigation(systemBars: Insets) {
+        binding.mainNavigation.setPadding(0, 0, 0, systemBars.bottom)
+    }
+
+    private fun setUpBottomSheet(systemBars: Insets) {
         val bottomSheet = binding.mainBottomSheet
         val screenHeight = Resources.getSystem().displayMetrics.heightPixels
-        val systemBars: Insets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
 
         bottomSheet.layoutParams.height = screenHeight / 2
         bottomSheet.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom)
@@ -252,6 +281,7 @@ class CoursesActivity :
         binding.lifecycleOwner = this
         binding.adapter = courseAdapter
         binding.action = this
+        binding.clientId = coursePickApplication.installationId.value
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])

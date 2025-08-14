@@ -8,7 +8,8 @@
     <string name="item_course_divider">|</string>
     <string name="main_search_this_area">이 지역 검색</string>
     <string name="item_course_navigate">길찾기</string>
-    <string name="feedback_url">https://forms.gle/W9Uwwgq2acW2y7Q99</string>
+    <string name="main_client_id">사용자 ID: %s</string>
+    <string name="feedback_url">https://docs.google.com/forms/d/e/1FAIpQLSdsJcNUsOcDiKW0FI-M360IUS64IZQmnWtMTbZqJSrx7HQbtg/viewform?usp=pp_url&amp;entry.1079171803=%s</string>
     <string name="privacy_policy_url">https://github.com/woowacourse-teams/2025-course-pick/wiki/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4%EC%B2%98%EB%A6%AC%EB%B0%A9%EC%B9%A8</string>
     <string name="search_query_hint">장소를 검색하세요</string>
     <string name="selected_route_finder_application_key">selected_route_finder_application</string>
