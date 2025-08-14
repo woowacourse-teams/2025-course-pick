@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.core.widget.ContentLoadingProgressBar
 import androidx.databinding.BindingAdapter
 import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
 import io.coursepick.coursepick.R
 
@@ -82,3 +83,8 @@ private fun formattedMeter(
     } else {
         context.getString(R.string.main_course_unit_kilometer, meter / 1000.0)
     }
+
+@BindingAdapter("onNavigationClick")
+fun MaterialToolbar.setOnNavigationClick(listener: View.OnClickListener) {
+    setNavigationOnClickListener(listener)
+}
