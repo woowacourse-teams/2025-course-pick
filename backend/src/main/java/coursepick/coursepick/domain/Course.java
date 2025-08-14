@@ -25,6 +25,9 @@ public class Course {
     @Enumerated(EnumType.STRING)
     private final RoadType roadType;
 
+    @Enumerated(EnumType.STRING)
+    private final InclineSummary inclineSummary;
+
     @BatchSize(size = 30)
     @ElementCollection
     @CollectionTable(name = "segment")
@@ -37,10 +40,11 @@ public class Course {
     @Enumerated(EnumType.STRING)
     private final Difficulty difficulty;
 
-    public Course(String name, RoadType roadType, List<Coordinate> rawCoordinates) {
+    public Course(String name, RoadType roadType, InclineSummary inclineSummary, List<Coordinate> rawCoordinates) {
         this.id = null;
         this.name = new CourseName(name);
         this.roadType = roadType;
+        this.inclineSummary = inclineSummary;
         List<Coordinate> coordinates = CoordinateBuilder.fromRawCoordinates(rawCoordinates)
                 .addFirstCoordinateIfNotConnected()
                 .removeDuplicatedCoordinate()
@@ -56,7 +60,7 @@ public class Course {
     }
 
     public Course(String name, List<Coordinate> coordinates) {
-        this(name, RoadType.알수없음, coordinates);
+        this(name, RoadType.알수없음, InclineSummary.UNKNOWN, coordinates);
     }
 
     public Coordinate closestCoordinateFrom(Coordinate target) {
