@@ -1,7 +1,6 @@
 package io.coursepick.coursepick.presentation
 
 import android.os.Bundle
-import io.coursepick.coursepick.presentation.course.AnalyticsService
 
 object Logger {
     private var analyticsService: AnalyticsService? = null

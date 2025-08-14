@@ -1,7 +1,6 @@
-package io.coursepick.coursepick.presentation.course
+package io.coursepick.coursepick.presentation
 
 import android.os.Bundle
-import io.coursepick.coursepick.presentation.Logger
 
 interface AnalyticsService {
     fun log(

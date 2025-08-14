@@ -8,7 +8,6 @@ import io.coursepick.coursepick.data.course.DefaultCourseRepository
 import io.coursepick.coursepick.data.search.DefaultSearchRepository
 import io.coursepick.coursepick.domain.course.CourseRepository
 import io.coursepick.coursepick.domain.search.SearchRepository
-import io.coursepick.coursepick.presentation.course.FirebaseAnalyticsService
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 import timber.log.Timber
 

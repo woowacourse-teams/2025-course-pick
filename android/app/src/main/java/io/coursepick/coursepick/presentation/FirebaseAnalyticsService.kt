@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.course
+package io.coursepick.coursepick.presentation
 
 import android.os.Bundle
 import com.google.firebase.Firebase
@@ -6,8 +6,6 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.crashlytics.crashlytics
-import io.coursepick.coursepick.presentation.InstallationId
-import io.coursepick.coursepick.presentation.Logger
 
 class FirebaseAnalyticsService(
     installationId: InstallationId,
