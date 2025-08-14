@@ -147,7 +147,7 @@ class CoursesActivity :
 
     override fun copyClientId() {
         val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-        val clip: ClipData = ClipData.newPlainText(null, coursePickApplication.clientId.value)
+        val clip: ClipData = ClipData.newPlainText(null, coursePickApplication.installationId.value)
         clipboard.setPrimaryClip(clip)
         Toast.makeText(this, "사용자 ID가 복사됐습니다.", Toast.LENGTH_SHORT).show()
     }
@@ -201,7 +201,7 @@ class CoursesActivity :
                 getString(
                     R.string.feedback_url,
                     """
-                    사용자 ID: ${coursePickApplication.clientId.value}%0A
+                    사용자 ID: ${coursePickApplication.installationId.value}%0A
                     앱 버전: ${BuildConfig.VERSION_NAME}%0A
                     안드로이드 버전: ${Build.VERSION.RELEASE} (SDK ${Build.VERSION.SDK_INT})%0A
                     사용 기기: ${Build.MANUFACTURER} ${Build.MODEL}%0A
@@ -281,7 +281,7 @@ class CoursesActivity :
         binding.lifecycleOwner = this
         binding.adapter = courseAdapter
         binding.action = this
-        binding.clientId = coursePickApplication.clientId.value
+        binding.clientId = coursePickApplication.installationId.value
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
