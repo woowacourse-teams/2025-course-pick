@@ -1,6 +1,7 @@
 package coursepick.coursepick.presentation.dto;
 
 import coursepick.coursepick.application.dto.CourseResponse;
+import coursepick.coursepick.domain.InclineSummary;
 import coursepick.coursepick.domain.Meter;
 import coursepick.coursepick.domain.RoadType;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -18,6 +19,8 @@ public record CourseWebResponse(
         double length,
         @Schema(example = "트랙")
         RoadType roadType,
+        @Schema(example = "FLAT")
+        InclineSummary inclineSummary,
         @Schema(example = "쉬움")
         String difficulty,
         List<SegmentWebResponse> segments
@@ -32,6 +35,7 @@ public record CourseWebResponse(
                                 .orElse(null),
                         courseResponse.length().value(),
                         courseResponse.roadType(),
+                        courseResponse.inclineSummary(),
                         courseResponse.difficulty().name(),
                         SegmentWebResponse.from(courseResponse.segments())
                 )).toList();
