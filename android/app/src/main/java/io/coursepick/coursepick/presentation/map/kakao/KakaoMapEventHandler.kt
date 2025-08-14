@@ -65,7 +65,7 @@ class KakaoMapEventHandler {
                 "tiltAngle" to cameraPosition.tiltAngle,
                 "rotationAngle" to cameraPosition.rotationAngle,
                 "zoomLevel" to cameraPosition.zoomLevel,
-                "gestureType" to gestureType,
+                "gestureType" to gestureType.name,
             )
         }
     }
