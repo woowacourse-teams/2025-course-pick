@@ -1,7 +1,7 @@
 package coursepick.coursepick.application;
 
-import com.mongodb.MongoException;
 import coursepick.coursepick.application.dto.CourseResponse;
+import coursepick.coursepick.application.exception.NotFoundException;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
 import coursepick.coursepick.domain.RoadType;
@@ -183,6 +183,6 @@ class CourseApplicationServiceTest extends IntegrationTest {
     @Test
     void 코스가_존재하지_않을_경우_예외가_발생한다() {
         Assertions.assertThatThrownBy(() -> sut.findClosestCoordinate("notId", 0, 0))
-                .isInstanceOf(MongoException.class);
+                .isInstanceOf(NotFoundException.class);
     }
 }
