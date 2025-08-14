@@ -54,7 +54,10 @@ class LocationProvider(
                 Logger.log(Logger.Event.Success("get_current_location"))
                 onSuccess(location)
             }.addOnFailureListener { exception: Exception ->
-                Logger.log(Logger.Event.Failure("get_current_location"))
+                Logger.log(
+                    Logger.Event.Failure("get_current_location"),
+                    "message" to exception.message.toString(),
+                )
                 onFailure(exception)
             }
     }

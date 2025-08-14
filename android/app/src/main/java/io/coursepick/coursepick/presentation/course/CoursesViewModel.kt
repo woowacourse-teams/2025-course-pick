@@ -73,8 +73,11 @@ class CoursesViewModel(
                 _state.value =
                     state.value?.copy(courses = courseItems, isLoading = false, isFailure = false)
                 _event.value = CoursesUiEvent.FetchCourseSuccess(courseItems.firstOrNull())
-            }.onFailure {
-                Logger.log(Logger.Event.Failure("fetch_courses"))
+            }.onFailure { error: Throwable ->
+                Logger.log(
+                    Logger.Event.Failure("fetch_courses"),
+                    "message" to error.message.toString(),
+                )
                 _state.value =
                     state.value?.copy(courses = emptyList(), isLoading = false, isFailure = true)
                 _event.value = CoursesUiEvent.FetchCourseFailure
@@ -97,8 +100,11 @@ class CoursesViewModel(
                         destination = nearest,
                         destinationName = selectedCourse.name,
                     )
-            }.onFailure {
-                Logger.log(Logger.Event.Failure("fetch_nearest_coordinate"))
+            }.onFailure { error: Throwable ->
+                Logger.log(
+                    Logger.Event.Failure("fetch_nearest_coordinate"),
+                    "message" to error.message.toString(),
+                )
                 _event.value = CoursesUiEvent.FetchNearestCoordinateFailure
             }
         }
