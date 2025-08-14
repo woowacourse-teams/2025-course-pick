@@ -192,6 +192,7 @@ class CoursesActivity :
     }
 
     private fun navigateToPreferences() {
+        Logger.log(Logger.Event.Click("navigate_to_preferences"))
         val intent = Intent(this, PreferencesActivity::class.java)
         startActivity(intent)
     }
@@ -203,6 +204,7 @@ class CoursesActivity :
     }
 
     private fun navigateToFeedback() {
+        Logger.log(Logger.Event.Click("navigate_to_feedback"))
         val intent =
             Intent(
                 Intent.ACTION_VIEW,
@@ -221,12 +223,14 @@ class CoursesActivity :
     }
 
     private fun navigateToPrivacyPolicy() {
+        Logger.log(Logger.Event.Click("navigate_to_privacy_policy"))
         val intent = Intent(Intent.ACTION_VIEW, getString(R.string.privacy_policy_url).toUri())
 
         startActivity(intent)
     }
 
     private fun navigateToOpenSourceNotice() {
+        Logger.log(Logger.Event.Click("navigate_to_open_source_notice"))
         startActivity(Intent(this, OssLicensesMenuActivity::class.java))
     }
 
