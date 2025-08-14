@@ -53,6 +53,11 @@ android {
                 "KAKAO_REST_API_KEY",
                 localProperties["kakao.rest.api.key"].toString(),
             )
+            buildConfigField(
+                "String",
+                "AMPLITUDE_API_KEY",
+                localProperties["amplitude.api.key"].toString(),
+            )
         }
 
         getByName("release") {
@@ -118,6 +123,7 @@ dependencies {
     implementation(libs.firebase.crashlytics.ndk)
     implementation(libs.play.services.oss.licenses)
     implementation(libs.androidx.preference.ktx)
+    implementation(libs.amplitude.analytics)
     testImplementation(libs.assertj.core)
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
