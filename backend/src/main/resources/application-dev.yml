@@ -1,5 +1,7 @@
 spring:
-  config.activate.on-profile: dev
+  config:
+    activate.on-profile: dev
+    import: classpath:monitoring-config.yml
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
@@ -11,32 +13,6 @@ spring:
     username: ${MONGO_USERNAME}
     password: ${MONGO_PASSWORD}
     authentication-database: ${MONGO_AUTH_DATABASE}
-  cloud:
-    aws:
-      cloudwatch:
-        region: ap-northeast-2
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "health, info, metrics"
-  metrics:
-    enable:
-      all: false
-      health.status: true
-      hikaricp.connections: true
-      http.server.requests: true
-      system.cpu.usage: true
-      spring.data.repository.invocations: true
-      jvm.memory.used: true
-      tomcat.threads: true
-
-  cloudwatch:
-    metrics:
-      export:
-        namespace: EC2/coursepick/dev
-        batch-size: 20
 
 gcp:
   drive.folder-id: ${GCP_DRIVE_FOLDER_ID}

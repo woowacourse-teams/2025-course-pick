@@ -1,0 +1,28 @@
+spring:
+  config.activate.on-profile: dev,prod
+  cloud:
+    aws:
+      cloudwatch:
+        region: ap-northeast-2
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health, info, metrics"
+  metrics:
+    enable:
+      all: false
+      health.status: true
+      hikaricp.connections: true
+      http.server.requests: true
+      system.cpu.usage: true
+      spring.data.repository.invocations: true
+      jvm.memory.used: true
+      tomcat.threads: true
+
+  cloudwatch:
+    metrics:
+      export:
+        namespace: EC2/coursepick/dev
+        batch-size: 20
