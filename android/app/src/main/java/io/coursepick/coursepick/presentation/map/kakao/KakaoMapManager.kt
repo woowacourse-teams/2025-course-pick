@@ -185,9 +185,7 @@ class KakaoMapManager(
             onSuccess = { location: Location ->
                 onSuccess(Latitude(location.latitude), Longitude(location.longitude))
             },
-            onFailure = { exception: Exception ->
-                onFailure(exception)
-            },
+            onFailure = onFailure,
         )
     }
 }
