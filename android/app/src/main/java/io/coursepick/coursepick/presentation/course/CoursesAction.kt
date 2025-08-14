@@ -14,4 +14,6 @@ interface CoursesAction {
     fun moveToCurrentLocation()
 
     fun copyClientId()
+
+    fun showCourseColorDescription()
 }
