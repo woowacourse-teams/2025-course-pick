@@ -17,4 +17,11 @@ public record CourseFile(
 
         return new CourseFile(fileName, CourseFileExtension.from(extension), file.getInputStream());
     }
+    
+    public CourseFile {
+        String extensionSuffix = "." + extension.name().toLowerCase();
+        if (name.toLowerCase().endsWith(extensionSuffix)) {
+            name = name.substring(0, name.length() - extensionSuffix.length());
+        }
+    }
 }

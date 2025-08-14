@@ -18,8 +18,8 @@ public record Meter(
         return new Meter(this.value() + other.value());
     }
 
-    public Meter minimum(Meter other) {
-        return this.value() <= other.value() ? this : other;
+    public Meter clamp(double min, double max) {
+        return new Meter(Math.clamp(this.value(), min, max));
     }
 
     public boolean isWithin(Meter other) {
