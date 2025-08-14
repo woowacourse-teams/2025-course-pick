@@ -22,7 +22,12 @@ class CoursePickApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        Logger.init(FirebaseAnalyticsService(installationId))
+        val analyticsServices: List<AnalyticsService> =
+            listOf(
+                FirebaseAnalyticsService(installationId),
+                AmplitudeAnalyticsService(this, installationId),
+            )
+        Logger.init(analyticsServices)
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
