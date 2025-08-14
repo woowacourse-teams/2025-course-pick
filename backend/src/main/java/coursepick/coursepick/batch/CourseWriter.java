@@ -15,8 +15,6 @@ public class CourseWriter implements ItemWriter<Course> {
 
     @Override
     public void write(Chunk<? extends Course> chunk) throws Exception {
-        for (Course course : chunk) {
-            courseRepository.save(course);
-        }
+        courseRepository.saveAll(chunk);
     }
 }
