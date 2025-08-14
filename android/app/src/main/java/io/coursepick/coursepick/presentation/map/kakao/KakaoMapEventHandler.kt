@@ -51,7 +51,7 @@ class KakaoMapEventHandler {
         map.setOnCameraMoveStartListener { _, gestureType: GestureType ->
             Logger.log(
                 Logger.Event.MapMoveStart("map"),
-                "gestureType" to gestureType,
+                "gestureType" to gestureType.name,
             )
             onCameraMove()
         }
