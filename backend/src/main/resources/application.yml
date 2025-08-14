@@ -3,7 +3,9 @@ spring:
   data:
     mongodb:
       auto-index-creation: true
-
+  batch:
+    jdbc.initialize-schema: always
+    job.enabled: false
 springdoc:
   default-consumes-media-type: application/json
   default-produces-media-type: application/json

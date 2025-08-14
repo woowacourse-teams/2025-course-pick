@@ -4,9 +4,6 @@ spring:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-  batch:
-    jdbc.initialize-schema: never
-    job.enabled: false
   cloud:
     aws:
       cloudwatch:

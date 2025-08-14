@@ -12,8 +12,5 @@ spring:
       username: root
       password: secret
       authentication-database: admin
-  batch:
-    jdbc.initialize-schema: always
-    job.enabled: false
 
 admin.token: secret
