@@ -38,7 +38,6 @@ public class CourseSyncJobConfig {
             ItemProcessor<Course, Course> courseProcessor,
             ItemWriter<Course> courseWriter
     ) {
-        System.out.println(courseProcessor.getClass().getSimpleName());
         return new StepBuilder("syncStep", jobRepository)
                 .<Course, Course>chunk(5, transactionManager)
                 .reader(courseReader)
