@@ -4,13 +4,12 @@ spring:
     url: jdbc:mysql://localhost:3307/coursepick
     username: user
     password: secret
-  data:
-    mongodb:
-      host: localhost
-      port: 27017
-      database: coursepick
-      username: root
-      password: secret
-      authentication-database: admin
+  data.mongodb:
+    host: localhost
+    port: 27017
+    database: coursepick
+    username: root
+    password: secret
+    authentication-database: admin
 
 admin.token: secret

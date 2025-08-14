@@ -4,6 +4,13 @@ spring:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+  data.mongodb:
+    host: ${MONGO_HOST}
+    port: ${MONGO_PORT}
+    database: ${MONGO_DATABASE}
+    username: ${MONGO_USERNAME}
+    password: ${MONGO_PASSWORD}
+    authentication-database: ${MONGO_AUTH_DATABASE}
   cloud:
     aws:
       cloudwatch:
