@@ -32,18 +32,18 @@ class SearchActivity : AppCompatActivity() {
         Logger.log(Logger.Event.Enter("search"))
 
         setUpBindingVariables()
-        setUpObserves()
-    }
-
-    private fun setUpObserves() {
-        viewModel.state.observe(this) { state: List<Place> ->
-            adapter.submitList(state)
-        }
+        setUpViews()
+        setUpObservers()
     }
 
     private fun setUpBindingVariables() {
-        binding.searchView.requestFocus()
+        binding.viewModel = viewModel
         binding.adapter = adapter
+        binding.lifecycleOwner = this
+    }
+
+    private fun setUpViews() {
+        binding.searchView.requestFocus()
         binding.searchView.setOnQueryTextListener(
             object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean = true
@@ -54,6 +54,12 @@ class SearchActivity : AppCompatActivity() {
                 }
             },
         )
+    }
+
+    private fun setUpObservers() {
+        viewModel.state.observe(this) { state: SearchUiState ->
+            adapter.submitList(state.places)
+        }
     }
 
     private fun submitPlace(place: Place) {
