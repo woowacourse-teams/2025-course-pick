@@ -12,4 +12,6 @@ interface CoursesAction {
     fun search()
 
     fun moveToCurrentLocation()
+
+    fun copyClientId()
 }
