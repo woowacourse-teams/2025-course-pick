@@ -1,6 +1,7 @@
 package io.coursepick.coursepick.presentation
 
 import android.os.Bundle
+import timber.log.Timber
 
 object Logger {
     private var analyticsService: AnalyticsService? = null
@@ -13,11 +14,31 @@ object Logger {
         event: Event,
         vararg parameters: Pair<String, Any>,
     ) {
+        debugLog(event, *parameters)
         val bundle =
             Bundle().apply {
                 parameters.forEach { (key: String, value: Any) -> putAny(key, value) }
             }
         analyticsService?.log(event, bundle)
+    }
+
+    private fun debugLog(
+        event: Event,
+        vararg parameters: Pair<String, Any>,
+    ) {
+        Timber.d(
+            buildString {
+                append(event.name)
+                if (parameters.isNotEmpty()) {
+                    append(" : (")
+                    parameters.forEachIndexed { index: Int, (key: String, value: Any) ->
+                        if (index != 0) append(", ")
+                        append("$key=$value")
+                    }
+                    append(")")
+                }
+            },
+        )
     }
 
     private fun Bundle.putAny(
