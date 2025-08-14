@@ -2,7 +2,6 @@ package io.coursepick.coursepick.presentation.map.kakao
 
 import android.graphics.Point
 import android.graphics.PointF
-import android.util.Log
 import com.kakao.vectormap.GestureType
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.LatLng
@@ -46,7 +45,6 @@ class KakaoMapEventHandler {
         onCameraMove: () -> Unit,
     ) {
         map.setOnCameraMoveStartListener { _, gestureType: GestureType ->
-            Log.wtf("asdf", "$gestureType")
             Logger.log(
                 Logger.Event.MapMoveStart("map"),
                 "gestureType" to gestureType,
