@@ -42,7 +42,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: [ self-hosted, dev-app ]
+    runs-on: self-hosted
 
     steps:
       - name: 임시 아티팩트 저장소에 저장된 파일 다운로드
@@ -74,7 +74,6 @@ jobs:
 
       - name: 새로운 서버로 실행
         env:
-          SPRING_PROFILES_ACTIVE: ${{ secrets.DEV_PROFILE }}
           SERVER_PORT: 80
           SPRING_DATASOURCE_URL: ${{ secrets.DEV_DB_URL }}
           SPRING_DATASOURCE_USERNAME: ${{ secrets.DEV_DB_USERNAME }}
