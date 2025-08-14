@@ -32,7 +32,11 @@ class KakaoMapEventHandler {
 
             courses.forEach { course: CourseItem ->
                 if (course.isNear(kakaoMap, target)) {
-                    Logger.log(Logger.Event.Click("course_on_map"), "course" to course)
+                    Logger.log(
+                        Logger.Event.Click("course_on_map"),
+                        "id" to course.id,
+                        "name" to course.name,
+                    )
                     onClick(course)
                     return@forEach
                 }
