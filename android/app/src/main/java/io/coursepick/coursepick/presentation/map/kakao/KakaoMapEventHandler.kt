@@ -25,9 +25,9 @@ class KakaoMapEventHandler {
                 Logger.Event.Click("map"),
                 "latitude" to latLng.latitude,
                 "longitude" to latLng.longitude,
-                "x" to target.x,
-                "y" to target.y,
-                "poi" to poi.name,
+                "pixel_x" to target.x,
+                "pixel_y" to target.y,
+                "point_of_interest" to poi.name,
             )
 
             courses.forEach { course: CourseItem ->
@@ -51,7 +51,7 @@ class KakaoMapEventHandler {
         map.setOnCameraMoveStartListener { _, gestureType: GestureType ->
             Logger.log(
                 Logger.Event.MapMoveStart("map"),
-                "gestureType" to gestureType.name,
+                "gesture_type" to gestureType.name,
             )
             onCameraMove()
         }
@@ -62,10 +62,10 @@ class KakaoMapEventHandler {
                 "latitude" to cameraPosition.position.latitude,
                 "longitude" to cameraPosition.position.longitude,
                 "height" to cameraPosition.height,
-                "tiltAngle" to cameraPosition.tiltAngle,
-                "rotationAngle" to cameraPosition.rotationAngle,
-                "zoomLevel" to cameraPosition.zoomLevel,
-                "gestureType" to gestureType.name,
+                "tilt_angle" to cameraPosition.tiltAngle,
+                "rotation_angle" to cameraPosition.rotationAngle,
+                "zoom_level" to cameraPosition.zoomLevel,
+                "gesture_type" to gestureType.name,
             )
         }
     }
