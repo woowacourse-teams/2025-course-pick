@@ -57,7 +57,8 @@ class KakaoMapEventHandler {
         map.setOnCameraMoveEndListener { _, cameraPosition: CameraPosition, gestureType: GestureType ->
             Logger.log(
                 Logger.Event.MapMoveEnd("map"),
-                "position" to cameraPosition.position,
+                "latitude" to cameraPosition.position.latitude,
+                "longitude" to cameraPosition.position.longitude,
                 "height" to cameraPosition.height,
                 "tiltAngle" to cameraPosition.tiltAngle,
                 "rotationAngle" to cameraPosition.rotationAngle,
