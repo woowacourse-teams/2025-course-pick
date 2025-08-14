@@ -32,11 +32,6 @@ class CoursePickApplication : Application() {
         setUpCallbacks()
     }
 
-    override fun onTerminate() {
-        Logger.log(Logger.Event.Exit(javaClass.simpleName))
-        super.onTerminate()
-    }
-
     private fun setUpCallbacks() {
         registerActivityLifecycleCallbacks(
             object : ActivityLifecycleCallbacks {
