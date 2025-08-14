@@ -30,11 +30,8 @@ object Logger {
             buildString {
                 append(event.name)
                 if (parameters.isNotEmpty()) {
-                    append(" : (")
-                    parameters.forEachIndexed { index: Int, (key: String, value: Any) ->
-                        if (index != 0) append(", ")
-                        append("$key=$value")
-                    }
+                    append(" (")
+                    append(parameters.joinToString(", ") { (key: String, value: Any) -> "$key=$value" })
                     append(")")
                 }
             },
