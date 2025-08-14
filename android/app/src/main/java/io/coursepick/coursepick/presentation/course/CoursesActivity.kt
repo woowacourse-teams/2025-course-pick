@@ -153,7 +153,7 @@ class CoursesActivity :
     }
 
     override fun showCourseColorDescription() {
-        Toast.makeText(this, "showCourseColorDescription clicked...", Toast.LENGTH_SHORT).show()
+        CourseColorDescriptionDialog().show(supportFragmentManager, null)
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
