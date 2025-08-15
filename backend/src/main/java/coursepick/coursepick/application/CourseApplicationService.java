@@ -43,7 +43,7 @@ public class CourseApplicationService {
     }
 
     @Transactional(readOnly = true)
-    public Coordinate findClosestCoordinate(long id, double latitude, double longitude) {
+    public Coordinate findClosestCoordinate(String id, double latitude, double longitude) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> NOT_EXIST_COURSE.create(id));
 

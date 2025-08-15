@@ -61,7 +61,7 @@ public interface CourseWebApi {
             })),
     })
     CoordinateWebResponse findClosestCoordinate(
-            @Parameter(example = "1", required = true) long id,
+            @Parameter(example = "689c3143182cecc6353cca7b", required = true) String id,
             @Parameter(example = "37.5165004", required = true) double latitude,
             @Parameter(example = "127.1040109", required = true) double longitude
     );
