@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+@Slf4j
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class PathAllowlistFilter extends OncePerRequestFilter {
@@ -28,6 +30,7 @@ public class PathAllowlistFilter extends OncePerRequestFilter {
         String uri = request.getRequestURI();
         boolean allowed = ALLOW_URI_PATTERNS.stream().anyMatch(pattern -> pattern.matcher(uri).matches());
         if (!allowed) {
+            log.warn("[SECURITY] 화이트리스트가 아닌 경로로 요청이 들어왔습니다. uri={}", uri);
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
