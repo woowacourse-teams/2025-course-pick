@@ -7,9 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import io.coursepick.coursepick.databinding.DialogCourseColorDescriptionBinding
 
-class CourseColorDescriptionDialog :
-    DialogFragment(),
-    OnConfirmListener {
+class CourseColorDescriptionDialog : DialogFragment() {
     @Suppress("ktlint:standard:backing-property-naming")
     private var _binding: DialogCourseColorDescriptionBinding? = null
     private val binding: DialogCourseColorDescriptionBinding get() = _binding!!
@@ -20,16 +18,12 @@ class CourseColorDescriptionDialog :
         savedInstanceState: Bundle?,
     ): View {
         _binding = DialogCourseColorDescriptionBinding.inflate(inflater, container, false)
-        binding.listener = this
+        binding.listener = OnConfirmListener { dismiss() }
         return binding.root
     }
 
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
-    }
-
-    override fun onConfirm() {
-        dismiss()
     }
 }

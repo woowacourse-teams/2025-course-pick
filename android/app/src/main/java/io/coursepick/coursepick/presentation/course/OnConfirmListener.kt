@@ -1,5 +1,5 @@
 package io.coursepick.coursepick.presentation.course
 
-interface OnConfirmListener {
+fun interface OnConfirmListener {
     fun onConfirm()
 }
