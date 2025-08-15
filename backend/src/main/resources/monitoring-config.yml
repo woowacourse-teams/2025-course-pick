@@ -23,5 +23,5 @@ management:
       connectionpool.enabled: true
   cloudwatch.metrics.export:
     enabled: true
-    namespace: EC2/coursepick/dev
+    namespace: EC2/coursepick/${spring.profiles.active}
     batch-size: 20
