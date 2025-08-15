@@ -49,9 +49,16 @@ class KakaoMapEventHandler {
         onCameraMove: () -> Unit,
     ) {
         map.setOnCameraMoveStartListener { _, gestureType: GestureType ->
+            val cameraPosition: CameraPosition? = map.cameraPosition
             Logger.log(
                 Logger.Event.MapMoveStart("map"),
                 "gesture_type" to gestureType.name,
+                "latitude" to cameraPosition?.position?.latitude.toString(),
+                "longitude" to cameraPosition?.position?.longitude.toString(),
+                "height" to cameraPosition?.height.toString(),
+                "tilt_angle" to cameraPosition?.tiltAngle.toString(),
+                "rotation_angle" to cameraPosition?.rotationAngle.toString(),
+                "zoom_level" to cameraPosition?.zoomLevel.toString(),
             )
             onCameraMove()
         }
@@ -59,13 +66,13 @@ class KakaoMapEventHandler {
         map.setOnCameraMoveEndListener { _, cameraPosition: CameraPosition, gestureType: GestureType ->
             Logger.log(
                 Logger.Event.MapMoveEnd("map"),
+                "gesture_type" to gestureType.name,
                 "latitude" to cameraPosition.position.latitude,
                 "longitude" to cameraPosition.position.longitude,
                 "height" to cameraPosition.height,
                 "tilt_angle" to cameraPosition.tiltAngle,
                 "rotation_angle" to cameraPosition.rotationAngle,
                 "zoom_level" to cameraPosition.zoomLevel,
-                "gesture_type" to gestureType.name,
             )
         }
     }
