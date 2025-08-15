@@ -15,7 +15,9 @@ public class MongoConfig {
                 new SegmentListConverter.Reader(),
                 new SegmentListConverter.Writer(),
                 new CourseNameConverter.Reader(),
-                new CourseNameConverter.Writer()
+                new CourseNameConverter.Writer(),
+                new MeterConverter.Reader(),
+                new MeterConverter.Writer()
         ));
     }
 }
