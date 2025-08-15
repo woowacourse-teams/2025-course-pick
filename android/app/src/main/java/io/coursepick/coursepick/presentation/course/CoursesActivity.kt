@@ -153,7 +153,8 @@ class CoursesActivity :
     }
 
     override fun showCourseColorDescription() {
-        CourseColorDescriptionDialog().show(supportFragmentManager, null)
+        supportFragmentManager.findFragmentByTag(COURSE_COLOR_DIALOG_TAG)
+            ?: CourseColorDescriptionDialog().show(supportFragmentManager, COURSE_COLOR_DIALOG_TAG)
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -406,5 +407,9 @@ class CoursesActivity :
                 Manifest.permission.ACCESS_COARSE_LOCATION,
             ),
         )
+    }
+
+    private companion object {
+        const val COURSE_COLOR_DIALOG_TAG = "CourseColorDescriptionDialog"
     }
 }
