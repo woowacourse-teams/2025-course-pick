@@ -1,6 +1,7 @@
 package io.coursepick.coursepick.presentation
 
 import android.os.Bundle
+import timber.log.Timber
 
 object Logger {
     private var analyticsService: AnalyticsService? = null
@@ -13,11 +14,28 @@ object Logger {
         event: Event,
         vararg parameters: Pair<String, Any>,
     ) {
+        debugLog(event, *parameters)
         val bundle =
             Bundle().apply {
                 parameters.forEach { (key: String, value: Any) -> putAny(key, value) }
             }
         analyticsService?.log(event, bundle)
+    }
+
+    private fun debugLog(
+        event: Event,
+        vararg parameters: Pair<String, Any>,
+    ) {
+        Timber.d(
+            buildString {
+                append(event.name)
+                if (parameters.isNotEmpty()) {
+                    append(" (")
+                    append(parameters.joinToString(", ") { (key: String, value: Any) -> "$key=$value" })
+                    append(")")
+                }
+            },
+        )
     }
 
     private fun Bundle.putAny(
@@ -53,15 +71,39 @@ object Logger {
             target: String,
         ) : Event(target)
 
+        class Pause(
+            target: String,
+        ) : Event(target)
+
+        class Resume(
+            target: String,
+        ) : Event(target)
+
         class Click(
             target: String,
         ) : Event(target)
 
-        object ZoomIn : Event()
+        class MapMoveStart(
+            target: String,
+        ) : Event(target)
 
-        object ZoomOut : Event()
+        class MapMoveEnd(
+            target: String,
+        ) : Event(target)
 
         class Search(
+            target: String,
+        ) : Event(target)
+
+        class Success(
+            target: String,
+        ) : Event(target)
+
+        class Failure(
+            target: String,
+        ) : Event(target)
+
+        class PreferenceChange(
             target: String,
         ) : Event(target)
     }

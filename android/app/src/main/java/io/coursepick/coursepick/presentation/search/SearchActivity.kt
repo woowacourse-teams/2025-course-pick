@@ -29,7 +29,6 @@ class SearchActivity : AppCompatActivity() {
             view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        Logger.log(Logger.Event.Enter("search"))
 
         setUpBindingVariables()
         setUpViews()
@@ -63,6 +62,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun submitPlace(place: Place) {
+        Logger.log(Logger.Event.Click("place"), "place" to place)
         val resultIntent =
             Intent().apply {
                 putExtra(CoordinateKeys.EXTRA_KEYS_LATITUDE, place.latitude)
@@ -70,12 +70,6 @@ class SearchActivity : AppCompatActivity() {
             }
         setResult(RESULT_OK, resultIntent)
         finish()
-    }
-
-    override fun onDestroy() {
-        Logger.log(Logger.Event.Exit("search"))
-
-        super.onDestroy()
     }
 
     companion object {
