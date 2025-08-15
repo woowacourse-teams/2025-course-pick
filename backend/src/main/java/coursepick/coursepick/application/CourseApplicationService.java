@@ -19,22 +19,24 @@ import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_CO
 @RequiredArgsConstructor
 public class CourseApplicationService {
 
-    private static final Meter SEARCH_RADIUS = new Meter(1000);
-
     private final CourseRepository courseRepository;
-    
+
     @Transactional(readOnly = true)
-    public List<CourseResponse> findNearbyCourses(double mapLatitude, double mapLongitude, Double userLatitude, Double userLongitude) {
+    public List<CourseResponse> findNearbyCourses(double mapLatitude, double mapLongitude, Double userLatitude, Double userLongitude, int scope) {
         final Coordinate mapPosition = new Coordinate(mapLatitude, mapLongitude);
+        Meter meter = new Meter(scope).clamp(1000, 3000);
+
+        List<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(mapPosition, meter);
+
         if (userLatitude == null || userLongitude == null) {
-            return courseRepository.findAllHasDistanceWithin(mapPosition, SEARCH_RADIUS)
+            return coursesWithinScope
                     .stream()
                     .map(CourseResponse::from)
                     .toList();
         }
 
         final Coordinate userPosition = new Coordinate(userLatitude, userLongitude);
-        return courseRepository.findAllHasDistanceWithin(mapPosition, SEARCH_RADIUS)
+        return coursesWithinScope
                 .stream()
                 .map(course -> CourseResponse.from(course, userPosition))
                 .toList();

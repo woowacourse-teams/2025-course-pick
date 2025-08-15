@@ -9,8 +9,7 @@
     </springProfile>
 
     <springProfile name="dev | prod">
-        <property name="LOG_FILE_PATH" value="./logs"/>
-
+        <property name="LOG_FILE_PATH" value="/var/lib/coursepick/logs"/>
         <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
             <file>${LOG_FILE_PATH}/coursepick.log</file>
             <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
@@ -35,16 +34,13 @@
                 <totalSizeCap>1GB</totalSizeCap>
             </rollingPolicy>
         </appender>
-
         <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
             <appender-ref ref="FILE"/>
             <discardingThreshold>0</discardingThreshold>
             <queueSize>256</queueSize>
         </appender>
-
         <root level="INFO">
             <appender-ref ref="ASYNC_FILE"/>
         </root>
     </springProfile>
-
 </configuration>
