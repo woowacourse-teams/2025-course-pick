@@ -13,7 +13,9 @@ public class MongoConfig {
     public MongoCustomConversions mongoCustomConversions() {
         return new MongoCustomConversions(List.of(
                 new SegmentListConverter.Reader(),
-                new SegmentListConverter.Writer()
+                new SegmentListConverter.Writer(),
+                new CourseNameConverter.Reader(),
+                new CourseNameConverter.Writer()
         ));
     }
 }
