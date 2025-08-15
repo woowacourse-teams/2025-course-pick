@@ -29,12 +29,12 @@ public class GpxTestUtil {
             </gpx>
             """;
 
-    public InputStream createGpxInputStreamOf(Coordinate... coordinates) {
+    public static InputStream createGpxInputStreamOf(Coordinate... coordinates) {
         String gpx = createGpxOf(coordinates);
         return new ByteArrayInputStream(gpx.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String createGpxOf(Coordinate... coordinates) {
+    public static String createGpxOf(Coordinate... coordinates) {
         StringBuilder trackPoints = new StringBuilder();
         for (Coordinate coordinate : coordinates) {
             String trackPoint = createTrackPointOf(coordinate);
