@@ -5,6 +5,7 @@ import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.dto.CourseFileExtension;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.infrastructure.GpxCourseParser;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -17,11 +18,14 @@ import static org.mockito.Mockito.when;
 
 class CourseReaderTest {
 
-    final CourseFileFetcher courseFileFetcher = mock(CourseFileFetcher.class);
-    final CourseReader sut = new CourseReader(
-            courseFileFetcher,
-            new CourseParserService(List.of(new GpxCourseParser()))
-    );
+    CourseFileFetcher courseFileFetcher;
+    CourseReader sut;
+
+    @BeforeEach
+    void setUp() {
+        courseFileFetcher = mock(CourseFileFetcher.class);
+        sut = new CourseReader(courseFileFetcher, new CourseParserService(List.of(new GpxCourseParser())));
+    }
 
     @Test
     void 코스를_하나씩_읽어들인다() {
