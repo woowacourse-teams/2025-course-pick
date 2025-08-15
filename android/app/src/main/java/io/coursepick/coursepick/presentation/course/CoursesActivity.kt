@@ -35,6 +35,7 @@ import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.presentation.CoordinateKeys
 import io.coursepick.coursepick.presentation.CoursePickApplication
+import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.map.kakao.KakaoMapManager
 import io.coursepick.coursepick.presentation.map.kakao.toCoordinate
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
@@ -113,12 +114,18 @@ class CoursesActivity :
     override fun searchThisArea() {
         val mapPosition: LatLng = mapManager.cameraPosition ?: return
         val coordinate = mapPosition.toCoordinate()
+        Logger.log(
+            Logger.Event.Click("search_this_area"),
+            "latitude" to coordinate.latitude.value,
+            "longitude" to coordinate.longitude.value,
+        )
         binding.mainSearchThisAreaButton.visibility = View.GONE
         mapManager.showSearchPosition(coordinate)
         fetchCourses(coordinate)
     }
 
     override fun openMenu() {
+        Logger.log(Logger.Event.Click("drawer_menu"))
         binding.mainDrawer.open()
     }
 
@@ -185,16 +192,19 @@ class CoursesActivity :
     }
 
     private fun navigateToPreferences() {
+        Logger.log(Logger.Event.Click("navigate_to_preferences"))
         val intent = Intent(this, PreferencesActivity::class.java)
         startActivity(intent)
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun moveToCurrentLocation() {
+        Logger.log(Logger.Event.Click("move_to_current_location"))
         mapManager.moveToCurrentLocation()
     }
 
     private fun navigateToFeedback() {
+        Logger.log(Logger.Event.Click("navigate_to_feedback"))
         val intent =
             Intent(
                 Intent.ACTION_VIEW,
@@ -213,23 +223,35 @@ class CoursesActivity :
     }
 
     private fun navigateToPrivacyPolicy() {
+        Logger.log(Logger.Event.Click("navigate_to_privacy_policy"))
         val intent = Intent(Intent.ACTION_VIEW, getString(R.string.privacy_policy_url).toUri())
 
         startActivity(intent)
     }
 
     private fun navigateToOpenSourceNotice() {
+        Logger.log(Logger.Event.Click("navigate_to_open_source_notice"))
         startActivity(Intent(this, OssLicensesMenuActivity::class.java))
     }
 
     private fun CourseItemListener(): CourseItemListener =
         object : CourseItemListener {
             override fun select(course: CourseItem) {
+                Logger.log(
+                    Logger.Event.Click("course_on_list"),
+                    "id" to course.id,
+                    "name" to course.name,
+                )
                 viewModel.select(course)
             }
 
             @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
             override fun navigateToMap(course: CourseItem) {
+                Logger.log(
+                    Logger.Event.Click("navigate"),
+                    "id" to course.id,
+                    "name" to course.name,
+                )
                 mapManager.fetchCurrentLocation(
                     onSuccess = { latitude: Latitude, longitude: Longitude ->
                         viewModel.fetchNearestCoordinate(course, Coordinate(latitude, longitude))
