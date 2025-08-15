@@ -8,7 +8,6 @@ import android.content.Intent
 import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
@@ -80,7 +79,6 @@ class CoursesActivity :
             setUpBottomSheet(systemBars)
             insets
         }
-        Log.wtf("asdf", "${Resources.getSystem().displayMetrics.widthPixels}")
 
         setUpBindingVariables()
         setUpObservers()
