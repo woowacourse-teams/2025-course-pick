@@ -22,7 +22,8 @@ public class PathAllowlistFilter extends OncePerRequestFilter {
     private static final Set<Pattern> ALLOW_URI_PATTERNS = Set.of(
             Pattern.compile("^/admin/courses/sync$"),
             Pattern.compile("^/courses$"),
-            Pattern.compile("^/courses/[^/]+/closest-coordinate$")
+            Pattern.compile("^/courses/[^/]+/closest-coordinate$"),
+            Pattern.compile("^/import.html$")
     );
 
     @Override
