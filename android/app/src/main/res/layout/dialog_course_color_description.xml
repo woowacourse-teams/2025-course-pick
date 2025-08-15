@@ -13,7 +13,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/background_primary"
+        android:background="@color/background_primary"
         android:padding="20dp">
 
         <TextView
