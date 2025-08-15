@@ -6,10 +6,8 @@ spring:
         region: ap-northeast-2
 
 management:
-  endpoints:
-    web:
-      exposure:
-        include: "health, info, metrics"
+  endpoints.web.exposure:
+    include: "health, info, metrics"
   metrics:
     enable:
       all: false
@@ -20,9 +18,10 @@ management:
       spring.data.repository.invocations: true
       jvm.memory.used: true
       tomcat.threads: true
-
-  cloudwatch:
-    metrics:
-      export:
-        namespace: EC2/coursepick/dev
-        batch-size: 20
+    mongo:
+      command.enabled: true
+      connectionpool.enabled: true
+  cloudwatch.metrics.export:
+    enabled: true
+    namespace: EC2/coursepick/dev
+    batch-size: 20
