@@ -18,6 +18,13 @@ management:
       spring.data.repository.invocations: true
       jvm.memory.used: true
       tomcat.threads: true
+      mongodb.driver:
+        commands: true
+        pool:
+          size: true
+          checkedout: true
+          waitqueuesize: true
+          checkoutfailed: true
     mongo:
       command.enabled: true
       connectionpool.enabled: true
