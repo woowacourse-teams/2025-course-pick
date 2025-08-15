@@ -11,6 +11,7 @@ public class CourseNameConverter {
     public static class Writer implements Converter<CourseName, String> {
         @Override
         public String convert(CourseName source) {
+            if (source == null) return null;
             return source.value();
         }
     }
@@ -19,6 +20,7 @@ public class CourseNameConverter {
     public static class Reader implements Converter<String, CourseName> {
         @Override
         public CourseName convert(String source) {
+            if (source == null || source.isBlank()) return null;
             return new CourseName(source);
         }
     }

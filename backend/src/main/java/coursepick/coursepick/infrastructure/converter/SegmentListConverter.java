@@ -18,6 +18,7 @@ public class SegmentListConverter {
     public static class Writer implements Converter<List<Segment>, Document> {
         @Override
         public Document convert(List<Segment> source) {
+            if (source == null) return null;
             List<List<List<Double>>> segmentsData = source.stream()
                     .map(Writer::parseSegment)
                     .toList();
@@ -46,6 +47,7 @@ public class SegmentListConverter {
     public static class Reader implements Converter<Document, List<Segment>> {
         @Override
         public List<Segment> convert(Document source) {
+            if (source == null) return null;
             List<List<List<Double>>> segmentsData = (List<List<List<Double>>>) source.get("coordinates");
 
             return segmentsData.stream()

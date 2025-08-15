@@ -11,6 +11,7 @@ public class MeterConverter {
     public static class Writer implements Converter<Meter, Double> {
         @Override
         public Double convert(Meter source) {
+            if (source == null) return null;
             return source.value();
         }
     }
@@ -19,6 +20,7 @@ public class MeterConverter {
     public static class Reader implements Converter<Double, Meter> {
         @Override
         public Meter convert(Double source) {
+            if (source == null) return null;
             return new Meter(source);
         }
     }
