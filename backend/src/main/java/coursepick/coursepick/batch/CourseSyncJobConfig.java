@@ -36,15 +36,16 @@ public class CourseSyncJobConfig {
     public Step syncStep(
             JobRepository jobRepository,
             PlatformTransactionManager transactionManager,
-            ItemReader<Course> gpxFileReader,
-            ItemProcessor<Course, Course> gpxToCourseProcessor,
-            ItemWriter<Course> courseItemWriter
+            ItemReader<Course> courseReader,
+            ItemProcessor<Course, Course> courseProcessor,
+            ItemWriter<Course> courseWriter
     ) {
+        System.out.println(courseProcessor.getClass().getSimpleName());
         return new StepBuilder("syncStep", jobRepository)
                 .<Course, Course>chunk(5, transactionManager)
-                .reader(gpxFileReader)
-                .processor(gpxToCourseProcessor)
-                .writer(courseItemWriter)
+                .reader(courseReader)
+                .processor(courseProcessor)
+                .writer(courseWriter)
                 .faultTolerant()
                 .retryLimit(3)
                 .retry(OptimisticLockingFailureException.class)
