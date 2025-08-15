@@ -27,6 +27,7 @@ public class CoordinateBuilder {
      * 비슷하다는 것은, 두 좌표의 거리가 1m 이하인 것을 말합니다.
      */
     public CoordinateBuilder removeSimilar() {
+        Meter minMeter = new Meter(1);
         List<Coordinate> nonSimilarCoordinates = new ArrayList<>();
         nonSimilarCoordinates.add(coordinates.getFirst());
 
@@ -34,7 +35,7 @@ public class CoordinateBuilder {
             Coordinate lastCoordinate = nonSimilarCoordinates.getLast();
             Coordinate currentCoordinate = coordinates.get(i);
             Meter distance = GeoLine.between(lastCoordinate, currentCoordinate).length();
-            if (new Meter(1).isWithin(distance)) {
+            if (minMeter.isWithin(distance)) {
                 nonSimilarCoordinates.add(currentCoordinate);
             }
         }
@@ -48,7 +49,7 @@ public class CoordinateBuilder {
      * 튄다는 것은, 갑자기 100m 이상 벌어지는 점을 말합니다.
      */
     public CoordinateBuilder smooth() {
-        final int maxJumpMeter = 100;
+        Meter maxMeter = new Meter(100);
         List<Coordinate> smoothCoordinates = new ArrayList<>();
         smoothCoordinates.add(coordinates.getFirst());
 
@@ -56,8 +57,8 @@ public class CoordinateBuilder {
             Coordinate lastCoordinate = smoothCoordinates.getLast();
             Coordinate currentCoordinate = coordinates.get(i);
             Meter distance = GeoLine.between(lastCoordinate, currentCoordinate).length();
-            if (new Meter(maxJumpMeter).isWithin(distance)) {
-                Coordinate lerpedCoordinate = Coordinate.lerp(lastCoordinate, currentCoordinate, maxJumpMeter / distance.value());
+            if (maxMeter.isWithin(distance)) {
+                Coordinate lerpedCoordinate = Coordinate.lerp(lastCoordinate, currentCoordinate, maxMeter.value() / distance.value());
                 smoothCoordinates.add(lerpedCoordinate);
             } else {
                 smoothCoordinates.add(currentCoordinate);
