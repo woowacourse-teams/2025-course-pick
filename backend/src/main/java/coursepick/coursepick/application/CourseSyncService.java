@@ -1,5 +1,6 @@
 package coursepick.coursepick.application;
 
+import coursepick.coursepick.logging.LogContent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -27,7 +28,7 @@ public class CourseSyncService {
                     .toJobParameters();
             jobLauncher.run(courseSyncJob, jobParameters);
         } catch (Exception e) {
-            log.warn("CourseSyncJob 실패", e);
+            log.warn("[EXCEPTION] CourseSyncJob 자동 실행 중 예외 발생", LogContent.exception(e));
         }
     }
 
@@ -40,7 +41,7 @@ public class CourseSyncService {
                     .toJobParameters();
             jobLauncher.run(courseSyncJob, jobParameters);
         } catch (Exception e) {
-            log.warn("CourseSyncJob 실패", e);
+            log.warn("[EXCEPTION] CourseSyncJob 수동 실행 중 예외 발생", LogContent.exception(e));
         }
     }
 }
