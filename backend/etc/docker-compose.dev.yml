@@ -1,6 +1,48 @@
 name: coursepick-dev
 
 services:
+  backend:
+    image: coursepicks/coursepick-backend:dev
+    container_name: coursepick-backend
+    ports:
+      - '80:8080'
+    environment:
+      - SPRING_PROFILES_ACTIVE=
+      - SPRING_DATASOURCE_URL=
+      - SPRING_DATASOURCE_USERNAME=
+      - SPRING_DATASOURCE_PASSWORD=
+    depends_on:
+      - mysql
+      - mongodb
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:8.0.12
+    container_name: mongoDB
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=
+      - MONGO_INITDB_ROOT_PASSWORD=
+    volumes:
+      - /var/lib/coursepick/mongo:/data/db
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb # 연결할 MongoDB 서비스 이름 (위 서비스 이름과 동일)
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=
+      - ME_CONFIG_MONGODB_AUTH_USERNAME=
+      - ME_CONFIG_MONGODB_AUTH_PASSWORD=
+      - ME_CONFIG_BASICAUTH_USERNAME=
+      - ME_CONFIG_BASICAUTH_PASSWORD=
+    depends_on:
+      - mongodb # mongodb 서비스가 실행된 후에 실행되도록 의존성 설정
+
   mysql:
     image: 'mysql:8.4.5'
     environment:
@@ -13,11 +55,8 @@ services:
     ports:
       - '3306:3306'
     volumes:
-      - mysql_data:/var/lib/mysql
+      - /var/lib/coursepick/mysql:/var/lib/mysql
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
     restart: unless-stopped
-
-volumes:
-  mysql_data:
