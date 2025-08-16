@@ -164,11 +164,11 @@ class CourseTest {
         @Test
         void 코스의_세그먼트를_생성한다() {
             var coord1 = new Coordinate(0, 0, 0);
-            var coord2 = left_uphill(coord1, 50, 6);
+            var coord2 = left_angled(coord1, 50, 6);
             var coord3 = left(coord2, 50);
-            var coord4 = down_uphill(coord3, 50, 6);
+            var coord4 = down_angled(coord3, 50, 6);
             var coord5 = right(coord4, 50);
-            var coord6 = up_downhill(coord5, 50, 6);
+            var coord6 = up_angled(coord5, 50, -6);
             var course = new Course("코스", List.of(coord1, coord2, coord3, coord4, coord5, coord6));
 
             var segments = course.segments();
@@ -189,11 +189,11 @@ class CourseTest {
         @Test
         void 동일한_경사타입과_방향의_세그먼트들이_올바르게_병합된다() {
             var coord1 = new Coordinate(0, 0, 0);
-            var coord2 = left_uphill(coord1, 50, 6);
-            var coord3 = left_uphill(coord2, 50, 6);
-            var coord4 = down_uphill(coord3, 50, 6);
-            var coord5 = down_uphill(coord4, 50, 6);
-            var coord6 = up_downhill(coord5, 50, 6);
+            var coord2 = left_angled(coord1, 50, 6);
+            var coord3 = left_angled(coord2, 50, 6);
+            var coord4 = down_angled(coord3, 50, 6);
+            var coord5 = down_angled(coord4, 50, 6);
+            var coord6 = up_angled(coord5, 50, -6);
             var course = new Course("코스", List.of(coord1, coord2, coord3, coord4, coord5, coord6));
 
             var segments = course.segments();
