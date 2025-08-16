@@ -59,6 +59,8 @@ jobs:
 
       - name: 새로운 서버 시작
         run: |
+          cd
+          
           export DEV_PROFILE=${{ secrets.DEV_PROFILE }}
           export DEV_DB_URL=${{ secrets.DEV_DB_URL }}
           export DEV_DB_USERNAME=${{ secrets.DEV_DB_USERNAME }}
