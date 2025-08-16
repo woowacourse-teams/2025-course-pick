@@ -61,15 +61,15 @@ jobs:
         run: |
           cd
           
-          export DEV_PROFILE=${{ secrets.DEV_PROFILE }}
-          export DEV_DB_URL=${{ secrets.DEV_DB_URL }}
-          export DEV_DB_USERNAME=${{ secrets.DEV_DB_USERNAME }}
-          export DEV_DB_PASSWORD=${{ secrets.DEV_DB_PASSWORD }}
-          export DEV_MONGO_USERNAME=${{ secrets.DEV_MONGO_USERNAME }}
-          export DEV_MONGO_PASSWORD=${{ secrets.DEV_MONGO_PASSWORD }}
-          export ADMIN_TOKEN=${{ secrets.DEV_ADMIN_TOKEN }}
-          export GCP_DRIVE_FOLDER_ID=${{ secrets.GCP_DRIVE_FOLDER_ID }}
-          export GCP_CREDENTIALS_PATH=${{ secrets.GCP_CREDENTIALS_PATH }}
+          sudo export DEV_PROFILE=${{ secrets.DEV_PROFILE }}
+          sudo export DEV_DB_URL=${{ secrets.DEV_DB_URL }}
+          sudo export DEV_DB_USERNAME=${{ secrets.DEV_DB_USERNAME }}
+          sudo export DEV_DB_PASSWORD=${{ secrets.DEV_DB_PASSWORD }}
+          sudo export DEV_MONGO_USERNAME=${{ secrets.DEV_MONGO_USERNAME }}
+          sudo export DEV_MONGO_PASSWORD=${{ secrets.DEV_MONGO_PASSWORD }}
+          sudo export ADMIN_TOKEN=${{ secrets.DEV_ADMIN_TOKEN }}
+          sudo export GCP_DRIVE_FOLDER_ID=${{ secrets.GCP_DRIVE_FOLDER_ID }}
+          sudo export GCP_CREDENTIALS_PATH=${{ secrets.GCP_CREDENTIALS_PATH }}
           
           sudo docker compose pull backend
           sudo docker compose down
