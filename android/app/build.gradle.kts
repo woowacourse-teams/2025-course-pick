@@ -63,6 +63,11 @@ android {
                 "MIXPANEL_PROJECT_TOKEN",
                 localProperties["mixpanel.project.token"].toString(),
             )
+            buildConfigField(
+                "String",
+                "CLARITY_PROJECT_ID",
+                localProperties["clarity.project.id"].toString(),
+            )
         }
 
         getByName("release") {
@@ -132,6 +137,7 @@ dependencies {
     implementation(libs.amplitude.android.session.replay)
     implementation(libs.mixpanel.android)
     implementation(libs.mixpanel.android.session.replay)
+    implementation(libs.clarity)
     testImplementation(libs.assertj.core)
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
