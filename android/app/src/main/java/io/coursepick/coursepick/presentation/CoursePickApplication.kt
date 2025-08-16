@@ -26,6 +26,7 @@ class CoursePickApplication : Application() {
             listOf(
                 FirebaseAnalyticsService(installationId),
                 AmplitudeAnalyticsService(this, installationId),
+                MixpanelAnalyticsService(this, installationId),
             )
         Logger.init(analyticsServices)
         if (BuildConfig.DEBUG) {

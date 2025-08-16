@@ -58,6 +58,11 @@ android {
                 "AMPLITUDE_API_KEY",
                 localProperties["amplitude.api.key"].toString(),
             )
+            buildConfigField(
+                "String",
+                "MIXPANEL_PROJECT_TOKEN",
+                localProperties["mixpanel.project.token"].toString(),
+            )
         }
 
         getByName("release") {
