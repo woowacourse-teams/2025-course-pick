@@ -27,6 +27,9 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.kakao.vectormap.LatLng
+import com.microsoft.clarity.Clarity
+import com.microsoft.clarity.ClarityConfig
+import com.microsoft.clarity.models.LogLevel
 import io.coursepick.coursepick.BuildConfig
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.databinding.ActivityCoursesBinding
@@ -81,6 +84,7 @@ class CoursesActivity :
             insets
         }
 
+        setUpClarity()
         setUpBindingVariables()
         setUpObservers()
         setUpDoubleBackPress()
@@ -162,7 +166,7 @@ class CoursesActivity :
     }
 
     override fun search() {
-        val intent = SearchActivity.Companion.intent(this)
+        val intent = SearchActivity.intent(this)
         searchLauncher?.launch(intent) ?: Toast
             .makeText(
                 this,
@@ -288,6 +292,17 @@ class CoursesActivity :
                 )
             }
         }
+
+    private fun setUpClarity() {
+        Clarity.initialize(
+            applicationContext,
+            ClarityConfig(
+                projectId = BuildConfig.CLARITY_PROJECT_ID,
+                logLevel = LogLevel.None,
+            ),
+        )
+        Clarity.setCustomUserId((application as CoursePickApplication).installationId.value)
+    }
 
     private fun setUpNavigation(systemBars: Insets) {
         binding.mainNavigation.setPadding(0, 0, 0, systemBars.bottom)
@@ -423,7 +438,7 @@ class CoursesActivity :
                             event.origin,
                             event.destination,
                             event.destinationName,
-                        ) ?: RouteFinderChoiceDialogFragment.Companion
+                        ) ?: RouteFinderChoiceDialogFragment
                             .newInstance(
                                 event.origin,
                                 event.destination,
