@@ -12,6 +12,7 @@ import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Longitude
+import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.presentation.LocationProvider
 import io.coursepick.coursepick.presentation.course.CourseItem
 
@@ -187,5 +188,16 @@ class KakaoMapManager(
             },
             onFailure = onFailure,
         )
+    }
+
+    fun scope(screenCenter: Coordinate): Scope {
+        val map = kakaoMap ?: throw IllegalStateException("KakaoMap이 초기화되지 않았습니다.")
+        val screenDiagonalTop =
+            map.fromScreenPoint(0, 0)
+                ?: throw IllegalStateException("화면 좌표 계산 실패")
+        val distance =
+            DistanceCalculator.distance(screenCenter, screenDiagonalTop.toCoordinate())
+                ?: throw IllegalStateException("거리 계산 실패")
+        return Scope(distance)
     }
 }

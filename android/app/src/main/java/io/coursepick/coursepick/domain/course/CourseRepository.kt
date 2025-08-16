@@ -4,6 +4,7 @@ interface CourseRepository {
     suspend fun courses(
         mapCoordinate: Coordinate,
         userCoordinate: Coordinate? = null,
+        scope: Scope,
     ): List<Course>
 
     suspend fun nearestCoordinate(
