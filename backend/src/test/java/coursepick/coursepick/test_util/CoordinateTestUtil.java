@@ -9,6 +9,29 @@ import java.util.List;
 public class CoordinateTestUtil {
 
     private static final double STEP_METER = 100.0;
+    private static final double EARTH_RADIUS_METER = 6371000;
+
+    public static Coordinate up(Coordinate target, double meter) {
+        double deltaLat = (meter / EARTH_RADIUS_METER) * (180 / Math.PI);
+
+        return new Coordinate(target.latitude() + deltaLat, target.longitude());
+    }
+
+    public static Coordinate down(Coordinate target, double meter) {
+        double deltaLat = (meter / EARTH_RADIUS_METER) * (180 / Math.PI);
+
+        return new Coordinate(target.latitude() - deltaLat, target.longitude());
+    }
+
+    public static Coordinate right(Coordinate target, double meter) {
+        double deltaLng = (meter / (EARTH_RADIUS_METER * Math.cos(Math.toRadians(target.latitude())))) * (180 / Math.PI);
+        return new Coordinate(target.latitude(), target.longitude() + deltaLng);
+    }
+
+    public static Coordinate left(Coordinate target, double meter) {
+        double deltaLng = (meter / (EARTH_RADIUS_METER * Math.cos(Math.toRadians(target.latitude())))) * (180 / Math.PI);
+        return new Coordinate(target.latitude(), target.longitude() - deltaLng);
+    }
 
     public static List<Coordinate> square(Coordinate start, Coordinate end) {
         return square(start.latitude(), start.longitude(), end.latitude(), end.longitude());
