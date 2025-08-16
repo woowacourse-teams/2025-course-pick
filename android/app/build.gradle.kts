@@ -129,6 +129,7 @@ dependencies {
     implementation(libs.play.services.oss.licenses)
     implementation(libs.androidx.preference.ktx)
     implementation(libs.amplitude.android)
+    implementation(libs.amplitude.android.session.replay)
     implementation(libs.mixpanel.android)
     testImplementation(libs.assertj.core)
     testImplementation(libs.junit)

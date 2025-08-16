@@ -30,6 +30,7 @@ timber = "5.0.1"
 google-services = "4.4.3"
 firebase-crashlytics = "3.0.5"
 amplitude-android = "1.22.1"
+amplitude-android-session-replay = "0.20.14"
 mixpanel-android = "8.2.1"
 
 [libraries]
@@ -62,6 +63,7 @@ kakao-maps = { module = "com.kakao.maps.open:android", version.ref = "kakao-maps
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "play-services-location" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 amplitude-android = { module = "com.amplitude:analytics-android", version.ref = "amplitude-android" }
+amplitude-android-session-replay = { module = "com.amplitude:plugin-session-replay-android", version.ref = "amplitude-android-session-replay" }
 mixpanel-android = { module = "com.mixpanel.android:mixpanel-android", version.ref = "mixpanel-android" }
 
 [plugins]
