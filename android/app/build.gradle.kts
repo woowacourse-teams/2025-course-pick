@@ -93,6 +93,21 @@ android {
                 "KAKAO_REST_API_KEY",
                 localProperties["kakao.rest.api.key"].toString(),
             )
+            buildConfigField(
+                "String",
+                "AMPLITUDE_API_KEY",
+                localProperties["amplitude.api.key"].toString(),
+            )
+            buildConfigField(
+                "String",
+                "MIXPANEL_PROJECT_TOKEN",
+                localProperties["mixpanel.project.token"].toString(),
+            )
+            buildConfigField(
+                "String",
+                "CLARITY_PROJECT_ID",
+                localProperties["clarity.project.id"].toString(),
+            )
         }
     }
 
