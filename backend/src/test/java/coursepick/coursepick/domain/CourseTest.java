@@ -4,11 +4,15 @@ import org.assertj.core.data.Percentage;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
+import java.util.stream.Stream;
 
+import static coursepick.coursepick.test_util.CoordinateTestUtil.square;
 import static org.assertj.core.api.Assertions.*;
 
 class CourseTest {
@@ -271,5 +275,45 @@ class CourseTest {
             // 같은 방향과 경사타입의 세그먼트들이 병합되어야 함
             assertThat(segments).hasSize(1);
         }
+    }
+
+    @ParameterizedTest
+    @MethodSource("courseInfoAndExpectedDifficulty")
+    void 코스의_난이도를_계산한다(List<Coordinate> coordinates, RoadType roadType, Difficulty expectedDifficulty) {
+        var course = new Course("코스", roadType, coordinates);
+
+        var difficulty = course.difficulty();
+
+        assertThat(difficulty).isEqualTo(expectedDifficulty);
+    }
+
+    private static Stream<Arguments> courseInfoAndExpectedDifficulty() {
+        return Stream.of(
+                Arguments.of(
+                        square(0, 0, 0.04, 0.04),
+                        RoadType.트랙,
+                        Difficulty.쉬움
+                ),
+                Arguments.of(
+                        square(0, 0, 0.04, 0.04),
+                        RoadType.보도,
+                        Difficulty.보통
+                ),
+                Arguments.of(
+                        square(0, 0, 0.04, 0.04),
+                        RoadType.트레일,
+                        Difficulty.어려움
+                ),
+                Arguments.of(
+                        square(0, 0, 0.06, 0.06),
+                        RoadType.트랙,
+                        Difficulty.보통
+                ),
+                Arguments.of(
+                        square(0, 0, 0.1, 0.1),
+                        RoadType.트랙,
+                        Difficulty.어려움
+                )
+        );
     }
 }
