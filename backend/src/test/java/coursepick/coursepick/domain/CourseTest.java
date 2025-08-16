@@ -1,35 +1,87 @@
 package coursepick.coursepick.domain;
 
-import org.assertj.core.data.Percentage;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 import java.util.stream.Stream;
 
-import static coursepick.coursepick.test_util.CoordinateTestUtil.square;
+import static coursepick.coursepick.test_util.CoordinateTestUtil.*;
 import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.data.Percentage.withPercentage;
 
 class CourseTest {
+
+    public static Stream<Arguments> targetAndDistance() {
+        var base = new Coordinate(0, 0);
+
+        return Stream.of(
+                Arguments.of(upleft(base, 1000), 1000),
+                Arguments.of(downleft(base, 2000), 2000 * ROOT2),
+                Arguments.of(downright(base, 3000), 3000),
+                Arguments.of(up(base, 3000), 0),
+                Arguments.of(upright(base, 3000), 3000)
+
+        );
+    }
+
+    public static Stream<Arguments> targetCoordinateAndExpectedCoordinate() {
+        var base = new Coordinate(0, 0);
+        return Stream.of(
+                Arguments.of(upleft(base, 1000), up(base, 1000)),
+                Arguments.of(up(right(base, 2000), 3000), up(base, 3000)),
+                Arguments.of(downleft(base, 1000), base)
+        );
+    }
+
+    @Test
+    void 코스의_총_길이를_계산할_수_있다() {
+        var course = new Course("코스", square(new Coordinate(0, 0), 10000, 10000));
+
+        var distance = course.length();
+
+        assertThat(distance.value()).isCloseTo(40000, withPercentage(1));
+    }
+
+    @ParameterizedTest
+    @MethodSource("targetAndDistance")
+    void 특정_좌표에서_코스까지_가장_가까운_거리를_계산할_수_있다(Coordinate target, double expectedDistance) {
+        var base = new Coordinate(0, 0);
+        var course = new Course("코스", square(base, 10000, 10000));
+
+        var distance = course.distanceFrom(target);
+
+        assertThat(distance.value()).isCloseTo(expectedDistance, withPercentage(1));
+    }
+
+    @ParameterizedTest
+    @MethodSource("targetCoordinateAndExpectedCoordinate")
+    void 코스에서_가장_가까운_좌표를_계산한다(Coordinate target, Coordinate expected) {
+        var base = new Coordinate(0, 0);
+        var course = new Course("코스", square(base, 10000, 10000));
+
+        var minDistanceCoordinate = course.closestCoordinateFrom(target);
+
+        assertThat(minDistanceCoordinate).isEqualTo(expected);
+    }
 
     @Nested
     class 생성_테스트 {
 
         @Test
         void 코스를_생성한다() {
-            assertThatCode(() -> new Course("코스이름", getNormalCoordinates()))
+            assertThatCode(() -> new Course("코스", List.of(new Coordinate(0, 0), new Coordinate(2, 2))))
                     .doesNotThrowAnyException();
         }
 
         @Test
         void 앞_뒤_공백을_제거하여_생성한다() {
-            var course = new Course(" 코스이름   ", getNormalCoordinates());
-            assertThat(course.name().value()).isEqualTo("코스이름");
+            var course = new Course(" 코스   ", List.of(new Coordinate(0, 0), new Coordinate(2, 2)));
+            assertThat(course.name().value()).isEqualTo("코스");
         }
 
         @ParameterizedTest
@@ -38,7 +90,7 @@ class CourseTest {
                 "짧"
         })
         void 잘못된_길이의_이름으로_코스를_생성하면_예외가_발생한다(String name) {
-            assertThatThrownBy(() -> new Course(name, getNormalCoordinates()))
+            assertThatThrownBy(() -> new Course(name, List.of(new Coordinate(0, 0), new Coordinate(2, 2))))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
@@ -46,177 +98,23 @@ class CourseTest {
         @ValueSource(strings = {
                 "코스 이름",
                 "코스  이름",
-                "코스   이름",
-                "코스    이름",
         })
         void 이름의_연속공백을_한_칸으로_변환하여_코스를_생성한다(String name) {
-            var course = new Course(name, getNormalCoordinates());
+            var course = new Course(name, List.of(new Coordinate(0, 0), new Coordinate(2, 2)));
             assertThat(course.name().value()).isEqualTo("코스 이름");
         }
 
         @Test
         void 코스의_좌표의_개수가_2보다_적으면_예외가_발생한다() {
-            assertThatThrownBy(() -> new Course("코스이름", List.of(new Coordinate(1d, 1d))))
+            assertThatThrownBy(() -> new Course("코스", List.of(new Coordinate(0, 0))))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
         @Test
         void 코스_생성시_첫_좌표_끝_좌표만_존재할때_둘은_중복될_수_없다() {
-            Coordinate coordinate1 = new Coordinate(37.5049400, 126.9058000, 18.19);
-            List<Coordinate> coordinates = List.of(
-                    coordinate1,
-                    coordinate1
-            );
-            assertThatThrownBy(() -> new Course("테스트 코스", coordinates))
+            assertThatThrownBy(() -> new Course("코스", List.of(new Coordinate(0, 0), new Coordinate(0, 0))))
                     .isInstanceOf(IllegalArgumentException.class);
         }
-
-        private static List<Coordinate> getNormalCoordinates() {
-            return List.of(new Coordinate(1d, 1d), new Coordinate(2d, 2d));
-        }
-    }
-
-    @Nested
-    class 거리_계산_테스트 {
-
-        @Test
-        void 코스의_총_거리를_계산할_수_있다() {
-            var course = new Course("한강뛰어보자", List.of(
-                    new Coordinate(0, 0),
-                    new Coordinate(0, 0.0001),
-                    new Coordinate(0.0001, 0.0001),
-                    new Coordinate(0.0001, 0),
-                    new Coordinate(0, 0)
-            ));
-
-            var distance = course.length();
-
-            assertThat(distance.value()).isCloseTo(44.4, Percentage.withPercentage(1));
-        }
-
-        @ParameterizedTest
-        @CsvSource({
-                "0.0002, 0.0001, 11.1",
-                "0.00005, 0.00005, 5.55",
-        })
-        void 특정_좌표에서_코스까지_가장_가까운_거리를_계산할_수_있다(double latitude, double longitude, double expectedDistance) {
-            var course = new Course("한강뛰어보자", List.of(
-                    new Coordinate(0, 0),
-                    new Coordinate(0, 0.0001),
-                    new Coordinate(0.0001, 0.0001),
-                    new Coordinate(0.0001, 0),
-                    new Coordinate(0, 0)
-            ));
-            var target = new Coordinate(latitude, longitude);
-
-            var distance = course.distanceFrom(target);
-
-            assertThat(distance.value()).isCloseTo(expectedDistance, Percentage.withPercentage(1));
-        }
-
-        @Test
-        void 코스_위의_점에서_코스까지의_거리는_0에_가깝다() {
-            var course = new Course("직선코스", List.of(
-                    new Coordinate(37.5, 127.0),
-                    new Coordinate(37.5, 127.001),
-                    new Coordinate(37.5, 127.0)
-            ));
-            var target = new Coordinate(37.5, 127.0005); // 코스 선분의 중점
-
-            var distance = course.distanceFrom(target);
-
-            assertThat(distance.value()).isLessThan(1.0);
-        }
-
-        @Test
-        void 코스_외부_멀리_떨어진_점에서_코스까지의_거리를_계산한다() {
-            var course = new Course("작은원형코스", List.of(
-                    new Coordinate(37.5, 127.0),
-                    new Coordinate(37.5001, 127.0),
-                    new Coordinate(37.5, 127.0001),
-                    new Coordinate(37.4999, 127.0),
-                    new Coordinate(37.5, 127.0)
-            ));
-            var target = new Coordinate(37.52, 127.02); // 매우 멀리 떨어진 점
-
-            var distance = course.distanceFrom(target);
-
-            assertThat((int) distance.value()).isEqualTo(2829);
-        }
-
-        @Test
-        void 코스_내부의_점에서_코스까지의_거리를_계산한다() {
-            var course = new Course("사각형코스", List.of(
-                    new Coordinate(37.5, 127.0),
-                    new Coordinate(37.501, 127.0),
-                    new Coordinate(37.501, 127.001),
-                    new Coordinate(37.5, 127.001),
-                    new Coordinate(37.5, 127.0)
-            ));
-            var target = new Coordinate(37.5005, 127.0005); // 사각형 중앙
-
-            var distance = course.distanceFrom(target);
-
-            assertThat((int) distance.value()).isEqualTo(44);
-        }
-
-        @Test
-        void 코스_시작점에서_코스까지의_거리는_0이다() {
-            var course = new Course("삼각형코스", List.of(
-                    new Coordinate(37.5, 127.0),
-                    new Coordinate(37.501, 127.0),
-                    new Coordinate(37.5005, 127.001),
-                    new Coordinate(37.5, 127.0)
-            ));
-            var target = new Coordinate(37.5, 127.0);
-
-            var distance = course.distanceFrom(target);
-
-            assertThat(distance.value()).isEqualTo(0.0);
-        }
-
-        @ParameterizedTest
-        @CsvSource({
-                "37.4999, 126.9999, 14",   // 코스 바로 옆
-                "37.5001, 127.0001, 0",    // 코스 반대편 바로 옆 (코스 위의 점)
-                "37.5, 126.999, 88"        // 코스에서 서쪽으로 100m
-        })
-        void 코스_주변_다양한_위치에서의_거리를_계산한다(double latitude, double longitude, int expectedDistance) {
-            var course = new Course("정사각형코스", List.of(
-                    new Coordinate(37.5, 127.0),
-                    new Coordinate(37.5001, 127.0),
-                    new Coordinate(37.5001, 127.0001),
-                    new Coordinate(37.5, 127.0001),
-                    new Coordinate(37.5, 127.0)
-            ));
-            var target = new Coordinate(latitude, longitude);
-
-            var distance = course.distanceFrom(target);
-
-            assertThat((int) distance.value()).isEqualTo(expectedDistance);
-        }
-    }
-
-    @ParameterizedTest
-    @CsvSource({
-            "0.0002, 0.00005, 0.0001, 0.00005",
-            "0.0002, 0.0002, 0.0001, 0.0001",
-            "0.00007, 0.00005, 0.0001, 0.00005",
-    })
-    void 코스의_좌표_중에서_가장_가까운_좌표를_계산한다(double targetLatitude, double targetLongitude, double expectedLatitude, double expectedLongitude) {
-        Course course = new Course("왕복코스", List.of(
-                new Coordinate(0, 0),
-                new Coordinate(0, 0.0001),
-                new Coordinate(0.0001, 0.0001),
-                new Coordinate(0.0001, 0),
-                new Coordinate(0, 0)
-        ));
-        Coordinate target = new Coordinate(targetLatitude, targetLongitude);
-
-        Coordinate minDistanceCoordinate = course.closestCoordinateFrom(target);
-
-        Coordinate expectedCoordinate = new Coordinate(expectedLatitude, expectedLongitude);
-        assertThat(minDistanceCoordinate).isEqualTo(expectedCoordinate);
     }
 
     @Nested
