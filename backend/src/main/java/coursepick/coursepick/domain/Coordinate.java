@@ -75,4 +75,9 @@ public record Coordinate(
             throw INVALID_LONGITUDE_RANGE.create(roundedLongitude);
         }
     }
+
+    @Override
+    public String toString() {
+        return "(%+.07f, %+.07f, %+.07f)".formatted(latitude, longitude, elevation);
+    }
 }

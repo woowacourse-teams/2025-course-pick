@@ -2,17 +2,10 @@ package coursepick.coursepick.infrastructure;
 
 import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.dto.CourseFileExtension;
-import coursepick.coursepick.domain.Coordinate;
-import coursepick.coursepick.domain.Course;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,9 +14,8 @@ class KmlCourseParserTest {
     KmlCourseParser sut = new KmlCourseParser();
 
     @Test
-    void KML_파일을_파싱하여_코스_정보를_추출한다(@TempDir Path tempDir) throws IOException {
-        // given
-        String kmlContent = """
+    void KML_파일을_파싱하여_코스_정보를_추출한다() {
+        var kmlContent = """
                 <?xml version="1.0" encoding="UTF-8"?>
                 <kml xmlns="http://www.opengis.net/kml/2.2">
                 <Document>
@@ -42,24 +34,21 @@ class KmlCourseParserTest {
                 </Document>
                 </kml>
                 """;
+        var inputStream = new ByteArrayInputStream(kmlContent.getBytes(StandardCharsets.UTF_8));
 
-        InputStream inputStream = new ByteArrayInputStream(kmlContent.getBytes(StandardCharsets.UTF_8));
-
-        List<Course> courses = sut.parse(new CourseFile("테스트코스", CourseFileExtension.KML, inputStream));
+        var courses = sut.parse(new CourseFile("테스트코스", CourseFileExtension.KML, inputStream));
 
         assertThat(courses).hasSize(1);
-
-        Course course = courses.getFirst();
+        var course = courses.getFirst();
         assertThat(course.name().value()).isEqualTo("테스트코스");
-
-        Coordinate firstCoordinate = course.segments().getFirst().startCoordinate();
+        var firstCoordinate = course.segments().getFirst().startCoordinate();
         assertThat(firstCoordinate.latitude()).isEqualTo(37.5224898);
         assertThat(firstCoordinate.longitude()).isEqualTo(127.0990294);
     }
 
     @Test
-    void 좌표가_없는_Placemark는_무시한다(@TempDir Path tempDir) throws IOException {
-        String kmlContent = """
+    void 좌표가_없는_Placemark는_무시한다() {
+        var kmlContent = """
                 <?xml version="1.0" encoding="UTF-8"?>
                 <kml xmlns="http://www.opengis.net/kml/2.2">
                 <Document>
@@ -69,9 +58,9 @@ class KmlCourseParserTest {
                 </Document>
                 </kml>
                 """;
-        InputStream inputStream = new ByteArrayInputStream(kmlContent.getBytes(StandardCharsets.UTF_8));
+        var inputStream = new ByteArrayInputStream(kmlContent.getBytes(StandardCharsets.UTF_8));
 
-        List<Course> courses = sut.parse(new CourseFile("테스트코스", CourseFileExtension.KML, inputStream));
+        var courses = sut.parse(new CourseFile("테스트코스", CourseFileExtension.KML, inputStream));
 
         assertThat(courses).isEmpty();
     }

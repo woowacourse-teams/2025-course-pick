@@ -1,13 +1,11 @@
 package coursepick.coursepick.test_util;
 
 import coursepick.coursepick.domain.Coordinate;
-import org.springframework.boot.test.context.TestComponent;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-@TestComponent
 public class GpxTestUtil {
 
     private static final String TRACK_POINT_FORMAT = """
