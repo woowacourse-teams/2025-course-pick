@@ -2,6 +2,8 @@ package io.coursepick.coursepick.presentation
 
 import android.content.Context
 import com.mixpanel.android.mpmetrics.MixpanelAPI
+import com.mixpanel.android.sessionreplay.MPSessionReplay
+import com.mixpanel.android.sessionreplay.models.MPSessionReplayConfig
 import io.coursepick.coursepick.BuildConfig
 import org.json.JSONObject
 
@@ -15,6 +17,12 @@ class MixpanelAnalyticsService(
     init {
         mixpanel.identify(installationId.value)
         mixpanel.people.set("installation_id", installationId.value)
+        MPSessionReplay.initialize(
+            context,
+            BuildConfig.MIXPANEL_PROJECT_TOKEN,
+            mixpanel.distinctId,
+            MPSessionReplayConfig(wifiOnly = false),
+        )
     }
 
     override fun log(
