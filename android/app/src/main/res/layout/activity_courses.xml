@@ -137,6 +137,22 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/mainCoursesHandle" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:drawablePadding="4dp"
+                    android:onClick="@{() -> action.showCourseColorDescription()}"
+                    android:padding="10dp"
+                    android:text="@string/main_course_color_description"
+                    android:textColor="@color/item_secondary"
+                    android:textSize="14sp"
+                    app:drawableStartCompat="@drawable/icon_course_color_information"
+                    app:drawableTint="@color/item_secondary"
+                    app:layout_constraintBottom_toBottomOf="@id/mainCoursesHeader"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/mainCoursesHeader" />
+
                 <androidx.core.widget.ContentLoadingProgressBar
                     android:id="@+id/mainCoursesLoadingIndicator"
                     style="?android:attr/progressBarStyleLarge"
@@ -172,7 +188,6 @@
             android:layout_gravity="start"
             android:background="@color/background_primary"
             android:fitsSystemWindows="true"
-            android:onClick="@{}"
             app:itemTextColor="@color/item_primary"
             app:menu="@menu/menu_navigation_courses"
             app:onNavigationItemSelected="@{(menuItem) -> action.navigate(menuItem)}">
