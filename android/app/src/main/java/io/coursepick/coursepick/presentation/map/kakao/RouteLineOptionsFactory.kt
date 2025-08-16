@@ -20,10 +20,10 @@ class RouteLineOptionsFactory(
     private val patternDistance: Float =
         context.resources.getDimension(R.dimen.course_pattern_between_distance)
 
-    private val uphillStyle = RouteLineStyles(context.getColor(R.color.course_difficulty_hard))
-    private val flatStyle = RouteLineStyles(context.getColor(R.color.course_difficulty_normal))
-    private val downhillStyle = RouteLineStyles(context.getColor(R.color.course_difficulty_easy))
-    private val unknownStyle = RouteLineStyles(context.getColor(R.color.course_difficulty_none))
+    private val uphillStyle = RouteLineStyles(context.getColor(R.color.course_uphill))
+    private val flatStyle = RouteLineStyles(context.getColor(R.color.course_flat))
+    private val downhillStyle = RouteLineStyles(context.getColor(R.color.course_downhill))
+    private val unknownStyle = RouteLineStyles(context.getColor(R.color.course_unknown))
     private val unselectedStyle = RouteLineStyles(context.getColor(R.color.course_unselected))
 
     fun routeLineOptions(course: CourseItem): RouteLineOptions {
