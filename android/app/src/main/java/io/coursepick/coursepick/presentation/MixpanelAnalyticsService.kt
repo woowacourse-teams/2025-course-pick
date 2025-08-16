@@ -14,6 +14,7 @@ class MixpanelAnalyticsService(
 
     init {
         mixpanel.identify(installationId.value)
+        mixpanel.people.set("installation_id", installationId.value)
     }
 
     override fun log(
