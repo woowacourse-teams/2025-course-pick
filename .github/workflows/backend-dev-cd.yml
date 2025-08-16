@@ -41,10 +41,10 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Docker 이미지 빌드
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/coursepick-backend:dev .
+        run: sudo docker build -t ${{ secrets.DOCKER_USERNAME }}/coursepick-backend:dev .
 
       - name: Docker 이미지 푸시
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/coursepick-backend:dev
+        run: sudo docker push ${{ secrets.DOCKER_USERNAME }}/coursepick-backend:dev
 
   deploy:
     needs: build
@@ -71,6 +71,6 @@ jobs:
           export GCP_DRIVE_FOLDER_ID=${{ secrets.GCP_DRIVE_FOLDER_ID }}
           export GCP_CREDENTIALS_PATH=${{ secrets.GCP_CREDENTIALS_PATH }}
           
-          docker compose pull backend
-          docker compose down
-          docker compose up -d backend
+          sudo docker compose pull backend
+          sudo docker compose down
+          sudo docker compose up -d backend
