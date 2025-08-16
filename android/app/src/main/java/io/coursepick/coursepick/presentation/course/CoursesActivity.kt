@@ -159,6 +159,11 @@ class CoursesActivity :
         Toast.makeText(this, "사용자 ID가 복사됐습니다.", Toast.LENGTH_SHORT).show()
     }
 
+    override fun showCourseColorDescription() {
+        supportFragmentManager.findFragmentByTag(COURSE_COLOR_DIALOG_TAG)
+            ?: CourseColorDescriptionDialog().show(supportFragmentManager, COURSE_COLOR_DIALOG_TAG)
+    }
+
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun searchActivityResultLauncher(): ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -424,5 +429,9 @@ class CoursesActivity :
                 Manifest.permission.ACCESS_COARSE_LOCATION,
             ),
         )
+    }
+
+    private companion object {
+        const val COURSE_COLOR_DIALOG_TAG = "CourseColorDescriptionDialog"
     }
 }

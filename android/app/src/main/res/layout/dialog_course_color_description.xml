@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="listener"
+            type="io.coursepick.coursepick.presentation.course.OnConfirmListener" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background_primary"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/courseColorDescriptionTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/course_color_description_title"
+            android:textColor="@color/item_primary"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/courseColorDescriptionDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/course_color_description_description"
+            android:textColor="@color/item_secondary"
+            android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@id/courseColorDescriptionTitle" />
+
+        <View
+            android:id="@+id/courseColorDescriptionUphillColor"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/background_course_color"
+            android:backgroundTint="@color/course_uphill"
+            app:layout_constraintBottom_toBottomOf="@id/courseColorDescriptionUphill"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/courseColorDescriptionUphill" />
+
+        <TextView
+            android:id="@+id/courseColorDescriptionUphill"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="24dp"
+            android:text="@string/course_color_description_uphill"
+            android:textColor="@color/item_primary"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/courseColorDescriptionUphillColor"
+            app:layout_constraintTop_toBottomOf="@id/courseColorDescriptionDescription" />
+
+        <View
+            android:id="@+id/courseColorDescriptionFlatColor"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/background_course_color"
+            android:backgroundTint="@color/course_flat"
+            app:layout_constraintBottom_toBottomOf="@id/courseColorDescriptionFlat"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/courseColorDescriptionFlat" />
+
+        <TextView
+            android:id="@+id/courseColorDescriptionFlat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/course_color_description_flat"
+            android:textColor="@color/item_primary"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/courseColorDescriptionFlatColor"
+            app:layout_constraintTop_toBottomOf="@id/courseColorDescriptionUphillColor" />
+
+        <View
+            android:id="@+id/courseColorDescriptionDownhillColor"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/background_course_color"
+            android:backgroundTint="@color/course_downhill"
+            app:layout_constraintBottom_toBottomOf="@id/courseColorDescriptionDownhill"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/courseColorDescriptionDownhill" />
+
+        <TextView
+            android:id="@+id/courseColorDescriptionDownhill"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/course_color_description_downhill"
+            android:textColor="@color/item_primary"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/courseColorDescriptionDownhillColor"
+            app:layout_constraintTop_toBottomOf="@id/courseColorDescriptionFlatColor" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/background_course_color_description_confirm"
+            android:gravity="center"
+            android:onClick="@{() -> listener.onConfirm()}"
+            android:paddingVertical="14dp"
+            android:text="@string/course_color_description_confirm"
+            android:textColor="@color/item_primary"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/courseColorDescriptionDownhillColor" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
