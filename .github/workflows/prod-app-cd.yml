@@ -87,15 +87,10 @@ jobs:
     if: ${{ needs.deploy-prod-main.result == 'success' }}
     runs-on: [ self-hosted, prod-lb ]
     steps:
-      - name: nginx.conf 갱신
+      - name: upstream 갱신, 리로드
         run: |
-          docker exec nginx sh -c " \
-            cd /etc/nginx && \
-            cat nginx-${{ inputs.main_runner }}.conf > nginx.conf"
-
-      - name: nginx 리로드
-        run: |
-          docker exec nginx nginx -s reload
+          sudo ln -sfn /etc/nginx/snippets/upstream.${{ inputs.main_runner }} /etc/nginx/snippets/upstream.active
+          sudo nginx -t && sudo systemctl reload nginx
 
   shutdown-prod-sub:
     name: sub runner 서버 종료
