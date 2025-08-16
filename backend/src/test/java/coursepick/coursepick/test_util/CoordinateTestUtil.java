@@ -8,8 +8,9 @@ import java.util.List;
 
 public class CoordinateTestUtil {
 
-    private static final double STEP_METER = 100.0;
-    private static final double EARTH_RADIUS_METER = 6371000;
+    public static final double ROOT2 = Math.sqrt(2);
+    public static final double STEP_METER = 100.0;
+    public static final double EARTH_RADIUS_METER = 6371000;
 
     public static Coordinate upleft(Coordinate target, double meter) {
         return left(up(target, meter), meter);
