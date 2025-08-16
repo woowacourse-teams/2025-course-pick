@@ -29,10 +29,10 @@ assertj-core = "3.27.3"
 timber = "5.0.1"
 google-services = "4.4.3"
 firebase-crashlytics = "3.0.5"
-amplitude-analytics = "1.22.1"
+amplitude-android = "1.22.1"
+mixpanel-android = "8.2.1"
 
 [libraries]
-amplitude-analytics = { module = "com.amplitude:analytics-android", version.ref = "amplitude-analytics" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preferenceKtx" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
@@ -61,6 +61,8 @@ assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "as
 kakao-maps = { module = "com.kakao.maps.open:android", version.ref = "kakao-maps" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "play-services-location" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+amplitude-android = { module = "com.amplitude:analytics-android", version.ref = "amplitude-android" }
+mixpanel-android = { module = "com.mixpanel.android:mixpanel-android", version.ref = "mixpanel-android" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
