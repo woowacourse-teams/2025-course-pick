@@ -6,11 +6,31 @@ import coursepick.coursepick.domain.GeoLine;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Math.*;
+
 public class CoordinateTestUtil {
 
-    public static final double ROOT2 = Math.sqrt(2);
+    public static final double ROOT2 = sqrt(2);
     public static final double STEP_METER = 100.0;
     public static final double EARTH_RADIUS_METER = 6371000;
+
+    public static Coordinate left_uphill(Coordinate target, double meter, double angle) {
+        double dEle = tan(toRadians(angle)) * meter;
+        Coordinate movedCoordinate = left(target, meter);
+        return new Coordinate(movedCoordinate.latitude(), movedCoordinate.longitude(), movedCoordinate.elevation() + dEle);
+    }
+
+    public static Coordinate down_uphill(Coordinate target, double meter, double angle) {
+        double dEle = tan(toRadians(angle)) * meter;
+        Coordinate movedCoordinate = down(target, meter);
+        return new Coordinate(movedCoordinate.latitude(), movedCoordinate.longitude(), movedCoordinate.elevation() + dEle);
+    }
+
+    public static Coordinate up_downhill(Coordinate target, double meter, double angle) {
+        double dEle = tan(toRadians(angle)) * meter;
+        Coordinate movedCoordinate = up(target, meter);
+        return new Coordinate(movedCoordinate.latitude(), movedCoordinate.longitude(), movedCoordinate.elevation() - dEle);
+    }
 
     public static Coordinate upleft(Coordinate target, double meter) {
         return left(up(target, meter), meter);
@@ -29,25 +49,25 @@ public class CoordinateTestUtil {
     }
 
     public static Coordinate up(Coordinate target, double meter) {
-        double deltaLat = (meter / EARTH_RADIUS_METER) * (180 / Math.PI);
+        double deltaLat = (meter / EARTH_RADIUS_METER) * (180 / PI);
 
-        return new Coordinate(target.latitude() + deltaLat, target.longitude());
+        return new Coordinate(target.latitude() + deltaLat, target.longitude(), target.elevation());
     }
 
     public static Coordinate down(Coordinate target, double meter) {
-        double deltaLat = (meter / EARTH_RADIUS_METER) * (180 / Math.PI);
+        double deltaLat = (meter / EARTH_RADIUS_METER) * (180 / PI);
 
-        return new Coordinate(target.latitude() - deltaLat, target.longitude());
+        return new Coordinate(target.latitude() - deltaLat, target.longitude(), target.elevation());
     }
 
     public static Coordinate right(Coordinate target, double meter) {
-        double deltaLng = (meter / (EARTH_RADIUS_METER * Math.cos(Math.toRadians(target.latitude())))) * (180 / Math.PI);
-        return new Coordinate(target.latitude(), target.longitude() + deltaLng);
+        double deltaLng = (meter / (EARTH_RADIUS_METER * cos(toRadians(target.latitude())))) * (180 / PI);
+        return new Coordinate(target.latitude(), target.longitude() + deltaLng, target.elevation());
     }
 
     public static Coordinate left(Coordinate target, double meter) {
-        double deltaLng = (meter / (EARTH_RADIUS_METER * Math.cos(Math.toRadians(target.latitude())))) * (180 / Math.PI);
-        return new Coordinate(target.latitude(), target.longitude() - deltaLng);
+        double deltaLng = (meter / (EARTH_RADIUS_METER * cos(toRadians(target.latitude())))) * (180 / PI);
+        return new Coordinate(target.latitude(), target.longitude() - deltaLng, target.elevation());
     }
 
     public static List<Coordinate> square(Coordinate start, Coordinate end) {
@@ -87,7 +107,7 @@ public class CoordinateTestUtil {
 
         double length = GeoLine.between(new Coordinate(lat1, lng1), new Coordinate(lat2, lng2)).length().value();
 
-        int steps = (int) Math.floor(length / STEP_METER);
+        int steps = (int) floor(length / STEP_METER);
         double dLat = lat2 - lat1;
         double dLng = lng2 - lng1;
 
