@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
-import java.util.List;
-
 import static coursepick.coursepick.test_util.CoordinateTestUtil.square;
 import static coursepick.coursepick.test_util.CoordinateTestUtil.upright;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,18 +29,18 @@ class CourseRepositoryTest {
             "700, 1"
     })
     void 거리를_줄여가면서_검색되는_코스_수가_줄어든다(int distance, int expectedSize) {
-        Coordinate target = new Coordinate(37.514647, 127.086592);
+        var target = new Coordinate(37.514647, 127.086592);
 
-        Course course1 = new Course("코스1", square(upright(target, 300), 1000, 1000));
-        Course course2 = new Course("코스2", square(upright(target, 500), 1000, 1000));
-        Course course3 = new Course("코스3", square(upright(target, 700), 1000, 1000));
-        Course course4 = new Course("코스4", square(upright(target, 900), 1000, 1000));
+        var course1 = new Course("코스1", square(upright(target, 300), 1000, 1000));
+        var course2 = new Course("코스2", square(upright(target, 500), 1000, 1000));
+        var course3 = new Course("코스3", square(upright(target, 700), 1000, 1000));
+        var course4 = new Course("코스4", square(upright(target, 900), 1000, 1000));
         dbUtil.saveCourse(course1);
         dbUtil.saveCourse(course2);
         dbUtil.saveCourse(course3);
         dbUtil.saveCourse(course4);
 
-        List<Course> courses = courseRepository.findAllHasDistanceWithin(target, new Meter(distance));
+        var courses = courseRepository.findAllHasDistanceWithin(target, new Meter(distance));
 
         assertThat(courses).hasSize(expectedSize);
     }

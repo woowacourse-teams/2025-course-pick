@@ -122,7 +122,7 @@ class CourseTest {
 
         @Test
         void 코스의_세그먼트를_생성한다() {
-            Course course = new Course("테스트코스", List.of(
+            var course = new Course("테스트코스", List.of(
                     new Coordinate(0, 0, 0),        // 시작점
                     new Coordinate(0, 0.0001, 10),  // 오르막 (UPHILL)
                     new Coordinate(0, 0.0002, 20),  // 오르막 (UPHILL)
@@ -131,7 +131,7 @@ class CourseTest {
                     new Coordinate(0, 0, 0)         // 시작점으로 돌아옴
             ));
 
-            List<Segment> segments = course.segments();
+            var segments = course.segments();
 
             assertThat(segments).hasSize(3);
 
@@ -158,7 +158,7 @@ class CourseTest {
 
         @Test
         void 동일한_경사타입과_방향의_세그먼트들이_올바르게_병합된다() {
-            Course course = new Course("병합테스트코스", List.of(
+            var course = new Course("병합테스트코스", List.of(
                     new Coordinate(0, 0, 0),
                     new Coordinate(0, 0.0001, 0.1),
                     new Coordinate(0, 0.0002, 0.2),
@@ -166,7 +166,7 @@ class CourseTest {
                     new Coordinate(0, 0, 0)
             ));
 
-            List<Segment> segments = course.segments();
+            var segments = course.segments();
 
             // 같은 방향과 경사타입의 세그먼트들이 병합되어야 함
             assertThat(segments).hasSize(1);
