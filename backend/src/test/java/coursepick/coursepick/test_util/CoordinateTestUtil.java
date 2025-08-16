@@ -14,38 +14,44 @@ public class CoordinateTestUtil {
     public static final double STEP_METER = 100.0;
     public static final double EARTH_RADIUS_METER = 6371000;
 
-    public static Coordinate left_uphill(Coordinate target, double meter, double angle) {
+    public static Coordinate up_angled(Coordinate target, double meter, double angle) {
         double dEle = tan(toRadians(angle)) * meter;
-        Coordinate movedCoordinate = left(target, meter);
+        Coordinate movedCoordinate = up(target, meter);
         return new Coordinate(movedCoordinate.latitude(), movedCoordinate.longitude(), movedCoordinate.elevation() + dEle);
     }
 
-    public static Coordinate down_uphill(Coordinate target, double meter, double angle) {
+    public static Coordinate down_angled(Coordinate target, double meter, double angle) {
         double dEle = tan(toRadians(angle)) * meter;
         Coordinate movedCoordinate = down(target, meter);
         return new Coordinate(movedCoordinate.latitude(), movedCoordinate.longitude(), movedCoordinate.elevation() + dEle);
     }
 
-    public static Coordinate up_downhill(Coordinate target, double meter, double angle) {
+    public static Coordinate right_angled(Coordinate target, double meter, double angle) {
         double dEle = tan(toRadians(angle)) * meter;
-        Coordinate movedCoordinate = up(target, meter);
-        return new Coordinate(movedCoordinate.latitude(), movedCoordinate.longitude(), movedCoordinate.elevation() - dEle);
+        Coordinate movedCoordinate = right(target, meter);
+        return new Coordinate(movedCoordinate.latitude(), movedCoordinate.longitude(), movedCoordinate.elevation() + dEle);
     }
 
-    public static Coordinate upleft(Coordinate target, double meter) {
-        return left(up(target, meter), meter);
+    public static Coordinate left_angled(Coordinate target, double meter, double angle) {
+        double dEle = tan(toRadians(angle)) * meter;
+        Coordinate movedCoordinate = left(target, meter);
+        return new Coordinate(movedCoordinate.latitude(), movedCoordinate.longitude(), movedCoordinate.elevation() + dEle);
     }
 
     public static Coordinate upright(Coordinate target, double meter) {
         return right(up(target, meter), meter);
     }
 
-    public static Coordinate downleft(Coordinate target, double meter) {
-        return left(down(target, meter), meter);
+    public static Coordinate upleft(Coordinate target, double meter) {
+        return left(up(target, meter), meter);
     }
 
     public static Coordinate downright(Coordinate target, double meter) {
         return right(down(target, meter), meter);
+    }
+
+    public static Coordinate downleft(Coordinate target, double meter) {
+        return left(down(target, meter), meter);
     }
 
     public static Coordinate up(Coordinate target, double meter) {
