@@ -37,6 +37,10 @@ management:
         namespace: EC2/coursepick/dev
         batch-size: 20
 
+springdoc:
+  dev-server-url: ${DEV_SERVER_URL}
+  prod-server-url: ${PROD_SERVER_URL}
+
 gcp:
   drive.folder-id: ${GCP_DRIVE_FOLDER_ID}
   credentials.path: ${GCP_CREDENTIALS_PATH}
