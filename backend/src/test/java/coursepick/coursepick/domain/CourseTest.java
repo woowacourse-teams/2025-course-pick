@@ -20,8 +20,6 @@ class CourseTest {
     @Nested
     class 생성_테스트 {
 
-        private static final String LENGTH_31_NAME = "1234567890123456789012345678901";
-
         @Test
         void 코스를_생성한다() {
             assertThatCode(() -> new Course("코스이름", getNormalCoordinates()))
@@ -36,7 +34,7 @@ class CourseTest {
 
         @ParameterizedTest
         @ValueSource(strings = {
-                LENGTH_31_NAME,
+                "1234567890123456789012345678901",
                 "짧"
         })
         void 잘못된_길이의_이름으로_코스를_생성하면_예외가_발생한다(String name) {
