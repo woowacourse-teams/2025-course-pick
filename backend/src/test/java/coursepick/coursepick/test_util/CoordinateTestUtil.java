@@ -11,6 +11,22 @@ public class CoordinateTestUtil {
     private static final double STEP_METER = 100.0;
     private static final double EARTH_RADIUS_METER = 6371000;
 
+    public static Coordinate upleft(Coordinate target, double meter) {
+        return left(up(target, meter), meter);
+    }
+
+    public static Coordinate upright(Coordinate target, double meter) {
+        return right(up(target, meter), meter);
+    }
+
+    public static Coordinate downleft(Coordinate target, double meter) {
+        return left(down(target, meter), meter);
+    }
+
+    public static Coordinate downright(Coordinate target, double meter) {
+        return right(down(target, meter), meter);
+    }
+
     public static Coordinate up(Coordinate target, double meter) {
         double deltaLat = (meter / EARTH_RADIUS_METER) * (180 / Math.PI);
 
