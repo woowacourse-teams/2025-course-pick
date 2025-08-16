@@ -25,4 +25,11 @@ public record Meter(
     public boolean isWithin(Meter other) {
         return this.value() <= other.value();
     }
+
+    public double getRateOf(Meter other) {
+        if (this.value == 0) {
+            throw new ArithmeticException("0을 기준으로 비율을 계산할 수 없습니다.");
+        }
+        return other.value() / this.value();
+    }
 }

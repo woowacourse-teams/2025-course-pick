@@ -40,11 +40,10 @@ public class Course {
     @Enumerated(EnumType.STRING)
     private final Difficulty difficulty;
 
-    public Course(String name, RoadType roadType, InclineSummary inclineSummary, List<Coordinate> rawCoordinates) {
+    public Course(String name, RoadType roadType, List<Coordinate> rawCoordinates) {
         this.id = null;
         this.name = new CourseName(name);
         this.roadType = roadType;
-        this.inclineSummary = inclineSummary;
         List<Coordinate> coordinates = CoordinateBuilder.fromRawCoordinates(rawCoordinates)
                 .addFirstCoordinateIfNotConnected()
                 .removeDuplicatedCoordinate()
@@ -56,11 +55,12 @@ public class Course {
                 .mergeSameInclineType()
                 .build();
         this.length = calculateLength(segments);
+        this.inclineSummary = InclineSummary.of(segments);
         this.difficulty = Difficulty.fromLengthAndRoadType(length(), roadType);
     }
 
     public Course(String name, List<Coordinate> coordinates) {
-        this(name, RoadType.알수없음, InclineSummary.UNKNOWN, coordinates);
+        this(name, RoadType.알수없음, coordinates);
     }
 
     public Coordinate closestCoordinateFrom(Coordinate target) {
