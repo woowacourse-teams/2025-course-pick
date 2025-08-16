@@ -127,7 +127,6 @@ class CoursesActivity :
         )
         binding.mainSearchThisAreaButton.visibility = View.GONE
         mapManager.showSearchPosition(coordinate)
-        fetchCourses(coordinate)
         val scope =
             try {
                 mapManager.scope(coordinate)
