@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: [ self-hosted, dev-app ]
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: backend
@@ -41,14 +41,14 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Docker 이미지 빌드
-        run: sudo docker build -t ${{ secrets.DOCKER_USERNAME }}/coursepick-backend:dev .
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/coursepick-backend:dev .
 
       - name: Docker 이미지 푸시
-        run: sudo docker push ${{ secrets.DOCKER_USERNAME }}/coursepick-backend:dev
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/coursepick-backend:dev
 
   deploy:
     needs: build
-    runs-on: self-hosted
+    runs-on: [ self-hosted, dev-app ]
 
     steps:
       - name: Docker 로그인
