@@ -7,10 +7,12 @@ services:
     ports:
       - '80:8080'
     environment:
-      - SPRING_PROFILES_ACTIVE=
-      - SPRING_DATASOURCE_URL=
-      - SPRING_DATASOURCE_USERNAME=
-      - SPRING_DATASOURCE_PASSWORD=
+      - 'SPRING_PROFILES_ACTIVE=${DEV_PROFILE}'
+      - 'SPRING_DATASOURCE_URL=${DEV_DB_URL}'
+      - 'SPRING_DATASOURCE_USERNAME=${DEV_DB_USERNAME}'
+      - 'SPRING_DATASOURCE_PASSWORD=${DEV_DB_PASSWORD}'
+      - 'MONGO_USERNAME=${DEV_MONGO_USERNAME}'
+      - 'MONGO_PASSWORD=${DEV_MONGO_PASSWORD}'
     depends_on:
       - mysql
       - mongodb
@@ -18,12 +20,13 @@ services:
 
   mongodb:
     image: mongo:8.0.12
-    container_name: mongoDB
+    container_name: mongodb
     ports:
-      - "27017:27017"
+      - '27017:27017'
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=
-      - MONGO_INITDB_ROOT_PASSWORD=
+      - 'MONGO_INITDB_ROOT_USERNAME='
+      - 'MONGO_INITDB_ROOT_PASSWORD='
+      - 'MONGO_INITDB_DATABASE='
     volumes:
       - /var/lib/coursepick/mongo:/data/db
 
@@ -33,23 +36,23 @@ services:
     ports:
       - "8081:8081"
     environment:
-      - ME_CONFIG_MONGODB_SERVER=mongodb # 연결할 MongoDB 서비스 이름 (위 서비스 이름과 동일)
-      - ME_CONFIG_MONGODB_PORT=27017
-      - ME_CONFIG_MONGODB_ENABLE_ADMIN=
-      - ME_CONFIG_MONGODB_AUTH_USERNAME=
-      - ME_CONFIG_MONGODB_AUTH_PASSWORD=
-      - ME_CONFIG_BASICAUTH_USERNAME=
-      - ME_CONFIG_BASICAUTH_PASSWORD=
+      - 'ME_CONFIG_MONGODB_SERVER=mongodb'
+      - 'ME_CONFIG_MONGODB_PORT=27017'
+      - 'ME_CONFIG_MONGODB_ENABLE_ADMIN='
+      - 'ME_CONFIG_MONGODB_AUTH_USERNAME='
+      - 'ME_CONFIG_MONGODB_AUTH_PASSWORD='
+      - 'ME_CONFIG_BASICAUTH_USERNAME='
+      - 'ME_CONFIG_BASICAUTH_PASSWORD='
     depends_on:
       - mongodb # mongodb 서비스가 실행된 후에 실행되도록 의존성 설정
 
   mysql:
     image: 'mysql:8.4.5'
     environment:
-      - 'MYSQL_DATABASE=???'
-      - 'MYSQL_ROOT_PASSWORD=???'
-      - 'MYSQL_USER=???'
-      - 'MYSQL_PASSWORD=???'
+      - 'MYSQL_DATABASE='
+      - 'MYSQL_ROOT_PASSWORD='
+      - 'MYSQL_USER='
+      - 'MYSQL_PASSWORD='
       - 'LANG=C.UTF-8'
       - 'LC_ALL=C.UTF-8'
     ports:
