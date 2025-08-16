@@ -57,20 +57,24 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: .env 파일 생성
+        run: | 
+          cat > .env <<EOF 
+          DEV_PROFILE=${{ secrets.DEV_PROFILE }} 
+          DEV_DB_URL=${{ secrets.DEV_DB_URL }} 
+          DEV_DB_USERNAME=${{ secrets.DEV_DB_USERNAME }} 
+          DEV_DB_PASSWORD=${{ secrets.DEV_DB_PASSWORD }} 
+          DEV_MONGO_USERNAME=${{ secrets.DEV_MONGO_USERNAME }} 
+          DEV_MONGO_PASSWORD=${{ secrets.DEV_MONGO_PASSWORD }} 
+          ADMIN_TOKEN=${{ secrets.DEV_ADMIN_TOKEN }} 
+          GCP_DRIVE_FOLDER_ID=${{ secrets.GCP_DRIVE_FOLDER_ID }} 
+          GCP_CREDENTIALS_PATH=${{ secrets.GCP_CREDENTIALS_PATH }} 
+          EOF
+
       - name: 새로운 서버 시작
         run: |
           cd
-          
-          export DEV_PROFILE=${{ secrets.DEV_PROFILE }}
-          export DEV_DB_URL=${{ secrets.DEV_DB_URL }}
-          export DEV_DB_USERNAME=${{ secrets.DEV_DB_USERNAME }}
-          export DEV_DB_PASSWORD=${{ secrets.DEV_DB_PASSWORD }}
-          export DEV_MONGO_USERNAME=${{ secrets.DEV_MONGO_USERNAME }}
-          export DEV_MONGO_PASSWORD=${{ secrets.DEV_MONGO_PASSWORD }}
-          export ADMIN_TOKEN=${{ secrets.DEV_ADMIN_TOKEN }}
-          export GCP_DRIVE_FOLDER_ID=${{ secrets.GCP_DRIVE_FOLDER_ID }}
-          export GCP_CREDENTIALS_PATH=${{ secrets.GCP_CREDENTIALS_PATH }}
-          
+        
           sudo docker compose pull backend
           sudo docker compose down
-          sudo -E docker compose up -d backend
+          sudo docker compose --env-file .env up -d backend
