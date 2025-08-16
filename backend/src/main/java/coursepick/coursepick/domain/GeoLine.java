@@ -47,4 +47,9 @@ public record GeoLine(
     private static double convertDegreeToMeter(double distanceInDegrees) {
         return distanceInDegrees * EARTH_RADIUS_METERS * Math.PI / 180.0;
     }
+
+    @Override
+    public String toString() {
+        return "GeoLine(" + start + "->" + end + ")";
+    }
 }
