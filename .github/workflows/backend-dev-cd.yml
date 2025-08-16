@@ -60,7 +60,7 @@ jobs:
       - name: .env 파일 생성
         working-directory: /home/ssm-user/coursepick
         run: | 
-          cat > .env <<EOF 
+          cat > .env <<'EOF'
           DEV_PROFILE=${{ secrets.DEV_PROFILE }} 
           DEV_DB_URL=${{ secrets.DEV_DB_URL }} 
           DEV_DB_USERNAME=${{ secrets.DEV_DB_USERNAME }} 
@@ -71,6 +71,7 @@ jobs:
           GCP_DRIVE_FOLDER_ID=${{ secrets.GCP_DRIVE_FOLDER_ID }} 
           GCP_CREDENTIALS_PATH=${{ secrets.GCP_CREDENTIALS_PATH }} 
           EOF
+          chmod 600 .env
 
       - name: 새로운 서버 시작
         working-directory: /home/ssm-user/coursepick
