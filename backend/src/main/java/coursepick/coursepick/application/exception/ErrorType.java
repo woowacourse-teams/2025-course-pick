@@ -42,6 +42,10 @@ public enum ErrorType {
             "올바르지 않은 어드민 토큰값 입니다.",
             SecurityException::new
     ),
+    INVALID_RATIO_BASE(
+            "0을 기준으로 비율을 계산할 수 없습니다.",
+            ArithmeticException::new
+    );
     ;
 
     private final String message;

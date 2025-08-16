@@ -25,6 +25,9 @@ public class Course {
     @Enumerated(EnumType.STRING)
     private final RoadType roadType;
 
+    @Enumerated(EnumType.STRING)
+    private final InclineSummary inclineSummary;
+
     @BatchSize(size = 30)
     @ElementCollection
     @CollectionTable(name = "segment")
@@ -52,6 +55,7 @@ public class Course {
                 .mergeSameInclineType()
                 .build();
         this.length = calculateLength(segments);
+        this.inclineSummary = InclineSummary.of(segments);
         this.difficulty = Difficulty.fromLengthAndRoadType(length(), roadType);
     }
 
