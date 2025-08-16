@@ -1,13 +1,12 @@
 package io.coursepick.coursepick.presentation
 
-import android.os.Bundle
 import timber.log.Timber
 
 object Logger {
-    private var analyticsService: AnalyticsService? = null
+    private var analyticsServices: List<AnalyticsService>? = null
 
-    fun init(analyticsService: AnalyticsService) {
-        this.analyticsService = analyticsService
+    fun init(analyticsServices: List<AnalyticsService>) {
+        this.analyticsServices = analyticsServices
     }
 
     fun log(
@@ -15,11 +14,9 @@ object Logger {
         vararg parameters: Pair<String, Any>,
     ) {
         debugLog(event, *parameters)
-        val bundle =
-            Bundle().apply {
-                parameters.forEach { (key: String, value: Any) -> putAny(key, value) }
-            }
-        analyticsService?.log(event, bundle)
+        analyticsServices?.forEach { analyticsService: AnalyticsService ->
+            analyticsService.log(event, *parameters)
+        }
     }
 
     private fun debugLog(
@@ -36,21 +33,6 @@ object Logger {
                 }
             },
         )
-    }
-
-    private fun Bundle.putAny(
-        key: String,
-        value: Any,
-    ) {
-        when (value) {
-            is String -> putString(key, value)
-            is Int -> putInt(key, value)
-            is Long -> putLong(key, value)
-            is Double -> putDouble(key, value)
-            is Float -> putFloat(key, value)
-            is Boolean -> putBoolean(key, value)
-            else -> putString(key, value.toString())
-        }
     }
 
     sealed class Event(

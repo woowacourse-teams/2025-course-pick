@@ -53,6 +53,16 @@ android {
                 "KAKAO_REST_API_KEY",
                 localProperties["kakao.rest.api.key"].toString(),
             )
+            buildConfigField(
+                "String",
+                "AMPLITUDE_API_KEY",
+                localProperties["amplitude.api.key"].toString(),
+            )
+            buildConfigField(
+                "String",
+                "MIXPANEL_PROJECT_TOKEN",
+                localProperties["mixpanel.project.token"].toString(),
+            )
         }
 
         getByName("release") {
@@ -77,6 +87,16 @@ android {
                 "String",
                 "KAKAO_REST_API_KEY",
                 localProperties["kakao.rest.api.key"].toString(),
+            )
+            buildConfigField(
+                "String",
+                "AMPLITUDE_API_KEY",
+                localProperties["amplitude.api.key"].toString(),
+            )
+            buildConfigField(
+                "String",
+                "MIXPANEL_PROJECT_TOKEN",
+                localProperties["mixpanel.project.token"].toString(),
             )
         }
     }
@@ -118,6 +138,10 @@ dependencies {
     implementation(libs.firebase.crashlytics.ndk)
     implementation(libs.play.services.oss.licenses)
     implementation(libs.androidx.preference.ktx)
+    implementation(libs.amplitude.android)
+    implementation(libs.amplitude.android.session.replay)
+    implementation(libs.mixpanel.android)
+    implementation(libs.mixpanel.android.session.replay)
     testImplementation(libs.assertj.core)
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)

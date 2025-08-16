@@ -162,7 +162,7 @@ class CoursesActivity :
     }
 
     override fun search() {
-        val intent = SearchActivity.Companion.intent(this)
+        val intent = SearchActivity.intent(this)
         searchLauncher?.launch(intent) ?: Toast
             .makeText(
                 this,
@@ -423,7 +423,7 @@ class CoursesActivity :
                             event.origin,
                             event.destination,
                             event.destinationName,
-                        ) ?: RouteFinderChoiceDialogFragment.Companion
+                        ) ?: RouteFinderChoiceDialogFragment
                             .newInstance(
                                 event.origin,
                                 event.destination,
