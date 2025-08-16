@@ -19,7 +19,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "health, info, metrics"
+        include: "health"
   metrics:
     enable:
       all: false

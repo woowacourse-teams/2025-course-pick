@@ -23,7 +23,8 @@ public class PathAllowlistFilter extends OncePerRequestFilter {
             Pattern.compile("^/admin/courses/sync$"),
             Pattern.compile("^/courses$"),
             Pattern.compile("^/courses/[^/]+/closest-coordinate$"),
-            Pattern.compile("^/import.html$")
+            Pattern.compile("^/import.html$"),
+            Pattern.compile("^/actuator/health$")
     );
 
     @Override
