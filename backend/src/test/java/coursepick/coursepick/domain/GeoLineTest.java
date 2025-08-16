@@ -1,81 +1,89 @@
 package coursepick.coursepick.domain;
 
-import org.assertj.core.data.Percentage;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.stream.Stream;
+
+import static coursepick.coursepick.test_util.CoordinateTestUtil.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.data.Percentage.withPercentage;
 
 class GeoLineTest {
 
-    @Test
-    void 시작좌표와_끝좌표_사이의_거리를_계산한다() {
-        Coordinate start = new Coordinate(37.509287, 127.098094);
-        Coordinate end = new Coordinate(37.510485, 127.101572);
-        GeoLine geoLine = new GeoLine(start, end);
+    @Nested
+    class 거리_계산_테스트 {
 
-        Meter distance = geoLine.length();
+        @Test
+        void 시작좌표와_끝좌표_사이의_거리를_계산한다() {
+            var start = new Coordinate(0, 0);
+            var end = left(start, 1000);
+            var geoLine = new GeoLine(start, end);
 
-        assertThat(distance.value()).isCloseTo(334, Percentage.withPercentage(1));
-    }
+            var distance = geoLine.length();
 
-    @Test
-    void 시작좌표와_끝좌표가_같으면_거리는_0이다() {
-        Coordinate start = new Coordinate(37.509287, 127.098094);
-        Coordinate end = new Coordinate(37.509287, 127.098094);
-        GeoLine geoLine = new GeoLine(start, end);
+            assertThat(distance.value()).isCloseTo(1000, withPercentage(1));
+        }
 
-        Meter distance = geoLine.length();
+        @Test
+        void 시작좌표와_끝좌표가_같으면_거리는_0이다() {
+            var start = new Coordinate(0, 0);
+            var geoLine = new GeoLine(start, start);
 
-        assertThat(distance.value()).isCloseTo(0, Percentage.withPercentage(1));
+            var distance = geoLine.length();
+
+            assertThat(distance.value()).isCloseTo(0, withPercentage(1));
+        }
     }
 
     @Nested
-    class 기준_좌표에서_선분에_가장_가까운_좌표를_계산한다 {
+    class 가장_가까운_좌표_계산_테스트 {
+
+        public static Stream<Arguments> targetAndExpectedCoordinate() {
+            var start = new Coordinate(0, 0);
+            return Stream.of(
+                    Arguments.of(upleft(start, 300), left(start, 300)),
+                    Arguments.of(downleft(start, 300), left(start, 300))
+            );
+        }
+
+        @ParameterizedTest
+        @MethodSource("targetAndExpectedCoordinate")
+        void 가장_가까운_좌표를_계산한다(Coordinate target, Coordinate expectedCoordinate) {
+            var start = new Coordinate(0, 0);
+            var end = left(start, 1000);
+            var geoLine = new GeoLine(start, end);
+
+            var result = geoLine.closestCoordinateFrom(target);
+
+            assertThat(result).isEqualTo(expectedCoordinate);
+        }
 
         @Test
         void 기준_좌표가_선분의_시작점_이전에_있으면_시작점을_반환한다() {
-            Coordinate start = new Coordinate(0.0, 0.0);
-            Coordinate end = new Coordinate(10.0, 0.0);
-            Coordinate target = new Coordinate(-5.0, 0.0);
-            GeoLine geoLine = new GeoLine(start, end);
+            var start = new Coordinate(0, 0);
+            var end = left(start, 1000);
+            var target = right(start, 1000);
+            var geoLine = new GeoLine(start, end);
 
-            Coordinate result = geoLine.closestCoordinateFrom(target);
+            var result = geoLine.closestCoordinateFrom(target);
 
             assertThat(start).isEqualTo(result);
         }
 
         @Test
         void 기준_좌표가_선분의_끝점_이후에_있으면_끝점을_반환한다() {
-            Coordinate start = new Coordinate(0.0, 0.0);
-            Coordinate end = new Coordinate(10.0, 0.0);
-            Coordinate target = new Coordinate(15.0, 0.0);
+            var start = new Coordinate(0, 0);
+            var end = left(start, 1000);
+            var target = left(end, 1000);
+            var geoLine = new GeoLine(start, end);
 
-            GeoLine geoLine = new GeoLine(start, end);
-
-            Coordinate result = geoLine.closestCoordinateFrom(target);
+            var result = geoLine.closestCoordinateFrom(target);
 
             assertThat(end).isEqualTo(result);
-        }
-
-        @ParameterizedTest
-        @CsvSource({
-                "10, 0, 5, 5",
-                "5, 0, 2.5, 2.5",
-                "0, 8, 4, 4"
-        })
-        void 가장_가까운_좌표를_계산한다(double targetLatitude, double targetLongitude, double latitude, double longitude) {
-            Coordinate start = new Coordinate(0.0, 0.0);
-            Coordinate end = new Coordinate(10.0, 10.0);
-            Coordinate target = new Coordinate(targetLatitude, targetLongitude);
-            GeoLine geoLine = new GeoLine(start, end);
-
-            Coordinate result = geoLine.closestCoordinateFrom(target);
-
-            Coordinate expectedCoordinate = new Coordinate(latitude, longitude);
-            assertThat(result).isEqualTo(expectedCoordinate);
         }
     }
 }
