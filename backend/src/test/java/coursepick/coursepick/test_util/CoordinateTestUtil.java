@@ -37,6 +37,10 @@ public class CoordinateTestUtil {
         return square(start.latitude(), start.longitude(), end.latitude(), end.longitude());
     }
 
+    public static List<Coordinate> square(Coordinate start, double toUpMeter, double toRightMeter) {
+        return square(start, right(up(start, toUpMeter), toRightMeter));
+    }
+
     public static List<Coordinate> square(double lat1, double lng1, double lat2, double lng2) {
         List<Coordinate> result = new ArrayList<>();
 
