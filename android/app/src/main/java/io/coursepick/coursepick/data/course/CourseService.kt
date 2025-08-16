@@ -11,6 +11,7 @@ interface CourseService {
         @Query("mapLng") mapLongitude: Double,
         @Query("userLat") userLatitude: Double?,
         @Query("userLng") userLongitude: Double?,
+        @Query("scope") scopeMeter: Int,
     ): List<CourseDto>
 
     @GET("/courses/{id}/closest-coordinate")

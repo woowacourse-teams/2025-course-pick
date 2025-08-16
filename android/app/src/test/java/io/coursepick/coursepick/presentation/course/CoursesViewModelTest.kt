@@ -1,6 +1,7 @@
 package io.coursepick.coursepick.presentation.course
 
 import io.coursepick.coursepick.domain.course.Course
+import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.domain.fixture.COORDINATE_FIXTURE
 import io.coursepick.coursepick.domain.fixture.COURSE_FIXTURE_20
 import io.coursepick.coursepick.domain.fixture.FAKE_COURSES
@@ -24,7 +25,7 @@ class CoursesViewModelTest {
     @BeforeEach
     fun setUp() {
         mainViewModel = CoursesViewModel(fakeRepository)
-        mainViewModel.fetchCourses(COORDINATE_FIXTURE)
+        mainViewModel.fetchCourses(COORDINATE_FIXTURE, null, Scope.default())
     }
 
     @Test
