@@ -170,13 +170,16 @@ class CourseApplicationServiceTest extends IntegrationTest {
     void 코스의_좌표_중에서_가장_가까운_좌표를_계산한다() {
         Course course = new Course("한강 러닝 코스", List.of(
                 new Coordinate(0, 0),
-                new Coordinate(10, 10),
+                new Coordinate(0, 0.0001),
+                new Coordinate(0.0001, 0.0001),
+                new Coordinate(0.0001, 0),
                 new Coordinate(0, 0)
         ));
         dbUtil.saveCourse(course);
-        Coordinate result = sut.findClosestCoordinate(course.id(), 5, 0);
 
-        assertThat(result).isEqualTo(new Coordinate(2.5, 2.5));
+        Coordinate result = sut.findClosestCoordinate(course.id(), 0.0002, 0.0002);
+
+        assertThat(result).isEqualTo(new Coordinate(0.0001, 0.0001));
     }
 
     @Test
