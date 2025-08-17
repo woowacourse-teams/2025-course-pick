@@ -32,7 +32,7 @@ public class CourseSyncService {
         }
     }
 
-    @Async
+    @Async("asyncExecutor")
     public void runCourseSyncJob() {
         log.info("CourseSyncJob 수동 시작");
         try {
