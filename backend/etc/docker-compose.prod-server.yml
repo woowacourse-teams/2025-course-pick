@@ -5,13 +5,13 @@ services:
     ports:
       - '80:8080'
     environment:
-      - 'PROD_PROFILE=${{ secrets.PROD_PROFILE }}'
-      - 'PROD_DB_URL=${{ secrets.PROD_DB_URL }}'
-      - 'PROD_DB_USERNAME=${{ secrets.PROD_DB_USERNAME }}'
-      - 'PROD_DB_PASSWORD=${{ secrets.PROD_DB_PASSWORD }}'
-      - 'PROD_MONGO_USERNAME=${{ secrets.PROD_MONGO_USERNAME }}'
-      - 'PROD_MONGO_PASSWORD=${{ secrets.PROD_MONGO_PASSWORD }}'
-      - 'ADMIN_TOKEN=${{ secrets.PROD_ADMIN_TOKEN }}'
-      - 'GCP_DRIVE_FOLDER_ID=${{ secrets.GCP_DRIVE_FOLDER_ID }}'
-      - 'GCP_CREDENTIALS_PATH=${{ secrets.GCP_CREDENTIALS_PATH }}'
+      - 'PROD_PROFILE=${{ PROD_PROFILE }}'
+      - 'PROD_DB_URL=${{ PROD_DB_URL }}'
+      - 'PROD_DB_USERNAME=${{ PROD_DB_USERNAME }}'
+      - 'PROD_DB_PASSWORD=${{ PROD_DB_PASSWORD }}'
+      - 'PROD_MONGO_USERNAME=${{ PROD_MONGO_USERNAME }}'
+      - 'PROD_MONGO_PASSWORD=${{ PROD_MONGO_PASSWORD }}'
+      - 'ADMIN_TOKEN=${{ PROD_ADMIN_TOKEN }}'
+      - 'GCP_DRIVE_FOLDER_ID=${{ GCP_DRIVE_FOLDER_ID }}'
+      - 'GCP_CREDENTIALS_PATH=${{ GCP_CREDENTIALS_PATH }}'
     restart: unless-stopped
