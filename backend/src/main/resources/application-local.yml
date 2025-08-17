@@ -21,4 +21,3 @@ admin.token: secret
 server:
   tomcat:
     max-part-count: 500
-    max-part-header-size: 2048
