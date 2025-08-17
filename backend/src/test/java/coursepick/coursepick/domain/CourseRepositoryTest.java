@@ -23,9 +23,9 @@ class CourseRepositoryTest {
 
     @ParameterizedTest
     @CsvSource({
-            "800, 3",
-            "700, 2",
-            "600, 1"
+            "1500, 3",
+            "1000, 2",
+            "700, 1"
     })
     void 거리를_줄여가면서_검색되는_코스_수가_줄어든다(int distance, int expectedSize) {
         Course course1 = new Course("잠실 한강 산책길", List.of(
