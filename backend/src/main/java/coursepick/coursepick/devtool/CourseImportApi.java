@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @Profile("local")
 @RequiredArgsConstructor
-public class CourseLocalController {
+public class CourseImportApi {
 
     private static final String IMPORT_PAGE = """
             <!DOCTYPE html>
@@ -42,6 +42,11 @@ public class CourseLocalController {
     private final CourseParserService courseParserService;
     private final CourseRepository courseRepository;
 
+    @GetMapping("/import")
+    public String importPage() {
+        return IMPORT_PAGE;
+    }
+
     @PostMapping("/import")
     public String importGpxFileToCourse(@RequestParam("files") List<MultipartFile> files) throws IOException {
         for (MultipartFile file : files) {
@@ -49,10 +54,5 @@ public class CourseLocalController {
             courseRepository.saveAll(courses);
         }
         return "done";
-    }
-
-    @GetMapping("/import")
-    public String importPage() {
-        return IMPORT_PAGE;
     }
 }
