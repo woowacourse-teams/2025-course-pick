@@ -4,7 +4,7 @@ import java.util.List;
 
 public enum InclineSummary {
 
-    FLAT,
+    MOSTLY_FLAT,
     REPEATING_HILLS,
     SOMETIMES_UPHILL,
     SOMETIMES_DOWNHILL,
@@ -37,7 +37,7 @@ public enum InclineSummary {
         if (downhillRate >= 0.2) {
             return SOMETIMES_DOWNHILL;
         }
-        return FLAT;
+        return MOSTLY_FLAT;
     }
 
     private static Meter sumLengthByInclineType(List<Segment> segments, InclineType type) {

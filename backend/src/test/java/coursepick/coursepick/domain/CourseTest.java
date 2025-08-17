@@ -288,7 +288,7 @@ class CourseTest {
                     new Coordinate(0, 0, 0),
                     new Coordinate(10, 10, 0)
             );
-            return Stream.of(Arguments.of(coordinates, InclineSummary.FLAT));
+            return Stream.of(Arguments.of(coordinates, InclineSummary.MOSTLY_FLAT));
         }
 
         private static Stream<Arguments> repeatingHillsCoordinates() {
