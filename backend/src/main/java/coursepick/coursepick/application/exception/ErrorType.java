@@ -44,7 +44,7 @@ public enum ErrorType {
     ),
     INVALID_RATIO_BASE(
             "0을 기준으로 비율을 계산할 수 없습니다.",
-            ArithmeticException::new
+            IllegalArgumentException::new
     ),
     ;
 

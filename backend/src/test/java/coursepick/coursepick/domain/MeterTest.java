@@ -1,9 +1,9 @@
 package coursepick.coursepick.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class MeterTest {
 
@@ -23,7 +23,7 @@ class MeterTest {
         Meter other = new Meter(50);
 
         Assertions.assertThatThrownBy(() -> meter.getRateOf(other))
-                .isInstanceOf(ArithmeticException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("0을 기준으로 비율을 계산할 수 없습니다.");
 
     }
