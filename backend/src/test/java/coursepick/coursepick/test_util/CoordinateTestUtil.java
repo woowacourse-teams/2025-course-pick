@@ -92,14 +92,14 @@ public class CoordinateTestUtil {
         Coordinate coordinate3 = new Coordinate(lat2, lng2);
         Coordinate coordinate4 = new Coordinate(lat2, lng1);
 
-        result.add(coordinate1);
         result.addAll(line(coordinate1, coordinate2));
-        result.add(coordinate2);
+        result.removeLast();
         result.addAll(line(coordinate2, coordinate3));
-        result.add(coordinate3);
+        result.removeLast();
         result.addAll(line(coordinate3, coordinate4));
-        result.add(coordinate4);
+        result.removeLast();
         result.addAll(line(coordinate4, coordinate1));
+        result.removeLast();
 
         return result;
     }
@@ -117,6 +117,7 @@ public class CoordinateTestUtil {
         double dLat = lat2 - lat1;
         double dLng = lng2 - lng1;
 
+        result.add(new Coordinate(lat1, lng1));
         for (int i = 1; i <= steps; i++) {
             double dist = i * STEP_METER;
             if (dist >= length) break;
@@ -125,6 +126,7 @@ public class CoordinateTestUtil {
             double lng = lng1 + t * dLng;
             result.add(new Coordinate(lat, lng));
         }
+        result.add(new Coordinate(lat2, lng2));
         return result;
     }
 }
