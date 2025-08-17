@@ -86,10 +86,8 @@ public class Course {
     }
 
     private static Meter calculateLength(List<Segment> segments) {
-        Meter total = Meter.zero();
-        for (Segment segment : segments) {
-            total = total.add(segment.length());
-        }
-        return total;
+        return segments.stream()
+                .map(Segment::length)
+                .reduce(Meter.zero(), Meter::add);
     }
 }

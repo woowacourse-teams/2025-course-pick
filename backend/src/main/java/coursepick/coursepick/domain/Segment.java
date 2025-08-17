@@ -19,11 +19,9 @@ public record Segment(
     }
 
     public Meter length() {
-        Meter total = Meter.zero();
-        for (GeoLine line : lines) {
-            total = total.add(line.length());
-        }
-        return total;
+        return lines.stream()
+                .map(GeoLine::length)
+                .reduce(Meter.zero(), Meter::add);
     }
 
     public Coordinate closestCoordinateFrom(Coordinate target) {
