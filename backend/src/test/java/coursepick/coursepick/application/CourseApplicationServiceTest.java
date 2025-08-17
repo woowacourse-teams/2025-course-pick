@@ -1,7 +1,9 @@
 package coursepick.coursepick.application;
 
 import coursepick.coursepick.application.dto.CourseResponse;
-import coursepick.coursepick.domain.*;
+import coursepick.coursepick.domain.Coordinate;
+import coursepick.coursepick.domain.Course;
+import coursepick.coursepick.domain.RoadType;
 import coursepick.coursepick.test_util.IntegrationTest;
 import jakarta.persistence.EntityNotFoundException;
 import org.assertj.core.api.Assertions;
