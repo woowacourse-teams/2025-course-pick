@@ -268,7 +268,7 @@ class CourseTest {
     }
 
     @Nested
-    class 경사도_요약_검증 {
+    class 경사도_요약_테스트 {
 
         @ParameterizedTest
         @MethodSource(value = {
