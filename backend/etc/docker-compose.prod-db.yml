@@ -13,6 +13,11 @@ services:
     volumes:
       - mongo_data:/data/db
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   mongo-express:
     image: mongo-express
@@ -29,7 +34,8 @@ services:
       - 'ME_CONFIG_BASICAUTH_USERNAME='
       - 'ME_CONFIG_BASICAUTH_PASSWORD='
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
 
   mysql:
     image: 'mysql:8.4.5'
@@ -48,6 +54,11 @@ services:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
 volumes:
   mysql_data:
