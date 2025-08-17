@@ -1,5 +1,9 @@
 spring:
   config.activate.on-profile: local
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 200MB
   jpa:
     hibernate:
       ddl-auto: update
@@ -13,3 +17,8 @@ spring:
     job.enabled: false
 
 admin.token: secret
+
+server:
+  tomcat:
+    max-part-count: 500
+    max-part-header-size: 2048
