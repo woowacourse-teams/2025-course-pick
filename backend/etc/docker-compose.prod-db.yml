@@ -1,6 +1,36 @@
 name: coursepick-prod-db
 
 services:
+  mongodb:
+    image: mongo:8.0.12
+    container_name: mongodb
+    ports:
+      - '27017:27017'
+    environment:
+      - 'MONGO_INITDB_ROOT_USERNAME='
+      - 'MONGO_INITDB_ROOT_PASSWORD='
+      - 'MONGO_INITDB_DATABASE='
+    volumes:
+      - mongo_data:/data/db
+    restart: unless-stopped
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    restart: always
+    ports:
+      - '8081:8081'
+    environment:
+      - 'ME_CONFIG_MONGODB_SERVER=mongodb'
+      - 'ME_CONFIG_MONGODB_PORT=27017'
+      - 'ME_CONFIG_MONGODB_ENABLE_ADMIN='
+      - 'ME_CONFIG_MONGODB_AUTH_USERNAME='
+      - 'ME_CONFIG_MONGODB_AUTH_PASSWORD='
+      - 'ME_CONFIG_BASICAUTH_USERNAME='
+      - 'ME_CONFIG_BASICAUTH_PASSWORD='
+    depends_on:
+      - mongodb
+
   mysql:
     image: 'mysql:8.4.5'
     environment:
@@ -21,3 +51,4 @@ services:
 
 volumes:
   mysql_data:
+  mongo_data:
