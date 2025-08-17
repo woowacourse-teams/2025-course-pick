@@ -76,6 +76,4 @@ jobs:
       - name: 새로운 서버 시작
         working-directory: /home/ssm-user/coursepick
         run: |        
-          sudo docker compose pull backend
-          sudo docker compose down
-          sudo docker compose --env-file .env up -d backend
+          sudo docker compose --env-file .env up -d --pull always backend
