@@ -1,5 +1,6 @@
 package coursepick.coursepick.domain;
 
+import coursepick.coursepick.application.exception.ErrorType;
 import jakarta.persistence.Embeddable;
 
 @Embeddable
@@ -28,7 +29,7 @@ public record Meter(
 
     public double getRateOf(Meter other) {
         if (this.value == 0) {
-            throw new ArithmeticException("0을 기준으로 비율을 계산할 수 없습니다.");
+            throw ErrorType.INVALID_RATIO_BASE.create();
         }
         return other.value() / this.value();
     }
