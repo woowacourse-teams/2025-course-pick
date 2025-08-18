@@ -84,3 +84,4 @@ jobs:
         working-directory: /home/ssm-user/coursepick
         run: |
           docker compose down
+          docker image prune -a -f
