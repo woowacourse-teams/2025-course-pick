@@ -19,7 +19,7 @@ public record CourseWebResponse(
         double length,
         @Schema(example = "트랙")
         RoadType roadType,
-        @Schema(example = "FLAT")
+        @Schema(example = "CONTINUOUS_UPHILL")
         InclineSummary inclineSummary,
         @Schema(example = "쉬움")
         String difficulty,
