@@ -1,13 +1,11 @@
 spring:
   application.name: coursepick
-  jpa:
-    open-in-view: false
-    properties:
-      hibernate:
-        jdbc.batch_size: 50 # 한 번에 처리할 배치 크기
-        order_inserts: true  # INSERT 순서 최적화
-        order_updates: true  # UPDATE 순서 최적화
-
+  data:
+    mongodb:
+      auto-index-creation: true
+  batch:
+    jdbc.initialize-schema: always
+    job.enabled: false
 springdoc:
   default-consumes-media-type: application/json
   default-produces-media-type: application/json

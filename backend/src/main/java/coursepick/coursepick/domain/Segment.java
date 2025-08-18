@@ -1,17 +1,9 @@
 package coursepick.coursepick.domain;
 
-import coursepick.coursepick.infrastructure.GeoLineListConverter;
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Embeddable;
-
 import java.util.ArrayList;
 import java.util.List;
 
-@Embeddable
 public record Segment(
-        @Convert(converter = GeoLineListConverter.class)
-        @Column(name = "geolines", columnDefinition = "LONGTEXT")
         List<GeoLine> lines
 ) {
     public InclineType inclineType() {
