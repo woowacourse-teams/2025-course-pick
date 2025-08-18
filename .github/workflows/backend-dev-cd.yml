@@ -83,7 +83,7 @@ jobs:
       - name: 사용하지 않는 도커 이미지 정리
         working-directory: /home/ssm-user/coursepick
         run: |
-          sudo docker image prune -f
+          sudo docker image prune -a -f
 
       - name: 시작된 서버 헬스체크
         run: |
