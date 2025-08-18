@@ -19,6 +19,8 @@ services:
     depends_on:
       - mysql
       - mongodb
+    volumes:
+      - /var/lib/coursepick/logs:/var/lib/coursepick/logs
     restart: unless-stopped
 
   mongodb:
