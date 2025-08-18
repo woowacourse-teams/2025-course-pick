@@ -22,7 +22,7 @@ class InclineSummaryTest {
     void 경사_요약_정보를_결정한다(List<Segment> segments, InclineSummary expectedInclineSummary) {
         InclineSummary inclineSummary = InclineSummary.of(segments);
 
-        assertThat(inclineSummary).isSameAs(expectedInclineSummary);
+        assertThat(inclineSummary).isEqualTo(expectedInclineSummary);
     }
 
     private static Stream<Arguments> flatSegments() {

@@ -280,7 +280,7 @@ class CourseTest {
 
             InclineSummary inclineSummary = course.inclineSummary();
 
-            assertThat(inclineSummary).isSameAs(expectedInclineSummary);
+            assertThat(inclineSummary).isEqualTo(expectedInclineSummary);
         }
 
         private static Stream<Arguments> flatCoordinates() {
