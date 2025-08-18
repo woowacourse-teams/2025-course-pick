@@ -20,11 +20,10 @@ public class CourseParserService {
     private final List<CourseParser> parsers;
 
     public List<Course> parseAndCloseInputStream(CourseFile file) throws IOException {
-        log.debug("코스를 파싱을 시작합니다.");
         CourseParser parser = findParser(file);
-        log.debug("선택된 CourseParse 구현체={}", parser.getClass().getSimpleName());
+        log.debug("코스 파싱을 시작합니다. 선택된 구현체={}", parser.getClass().getSimpleName());
         List<Course> result = parser.parse(file);
-        log.info("{}개의 코스를 파싱했습니다", result.size());
+        log.debug("{}개의 코스를 파싱했습니다.", result.size());
         file.inputStream().close();
         return result;
     }
