@@ -36,6 +36,7 @@ jobs:
           PROD_DB_PASSWORD=${{ secrets.PROD_DB_PASSWORD }}
           PROD_MONGO_HOST=${{ secrets.PROD_MONGO_HOST }}
           PROD_MONGO_PORT=${{ secrets.PROD_MONGO_PORT }}
+          PROD_MONGO_DATABASE=${{ secrets.PROD_MONGO_DATABASE }}
           PROD_MONGO_AUTH_DATABASE=${{ secrets.PROD_MONGO_AUTH_DATABASE }}
           PROD_MONGO_USERNAME=${{ secrets.PROD_MONGO_USERNAME }}
           PROD_MONGO_PASSWORD=${{ secrets.PROD_MONGO_PASSWORD }}
