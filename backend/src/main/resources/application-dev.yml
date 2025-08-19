@@ -1,9 +1,14 @@
 server:
   tomcat:
+    max-part-count: 500
     mbean-registry:
       enabled: true
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 200MB
   config:
     activate.on-profile: dev
     import: classpath:monitoring-config.yml
