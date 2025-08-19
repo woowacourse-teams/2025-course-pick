@@ -59,6 +59,7 @@ class CoursesViewModel(
             state.value?.copy(
                 isLoading = true,
                 isFailure = false,
+                isNoInternet = false,
             )
         viewModelScope.launch {
             try {
@@ -78,7 +79,12 @@ class CoursesViewModel(
                 _event.value = CoursesUiEvent.FetchCourseSuccess(courseItems.firstOrNull())
             } catch (exception: IOException) {
                 _state.value =
-                    state.value?.copy(courses = emptyList(), isLoading = false, isFailure = true)
+                    state.value?.copy(
+                        courses = emptyList(),
+                        isLoading = false,
+                        isFailure = false,
+                        isNoInternet = true,
+                    )
                 _event.value = CoursesUiEvent.NoInternet
             } catch (exception: Exception) {
                 Logger.log(

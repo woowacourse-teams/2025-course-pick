@@ -41,6 +41,7 @@ import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.IntentKeys
 import io.coursepick.coursepick.presentation.Logger
+import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.map.kakao.KakaoMapManager
 import io.coursepick.coursepick.presentation.map.kakao.toCoordinate
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
@@ -55,7 +56,8 @@ import kotlinx.coroutines.withContext
 
 class CoursesActivity :
     AppCompatActivity(),
-    CoursesAction {
+    CoursesAction,
+    OnReconnectListener {
     private val coursePickApplication by lazy { application as CoursePickApplication }
     private var searchLauncher: ActivityResultLauncher<Intent>? = null
     private val binding by lazy { ActivityCoursesBinding.inflate(layoutInflater) }
@@ -193,6 +195,25 @@ class CoursesActivity :
 
     override fun clearQuery() {
         viewModel.setQuery("")
+    }
+
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+    override fun onReconnect() {
+        val coordinate = mapManager.cameraPosition?.toCoordinate()
+        if (coordinate != null) {
+            fetchCourses(coordinate, Scope.default())
+        } else {
+            mapManager.fetchCurrentLocation(
+                onSuccess = { lat, lng ->
+                    fetchCourses(Coordinate(lat, lng), Scope.default())
+                },
+                onFailure = {
+                    Toast
+                        .makeText(this, "위치 정보를 가져올 수 없어 데이터를 갱신할 수 없습니다.", Toast.LENGTH_SHORT)
+                        .show()
+                },
+            )
+        }
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -382,6 +403,7 @@ class CoursesActivity :
         binding.adapter = courseAdapter
         binding.action = this
         binding.clientId = coursePickApplication.installationId.value
+        binding.listener = this
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -477,13 +499,14 @@ class CoursesActivity :
                         .makeText(this, "코스까지 가는 길을 찾지 못했습니다.", Toast.LENGTH_SHORT)
                         .show()
 
-                CoursesUiEvent.NoInternet ->
+                CoursesUiEvent.NoInternet -> {
                     Toast
                         .makeText(
                             this,
-                            "네트워크 연결이 불안정합니다. 다시 시도해주세요.",
+                            "네트워크에 연결되지 않았습니다.\n설정을 확인하고 다시 시도해주세요.",
                             Toast.LENGTH_LONG,
                         ).show()
+                }
             }
         }
     }
