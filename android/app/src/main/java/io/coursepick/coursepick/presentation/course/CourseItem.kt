@@ -7,7 +7,7 @@ data class CourseItem(
     val course: Course,
     val selected: Boolean,
 ) {
-    val id: Long = course.id
+    val id: String = course.id
     val name: String = course.name.value
     val distance: Int? = course.distance?.meter
     val length: Int = course.length.meter
