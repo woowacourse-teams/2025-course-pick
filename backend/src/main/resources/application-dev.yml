@@ -1,14 +1,4 @@
-server:
-  tomcat:
-    max-part-count: 500
-    mbean-registry:
-      enabled: true
-
 spring:
-  servlet:
-    multipart:
-      max-file-size: 100MB
-      max-request-size: 200MB
   config:
     activate.on-profile: dev
     import: classpath:monitoring-config.yml
@@ -26,32 +16,14 @@ spring:
   batch:
     jdbc.initialize-schema: never
     job.enabled: false
-  cloud:
-    aws:
-      cloudwatch:
-        region: ap-northeast-2
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 200MB
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "health"
-  metrics:
-    enable:
-      all: false
-      health.status: true
-      hikaricp.connections: true
-      http.server.requests: true
-      system.cpu.usage: true
-      spring.data.repository.invocations: true
-      jvm.memory.used: true
-      tomcat.threads: true
-
-  cloudwatch:
-    metrics:
-      export:
-        namespace: EC2/coursepick/dev
-        batch-size: 20
+server:
+  tomcat:
+    max-part-count: 500
 
 springdoc:
   dev-server-url: ${DEV_SERVER_URL}

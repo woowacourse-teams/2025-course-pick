@@ -32,3 +32,8 @@ management:
     enabled: true
     namespace: EC2/coursepick/${spring.profiles.active}
     batch-size: 20
+
+server:
+  tomcat:
+    mbean-registry:
+      enabled: true
