@@ -211,6 +211,7 @@ class CoursesActivity :
         val latitude = Latitude(latitudeValue)
         val longitude = Longitude(longitudeValue)
 
+        mapManager.resetZoomLevel()
         mapManager.moveTo(latitude, longitude)
         fetchCourses(Coordinate(latitude, longitude), Scope.default())
     }
