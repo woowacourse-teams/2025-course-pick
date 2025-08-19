@@ -35,9 +35,9 @@ services:
     ports:
       - '27017:27017'
     environment:
-      - 'MONGO_INITDB_ROOT_USERNAME='
-      - 'MONGO_INITDB_ROOT_PASSWORD='
-      - 'MONGO_INITDB_DATABASE='
+      - 'MONGO_INITDB_DATABASE=${MONGO_DATABASE}'
+      - 'MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}'
+      - 'MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}'
     volumes:
       - /var/lib/coursepick/mongo:/data/db
     restart: unless-stopped
@@ -51,21 +51,21 @@ services:
     environment:
       - 'ME_CONFIG_MONGODB_SERVER=mongodb'
       - 'ME_CONFIG_MONGODB_PORT=27017'
-      - 'ME_CONFIG_MONGODB_ENABLE_ADMIN='
-      - 'ME_CONFIG_MONGODB_AUTH_USERNAME='
-      - 'ME_CONFIG_MONGODB_AUTH_PASSWORD='
-      - 'ME_CONFIG_BASICAUTH_USERNAME='
-      - 'ME_CONFIG_BASICAUTH_PASSWORD='
+      - 'ME_CONFIG_MONGODB_ENABLE_ADMIN=true'
+      - 'ME_CONFIG_MONGODB_AUTH_USERNAME=${MONGO_USERNAME}'
+      - 'ME_CONFIG_MONGODB_AUTH_PASSWORD=${MONGO_PASSWORD}'
+      - 'ME_CONFIG_BASICAUTH_USERNAME=${MONGO_USERNAME}'
+      - 'ME_CONFIG_BASICAUTH_PASSWORD=${MONGO_PASSWORD}'
     depends_on:
       - mongodb # mongodb 서비스가 실행된 후에 실행되도록 의존성 설정
 
   mysql:
     image: 'mysql:8.4.5'
     environment:
-      - 'MYSQL_DATABASE='
-      - 'MYSQL_ROOT_PASSWORD='
-      - 'MYSQL_USER='
-      - 'MYSQL_PASSWORD='
+      - 'MYSQL_DATABASE=${DB_DATABASE}'
+      - 'MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}'
+      - 'MYSQL_USER=${DB_USERNAME}'
+      - 'MYSQL_PASSWORD=${DB_PASSWORD}'
       - 'LANG=C.UTF-8'
       - 'LC_ALL=C.UTF-8'
     ports:
