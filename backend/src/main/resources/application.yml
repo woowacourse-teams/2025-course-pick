@@ -6,6 +6,10 @@ spring:
   batch:
     jdbc.initialize-schema: always
     job.enabled: false
+
+server:
+  forward-headers-strategy: framework
+
 springdoc:
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
