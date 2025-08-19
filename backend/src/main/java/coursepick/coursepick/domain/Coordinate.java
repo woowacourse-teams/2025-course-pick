@@ -25,6 +25,17 @@ public record Coordinate(
         this(latitude, longitude, 0);
     }
 
+    /**
+     * 두 좌표에 대한 선형보간 좌표를 구합니다.
+     * <a href="https://ko.wikipedia.org/wiki/%EC%84%A0%ED%98%95_%EB%B3%B4%EA%B0%84%EB%B2%95">선형보간</a>
+     */
+    public static Coordinate lerp(Coordinate start, Coordinate end, double lerpRatio) {
+        double latitude = start.latitude + (end.latitude - start.latitude) * lerpRatio;
+        double longitude = start.longitude + (end.longitude - start.longitude) * lerpRatio;
+        double elevation = start.elevation + (end.elevation - start.elevation) * lerpRatio;
+        return new Coordinate(latitude, longitude, elevation);
+    }
+
     public boolean hasSameLatitudeAndLongitude(Coordinate other) {
         return this.latitude == other.latitude && this.longitude == other.longitude;
     }
@@ -63,5 +74,10 @@ public record Coordinate(
         if (roundedLongitude < -180 || roundedLongitude >= 180) {
             throw INVALID_LONGITUDE_RANGE.create(roundedLongitude);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "(%+.07f, %+.07f, %+.07f)".formatted(latitude, longitude, elevation);
     }
 }
