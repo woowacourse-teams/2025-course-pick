@@ -1,13 +1,11 @@
 package coursepick.coursepick.test_util;
 
 import coursepick.coursepick.domain.Coordinate;
-import org.springframework.boot.test.context.TestComponent;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-@TestComponent
 public class GpxTestUtil {
 
     private static final String TRACK_POINT_FORMAT = """
@@ -29,12 +27,12 @@ public class GpxTestUtil {
             </gpx>
             """;
 
-    public InputStream createGpxInputStreamOf(Coordinate... coordinates) {
+    public static InputStream createGpxInputStreamOf(Coordinate... coordinates) {
         String gpx = createGpxOf(coordinates);
         return new ByteArrayInputStream(gpx.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String createGpxOf(Coordinate... coordinates) {
+    public static String createGpxOf(Coordinate... coordinates) {
         StringBuilder trackPoints = new StringBuilder();
         for (Coordinate coordinate : coordinates) {
             String trackPoint = createTrackPointOf(coordinate);

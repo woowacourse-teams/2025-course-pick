@@ -1,15 +1,23 @@
 spring:
   config.activate.on-profile: local
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 200MB
   datasource:
     url: jdbc:mysql://localhost:3307/coursepick
     username: user
     password: secret
-  batch:
-    jdbc.initialize-schema: always
-    job.enabled: false
+  data.mongodb:
+    host: localhost
+    port: 27017
+    database: coursepick
+    username: root
+    password: secret
+    authentication-database: admin
 
 admin.token: secret
+
+server:
+  tomcat:
+    max-part-count: 500

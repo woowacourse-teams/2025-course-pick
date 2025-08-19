@@ -1,20 +1,28 @@
 package coursepick.coursepick.domain;
 
-import org.springframework.data.repository.Repository;
+import com.mongodb.client.model.geojson.Point;
+import com.mongodb.client.model.geojson.Position;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 import java.util.List;
-import java.util.Optional;
 
-public interface CourseRepository extends Repository<Course, Long> {
+public interface CourseRepository extends MongoRepository<Course, String> {
 
-    List<Course> findAll();
+    @Query("""
+            {
+              'segments': {
+                $near: {
+                  $geometry: ?0,
+                  $maxDistance: ?1
+                }
+              }
+            }
+            """)
+    List<Course> findAllHasDistanceWithin(Point target, double radius);
 
-    Optional<Course> findById(Long id);
-
-    default List<Course> findAllHasDistanceWithin(Coordinate target, Meter meter) {
-        return findAll().stream()
-                .filter(c -> c.distanceFrom(target).isWithin(meter))
-                .toList();
+    default List<Course> findAllHasDistanceWithin(Coordinate target, Meter distance) {
+        return findAllHasDistanceWithin(new Point(new Position(target.longitude(), target.latitude())), distance.value());
     }
 
     boolean existsByName(CourseName courseName);

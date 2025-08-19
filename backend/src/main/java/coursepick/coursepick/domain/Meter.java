@@ -1,8 +1,5 @@
 package coursepick.coursepick.domain;
 
-import jakarta.persistence.Embeddable;
-
-@Embeddable
 public record Meter(
         double value
 ) {

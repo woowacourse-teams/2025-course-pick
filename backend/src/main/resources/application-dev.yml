@@ -1,12 +1,28 @@
+server:
+  tomcat:
+    max-part-count: 500
+    mbean-registry:
+      enabled: true
+
 spring:
-  config.activate.on-profile: dev
-  jpa:
-    hibernate:
-      ddl-auto: update
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 200MB
+  config:
+    activate.on-profile: dev
+    import: classpath:monitoring-config.yml
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+  data.mongodb:
+    host: ${MONGO_HOST}
+    port: ${MONGO_PORT}
+    database: ${MONGO_DATABASE}
+    username: ${MONGO_USERNAME}
+    password: ${MONGO_PASSWORD}
+    authentication-database: ${MONGO_AUTH_DATABASE}
   batch:
     jdbc.initialize-schema: never
     job.enabled: false
@@ -19,7 +35,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "health, info, metrics"
+        include: "health"
   metrics:
     enable:
       all: false
@@ -36,6 +52,10 @@ management:
       export:
         namespace: EC2/coursepick/dev
         batch-size: 20
+
+springdoc:
+  dev-server-url: ${DEV_SERVER_URL}
+  prod-server-url: ${PROD_SERVER_URL}
 
 gcp:
   drive.folder-id: ${GCP_DRIVE_FOLDER_ID}
