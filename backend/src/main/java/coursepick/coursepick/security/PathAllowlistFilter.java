@@ -24,7 +24,10 @@ public class PathAllowlistFilter extends OncePerRequestFilter {
             Pattern.compile("^/courses$"),
             Pattern.compile("^/courses/[^/]+/closest-coordinate$"),
             Pattern.compile("^/import$"),
-            Pattern.compile("^/actuator/health$")
+            Pattern.compile("^/actuator/health$"),
+            Pattern.compile("^/api-docs.html$"),
+            Pattern.compile("^/swagger-ui.*$"),
+            Pattern.compile("^/v3/api-docs.*$")
     );
 
     @Override
