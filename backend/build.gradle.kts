@@ -22,7 +22,7 @@ configurations.all {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
     implementation("org.springframework.boot:spring-boot-starter-batch")
@@ -50,10 +50,10 @@ dependencies {
 
     // Google Drive
     implementation("com.google.api-client:google-api-client:2.8.0")
-    implementation("com.google.auth:google-auth-library-oauth2-http:1.37.1")
-    implementation("com.google.apis:google-api-services-drive:v3-rev20241027-2.0.0")
+    implementation("com.google.apis:google-api-services-drive:v3-rev20250723-2.0.0")
 
     // Test
+    testRuntimeOnly("de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring30x:4.21.0")
     testImplementation("org.springframework.batch:spring-batch-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

@@ -1,0 +1,34 @@
+spring:
+  config.activate.on-profile: dev,prod
+  cloud:
+    aws:
+      cloudwatch:
+        region: ap-northeast-2
+
+management:
+  endpoints.web.exposure:
+    include: "health, info, metrics"
+  metrics:
+    enable:
+      all: false
+      health.status: true
+      hikaricp.connections: true
+      http.server.requests: true
+      system.cpu.usage: true
+      spring.data.repository.invocations: true
+      jvm.memory.used: true
+      tomcat.threads: true
+      mongodb.driver:
+        commands: true
+        pool:
+          size: true
+          checkedout: true
+          waitqueuesize: true
+          checkoutfailed: true
+    mongo:
+      command.enabled: true
+      connectionpool.enabled: true
+  cloudwatch.metrics.export:
+    enabled: true
+    namespace: EC2/coursepick/${spring.profiles.active}
+    batch-size: 20

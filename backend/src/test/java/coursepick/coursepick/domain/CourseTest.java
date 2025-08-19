@@ -69,6 +69,47 @@ class CourseTest {
         assertThat(minDistanceCoordinate).isEqualTo(expected);
     }
 
+    private static Stream<Arguments> courseInfoAndExpectedDifficulty() {
+        Coordinate base = new Coordinate(0, 0);
+        return Stream.of(
+                Arguments.of(
+                        square(base, 4000, 4000),
+                        RoadType.트랙,
+                        Difficulty.쉬움
+                ),
+                Arguments.of(
+                        square(base, 4000, 4000),
+                        RoadType.보도,
+                        Difficulty.보통
+                ),
+                Arguments.of(
+                        square(base, 4000, 4000),
+                        RoadType.트레일,
+                        Difficulty.어려움
+                ),
+                Arguments.of(
+                        square(base, 6000, 6000),
+                        RoadType.트랙,
+                        Difficulty.보통
+                ),
+                Arguments.of(
+                        square(base, 12000, 12000),
+                        RoadType.트랙,
+                        Difficulty.어려움
+                )
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("courseInfoAndExpectedDifficulty")
+    void 코스의_난이도를_계산한다(List<Coordinate> coordinates, RoadType roadType, Difficulty expectedDifficulty) {
+        var course = new Course("코스", roadType, coordinates);
+
+        var difficulty = course.difficulty();
+
+        assertThat(difficulty).isEqualTo(expectedDifficulty);
+    }
+
     @Nested
     class 생성_테스트 {
 
@@ -115,47 +156,6 @@ class CourseTest {
             assertThatThrownBy(() -> new Course("코스", List.of(new Coordinate(0, 0), new Coordinate(0, 0))))
                     .isInstanceOf(IllegalArgumentException.class);
         }
-    }
-
-    private static Stream<Arguments> courseInfoAndExpectedDifficulty() {
-        Coordinate base = new Coordinate(0, 0);
-        return Stream.of(
-                Arguments.of(
-                        square(base, 4000, 4000),
-                        RoadType.트랙,
-                        Difficulty.쉬움
-                ),
-                Arguments.of(
-                        square(base, 4000, 4000),
-                        RoadType.보도,
-                        Difficulty.보통
-                ),
-                Arguments.of(
-                        square(base, 4000, 4000),
-                        RoadType.트레일,
-                        Difficulty.어려움
-                ),
-                Arguments.of(
-                        square(base, 6000, 6000),
-                        RoadType.트랙,
-                        Difficulty.보통
-                ),
-                Arguments.of(
-                        square(base, 12000, 12000),
-                        RoadType.트랙,
-                        Difficulty.어려움
-                )
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("courseInfoAndExpectedDifficulty")
-    void 코스의_난이도를_계산한다(List<Coordinate> coordinates, RoadType roadType, Difficulty expectedDifficulty) {
-        var course = new Course("코스", roadType, coordinates);
-
-        var difficulty = course.difficulty();
-
-        assertThat(difficulty).isEqualTo(expectedDifficulty);
     }
 
     @Nested
