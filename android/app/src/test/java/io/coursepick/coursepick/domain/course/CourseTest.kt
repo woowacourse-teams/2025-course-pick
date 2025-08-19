@@ -8,7 +8,7 @@ class CourseTest {
     fun `코스는 한 개 이상의 세그먼트로 이루어져 있다`() {
         assertThrows<IllegalArgumentException> {
             Course(
-                0L,
+                "",
                 CourseName("석촌호수 러닝 코스"),
                 Distance(300),
                 Length(3000),

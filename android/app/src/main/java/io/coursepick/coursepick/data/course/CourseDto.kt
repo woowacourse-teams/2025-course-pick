@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CourseDto(
-    private val id: Long,
+    private val id: String,
     private val name: String,
     private val distance: Double?,
     private val length: Double,

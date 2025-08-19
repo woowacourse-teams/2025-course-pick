@@ -1,7 +1,7 @@
 package io.coursepick.coursepick.domain.course
 
 data class Course(
-    val id: Long,
+    val id: String,
     val name: CourseName,
     val distance: Distance?,
     val length: Length,
