@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@Profile("local")
+@Profile({"local", "dev"})
 @RequiredArgsConstructor
 public class CourseImportApi {
 
