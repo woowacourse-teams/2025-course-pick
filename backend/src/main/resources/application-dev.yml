@@ -25,13 +25,6 @@ spring:
     aws:
       cloudwatch:
         region: ap-northeast-2
-  data:
-    mongodb:
-      host: mongodb
-      port: 27017
-      database: coursepick
-      username: ${MONGO_USERNAME}
-      password: ${MONGO_PASSWORD}
 
 management:
   endpoints:
