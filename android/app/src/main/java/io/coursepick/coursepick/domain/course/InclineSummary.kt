@@ -1,7 +1,7 @@
 package io.coursepick.coursepick.domain.course
 
 enum class InclineSummary {
-    FLAT,
+    MOSTLY_FLAT,
     REPEATING_HILLS,
     SOMETIMES_UPHILL,
     SOMETIMES_DOWNHILL,
