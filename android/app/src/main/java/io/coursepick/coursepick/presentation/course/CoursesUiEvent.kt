@@ -16,4 +16,6 @@ sealed interface CoursesUiEvent {
     ) : CoursesUiEvent
 
     object FetchNearestCoordinateFailure : CoursesUiEvent
+
+    object NoInternet : CoursesUiEvent
 }
