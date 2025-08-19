@@ -1,12 +1,22 @@
 spring:
-  config.activate.on-profile: prod
-  jpa:
-    hibernate:
-      ddl-auto: update
+  config:
+    activate.on-profile: prod
+    import: classpath:monitoring-config.yml
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+  data.mongodb:
+    host: ${MONGO_HOST}
+    port: ${MONGO_PORT}
+    database: ${MONGO_DATABASE}
+    username: ${MONGO_USERNAME}
+    password: ${MONGO_PASSWORD}
+    authentication-database: ${MONGO_AUTH_DATABASE}
+
+springdoc:
+  api-docs.enabled: false
+  swagger-ui.enabled: false
 
 gcp:
   drive.folder-id: ${GCP_DRIVE_FOLDER_ID}

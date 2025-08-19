@@ -34,60 +34,65 @@ jobs:
           path: backend/build/test-results/test/*.xml
           reporter: java-junit
 
-      - name: 임시 아티팩트 저장소 업로드
-        uses: actions/upload-artifact@v4
+      - name: Docker 로그인
+        uses: docker/login-action@v3
         with:
-          name: coursepick
-          path: backend/build/libs/*SNAPSHOT.jar
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Docker 이미지 빌드 및 푸시
+        run: |
+          docker buildx build \
+            --platform=linux/arm64 \
+            -t ${{ secrets.DOCKER_USERNAME }}/coursepick-backend:dev \
+            --push \
+            .
 
   deploy:
     needs: build
     runs-on: [ self-hosted, dev-app ]
+    defaults:
+      run:
+        working-directory: /home/ssm-user/coursepick
 
     steps:
-      - name: 임시 아티팩트 저장소에 저장된 파일 다운로드
-        uses: actions/download-artifact@v4
+      - name: Docker 로그인
+        uses: docker/login-action@v3
         with:
-          name: coursepick
-          path: ./artifacts
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: 기존 80 포트 서버 내리기
+      - name: .env 파일 생성
         run: |
-          PID=$(sudo lsof -t -i :80 || true)
+          cat > .env <<'EOF'
+          DEV_PROFILE=${{ secrets.DEV_PROFILE }} 
+          DEV_DB_URL=${{ secrets.DEV_DB_URL }} 
+          DEV_DB_USERNAME=${{ secrets.DEV_DB_USERNAME }} 
+          DEV_DB_PASSWORD=${{ secrets.DEV_DB_PASSWORD }} 
+          DEV_MONGO_HOST=${{ secrets.DEV_MONGO_HOST }}
+          DEV_MONGO_PORT=${{ secrets.DEV_MONGO_PORT }}
+          DEV_MONGO_DATABASE=${{ secrets.DEV_MONGO_DATABASE }}
+          DEV_MONGO_USERNAME=${{ secrets.DEV_MONGO_USERNAME }} 
+          DEV_MONGO_PASSWORD=${{ secrets.DEV_MONGO_PASSWORD }} 
+          DEV_MONGO_AUTH_DATABASE=${{ secrets.DEV_MONGO_AUTH_DATABASE }}
+          ADMIN_TOKEN=${{ secrets.DEV_ADMIN_TOKEN }} 
+          DEV_SERVER_URL=${{ secrets.DEV_SERVER_URL }}
+          PROD_SERVER_URL=${{ secrets.PROD_SERVER_URL }}
+          GCP_DRIVE_FOLDER_ID=${{ secrets.GCP_DRIVE_FOLDER_ID }} 
+          GCP_CREDENTIALS_PATH=${{ secrets.GCP_CREDENTIALS_PATH }} 
+          EOF
+          chmod 600 .env
 
-          if [ -n "$PID" ]; then
-          	echo "사용중인 포트 80 서버 종료... PID=$PID"
-          	sudo kill -15 $PID || true
-          	sleep 5
-
-          	CHECK_PID=$(sudo lsof -t -i :80 || true)
-          	if [ -z "$CHECK_PID" ]; then
-          		echo "기존 서버 종료됨"
-          	else
-          		echo "기존 서버 종료되지 않아 강제 종료 수행... PID=$CHECK_PID"
-          		sudo kill -9 $CHECK_PID || true
-          		sleep 5
-          	fi
-          else
-          	echo "포트 80은 사용 중이지 않음"
-          fi
-
-      - name: 새로운 서버로 실행
-        env:
-          SPRING_PROFILES_ACTIVE: ${{ secrets.DEV_PROFILE }}
-          SERVER_PORT: 80
-          SPRING_DATASOURCE_URL: ${{ secrets.DEV_DB_URL }}
-          SPRING_DATASOURCE_USERNAME: ${{ secrets.DEV_DB_USERNAME }}
-          SPRING_DATASOURCE_PASSWORD: ${{ secrets.DEV_DB_PASSWORD }}
-          ADMIN_TOKEN: ${{ secrets.DEV_ADMIN_TOKEN }}
-          GCP_DRIVE_FOLDER_ID: ${{ secrets.GCP_DRIVE_FOLDER_ID }}
-          GCP_CREDENTIALS_PATH: ${{ secrets.GCP_CREDENTIALS_PATH }}
+      - name: 새로운 서버 시작
         run: |
-          JAR_FILE=$(find ./artifacts -name "*.jar" | head -n 1)
-          echo "서버 시작 중... =$JAR_FILE"
+          sudo docker compose --env-file .env up -d --pull always backend
 
-          sudo -E -b sh -c "java -jar '$JAR_FILE' > /var/log/app.log 2>&1"
+      - name: 사용하지 않는 도커 이미지 정리
+        run: |
+          sudo docker image prune -a -f
 
+      - name: 시작된 서버 헬스체크
+        run: |
           for i in $(seq 1 10)
           do
             SERVER_STATUS=$(curl -o /dev/null -w "%{http_code}" http://localhost:80/actuator/health || true)
@@ -105,5 +110,3 @@ jobs:
               exit 1
             fi
           done
-
-          echo "-- 배포 종료 --"
