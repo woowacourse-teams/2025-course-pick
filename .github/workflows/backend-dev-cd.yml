@@ -51,6 +51,9 @@ jobs:
   deploy:
     needs: build
     runs-on: [ self-hosted, dev-app ]
+    defaults:
+      run:
+        working-directory: /home/ssm-user/coursepick
 
     steps:
       - name: Docker 로그인
@@ -60,7 +63,6 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: .env 파일 생성
-        working-directory: /home/ssm-user/coursepick
         run: |
           cat > .env <<'EOF'
           DEV_PROFILE=${{ secrets.DEV_PROFILE }} 
@@ -76,12 +78,10 @@ jobs:
           chmod 600 .env
 
       - name: 새로운 서버 시작
-        working-directory: /home/ssm-user/coursepick
         run: |
           sudo docker compose --env-file .env up -d --pull always backend
 
       - name: 사용하지 않는 도커 이미지 정리
-        working-directory: /home/ssm-user/coursepick
         run: |
           sudo docker image prune -a -f
 
