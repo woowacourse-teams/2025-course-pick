@@ -476,6 +476,14 @@ class CoursesActivity :
                     Toast
                         .makeText(this, "코스까지 가는 길을 찾지 못했습니다.", Toast.LENGTH_SHORT)
                         .show()
+
+                CoursesUiEvent.NoInternet ->
+                    Toast
+                        .makeText(
+                            this,
+                            "네트워크 연결이 불안정합니다. 다시 시도해주세요.",
+                            Toast.LENGTH_LONG,
+                        ).show()
             }
         }
     }

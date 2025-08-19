@@ -5,6 +5,7 @@ import io.coursepick.coursepick.BuildConfig
 import io.coursepick.coursepick.data.course.CourseService
 import io.coursepick.coursepick.data.interceptor.ClientIdInterceptor
 import io.coursepick.coursepick.data.interceptor.KakaoAuthInterceptor
+import io.coursepick.coursepick.data.interceptor.OffLineInterceptor
 import io.coursepick.coursepick.data.interceptor.PrettyPrintLogger
 import io.coursepick.coursepick.data.search.SearchService
 import io.coursepick.coursepick.presentation.InstallationId
@@ -16,6 +17,7 @@ import retrofit2.Retrofit
 
 class Services(
     installationId: InstallationId,
+    networkMonitor: NetworkMonitor,
 ) {
     private val loggingLevel =
         if (BuildConfig.DEBUG) {
@@ -30,6 +32,7 @@ class Services(
             .Builder()
             .addInterceptor(ClientIdInterceptor(installationId))
             .addInterceptor(loggingInterceptor)
+            .addInterceptor(OffLineInterceptor(networkMonitor))
             .build()
 
     private val json =
@@ -50,6 +53,7 @@ class Services(
             .Builder()
             .addInterceptor(KakaoAuthInterceptor)
             .addInterceptor(loggingInterceptor)
+            .addInterceptor(OffLineInterceptor(networkMonitor))
             .build()
 
     private val kakaoRetrofit =

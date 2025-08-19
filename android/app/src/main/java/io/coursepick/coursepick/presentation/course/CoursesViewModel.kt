@@ -16,6 +16,7 @@ import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
 import kotlinx.coroutines.launch
+import okio.IOException
 
 class CoursesViewModel(
     private val courseRepository: CourseRepository,
@@ -60,9 +61,8 @@ class CoursesViewModel(
                 isFailure = false,
             )
         viewModelScope.launch {
-            runCatching {
-                courseRepository.courses(mapCoordinate, userCoordinate, scope)
-            }.onSuccess { courses: List<Course> ->
+            try {
+                val courses = courseRepository.courses(mapCoordinate, userCoordinate, scope)
                 Logger.log(Logger.Event.Success("fetch_courses"))
                 val courseItems: List<CourseItem> =
                     courses
@@ -75,10 +75,15 @@ class CoursesViewModel(
                         }
                 _state.value =
                     state.value?.copy(courses = courseItems, isLoading = false, isFailure = false)
-            }.onFailure { error: Throwable ->
+                _event.value = CoursesUiEvent.FetchCourseSuccess(courseItems.firstOrNull())
+            } catch (exception: IOException) {
+                _state.value =
+                    state.value?.copy(courses = emptyList(), isLoading = false, isFailure = true)
+                _event.value = CoursesUiEvent.NoInternet
+            } catch (exception: Exception) {
                 Logger.log(
                     Logger.Event.Failure("fetch_courses"),
-                    "message" to error.message.toString(),
+                    "message" to exception.message.toString(),
                 )
                 _state.value =
                     state.value?.copy(courses = emptyList(), isLoading = false, isFailure = true)
