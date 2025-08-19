@@ -16,7 +16,7 @@ interface CourseService {
 
     @GET("/courses/{id}/closest-coordinate")
     suspend fun nearestCoordinate(
-        @Path("id") courseId: Long,
+        @Path("id") courseId: String,
         @Query("lat") currentLatitude: Double,
         @Query("lng") currentLongitude: Double,
     ): CoordinateDto
