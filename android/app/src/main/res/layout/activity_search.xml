@@ -47,11 +47,21 @@
             android:layout_height="0dp"
             android:adapter="@{adapter}"
             android:orientation="vertical"
-            android:visibility="@{viewModel.state.isLoading ? View.GONE : View.VISIBLE}"
+            android:visibility="@{viewModel.state.isLoading || viewModel.state.arePlacesEmpty ? View.GONE : View.VISIBLE}"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/searchView"
             tools:listitem="@layout/item_place" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:text="@string/search_no_result"
+            android:textSize="20sp"
+            android:visibility="@{viewModel.state.isLoading || !viewModel.state.arePlacesEmpty || viewModel.state.isQueryBlank ? View.GONE : View.VISIBLE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/searchView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
