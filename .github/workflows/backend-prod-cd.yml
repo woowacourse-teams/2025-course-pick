@@ -88,8 +88,8 @@ jobs:
             echo "One server is idle, idle=$idle"
             echo "idle=$idle" >> $GITHUB_OUTPUT
           else
-            echo "None servers are idle – as default, deploy to server1, idle=$idle"
             idle="prod-app-1"
+            echo "None servers are idle – as default, deploy to server1, idle=$idle"
             echo "idle=$idle" >> $GITHUB_OUTPUT
           fi
 
