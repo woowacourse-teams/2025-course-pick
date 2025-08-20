@@ -405,18 +405,6 @@ class CoursesActivity :
     private fun setUpEventObserver() {
         viewModel.event.observe(this) { event: CoursesUiEvent ->
             when (event) {
-                is CoursesUiEvent.FetchCourseSuccess -> {
-                    event.nearestCourse ?: {
-                        binding.mainSearchThisAreaButton.visibility = View.VISIBLE
-                        Toast
-                            .makeText(
-                                this,
-                                "이 지역에 코스가 없습니다.",
-                                Toast.LENGTH_SHORT,
-                            ).show()
-                    }
-                }
-
                 CoursesUiEvent.FetchCourseFailure -> {
                     binding.mainSearchThisAreaButton.visibility = View.VISIBLE
                     Toast.makeText(this, "코스 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
