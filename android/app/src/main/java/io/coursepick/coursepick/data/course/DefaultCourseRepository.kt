@@ -20,7 +20,7 @@ class DefaultCourseRepository(
                 userCoordinate?.latitude?.value,
                 userCoordinate?.longitude?.value,
                 scope.meter,
-            ).map(CourseDto::toCourse)
+            ).mapNotNull(CourseDto::toCourseOrNull)
 
     override suspend fun nearestCoordinate(
         selected: Course,

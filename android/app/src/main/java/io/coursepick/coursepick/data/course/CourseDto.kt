@@ -16,14 +16,16 @@ data class CourseDto(
     private val difficulty: String,
     private val segments: List<SegmentDto>,
 ) {
-    fun toCourse(): Course =
-        Course(
-            id = id,
-            name = CourseName(name),
-            distance = distance?.let(::Distance),
-            length = Length(length),
-            roadType = roadType,
-            difficulty = difficulty,
-            segments = segments.map(SegmentDto::toSegment),
-        )
+    fun toCourseOrNull(): Course? =
+        runCatching {
+            Course(
+                id = id,
+                name = CourseName(name),
+                distance = distance?.let(::Distance),
+                length = Length(length),
+                roadType = roadType,
+                difficulty = difficulty,
+                segments = segments.map(SegmentDto::toSegment),
+            )
+        }.getOrNull()
 }
