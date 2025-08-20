@@ -224,10 +224,12 @@ class CoursesActivity :
 
         val latitude = Latitude(latitudeValue)
         val longitude = Longitude(longitudeValue)
+        val coordinate = Coordinate(latitude, longitude)
 
         mapManager.resetZoomLevel()
+        mapManager.showSearchPosition(coordinate)
         mapManager.moveTo(latitude, longitude)
-        fetchCourses(Coordinate(latitude, longitude), Scope.default())
+        fetchCourses(coordinate, Scope.default())
     }
 
     private fun navigateToPreferences() {
