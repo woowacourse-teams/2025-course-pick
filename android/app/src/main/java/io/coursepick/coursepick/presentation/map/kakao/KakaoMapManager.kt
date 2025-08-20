@@ -15,6 +15,11 @@ import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.presentation.LocationProvider
 import io.coursepick.coursepick.presentation.course.CourseItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 class KakaoMapManager(
     private val mapView: MapView,
@@ -24,23 +29,29 @@ class KakaoMapManager(
     private val cameraController = KakaoMapCameraController(mapView.context)
     private val drawer = KakaoMapDrawer(mapView.context)
     private val eventHandler = KakaoMapEventHandler()
-    private var kakaoMap: KakaoMap? = null
 
-    val cameraPosition get(): LatLng? = kakaoMap?.cameraPosition?.position
+    @Suppress("ktlint:standard:backing-property-naming")
+    private var _kakaoMap: KakaoMap? = null
+    private val kakaoMap: KakaoMap get() = _kakaoMap!!
+
+    val cameraPosition get(): LatLng? = kakaoMap.cameraPosition?.position
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     fun start(onMapReady: () -> Unit) {
         val offsetPx: Float =
             mapView.context.resources.getDimension(R.dimen.map_logo_position_offset)
         lifecycleHandler.start { map: KakaoMap ->
-            kakaoMap = map
+            _kakaoMap = map
             map.logo?.setPosition(
                 MapGravity.BOTTOM or MapGravity.LEFT,
                 offsetPx,
                 offsetPx,
             )
-            showCurrentLocation()
             onMapReady()
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(500.milliseconds)
+                showCurrentLocation()
+            }
         }
     }
 
@@ -49,98 +60,19 @@ class KakaoMapManager(
     fun pause() = lifecycleHandler.pause()
 
     fun draw(courses: List<CourseItem>) {
-        kakaoMap?.let { map: KakaoMap ->
-            drawer.drawCourses(map, courses)
-        }
+        drawer.drawCourses(kakaoMap, courses)
     }
 
     fun showSearchPosition(coordinate: Coordinate) {
-        kakaoMap?.let { map: KakaoMap ->
-            drawer.showSearchPosition(map, coordinate)
-        }
+        drawer.showSearchPosition(kakaoMap, coordinate)
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    fun moveToCurrentLocation() {
-        showCurrentLocation()
-    }
-
-    fun fitTo(course: CourseItem) {
-        kakaoMap?.let { map: KakaoMap ->
-            cameraController.fitTo(
-                course,
-                map,
-            )
-        }
-    }
-
-    fun setOnCourseClickListener(
-        courses: List<CourseItem>,
-        onClick: (CourseItem) -> Unit,
-    ) {
-        kakaoMap?.let { map: KakaoMap ->
-            eventHandler.setOnCourseClickListener(map, courses) { course: CourseItem ->
-                onClick(course)
-            }
-        }
-    }
-
-    fun setOnCameraMoveListener(onCameraMove: () -> Unit) {
-        kakaoMap?.let { map: KakaoMap ->
-            eventHandler.setOnCameraMoveListener(map) {
-                onCameraMove()
-            }
-        }
-    }
-
-    fun moveTo(
-        latitude: Latitude,
-        longitude: Longitude,
-    ) {
-        kakaoMap?.let { map: KakaoMap ->
-            val location =
-                Location("search").apply {
-                    this.latitude = latitude.value
-                    this.longitude = longitude.value
-                }
-            cameraController.moveTo(map, location)
-        }
-    }
-
-    fun resetZoomLevel() {
-        kakaoMap?.let { map: KakaoMap ->
-            cameraController.resetZoomLevel(map)
-        }
-    }
-
-    fun showSearchLocation(
-        latitude: Latitude,
-        longitude: Longitude,
-    ) {
-        kakaoMap?.let { map: KakaoMap ->
-            val location =
-                Location("search").apply {
-                    this.latitude = latitude.value
-                    this.longitude = longitude.value
-                }
-            cameraController.moveTo(map, location)
-        }
-    }
-
-    fun setBottomPadding(size: Int) {
-        kakaoMap?.let { map: KakaoMap ->
-            map.setPadding(0, 0, 0, size)
-        }
-    }
-
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    private fun showCurrentLocation() {
+    fun showCurrentLocation() {
         locationProvider.fetchCurrentLocation(
             onSuccess = { location: Location ->
-                kakaoMap?.let { map: KakaoMap ->
-                    drawer.showUserPosition(map, location)
-                    cameraController.moveTo(map, location)
-                }
+                drawer.showUserPosition(kakaoMap, location)
+                cameraController.moveTo(kakaoMap, location)
             },
             onFailure = {
                 Toast
@@ -153,18 +85,53 @@ class KakaoMapManager(
         )
     }
 
+    fun fitTo(course: CourseItem) {
+        cameraController.fitTo(course, kakaoMap)
+    }
+
+    fun setOnCourseClickListener(
+        courses: List<CourseItem>,
+        onClick: (CourseItem) -> Unit,
+    ) {
+        eventHandler.setOnCourseClickListener(kakaoMap, courses) { course: CourseItem ->
+            onClick(course)
+        }
+    }
+
+    fun setOnCameraMoveListener(onCameraMove: () -> Unit) {
+        eventHandler.setOnCameraMoveListener(kakaoMap) {
+            onCameraMove()
+        }
+    }
+
+    fun moveTo(
+        latitude: Latitude,
+        longitude: Longitude,
+    ) {
+        val location =
+            Location("search").apply {
+                this.latitude = latitude.value
+                this.longitude = longitude.value
+            }
+        cameraController.moveTo(kakaoMap, location)
+    }
+
+    fun resetZoomLevel() {
+        cameraController.resetZoomLevel(kakaoMap)
+    }
+
+    fun setBottomPadding(size: Int) {
+        kakaoMap.setPadding(0, 0, 0, size)
+    }
+
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     fun startTrackingCurrentLocation() {
         locationProvider.startLocationUpdates(
             onUpdate = { location ->
-                kakaoMap?.let { map: KakaoMap ->
-                    drawer.showUserPosition(map, location)
-                }
+                drawer.showUserPosition(kakaoMap, location)
             },
             onError = {
-                kakaoMap?.let { map: KakaoMap ->
-                    drawer.removeAllLabels(map)
-                }
+                drawer.removeAllLabels(kakaoMap)
             },
         )
     }
@@ -187,9 +154,8 @@ class KakaoMapManager(
     }
 
     fun scope(screenCenter: Coordinate): Scope {
-        val map = kakaoMap ?: throw IllegalStateException("KakaoMap이 초기화되지 않았습니다.")
         val screenDiagonalTop =
-            map.fromScreenPoint(0, 0)
+            kakaoMap.fromScreenPoint(0, 0)
                 ?: throw IllegalStateException("화면 좌표 계산 실패")
         val distance =
             DistanceCalculator.distance(screenCenter, screenDiagonalTop.toCoordinate())
