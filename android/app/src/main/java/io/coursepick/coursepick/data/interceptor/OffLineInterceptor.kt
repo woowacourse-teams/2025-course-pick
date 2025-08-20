@@ -3,7 +3,7 @@ package io.coursepick.coursepick.data.interceptor
 import io.coursepick.coursepick.data.NetworkMonitor
 import okhttp3.Interceptor
 import okhttp3.Response
-import okio.IOException
+import java.io.IOException
 
 class OffLineInterceptor(
     private val networkMonitor: NetworkMonitor,
