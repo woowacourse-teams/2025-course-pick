@@ -93,7 +93,6 @@ class CoursesViewModel(
                         }
                 _state.value =
                     state.value?.copy(courses = courseItems, isLoading = false, isFailure = false)
-                _event.value = CoursesUiEvent.FetchCourseSuccess(courseItems.firstOrNull())
             } catch (exception: IOException) {
                 _state.value =
                     state.value?.copy(
