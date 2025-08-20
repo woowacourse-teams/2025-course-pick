@@ -15,6 +15,11 @@ import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.presentation.LocationProvider
 import io.coursepick.coursepick.presentation.course.CourseItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 class KakaoMapManager(
     private val mapView: MapView,
@@ -42,8 +47,11 @@ class KakaoMapManager(
                 offsetPx,
                 offsetPx,
             )
-            showCurrentLocation()
             onMapReady()
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(500.milliseconds)
+                showCurrentLocation()
+            }
         }
     }
 
