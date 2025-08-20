@@ -17,7 +17,7 @@ import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
 import kotlinx.coroutines.launch
-import okio.IOException
+import java.io.IOException
 
 class CoursesViewModel(
     private val courseRepository: CourseRepository,
