@@ -16,4 +16,6 @@ interface CoursesAction {
     fun copyClientId()
 
     fun showCourseColorDescription()
+
+    fun clearQuery()
 }
