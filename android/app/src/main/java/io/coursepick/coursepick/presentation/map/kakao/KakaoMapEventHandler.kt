@@ -49,6 +49,7 @@ class KakaoMapEventHandler {
         onCameraMove: () -> Unit,
     ) {
         map.setOnCameraMoveStartListener { _, gestureType: GestureType ->
+            if (gestureType == GestureType.Unknown) return@setOnCameraMoveStartListener
             val cameraPosition: CameraPosition? = map.cameraPosition
             Logger.log(
                 Logger.Event.MapMoveStart("map"),
@@ -64,6 +65,7 @@ class KakaoMapEventHandler {
         }
 
         map.setOnCameraMoveEndListener { _, cameraPosition: CameraPosition, gestureType: GestureType ->
+            if (gestureType == GestureType.Unknown) return@setOnCameraMoveEndListener
             Logger.log(
                 Logger.Event.MapMoveEnd("map"),
                 "gesture_type" to gestureType.name,
