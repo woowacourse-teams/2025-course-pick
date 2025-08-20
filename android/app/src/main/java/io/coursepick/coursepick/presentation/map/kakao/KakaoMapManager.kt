@@ -29,7 +29,7 @@ class KakaoMapManager(
     val cameraPosition get(): LatLng? = kakaoMap?.cameraPosition?.position
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    fun start(onMapReady: (Coordinate) -> Unit) {
+    fun start(onMapReady: () -> Unit) {
         val offsetPx: Float =
             mapView.context.resources.getDimension(R.dimen.map_logo_position_offset)
         lifecycleHandler.start { map: KakaoMap ->
@@ -40,17 +40,7 @@ class KakaoMapManager(
                 offsetPx,
             )
             showCurrentLocation()
-            locationProvider.fetchCurrentLocation(
-                onSuccess = { location: Location ->
-                    onMapReady(
-                        Coordinate(
-                            Latitude(location.latitude),
-                            Longitude(location.longitude),
-                        ),
-                    )
-                },
-                onFailure = {},
-            )
+            onMapReady()
         }
     }
 
