@@ -22,9 +22,10 @@ public record CourseFile(
     }
 
     public static CourseFile from(MultipartFile file) throws IOException {
-        String[] fileFullName = file.getOriginalFilename().split("\\.");
-        String fileName = fileFullName[0];
-        String extension = fileFullName[1];
+        String originalFilename = file.getOriginalFilename();
+        int dotIndex = originalFilename.lastIndexOf(".");
+        String fileName = originalFilename.substring(0, dotIndex);
+        String extension = originalFilename.substring(dotIndex + 1);
 
         return new CourseFile(fileName, CourseFileExtension.from(extension), file.getInputStream());
     }

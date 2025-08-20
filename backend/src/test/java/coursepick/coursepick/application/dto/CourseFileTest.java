@@ -20,6 +20,18 @@ class CourseFileTest {
 
     @ParameterizedTest
     @CsvSource({
+            ".file.gpx, .file",
+            "_file.gpx, _file",
+    })
+    void 복잡한_특수문자로_이루어진_코스이름도_정상적으로_파싱한다(String filename, String expectedFileName) {
+        var result = new CourseFile(filename, CourseFileExtension.GPX, null);
+
+        assertThat(result.name()).isEqualTo(expectedFileName);
+        assertThat(result.extension()).isEqualTo(CourseFileExtension.GPX);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
             "코스.gpx, 2",
             "코스이.gpx, 3",
             "코스이름.gpx, 4"
