@@ -5,12 +5,19 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 
 class DefaultNetworkMonitor(
-    val context: Context,
+    private val context: Context,
 ) : NetworkMonitor {
     override fun isConnected(): Boolean {
-        val connectivityManager = context.getSystemService(ConnectivityManager::class.java)
-        val currentNetwork = connectivityManager.getActiveNetwork()
-        val caps = connectivityManager.getNetworkCapabilities(currentNetwork)
-        return caps?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+        val connectivityManager: ConnectivityManager =
+            context.getSystemService(ConnectivityManager::class.java)
+                ?: return false
+        val currentNetwork =
+            connectivityManager.activeNetwork
+                ?: return false
+        val caps =
+            connectivityManager.getNetworkCapabilities(currentNetwork)
+                ?: return false
+        return caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+            caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
     }
 }
