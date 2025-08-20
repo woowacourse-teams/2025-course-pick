@@ -1,8 +1,8 @@
 name: Backend Prod Server CD
 
 on:
-  push:
-    branches: [ main ]
+  pull_request:
+    branches: [ backend ]
     paths:
       - 'backend/**'
       - '.github/workflows/backend-prod-cd.yml'
@@ -63,20 +63,16 @@ jobs:
       - name: 탐침 스크립트 실행
         id: find
         run: |
-          # health 체크할 서버 목록
-          declare -A servers=(
-            [prod-app-1]="${{ secrets.PROD_APP_1_HEALTH_URL }}"
-            [prod-app-2]="${{ secrets.PROD_APP_2_HEALTH_URL }}"
-          )
-
+          ACTIVE_CONF="/etc/snippets/upstream.active"
+          APP1_CONF="/etc/snippets/upstream.prod-app-1.conf"
+          APP2_CONF="/etc/snippets/upstream.prod-app-2.conf"
           idle=""
-          for name in "${!servers[@]}"; do
-            code=$(curl -s -o /dev/null -w "%{http_code}" "${servers[$name]}" || echo "")
-            if [[ "$code" -ne 200 ]]; then
-              idle=$name
-              break
-            fi
-          done
+
+          if diff -q "ACTIVE_CONF" "APP1_CONF" &>/dev/null; then
+            idle="prod-app-2"
+          elif diff -q "ACTIVE_CONF" "APP2_CONF" &>/dev/null; then
+            idle="prod-app-1"
+          fi
 
           if [[ -z "$idle" ]]; then
             echo "Both servers are healthy – cannot find idle server" >&2
