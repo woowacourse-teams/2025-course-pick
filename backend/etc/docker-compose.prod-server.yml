@@ -1,4 +1,6 @@
+name: coursepick-prod-server
 services:
+
   backend:
     image: coursepicks/coursepick-backend:prod
     container_name: coursepick-backend

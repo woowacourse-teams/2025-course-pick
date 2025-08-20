@@ -1,5 +1,4 @@
 name: coursepick-dev
-
 services:
 
   mongodb:

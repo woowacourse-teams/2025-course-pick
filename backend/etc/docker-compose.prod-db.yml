@@ -1,6 +1,6 @@
 name: coursepick-prod-db
-
 services:
+
   mongodb:
     image: mongo:8.0.12
     container_name: mongodb
@@ -14,7 +14,7 @@ services:
       - /var/lib/coursepick/mongodb:/data/db
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      test: [ "CMD", "mongo", "--eval", "db.adminCommand('ping')" ]
       interval: 10s
       timeout: 5s
       retries: 3
