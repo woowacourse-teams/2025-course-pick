@@ -48,6 +48,7 @@ class SearchActivity : AppCompatActivity() {
                 override fun onQueryTextSubmit(query: String?): Boolean = true
 
                 override fun onQueryTextChange(newText: String?): Boolean {
+                    viewModel.updateQueryState(newText.isNullOrBlank())
                     viewModel.search(newText.orEmpty())
                     return true
                 }

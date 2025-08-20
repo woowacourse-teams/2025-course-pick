@@ -13,6 +13,7 @@
     <string name="feedback_url">https://docs.google.com/forms/d/e/1FAIpQLSdsJcNUsOcDiKW0FI-M360IUS64IZQmnWtMTbZqJSrx7HQbtg/viewform?usp=pp_url&amp;entry.1079171803=%s</string>
     <string name="privacy_policy_url">https://github.com/woowacourse-teams/2025-course-pick/wiki/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4%EC%B2%98%EB%A6%AC%EB%B0%A9%EC%B9%A8</string>
     <string name="search_query_hint">장소를 검색하세요</string>
+    <string name="search_no_result">검색 결과가 없어요 🥲</string>
     <string name="selected_route_finder_application_key">selected_route_finder_application</string>
     <string name="selected_route_finder_application_value_kakao">kakao map</string>
     <string name="selected_route_finder_application_value_naver">naver map</string>
