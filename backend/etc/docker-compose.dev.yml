@@ -11,7 +11,7 @@ services:
       - 'MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME}'
       - 'MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}'
     volumes:
-      - /var/lib/coursepick/mongo:/data/db
+      - /var/lib/coursepick/mongodb:/data/db
     restart: unless-stopped
 
   mysql:
