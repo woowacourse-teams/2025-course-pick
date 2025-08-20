@@ -1,4 +1,4 @@
-name: coursepick-prod-server
+name: coursepick-prod-app
 services:
 
   backend:
