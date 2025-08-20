@@ -37,7 +37,7 @@ jobs:
       - name: 새로운 서버 시작
         working-directory: /home/ssm-user/coursepick
         run: |
-          sudo docker compose up -d --pull always backend
+          sudo docker compose --env-file .env up -d --pull always backend
 
       - name: 시작된 서버 헬스체크
         run: |
