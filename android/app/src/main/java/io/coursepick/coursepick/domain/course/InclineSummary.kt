@@ -15,7 +15,5 @@ enum class InclineSummary {
             InclineSummary.entries.firstOrNull { inclineSummary: InclineSummary ->
                 inclineSummary.name == value
             } ?: UNKNOWN
-
-        fun random() = entries.random()
     }
 }

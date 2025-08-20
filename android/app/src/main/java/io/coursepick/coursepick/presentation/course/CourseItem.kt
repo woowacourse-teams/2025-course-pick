@@ -19,17 +19,17 @@ data class CourseItem(
     val difficulty: String = course.difficulty
 
     @StringRes
-    val inclineSummaryStringResourceId: Int = course.inclineSummary.stringResourceId
+    val inclineSummaryStringResourceId: Int? = course.inclineSummary.stringResourceId
 
-    private val InclineSummary.stringResourceId: Int
+    private val InclineSummary.stringResourceId: Int?
         get() =
             when (this) {
-                InclineSummary.FLAT -> R.string.incline_summary_flat
+                InclineSummary.MOSTLY_FLAT -> R.string.incline_summary_flat
                 InclineSummary.REPEATING_HILLS -> R.string.incline_summary_repeating_hills
                 InclineSummary.SOMETIMES_UPHILL -> R.string.incline_summary_sometimes_uphill
                 InclineSummary.SOMETIMES_DOWNHILL -> R.string.incline_summary_sometimes_downhill
                 InclineSummary.CONTINUOUS_UPHILL -> R.string.incline_summary_continuous_uphill
                 InclineSummary.CONTINUOUS_DOWNHILL -> R.string.incline_summary_continuous_downhill
-                InclineSummary.UNKNOWN -> R.string.incline_summary_unknown
+                InclineSummary.UNKNOWN -> null
             }
 }

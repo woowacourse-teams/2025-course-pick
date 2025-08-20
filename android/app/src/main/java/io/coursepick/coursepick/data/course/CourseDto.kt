@@ -27,7 +27,7 @@ data class CourseDto(
                 length = Length(length),
                 roadType = roadType,
                 difficulty = difficulty,
-                inclineSummary = InclineSummary.random(),
+                inclineSummary = InclineSummary(inclineSummary),
                 segments = segments.map(SegmentDto::toSegment),
             )
         }.getOrNull()
