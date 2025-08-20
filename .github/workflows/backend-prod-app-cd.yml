@@ -82,5 +82,5 @@ jobs:
       - name: 기존 서버 내리기
         working-directory: /home/ssm-user/coursepick
         run: |
-          docker compose down
-          docker image prune -a -f
+          sudo docker compose down
+          sudo docker image prune -a -f
