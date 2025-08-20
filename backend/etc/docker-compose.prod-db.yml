@@ -44,6 +44,3 @@ services:
     volumes:
       - /var/lib/coursepick/mysql:/var/lib/mysql
     restart: unless-stopped
-
-volumes:
-  mysql_data:
