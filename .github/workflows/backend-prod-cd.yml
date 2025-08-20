@@ -64,8 +64,8 @@ jobs:
         id: find
         run: |
           ACTIVE_CONF="/etc/nginx/snippets/upstream.active"
-          APP1_CONF="/etc/nginx/snippets/upstream.prod-app-1.conf"
-          APP2_CONF="/etc/nginx/snippets/upstream.prod-app-2.conf"
+          APP1_CONF="/etc/nginx/snippets/upstream.prod-app-1"
+          APP2_CONF="/etc/nginx/snippets/upstream.prod-app-2"
           idle=""
 
           if diff -q "ACTIVE_CONF" "APP1_CONF" &>/dev/null; then
