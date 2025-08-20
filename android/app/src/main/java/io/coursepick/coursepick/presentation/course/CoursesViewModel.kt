@@ -23,6 +23,7 @@ class CoursesViewModel(
     private val _state: MutableLiveData<CoursesUiState> =
         MutableLiveData(
             CoursesUiState(
+                query = "",
                 courses = emptyList(),
                 isLoading = true,
             ),
@@ -110,6 +111,10 @@ class CoursesViewModel(
                 _event.value = CoursesUiEvent.FetchNearestCoordinateFailure
             }
         }
+    }
+
+    fun setQuery(query: String) {
+        _state.value = state.value?.copy(query = query)
     }
 
     private fun newCourses(
