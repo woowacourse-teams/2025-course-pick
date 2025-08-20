@@ -12,7 +12,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import io.coursepick.coursepick.databinding.ActivitySearchBinding
 import io.coursepick.coursepick.domain.search.Place
-import io.coursepick.coursepick.presentation.CoordinateKeys
+import io.coursepick.coursepick.presentation.IntentKeys
 import io.coursepick.coursepick.presentation.Logger
 
 class SearchActivity : AppCompatActivity() {
@@ -33,6 +33,9 @@ class SearchActivity : AppCompatActivity() {
         setUpBindingVariables()
         setUpViews()
         setUpObservers()
+        intent.getStringExtra(IntentKeys.EXTRA_KEYS_PLACE_NAME)?.let { placeName: String ->
+            binding.searchView.setQuery(placeName, false)
+        }
     }
 
     private fun setUpBindingVariables() {
@@ -65,8 +68,9 @@ class SearchActivity : AppCompatActivity() {
         Logger.log(Logger.Event.Click("place"), "place" to place)
         val resultIntent =
             Intent().apply {
-                putExtra(CoordinateKeys.EXTRA_KEYS_LATITUDE, place.latitude)
-                putExtra(CoordinateKeys.EXTRA_KEYS_LONGITUDE, place.longitude)
+                putExtra(IntentKeys.EXTRA_KEYS_PLACE_LATITUDE, place.latitude)
+                putExtra(IntentKeys.EXTRA_KEYS_PLACE_LONGITUDE, place.longitude)
+                putExtra(IntentKeys.EXTRA_KEYS_PLACE_NAME, place.placeName)
             }
         setResult(RESULT_OK, resultIntent)
         finish()
