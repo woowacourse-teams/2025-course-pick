@@ -35,58 +35,73 @@ object Logger {
         )
     }
 
-    sealed class Event(
-        target: String? = null,
-    ) {
-        val name: String =
-            if (target == null) {
-                javaClass.simpleName.lowercase()
-            } else {
-                "${target}_${javaClass.simpleName.lowercase()}"
-            }
+    sealed class Event {
+        abstract val name: String
 
         class Enter(
             target: String,
-        ) : Event(target)
+        ) : Event() {
+            override val name: String = "${target}_enter"
+        }
 
         class Exit(
             target: String,
-        ) : Event(target)
+        ) : Event() {
+            override val name: String = "${target}_exit"
+        }
 
         class Pause(
             target: String,
-        ) : Event(target)
+        ) : Event() {
+            override val name: String = "${target}_pause"
+        }
 
         class Resume(
             target: String,
-        ) : Event(target)
+        ) : Event() {
+            override val name: String = "${target}_resume"
+        }
 
         class Click(
             target: String,
-        ) : Event(target)
+        ) : Event() {
+            override val name: String = "${target}_click"
+        }
 
         class MapMoveStart(
             target: String,
-        ) : Event(target)
+        ) : Event() {
+            override val name: String = "${target}_map_move_start"
+        }
 
         class MapMoveEnd(
             target: String,
-        ) : Event(target)
+        ) : Event() {
+            override val name: String = "${target}_map_move_end"
+        }
 
         class Search(
             target: String,
-        ) : Event(target)
+        ) : Event() {
+            override val name: String = "${target}_search"
+        }
 
         class Success(
             target: String,
-        ) : Event(target)
+        ) : Event() {
+            override val name: String = "${target}_success"
+        }
 
         class Failure(
             target: String,
-        ) : Event(target)
+        ) : Event() {
+            override val name: String = "${target}_failure"
+        }
 
         class PreferenceChange(
             target: String,
-        ) : Event(target)
+        ) : Event() {
+            override val name: String = "${target}_preference_change"
+        }
     }
 }
