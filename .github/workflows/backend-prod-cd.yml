@@ -68,9 +68,9 @@ jobs:
           APP2_CONF="/etc/nginx/snippets/upstream.prod-app-2"
           idle=""
 
-          if diff -q "ACTIVE_CONF" "APP1_CONF" &>/dev/null; then
+          if diff -q "$ACTIVE_CONF" "$APP1_CONF" &>/dev/null; then
             idle="prod-app-2"
-          elif diff -q "ACTIVE_CONF" "APP2_CONF" &>/dev/null; then
+          elif diff -q "$ACTIVE_CONF" "$APP2_CONF" &>/dev/null; then
             idle="prod-app-1"
           fi
 
