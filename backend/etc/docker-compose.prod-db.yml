@@ -7,9 +7,9 @@ services:
     ports:
       - '27017:27017'
     environment:
-      - 'MONGO_INITDB_ROOT_USERNAME='
-      - 'MONGO_INITDB_ROOT_PASSWORD='
-      - 'MONGO_INITDB_DATABASE='
+      - 'MONGO_INITDB_DATABASE=${MONGO_DATABASE}'
+      - 'MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME}'
+      - 'MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}'
     volumes:
       - /var/lib/coursepick/mongodb:/data/db
     restart: unless-stopped
@@ -28,11 +28,11 @@ services:
     environment:
       - 'ME_CONFIG_MONGODB_SERVER=mongodb'
       - 'ME_CONFIG_MONGODB_PORT=27017'
-      - 'ME_CONFIG_MONGODB_ENABLE_ADMIN='
-      - 'ME_CONFIG_MONGODB_AUTH_USERNAME='
-      - 'ME_CONFIG_MONGODB_AUTH_PASSWORD='
-      - 'ME_CONFIG_BASICAUTH_USERNAME='
-      - 'ME_CONFIG_BASICAUTH_PASSWORD='
+      - 'ME_CONFIG_MONGODB_ENABLE_ADMIN=true'
+      - 'ME_CONFIG_MONGODB_AUTH_USERNAME=${MONGO_ROOT_USERNAME}'
+      - 'ME_CONFIG_MONGODB_AUTH_PASSWORD=${MONGO_ROOT_PASSWORD}'
+      - 'ME_CONFIG_BASICAUTH_USERNAME=${MONGO_ROOT_USERNAME}'
+      - 'ME_CONFIG_BASICAUTH_PASSWORD=${MONGO_ROOT_PASSWORD}'
     depends_on:
       mongodb:
         condition: service_healthy
@@ -40,19 +40,14 @@ services:
   mysql:
     image: 'mysql:8.4.5'
     environment:
-      - 'MYSQL_DATABASE=???'
-      - 'MYSQL_ROOT_PASSWORD=???'
-      - 'MYSQL_USER=???'
-      - 'MYSQL_PASSWORD=???'
-      - 'LANG=C.UTF-8'
-      - 'LC_ALL=C.UTF-8'
+      - 'MYSQL_DATABASE=${DB_DATABASE}'
+      - 'MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}'
+      - 'MYSQL_USER=${DB_USERNAME}'
+      - 'MYSQL_PASSWORD=${DB_PASSWORD}'
     ports:
       - '3306:3306'
     volumes:
-      - mysql_data:/var/lib/mysql
-    command:
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
+      - /var/lib/coursepick/mysql:/var/lib/mysql
     restart: unless-stopped
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
