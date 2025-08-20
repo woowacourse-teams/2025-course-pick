@@ -44,6 +44,7 @@ services:
       - .env
     volumes:
       - /var/lib/coursepick/logs:/var/lib/coursepick/logs
+      - /var/lib/coursepick/gcp-credentials.json:/var/lib/coursepick/gcp-credentials.json
     restart: unless-stopped
     depends_on:
       - mysql
