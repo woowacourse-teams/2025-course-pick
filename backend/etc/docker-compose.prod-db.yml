@@ -13,16 +13,10 @@ services:
     volumes:
       - /var/lib/coursepick/mongodb:/data/db
     restart: unless-stopped
-    healthcheck:
-      test: [ "CMD", "mongo", "--eval", "db.adminCommand('ping')" ]
-      interval: 10s
-      timeout: 5s
-      retries: 3
 
   mongo-express:
     image: mongo-express
     container_name: mongo-express
-    restart: always
     ports:
       - '8081:8081'
     environment:
@@ -34,26 +28,22 @@ services:
       - 'ME_CONFIG_BASICAUTH_USERNAME=${MONGO_ROOT_USERNAME}'
       - 'ME_CONFIG_BASICAUTH_PASSWORD=${MONGO_ROOT_PASSWORD}'
     depends_on:
-      mongodb:
-        condition: service_healthy
+      - mongodb
+    restart: unless-stopped
 
   mysql:
-    image: 'mysql:8.4.5'
+    image: mysql:8.4.5
+    container_name: mysql
+    ports:
+      - '3306:3306'
     environment:
       - 'MYSQL_DATABASE=${DB_DATABASE}'
       - 'MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}'
       - 'MYSQL_USER=${DB_USERNAME}'
       - 'MYSQL_PASSWORD=${DB_PASSWORD}'
-    ports:
-      - '3306:3306'
     volumes:
       - /var/lib/coursepick/mysql:/var/lib/mysql
     restart: unless-stopped
-    healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
-      interval: 10s
-      timeout: 5s
-      retries: 3
 
 volumes:
   mysql_data:
