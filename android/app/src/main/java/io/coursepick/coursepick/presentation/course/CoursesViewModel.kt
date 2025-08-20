@@ -48,6 +48,10 @@ class CoursesViewModel(
         _event.value = CoursesUiEvent.SelectNewCourse(selectedCourse)
     }
 
+    fun setUiStateLoading() {
+        _state.value = state.value?.copy(isLoading = true)
+    }
+
     fun fetchCourses(
         mapCoordinate: Coordinate,
         userCoordinate: Coordinate?,
