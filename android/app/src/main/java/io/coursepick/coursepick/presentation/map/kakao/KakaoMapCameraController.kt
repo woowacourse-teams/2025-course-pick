@@ -36,6 +36,11 @@ class KakaoMapCameraController(
         fitTo(coordinates, map)
     }
 
+    fun resetZoomLevel(map: KakaoMap) {
+        val cameraUpdate: CameraUpdate = CameraUpdateFactory.zoomTo(DEFAULT_ZOOM_LEVEL)
+        map.moveCamera(cameraUpdate)
+    }
+
     private fun fitTo(
         coordinates: List<Coordinate>,
         map: KakaoMap,
@@ -49,5 +54,6 @@ class KakaoMapCameraController(
 
     companion object {
         private const val MOVE_ANIMATION_DURATION = 750
+        private const val DEFAULT_ZOOM_LEVEL = 15
     }
 }
