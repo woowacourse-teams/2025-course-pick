@@ -1,4 +1,5 @@
-name: Prod App CD
+name: Backend Prod App CD
+
 on:
   workflow_call:
     inputs:
