@@ -12,14 +12,9 @@ ubuntu 24.04 LTS, ARM64
 ### 스크립트
 
 ```text
-1.
 wget -O - https://apt.corretto.aws/corretto.key | sudo gpg --dearmor -o /usr/share/keyrings/corretto-keyring.gpg && \
 echo "deb [signed-by=/usr/share/keyrings/corretto-keyring.gpg] https://apt.corretto.aws stable main" | sudo tee /etc/apt/sources.list.d/corretto.list
-
-2.
 sudo apt-get update; sudo apt-get install -y java-21-amazon-corretto-jdk
-
-3.
 java -version
 ```
 
@@ -58,4 +53,29 @@ sudo usermod -aG docker $USER
 
 7.
 newgrp docker
+```
+
+## Cloudwatch Agent 설치
+
+### 스크립트
+
+```text
+1. 설치
+cd ~
+wget https://amazoncloudwatch-agent.s3.amazonaws.com/ubuntu/arm64/latest/amazon-cloudwatch-agent.deb
+sudo dpkg -i amazon-cloudwatch-agent.deb
+rm amazon-cloudwatch-agent.deb
+
+2. 실행
+sudo systemctl enable amazon-cloudwatch-agent.service
+
+3. 구성 파일 로딩
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+  -a fetch-config -m ec2 \
+  -c file:구성파일위치 -s
+
+4. 실행 확인
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+  -a status
+sudo systemctl status amazon-cloudwatch-agent.service
 ```
