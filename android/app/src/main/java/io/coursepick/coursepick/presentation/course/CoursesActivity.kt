@@ -86,11 +86,13 @@ class CoursesActivity :
         setUpDoubleBackPress()
         requestLocationPermissions()
 
-        mapManager.start { coordinate: Coordinate ->
+        mapManager.start {
             mapManager.setOnCameraMoveListener {
                 binding.mainSearchThisAreaButton.visibility = View.VISIBLE
             }
-            fetchCourses(coordinate, Scope.default())
+            mapManager.cameraPosition?.let { cameraPosition: LatLng ->
+                fetchCourses(cameraPosition.toCoordinate(), Scope.default())
+            }
         }
 
         searchLauncher = searchActivityResultLauncher()
