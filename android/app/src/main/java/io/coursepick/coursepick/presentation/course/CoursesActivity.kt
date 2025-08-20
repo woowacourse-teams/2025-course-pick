@@ -412,8 +412,6 @@ class CoursesActivity :
 
                 is CoursesUiEvent.SelectNewCourse -> {
                     selectCourse(event.course)
-                    val behavior = BottomSheetBehavior.from(binding.mainBottomSheet)
-                    behavior.state = BottomSheetBehavior.STATE_COLLAPSED
                 }
 
                 is CoursesUiEvent.FetchNearestCoordinateSuccess -> {
