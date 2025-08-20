@@ -81,9 +81,9 @@ jobs:
             fi
           done
           
-          if [[ ${#idle_servers[0]} -eq 0 ]]; then
+          if [[ ${#idle_servers[@]} -eq 0 ]]; then
             echo "Both servers are healthy – cannot find idle server"
-          elif [[ ${#idle_servers[0]} -eq 1 ]]; then
+          elif [[ ${#idle_servers[@]} -eq 1 ]]; then
             idle="${idle_servers[0]}"
             echo "One server is idle, idle=$idle"
             echo "idle=$idle" >> $GITHUB_OUTPUT
