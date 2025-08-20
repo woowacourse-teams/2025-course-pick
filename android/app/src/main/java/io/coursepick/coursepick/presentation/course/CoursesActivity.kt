@@ -239,9 +239,18 @@ class CoursesActivity :
     }
 
     private fun showFineLocationPermissionRationaleDialog() {
+        val message: String =
+            getString(
+                if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    R.string.fine_location_permission_rationale_dialog_with_coarse_permission_message
+                } else {
+                    R.string.fine_location_permission_rationale_dialog_without_coarse_permission_message
+                },
+            )
+
         AlertDialog
             .Builder(this)
-            .setMessage(getString(R.string.fine_location_permission_rationale_dialog_message))
+            .setMessage(message)
             .setPositiveButton(
                 getString(R.string.fine_location_permission_rationale_dialog_positive_button),
             ) { dialog: DialogInterface, _ ->
