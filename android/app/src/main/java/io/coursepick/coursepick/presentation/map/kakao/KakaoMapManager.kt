@@ -117,6 +117,12 @@ class KakaoMapManager(
         }
     }
 
+    fun resetZoomLevel() {
+        kakaoMap?.let { map: KakaoMap ->
+            cameraController.resetZoomLevel(map)
+        }
+    }
+
     fun showSearchLocation(
         latitude: Latitude,
         longitude: Longitude,
