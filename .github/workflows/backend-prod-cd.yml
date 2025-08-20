@@ -101,7 +101,7 @@ jobs:
     name: prod-app-1 서버에 배포
     needs: detect-idle
     if: needs.detect-idle.outputs.idle-server == 'prod-app-1'
-    uses: ./.github/workflows/backend-prod-app.cd.yml
+    uses: ./.github/workflows/backend-prod-app-cd.yml
     with:
       run_id: ${{ github.run_id }}
       main_runner: prod-app-1
@@ -112,7 +112,7 @@ jobs:
     name: prod-app-2 서버에 배포
     needs: detect-idle
     if: needs.detect-idle.outputs.idle-server == 'prod-app-2'
-    uses: ./.github/workflows/backend-prod-app.cd.yml
+    uses: ./.github/workflows/backend-prod-app-cd.yml
     with:
       run_id: ${{ github.run_id }}
       main_runner: prod-app-2
