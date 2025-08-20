@@ -7,6 +7,7 @@ on:
 
 jobs:
   build:
+    name: 도커 이미지 빌드 & 푸시
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -49,6 +50,7 @@ jobs:
             .
 
   deploy:
+    name: 개발서버 배포
     needs: build
     runs-on: [ self-hosted, dev-app ]
     defaults:
