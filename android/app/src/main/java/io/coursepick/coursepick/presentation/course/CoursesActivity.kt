@@ -34,8 +34,8 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.domain.course.Scope
-import io.coursepick.coursepick.presentation.CoordinateKeys
 import io.coursepick.coursepick.presentation.CoursePickApplication
+import io.coursepick.coursepick.presentation.IntentKeys
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.map.kakao.KakaoMapManager
 import io.coursepick.coursepick.presentation.map.kakao.toCoordinate
@@ -193,24 +193,34 @@ class CoursesActivity :
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun handleLocationResult(intent: Intent?) {
-        val latitudeExtraKey = CoordinateKeys.EXTRA_KEYS_LATITUDE
-        val longitudeExtraKey = CoordinateKeys.EXTRA_KEYS_LONGITUDE
-        if (intent == null ||
-            !intent.hasExtra(latitudeExtraKey) ||
-            !intent.hasExtra(
-                longitudeExtraKey,
-            )
-        ) {
+        if (intent == null) {
+            Toast.makeText(this@CoursesActivity, "검색 정보가 전달되지 않았습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val placeNameExtraKey = IntentKeys.EXTRA_KEYS_PLACE_NAME
+        binding.mainToolBar.title =
+            if (intent.hasExtra(placeNameExtraKey)) {
+                intent.getStringExtra(placeNameExtraKey)
+            } else {
+                getString(R.string.search_query_hint)
+            }
+
+        val latitudeExtraKey = IntentKeys.EXTRA_KEYS_PLACE_LATITUDE
+        val longitudeExtraKey = IntentKeys.EXTRA_KEYS_PLACE_LONGITUDE
+        if (!intent.hasExtra(latitudeExtraKey) || !intent.hasExtra(longitudeExtraKey)) {
             Toast.makeText(this, "위치 정보가 전달되지 않았습니다.", Toast.LENGTH_SHORT).show()
             return
         }
 
         val latitudeValue = intent.getDoubleExtra(latitudeExtraKey, 0.0)
         val longitudeValue = intent.getDoubleExtra(longitudeExtraKey, 0.0)
+        val placeName = intent.getStringExtra(placeNameExtraKey) ?: ""
 
         val latitude = Latitude(latitudeValue)
         val longitude = Longitude(longitudeValue)
 
+        binding.mainToolBar.title = placeName
         mapManager.moveTo(latitude, longitude)
         fetchCourses(Coordinate(latitude, longitude), Scope.default())
     }
