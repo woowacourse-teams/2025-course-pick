@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import io.coursepick.coursepick.data.NetworkMonitor
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseRepository
@@ -20,6 +21,7 @@ import okio.IOException
 
 class CoursesViewModel(
     private val courseRepository: CourseRepository,
+    private val networkMonitor: NetworkMonitor,
 ) : ViewModel() {
     private val _state: MutableLiveData<CoursesUiState> =
         MutableLiveData(
@@ -27,12 +29,27 @@ class CoursesViewModel(
                 query = "",
                 courses = emptyList(),
                 isLoading = true,
+                isNoInternet = false,
             ),
         )
     val state: LiveData<CoursesUiState> get() = _state
 
     private val _event: MutableSingleLiveData<CoursesUiEvent> = MutableSingleLiveData()
     val event: SingleLiveData<CoursesUiEvent> get() = _event
+
+    init {
+        checkNetwork()
+    }
+
+    private fun checkNetwork() {
+        if (!networkMonitor.isConnected()) {
+            _state.value =
+                state.value?.copy(
+                    isLoading = false,
+                    isNoInternet = true,
+                )
+        }
+    }
 
     fun select(selectedCourse: CourseItem) {
         if (selectedCourse.selected) {
@@ -148,7 +165,10 @@ class CoursesViewModel(
                     extras: CreationExtras,
                 ): T {
                     val application = checkNotNull(extras[APPLICATION_KEY]) as CoursePickApplication
-                    return CoursesViewModel(application.courseRepository) as T
+                    return CoursesViewModel(
+                        application.courseRepository,
+                        application.networkMonitor,
+                    ) as T
                 }
             }
     }
