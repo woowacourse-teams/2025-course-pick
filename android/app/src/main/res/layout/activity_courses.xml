@@ -189,6 +189,21 @@
                     app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
                     tools:listitem="@layout/item_course" />
 
+                <TextView
+                    android:id="@+id/mainEmptyCourses"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:text="@string/main_empty_courses_description"
+                    android:textSize="20sp"
+                    android:visibility="@{viewModel.state.isLoading || viewModel.state.areCoursesNotEmpty ? View.GONE : View.VISIBLE}"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
+                    tools:listitem="@layout/item_course" />
+
+
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
