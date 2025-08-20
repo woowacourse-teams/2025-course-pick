@@ -7,5 +7,5 @@ data class CoursesUiState(
     val isFailure: Boolean = false,
 ) {
     val isQueryBlank: Boolean get() = query.isBlank()
-    val areCoursesNotEmpty: Boolean = courses.isNotEmpty()
+    val areCoursesNotEmpty: Boolean get() = courses.isNotEmpty()
 }
