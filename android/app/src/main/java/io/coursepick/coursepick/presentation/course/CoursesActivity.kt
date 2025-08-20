@@ -81,6 +81,7 @@ class CoursesActivity :
             insets
         }
 
+        binding.mainCourses.itemAnimator = null
         setUpBindingVariables()
         setUpObservers()
         setUpDoubleBackPress()
@@ -213,9 +214,9 @@ class CoursesActivity :
         val latitude = Latitude(latitudeValue)
         val longitude = Longitude(longitudeValue)
 
+        fetchCourses(Coordinate(latitude, longitude), Scope.default())
         mapManager.resetZoomLevel()
         mapManager.moveTo(latitude, longitude)
-        fetchCourses(Coordinate(latitude, longitude), Scope.default())
     }
 
     private fun navigateToPreferences() {
