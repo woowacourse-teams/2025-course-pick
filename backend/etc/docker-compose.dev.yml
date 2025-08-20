@@ -1,19 +1,6 @@
 name: coursepick-dev
 
 services:
-  backend:
-    image: coursepicks/coursepick-backend:dev
-    container_name: coursepick-backend
-    ports:
-      - '80:8080'
-    env_file:
-      - .env
-    depends_on:
-      - mysql
-      - mongodb
-    volumes:
-      - /var/lib/coursepick/logs:/var/lib/coursepick/logs
-    restart: unless-stopped
 
   mongodb:
     image: mongo:8.0.12
@@ -26,26 +13,38 @@ services:
       - /var/lib/coursepick/mongo:/data/db
     restart: unless-stopped
 
+  mysql:
+    image: mysql:8.4.5
+    container_name: mysql
+    ports:
+      - '3306:3306'
+    env_file:
+      - .env
+    volumes:
+      - /var/lib/coursepick/mysql:/var/lib/mysql
+    restart: unless-stopped
+
   mongo-express:
     image: mongo-express
     container_name: mongo-express
-    restart: always
     ports:
-      - "8081:8081"
+      - '8081:8081'
     env_file:
       - .env
+    restart: unless-stopped
     depends_on:
       - mongodb
 
-  mysql:
-    image: 'mysql:8.4.5'
+  backend:
+    image: coursepicks/coursepick-backend:dev
+    container_name: coursepick-backend
+    ports:
+      - '80:8080'
     env_file:
       - .env
-    ports:
-      - '3306:3306'
     volumes:
-      - /var/lib/coursepick/mysql:/var/lib/mysql
-    command:
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
+      - /var/lib/coursepick/logs:/var/lib/coursepick/logs
     restart: unless-stopped
+    depends_on:
+      - mysql
+      - mongodb
