@@ -2,6 +2,7 @@ package io.coursepick.coursepick.presentation.map.kakao
 
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
+import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
 
@@ -19,6 +20,8 @@ class KakaoMapLifecycleHandler(
                 override fun onMapReady(map: KakaoMap) {
                     onMapReady(map)
                 }
+
+                override fun getPosition(): LatLng = LatLng.from(37.5100226, 127.1026170)
             },
         )
     }
