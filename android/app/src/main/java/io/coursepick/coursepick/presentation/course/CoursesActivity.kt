@@ -338,6 +338,7 @@ class CoursesActivity :
         mapCenter: Coordinate,
         scope: Scope,
     ) {
+        viewModel.setUiStateLoading()
         mapManager.fetchCurrentLocation(
             onSuccess = { userLatitude: Latitude, userLongitude: Longitude ->
                 val userCoordinate = Coordinate(userLatitude, userLongitude)
