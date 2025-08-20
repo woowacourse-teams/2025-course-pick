@@ -63,29 +63,28 @@ jobs:
       - name: 탐침 스크립트 실행
         id: find
         run: |
-          # health 체크할 서버 목록
           declare -A servers=(
             [prod-app-1]="${{ secrets.PROD_APP_1_HEALTH_URL }}"
             [prod-app-2]="${{ secrets.PROD_APP_2_HEALTH_URL }}"
           )
           
-          ok_servers=()
+          idle_servers=()
           
           for name in "${!servers[@]}"; do
             url="${servers[$name]}"
             code=$(curl -s -o /dev/null -w "%{http_code}" "$url" || echo "")
             if [[ "$code" -eq 200 ]]; then
               echo "$name 응답 성공"
-              ok_servers+=("$name")
             else
               echo "$name 응답 실패"
+              idle_servers+=("$name")
             fi
           done
           
-          if [[ ${#ok_servers[@]} -eq 2 ]]; then
+          if [[ ${#idle_servers[0]} -eq 0 ]]; then
             echo "Both servers are healthy – cannot find idle server"
-          elif [[ ${#ok_servers[@]} -eq 1 ]]; then
-            idle="${ok_servers[0]}"
+          elif [[ ${#idle_servers[0]} -eq 1 ]]; then
+            idle="${idle_servers[0]}"
             echo "One server is idle, idle=$idle"
             echo "idle=$idle" >> $GITHUB_OUTPUT
           else
