@@ -81,23 +81,23 @@ class CoursesActivity :
             val systemBars: Insets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             setUpNavigation(systemBars)
-            setUpBottomSheet(systemBars)
+            mapManager.start {
+                setUpObservers()
+                setUpBottomSheet(systemBars)
+                mapManager.setOnCameraMoveListener {
+                    binding.mainSearchThisAreaButton.visibility = View.VISIBLE
+                }
+                mapManager.cameraPosition?.let { cameraPosition: LatLng ->
+                    fetchCourses(cameraPosition.toCoordinate(), Scope.default())
+                }
+            }
+
             insets
         }
 
         setUpBindingVariables()
-        setUpObservers()
         setUpDoubleBackPress()
         requestLocationPermissions()
-
-        mapManager.start {
-            mapManager.setOnCameraMoveListener {
-                binding.mainSearchThisAreaButton.visibility = View.VISIBLE
-            }
-            mapManager.cameraPosition?.let { cameraPosition: LatLng ->
-                fetchCourses(cameraPosition.toCoordinate(), Scope.default())
-            }
-        }
 
         searchLauncher = searchActivityResultLauncher()
     }
@@ -248,7 +248,7 @@ class CoursesActivity :
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
             showFineLocationPermissionRationaleDialog()
         } else {
-            mapManager.moveToCurrentLocation()
+            mapManager.showCurrentLocation()
         }
     }
 
