@@ -6,6 +6,6 @@ data class CoursesUiState(
     val isLoading: Boolean = false,
     val isFailure: Boolean = false,
 ) {
-    val areCoursesEmpty: Boolean = courses.isEmpty()
     val isQueryBlank: Boolean get() = query.isBlank()
+    val areCoursesEmpty: Boolean get() = courses.isEmpty()
 }

@@ -5,6 +5,7 @@
     <string name="main_course_unit_meter">%dm</string>
     <string name="main_course_unit_kilometer">%.2fkm</string>
     <string name="main_back_press_exit">버튼을 한 번 더 누르면 종료됩니다.</string>
+    <string name="main_empty_courses_description">이 곳엔 코스가 없어요 🥲</string>
     <string name="item_course_divider">|</string>
     <string name="main_search_this_area">이 지역 검색</string>
     <string name="main_course_color_description">코스 색</string>
