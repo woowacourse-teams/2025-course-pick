@@ -33,6 +33,10 @@ class SearchActivity : AppCompatActivity() {
         setUpBindingVariables()
         setUpViews()
         setUpObservers()
+        binding.searchView.setQuery(
+            intent.getStringExtra(IntentKeys.EXTRA_KEYS_PLACE_NAME) ?: "",
+            false,
+        )
     }
 
     private fun setUpBindingVariables() {

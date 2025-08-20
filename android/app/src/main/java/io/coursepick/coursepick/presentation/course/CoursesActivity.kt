@@ -162,7 +162,10 @@ class CoursesActivity :
     }
 
     override fun search() {
-        val intent = SearchActivity.intent(this)
+        val intent =
+            SearchActivity.intent(this).apply {
+                putExtra(IntentKeys.EXTRA_KEYS_PLACE_NAME, viewModel.state.value?.query)
+            }
         searchLauncher?.launch(intent) ?: Toast
             .makeText(
                 this,
@@ -199,12 +202,9 @@ class CoursesActivity :
         }
 
         val placeNameExtraKey = IntentKeys.EXTRA_KEYS_PLACE_NAME
-        binding.mainToolBar.title =
-            if (intent.hasExtra(placeNameExtraKey)) {
-                intent.getStringExtra(placeNameExtraKey)
-            } else {
-                getString(R.string.search_query_hint)
-            }
+        if (intent.hasExtra(placeNameExtraKey)) {
+            viewModel.setQuery(intent.getStringExtra(placeNameExtraKey) ?: "")
+        }
 
         val latitudeExtraKey = IntentKeys.EXTRA_KEYS_PLACE_LATITUDE
         val longitudeExtraKey = IntentKeys.EXTRA_KEYS_PLACE_LONGITUDE
@@ -215,12 +215,10 @@ class CoursesActivity :
 
         val latitudeValue = intent.getDoubleExtra(latitudeExtraKey, 0.0)
         val longitudeValue = intent.getDoubleExtra(longitudeExtraKey, 0.0)
-        val placeName = intent.getStringExtra(placeNameExtraKey) ?: ""
 
         val latitude = Latitude(latitudeValue)
         val longitude = Longitude(longitudeValue)
 
-        binding.mainToolBar.title = placeName
         mapManager.moveTo(latitude, longitude)
         fetchCourses(Coordinate(latitude, longitude), Scope.default())
     }

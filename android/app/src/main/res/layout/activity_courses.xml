@@ -53,7 +53,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:navigationIcon="@drawable/icon_menu"
                 app:onNavigationClick="@{() -> action.openMenu()}"
-                app:title="@string/search_query_hint" />
+                app:title="@{viewModel.state.isQueryBlank ? @string/search_query_hint : viewModel.state.query}" />
 
             <LinearLayout
                 android:id="@+id/mainSearchThisAreaButton"
