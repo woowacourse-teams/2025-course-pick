@@ -101,7 +101,6 @@ class CoursesViewModel(
                         isFailure = false,
                         isNoInternet = true,
                     )
-                _event.value = CoursesUiEvent.NoInternet
             } catch (exception: Exception) {
                 Logger.log(
                     Logger.Event.Failure("fetch_courses"),
