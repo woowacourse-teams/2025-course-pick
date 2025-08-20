@@ -28,4 +28,7 @@
     <string name="course_color_description_flat">평지</string>
     <string name="course_color_description_downhill">내리막</string>
     <string name="course_color_description_confirm">확인</string>
+    <string name="fine_location_permission_rationale_dialog_message">현위치 기능은 \'정확한 위치\' 권한으로만 사용 가능합니다.</string>
+    <string name="fine_location_permission_rationale_dialog_negative_button">설정으로 이동</string>
+    <string name="fine_location_permission_rationale_dialog_positive_button">확인</string>
 </resources>

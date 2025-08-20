@@ -4,10 +4,13 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
@@ -18,6 +21,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresPermission
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.Insets
 import androidx.core.net.toUri
@@ -227,7 +231,31 @@ class CoursesActivity :
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun moveToCurrentLocation() {
         Logger.log(Logger.Event.Click("move_to_current_location"))
-        mapManager.moveToCurrentLocation()
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+            showFineLocationPermissionRationaleDialog()
+        } else {
+            mapManager.moveToCurrentLocation()
+        }
+    }
+
+    private fun showFineLocationPermissionRationaleDialog() {
+        AlertDialog
+            .Builder(this)
+            .setMessage(getString(R.string.fine_location_permission_rationale_dialog_message))
+            .setPositiveButton(
+                getString(R.string.fine_location_permission_rationale_dialog_positive_button),
+            ) { dialog: DialogInterface, _ ->
+                dialog.dismiss()
+            }.setNegativeButton(
+                getString(R.string.fine_location_permission_rationale_dialog_negative_button),
+            ) { dialog: DialogInterface, _ ->
+                val intent =
+                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = "package:$packageName".toUri()
+                    }
+                startActivity(intent)
+                dialog.dismiss()
+            }.show()
     }
 
     private fun navigateToFeedback() {
