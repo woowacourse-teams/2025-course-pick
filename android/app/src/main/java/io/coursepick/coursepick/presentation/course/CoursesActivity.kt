@@ -162,10 +162,9 @@ class CoursesActivity :
     }
 
     override fun search() {
-        val intent =
-            SearchActivity.intent(this).apply {
-                putExtra(IntentKeys.EXTRA_KEYS_PLACE_NAME, viewModel.state.value?.query)
-            }
+        val intent = SearchActivity.intent(this)
+        val query: String? = viewModel.state.value?.query
+        if (!query.isNullOrBlank()) intent.putExtra(IntentKeys.EXTRA_KEYS_PLACE_NAME, query)
         searchLauncher?.launch(intent) ?: Toast
             .makeText(
                 this,
@@ -206,8 +205,9 @@ class CoursesActivity :
         }
 
         val placeNameExtraKey = IntentKeys.EXTRA_KEYS_PLACE_NAME
-        if (intent.hasExtra(placeNameExtraKey)) {
-            viewModel.setQuery(intent.getStringExtra(placeNameExtraKey) ?: "")
+        val query: String? = intent.getStringExtra(placeNameExtraKey)
+        if (!query.isNullOrBlank()) {
+            viewModel.setQuery(query)
         }
 
         val latitudeExtraKey = IntentKeys.EXTRA_KEYS_PLACE_LATITUDE
