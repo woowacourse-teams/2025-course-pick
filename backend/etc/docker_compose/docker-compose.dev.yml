@@ -1,0 +1,75 @@
+name: coursepick-dev
+services:
+
+  mongodb:
+    image: mongo:8.0.12
+    container_name: mongodb
+    ports:
+      - '27017:27017'
+    environment:
+      - 'MONGO_INITDB_DATABASE=${MONGO_DATABASE}'
+      - 'MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME}'
+      - 'MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}'
+    volumes:
+      - /var/lib/coursepick/mongodb:/data/db
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.4.5
+    container_name: mysql
+    ports:
+      - '3306:3306'
+    environment:
+      - 'MYSQL_DATABASE=${DB_DATABASE}'
+      - 'MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}'
+      - 'MYSQL_USER=${DB_USERNAME}'
+      - 'MYSQL_PASSWORD=${DB_PASSWORD}'
+    volumes:
+      - /var/lib/coursepick/mysql:/var/lib/mysql
+    restart: unless-stopped
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    ports:
+      - '8081:8081'
+    environment:
+      - 'ME_CONFIG_MONGODB_SERVER=mongodb'
+      - 'ME_CONFIG_MONGODB_PORT=27017'
+      - 'ME_CONFIG_MONGODB_ENABLE_ADMIN=true'
+      - 'ME_CONFIG_MONGODB_AUTH_USERNAME=${MONGO_ROOT_USERNAME}'
+      - 'ME_CONFIG_MONGODB_AUTH_PASSWORD=${MONGO_ROOT_PASSWORD}'
+      - 'ME_CONFIG_BASICAUTH_USERNAME=${MONGO_ROOT_USERNAME}'
+      - 'ME_CONFIG_BASICAUTH_PASSWORD=${MONGO_ROOT_PASSWORD}'
+    restart: unless-stopped
+    depends_on:
+      - mongodb
+
+  backend:
+    image: coursepicks/coursepick-backend:dev
+    container_name: coursepick-backend
+    ports:
+      - '80:8080'
+    environment:
+      - 'SPRING_PROFILES_ACTIVE=${PROFILE}'
+      - 'DB_URL=${DB_URL}'
+      - 'DB_USERNAME=${DB_USERNAME}'
+      - 'DB_PASSWORD=${DB_PASSWORD}'
+      - 'MONGO_HOST=${MONGO_HOST}'
+      - 'MONGO_PORT=${MONGO_PORT}'
+      - 'MONGO_DATABASE=${MONGO_DATABASE}'
+      - 'MONGO_USERNAME=${MONGO_ROOT_USERNAME}'
+      - 'MONGO_PASSWORD=${MONGO_ROOT_PASSWORD}'
+      - 'MONGO_AUTH_DATABASE=${MONGO_AUTH_DATABASE}'
+      - 'ADMIN_TOKEN=${ADMIN_TOKEN}'
+      - 'DEV_SERVER_URL=${DEV_SERVER_URL}'
+      - 'PROD_SERVER_URL=${PROD_SERVER_URL}'
+      - 'GCP_DRIVE_FOLDER_ID=${GCP_DRIVE_FOLDER_ID}'
+      - 'GCP_CREDENTIALS_PATH=${GCP_CREDENTIALS_PATH}'
+    volumes:
+      - /var/lib/coursepick/logs:/var/lib/coursepick/logs
+      - /var/lib/coursepick/gcp-credentials.json:/var/lib/coursepick/gcp-credentials.json
+    restart: unless-stopped
+    depends_on:
+      - mysql
+      - mongodb

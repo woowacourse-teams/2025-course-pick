@@ -1,6 +1,6 @@
 name: coursepick-local
-
 services:
+
   mongodb:
     image: mongo:8.0.12
     container_name: mongoDB
