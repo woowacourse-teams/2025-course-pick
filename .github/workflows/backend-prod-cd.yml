@@ -68,19 +68,30 @@ jobs:
             [prod-app-1]="${{ secrets.PROD_APP_1_HEALTH_URL }}"
             [prod-app-2]="${{ secrets.PROD_APP_2_HEALTH_URL }}"
           )
-
-          idle=""
+          
+          ok_servers=()
+          
           for name in "${!servers[@]}"; do
-            code=$(curl -s -o /dev/null -w "%{http_code}" "${servers[$name]}" || echo "")
-            if [[ "$code" -ne 200 ]]; then
-              idle=$name
-              break
+            url="${servers[$name]}"
+            code=$(curl -s -o /dev/null -w "%{http_code}" "$url" || echo "")
+            if [[ "$code" -eq 200 ]]; then
+              echo "$name 응답 성공"
+              ok_servers+=("$name")
+            else
+              echo "$name 응답 실패"
             fi
           done
-
-          if [[ -z "$idle" ]]; then
-            echo "Both servers are healthy – cannot find idle server" >&2
-            exit 1
+          
+          if [[ ${#ok_servers[@]} -eq 2 ]]; then
+            echo "Both servers are healthy – cannot find idle server"
+          elif [[ ${#ok_servers[@]} -eq 1 ]]; then
+            idle="${ok_servers[0]}"
+            echo "One server is idle, idle=$idle"
+            echo "idle=$idle" >> $GITHUB_OUTPUT
+          else
+            echo "None servers are idle – as default, deploy to server1, idle=$idle"
+            idle="prod-app-1"
+            echo "idle=$idle" >> $GITHUB_OUTPUT
           fi
 
           echo "idle=$idle" >> $GITHUB_OUTPUT
