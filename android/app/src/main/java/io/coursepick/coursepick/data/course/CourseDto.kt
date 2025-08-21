@@ -15,7 +15,7 @@ data class CourseDto(
     private val length: Double,
     private val roadType: String,
     private val difficulty: String,
-    private val inclineSummary: String,
+    private val inclineSummary: String?,
     private val segments: List<SegmentDto>,
 ) {
     fun toCourseOrNull(): Course? =

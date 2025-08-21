@@ -11,7 +11,7 @@ enum class InclineSummary {
     ;
 
     companion object {
-        operator fun invoke(value: String): InclineSummary =
+        operator fun invoke(value: String?): InclineSummary =
             InclineSummary.entries.firstOrNull { inclineSummary: InclineSummary ->
                 inclineSummary.name == value
             } ?: UNKNOWN
