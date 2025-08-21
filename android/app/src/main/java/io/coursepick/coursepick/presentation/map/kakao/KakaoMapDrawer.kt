@@ -29,7 +29,12 @@ class KakaoMapDrawer(
         layer.removeAll()
         courses.forEach { course: CourseItem ->
             val options: RouteLineOptions = routeLineOptionsFactory.routeLineOptions(course)
-            layer.addRouteLine(options)
+            layer.addRouteLine(
+                options.apply {
+                    zOrder =
+                        if (course.selected) SELECTED_COURSE_Z_ORDER else UNSELECTED_COURSE_Z_ORDER
+                },
+            )
         }
     }
 
@@ -94,5 +99,7 @@ class KakaoMapDrawer(
 
     companion object {
         private const val LABEL_MOVE_ANIMATION_DURATION = 500
+        private const val SELECTED_COURSE_Z_ORDER = 1
+        private const val UNSELECTED_COURSE_Z_ORDER = 0
     }
 }
