@@ -32,7 +32,7 @@ services:
     image: mongo-express
     container_name: mongo-express
     ports:
-      - '8081:8081'
+      - '8080:8081'
     environment:
       - 'ME_CONFIG_MONGODB_SERVER=mongodb'
       - 'ME_CONFIG_MONGODB_PORT=27017'
