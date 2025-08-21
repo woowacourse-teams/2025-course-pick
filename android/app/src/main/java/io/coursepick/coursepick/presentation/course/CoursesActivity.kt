@@ -65,13 +65,13 @@ class CoursesActivity :
     private val courseAdapter by lazy { CourseAdapter(CourseItemListener()) }
     private val doublePressDetector = DoublePressDetector()
     private val mapManager by lazy { KakaoMapManager(binding.mainMap) }
+    private var systemBars: Insets? = null
 
     @SuppressLint("MissingPermission")
     private val locationPermissionLauncher: ActivityResultLauncher<Array<String>> =
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions(),
-        ) {
-        }
+        ) {}
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,6 +80,7 @@ class CoursesActivity :
         setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view: View, insets: WindowInsetsCompat ->
             val systemBars: Insets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            this.systemBars = systemBars
             view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             setUpNavigation(systemBars)
             setUpBottomSheet(systemBars)
@@ -88,7 +89,7 @@ class CoursesActivity :
 
         mapManager.start {
             setUpObservers()
-            setUpBottomSheet(WindowInsetsCompat.CONSUMED.getInsets(WindowInsetsCompat.Type.systemBars()))
+            systemBars?.let(::setUpMapPadding)
             mapManager.setOnCameraMoveListener {
                 binding.mainSearchThisAreaButton.visibility = View.VISIBLE
             }
@@ -368,13 +369,18 @@ class CoursesActivity :
         binding.mainNavigation.setPadding(0, 0, 0, systemBars.bottom)
     }
 
+    private fun setUpMapPadding(systemBars: Insets) {
+        val bottomSheet = binding.mainBottomSheet
+        val screenHeight = Resources.getSystem().displayMetrics.heightPixels
+        mapManager.setBottomPadding(screenHeight - systemBars.bottom - bottomSheet.height)
+    }
+
     private fun setUpBottomSheet(systemBars: Insets) {
         val bottomSheet = binding.mainBottomSheet
         val screenHeight = Resources.getSystem().displayMetrics.heightPixels
 
         bottomSheet.layoutParams.height = screenHeight / 2
         bottomSheet.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom)
-        mapManager.setBottomPadding(screenHeight - systemBars.bottom - bottomSheet.height)
 
         val behavior = BottomSheetBehavior.from(bottomSheet)
         behavior.state = BottomSheetBehavior.STATE_EXPANDED
