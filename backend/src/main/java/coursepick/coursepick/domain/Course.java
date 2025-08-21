@@ -25,6 +25,8 @@ public class Course {
 
     private final RoadType roadType;
 
+    private final InclineSummary inclineSummary;
+
     @GeoSpatialIndexed(name = "idx_geo_segments", type = GeoSpatialIndexType.GEO_2DSPHERE)
     private final List<Segment> segments;
 
@@ -47,6 +49,7 @@ public class Course {
                 .mergeSameInclineType()
                 .build();
         this.length = calculateLength(segments);
+        this.inclineSummary = InclineSummary.of(segments);
         this.difficulty = Difficulty.fromLengthAndRoadType(length(), roadType);
     }
 
@@ -77,10 +80,8 @@ public class Course {
     }
 
     private static Meter calculateLength(List<Segment> segments) {
-        Meter total = Meter.zero();
-        for (Segment segment : segments) {
-            total = total.add(segment.length());
-        }
-        return total;
+        return segments.stream()
+                .map(Segment::length)
+                .reduce(Meter.zero(), Meter::add);
     }
 }

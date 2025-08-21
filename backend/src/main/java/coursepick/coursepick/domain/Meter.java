@@ -1,5 +1,7 @@
 package coursepick.coursepick.domain;
 
+import coursepick.coursepick.application.exception.ErrorType;
+
 public record Meter(
         double value
 ) {
@@ -21,5 +23,12 @@ public record Meter(
 
     public boolean isWithin(Meter other) {
         return this.value() <= other.value();
+    }
+
+    public double getRateOf(Meter other) {
+        if (this.value == 0) {
+            throw ErrorType.INVALID_RATIO_BASE.create();
+        }
+        return other.value() / this.value();
     }
 }
