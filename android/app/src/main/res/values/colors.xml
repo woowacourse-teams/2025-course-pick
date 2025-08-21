@@ -17,6 +17,8 @@
     <color name="background_tertiary">#EEEDF4</color>
     <color name="background_border">#C5C6D0</color>
 
+    <color name="point_primary">#FF8314</color>
+
     <color name="course_downhill">#5B8DEF</color>
     <color name="course_flat">#6BBE92</color>
     <color name="course_uphill">#E75B64</color>
