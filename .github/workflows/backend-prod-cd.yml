@@ -1,7 +1,7 @@
 name: Backend Prod Server CD
 
 on:
-  pull_request:
+  push:
     branches: [ main ]
     paths:
       - 'backend/**'
