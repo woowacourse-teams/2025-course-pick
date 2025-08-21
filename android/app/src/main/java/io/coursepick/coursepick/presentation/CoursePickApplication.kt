@@ -5,6 +5,7 @@ import android.app.Application
 import android.os.Bundle
 import com.kakao.vectormap.KakaoMapSdk
 import io.coursepick.coursepick.BuildConfig
+import io.coursepick.coursepick.data.DefaultNetworkMonitor
 import io.coursepick.coursepick.data.Services
 import io.coursepick.coursepick.data.course.DefaultCourseRepository
 import io.coursepick.coursepick.data.search.DefaultSearchRepository
@@ -15,7 +16,8 @@ import timber.log.Timber
 
 class CoursePickApplication : Application() {
     val installationId: InstallationId by lazy { InstallationId(this) }
-    private val services: Services by lazy { Services(installationId) }
+    val networkMonitor: DefaultNetworkMonitor by lazy { DefaultNetworkMonitor(this) }
+    private val services: Services by lazy { Services(installationId, networkMonitor) }
     val courseRepository: CourseRepository by lazy { DefaultCourseRepository(services.courseService) }
     val searchRepository: SearchRepository by lazy { DefaultSearchRepository(services.searchService) }
 

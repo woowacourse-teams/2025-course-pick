@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import io.coursepick.coursepick.data.NetworkMonitor
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseRepository
@@ -16,9 +17,11 @@ import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 class CoursesViewModel(
     private val courseRepository: CourseRepository,
+    private val networkMonitor: NetworkMonitor,
 ) : ViewModel() {
     private val _state: MutableLiveData<CoursesUiState> =
         MutableLiveData(
@@ -26,12 +29,27 @@ class CoursesViewModel(
                 query = "",
                 courses = emptyList(),
                 isLoading = true,
+                isNoInternet = false,
             ),
         )
     val state: LiveData<CoursesUiState> get() = _state
 
     private val _event: MutableSingleLiveData<CoursesUiEvent> = MutableSingleLiveData()
     val event: SingleLiveData<CoursesUiEvent> get() = _event
+
+    init {
+        checkNetwork()
+    }
+
+    private fun checkNetwork() {
+        if (!networkMonitor.isConnected()) {
+            _state.value =
+                state.value?.copy(
+                    isLoading = false,
+                    isNoInternet = true,
+                )
+        }
+    }
 
     fun select(selectedCourse: CourseItem) {
         if (selectedCourse.selected) {
@@ -58,11 +76,11 @@ class CoursesViewModel(
             state.value?.copy(
                 isLoading = true,
                 isFailure = false,
+                isNoInternet = false,
             )
         viewModelScope.launch {
-            runCatching {
-                courseRepository.courses(mapCoordinate, userCoordinate, scope)
-            }.onSuccess { courses: List<Course> ->
+            try {
+                val courses = courseRepository.courses(mapCoordinate, userCoordinate, scope)
                 Logger.log(Logger.Event.Success("fetch_courses"))
                 val courseItems: List<CourseItem> =
                     courses
@@ -75,10 +93,18 @@ class CoursesViewModel(
                         }
                 _state.value =
                     state.value?.copy(courses = courseItems, isLoading = false, isFailure = false)
-            }.onFailure { error: Throwable ->
+            } catch (exception: IOException) {
+                _state.value =
+                    state.value?.copy(
+                        courses = emptyList(),
+                        isLoading = false,
+                        isFailure = false,
+                        isNoInternet = true,
+                    )
+            } catch (exception: Exception) {
                 Logger.log(
                     Logger.Event.Failure("fetch_courses"),
-                    "message" to error.message.toString(),
+                    "message" to exception.message.toString(),
                 )
                 _state.value =
                     state.value?.copy(courses = emptyList(), isLoading = false, isFailure = true)
@@ -137,7 +163,10 @@ class CoursesViewModel(
                     extras: CreationExtras,
                 ): T {
                     val application = checkNotNull(extras[APPLICATION_KEY]) as CoursePickApplication
-                    return CoursesViewModel(application.courseRepository) as T
+                    return CoursesViewModel(
+                        application.courseRepository,
+                        application.networkMonitor,
+                    ) as T
                 }
             }
     }
