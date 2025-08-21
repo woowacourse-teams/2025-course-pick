@@ -4,6 +4,7 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseName
 import io.coursepick.coursepick.domain.course.Distance
+import io.coursepick.coursepick.domain.course.InclineSummary
 import io.coursepick.coursepick.domain.course.InclineType
 import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Length
@@ -72,6 +73,7 @@ private fun Course(
         length = Length(length),
         roadType = type,
         difficulty = difficulty,
+        inclineSummary = InclineSummary.UNKNOWN,
         segments =
             listOf(
                 Segment(

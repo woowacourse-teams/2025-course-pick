@@ -14,6 +14,7 @@ class CourseTest {
                 Length(3000),
                 "트랙",
                 "쉬움",
+                InclineSummary.UNKNOWN,
                 emptyList(),
             )
         }
