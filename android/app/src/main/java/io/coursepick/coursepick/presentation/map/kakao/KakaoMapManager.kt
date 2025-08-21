@@ -72,13 +72,14 @@ class KakaoMapManager(
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    fun showCurrentLocation() {
+    fun showCurrentLocation(afterSuccess: () -> Unit = {}) {
         locationProvider.fetchCurrentLocation(
             onSuccess = { location: Location ->
                 kakaoMap?.let { kakaoMap: KakaoMap ->
                     drawer.showUserPosition(kakaoMap, location)
                     cameraController.moveTo(kakaoMap, location)
                 } ?: Timber.w("kakaoMap is null")
+                afterSuccess()
             },
             onFailure = {
                 Toast
