@@ -1,5 +1,6 @@
 package coursepick.coursepick.logging;
 
+import org.bson.Document;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
@@ -27,6 +28,15 @@ public class LogContent {
                 kv("req_headers", headers),
                 kv("req_body", left(requestBody, 100)),
                 kv("res_body", left(responseBody, 100))
+        };
+    }
+
+    public static Object[] exception(Document document, Exception e) {
+        return new Object[]{
+                kv("document", document),
+                kv("exception_class", e.getClass().getName()),
+                kv("exception_message", e.getMessage()),
+                e
         };
     }
 
