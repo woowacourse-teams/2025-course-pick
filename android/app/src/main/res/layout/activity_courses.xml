@@ -58,7 +58,8 @@
                 app:navigationIcon="@drawable/icon_menu"
                 app:onNavigationClick="@{() -> action.openMenu()}"
                 app:title="@{viewModel.state.isQueryBlank ? @string/search_query_hint : viewModel.state.query}"
-                app:titleTextAppearance="@style/Toolbar.TitleText">
+                app:titleTextAppearance="@style/Toolbar.TitleText"
+                app:titleTextColor="@{viewModel.state.isQueryBlank ? @color/gray3 : @color/item_primary }">
 
                 <ImageView
                     android:layout_width="wrap_content"
