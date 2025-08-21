@@ -22,6 +22,10 @@
         <variable
             name="clientId"
             type="String" />
+
+        <variable
+            name="listener"
+            type="io.coursepick.coursepick.presentation.compat.OnReconnectListener" />
     </data>
 
     <androidx.drawerlayout.widget.DrawerLayout
@@ -183,7 +187,7 @@
                     android:layout_marginTop="10dp"
                     android:adapter="@{adapter}"
                     android:orientation="vertical"
-                    android:visibility="@{viewModel.state.isLoading || viewModel.state.areCoursesEmpty ? View.GONE : View.VISIBLE}"
+                    android:visibility="@{viewModel.state.isLoading || viewModel.state.areCoursesEmpty || viewModel.state.isNoInternet ? View.GONE : View.VISIBLE}"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
@@ -197,12 +201,21 @@
                     android:gravity="center"
                     android:text="@string/main_empty_courses_description"
                     android:textSize="20sp"
-                    android:visibility="@{viewModel.state.isLoading || !viewModel.state.areCoursesEmpty ? View.GONE : View.VISIBLE}"
+                    android:visibility="@{viewModel.state.isLoading || !viewModel.state.areCoursesEmpty || viewModel.state.isNoInternet ? View.GONE : View.VISIBLE}"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
                     tools:listitem="@layout/item_course" />
 
+                <include
+                    android:id="@+id/noInternet"
+                    layout="@layout/layout_no_internet"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:visibility="@{viewModel.state.isNoInternet ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
+                    app:listener="@{listener}" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
