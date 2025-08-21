@@ -107,7 +107,11 @@ class CoursesViewModel(
                     "message" to exception.message.toString(),
                 )
                 _state.value =
-                    state.value?.copy(courses = emptyList(), isLoading = false, isFailure = true)
+                    state.value?.copy(
+                        courses = emptyList(),
+                        isLoading = false,
+                        isFailure = true,
+                    )
                 _event.value = CoursesUiEvent.FetchCourseFailure
             }
         }

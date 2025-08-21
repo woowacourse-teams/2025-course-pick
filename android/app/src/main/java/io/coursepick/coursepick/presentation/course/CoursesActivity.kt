@@ -93,9 +93,22 @@ class CoursesActivity :
             mapManager.setOnCameraMoveListener {
                 binding.mainSearchThisAreaButton.visibility = View.VISIBLE
             }
-            mapManager.cameraPosition?.let { cameraPosition: LatLng ->
-                fetchCourses(cameraPosition.toCoordinate(), Scope.default())
-            }
+            mapManager.fetchCurrentLocation(
+                onSuccess = { latitude: Latitude, longitude: Longitude ->
+                    viewModel.fetchCourses(
+                        mapCoordinate = Coordinate(latitude, longitude),
+                        userCoordinate = Coordinate(latitude, longitude),
+                    )
+                },
+                onFailure = {
+                    val mapCoordinate: Coordinate =
+                        mapManager.cameraPosition?.toCoordinate() ?: return@fetchCurrentLocation
+                    viewModel.fetchCourses(
+                        mapCoordinate = mapCoordinate,
+                        userCoordinate = null,
+                    )
+                },
+            )
         }
 
         setUpBindingVariables()
