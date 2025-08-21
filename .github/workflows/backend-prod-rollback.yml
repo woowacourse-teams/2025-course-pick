@@ -1,0 +1,42 @@
+name: Backend Prod App CD
+
+on:
+  workflow_dispatch:
+
+jobs:
+  detect-idle:
+    name: 이전 버전 EC2 서버 탐지
+    runs-on: [ self-hosted, prod-lb ]
+    outputs:
+      idle-server: ${{ steps.find.outputs.idle }}
+    steps:
+      - name: 탐침 스크립트 실행
+        id: find
+        run: |
+          ACTIVE_CONF="/etc/nginx/snippets/upstream.active"
+          APP1_CONF="/etc/nginx/snippets/upstream.prod-app-1"
+          APP2_CONF="/etc/nginx/snippets/upstream.prod-app-2"
+          idle=""
+
+          if diff -q "$ACTIVE_CONF" "$APP1_CONF" &>/dev/null; then
+            idle="prod-app-2"
+          elif diff -q "$ACTIVE_CONF" "$APP2_CONF" &>/dev/null; then
+            idle="prod-app-1"
+          fi
+
+          if [[ -z "$idle" ]]; then
+            echo "Both servers are healthy – cannot find idle server" >&2
+            exit 1
+          fi
+
+          echo "idle=$idle" >> $GITHUB_OUTPUT
+
+  update-nginx-to-prod-main:
+    name: nginx 로드밸런서 설정 파일 main runner 설정으로 변경
+    needs: [ detect-idle ]
+    runs-on: [ self-hosted, prod-lb ]
+    steps:
+      - name: upstream 갱신, 리로드
+        run: |
+          sudo ln -sfn /etc/nginx/snippets/upstream.${{ needs.detect-idle.outputs.idle-server }} /etc/nginx/snippets/upstream.active
+          sudo nginx -t && sudo systemctl reload nginx
