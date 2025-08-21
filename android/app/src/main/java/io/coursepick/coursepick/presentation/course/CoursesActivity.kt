@@ -69,7 +69,6 @@ class CoursesActivity :
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions(),
         ) {
-            mapManager.startTrackingCurrentLocation()
         }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -81,18 +80,19 @@ class CoursesActivity :
             val systemBars: Insets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             setUpNavigation(systemBars)
-            mapManager.start {
-                setUpObservers()
-                setUpBottomSheet(systemBars)
-                mapManager.setOnCameraMoveListener {
-                    binding.mainSearchThisAreaButton.visibility = View.VISIBLE
-                }
-                mapManager.cameraPosition?.let { cameraPosition: LatLng ->
-                    fetchCourses(cameraPosition.toCoordinate(), Scope.default())
-                }
-            }
-
+            setUpBottomSheet(systemBars)
             insets
+        }
+
+        mapManager.start {
+            setUpObservers()
+            setUpBottomSheet(WindowInsetsCompat.CONSUMED.getInsets(WindowInsetsCompat.Type.systemBars()))
+            mapManager.setOnCameraMoveListener {
+                binding.mainSearchThisAreaButton.visibility = View.VISIBLE
+            }
+            mapManager.cameraPosition?.let { cameraPosition: LatLng ->
+                fetchCourses(cameraPosition.toCoordinate(), Scope.default())
+            }
         }
 
         setUpBindingVariables()
