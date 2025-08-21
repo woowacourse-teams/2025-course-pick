@@ -1,4 +1,4 @@
-name: Backend Prod App CD
+name: Backend Prod App Rollback
 
 on:
   workflow_dispatch:
