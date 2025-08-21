@@ -1,4 +1,5 @@
-name: Prod App CD
+name: Backend Prod App CD
+
 on:
   workflow_call:
     inputs:
@@ -30,19 +31,7 @@ jobs:
         working-directory: /home/ssm-user/coursepick
         run: |
           cat > .env <<'EOF'
-          PROD_PROFILE=${{ secrets.PROD_PROFILE }}
-          PROD_DB_URL=${{ secrets.PROD_DB_URL }}
-          PROD_DB_USERNAME=${{ secrets.PROD_DB_USERNAME }}
-          PROD_DB_PASSWORD=${{ secrets.PROD_DB_PASSWORD }}
-          PROD_MONGO_HOST=${{ secrets.PROD_MONGO_HOST }}
-          PROD_MONGO_PORT=${{ secrets.PROD_MONGO_PORT }}
-          PROD_MONGO_DATABASE=${{ secrets.PROD_MONGO_DATABASE }}
-          PROD_MONGO_AUTH_DATABASE=${{ secrets.PROD_MONGO_AUTH_DATABASE }}
-          PROD_MONGO_USERNAME=${{ secrets.PROD_MONGO_USERNAME }}
-          PROD_MONGO_PASSWORD=${{ secrets.PROD_MONGO_PASSWORD }}
-          ADMIN_TOKEN=${{ secrets.PROD_ADMIN_TOKEN }}
-          GCP_DRIVE_FOLDER_ID=${{ secrets.GCP_DRIVE_FOLDER_ID }}
-          GCP_CREDENTIALS_PATH=${{ secrets.GCP_CREDENTIALS_PATH }}
+          ${{ secrets.PROD_ENV_FILE }}
           EOF
           chmod 600 .env
 
@@ -93,4 +82,5 @@ jobs:
       - name: 기존 서버 내리기
         working-directory: /home/ssm-user/coursepick
         run: |
-          docker image prune -a -f
+          sudo docker compose down
+          sudo docker image prune -a -f
