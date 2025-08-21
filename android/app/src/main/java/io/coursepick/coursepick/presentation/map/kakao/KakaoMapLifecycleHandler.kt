@@ -21,7 +21,7 @@ class KakaoMapLifecycleHandler(
                     onMapReady(map)
                 }
 
-                override fun getPosition(): LatLng = LatLng.from(37.5100226, 127.1026170)
+                override fun getPosition(): LatLng = DEFAULT_LATLNG
             },
         )
     }
@@ -29,4 +29,10 @@ class KakaoMapLifecycleHandler(
     fun resume() = mapView.resume()
 
     fun pause() = mapView.pause()
+
+    companion object {
+        private const val DEFAULT_LATITUDE = 37.5100226
+        private const val DEFAULT_LONGITUDE = 127.1026170
+        private val DEFAULT_LATLNG = LatLng.from(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
+    }
 }
