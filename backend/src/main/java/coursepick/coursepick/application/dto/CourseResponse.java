@@ -18,6 +18,7 @@ public class CourseResponse {
     private final Meter distance;
     private final Meter length;
     private final RoadType roadType;
+    private final InclineSummary inclineSummary;
     private final Difficulty difficulty;
     private final List<SegmentResponse> segments;
 
@@ -28,6 +29,7 @@ public class CourseResponse {
                 course.distanceFrom(target),
                 course.length(),
                 course.roadType(),
+                course.inclineSummary(),
                 course.difficulty(),
                 SegmentResponse.from(course.segments())
         );
@@ -40,6 +42,7 @@ public class CourseResponse {
                 null,
                 course.length(),
                 course.roadType(),
+                course.inclineSummary(),
                 course.difficulty(),
                 SegmentResponse.from(course.segments())
         );

@@ -159,6 +159,41 @@ class CourseTest {
     }
 
     @Nested
+    class 경사도_요약_테스트 {
+
+        @ParameterizedTest
+        @MethodSource(value = {
+                "flatCoordinates",
+                "repeatingHillsCoordinates"
+        })
+        void 코스의_경사도_요약을_계산한다(List<Coordinate> coordinates, InclineSummary expectedInclineSummary) {
+            Course course = new Course("코스이름1", coordinates);
+
+            InclineSummary inclineSummary = course.inclineSummary();
+
+            assertThat(inclineSummary).isEqualTo(expectedInclineSummary);
+        }
+
+        private static Stream<Arguments> flatCoordinates() {
+            List<Coordinate> coordinates = List.of(
+                    new Coordinate(0, 0, 0),
+                    new Coordinate(10, 10, 0)
+            );
+            return Stream.of(Arguments.of(coordinates, InclineSummary.MOSTLY_FLAT));
+        }
+
+        private static Stream<Arguments> repeatingHillsCoordinates() {
+            List<Coordinate> coordinates = List.of(
+                    new Coordinate(0, 0, 0),
+                    new Coordinate(0, 0.0009, 8.8),
+                    new Coordinate(0, 0, 0)
+            );
+            return Stream.of(Arguments.of(coordinates, InclineSummary.REPEATING_HILLS));
+        }
+
+    }
+
+    @Nested
     class 세그먼트_분리_테스트 {
 
         @Test
