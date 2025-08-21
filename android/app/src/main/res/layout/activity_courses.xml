@@ -48,7 +48,7 @@
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/mainToolBar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:layout_margin="10dp"
                 android:background="@drawable/background_toolbar"
                 android:onClick="@{() -> action.search()}"
@@ -57,7 +57,9 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:navigationIcon="@drawable/icon_menu"
                 app:onNavigationClick="@{() -> action.openMenu()}"
-                app:title="@{viewModel.state.isQueryBlank ? @string/search_query_hint : viewModel.state.query}">
+                app:title="@{viewModel.state.isQueryBlank ? @string/search_query_hint : viewModel.state.query}"
+                app:titleTextAppearance="@style/Toolbar.TitleText"
+                app:titleTextColor="@{viewModel.state.isQueryBlank ? @color/gray3 : @color/item_primary }">
 
                 <ImageView
                     android:layout_width="wrap_content"
