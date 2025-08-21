@@ -56,12 +56,12 @@ android {
             buildConfigField(
                 "String",
                 "AMPLITUDE_API_KEY",
-                localProperties["amplitude.api.key"].toString(),
+                localProperties["amplitude.api.key.dev"].toString(),
             )
             buildConfigField(
                 "String",
                 "MIXPANEL_PROJECT_TOKEN",
-                localProperties["mixpanel.project.token"].toString(),
+                localProperties["mixpanel.project.token.dev"].toString(),
             )
         }
 
@@ -92,12 +92,12 @@ android {
             buildConfigField(
                 "String",
                 "AMPLITUDE_API_KEY",
-                localProperties["amplitude.api.key"].toString(),
+                localProperties["amplitude.api.key.prod"].toString(),
             )
             buildConfigField(
                 "String",
                 "MIXPANEL_PROJECT_TOKEN",
-                localProperties["mixpanel.project.token"].toString(),
+                localProperties["mixpanel.project.token.prod"].toString(),
             )
         }
     }
