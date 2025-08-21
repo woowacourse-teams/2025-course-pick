@@ -4,14 +4,18 @@ import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.GeoLine;
 import coursepick.coursepick.domain.GeoLineBuilder;
 import coursepick.coursepick.domain.Segment;
+import coursepick.coursepick.logging.LogContent;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.data.convert.WritingConverter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+@Slf4j
 public class SegmentListConverter {
 
     @WritingConverter
@@ -47,12 +51,17 @@ public class SegmentListConverter {
     public static class Reader implements Converter<Document, List<Segment>> {
         @Override
         public List<Segment> convert(Document source) {
-            if (source == null) return null;
-            List<List<List<Double>>> segmentsData = (List<List<List<Double>>>) source.get("coordinates");
+            try {
+                if (source == null) return null;
+                List<List<List<Double>>> segmentsData = (List<List<List<Double>>>) source.get("coordinates");
 
-            return segmentsData.stream()
-                    .map(Reader::parseSegment)
-                    .toList();
+                return segmentsData.stream()
+                        .map(Reader::parseSegment)
+                        .toList();
+            } catch (Exception e) {
+                log.warn("[EXCEPTION] 세그먼트 파싱 중 예외 발생", LogContent.exception(source, e));
+                return Collections.emptyList();
+            }
         }
 
         private static Segment parseSegment(List<List<Double>> lineStringCoordinates) {
