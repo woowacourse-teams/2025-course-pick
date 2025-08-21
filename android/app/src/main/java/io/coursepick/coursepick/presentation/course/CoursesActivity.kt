@@ -23,6 +23,7 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.Insets
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
@@ -92,6 +93,12 @@ class CoursesActivity :
             systemBars?.let(::setUpMapPadding)
             mapManager.setOnCameraMoveListener {
                 binding.mainSearchThisAreaButton.visibility = View.VISIBLE
+                binding.mainCurrentLocationButton.setColorFilter(
+                    ContextCompat.getColor(
+                        this,
+                        R.color.item_primary,
+                    ),
+                )
             }
             mapManager.fetchCurrentLocation(
                 onSuccess = { latitude: Latitude, longitude: Longitude ->
@@ -283,7 +290,14 @@ class CoursesActivity :
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
             showFineLocationPermissionRationaleDialog()
         } else {
-            mapManager.showCurrentLocation()
+            mapManager.showCurrentLocation {
+                binding.mainCurrentLocationButton.setColorFilter(
+                    ContextCompat.getColor(
+                        this,
+                        R.color.gray3,
+                    ),
+                )
+            }
         }
     }
 
