@@ -70,17 +70,3 @@ jobs:
         run: |
           sudo ln -sfn /etc/nginx/snippets/upstream.${{ inputs.main_runner }} /etc/nginx/snippets/upstream.active
           sudo nginx -t && sudo systemctl reload nginx
-
-  shutdown-prod-sub:
-    name: sub runner 서버 종료
-    needs: [ update-nginx-to-prod-main ]
-    runs-on: [ self-hosted, "${{ inputs.sub_runner }}" ]
-    defaults:
-      run:
-        working-directory: /home/ssm-user/coursepick
-    steps:
-      - name: 기존 서버 내리기
-        working-directory: /home/ssm-user/coursepick
-        run: |
-          sudo docker compose down
-          sudo docker image prune -a -f
