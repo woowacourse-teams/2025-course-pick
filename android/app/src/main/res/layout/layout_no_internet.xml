@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -20,22 +19,25 @@
             android:layout_height="wrap_content"
             android:text="네트워크에 연결되지 않았습니다.\n설정을 확인하고 다시 시도해주세요."
             android:textAlignment="center"
+            android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:background="@drawable/background_search_this_area"
             android:onClick="@{() -> listener.onReconnect()}"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="10dp"
             android:text="재시도"
+            android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/message"
-            tools:text="재시도" />
+            app:layout_constraintTop_toBottomOf="@id/message" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
