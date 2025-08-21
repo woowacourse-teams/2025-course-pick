@@ -1,9 +1,7 @@
 package coursepick.coursepick.domain;
 
 import coursepick.coursepick.application.exception.ErrorType;
-import jakarta.persistence.Embeddable;
 
-@Embeddable
 public record Meter(
         double value
 ) {

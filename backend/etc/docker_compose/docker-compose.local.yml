@@ -1,0 +1,42 @@
+name: coursepick-local
+services:
+
+  mongodb:
+    image: mongo:8.0.12
+    container_name: mongoDB
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root # 관리자 계정 ID
+      - MONGO_INITDB_ROOT_PASSWORD=secret # 관리자 계정 비밀번호
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb # 연결할 MongoDB 서비스 이름 (위 서비스 이름과 동일)
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+      - ME_CONFIG_MONGODB_AUTH_USERNAME=root # 관리자 계정 ID
+      - ME_CONFIG_MONGODB_AUTH_PASSWORD=secret # 관리자 계성 비밀번호
+      - ME_CONFIG_BASICAUTH_USERNAME=user # Mongo Express 웹 UI 로그인 ID
+      - ME_CONFIG_BASICAUTH_PASSWORD=password # Mongo Express 웹 UI 로그인 비밀번호
+    depends_on:
+      - mongodb # mongodb 서비스가 실행된 후에 실행되도록 의존성 설정
+
+  mysql:
+    image: 'mysql:8.4.5'
+    environment:
+      - 'MYSQL_DATABASE=coursepick'
+      - 'MYSQL_ROOT_PASSWORD=verysecret'
+      - 'MYSQL_USER=user'
+      - 'MYSQL_PASSWORD=secret'
+    ports:
+      - '3307:3306'
+    volumes:
+      - 'mysql_data:/var/lib/mysql'
+
+volumes:
+  mysql_data:
