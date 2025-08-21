@@ -7,6 +7,7 @@ import io.coursepick.coursepick.domain.fixture.COURSE_FIXTURE_20
 import io.coursepick.coursepick.domain.fixture.FAKE_COURSES
 import io.coursepick.coursepick.presentation.extension.CoroutinesTestExtension
 import io.coursepick.coursepick.presentation.extension.InstantTaskExecutorExtension
+import io.coursepick.coursepick.presentation.fixtures.FakeNetworkMonitor
 import io.coursepick.coursepick.presentation.fixtures.FakeRepository
 import io.coursepick.coursepick.presentation.ui.getOrAwaitValue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,11 +21,12 @@ import org.junit.jupiter.api.extension.ExtendWith
 @ExtendWith(InstantTaskExecutorExtension::class)
 class CoursesViewModelTest {
     private val fakeRepository = FakeRepository()
+    private val fakeNetworkMonitor = FakeNetworkMonitor()
     private lateinit var mainViewModel: CoursesViewModel
 
     @BeforeEach
     fun setUp() {
-        mainViewModel = CoursesViewModel(fakeRepository)
+        mainViewModel = CoursesViewModel(fakeRepository, fakeNetworkMonitor)
         mainViewModel.fetchCourses(COORDINATE_FIXTURE, null, Scope.default())
     }
 
