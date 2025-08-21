@@ -109,6 +109,7 @@
             </LinearLayout>
 
             <ImageView
+                android:id="@+id/mainCurrentLocationButton"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_marginEnd="10dp"
