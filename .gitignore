@@ -43,3 +43,6 @@ CLAUDE.md
 ### Log ###
 /logs/**
 /backend/logs/**
+
+### GCP ###
+**/gcp-credentials.json

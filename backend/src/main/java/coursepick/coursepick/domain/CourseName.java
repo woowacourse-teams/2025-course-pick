@@ -1,13 +1,8 @@
 package coursepick.coursepick.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_NAME_LENGTH;
 
-@Embeddable
 public record CourseName(
-        @Column(name = "name", nullable = false)
         String value
 ) {
     public CourseName {

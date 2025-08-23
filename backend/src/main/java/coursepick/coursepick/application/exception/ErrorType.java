@@ -1,7 +1,5 @@
 package coursepick.coursepick.application.exception;
 
-import jakarta.persistence.EntityNotFoundException;
-
 import java.util.function.Function;
 
 public enum ErrorType {
@@ -27,8 +25,8 @@ public enum ErrorType {
             IllegalArgumentException::new
     ),
     NOT_EXIST_COURSE(
-            "코스가 존재하지 않습니다. 코스id=%d",
-            EntityNotFoundException::new
+            "코스가 존재하지 않습니다. 코스id=%s",
+            NotFoundException::new
     ),
     INVALID_FILE_EXTENSION(
             "파싱할 수 없는 파일 확장자입니다.",

@@ -1,40 +1,35 @@
 package coursepick.coursepick.domain;
 
-import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import org.hibernate.annotations.BatchSize;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceCreator;
+import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
+import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-@Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
+@Document
+@AllArgsConstructor(access = AccessLevel.PROTECTED, onConstructor_ = @PersistenceCreator)
 @Getter
 @Accessors(fluent = true)
 public class Course {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private final Long id;
+    private final String id;
 
-    @Embedded
     private final CourseName name;
 
-    @Enumerated(EnumType.STRING)
     private final RoadType roadType;
 
-    @BatchSize(size = 30)
-    @ElementCollection
-    @CollectionTable(name = "segment")
+    @GeoSpatialIndexed(name = "idx_geo_segments", type = GeoSpatialIndexType.GEO_2DSPHERE)
     private final List<Segment> segments;
 
-    @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "length"))
     private final Meter length;
 
-    @Enumerated(EnumType.STRING)
     private final Difficulty difficulty;
 
     public Course(String name, RoadType roadType, List<Coordinate> rawCoordinates) {
@@ -42,8 +37,8 @@ public class Course {
         this.name = new CourseName(name);
         this.roadType = roadType;
         List<Coordinate> coordinates = CoordinateBuilder.fromRawCoordinates(rawCoordinates)
-                .addFirstCoordinateIfNotConnected()
-                .removeDuplicatedCoordinate()
+                .removeSimilar()
+                .smooth()
                 .build();
         List<GeoLine> geoLines = GeoLineBuilder.fromCoordinates(coordinates)
                 .build();
@@ -57,14 +52,6 @@ public class Course {
 
     public Course(String name, List<Coordinate> coordinates) {
         this(name, RoadType.알수없음, coordinates);
-    }
-
-    private static Meter calculateLength(List<Segment> segments) {
-        Meter total = Meter.zero();
-        for (Segment segment : segments) {
-            total = total.add(segment.length());
-        }
-        return total;
     }
 
     public Coordinate closestCoordinateFrom(Coordinate target) {
@@ -87,5 +74,13 @@ public class Course {
     public Meter distanceFrom(Coordinate target) {
         Coordinate minDistanceCoordinate = closestCoordinateFrom(target);
         return GeoLine.between(minDistanceCoordinate, target).length();
+    }
+
+    private static Meter calculateLength(List<Segment> segments) {
+        Meter total = Meter.zero();
+        for (Segment segment : segments) {
+            total = total.add(segment.length());
+        }
+        return total;
     }
 }

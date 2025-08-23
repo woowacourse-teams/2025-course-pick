@@ -13,7 +13,7 @@ import java.util.Optional;
 @Accessors(fluent = true)
 public class CourseResponse {
 
-    private final Long id;
+    private final String id;
     private final String name;
     private final Meter distance;
     private final Meter length;

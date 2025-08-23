@@ -1,6 +1,7 @@
 package coursepick.coursepick.presentation;
 
 import coursepick.coursepick.application.CourseApplicationService;
+import coursepick.coursepick.application.CourseSyncService;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.presentation.api.CourseWebApi;
@@ -8,12 +9,8 @@ import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
 import coursepick.coursepick.presentation.dto.CourseWebResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.text.Normalizer;
 import java.util.List;
 
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_ADMIN_TOKEN;
@@ -23,22 +20,17 @@ import static coursepick.coursepick.application.exception.ErrorType.INVALID_ADMI
 public class CourseWebController implements CourseWebApi {
 
     private final CourseApplicationService courseApplicationService;
+    private final CourseSyncService courseSyncService;
 
     @Value("${admin.token}")
     private String adminToken;
 
-    @PostMapping("/admin/courses/import")
-    public void importCourses(
-            @RequestParam("adminToken") String token,
-            @RequestParam("file") List<MultipartFile> files
-    ) throws IOException {
+    @Override
+    @PostMapping("/admin/courses/sync")
+    public String syncCourses(@RequestParam("adminToken") String token) {
         validateAdminToken(token);
-
-        for (MultipartFile file : files) {
-            String filename = Normalizer.normalize(file.getOriginalFilename(), Normalizer.Form.NFC);
-            String fileExtension = StringUtils.getFilenameExtension(file.getOriginalFilename());
-            courseApplicationService.parseInputStreamAndSave(file.getInputStream(), filename, fileExtension);
-        }
+        courseSyncService.runCourseSyncJob();
+        return "Course Sync Job을 성공적으로 실행했습니다.";
     }
 
     @Override
@@ -47,16 +39,17 @@ public class CourseWebController implements CourseWebApi {
             @RequestParam("mapLat") double mapLatitude,
             @RequestParam("mapLng") double mapLongitude,
             @RequestParam(value = "userLat", required = false) Double userLatitude,
-            @RequestParam(value = "userLng", required = false) Double userLongitude
+            @RequestParam(value = "userLng", required = false) Double userLongitude,
+            @RequestParam("scope") int scope
     ) {
-        List<CourseResponse> responses = courseApplicationService.findNearbyCourses(mapLatitude, mapLongitude, userLatitude, userLongitude);
+        List<CourseResponse> responses = courseApplicationService.findNearbyCourses(mapLatitude, mapLongitude, userLatitude, userLongitude, scope);
         return CourseWebResponse.from(responses);
     }
 
     @Override
     @GetMapping("/courses/{id}/closest-coordinate")
     public CoordinateWebResponse findClosestCoordinate(
-            @PathVariable("id") long id,
+            @PathVariable("id") String id,
             @RequestParam("lat") double latitude,
             @RequestParam("lng") double longitude
     ) {

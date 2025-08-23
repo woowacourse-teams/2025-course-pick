@@ -24,10 +24,10 @@ class InclineTypeTest {
             double endLat, double endLng, double endElev,
             InclineType expected
     ) {
-        Coordinate start = new Coordinate(startLat, startLng, startElev);
-        Coordinate end = new Coordinate(endLat, endLng, endElev);
+        var start = new Coordinate(startLat, startLng, startElev);
+        var end = new Coordinate(endLat, endLng, endElev);
 
-        InclineType result = InclineType.of(start, end);
+        var result = InclineType.of(start, end);
 
         assertThat(result).isEqualTo(expected);
     }

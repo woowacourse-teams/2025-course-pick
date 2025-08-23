@@ -2,7 +2,6 @@ package coursepick.coursepick.logging.metrics;
 
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
-import lombok.RequiredArgsConstructor;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +16,7 @@ public class HealthCheckMetricPublisher {
         this.healthEndpoint = healthEndpoint;
 
         Gauge.builder("health.status",
-                () -> healthStatusToNumber(healthEndpoint))
+                        () -> healthStatusToNumber(healthEndpoint))
                 .description("서버 Health Status: 1=UP, 0=DOWN")
                 .register(meterRegistry);
     }
