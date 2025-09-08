@@ -8,6 +8,8 @@ import io.coursepick.coursepick.domain.course.Scope
 class DefaultCourseRepository(
     private val service: CourseService,
 ) : CourseRepository {
+    override suspend fun courseById(courseId: String): Course? = service.courseById(courseId).toCourseOrNull()
+
     override suspend fun courses(
         mapCoordinate: Coordinate,
         userCoordinate: Coordinate?,

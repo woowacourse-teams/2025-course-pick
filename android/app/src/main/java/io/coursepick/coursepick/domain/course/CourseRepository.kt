@@ -1,6 +1,8 @@
 package io.coursepick.coursepick.domain.course
 
 interface CourseRepository {
+    suspend fun courseById(courseId: String): Course?
+
     suspend fun courses(
         mapCoordinate: Coordinate,
         userCoordinate: Coordinate? = null,
