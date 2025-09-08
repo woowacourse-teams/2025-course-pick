@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="io.coursepick.coursepick.presentation.model.Difficulty" />
+
+        <import type="java.util.Arrays" />
+
+        <variable
+            name="viewModel"
+            type="io.coursepick.coursepick.presentation.filter.FilterViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_courses"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/mainFilterTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:text="@string/filter_dialog_title"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/mainFilterReset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> viewModel.resetFilterToDefault()}"
+            android:padding="20dp"
+            android:text="@string/filter_dialog_reset"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/mainFilterTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/mainDifficultyLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:text="@string/filter_dialog_difficulty_label"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mainFilterTitle" />
+
+        <TextView
+            android:id="@+id/mainDifficultyEasy"
+            isSelected="@{viewModel.state.difficulties.contains(Difficulty.EASY)}"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:background="@drawable/background_difficulty_selector"
+            android:onClick="@{() -> viewModel.toggleDifficulty(Difficulty.EASY)}"
+            android:padding="20dp"
+            android:text="@string/filter_dialog_difficulty_easy"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/mainDifficultyNormal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mainDifficultyLabel" />
+
+        <TextView
+            android:id="@+id/mainDifficultyNormal"
+            isSelected="@{viewModel.state.difficulties.contains(Difficulty.NORMAL)}"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:background="@drawable/background_difficulty_selector"
+            android:onClick="@{() -> viewModel.toggleDifficulty(Difficulty.NORMAL)}"
+            android:padding="20dp"
+            android:text="@string/filter_dialog_difficulty_normal"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/mainDifficultyHard"
+            app:layout_constraintStart_toEndOf="@id/mainDifficultyEasy"
+            app:layout_constraintTop_toBottomOf="@id/mainDifficultyLabel" />
+
+        <TextView
+            android:id="@+id/mainDifficultyHard"
+            isSelected="@{viewModel.state.difficulties.contains(Difficulty.HARD)}"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:background="@drawable/background_difficulty_selector"
+            android:onClick="@{() -> viewModel.toggleDifficulty(Difficulty.HARD)}"
+            android:padding="20dp"
+            android:text="@string/filter_dialog_difficulty_hard"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/mainDifficultyNormal"
+            app:layout_constraintTop_toBottomOf="@id/mainDifficultyLabel" />
+
+        <TextView
+            android:id="@+id/mainFilterLengthLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:text="@string/filter_dialog_length_label"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mainDifficultyEasy" />
+
+        <TextView
+            android:id="@+id/mainFilterLengthRange"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/mainFilterLengthSlider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mainDifficultyHard"
+            app:maxValueText="@{viewModel.state.maximumLengthKm}"
+            app:minValueText="@{viewModel.state.minimumLengthKm}" />
+
+        <com.google.android.material.slider.RangeSlider
+            android:id="@+id/mainFilterLengthSlider"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="20dp"
+            app:labelBehavior="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mainFilterLengthLabel"
+            app:maxValue="@{viewModel.state.maximumLengthKm}"
+            app:minValue="@{viewModel.state.minimumLengthKm}"
+            app:onRangeChanged="@{(min, max) -> viewModel.updateLengthRange(min, max)}"
+            app:thumbColor="@color/point_secondary"
+            app:trackColorActive="@color/point_secondary"
+            app:trackColorInactive="@color/gray2"
+            app:valueFrom="@{viewModel.MINIMUM_LENGTH_RANGE}"
+            app:valueTo="@{viewModel.MAXIMUM_LENGTH_RANGE}" />
+
+        <TextView
+            android:id="@+id/mainFilterCancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> viewModel.cancel()}"
+            android:padding="20dp"
+            android:text="@string/filter_dialog_cancel"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/mainFilteredCoursesResult"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mainFilterLengthSlider" />
+
+        <TextView
+            android:id="@+id/mainFilteredCoursesResult"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_filter_result_selector"
+            android:enabled="@{viewModel.state.coursesCount > 0}"
+            android:onClick="@{() -> viewModel.result()}"
+            android:padding="20dp"
+            android:text="@{@string/filter_result_count(viewModel.state.coursesCount)}"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/mainFilterCancel"
+            app:layout_constraintTop_toBottomOf="@id/mainFilterLengthSlider" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -5,6 +5,7 @@ import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.InclineSummary
 import io.coursepick.coursepick.domain.course.Segment
+import io.coursepick.coursepick.presentation.model.Difficulty
 
 data class CourseItem(
     val course: Course,
@@ -41,4 +42,12 @@ data class CourseItem(
                 InclineSummary.CONTINUOUS_DOWNHILL -> R.string.incline_summary_continuous_downhill
                 InclineSummary.UNKNOWN -> R.string.incline_summary_continuous_unknown
             }
+
+    fun toDifficulty(): Difficulty =
+        when (this.difficulty) {
+            "쉬움" -> Difficulty.EASY
+            "보통" -> Difficulty.NORMAL
+            "어려움" -> Difficulty.HARD
+            else -> Difficulty.UNKNOWN
+        }
 }

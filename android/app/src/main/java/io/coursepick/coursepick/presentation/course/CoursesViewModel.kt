@@ -16,6 +16,7 @@ import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.domain.favorites.FavoritesRepository
 import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.Logger
+import io.coursepick.coursepick.presentation.filter.CourseFilter
 import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
@@ -28,6 +29,9 @@ class CoursesViewModel(
     private val favoritesRepository: FavoritesRepository,
     private val networkMonitor: NetworkMonitor,
 ) : ViewModel() {
+    private var _fetchedCourses: List<CourseItem> = emptyList()
+    val fetchedCourses: List<CourseItem> get() = _fetchedCourses
+
     private val _state: MutableLiveData<CoursesUiState> =
         MutableLiveData(
             CoursesUiState(
@@ -141,6 +145,7 @@ class CoursesViewModel(
                     }
             }.onSuccess { courses: List<CourseItem> ->
                 Logger.log(Logger.Event.Success("fetch_courses"))
+                _fetchedCourses = courses
                 _state
                     .value =
                     state.value?.copy(
@@ -318,6 +323,17 @@ class CoursesViewModel(
 
     fun setQuery(query: String) {
         _state.value = state.value?.copy(query = query)
+    }
+
+    fun applyFilter(courseFilter: CourseFilter) {
+        val filtered =
+            fetchedCourses
+                .filter { courseItem ->
+                    (courseFilter.difficulties.isEmpty() || courseItem.toDifficulty() in courseFilter.difficulties) &&
+                        (courseItem.length in courseFilter.lengthRange.first..courseFilter.lengthRange.last)
+                }
+
+        _state.value = state.value?.copy(courses = filtered, courseFilter = courseFilter)
     }
 
     private fun newCourses(
