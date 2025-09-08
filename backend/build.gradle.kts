@@ -52,6 +52,9 @@ dependencies {
     implementation("com.google.api-client:google-api-client:2.8.0")
     implementation("com.google.apis:google-api-services-drive:v3-rev20250723-2.0.0")
 
+    // Google Maps
+    implementation("com.google.maps:google-maps-services:2.2.0")
+
     // Test
     testRuntimeOnly("de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring30x:4.21.0")
     testImplementation("org.springframework.batch:spring-batch-test")
