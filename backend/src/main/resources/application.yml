@@ -9,6 +9,10 @@ spring:
 
 server:
   forward-headers-strategy: framework
+  compression:
+    enabled: true
+    mime-types: application/json,text/plain
+    min-response-size: 2KB
 
 springdoc:
   default-consumes-media-type: application/json
