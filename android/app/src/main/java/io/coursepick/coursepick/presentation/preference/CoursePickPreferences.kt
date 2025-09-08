@@ -20,7 +20,7 @@ object CoursePickPreferences {
         OnSharedPreferenceChangeListener { _, key: String? ->
             Logger.log(
                 Logger.Event.PreferenceChange(key.toString()),
-                "new_preference" to preferences.getString(key, null).toString(),
+//                "new_preference" to preferences.getString(key, null).toString(),
             )
         }
 
@@ -50,6 +50,20 @@ object CoursePickPreferences {
                 )
             }
         }
+
+    fun likedCourseIds(): Set<String> = preferences.getStringSet("liked_courses", emptySet()) ?: emptySet()
+
+    fun likeCourse(courseId: String) {
+        preferences.edit {
+            putStringSet("liked_courses", likedCourseIds() + courseId)
+        }
+    }
+
+    fun unlikeCourse(courseId: String) {
+        preferences.edit {
+            putStringSet("liked_courses", likedCourseIds() - courseId)
+        }
+    }
 
     private val RouteFinderApplication?.serialized: String
         get() =

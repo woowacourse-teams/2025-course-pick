@@ -14,6 +14,7 @@ import io.coursepick.coursepick.domain.course.CourseRepository
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.Logger
+import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
 import kotlinx.coroutines.launch
@@ -43,10 +44,12 @@ class CoursesViewModel(
 
     private fun checkNetwork() {
         if (!networkMonitor.isConnected()) {
-            _state.value =
-                state.value?.copy(
-                    isLoading = false,
-                    isNoInternet = true,
+            _state
+                .postValue(
+                    state.value?.copy(
+                        isLoading = false,
+                        isNoInternet = true,
+                    ),
                 )
         }
     }
@@ -63,8 +66,23 @@ class CoursesViewModel(
         if (selectedIndex == -1) return
 
         val newCourses: List<CourseItem> = newCourses(oldCourses, selectedCourse)
-        _state.value = state.value?.copy(courses = newCourses)
+        _state.postValue(state.value?.copy(courses = newCourses))
         _event.value = CoursesUiEvent.SelectNewCourse(selectedCourse)
+    }
+
+    fun toggleLike(toggledCourse: CourseItem) {
+        state.value?.courses?.let { courses: List<CourseItem> ->
+            val newCourses =
+                courses.map { course: CourseItem ->
+                    if (course.id == toggledCourse.id) course.copy(liked = !course.liked) else course
+                }
+            _state.postValue(state.value?.copy(courses = newCourses))
+        }
+        if (toggledCourse.liked) {
+            CoursePickPreferences.unlikeCourse(toggledCourse.id)
+        } else {
+            CoursePickPreferences.likeCourse(toggledCourse.id)
+        }
     }
 
     fun fetchCourses(
@@ -72,47 +90,101 @@ class CoursesViewModel(
         userCoordinate: Coordinate?,
         scope: Scope = Scope.default(),
     ) {
-        _state.value =
+        _state.postValue(
             state.value?.copy(
                 isLoading = true,
                 isFailure = false,
                 isNoInternet = false,
-            )
+            ),
+        )
+
         viewModelScope.launch {
-            try {
+            runCatching {
+                val likedCourseIds: Set<String> = CoursePickPreferences.likedCourseIds()
                 val courses = courseRepository.courses(mapCoordinate, userCoordinate, scope)
                 Logger.log(Logger.Event.Success("fetch_courses"))
-                val courseItems: List<CourseItem> =
-                    courses
-                        .sortedBy { course: Course -> course.distance }
-                        .mapIndexed { index: Int, course: Course ->
-                            CourseItem(
-                                course,
-                                index == 0,
-                            )
-                        }
-                _state.value =
-                    state.value?.copy(courses = courseItems, isLoading = false, isFailure = false)
-            } catch (exception: IOException) {
-                _state.value =
-                    state.value?.copy(
-                        courses = emptyList(),
-                        isLoading = false,
-                        isFailure = false,
-                        isNoInternet = true,
+                courses
+                    .sortedBy { course: Course -> course.distance }
+                    .mapIndexed { index: Int, course: Course ->
+                        CourseItem(
+                            course = course,
+                            selected = index == 0,
+                            liked = likedCourseIds.contains(course.id),
+                        )
+                    }
+            }.onSuccess { courses: List<CourseItem> ->
+                _state
+                    .postValue(
+                        state.value?.copy(courses = courses, isLoading = false, isFailure = false),
                     )
-            } catch (exception: Exception) {
+            }.onFailure { exception: Throwable ->
                 Logger.log(
                     Logger.Event.Failure("fetch_courses"),
                     "message" to exception.message.toString(),
                 )
-                _state.value =
-                    state.value?.copy(
-                        courses = emptyList(),
-                        isLoading = false,
-                        isFailure = true,
-                    )
+                if (exception is IOException) {
+                    _state
+                        .postValue(
+                            state.value?.copy(
+                                courses = emptyList(),
+                                isLoading = false,
+                                isFailure = false,
+                                isNoInternet = true,
+                            ),
+                        )
+                    return@onFailure
+                }
+                _state.postValue(
+                    state.value
+                        ?.copy(
+                            courses = emptyList(),
+                            isLoading = false,
+                            isFailure = true,
+                        ),
+                )
                 _event.value = CoursesUiEvent.FetchCourseFailure
+            }
+        }
+    }
+
+    fun fetchFavorites() {
+        _state.postValue(
+            state.value?.copy(isLoading = true, isFailure = false, isNoInternet = false),
+        )
+
+        viewModelScope.launch {
+            runCatching {
+                val likedCourseIds: Set<String> = CoursePickPreferences.likedCourseIds()
+                likedCourseIds.mapNotNull { courseId: String ->
+                    courseRepository.courseById(courseId)?.let { course: Course ->
+                        CourseItem(
+                            course = course,
+                            selected = false,
+                            liked = true,
+                        )
+                    } ?: run {
+                        CoursePickPreferences.unlikeCourse(courseId)
+                        null
+                    }
+                }
+            }.onSuccess { courses ->
+                _state.postValue(
+                    state.value
+                        ?.copy(courses = courses, isLoading = false, isNoInternet = false),
+                )
+            }.onFailure { throwable: Throwable ->
+                Logger.log(
+                    Logger.Event.Failure("fetch_courses"),
+                    "message" to throwable.message.toString(),
+                )
+                _state.postValue(
+                    state.value
+                        ?.copy(
+                            courses = emptyList(),
+                            isLoading = false,
+                            isNoInternet = true,
+                        ),
+                )
             }
         }
     }
@@ -143,7 +215,7 @@ class CoursesViewModel(
     }
 
     fun setQuery(query: String) {
-        _state.value = state.value?.copy(query = query)
+        _state.postValue(state.value?.copy(query = query))
     }
 
     private fun newCourses(

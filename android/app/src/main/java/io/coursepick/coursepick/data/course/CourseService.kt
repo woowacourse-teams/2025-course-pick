@@ -5,6 +5,11 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface CourseService {
+    @GET("/courses/{id}")
+    suspend fun courseById(
+        @Path("id") courseId: String,
+    ): CourseDto
+
     @GET("/courses")
     suspend fun courses(
         @Query("mapLat") mapLatitude: Double,

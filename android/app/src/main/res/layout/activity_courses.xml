@@ -130,7 +130,8 @@
                 android:background="@drawable/background_courses"
                 app:behavior_fitToContents="true"
                 app:behavior_peekHeight="@dimen/main_bottom_sheet_peek_height"
-                app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+                app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+                app:layout_constraintBottom_toTopOf="@id/mainBottomNavigation">
 
                 <View
                     android:id="@+id/mainCoursesHandle"
@@ -149,7 +150,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="10dp"
-                    android:text="@string/main_courses_header"
                     android:textColor="@color/item_primary"
                     android:textSize="24sp"
                     android:textStyle="bold"
@@ -175,27 +175,23 @@
                 <androidx.core.widget.ContentLoadingProgressBar
                     android:id="@+id/mainCoursesLoadingIndicator"
                     style="?android:attr/progressBarStyleLarge"
-                    loading="@{viewModel.state.isLoading}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:visibility="@{viewModel.state.isLoading ? View.VISIBLE : View.GONE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/mainCourses"
-                    android:layout_width="match_parent"
+                <androidx.fragment.app.FragmentContainerView
+                    android:id="@+id/mainFragmentContainer"
+                    android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:layout_marginTop="10dp"
-                    android:adapter="@{adapter}"
-                    android:orientation="vertical"
                     android:visibility="@{viewModel.state.isLoading || viewModel.state.areCoursesEmpty || viewModel.state.isNoInternet ? View.GONE : View.VISIBLE}"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
-                    tools:listitem="@layout/item_course" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader" />
 
                 <TextView
                     android:id="@+id/mainEmptyCourses"
@@ -207,21 +203,30 @@
                     android:textSize="20sp"
                     android:visibility="@{viewModel.state.isLoading || !viewModel.state.areCoursesEmpty || viewModel.state.isNoInternet ? View.GONE : View.VISIBLE}"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
                     tools:listitem="@layout/item_course" />
 
                 <include
                     android:id="@+id/noInternet"
                     layout="@layout/layout_no_internet"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:visibility="@{viewModel.state.isNoInternet ? View.VISIBLE : View.GONE}"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
                     app:listener="@{listener}" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/mainBottomNavigation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:clickable="true"
+                app:menu="@menu/menu_bottom_navigation" />
+
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
         <com.google.android.material.navigation.NavigationView

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/coursesMenu"
+        android:icon="@drawable/icon_courses_menu"
+        android:title="코스 탐색" />
+    <item
+        android:id="@+id/favoritesMenu"
+        android:icon="@drawable/icon_favorites_menu"
+        android:title="즐겨찾기" />
+</menu>
