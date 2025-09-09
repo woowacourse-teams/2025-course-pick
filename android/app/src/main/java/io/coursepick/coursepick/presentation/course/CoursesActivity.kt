@@ -68,7 +68,7 @@ class CoursesActivity :
     private val doublePressDetector = DoublePressDetector()
     private val mapManager by lazy { KakaoMapManager(binding.mainMap) }
     private var systemBars: Insets? = null
-    private val updateManager = CoursePickUpdateManager(this)
+    private lateinit var updateManager: CoursePickUpdateManager
 
     @SuppressLint("MissingPermission")
     private val locationPermissionLauncher: ActivityResultLauncher<Array<String>> =
@@ -126,6 +126,7 @@ class CoursesActivity :
 
         searchLauncher = searchActivityResultLauncher()
 
+        updateManager = CoursePickUpdateManager(this)
         updateManager.checkForUpdate()
     }
 
