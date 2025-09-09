@@ -40,4 +40,19 @@ public record CourseWebResponse(
                         SegmentWebResponse.from(courseResponse.segments())
                 )).toList();
     }
+
+    public static CourseWebResponse from(CourseResponse courseResponse) {
+        return new CourseWebResponse(
+                courseResponse.id(),
+                courseResponse.name(),
+                courseResponse.distance()
+                        .map(Meter::value)
+                        .orElse(null),
+                courseResponse.length().value(),
+                courseResponse.roadType(),
+                courseResponse.inclineSummary(),
+                courseResponse.difficulty().name(),
+                SegmentWebResponse.from(courseResponse.segments())
+        );
+    }
 }

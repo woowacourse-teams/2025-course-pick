@@ -65,4 +65,6 @@ public interface CourseWebApi {
             @Parameter(example = "37.5165004", required = true) double latitude,
             @Parameter(example = "127.1040109", required = true) double longitude
     );
+
+    CourseWebResponse findCourseById(String id);
 }
