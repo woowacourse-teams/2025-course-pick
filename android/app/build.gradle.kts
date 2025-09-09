@@ -143,6 +143,7 @@ dependencies {
     implementation(libs.amplitude.android.session.replay)
     implementation(libs.mixpanel.android)
     implementation(libs.mixpanel.android.session.replay)
+    implementation(libs.app.update)
     testImplementation(libs.assertj.core)
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
