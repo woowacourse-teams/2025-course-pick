@@ -41,4 +41,7 @@
     <string name="fine_location_permission_rationale_dialog_without_coarse_permission_message">현위치 기능은 \'정확한 위치\' 권한이 필요합니다.</string>
     <string name="fine_location_permission_rationale_dialog_negative_button">설정으로 이동</string>
     <string name="fine_location_permission_rationale_dialog_positive_button">닫기</string>
+    <string name="app_update_cancelled">업데이트가 취소되었습니다.</string>
+    <string name="app_update_downloaded">업데이트가 다운로드되었습니다. 설치하려면 눌러주세요.</string>
+    <string name="app_update_action_after_downloaded">설치</string>
 </resources>
