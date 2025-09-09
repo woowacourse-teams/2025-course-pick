@@ -66,5 +66,17 @@ public interface CourseWebApi {
             @Parameter(example = "127.1040109", required = true) double longitude
     );
 
-    CourseWebResponse findCourseById(String id);
+    @Operation(summary = "특정 코스 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content(examples = {
+                    @ExampleObject(
+                            name = "코스가 존재하지 않는 경우",
+                            ref = "#/components/examples/NOT_EXIST_COURSE"
+                    )
+            }))
+    })
+    CourseWebResponse findCourseById(
+            @Parameter(example = "689c3143182cecc6353cca7b", required = true) String id
+    );
 }
