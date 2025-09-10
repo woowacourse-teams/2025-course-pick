@@ -11,12 +11,12 @@ import coursepick.coursepick.domain.Coordinate;
 import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@Service
+@Component
 @Profile({"dev", "prod"})
 public class GoogleWalkingRouteService implements WalkingRouteService {
 
