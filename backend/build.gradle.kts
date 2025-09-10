@@ -55,6 +55,10 @@ dependencies {
     // Google Maps
     implementation("com.google.maps:google-maps-services:2.2.0")
 
+    // WebClient
+    implementation("org.springframework:spring-webflux")
+    implementation("io.projectreactor:reactor-core")
+
     // Test
     testRuntimeOnly("de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring30x:4.21.0")
     testImplementation("org.springframework.batch:spring-batch-test")
