@@ -5,7 +5,7 @@ import mockwebserver3.MockWebServer;
 
 import java.io.IOException;
 
-public class SimpleMockServer {
+public class SimpleMockServer implements AutoCloseable {
 
     MockWebServer server;
 
@@ -21,5 +21,10 @@ public class SimpleMockServer {
 
     public String url() {
         return server.url("").toString();
+    }
+
+    @Override
+    public void close() {
+        server.close();
     }
 }

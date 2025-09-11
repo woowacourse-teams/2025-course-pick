@@ -10,6 +10,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class OsrmWalkingRouteServiceTest {
 
+    @Test
+    void 두_좌표_사이의_걷기_경로를_조회할_수_있다() throws IOException {
+        try (var mockServer = new SimpleMockServer(ormsResponse())) {
+            var sut = new OsrmWalkingRouteService(mockServer.url());
+
+            var result = sut.route(
+                    new Coordinate(37.5045224, 127.048996),
+                    new Coordinate(37.5113001, 127.0392855)
+            );
+
+            assertThat(result.size()).isEqualTo(10);
+        }
+    }
+
     private static String ormsResponse() {
         return """
                 {
@@ -98,18 +112,5 @@ class OsrmWalkingRouteServiceTest {
                   ]
                 }
                 """;
-    }
-
-    @Test
-    void 두_좌표_사이의_걷기_경로를_조회할_수_있다() throws IOException {
-        var mockServer = new SimpleMockServer(ormsResponse());
-        var sut = new OsrmWalkingRouteService(mockServer.url());
-
-        var result = sut.route(
-                new Coordinate(37.5045224, 127.048996),
-                new Coordinate(37.5113001, 127.0392855)
-        );
-
-        assertThat(result.size()).isEqualTo(10);
     }
 }
