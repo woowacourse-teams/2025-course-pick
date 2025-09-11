@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.view
+package io.coursepick.coursepick.presentation
 
 import android.app.Activity
 import android.widget.Toast
