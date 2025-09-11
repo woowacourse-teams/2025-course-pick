@@ -26,6 +26,18 @@ public class OsrmWalkingRouteService implements WalkingRouteService {
                 .build();
     }
 
+    @Override
+    public List<Coordinate> route(Coordinate origin, Coordinate destination) {
+        Mono<Map<String, Object>> responseMono = webClient.get().uri(createUriOf(origin, destination))
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<>() {
+                });
+
+        Map<String, Object> response = responseMono.block();
+
+        return parseResponseToCoordinates(response);
+    }
+
     private static String createUriOf(Coordinate origin, Coordinate destination) {
         return REQUEST_FORMAT
                 .replace("{origin_longitude}", String.valueOf(origin.longitude()))
@@ -42,17 +54,5 @@ public class OsrmWalkingRouteService implements WalkingRouteService {
         return coordinates.stream()
                 .map(lnglat -> new Coordinate(lnglat.get(1), lnglat.get(0)))
                 .toList();
-    }
-
-    @Override
-    public List<Coordinate> route(Coordinate origin, Coordinate destination) {
-        Mono<Map<String, Object>> responseMono = webClient.get().uri(createUriOf(origin, destination))
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<>() {
-                });
-
-        Map<String, Object> response = responseMono.block();
-
-        return parseResponseToCoordinates(response);
     }
 }
