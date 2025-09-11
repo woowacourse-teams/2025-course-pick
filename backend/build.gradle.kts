@@ -55,10 +55,6 @@ dependencies {
     // Google Maps
     implementation("com.google.maps:google-maps-services:2.2.0")
 
-    // WebClient
-    implementation("org.springframework:spring-webflux")
-    implementation("io.projectreactor:reactor-core")
-
     // MockWebServer
     testImplementation("com.squareup.okhttp3:mockwebserver3:5.1.0")
 

@@ -8,8 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+import org.springframework.web.client.RestClient;
 
 import java.util.List;
 import java.util.Map;
@@ -21,22 +20,21 @@ public class OsrmWalkingRouteService implements WalkingRouteService {
 
     private static final String REQUEST_FORMAT = "/route/v1/foot/{origin_longitude},{origin_latitude};{destination_longitude},{destination_latitude}?geometries=geojson";
 
-    private final WebClient webClient;
+    private final RestClient restClient;
 
     public OsrmWalkingRouteService(@Value("${osrm.url}") String osrmUrl) {
-        this.webClient = WebClient.builder()
+        this.restClient = RestClient.builder()
                 .baseUrl(osrmUrl)
                 .build();
     }
 
     @Override
     public List<Coordinate> route(Coordinate origin, Coordinate destination) {
-        Mono<Map<String, Object>> responseMono = webClient.get().uri(createUriOf(origin, destination))
+        Map<String, Object> response = restClient.get()
+                .uri(createUriOf(origin, destination))
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<>() {
+                .body(new ParameterizedTypeReference<>() {
                 });
-
-        Map<String, Object> response = responseMono.block();
 
         return parseResponseToCoordinates(response);
     }
