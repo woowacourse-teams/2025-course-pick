@@ -11,7 +11,7 @@ server:
   forward-headers-strategy: framework
   compression:
     enabled: true
-    mime-types: application/json,text/plain
+    mime-types: application/json
     min-response-size: 2KB
 
 springdoc:
