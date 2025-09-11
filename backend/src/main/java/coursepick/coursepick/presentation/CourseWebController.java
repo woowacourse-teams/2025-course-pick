@@ -66,6 +66,7 @@ public class CourseWebController implements CourseWebApi {
     }
 
     @GetMapping("/courses/meta")
+    @Override
     public CourseMetadataWebResponse getCourseMetaData() {
         CourseMetaData courseMetaData = courseApplicationService.getCourseMetaData();
         return CourseMetadataWebResponse.from(courseMetaData);

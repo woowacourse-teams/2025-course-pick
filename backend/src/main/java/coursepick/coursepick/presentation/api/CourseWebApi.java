@@ -1,6 +1,7 @@
 package coursepick.coursepick.presentation.api;
 
 import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
+import coursepick.coursepick.presentation.dto.CourseMetadataWebResponse;
 import coursepick.coursepick.presentation.dto.CourseWebResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -65,4 +66,33 @@ public interface CourseWebApi {
             @Parameter(example = "37.5165004", required = true) double latitude,
             @Parameter(example = "127.1040109", required = true) double longitude
     );
+
+    @Operation(summary = "코스 관련 메타 데이터 조회")
+    @ApiResponse(
+            responseCode = "200",
+            content = @Content(
+                    examples = @ExampleObject(
+                            value = """
+                                    {
+                                        "difficulties": [
+                                            "쉬움",
+                                            "보통",
+                                            "어려움"
+                                        ],
+                                        "inclineSummaries": [
+                                            "MOSTLY_FLAT",
+                                            "SOMETIMES_UPHILL",
+                                            "UNKNOWN"
+                                        ],
+                                        "roadTypes": [
+                                            "트랙",
+                                            "트레일",
+                                            "알수없음"
+                                        ]
+                                    }
+                                    """
+                    )
+            )
+    )
+    CourseMetadataWebResponse getCourseMetaData();
 }
