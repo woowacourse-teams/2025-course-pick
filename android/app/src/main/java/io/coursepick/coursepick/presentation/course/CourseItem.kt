@@ -3,6 +3,7 @@ package io.coursepick.coursepick.presentation.course
 import androidx.annotation.StringRes
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Course
+import io.coursepick.coursepick.domain.course.Difficulty
 import io.coursepick.coursepick.domain.course.InclineSummary
 import io.coursepick.coursepick.domain.course.Segment
 
@@ -34,4 +35,11 @@ data class CourseItem(
                 InclineSummary.CONTINUOUS_DOWNHILL -> R.string.incline_summary_continuous_downhill
                 InclineSummary.UNKNOWN -> R.string.incline_summary_continuous_unknown
             }
+
+    fun toDomain(): Difficulty =
+        when (this.difficulty) {
+            "쉬움" -> Difficulty.EASY
+            "보통" -> Difficulty.NORMAL
+            else -> Difficulty.HARD
+        }
 }
