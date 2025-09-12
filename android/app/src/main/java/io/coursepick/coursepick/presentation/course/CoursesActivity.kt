@@ -40,6 +40,7 @@ import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.presentation.CoursePickApplication
+import io.coursepick.coursepick.presentation.CoursePickUpdateManager
 import io.coursepick.coursepick.presentation.IntentKeys
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
@@ -67,6 +68,7 @@ class CoursesActivity :
     private val doublePressDetector = DoublePressDetector()
     private val mapManager by lazy { KakaoMapManager(binding.mainMap) }
     private var systemBars: Insets? = null
+    private lateinit var updateManager: CoursePickUpdateManager
 
     @SuppressLint("MissingPermission")
     private val locationPermissionLauncher: ActivityResultLauncher<Array<String>> =
@@ -123,6 +125,9 @@ class CoursesActivity :
         requestLocationPermissions()
 
         searchLauncher = searchActivityResultLauncher()
+
+        updateManager = CoursePickUpdateManager(this)
+        updateManager.checkForUpdate()
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -131,6 +136,8 @@ class CoursesActivity :
 
         mapManager.resume()
         mapManager.startTrackingCurrentLocation()
+
+        updateManager.onResume()
     }
 
     override fun onPause() {
@@ -138,6 +145,12 @@ class CoursesActivity :
 
         mapManager.pause()
         mapManager.stopTrackingCurrentLocation()
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        updateManager.onStop()
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
