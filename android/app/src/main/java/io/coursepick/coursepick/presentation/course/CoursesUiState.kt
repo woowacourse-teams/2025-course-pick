@@ -6,6 +6,7 @@ data class CoursesUiState(
     val isLoading: Boolean = false,
     val isFailure: Boolean = false,
     val isNoInternet: Boolean = false,
+    val filterCondition: FilterCondition = FilterCondition(),
 ) {
     val isQueryBlank: Boolean get() = query.isBlank()
     val areCoursesEmpty: Boolean get() = courses.isEmpty()
