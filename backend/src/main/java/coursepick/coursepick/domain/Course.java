@@ -1,5 +1,6 @@
 package coursepick.coursepick.domain;
 
+import coursepick.coursepick.application.dto.CourseMetaData;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -55,6 +56,10 @@ public class Course {
 
     public Course(String name, List<Coordinate> coordinates) {
         this(name, RoadType.알수없음, coordinates);
+    }
+
+    public static CourseMetaData getMetaData() {
+        return new CourseMetaData(List.of(Difficulty.values()), List.of(InclineSummary.values()), List.of(RoadType.values()));
     }
 
     public Coordinate closestCoordinateFrom(Coordinate target) {
