@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/background_primary" />
+            <stroke
+                android:width="2dp"
+                android:color="@color/item_primary" />
+            <corners android:radius="8dp" />
+        </shape>
+    </item>
+<!--<item>-->
+<!--    <inset-->
+<!--        android:insetLeft="1dp"-->
+<!--        android:insetRight="1dp">-->
+<!--        <shape android:shape="rectangle">-->
+<!--            <solid android:color="@color/background_primary" />-->
+<!--        </shape>-->
+<!--    </inset>-->
+<!--</item>-->
+</layer-list>
