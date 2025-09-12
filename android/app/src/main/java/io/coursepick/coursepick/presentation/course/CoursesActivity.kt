@@ -231,6 +231,11 @@ class CoursesActivity :
         viewModel.setQuery("")
     }
 
+    override fun filter() {
+        val bottomSheet = FilterBottomSheet()
+        bottomSheet.show(supportFragmentManager, bottomSheet.tag)
+    }
+
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun onReconnect() {
         val coordinate = mapManager.cameraPosition?.toCoordinate()
