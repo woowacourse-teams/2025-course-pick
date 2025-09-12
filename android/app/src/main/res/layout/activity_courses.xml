@@ -172,6 +172,20 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/mainCoursesHeader" />
 
+                <TextView
+                    android:id="@+id/mainCourseFilter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/background_filter_selector"
+                    android:onClick="@{() -> action.filter()}"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="6dp"
+                    android:text="필터"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="@id/mainCoursesHeader"
+                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader" />
+
                 <androidx.core.widget.ContentLoadingProgressBar
                     android:id="@+id/mainCoursesLoadingIndicator"
                     style="?android:attr/progressBarStyleLarge"
@@ -194,7 +208,7 @@
                     android:visibility="@{viewModel.state.isLoading || viewModel.state.areCoursesEmpty || viewModel.state.isNoInternet ? View.GONE : View.VISIBLE}"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
+                    app:layout_constraintTop_toBottomOf="@id/mainCourseFilter"
                     tools:listitem="@layout/item_course" />
 
                 <TextView
