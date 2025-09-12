@@ -68,38 +68,46 @@ jobs:
       # 8. Play Store에 AAB 업로드 및 출시 (API 직접 호출)
       - name: Upload and Release to Play Store
         run: |
-          set -e # 오류 발생 시 즉시 스크립트 중단
+          set -euo pipefail
 
           # 변수 설정
           PACKAGE_NAME="${{ secrets.ANDROID_PACKAGE_NAME }}"
           AAB_PATH="android/app/build/outputs/bundle/release/app-release.aab"
           TRACK="internal" # 배포할 트랙: internal, alpha, beta, production
-          
+
           # 인증된 액세스 토큰 가져오기
           ACCESS_TOKEN="${{ steps.auth.outputs.access_token }}"
-          
+
+          if [[ ! -f "$AAB_PATH" ]]; then
+            echo "AAB not found at $AAB_PATH"; exit 1
+          fi
+
           # 1. 편집 세션 시작 및 editId 획득
           echo "1. Creating a new edit session..."
-          EDIT_RESPONSE=$(curl -s -X POST \
+          EDIT_RESPONSE=$(curl -fSs -X POST \
             -H "Authorization: Bearer $ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
             "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/$PACKAGE_NAME/edits")
           EDIT_ID=$(echo $EDIT_RESPONSE | jq -r .id)
+          if [[ -z "$EDIT_ID" || "$EDIT_ID" == "null" ]]; then
+            echo "Failed to create edit: $EDIT_RESPONSE"; exit 1; fi
           echo "   - Success! Edit ID: $EDIT_ID"
-          
+
           # 2. AAB 업로드 및 versionCode 획득
           echo "2. Uploading AAB..."
-          UPLOAD_RESPONSE=$(curl -s -X POST \
+          UPLOAD_RESPONSE=$(curl -fSs -X POST \
             -H "Authorization: Bearer $ACCESS_TOKEN" \
             -H "Content-Type: application/octet-stream" \
             --data-binary "@$AAB_PATH" \
-            "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/$PACKAGE_NAME/edits/$EDIT_ID/bundles")
+            "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/$PACKAGE_NAME/edits/$EDIT_ID/bundles?uploadType=media")
           VERSION_CODE=$(echo $UPLOAD_RESPONSE | jq -r .versionCode)
+          if [[ -z "$VERSION_CODE" || "$VERSION_CODE" == "null" ]]; then
+            echo "Failed to upload bundle: $UPLOAD_RESPONSE"; exit 1; fi
           echo "   - Success! Version Code: $VERSION_CODE"
-          
+
           # 3. 트랙 업데이트 (⭐ inAppUpdatePriority 설정)
-          echo "3. Assigning build to the '$TRACK' track with high priority..."
-          curl -s -X PUT \
+          echo "3. Assigning build to the '$TRACK' track..."
+          TRACK_RESPONSE=$(curl -fSs -X PUT \
             -H "Authorization: Bearer $ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
             -d '{
@@ -109,12 +117,12 @@ jobs:
                     "inAppUpdatePriority": ${{ github.event.inputs.updatePriority }}
                   }]
                 }' \
-            "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/$PACKAGE_NAME/edits/$EDIT_ID/tracks/$TRACK"
-          echo "   - Success!"
-          
+            "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/$PACKAGE_NAME/edits/$EDIT_ID/tracks/$TRACK")
+          echo "   - Success! Track updated."
+
           # 4. 모든 변경사항 적용(Commit)
           echo "4. Committing all changes..."
-          curl -s -X POST \
+          COMMIT_RESPONSE=$(curl -fSs -X POST \
             -H "Authorization: Bearer $ACCESS_TOKEN" \
-            "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/$PACKAGE_NAME/edits/$EDIT_ID:commit"
+            "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/$PACKAGE_NAME/edits/$EDIT_ID:commit")
           echo "   - 🎉 Deploy complete!"
