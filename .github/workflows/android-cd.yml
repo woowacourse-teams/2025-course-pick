@@ -41,11 +41,16 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      # 4. Keystore 파일 디코딩
+      # 4. google-services.json 파일 디코딩
+      - name: Decode google-services.json
+        run: |
+          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > android/app/google-services.json
+
+      # 5. Keystore 파일 디코딩
       - name: Decode Keystore
         run: echo "${{ secrets.SIGNING_KEYSTORE_BASE64 }}" | base64 -d > android/app/keystore.jks
 
-      # 5. Release AAB 빌드
+      # 6. Release AAB 빌드
       - name: Build Release AAB
         run: cd android && ./gradlew bundleRelease
         env:
@@ -53,14 +58,14 @@ jobs:
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
 
-      # 6. Google Cloud 인증 (액세스 토큰 획득)
+      # 7. Google Cloud 인증 (액세스 토큰 획득)
       - name: Authenticate with Google Cloud
         id: auth
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.PLAY_STORE_JSON_KEY }}'
 
-      # 7. Play Store에 AAB 업로드 및 출시 (API 직접 호출)
+      # 8. Play Store에 AAB 업로드 및 출시 (API 직접 호출)
       - name: Upload and Release to Play Store
         run: |
           set -e # 오류 발생 시 즉시 스크립트 중단
