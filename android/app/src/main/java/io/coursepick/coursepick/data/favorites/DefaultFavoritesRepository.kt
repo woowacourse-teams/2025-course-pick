@@ -4,13 +4,13 @@ import io.coursepick.coursepick.domain.favorites.FavoritesRepository
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 
 class DefaultFavoritesRepository : FavoritesRepository {
-    override fun likedCourseIds(): Set<String> = CoursePickPreferences.likedCourseIds()
+    override fun favoritedCourseIds(): Set<String> = CoursePickPreferences.favoritedCourseIds()
 
-    override fun likeCourse(courseId: String) {
-        CoursePickPreferences.likeCourse(courseId)
+    override fun addFavorite(courseId: String) {
+        CoursePickPreferences.addFavorite(courseId)
     }
 
-    override fun unlikeCourse(courseId: String) {
-        CoursePickPreferences.unlikeCourse(courseId)
+    override fun removeFavorite(courseId: String) {
+        CoursePickPreferences.removeFavorite(courseId)
     }
 }

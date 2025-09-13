@@ -71,18 +71,18 @@ class CoursesViewModel(
         _event.value = CoursesUiEvent.SelectNewCourse(selectedCourse)
     }
 
-    fun toggleLike(toggledCourse: CourseItem) {
+    fun toggleFavorite(toggledCourse: CourseItem) {
         state.value?.courses?.let { courses: List<CourseItem> ->
             val newCourses =
                 courses.map { course: CourseItem ->
-                    if (course.id == toggledCourse.id) course.copy(liked = !course.liked) else course
+                    if (course.id == toggledCourse.id) course.copy(favorite = !course.favorite) else course
                 }
             _state.postValue(state.value?.copy(courses = newCourses))
         }
-        if (toggledCourse.liked) {
-            favoritesRepository.unlikeCourse(toggledCourse.id)
+        if (toggledCourse.favorite) {
+            favoritesRepository.removeFavorite(toggledCourse.id)
         } else {
-            favoritesRepository.likeCourse(toggledCourse.id)
+            favoritesRepository.addFavorite(toggledCourse.id)
         }
     }
 
@@ -101,7 +101,7 @@ class CoursesViewModel(
 
         viewModelScope.launch {
             runCatching {
-                val likedCourseIds: Set<String> = favoritesRepository.likedCourseIds()
+                val favoritedCourseIds: Set<String> = favoritesRepository.favoritedCourseIds()
                 val courses = courseRepository.courses(mapCoordinate, userCoordinate, scope)
                 Logger.log(Logger.Event.Success("fetch_courses"))
                 courses
@@ -110,7 +110,7 @@ class CoursesViewModel(
                         CourseItem(
                             course = course,
                             selected = index == 0,
-                            liked = likedCourseIds.contains(course.id),
+                            favorite = favoritedCourseIds.contains(course.id),
                         )
                     }
             }.onSuccess { courses: List<CourseItem> ->
@@ -156,16 +156,16 @@ class CoursesViewModel(
 
         viewModelScope.launch {
             runCatching {
-                val likedCourseIds: Set<String> = favoritesRepository.likedCourseIds()
-                likedCourseIds.mapNotNull { courseId: String ->
+                val favoritedCourseIds: Set<String> = favoritesRepository.favoritedCourseIds()
+                favoritedCourseIds.mapNotNull { courseId: String ->
                     courseRepository.courseById(courseId)?.let { course: Course ->
                         CourseItem(
                             course = course,
                             selected = false,
-                            liked = true,
+                            favorite = true,
                         )
                     } ?: run {
-                        favoritesRepository.unlikeCourse(courseId)
+                        favoritesRepository.removeFavorite(courseId)
                         null
                     }
                 }

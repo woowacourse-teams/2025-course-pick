@@ -40,7 +40,7 @@ class CoursesViewModelTest {
         val expected =
             CoursesUiState(
                 FAKE_COURSES.mapIndexed { index: Int, course: Course ->
-                    CourseItem(course, selected = index == 0, liked = false)
+                    CourseItem(course, selected = index == 0, favorite = false)
                 },
             )
         val actual = mainViewModel.state.getOrAwaitValue()
@@ -55,12 +55,12 @@ class CoursesViewModelTest {
         val expected =
             CoursesUiState(
                 FAKE_COURSES.map { course: Course ->
-                    CourseItem(course, selected = course == COURSE_FIXTURE_20, liked = false)
+                    CourseItem(course, selected = course == COURSE_FIXTURE_20, favorite = false)
                 },
             )
 
         // when
-        mainViewModel.select(CourseItem(COURSE_FIXTURE_20, selected = false, liked = false))
+        mainViewModel.select(CourseItem(COURSE_FIXTURE_20, selected = false, favorite = false))
 
         // then
         Assertions.assertThat(mainViewModel.state.getOrAwaitValue()).isEqualTo(expected)
@@ -69,17 +69,17 @@ class CoursesViewModelTest {
     @Test
     fun `이미 선택된 코스가 선택되면 해당 코스가 유지된다`() {
         // given
-        mainViewModel.select(CourseItem(COURSE_FIXTURE_20, selected = false, liked = false))
+        mainViewModel.select(CourseItem(COURSE_FIXTURE_20, selected = false, favorite = false))
 
         val expected =
             CoursesUiState(
                 FAKE_COURSES.map { course: Course ->
-                    CourseItem(course, selected = course == COURSE_FIXTURE_20, liked = false)
+                    CourseItem(course, selected = course == COURSE_FIXTURE_20, favorite = false)
                 },
             )
 
         // when
-        mainViewModel.select(CourseItem(COURSE_FIXTURE_20, selected = true, liked = false))
+        mainViewModel.select(CourseItem(COURSE_FIXTURE_20, selected = true, favorite = false))
 
         // then
         Assertions.assertThat(mainViewModel.state.getOrAwaitValue()).isEqualTo(expected)
