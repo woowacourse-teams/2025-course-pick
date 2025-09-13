@@ -331,7 +331,11 @@ class CoursesActivity :
         binding.mainCoursesHeader.text = headerText
         supportFragmentManager.commit {
             setReorderingAllowed(true)
-            supportFragmentManager.fragments.forEach(::hide)
+            supportFragmentManager.fragments.forEach { fragment: Fragment ->
+                if (fragment is ExploreCoursesFragment || fragment is FavoriteCoursesFragment) {
+                    hide(fragment)
+                }
+            }
             supportFragmentManager.findFragmentByTag(fragment.javaClass.name)?.let(::show) ?: run {
                 add(R.id.mainFragmentContainer, fragment, fragment.javaClass.name)
             }
