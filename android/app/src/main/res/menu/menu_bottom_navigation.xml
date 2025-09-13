@@ -6,6 +6,6 @@
         android:title="코스 탐색" />
     <item
         android:id="@+id/favoritesMenu"
-        android:icon="@drawable/icon_favorites_menu"
+        android:icon="@drawable/icon_favorite_menu"
         android:title="즐겨찾기" />
 </menu>
