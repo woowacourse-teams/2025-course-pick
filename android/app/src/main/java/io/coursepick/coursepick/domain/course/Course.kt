@@ -9,7 +9,6 @@ data class Course(
     val difficulty: String,
     val inclineSummary: InclineSummary,
     val segments: List<Segment>,
-    val liked: Boolean = false,
 ) {
     init {
         require(segments.isNotEmpty())
