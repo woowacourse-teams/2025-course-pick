@@ -120,12 +120,12 @@
             tools:text="EASY • 대체로 평탄해요" />
 
         <ImageView
-            android:id="@+id/courseLiked"
+            android:id="@+id/courseFavoriteButton"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginEnd="10dp"
-            android:onClick="@{() -> courseItemListener.toggleLike(course)}"
-            android:src="@{course.liked ? @drawable/icon_liked : @drawable/icon_not_liked}"
+            android:onClick="@{() -> courseItemListener.toggleFavorite(course)}"
+            android:src="@{course.favorite ? @drawable/icon_favorite : @drawable/icon_not_favorite}"
             app:layout_constraintBottom_toBottomOf="@id/courseNavigationButton"
             app:layout_constraintEnd_toStartOf="@id/courseNavigationButton"
             app:layout_constraintTop_toTopOf="@id/courseNavigationButton" />

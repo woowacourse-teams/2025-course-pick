@@ -64,8 +64,8 @@ class ExploreCoursesFragment : Fragment() {
                 viewModel.select(course)
             }
 
-            override fun toggleLike(course: CourseItem) {
-                viewModel.toggleLike(course)
+            override fun toggleFavorite(course: CourseItem) {
+                viewModel.toggleFavorite(course)
             }
 
             @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])

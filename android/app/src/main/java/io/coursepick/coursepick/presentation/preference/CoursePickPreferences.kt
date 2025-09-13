@@ -70,17 +70,17 @@ object CoursePickPreferences {
             }
         }
 
-    fun likedCourseIds(): Set<String> = preferences.getStringSet("liked_courses", emptySet()) ?: emptySet()
+    fun favoritedCourseIds(): Set<String> = preferences.getStringSet("favorited_courses", emptySet()) ?: emptySet()
 
-    fun likeCourse(courseId: String) {
+    fun addFavorite(courseId: String) {
         preferences.edit {
-            putStringSet("liked_courses", likedCourseIds() + courseId)
+            putStringSet("favorited_courses", favoritedCourseIds() + courseId)
         }
     }
 
-    fun unlikeCourse(courseId: String) {
+    fun removeFavorite(courseId: String) {
         preferences.edit {
-            putStringSet("liked_courses", likedCourseIds() - courseId)
+            putStringSet("favorited_courses", favoritedCourseIds() - courseId)
         }
     }
 

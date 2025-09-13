@@ -1,9 +1,9 @@
 package io.coursepick.coursepick.domain.favorites
 
 interface FavoritesRepository {
-    fun likedCourseIds(): Set<String>
+    fun favoritedCourseIds(): Set<String>
 
-    fun likeCourse(courseId: String)
+    fun addFavorite(courseId: String)
 
-    fun unlikeCourse(courseId: String)
+    fun removeFavorite(courseId: String)
 }
