@@ -58,9 +58,11 @@ public class CourseWebController implements CourseWebApi {
     }
 
     @Override
-    @GetMapping("/courses/{id}")
-    public CourseWebResponse findCourseById(@PathVariable("id") String id) {
-        return CourseWebResponse.from(courseApplicationService.findById(id));
+    @GetMapping("/user/favorite-courses")
+    public List<CourseWebResponse> findFavoriteCourses(@RequestParam("courseIds") List<String> ids) {
+        return courseApplicationService.findFavoriteCourses(ids).stream()
+                .map(CourseWebResponse::from)
+                .toList();
     }
 
     private void validateAdminToken(String token) {
