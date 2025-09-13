@@ -7,8 +7,9 @@ import io.coursepick.coursepick.domain.fixture.COURSE_FIXTURE_20
 import io.coursepick.coursepick.domain.fixture.FAKE_COURSES
 import io.coursepick.coursepick.presentation.extension.CoroutinesTestExtension
 import io.coursepick.coursepick.presentation.extension.InstantTaskExecutorExtension
+import io.coursepick.coursepick.presentation.fixtures.FakeCourseRepository
+import io.coursepick.coursepick.presentation.fixtures.FakeFavoritesRepository
 import io.coursepick.coursepick.presentation.fixtures.FakeNetworkMonitor
-import io.coursepick.coursepick.presentation.fixtures.FakeRepository
 import io.coursepick.coursepick.presentation.ui.getOrAwaitValue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions
@@ -20,14 +21,17 @@ import org.junit.jupiter.api.extension.ExtendWith
 @ExtendWith(CoroutinesTestExtension::class)
 @ExtendWith(InstantTaskExecutorExtension::class)
 class CoursesViewModelTest {
-    private val fakeRepository = FakeRepository()
+    private val fakeCourseRepository = FakeCourseRepository()
+    private val fakeFavoritesRepository = FakeFavoritesRepository()
     private val fakeNetworkMonitor = FakeNetworkMonitor()
     private lateinit var mainViewModel: CoursesViewModel
 
     @BeforeEach
     fun setUp() {
-        mainViewModel = CoursesViewModel(fakeRepository, fakeNetworkMonitor)
+        mainViewModel =
+            CoursesViewModel(fakeCourseRepository, fakeFavoritesRepository, fakeNetworkMonitor)
         mainViewModel.fetchCourses(COORDINATE_FIXTURE, null, Scope.default())
+        println(">>>>> ${mainViewModel.state.value?.courses}")
     }
 
     @Test
@@ -36,7 +40,7 @@ class CoursesViewModelTest {
         val expected =
             CoursesUiState(
                 FAKE_COURSES.mapIndexed { index: Int, course: Course ->
-                    CourseItem(course, selected = index == 0)
+                    CourseItem(course, selected = index == 0, liked = false)
                 },
             )
         val actual = mainViewModel.state.getOrAwaitValue()
@@ -51,12 +55,12 @@ class CoursesViewModelTest {
         val expected =
             CoursesUiState(
                 FAKE_COURSES.map { course: Course ->
-                    CourseItem(course, selected = course == COURSE_FIXTURE_20)
+                    CourseItem(course, selected = course == COURSE_FIXTURE_20, liked = false)
                 },
             )
 
         // when
-        mainViewModel.select(CourseItem(COURSE_FIXTURE_20, selected = false))
+        mainViewModel.select(CourseItem(COURSE_FIXTURE_20, selected = false, liked = false))
 
         // then
         Assertions.assertThat(mainViewModel.state.getOrAwaitValue()).isEqualTo(expected)
@@ -65,17 +69,17 @@ class CoursesViewModelTest {
     @Test
     fun `이미 선택된 코스가 선택되면 해당 코스가 유지된다`() {
         // given
-        mainViewModel.select(CourseItem(COURSE_FIXTURE_20, selected = false))
+        mainViewModel.select(CourseItem(COURSE_FIXTURE_20, selected = false, liked = false))
 
         val expected =
             CoursesUiState(
                 FAKE_COURSES.map { course: Course ->
-                    CourseItem(course, selected = course == COURSE_FIXTURE_20)
+                    CourseItem(course, selected = course == COURSE_FIXTURE_20, liked = false)
                 },
             )
 
         // when
-        mainViewModel.select(CourseItem(COURSE_FIXTURE_20, selected = true))
+        mainViewModel.select(CourseItem(COURSE_FIXTURE_20, selected = true, liked = false))
 
         // then
         Assertions.assertThat(mainViewModel.state.getOrAwaitValue()).isEqualTo(expected)
