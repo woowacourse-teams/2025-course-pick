@@ -12,9 +12,9 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseRepository
 import io.coursepick.coursepick.domain.course.Scope
+import io.coursepick.coursepick.domain.favorites.FavoritesRepository
 import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.Logger
-import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
 import kotlinx.coroutines.launch
@@ -22,6 +22,7 @@ import java.io.IOException
 
 class CoursesViewModel(
     private val courseRepository: CourseRepository,
+    private val favoritesRepository: FavoritesRepository,
     private val networkMonitor: NetworkMonitor,
 ) : ViewModel() {
     private val _state: MutableLiveData<CoursesUiState> =
@@ -79,9 +80,9 @@ class CoursesViewModel(
             _state.postValue(state.value?.copy(courses = newCourses))
         }
         if (toggledCourse.liked) {
-            CoursePickPreferences.unlikeCourse(toggledCourse.id)
+            favoritesRepository.unlikeCourse(toggledCourse.id)
         } else {
-            CoursePickPreferences.likeCourse(toggledCourse.id)
+            favoritesRepository.likeCourse(toggledCourse.id)
         }
     }
 
@@ -100,7 +101,7 @@ class CoursesViewModel(
 
         viewModelScope.launch {
             runCatching {
-                val likedCourseIds: Set<String> = CoursePickPreferences.likedCourseIds()
+                val likedCourseIds: Set<String> = favoritesRepository.likedCourseIds()
                 val courses = courseRepository.courses(mapCoordinate, userCoordinate, scope)
                 Logger.log(Logger.Event.Success("fetch_courses"))
                 courses
@@ -118,6 +119,7 @@ class CoursesViewModel(
                         state.value?.copy(courses = courses, isLoading = false, isFailure = false),
                     )
             }.onFailure { exception: Throwable ->
+                println("${exception.message}")
                 Logger.log(
                     Logger.Event.Failure("fetch_courses"),
                     "message" to exception.message.toString(),
@@ -154,7 +156,7 @@ class CoursesViewModel(
 
         viewModelScope.launch {
             runCatching {
-                val likedCourseIds: Set<String> = CoursePickPreferences.likedCourseIds()
+                val likedCourseIds: Set<String> = favoritesRepository.likedCourseIds()
                 likedCourseIds.mapNotNull { courseId: String ->
                     courseRepository.courseById(courseId)?.let { course: Course ->
                         CourseItem(
@@ -163,7 +165,7 @@ class CoursesViewModel(
                             liked = true,
                         )
                     } ?: run {
-                        CoursePickPreferences.unlikeCourse(courseId)
+                        favoritesRepository.unlikeCourse(courseId)
                         null
                     }
                 }
@@ -241,6 +243,7 @@ class CoursesViewModel(
                     val application = checkNotNull(extras[APPLICATION_KEY]) as CoursePickApplication
                     return CoursesViewModel(
                         application.courseRepository,
+                        application.favoritesRepository,
                         application.networkMonitor,
                     ) as T
                 }
