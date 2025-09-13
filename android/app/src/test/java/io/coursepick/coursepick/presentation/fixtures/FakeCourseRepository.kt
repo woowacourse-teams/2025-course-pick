@@ -5,9 +5,12 @@ import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseRepository
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.domain.fixture.COORDINATE_FIXTURE
+import io.coursepick.coursepick.domain.fixture.COURSE_FIXTURE_1
 import io.coursepick.coursepick.domain.fixture.FAKE_COURSES
 
-class FakeRepository : CourseRepository {
+class FakeCourseRepository : CourseRepository {
+    override suspend fun courseById(courseId: String): Course = COURSE_FIXTURE_1
+
     override suspend fun courses(
         mapCoordinate: Coordinate,
         userCoordinate: Coordinate?,
