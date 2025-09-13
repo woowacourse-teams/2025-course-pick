@@ -66,6 +66,8 @@ class CoursesActivity :
     private var searchLauncher: ActivityResultLauncher<Intent>? = null
     private val binding by lazy { ActivityCoursesBinding.inflate(layoutInflater) }
     private val viewModel: CoursesViewModel by viewModels { CoursesViewModel.Factory }
+    private val exploreCoursesFragment = ExploreCoursesFragment()
+    private val favoriteCoursesFragment = FavoriteCoursesFragment()
     private val doublePressDetector = DoublePressDetector()
     private val mapManager by lazy { KakaoMapManager(binding.mainMap) }
     private var systemBars: Insets? = null
@@ -608,7 +610,5 @@ class CoursesActivity :
 
     private companion object {
         const val COURSE_COLOR_DIALOG_TAG = "CourseColorDescriptionDialog"
-        private val exploreCoursesFragment = ExploreCoursesFragment()
-        private val favoriteCoursesFragment = FavoriteCoursesFragment()
     }
 }
