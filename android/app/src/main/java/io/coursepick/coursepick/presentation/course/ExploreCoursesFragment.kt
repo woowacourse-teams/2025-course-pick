@@ -43,7 +43,7 @@ class ExploreCoursesFragment : Fragment() {
 
     private fun setUpBindingVariables() {
         binding.viewModel = viewModel
-        binding.lifecycleOwner = this
+        binding.lifecycleOwner = viewLifecycleOwner
         binding.adapter = courseAdapter
     }
 
