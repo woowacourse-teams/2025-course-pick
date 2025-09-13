@@ -50,10 +50,11 @@ public class CourseApplicationService {
         return course.closestCoordinateFrom(new Coordinate(latitude, longitude));
     }
 
-    public CourseResponse findById(String id) {
-        Course course = courseRepository.findById(id)
-                .orElseThrow(() -> NOT_EXIST_COURSE.create(id));
-
-        return CourseResponse.from(course);
+    @Transactional(readOnly = true)
+    public List<CourseResponse> findFavoriteCourses(List<String> ids) {
+        List<Course> courses = courseRepository.findByIdIn(ids);
+        return courses.stream()
+                .map(CourseResponse::from)
+                .toList();
     }
 }
