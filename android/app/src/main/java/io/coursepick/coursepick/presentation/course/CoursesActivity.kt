@@ -90,6 +90,10 @@ class CoursesActivity :
             insets
         }
 
+        ViewCompat.setOnApplyWindowInsetsListener(binding.mainBottomNavigation) { _, insets: WindowInsetsCompat ->
+            insets
+        }
+
         mapManager.start {
             setUpObservers()
             systemBars?.let(::setUpMapPadding)
@@ -460,8 +464,7 @@ class CoursesActivity :
             systemBars.left,
             0,
             systemBars.right,
-            systemBars.bottom +
-                binding.mainBottomNavigation.height,
+            systemBars.bottom + binding.mainBottomNavigation.height,
         )
 
         val behavior = BottomSheetBehavior.from(bottomSheet)
