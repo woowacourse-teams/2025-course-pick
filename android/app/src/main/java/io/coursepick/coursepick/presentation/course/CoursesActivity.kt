@@ -167,6 +167,7 @@ class CoursesActivity :
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun searchThisArea() {
+        switchContent(CoursesContent.EXPLORE)
         binding.mainBottomNavigation.setOnItemSelectedListener(null)
         binding.mainBottomNavigation.selectedItemId = R.id.coursesMenu
         setUpBottomNavigation()
@@ -276,6 +277,7 @@ class CoursesActivity :
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun handleLocationResult(intent: Intent?) {
+        switchContent(CoursesContent.EXPLORE)
         binding.mainBottomNavigation.setOnItemSelectedListener(null)
         binding.mainBottomNavigation.selectedItemId = R.id.coursesMenu
         setUpBottomNavigation()
