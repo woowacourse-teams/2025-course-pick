@@ -9,6 +9,9 @@ import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
 import coursepick.coursepick.presentation.dto.CourseWebResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -55,6 +58,11 @@ public class CourseWebController implements CourseWebApi {
     ) {
         Coordinate coordinate = courseApplicationService.findClosestCoordinate(id, latitude, longitude);
         return CoordinateWebResponse.from(coordinate);
+    }
+
+    @GetMapping("/admin/courses")
+    public Page<CourseWebResponse> findClosestCoordinate(@PageableDefault Pageable page) {
+        return courseApplicationService.findCourses(page).map(CourseWebResponse::from);
     }
 
     private void validateAdminToken(String token) {
