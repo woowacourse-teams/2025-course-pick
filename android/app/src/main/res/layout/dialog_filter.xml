@@ -141,17 +141,16 @@
             android:textAlignment="center"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@id/mainFilterLengthConfirm"
+            app:layout_constraintEnd_toStartOf="@id/mainFilteredCoursesResult"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/mainFilterLengthSlider" />
 
         <TextView
-            android:id="@+id/mainFilterLengthConfirm"
+            android:id="@+id/mainFilteredCoursesResult"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:onClick="@{}"
             android:padding="20dp"
-            android:text="확인"
             android:textAlignment="center"
             android:textSize="18sp"
             android:textStyle="bold"
