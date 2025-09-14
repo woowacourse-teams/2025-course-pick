@@ -26,31 +26,31 @@ jobs:
       id-token: 'write'
 
     steps:
-      # 1. 저장소 코드 체크아웃
+      # 저장소 코드 체크아웃
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. JDK 21 설정
+      # JDK 21 설정
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '21'
 
-      # 3. Gradle 캐시 설정
+      # Gradle 캐시 설정
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      # 4. google-services.json 파일 디코딩
+      # google-services.json 파일 디코딩
       - name: Decode google-services.json
         run: |
           echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > android/app/google-services.json
 
-      # 5. Keystore 파일 디코딩
+      # Keystore 파일 디코딩
       - name: Decode Keystore
         run: echo "${{ secrets.SIGNING_KEYSTORE_BASE64 }}" | base64 -d > android/app/keystore.jks
 
-      # 6. Release AAB 빌드
+      # Release AAB 빌드
       - name: Build Release AAB
         run: cd android && ./gradlew bundleRelease
         env:
@@ -58,25 +58,31 @@ jobs:
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
 
-      # 7. Google Cloud 인증 (액세스 토큰 획득)
+      # Google Cloud 인증
       - name: Authenticate with Google Cloud
-        id: auth
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.PLAY_STORE_JSON_KEY }}'
 
-      # 8. Play Store에 AAB 업로드 및 출시 (API 직접 호출)
+      # Play Store API용 Access Token 발급
+      - name: Generate Access Token for Play Store API
+        id: generate_token
+        run: |
+          # scope가 적용된 토큰을 발급받아, 다음 스텝에서 사용할 수 있도록 output으로 설정합니다.
+          echo "access_token=$(gcloud auth print-access-token --scopes='https://www.googleapis.com/auth/androidpublisher')" >> $GITHUB_OUTPUT
+
+      # Play Store에 AAB 업로드 및 출시 (API 직접 호출)
       - name: Upload and Release to Play Store
         run: |
           set -euo pipefail
-
-          # 변수 설정
-          PACKAGE_NAME="${{ secrets.ANDROID_PACKAGE_NAME }}"
-          AAB_PATH="android/app/build/outputs/bundle/release/app-release.aab"
-          TRACK="internal" # 배포할 트랙: internal, alpha, beta, production
-
-          # 인증된 액세스 토큰 가져오기
-          ACCESS_TOKEN="${{ steps.auth.outputs.access_token }}"
+          
+           # 변수 설정
+           PACKAGE_NAME="${{ secrets.ANDROID_PACKAGE_NAME }}"
+           AAB_PATH="android/app/build/outputs/bundle/release/app-release.aab"
+           TRACK="internal"
+          
+           # 인증된 액세스 토큰 가져오기 (참조 방식 변경)
+           ACCESS_TOKEN="${{ steps.generate_token.outputs.access_token }}"
 
           if [[ ! -f "$AAB_PATH" ]]; then
             echo "AAB not found at $AAB_PATH"; exit 1
