@@ -105,7 +105,7 @@ jobs:
             -H "Authorization: Bearer $ACCESS_TOKEN" \
             -H "Content-Type: application/octet-stream" \
             --data-binary "@$AAB_PATH" \
-            "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/$PACKAGE_NAME/edits/$EDIT_ID/bundles?uploadType=media")
+            "https://androidpublisher.googleapis.com/upload/androidpublisher/v3/applications/$PACKAGE_NAME/edits/$EDIT_ID/bundles?uploadType=media")
           VERSION_CODE=$(echo $UPLOAD_RESPONSE | jq -r .versionCode)
           if [[ -z "$VERSION_CODE" || "$VERSION_CODE" == "null" ]]; then
             echo "Failed to upload bundle: $UPLOAD_RESPONSE"; exit 1; fi
