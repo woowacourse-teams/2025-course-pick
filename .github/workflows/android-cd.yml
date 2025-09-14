@@ -50,6 +50,10 @@ jobs:
       - name: Decode Keystore
         run: echo "${{ secrets.SIGNING_KEYSTORE_BASE64 }}" | base64 -d > android/app/keystore.jks
 
+      # local.properties 파일 생성
+      - name: Create local.properties
+        run: echo "${{ secrets.ANDROID_LOCAL_PROPERTIES_BASE64 }}" | base64 --decode > android/local.properties
+
       # Release AAB 빌드
       - name: Build Release AAB
         run: cd android && ./gradlew bundleRelease
