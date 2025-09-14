@@ -152,7 +152,6 @@
             android:layout_height="wrap_content"
             android:background="@drawable/background_filter_result_selector"
             android:enabled="false"
-            android:onClick="@{}"
             android:padding="20dp"
             android:textAlignment="center"
             android:textColor="@color/white"

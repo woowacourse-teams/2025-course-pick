@@ -185,6 +185,9 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
                 lengthRange = LengthRange(minimum, maximum),
             )
         viewModel.filter(condition)
+        binding.mainFilteredCoursesResult.isEnabled = viewModel.state.value
+            ?.courses
+            ?.isNotEmpty() == true
     }
 
     override fun onDestroyView() {
