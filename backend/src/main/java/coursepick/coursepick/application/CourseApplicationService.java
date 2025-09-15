@@ -52,7 +52,10 @@ public class CourseApplicationService {
         return course.closestCoordinateFrom(new Coordinate(latitude, longitude));
     }
 
-    public Page<CourseResponse> findCourses(Pageable page) {
-        return courseRepository.findAll(page).map(CourseResponse::from);
+    public Page<CourseResponse> findCourses(String keyword, Pageable page) {
+        if (keyword == null) {
+            return courseRepository.findAll(page).map(CourseResponse::from);
+        }
+        return courseRepository.findByNameContains(keyword, page).map(CourseResponse::from);
     }
 }

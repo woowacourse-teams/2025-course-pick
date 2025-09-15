@@ -61,8 +61,11 @@ public class CourseWebController implements CourseWebApi {
     }
 
     @GetMapping("/admin/courses")
-    public Page<CourseWebResponse> findClosestCoordinate(@PageableDefault Pageable page) {
-        return courseApplicationService.findCourses(page).map(CourseWebResponse::from);
+    public Page<CourseWebResponse> findCourses(
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @PageableDefault Pageable page
+    ) {
+        return courseApplicationService.findCourses(keyword, page).map(CourseWebResponse::from);
     }
 
     private void validateAdminToken(String token) {
