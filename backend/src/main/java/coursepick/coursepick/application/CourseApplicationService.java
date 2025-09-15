@@ -54,9 +54,9 @@ public class CourseApplicationService {
 
     @Transactional(readOnly = true)
     public Page<CourseResponse> findCourses(String keyword, Pageable page) {
-        if (keyword == null) {
+        if (keyword == null || keyword.isBlank()) {
             return courseRepository.findAll(page).map(CourseResponse::from);
         }
-        return courseRepository.findByNameContains(keyword, page).map(CourseResponse::from);
+        return courseRepository.findByNameContains(keyword.trim(), page).map(CourseResponse::from);
     }
 }
