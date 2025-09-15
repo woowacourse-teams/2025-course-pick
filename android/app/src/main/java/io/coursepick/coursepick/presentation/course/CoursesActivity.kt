@@ -43,10 +43,11 @@ import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.CoursePickUpdateManager
-import io.coursepick.coursepick.presentation.IntentKeys
+import io.coursepick.coursepick.presentation.DataKeys
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
+import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.map.kakao.KakaoMapManager
 import io.coursepick.coursepick.presentation.map.kakao.toCoordinate
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
@@ -55,9 +56,6 @@ import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 import io.coursepick.coursepick.presentation.routefinder.RouteFinderChoiceDialogFragment
 import io.coursepick.coursepick.presentation.search.SearchActivity
 import io.coursepick.coursepick.presentation.ui.DoublePressDetector
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class CoursesActivity :
     AppCompatActivity(),
@@ -217,7 +215,7 @@ class CoursesActivity :
     override fun search() {
         val intent = SearchActivity.intent(this)
         val query: String? = viewModel.state.value?.query
-        if (!query.isNullOrBlank()) intent.putExtra(IntentKeys.EXTRA_KEYS_PLACE_NAME, query)
+        if (!query.isNullOrBlank()) intent.putExtra(DataKeys.DATA_KEY_PLACE_NAME, query)
         searchLauncher?.launch(intent) ?: Toast
             .makeText(
                 this,
@@ -278,21 +276,18 @@ class CoursesActivity :
             return
         }
 
-        val placeNameExtraKey = IntentKeys.EXTRA_KEYS_PLACE_NAME
-        val query: String? = intent.getStringExtra(placeNameExtraKey)
+        val query: String? = intent.getStringExtra(DataKeys.DATA_KEY_PLACE_NAME)
         if (!query.isNullOrBlank()) {
             viewModel.setQuery(query)
         }
 
-        val latitudeExtraKey = IntentKeys.EXTRA_KEYS_PLACE_LATITUDE
-        val longitudeExtraKey = IntentKeys.EXTRA_KEYS_PLACE_LONGITUDE
-        if (!intent.hasExtra(latitudeExtraKey) || !intent.hasExtra(longitudeExtraKey)) {
+        if (!intent.hasExtra(DataKeys.DATA_KEY_PLACE_LATITUDE) || !intent.hasExtra(DataKeys.DATA_KEY_PLACE_LONGITUDE)) {
             Toast.makeText(this, "위치 정보가 전달되지 않았습니다.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val latitudeValue = intent.getDoubleExtra(latitudeExtraKey, 0.0)
-        val longitudeValue = intent.getDoubleExtra(longitudeExtraKey, 0.0)
+        val latitudeValue = intent.getDoubleExtra(DataKeys.DATA_KEY_PLACE_LATITUDE, 0.0)
+        val longitudeValue = intent.getDoubleExtra(DataKeys.DATA_KEY_PLACE_LONGITUDE, 0.0)
 
         val latitude = Latitude(latitudeValue)
         val longitude = Longitude(longitudeValue)
@@ -459,6 +454,83 @@ class CoursesActivity :
         startActivity(Intent(this, OssLicensesMenuActivity::class.java))
     }
 
+    private fun CourseItemListener(): CourseItemListener =
+        object : CourseItemListener {
+            override fun select(course: CourseItem) {
+                Logger.log(
+                    Logger.Event.Click("course_on_list"),
+                    "id" to course.id,
+                    "name" to course.name,
+                )
+                viewModel.select(course)
+            }
+
+            @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+            override fun navigateToCourse(course: CourseItem) {
+                Logger.log(
+                    Logger.Event.Click("navigate"),
+                    "id" to course.id,
+                    "name" to course.name,
+                )
+
+                mapManager.fetchCurrentLocation(
+                    onSuccess = { latitude: Latitude, longitude: Longitude ->
+                        val origin = Coordinate(latitude, longitude)
+                        val selectedApp: RouteFinderApplication? =
+                            CoursePickPreferences.selectedRouteFinder
+                        if (selectedApp == null) {
+                            supportFragmentManager.setFragmentResultListener(
+                                DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_REQUEST,
+                                this@CoursesActivity,
+                            ) { _, bundle: Bundle ->
+                                supportFragmentManager.clearFragmentResultListener(DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_REQUEST)
+                                val selectedApp: RouteFinderApplication =
+                                    bundle.getParcelableCompat<RouteFinderApplication>(DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_RESULT)
+                                        ?: return@setFragmentResultListener
+                                handleNavigation(course, origin, selectedApp)
+                            }
+                            RouteFinderChoiceDialogFragment().show(supportFragmentManager, null)
+                            return@fetchCurrentLocation
+                        }
+                        handleNavigation(course, origin, selectedApp)
+                    },
+                    onFailure = {
+                        Toast
+                            .makeText(this@CoursesActivity, "현재 위치를 가져올 수 없어요.", Toast.LENGTH_SHORT)
+                            .show()
+                    },
+                )
+            }
+        }
+
+    private fun handleNavigation(
+        course: CourseItem,
+        origin: Coordinate,
+        selectedApp: RouteFinderApplication,
+    ) {
+        when (selectedApp) {
+            is RouteFinderApplication.InApp -> {
+                viewModel.fetchRouteToCourse(course, origin)
+            }
+
+            is RouteFinderApplication.KakaoMap -> {
+                viewModel.fetchNearestCoordinate(
+                    course,
+                    origin,
+                    RouteFinderApplication.KakaoMap,
+                )
+            }
+
+            is RouteFinderApplication.NaverMap -> {
+                viewModel.fetchNearestCoordinate(
+                    course,
+                    origin,
+                    RouteFinderApplication.NaverMap,
+                )
+            }
+        }
+    }
+
     private fun setUpNavigation(systemBars: Insets) {
         binding.mainNavigation.setPadding(0, 0, 0, systemBars.bottom)
     }
@@ -559,6 +631,8 @@ class CoursesActivity :
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun setUpStateObserver() {
         viewModel.state.observe(this) { state: CoursesUiState ->
+            courseAdapter.submitList(state.courses)
+            mapManager.removeAllLines()
             mapManager.setOnCourseClickListener(state.courses) { course: CourseItem ->
                 viewModel.select(course)
             }
@@ -574,29 +648,30 @@ class CoursesActivity :
                     Toast.makeText(this, "코스 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
                 }
 
-                is CoursesUiEvent.SelectNewCourse -> {
-                    selectCourse(event.course)
+                is CoursesUiEvent.SelectCourseManually -> {
+                    mapManager.fitTo(event.course)
+                }
+
+                is CoursesUiEvent.FetchRouteToCourseSuccess -> {
+                    mapManager.removeAllLines()
+                    mapManager.fitTo(event.route)
+                    mapManager.draw(event.course)
+                    mapManager.drawRouteToCourse(event.route, event.course)
+                }
+
+                is CoursesUiEvent.FetchRouteToCourseFailure -> {
+                    Toast
+                        .makeText(this, "코스까지 가는 길을 찾지 못했습니다.", Toast.LENGTH_SHORT)
+                        .show()
                 }
 
                 is CoursesUiEvent.FetchNearestCoordinateSuccess -> {
-                    lifecycleScope.launch {
-                        val selectedApp: RouteFinderApplication? =
-                            withContext(Dispatchers.IO) {
-                                CoursePickPreferences.selectedRouteFinder
-                            }
-
-                        selectedApp?.launch(
-                            this@CoursesActivity,
-                            event.origin,
-                            event.destination,
-                            event.destinationName,
-                        ) ?: RouteFinderChoiceDialogFragment
-                            .newInstance(
-                                event.origin,
-                                event.destination,
-                                event.destinationName,
-                            ).show(supportFragmentManager, null)
-                    }
+                    event.routeFinder.launch(
+                        this@CoursesActivity,
+                        event.origin,
+                        event.destination,
+                        event.destinationName,
+                    )
                 }
 
                 CoursesUiEvent.FetchNearestCoordinateFailure ->
@@ -605,10 +680,6 @@ class CoursesActivity :
                         .show()
             }
         }
-    }
-
-    private fun selectCourse(course: CourseItem) {
-        mapManager.fitTo(course)
     }
 
     private fun requestLocationPermissions() {

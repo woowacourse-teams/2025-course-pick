@@ -5,8 +5,8 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class RouteFinderChoiceUiState(
-    val routeFinders: List<RouteFinderApplication> = RouteFinderApplication.entries.toList(),
+    val routeFinders: List<RouteFinderApplication> = RouteFinderApplication.ALL,
     var defaultAppChecked: Boolean = false,
 ) : Parcelable {
-    val routeFinderNames: List<String> get() = routeFinders.map(RouteFinderApplication::appName)
+    val routeFinderNames: List<String> get() = routeFinders.map(RouteFinderApplication::name)
 }

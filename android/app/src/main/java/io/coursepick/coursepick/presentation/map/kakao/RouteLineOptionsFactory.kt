@@ -26,6 +26,15 @@ class RouteLineOptionsFactory(
     private val downhillStyle = RouteLineStyles((R.color.course_downhill), true)
     private val unknownStyle = RouteLineStyles((R.color.course_unknown), true)
     private val unselectedStyle = RouteLineStyles(R.color.course_unselected, false)
+    private val routeStyle = RouteLineStyles(R.color.course_route, false)
+
+    fun routeLineOptions(route: List<Coordinate>): RouteLineOptions =
+        RouteLineOptions.from(
+            RouteLineSegment.from(
+                route.map(Coordinate::toLatLng),
+                routeStyle,
+            ),
+        )
 
     fun routeLineOptions(course: CourseItem): RouteLineOptions {
         val segments: List<RouteLineSegment> =
