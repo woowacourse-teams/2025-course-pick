@@ -31,7 +31,6 @@ class CoursesViewModelTest {
         mainViewModel =
             CoursesViewModel(fakeCourseRepository, fakeFavoritesRepository, fakeNetworkMonitor)
         mainViewModel.fetchCourses(COORDINATE_FIXTURE, null, Scope.default())
-        println(">>>>> ${mainViewModel.state.value?.courses}")
     }
 
     @Test

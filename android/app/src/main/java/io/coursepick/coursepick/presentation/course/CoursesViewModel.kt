@@ -119,7 +119,6 @@ class CoursesViewModel(
                         state.value?.copy(courses = courses, isLoading = false, isFailure = false),
                     )
             }.onFailure { exception: Throwable ->
-                println("${exception.message}")
                 Logger.log(
                     Logger.Event.Failure("fetch_courses"),
                     "message" to exception.message.toString(),
