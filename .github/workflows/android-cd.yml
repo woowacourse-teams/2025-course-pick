@@ -4,17 +4,15 @@ on:
   # Github Action 탭에서 수동으로 실행
   workflow_dispatch:
     inputs:
-      updatePriority:
-        description: '업데이트 우선순위 (1-5). 5는 즉시 업데이트.'
-        required: true
-        default: '1'
-        type: choice
-        options:
-          - '1'
-          - '2'
-          - '3'
-          - '4'
-          - '5'
+      updateType:
+          description: '배포할 업데이트의 종류를 선택하세요.'
+          required: true
+          default: '일반 업데이트 (앱 내 제안 X)'
+          type: choice
+          options:
+            - '일반 업데이트 (앱 내 제안 X)'
+            - '유연한 업데이트 (앱 내 제안 O, 강제 X)'
+            - '즉시 업데이트 (앱 내 제안 O, 강제 O)'
 
 jobs:
   deploy:
@@ -80,13 +78,21 @@ jobs:
         run: |
           set -euo pipefail
           
-           # 변수 설정
-           PACKAGE_NAME="${{ secrets.ANDROID_PACKAGE_NAME }}"
-           AAB_PATH="android/app/build/outputs/bundle/release/app-release.aab"
-           TRACK="internal"
-          
-           # 인증된 액세스 토큰 가져오기 (참조 방식 변경)
-           ACCESS_TOKEN="${{ steps.generate_token.outputs.access_token }}"
+          # 변수 설정
+          UPDATE_TYPE="${{ github.event.inputs.updateType }}"
+          PRIORITY_VALUE=1 # 기본값
+          if [[ "$UPDATE_TYPE" == "유연한 업데이트 (앱 내 제안 O, 강제 X)" ]]; then
+            PRIORITY_VALUE=3
+          elif [[ "$UPDATE_TYPE" == "즉시 업데이트 (앱 내 제안 O, 강제 O)" ]]; then
+            PRIORITY_VALUE=5
+          fi
+          echo "Selected Update Type: $UPDATE_TYPE -> Priority: $PRIORITY_VALUE"
+          PACKAGE_NAME="${{ secrets.ANDROID_PACKAGE_NAME }}"
+          AAB_PATH="android/app/build/outputs/bundle/release/app-release.aab"
+          TRACK="internal"
+
+          # 인증된 액세스 토큰 가져오기 (참조 방식 변경)
+          ACCESS_TOKEN="${{ steps.generate_token.outputs.access_token }}"
 
           if [[ ! -f "$AAB_PATH" ]]; then
             echo "AAB not found at $AAB_PATH"; exit 1
@@ -124,7 +130,7 @@ jobs:
                   "releases": [{
                     "versionCodes": ["'"$VERSION_CODE"'"],
                     "status": "completed",
-                    "inAppUpdatePriority": ${{ github.event.inputs.updatePriority }}
+                    "inAppUpdatePriority": '$PRIORITY_VALUE'
                   }]
                 }' \
             "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/$PACKAGE_NAME/edits/$EDIT_ID/tracks/$TRACK")

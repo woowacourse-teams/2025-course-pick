@@ -93,10 +93,14 @@ class CoursePickUpdateManager(
     private fun AppUpdateInfo.handleAvailableUpdate() {
         val priority = updatePriority()
 
-        if (priority == PRIORITY_IMMEDIATE && isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+        if (priority >= PRIORITY_IMMEDIATE && isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
             startUpdateFlowForResult(AppUpdateType.IMMEDIATE)
-        } else if (isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
+            return
+        }
+
+        if (priority >= PRIORITY_FLEXIBLE && isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
             startUpdateFlowForResult(AppUpdateType.FLEXIBLE)
+            return
         }
     }
 
@@ -114,5 +118,6 @@ class CoursePickUpdateManager(
 
     companion object {
         private const val PRIORITY_IMMEDIATE = 5
+        private const val PRIORITY_FLEXIBLE = 3
     }
 }
