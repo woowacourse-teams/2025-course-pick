@@ -52,6 +52,7 @@ public class CourseApplicationService {
         return course.closestCoordinateFrom(new Coordinate(latitude, longitude));
     }
 
+    @Transactional(readOnly = true)
     public Page<CourseResponse> findCourses(String keyword, Pageable page) {
         if (keyword == null) {
             return courseRepository.findAll(page).map(CourseResponse::from);
