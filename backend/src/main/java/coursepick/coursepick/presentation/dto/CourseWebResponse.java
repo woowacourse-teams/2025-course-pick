@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
 public record CourseWebResponse(
-        @Schema(example = "1")
+        @Schema(example = "689c3143182cecc6353cca7b")
         String id,
         @Schema(example = "석촌호수")
         String name,
