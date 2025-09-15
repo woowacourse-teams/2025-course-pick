@@ -16,7 +16,7 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
     private var _binding: DialogFilterBinding? = null
     val binding get() = _binding!!
 
-    private var difficulties = mutableSetOf<Difficulty>()
+    private var difficulties = mutableSetOf(Difficulty.EASY, Difficulty.NORMAL, Difficulty.HARD)
     private var lengthMinimum = MINIMUM_LENGTH_RANGE
     private var lengthMaximum = MAXIMUM_LENGTH_RANGE
 
@@ -100,10 +100,10 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
         }
 
         binding.mainFilterReset.setOnClickListener {
-            difficulties.clear()
-            binding.mainDifficultyEasy.setBackgroundResource(R.drawable.background_difficulty_default)
-            binding.mainDifficultyNormal.setBackgroundResource(R.drawable.background_difficulty_default)
-            binding.mainDifficultyHard.setBackgroundResource(R.drawable.background_difficulty_default)
+            difficulties = mutableSetOf(Difficulty.EASY, Difficulty.NORMAL, Difficulty.HARD)
+            binding.mainDifficultyEasy.setBackgroundResource(R.drawable.background_difficulty_selected)
+            binding.mainDifficultyNormal.setBackgroundResource(R.drawable.background_difficulty_selected)
+            binding.mainDifficultyHard.setBackgroundResource(R.drawable.background_difficulty_selected)
             setSlider()
             viewModel.filter(FilterCondition())
         }
