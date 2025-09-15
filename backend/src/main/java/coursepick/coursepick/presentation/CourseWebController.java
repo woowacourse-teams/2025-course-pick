@@ -57,6 +57,17 @@ public class CourseWebController implements CourseWebApi {
         return CoordinateWebResponse.from(coordinate);
     }
 
+    @Override
+    @GetMapping("/routes/{id}")
+    public List<CoordinateWebResponse> routeToCourse(
+            @PathVariable("id") String id,
+            @RequestParam("startLat") double latitude,
+            @RequestParam("startLng") double longitude
+    ) {
+        List<Coordinate> responses = courseApplicationService.routesTo(id, latitude, longitude);
+        return CoordinateWebResponse.from(responses);
+    }
+
     private void validateAdminToken(String token) {
         if (adminToken.isEmpty() || !adminToken.equals(token)) {
             throw INVALID_ADMIN_TOKEN.create();
