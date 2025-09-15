@@ -60,6 +60,7 @@ public class CourseWebController implements CourseWebApi {
         return CoordinateWebResponse.from(coordinate);
     }
 
+    @Override
     @GetMapping("/admin/courses")
     public Page<CourseWebResponse> findCourses(
             @RequestParam(value = "keyword", required = false) String keyword,
