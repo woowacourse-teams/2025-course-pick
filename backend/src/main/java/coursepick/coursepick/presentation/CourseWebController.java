@@ -58,7 +58,7 @@ public class CourseWebController implements CourseWebApi {
     }
 
     @Override
-    @GetMapping("/user/favorite-courses")
+    @GetMapping("/courses/favorites")
     public List<CourseWebResponse> findFavoriteCourses(@RequestParam("courseIds") List<String> ids) {
         return courseApplicationService.findFavoriteCourses(ids).stream()
                 .map(CourseWebResponse::from)
