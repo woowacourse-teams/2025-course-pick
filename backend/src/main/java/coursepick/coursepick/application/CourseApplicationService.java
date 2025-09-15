@@ -1,6 +1,7 @@
 package coursepick.coursepick.application;
 
 import coursepick.coursepick.application.dto.CourseResponse;
+import coursepick.coursepick.application.exception.NotFoundException;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
 import coursepick.coursepick.domain.CourseRepository;
@@ -53,6 +54,10 @@ public class CourseApplicationService {
     @Transactional(readOnly = true)
     public List<CourseResponse> findFavoriteCourses(List<String> ids) {
         List<Course> courses = courseRepository.findByIdIn(ids);
+        if (courses == null || courses.isEmpty()) {
+            throw NOT_EXIST_COURSE.create(ids);
+        }
+
         return courses.stream()
                 .map(CourseResponse::from)
                 .toList();

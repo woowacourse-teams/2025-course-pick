@@ -60,7 +60,7 @@ public class OpenApiConfig {
 
             example = new Example()
                     .value(Map.of(
-                            "message", NOT_EXIST_COURSE.message(99999),
+                            "message", NOT_EXIST_COURSE.message("689c3143182cecc6353cca2b"),
                             "timestamp", TIMESTAMP
                     ));
             components.addExamples(NOT_EXIST_COURSE.name(), example);
