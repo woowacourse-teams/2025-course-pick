@@ -89,7 +89,7 @@ jobs:
           echo "Selected Update Type: $UPDATE_TYPE -> Priority: $PRIORITY_VALUE"
           PACKAGE_NAME="${{ secrets.ANDROID_PACKAGE_NAME }}"
           AAB_PATH="android/app/build/outputs/bundle/release/app-release.aab"
-          TRACK="internal"
+          TRACK="production"
 
           # 인증된 액세스 토큰 가져오기 (참조 방식 변경)
           ACCESS_TOKEN="${{ steps.generate_token.outputs.access_token }}"
