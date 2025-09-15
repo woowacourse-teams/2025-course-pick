@@ -27,10 +27,9 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
     ): View {
         _binding = DialogFilterBinding.inflate(inflater, container, false)
 
-        viewModel.state.observe(viewLifecycleOwner) { state ->
-            val count = state.courses.size
+        viewModel.filteredCourses.observe(viewLifecycleOwner) { state ->
             binding.mainFilteredCoursesResult.text =
-                getString(R.string.filter_result_count, count)
+                getString(R.string.filter_result_count, state)
         }
 
         difficulties = viewModel.state.value
@@ -88,7 +87,7 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
             lengthMinimum = min
             lengthMaximum = max
             setSlider(min, max)
-            confirmSelection()
+            filter()
         }
 
         binding.mainFilteredCoursesResult.setOnClickListener {
@@ -127,7 +126,7 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
         } else {
             binding.mainFilterLengthRange.text = getString(R.string.total_length_range)
         }
-        confirmSelection()
+        filter()
     }
 
     private fun setupDifficultyButtons() {
@@ -143,7 +142,7 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
                     R.drawable.background_difficulty_selected,
                 )
             }
-            confirmSelection()
+            filter()
         }
         binding.mainDifficultyNormal.setOnClickListener {
             if (difficulties.contains(Difficulty.NORMAL)) {
@@ -157,7 +156,7 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
                     R.drawable.background_difficulty_selected,
                 )
             }
-            confirmSelection()
+            filter()
         }
         binding.mainDifficultyHard.setOnClickListener {
             if (difficulties.contains(Difficulty.HARD)) {
@@ -171,8 +170,22 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
                     R.drawable.background_difficulty_selected,
                 )
             }
-            confirmSelection()
+            filter()
         }
+    }
+
+    private fun filter() {
+        val minimum = lengthMinimum * 1000
+        val maximum =
+            if (lengthMaximum == MAXIMUM_LENGTH_RANGE) Int.MAX_VALUE else lengthMaximum * 1000
+        val condition =
+            FilterCondition(
+                difficulties = difficulties.toSet(),
+                lengthRange = LengthRange(minimum, maximum),
+            )
+        viewModel.filter(condition)
+        binding.mainFilteredCoursesResult.isEnabled =
+            if (viewModel.filteredCourses.value == 0) false else true
     }
 
     private fun confirmSelection() {
@@ -184,10 +197,7 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
                 difficulties = difficulties.toSet(),
                 lengthRange = LengthRange(minimum, maximum),
             )
-        viewModel.filter(condition)
-        binding.mainFilteredCoursesResult.isEnabled = viewModel.state.value
-            ?.courses
-            ?.isNotEmpty() == true
+        viewModel.applyfilter(condition)
     }
 
     override fun onDestroyView() {

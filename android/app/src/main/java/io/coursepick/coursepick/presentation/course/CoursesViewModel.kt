@@ -38,6 +38,9 @@ class CoursesViewModel(
     private val _event: MutableSingleLiveData<CoursesUiEvent> = MutableSingleLiveData()
     val event: SingleLiveData<CoursesUiEvent> get() = _event
 
+    private val _filteredCourses: MutableLiveData<Int> = MutableLiveData(0)
+    val filteredCourses: LiveData<Int> get() = _filteredCourses
+
     init {
         checkNetwork()
     }
@@ -149,6 +152,16 @@ class CoursesViewModel(
     }
 
     fun filter(condition: FilterCondition) {
+        val filtered =
+            fetchedCourses
+                .filter { courseItem ->
+                    (condition.difficulties.isEmpty() || courseItem.toDomain() in condition.difficulties) &&
+                        (courseItem.length in condition.lengthRange.minimum..condition.lengthRange.maximum)
+                }
+        _filteredCourses.value = filtered.size
+    }
+
+    fun applyfilter(condition: FilterCondition) {
         _state.value = _state.value?.copy(filterCondition = condition)
 
         val filtered =
