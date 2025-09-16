@@ -52,13 +52,10 @@ class CoursesViewModel(
         }
     }
 
-    fun select(
-        course: CourseItem,
-        manual: Boolean = true,
-    ) {
+    fun select(course: CourseItem) {
         val selectedCourse: CourseItem = course.copy(selected = true)
 
-        if (course.selected && manual) {
+        if (course.selected) {
             _event.value = CoursesUiEvent.SelectCourseManually(selectedCourse)
             return
         }
@@ -70,7 +67,7 @@ class CoursesViewModel(
 
         val newCourses: List<CourseItem> = newCourses(oldCourses, course)
         _state.value = state.value?.copy(courses = newCourses)
-        if (manual) _event.value = CoursesUiEvent.SelectCourseManually(selectedCourse)
+        _event.value = CoursesUiEvent.SelectCourseManually(selectedCourse)
     }
 
     fun fetchCourses(
