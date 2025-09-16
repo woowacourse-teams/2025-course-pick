@@ -21,3 +21,10 @@ admin.token: secret
 server:
   tomcat:
     max-part-count: 500
+
+auth:
+  jwt:
+    secret-key: thisisfakekeythisisfakekeythisisfakekeythisisfakekey
+    valid-millis: 1800000
+  cookie:
+    max-age: 1800000
