@@ -177,7 +177,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:background="@drawable/background_filter_selector"
+                    android:background="@drawable/background_difficulty_default"
                     android:onClick="@{() -> action.filter()}"
                     android:paddingHorizontal="10dp"
                     android:paddingVertical="6dp"
