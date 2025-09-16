@@ -27,3 +27,10 @@ gcp:
 
 osrm.url: ${OSRM_URL}
 admin.token: ${ADMIN_TOKEN}
+
+auth:
+  jwt:
+    secret-key: ${JWT_SECRET_KEY}
+    valid-millis: ${JWT_VALID_MILLIS}
+  cookie:
+    max-age: ${COOKIE_MAX_AGE}
