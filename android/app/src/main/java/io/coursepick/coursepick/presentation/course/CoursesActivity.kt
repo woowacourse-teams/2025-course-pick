@@ -40,7 +40,7 @@ import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.CoursePickUpdateManager
-import io.coursepick.coursepick.presentation.IntentKeys
+import io.coursepick.coursepick.presentation.DataKeys
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.compat.getSerializableCompat
@@ -203,7 +203,7 @@ class CoursesActivity :
     override fun search() {
         val intent = SearchActivity.intent(this)
         val query: String? = viewModel.state.value?.query
-        if (!query.isNullOrBlank()) intent.putExtra(IntentKeys.EXTRA_KEYS_PLACE_NAME, query)
+        if (!query.isNullOrBlank()) intent.putExtra(DataKeys.DATA_KEY_PLACE_NAME, query)
         searchLauncher?.launch(intent) ?: Toast
             .makeText(
                 this,
@@ -262,14 +262,14 @@ class CoursesActivity :
             return
         }
 
-        val placeNameExtraKey = IntentKeys.EXTRA_KEYS_PLACE_NAME
+        val placeNameExtraKey = DataKeys.DATA_KEY_PLACE_NAME
         val query: String? = intent.getStringExtra(placeNameExtraKey)
         if (!query.isNullOrBlank()) {
             viewModel.setQuery(query)
         }
 
-        val latitudeExtraKey = IntentKeys.EXTRA_KEYS_PLACE_LATITUDE
-        val longitudeExtraKey = IntentKeys.EXTRA_KEYS_PLACE_LONGITUDE
+        val latitudeExtraKey = DataKeys.DATA_KEY_PLACE_LATITUDE
+        val longitudeExtraKey = DataKeys.DATA_KEY_PLACE_LONGITUDE
         if (!intent.hasExtra(latitudeExtraKey) || !intent.hasExtra(longitudeExtraKey)) {
             Toast.makeText(this, "위치 정보가 전달되지 않았습니다.", Toast.LENGTH_SHORT).show()
             return
@@ -397,11 +397,11 @@ class CoursesActivity :
                             CoursePickPreferences.selectedRouteFinder
                         if (selectedApp == null) {
                             supportFragmentManager.setFragmentResultListener(
-                                IntentKeys.KEYS_ROUTE_FINDER_CHOICE_REQUEST,
+                                DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_REQUEST,
                                 this@CoursesActivity,
                             ) { _, bundle: Bundle ->
                                 val selectedApp: RouteFinderApplication =
-                                    bundle.getSerializableCompat<RouteFinderApplication>(IntentKeys.KEYS_ROUTE_FINDER_CHOICE_RESULT)
+                                    bundle.getSerializableCompat<RouteFinderApplication>(DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_RESULT)
                                         ?: return@setFragmentResultListener
                                 handleNavigation(course, origin, selectedApp)
                             }

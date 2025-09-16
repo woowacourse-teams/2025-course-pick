@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import io.coursepick.coursepick.databinding.DialogRouteFinderChoiceBinding
-import io.coursepick.coursepick.presentation.IntentKeys
+import io.coursepick.coursepick.presentation.DataKeys
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 
 class RouteFinderChoiceDialogFragment :
@@ -38,11 +38,14 @@ class RouteFinderChoiceDialogFragment :
         val result: Bundle =
             Bundle().apply {
                 putSerializable(
-                    IntentKeys.KEYS_ROUTE_FINDER_CHOICE_RESULT,
+                    DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_RESULT,
                     selectedMap,
                 )
             }
-        parentFragmentManager.setFragmentResult(IntentKeys.KEYS_ROUTE_FINDER_CHOICE_REQUEST, result)
+        parentFragmentManager.setFragmentResult(
+            DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_REQUEST,
+            result,
+        )
         dismiss()
     }
 
