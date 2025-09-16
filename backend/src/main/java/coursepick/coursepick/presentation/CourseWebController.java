@@ -58,7 +58,7 @@ public class CourseWebController implements CourseWebApi {
     }
 
     @Override
-    @GetMapping("/routes/{id}")
+    @GetMapping("/courses/{id}/route")
     public List<CoordinateWebResponse> routeToCourse(
             @PathVariable("id") String id,
             @RequestParam("startLat") double latitude,
