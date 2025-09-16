@@ -52,8 +52,8 @@ public class CourseApplicationService {
     }
 
     @Transactional(readOnly = true)
-    public List<Coordinate> routesTo(String id, double latitude, double longitude) {
-        Coordinate destination = findClosestCoordinate(id, latitude, longitude);
-        return walkingRouteService.route(new Coordinate(latitude, longitude), destination);
+    public List<Coordinate> routesToCourse(String id, double originLatitude, double originLongitude) {
+        Coordinate destination = findClosestCoordinate(id, originLatitude, originLongitude);
+        return walkingRouteService.route(new Coordinate(originLatitude, originLongitude), destination);
     }
 }

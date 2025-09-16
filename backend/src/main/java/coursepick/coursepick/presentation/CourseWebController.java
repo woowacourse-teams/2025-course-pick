@@ -64,7 +64,7 @@ public class CourseWebController implements CourseWebApi {
             @RequestParam("startLat") double latitude,
             @RequestParam("startLng") double longitude
     ) {
-        List<Coordinate> responses = courseApplicationService.routesTo(id, latitude, longitude);
+        List<Coordinate> responses = courseApplicationService.routesToCourse(id, latitude, longitude);
         return CoordinateWebResponse.from(responses);
     }
 
