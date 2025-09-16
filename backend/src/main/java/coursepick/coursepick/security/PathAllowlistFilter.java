@@ -24,6 +24,7 @@ public class PathAllowlistFilter extends OncePerRequestFilter {
             Pattern.compile("^/courses$"),
             Pattern.compile("^/courses/favorites$"),
             Pattern.compile("^/courses/[^/]+/closest-coordinate$"),
+            Pattern.compile("^/courses/[^/]+/route$"),
             Pattern.compile("^/import$"),
             Pattern.compile("^/actuator/health$"),
             Pattern.compile("^/api-docs.html$"),
