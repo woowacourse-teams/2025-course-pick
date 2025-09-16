@@ -60,10 +60,7 @@ public enum ErrorType {
             "로그인에 실패했습니다.",
             SecurityException::new
     ),
-    INVALID_PASSWORD(
-            "잘못된 비밀번호입니다.",
-            SecurityException::new
-    );
+    ;
 
     private final String message;
     private final Function<String, ? extends RuntimeException> exceptionConstructor;
