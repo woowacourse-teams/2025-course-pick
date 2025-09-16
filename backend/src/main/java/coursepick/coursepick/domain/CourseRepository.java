@@ -25,5 +25,7 @@ public interface CourseRepository extends MongoRepository<Course, String> {
         return findAllHasDistanceWithin(new Point(new Position(target.longitude(), target.latitude())), distance.value());
     }
 
+    List<Course> findByIdIn(List<String> ids);
+
     boolean existsByName(CourseName courseName);
 }

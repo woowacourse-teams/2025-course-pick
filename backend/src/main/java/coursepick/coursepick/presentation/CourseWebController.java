@@ -68,6 +68,13 @@ public class CourseWebController implements CourseWebApi {
         return CoordinateWebResponse.from(responses);
     }
 
+    @GetMapping("/courses/favorites")
+    public List<CourseWebResponse> findFavoriteCourses(@RequestParam("courseIds") List<String> ids) {
+        return courseApplicationService.findFavoriteCourses(ids).stream()
+                .map(CourseWebResponse::from)
+                .toList();
+    }
+
     private void validateAdminToken(String token) {
         if (adminToken.isEmpty() || !adminToken.equals(token)) {
             throw INVALID_ADMIN_TOKEN.create();
