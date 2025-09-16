@@ -400,6 +400,7 @@ class CoursesActivity :
                                 DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_REQUEST,
                                 this@CoursesActivity,
                             ) { _, bundle: Bundle ->
+                                supportFragmentManager.clearFragmentResultListener(DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_REQUEST)
                                 val selectedApp: RouteFinderApplication =
                                     bundle.getSerializableCompat<RouteFinderApplication>(DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_RESULT)
                                         ?: return@setFragmentResultListener
