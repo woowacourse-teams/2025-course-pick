@@ -148,7 +148,7 @@ class CoursesViewModel(
     fun fetchNearestCoordinate(
         selectedCourse: CourseItem,
         location: Coordinate,
-        routeFinder: RouteFinderApplication,
+        routeFinder: RouteFinderApplication.ThirdParty,
     ) {
         viewModelScope.launch {
             runCatching {

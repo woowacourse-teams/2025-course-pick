@@ -21,7 +21,7 @@ sealed interface CoursesUiEvent {
         val origin: Coordinate,
         val destination: Coordinate,
         val destinationName: String,
-        val routeFinder: RouteFinderApplication,
+        val routeFinder: RouteFinderApplication.ThirdParty,
     ) : CoursesUiEvent
 
     object FetchNearestCoordinateFailure : CoursesUiEvent

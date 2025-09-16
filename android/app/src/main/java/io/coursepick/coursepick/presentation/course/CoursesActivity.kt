@@ -28,7 +28,6 @@ import androidx.core.graphics.Insets
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.kakao.vectormap.LatLng
@@ -53,9 +52,6 @@ import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 import io.coursepick.coursepick.presentation.routefinder.RouteFinderChoiceDialogFragment
 import io.coursepick.coursepick.presentation.search.SearchActivity
 import io.coursepick.coursepick.presentation.ui.DoublePressDetector
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class CoursesActivity :
     AppCompatActivity(),
@@ -577,21 +573,12 @@ class CoursesActivity :
                 }
 
                 is CoursesUiEvent.FetchNearestCoordinateSuccess -> {
-                    lifecycleScope.launch {
-                        val selectedApp: RouteFinderApplication? =
-                            withContext(Dispatchers.IO) {
-                                CoursePickPreferences.selectedRouteFinder
-                            }
-
-                        if (selectedApp is RouteFinderApplication.ThirdParty) {
-                            selectedApp.launch(
-                                this@CoursesActivity,
-                                event.origin,
-                                event.destination,
-                                event.destinationName,
-                            )
-                        }
-                    }
+                    event.routeFinder.launch(
+                        this@CoursesActivity,
+                        event.origin,
+                        event.destination,
+                        event.destinationName,
+                    )
                 }
 
                 CoursesUiEvent.FetchNearestCoordinateFailure ->
