@@ -2,10 +2,13 @@ package coursepick.coursepick.presentation;
 
 import coursepick.coursepick.application.CourseApplicationService;
 import coursepick.coursepick.application.CourseSyncService;
+import coursepick.coursepick.application.dto.CourseMetaData;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.domain.Coordinate;
+import coursepick.coursepick.domain.Course;
 import coursepick.coursepick.presentation.api.CourseWebApi;
 import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
+import coursepick.coursepick.presentation.dto.CourseMetadataWebResponse;
 import coursepick.coursepick.presentation.dto.CourseWebResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,5 +64,12 @@ public class CourseWebController implements CourseWebApi {
         if (adminToken.isEmpty() || !adminToken.equals(token)) {
             throw INVALID_ADMIN_TOKEN.create();
         }
+    }
+
+    @Override
+    @GetMapping("/courses/meta")
+    public CourseMetadataWebResponse getCourseMetaData() {
+        CourseMetaData courseMetaData = Course.getMetaData();
+        return CourseMetadataWebResponse.from(courseMetaData);
     }
 }
