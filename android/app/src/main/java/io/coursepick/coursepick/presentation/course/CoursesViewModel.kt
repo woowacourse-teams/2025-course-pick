@@ -52,20 +52,25 @@ class CoursesViewModel(
         }
     }
 
-    fun select(selectedCourse: CourseItem) {
-        if (selectedCourse.selected) {
-            _event.value = CoursesUiEvent.SelectNewCourse(selectedCourse)
+    fun select(
+        course: CourseItem,
+        manual: Boolean = true,
+    ) {
+        val selectedCourse: CourseItem = course.copy(selected = true)
+
+        if (course.selected && manual) {
+            _event.value = CoursesUiEvent.SelectCourseManually(selectedCourse)
             return
         }
 
         val oldCourses: List<CourseItem> = state.value?.courses ?: return
 
-        val selectedIndex = oldCourses.indexOf(selectedCourse)
+        val selectedIndex = oldCourses.indexOf(course)
         if (selectedIndex == -1) return
 
-        val newCourses: List<CourseItem> = newCourses(oldCourses, selectedCourse)
+        val newCourses: List<CourseItem> = newCourses(oldCourses, course)
         _state.value = state.value?.copy(courses = newCourses)
-        _event.value = CoursesUiEvent.SelectNewCourse(selectedCourse)
+        if (manual) _event.value = CoursesUiEvent.SelectCourseManually(selectedCourse)
     }
 
     fun fetchCourses(
@@ -122,12 +127,17 @@ class CoursesViewModel(
         course: CourseItem,
         origin: Coordinate,
     ) {
+        val selectedCourse: CourseItem = course.copy(selected = true)
+        val oldCourses: List<CourseItem> = state.value?.courses ?: return
+        val newCourses: List<CourseItem> = newCourses(oldCourses, course)
+        _state.value = state.value?.copy(courses = newCourses)
+
         viewModelScope.launch {
             runCatching {
-                courseRepository.routeToCourse(course.course, origin)
+                courseRepository.routeToCourse(selectedCourse.course, origin)
             }.onSuccess { route: List<Coordinate> ->
                 Logger.log(Logger.Event.Success("fetch_route_to_course"))
-                _event.value = CoursesUiEvent.FetchRouteToCourseSuccess(route, course)
+                _event.value = CoursesUiEvent.FetchRouteToCourseSuccess(route, selectedCourse)
             }.onFailure { error: Throwable ->
                 Logger.log(
                     Logger.Event.Failure("fetch_route_to_course"),

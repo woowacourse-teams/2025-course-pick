@@ -6,7 +6,7 @@ import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 sealed interface CoursesUiEvent {
     object FetchCourseFailure : CoursesUiEvent
 
-    class SelectNewCourse(
+    class SelectCourseManually(
         val course: CourseItem,
     ) : CoursesUiEvent
 

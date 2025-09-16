@@ -11,6 +11,7 @@ import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
@@ -393,7 +394,6 @@ class CoursesActivity :
                     "id" to course.id,
                     "name" to course.name,
                 )
-                viewModel.select(course)
 
                 mapManager.fetchCurrentLocation(
                     onSuccess = { latitude: Latitude, longitude: Longitude ->
@@ -578,13 +578,16 @@ class CoursesActivity :
                     Toast.makeText(this, "코스 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
                 }
 
-                is CoursesUiEvent.SelectNewCourse -> {
+                is CoursesUiEvent.SelectCourseManually -> {
+                    Log.wtf("asdf", "SelectCourseManually")
                     mapManager.fitTo(event.course)
                 }
 
                 is CoursesUiEvent.FetchRouteToCourseSuccess -> {
+                    Log.wtf("asdf", "FetchRouteToCourseSuccess")
                     mapManager.fitTo(event.route)
                     mapManager.drawRouteToCourse(event.route, event.course)
+                    Log.wtf("asdf", "${event.course.selected}")
                 }
 
                 is CoursesUiEvent.FetchRouteToCourseFailure -> {
