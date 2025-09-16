@@ -68,15 +68,7 @@ public interface CourseWebApi {
     );
 
     @Operation(summary = "즐겨찾기 코스 조회")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content(examples = {
-                    @ExampleObject(
-                            name = "코스가 존재하지 않는 경우",
-                            ref = "#/components/examples/NOT_EXIST_COURSE"
-                    )
-            }))
-    })
+    @ApiResponse(responseCode = "200")
     List<CourseWebResponse> findFavoriteCourses(
             @Parameter(
                     description = "조회할 코스 ID 목록",
