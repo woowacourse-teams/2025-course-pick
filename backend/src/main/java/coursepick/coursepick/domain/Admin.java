@@ -23,8 +23,6 @@ public class Admin {
     private final String password;
 
     public boolean checkPassword(String password, PasswordEncoder passwordEncoder) {
-        System.out.println(passwordEncoder.hash(password));
-        System.out.println("real: " + this.password);
         return passwordEncoder.matches(password, this.password);
     }
 }
