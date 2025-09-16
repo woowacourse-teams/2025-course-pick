@@ -117,6 +117,26 @@ class CoursesViewModel(
         }
     }
 
+    fun fetchRouteToCourse(
+        course: CourseItem,
+        origin: Coordinate,
+    ) {
+        viewModelScope.launch {
+            runCatching {
+                courseRepository.routeToCourse(course.course, origin)
+            }.onSuccess { route: List<Coordinate> ->
+                Logger.log(Logger.Event.Success("fetch_route_to_course"))
+                _event.value = CoursesUiEvent.FetchRouteToCourseSuccess(origin, route)
+            }.onFailure { error: Throwable ->
+                Logger.log(
+                    Logger.Event.Failure("fetch_route_to_course"),
+                    "message" to error.message.toString(),
+                )
+                _event.value = CoursesUiEvent.FetchRouteToCourseFailure
+            }
+        }
+    }
+
     fun fetchNearestCoordinate(
         selectedCourse: CourseItem,
         location: Coordinate,
