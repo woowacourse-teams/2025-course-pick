@@ -393,6 +393,7 @@ class CoursesActivity :
                     "id" to course.id,
                     "name" to course.name,
                 )
+                viewModel.select(course)
 
                 mapManager.fetchCurrentLocation(
                     onSuccess = { latitude: Latitude, longitude: Longitude ->
@@ -578,10 +579,11 @@ class CoursesActivity :
                 }
 
                 is CoursesUiEvent.SelectNewCourse -> {
-                    selectCourse(event.course)
+                    mapManager.fitTo(event.course)
                 }
 
                 is CoursesUiEvent.FetchRouteToCourseSuccess -> {
+                    mapManager.fitTo(event.route)
                     mapManager.drawRouteToCourse(event.route, event.course)
                 }
 
@@ -618,10 +620,6 @@ class CoursesActivity :
                         .show()
             }
         }
-    }
-
-    private fun selectCourse(course: CourseItem) {
-        mapManager.fitTo(course)
     }
 
     private fun requestLocationPermissions() {

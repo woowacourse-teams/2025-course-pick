@@ -101,6 +101,12 @@ class KakaoMapManager(
         )
     }
 
+    fun fitTo(coordinates: List<Coordinate>) {
+        kakaoMap?.let { kakaoMap: KakaoMap ->
+            cameraController.fitTo(coordinates, kakaoMap)
+        } ?: Timber.w("kakaoMap is null")
+    }
+
     fun fitTo(course: CourseItem) {
         kakaoMap?.let { kakaoMap: KakaoMap ->
             cameraController.fitTo(course, kakaoMap)
