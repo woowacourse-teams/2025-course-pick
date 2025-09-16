@@ -2,6 +2,8 @@ package coursepick.coursepick.domain;
 
 import com.mongodb.client.model.geojson.Point;
 import com.mongodb.client.model.geojson.Position;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
@@ -26,4 +28,6 @@ public interface CourseRepository extends MongoRepository<Course, String> {
     }
 
     boolean existsByName(CourseName courseName);
+
+    Page<Course> findByNameContains(String name, Pageable page);
 }

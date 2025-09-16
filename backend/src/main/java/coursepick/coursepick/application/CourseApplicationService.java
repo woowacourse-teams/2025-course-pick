@@ -7,6 +7,8 @@ import coursepick.coursepick.domain.CourseRepository;
 import coursepick.coursepick.domain.Meter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,5 +50,13 @@ public class CourseApplicationService {
                 .orElseThrow(() -> NOT_EXIST_COURSE.create(id));
 
         return course.closestCoordinateFrom(new Coordinate(latitude, longitude));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<CourseResponse> findCourses(String keyword, Pageable page) {
+        if (keyword == null || keyword.isBlank()) {
+            return courseRepository.findAll(page).map(CourseResponse::from);
+        }
+        return courseRepository.findByNameContains(keyword.trim(), page).map(CourseResponse::from);
     }
 }

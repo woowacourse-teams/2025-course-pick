@@ -6,15 +6,17 @@ import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
 import coursepick.coursepick.domain.RoadType;
 import coursepick.coursepick.test_util.IntegrationTest;
-import org.assertj.core.api.Assertions;
 import org.assertj.core.data.Percentage;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CourseApplicationServiceTest extends IntegrationTest {
 
@@ -184,7 +186,68 @@ class CourseApplicationServiceTest extends IntegrationTest {
 
     @Test
     void 코스가_존재하지_않을_경우_예외가_발생한다() {
-        Assertions.assertThatThrownBy(() -> sut.findClosestCoordinate("notId", 0, 0))
+        assertThatThrownBy(() -> sut.findClosestCoordinate("notId", 0, 0))
                 .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    void 이름을_기준으로_코스목록을_조회한다() {
+        var course1 = new Course("한강 러닝 코스", RoadType.트랙, List.of(
+                new Coordinate(37.5180, 127.0280),
+                new Coordinate(37.5175, 127.0270),
+                new Coordinate(37.5170, 127.0265),
+                new Coordinate(37.5180, 127.0280)
+        ));
+        var course2 = new Course("양재천 산책길", RoadType.트랙, List.of(
+                new Coordinate(37.5165, 127.0285),
+                new Coordinate(37.5160, 127.0278),
+                new Coordinate(37.5155, 127.0265),
+                new Coordinate(37.5165, 127.0285)
+        ));
+        var course3 = new Course("북악산 둘레길", RoadType.트레일, List.of(
+                new Coordinate(37.602500, 126.967000),
+                new Coordinate(37.603000, 126.968000),
+                new Coordinate(37.603500, 126.969000),
+                new Coordinate(37.602500, 126.967000)
+        ));
+        dbUtil.saveCourse(course1);
+        dbUtil.saveCourse(course2);
+        dbUtil.saveCourse(course3);
+
+        Page<CourseResponse> actual = sut.findCourses("한강", PageRequest.of(0, 10));
+
+        assertThat(actual.getNumberOfElements()).isEqualTo(1);
+        assertThat(actual.getTotalPages()).isEqualTo(1);
+        assertThat(actual.getContent().get(0).name()).isEqualTo("한강 러닝 코스");
+    }
+
+    @Test
+    void 코스목록을_조회한다() {
+        var course1 = new Course("한강 러닝 코스", RoadType.트랙, List.of(
+                new Coordinate(37.5180, 127.0280),
+                new Coordinate(37.5175, 127.0270),
+                new Coordinate(37.5170, 127.0265),
+                new Coordinate(37.5180, 127.0280)
+        ));
+        var course2 = new Course("양재천 산책길", RoadType.트랙, List.of(
+                new Coordinate(37.5165, 127.0285),
+                new Coordinate(37.5160, 127.0278),
+                new Coordinate(37.5155, 127.0265),
+                new Coordinate(37.5165, 127.0285)
+        ));
+        var course3 = new Course("북악산 둘레길", RoadType.트레일, List.of(
+                new Coordinate(37.602500, 126.967000),
+                new Coordinate(37.603000, 126.968000),
+                new Coordinate(37.603500, 126.969000),
+                new Coordinate(37.602500, 126.967000)
+        ));
+        dbUtil.saveCourse(course1);
+        dbUtil.saveCourse(course2);
+        dbUtil.saveCourse(course3);
+
+        Page<CourseResponse> actual = sut.findCourses(null, PageRequest.of(0, 10));
+
+        assertThat(actual.getNumberOfElements()).isEqualTo(3);
+        assertThat(actual.getTotalPages()).isEqualTo(1);
     }
 }

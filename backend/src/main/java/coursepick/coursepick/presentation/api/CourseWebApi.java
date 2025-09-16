@@ -9,6 +9,9 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -64,5 +67,12 @@ public interface CourseWebApi {
             @Parameter(example = "689c3143182cecc6353cca7b", required = true) String id,
             @Parameter(example = "37.5165004", required = true) double latitude,
             @Parameter(example = "127.1040109", required = true) double longitude
+    );
+
+    @Operation(summary = "코스 목록 조회")
+    @ApiResponse(responseCode = "200")
+    Page<CourseWebResponse> findCourses(
+            @Parameter(example = "한강") String keyword,
+            @ParameterObject Pageable page
     );
 }
