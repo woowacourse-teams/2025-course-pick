@@ -26,7 +26,7 @@ public class AuthWebController {
 
     @PostMapping("admin/auth/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest request) {
-        String token = authApplicationService.login(request);
+        String token = authApplicationService.validateAndCreateToken(request.account(), request.password());
         ResponseCookie cookie = ResponseCookie.from("token")
                 .value(token)
                 .httpOnly(true)
