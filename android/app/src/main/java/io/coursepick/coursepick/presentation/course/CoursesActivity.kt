@@ -392,9 +392,25 @@ class CoursesActivity :
                     "id" to course.id,
                     "name" to course.name,
                 )
+
                 mapManager.fetchCurrentLocation(
                     onSuccess = { latitude: Latitude, longitude: Longitude ->
                         viewModel.fetchNearestCoordinate(course, Coordinate(latitude, longitude))
+                        val origin = Coordinate(latitude, longitude)
+
+                        val selectedApp: RouteFinderApplication? =
+                            CoursePickPreferences.selectedRouteFinder
+
+                        if (selectedApp == null) {
+                            supportFragmentManager.setFragmentResultListener(
+                                "requestKey",
+                                this@CoursesActivity,
+                            ) { _, bundle: Bundle ->
+                                val result =
+                                    bundle.getSerializableCompat<RouteFinderApplication>("resultKey")
+                            RouteFinderChoiceDialogFragment().show(supportFragmentManager, null)
+                            return@fetchCurrentLocation
+                        }
                     },
                     onFailure = {
                         Toast
@@ -531,12 +547,7 @@ class CoursesActivity :
                             event.origin,
                             event.destination,
                             event.destinationName,
-                        ) ?: RouteFinderChoiceDialogFragment
-                            .newInstance(
-                                event.origin,
-                                event.destination,
-                                event.destinationName,
-                            ).show(supportFragmentManager, null)
+                        )
                     }
                 }
 
