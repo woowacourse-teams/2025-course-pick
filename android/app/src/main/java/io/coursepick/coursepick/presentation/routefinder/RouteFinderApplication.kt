@@ -11,6 +11,13 @@ import kotlin.math.tan
 enum class RouteFinderApplication(
     val appName: String,
 ) {
+    IN_APP("인앱") {
+        override fun navigationUrl(
+            origin: Coordinate,
+            destination: Coordinate,
+            destinationName: String,
+        ): String = ""
+    },
     KAKAO_MAP("카카오맵") {
         override fun navigationUrl(
             origin: Coordinate,
