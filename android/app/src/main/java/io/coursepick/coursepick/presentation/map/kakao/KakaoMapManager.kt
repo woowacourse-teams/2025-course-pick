@@ -65,6 +65,11 @@ class KakaoMapManager(
         } ?: Timber.w("kakaoMap is null")
     }
 
+    fun drawRoute(route: List<Coordinate>) {
+        kakaoMap?.let { kakaoMap: KakaoMap ->
+        }
+    }
+
     fun showSearchPosition(coordinate: Coordinate) {
         kakaoMap?.let { kakaoMap: KakaoMap ->
             drawer.showSearchPosition(kakaoMap, coordinate)

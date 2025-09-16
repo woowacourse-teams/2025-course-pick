@@ -21,6 +21,12 @@ class KakaoMapDrawer(
 ) {
     private val routeLineOptionsFactory = RouteLineOptionsFactory(context)
 
+    fun drawRoute(
+        map: KakaoMap,
+        route: List<Coordinate>,
+    ) {
+    }
+
     fun drawCourses(
         map: KakaoMap,
         courses: List<CourseItem>,
