@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
 public record CourseWebResponse(
-        @Schema(example = "1")
+        @Schema(example = "689c3143182cecc6353cca7b")
         String id,
         @Schema(example = "석촌호수")
         String name,
@@ -39,5 +39,20 @@ public record CourseWebResponse(
                         courseResponse.difficulty().name(),
                         SegmentWebResponse.from(courseResponse.segments())
                 )).toList();
+    }
+
+    public static CourseWebResponse from(CourseResponse courseResponse) {
+        return new CourseWebResponse(
+                courseResponse.id(),
+                courseResponse.name(),
+                courseResponse.distance()
+                        .map(Meter::value)
+                        .orElse(null),
+                courseResponse.length().value(),
+                courseResponse.roadType(),
+                courseResponse.inclineSummary(),
+                courseResponse.difficulty().name(),
+                SegmentWebResponse.from(courseResponse.segments())
+        );
     }
 }

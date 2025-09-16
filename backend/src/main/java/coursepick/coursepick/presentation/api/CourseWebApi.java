@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -64,5 +65,17 @@ public interface CourseWebApi {
             @Parameter(example = "689c3143182cecc6353cca7b", required = true) String id,
             @Parameter(example = "37.5165004", required = true) double latitude,
             @Parameter(example = "127.1040109", required = true) double longitude
+    );
+
+    @Operation(summary = "즐겨찾기 코스 조회")
+    @ApiResponse(responseCode = "200")
+    List<CourseWebResponse> findFavoriteCourses(
+            @Parameter(
+                    description = "조회할 코스 ID 목록",
+                    required = true,
+                    example = "689c3143182cecc6353cca7b,689c3143182cecc6353cca7c,689c3143182cecc6353cca7d",
+                    schema = @Schema(type = "array", implementation = String.class)
+            )
+            List<String> coursesId
     );
 }
