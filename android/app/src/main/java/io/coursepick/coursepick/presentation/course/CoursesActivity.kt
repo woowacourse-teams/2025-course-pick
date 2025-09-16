@@ -398,66 +398,22 @@ class CoursesActivity :
                 mapManager.fetchCurrentLocation(
                     onSuccess = { latitude: Latitude, longitude: Longitude ->
                         val origin = Coordinate(latitude, longitude)
-
                         val selectedApp: RouteFinderApplication? =
                             CoursePickPreferences.selectedRouteFinder
-
                         if (selectedApp == null) {
                             supportFragmentManager.setFragmentResultListener(
                                 "requestKey",
                                 this@CoursesActivity,
                             ) { _, bundle: Bundle ->
-                                val result =
+                                val selectedApp: RouteFinderApplication =
                                     bundle.getSerializableCompat<RouteFinderApplication>("resultKey")
-                                when (result) {
-                                    RouteFinderApplication.IN_APP -> {
-                                        viewModel.fetchRouteToCourse(course, origin)
-                                    }
-
-                                    RouteFinderApplication.KAKAO_MAP -> {
-                                        viewModel.fetchNearestCoordinate(
-                                            course,
-                                            origin,
-                                            RouteFinderApplication.KAKAO_MAP,
-                                        )
-                                    }
-
-                                    RouteFinderApplication.NAVER_MAP -> {
-                                        viewModel.fetchNearestCoordinate(
-                                            course,
-                                            origin,
-                                            RouteFinderApplication.NAVER_MAP,
-                                        )
-                                    }
-
-                                    null -> return@setFragmentResultListener
-                                }
+                                        ?: return@setFragmentResultListener
+                                handleNavigation(course, origin, selectedApp)
                             }
                             RouteFinderChoiceDialogFragment().show(supportFragmentManager, null)
                             return@fetchCurrentLocation
                         }
-
-                        when (selectedApp) {
-                            RouteFinderApplication.IN_APP -> {
-                                viewModel.fetchRouteToCourse(course, origin)
-                            }
-
-                            RouteFinderApplication.KAKAO_MAP -> {
-                                viewModel.fetchNearestCoordinate(
-                                    course,
-                                    origin,
-                                    RouteFinderApplication.KAKAO_MAP,
-                                )
-                            }
-
-                            RouteFinderApplication.NAVER_MAP -> {
-                                viewModel.fetchNearestCoordinate(
-                                    course,
-                                    origin,
-                                    RouteFinderApplication.NAVER_MAP,
-                                )
-                            }
-                        }
+                        handleNavigation(course, origin, selectedApp)
                     },
                     onFailure = {
                         Toast
@@ -467,6 +423,34 @@ class CoursesActivity :
                 )
             }
         }
+
+    private fun handleNavigation(
+        course: CourseItem,
+        origin: Coordinate,
+        selectedApp: RouteFinderApplication,
+    ) {
+        when (selectedApp) {
+            RouteFinderApplication.IN_APP -> {
+                viewModel.fetchRouteToCourse(course, origin)
+            }
+
+            RouteFinderApplication.KAKAO_MAP -> {
+                viewModel.fetchNearestCoordinate(
+                    course,
+                    origin,
+                    RouteFinderApplication.KAKAO_MAP,
+                )
+            }
+
+            RouteFinderApplication.NAVER_MAP -> {
+                viewModel.fetchNearestCoordinate(
+                    course,
+                    origin,
+                    RouteFinderApplication.NAVER_MAP,
+                )
+            }
+        }
+    }
 
     private fun setUpNavigation(systemBars: Insets) {
         binding.mainNavigation.setPadding(0, 0, 0, systemBars.bottom)
