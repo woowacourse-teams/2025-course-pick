@@ -12,9 +12,6 @@ import com.kakao.vectormap.label.LabelTransition
 import com.kakao.vectormap.label.Transition
 import com.kakao.vectormap.route.RouteLineLayer
 import com.kakao.vectormap.route.RouteLineOptions
-import com.kakao.vectormap.route.RouteLineSegment
-import com.kakao.vectormap.route.RouteLineStyle
-import com.kakao.vectormap.route.RouteLineStyles
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.presentation.course.CourseItem
@@ -29,22 +26,11 @@ class KakaoMapDrawer(
         route: List<Coordinate>,
         course: CourseItem,
     ) {
-        val routeOptions =
-            RouteLineOptions.from(
-                RouteLineSegment.from(
-                    route.map(Coordinate::toLatLng),
-                    RouteLineStyles.from(
-                        RouteLineStyle.from(
-                            context.resources.getDimension(R.dimen.course_route_width),
-                            context.getColor(R.color.course_route),
-                        ),
-                    ),
-                ),
-            )
-
         val layer: RouteLineLayer = map.routeLineManager?.layer ?: return
-        drawCourses(map, listOf(course))
-        layer.addRouteLine(routeOptions)
+        layer.removeAll()
+        val courseOptions = routeLineOptionsFactory.routeLineOptions(course)
+        layer.addRouteLine(routeLineOptionsFactory.routeLineOptions(route))
+        layer.addRouteLine(courseOptions)
     }
 
     fun drawCourses(
