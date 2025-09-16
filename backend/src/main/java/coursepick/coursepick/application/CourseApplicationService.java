@@ -20,6 +20,7 @@ import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_CO
 public class CourseApplicationService {
 
     private final CourseRepository courseRepository;
+    private final WalkingRouteService walkingRouteService;
 
     @Transactional(readOnly = true)
     public List<CourseResponse> findNearbyCourses(double mapLatitude, double mapLongitude, Double userLatitude, Double userLongitude, int scope) {
@@ -48,6 +49,12 @@ public class CourseApplicationService {
                 .orElseThrow(() -> NOT_EXIST_COURSE.create(id));
 
         return course.closestCoordinateFrom(new Coordinate(latitude, longitude));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Coordinate> routesToCourse(String id, double originLatitude, double originLongitude) {
+        Coordinate destination = findClosestCoordinate(id, originLatitude, originLongitude);
+        return walkingRouteService.route(new Coordinate(originLatitude, originLongitude), destination);
     }
 
     @Transactional(readOnly = true)
