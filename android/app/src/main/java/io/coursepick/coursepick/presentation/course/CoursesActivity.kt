@@ -429,23 +429,23 @@ class CoursesActivity :
         selectedApp: RouteFinderApplication,
     ) {
         when (selectedApp) {
-            RouteFinderApplication.IN_APP -> {
+            is RouteFinderApplication.InApp -> {
                 viewModel.fetchRouteToCourse(course, origin)
             }
 
-            RouteFinderApplication.KAKAO_MAP -> {
+            is RouteFinderApplication.KakaoMap -> {
                 viewModel.fetchNearestCoordinate(
                     course,
                     origin,
-                    RouteFinderApplication.KAKAO_MAP,
+                    RouteFinderApplication.KakaoMap,
                 )
             }
 
-            RouteFinderApplication.NAVER_MAP -> {
+            is RouteFinderApplication.NaverMap -> {
                 viewModel.fetchNearestCoordinate(
                     course,
                     origin,
-                    RouteFinderApplication.NAVER_MAP,
+                    RouteFinderApplication.NaverMap,
                 )
             }
         }
@@ -583,17 +583,14 @@ class CoursesActivity :
                                 CoursePickPreferences.selectedRouteFinder
                             }
 
-                        selectedApp?.launch(
-                            this@CoursesActivity,
-                            event.origin,
-                            event.destination,
-                            event.destinationName,
-                        ) ?: event.routeFinder.launch(
-                            this@CoursesActivity,
-                            event.origin,
-                            event.destination,
-                            event.destinationName,
-                        )
+                        if (selectedApp is RouteFinderApplication.ThirdParty) {
+                            selectedApp.launch(
+                                this@CoursesActivity,
+                                event.origin,
+                                event.destination,
+                                event.destinationName,
+                            )
+                        }
                     }
                 }
 

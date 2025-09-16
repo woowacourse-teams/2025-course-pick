@@ -40,9 +40,9 @@ object CoursePickPreferences {
     var selectedRouteFinder: RouteFinderApplication?
         get() =
             when (preferences.getString(selectedRouteFinderApplicationKey, null)) {
-                inApp -> RouteFinderApplication.IN_APP
-                kakaoMap -> RouteFinderApplication.KAKAO_MAP
-                naverMap -> RouteFinderApplication.NAVER_MAP
+                inApp -> RouteFinderApplication.InApp()
+                kakaoMap -> RouteFinderApplication.KakaoMap
+                naverMap -> RouteFinderApplication.NaverMap
                 else -> null
             }
         set(mapApplication) {
@@ -57,9 +57,9 @@ object CoursePickPreferences {
     private val RouteFinderApplication?.serialized: String
         get() =
             when (this) {
-                RouteFinderApplication.IN_APP -> inApp
-                RouteFinderApplication.KAKAO_MAP -> kakaoMap
-                RouteFinderApplication.NAVER_MAP -> naverMap
+                is RouteFinderApplication.InApp -> inApp
+                is RouteFinderApplication.KakaoMap -> kakaoMap
+                is RouteFinderApplication.NaverMap -> naverMap
                 null -> none
             }
 }
