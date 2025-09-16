@@ -16,9 +16,9 @@ interface CourseService {
 
     @GET("/courses/{id}/route")
     suspend fun routeToCourse(
-        @Query("courseId") courseId: String,
-        @Query("originLat") originLatitude: Double,
-        @Query("originLng") originLongitude: Double,
+        @Path("id") courseId: String,
+        @Query("startLat") originLatitude: Double,
+        @Query("startLng") originLongitude: Double,
     ): List<CoordinateDto>
 
     @GET("/courses/{id}/closest-coordinate")
