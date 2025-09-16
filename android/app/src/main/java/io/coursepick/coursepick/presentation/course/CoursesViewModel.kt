@@ -155,23 +155,21 @@ class CoursesViewModel(
 
         viewModelScope.launch {
             runCatching {
-                val favoritedCourseIds: Set<String> = favoritesRepository.favoritedCourseIds()
-                favoritedCourseIds.mapNotNull { courseId: String ->
-                    courseRepository.courseById(courseId)?.let { course: Course ->
+                val favoritedCourseIds: List<String> =
+                    favoritesRepository.favoritedCourseIds().toList()
+                courseRepository.coursesById(favoritedCourseIds)
+            }.onSuccess { courses: List<Course> ->
+                val courseItems: List<CourseItem> =
+                    courses.map { course: Course ->
                         CourseItem(
                             course = course,
                             selected = false,
                             favorite = true,
                         )
-                    } ?: run {
-                        favoritesRepository.removeFavorite(courseId)
-                        null
                     }
-                }
-            }.onSuccess { courses ->
                 _state.postValue(
                     state.value
-                        ?.copy(courses = courses, isLoading = false, isNoInternet = false),
+                        ?.copy(courses = courseItems, isLoading = false, isNoInternet = false),
                 )
             }.onFailure { throwable: Throwable ->
                 Logger.log(
