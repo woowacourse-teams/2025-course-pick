@@ -49,4 +49,22 @@ public class CourseApplicationService {
 
         return course.closestCoordinateFrom(new Coordinate(latitude, longitude));
     }
+
+    @Transactional(readOnly = true)
+    public List<CourseResponse> findFavoriteCourses(List<String> ids) {
+        List<Course> courses = courseRepository.findByIdIn(ids);
+        loggingForNotExistsCourse(ids, courses);
+
+        return courses.stream()
+                .map(CourseResponse::from)
+                .toList();
+    }
+
+    private void loggingForNotExistsCourse(List<String> ids, List<Course> courses) {
+        for (Course course : courses) {
+            if (!ids.contains(course.id())) {
+                log.warn("존재하지 않는 코스에 대한 조회: {}", course.id());
+            }
+        }
+    }
 }
