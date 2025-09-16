@@ -582,7 +582,7 @@ class CoursesActivity :
                 }
 
                 is CoursesUiEvent.FetchRouteToCourseSuccess -> {
-                    mapManager.drawRoute(event.route)
+                    mapManager.drawRouteToCourse(event.route, event.course)
                 }
 
                 is CoursesUiEvent.FetchRouteToCourseFailure -> {

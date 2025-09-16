@@ -11,8 +11,8 @@ sealed interface CoursesUiEvent {
     ) : CoursesUiEvent
 
     class FetchRouteToCourseSuccess(
-        val origin: Coordinate,
         val route: List<Coordinate>,
+        val course: CourseItem,
     ) : CoursesUiEvent
 
     object FetchRouteToCourseFailure : CoursesUiEvent

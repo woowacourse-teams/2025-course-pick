@@ -127,7 +127,7 @@ class CoursesViewModel(
                 courseRepository.routeToCourse(course.course, origin)
             }.onSuccess { route: List<Coordinate> ->
                 Logger.log(Logger.Event.Success("fetch_route_to_course"))
-                _event.value = CoursesUiEvent.FetchRouteToCourseSuccess(origin, route)
+                _event.value = CoursesUiEvent.FetchRouteToCourseSuccess(route, course)
             }.onFailure { error: Throwable ->
                 Logger.log(
                     Logger.Event.Failure("fetch_route_to_course"),

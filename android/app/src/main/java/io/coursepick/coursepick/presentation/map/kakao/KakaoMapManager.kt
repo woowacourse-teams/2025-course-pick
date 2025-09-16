@@ -65,8 +65,12 @@ class KakaoMapManager(
         } ?: Timber.w("kakaoMap is null")
     }
 
-    fun drawRoute(route: List<Coordinate>) {
+    fun drawRouteToCourse(
+        route: List<Coordinate>,
+        course: CourseItem,
+    ) {
         kakaoMap?.let { kakaoMap: KakaoMap ->
+            drawer.drawRouteToCourse(kakaoMap, route, course)
         }
     }
 
