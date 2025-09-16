@@ -10,7 +10,7 @@ public class SecurityPasswordEncoder implements PasswordEncoder {
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override
-    public String hash(String password) {
+    public String encode(String password) {
         return passwordEncoder.encode(password);
     }
 
