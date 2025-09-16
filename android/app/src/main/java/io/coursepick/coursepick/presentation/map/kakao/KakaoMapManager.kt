@@ -65,6 +65,15 @@ class KakaoMapManager(
         } ?: Timber.w("kakaoMap is null")
     }
 
+    fun drawRouteToCourse(
+        route: List<Coordinate>,
+        course: CourseItem,
+    ) {
+        kakaoMap?.let { kakaoMap: KakaoMap ->
+            drawer.drawRouteToCourse(kakaoMap, route, course)
+        }
+    }
+
     fun showSearchPosition(coordinate: Coordinate) {
         kakaoMap?.let { kakaoMap: KakaoMap ->
             drawer.showSearchPosition(kakaoMap, coordinate)
@@ -90,6 +99,12 @@ class KakaoMapManager(
                     ).show()
             },
         )
+    }
+
+    fun fitTo(coordinates: List<Coordinate>) {
+        kakaoMap?.let { kakaoMap: KakaoMap ->
+            cameraController.fitTo(coordinates, kakaoMap)
+        } ?: Timber.w("kakaoMap is null")
     }
 
     fun fitTo(course: CourseItem) {

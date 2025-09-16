@@ -14,6 +14,7 @@ import io.coursepick.coursepick.domain.course.CourseRepository
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.Logger
+import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
 import kotlinx.coroutines.launch
@@ -51,20 +52,22 @@ class CoursesViewModel(
         }
     }
 
-    fun select(selectedCourse: CourseItem) {
-        if (selectedCourse.selected) {
-            _event.value = CoursesUiEvent.SelectNewCourse(selectedCourse)
+    fun select(course: CourseItem) {
+        val selectedCourse: CourseItem = course.copy(selected = true)
+
+        if (course.selected) {
+            _event.value = CoursesUiEvent.SelectCourseManually(selectedCourse)
             return
         }
 
         val oldCourses: List<CourseItem> = state.value?.courses ?: return
 
-        val selectedIndex = oldCourses.indexOf(selectedCourse)
+        val selectedIndex = oldCourses.indexOf(course)
         if (selectedIndex == -1) return
 
-        val newCourses: List<CourseItem> = newCourses(oldCourses, selectedCourse)
+        val newCourses: List<CourseItem> = newCourses(oldCourses, course)
         _state.value = state.value?.copy(courses = newCourses)
-        _event.value = CoursesUiEvent.SelectNewCourse(selectedCourse)
+        _event.value = CoursesUiEvent.SelectCourseManually(selectedCourse)
     }
 
     fun fetchCourses(
@@ -117,9 +120,58 @@ class CoursesViewModel(
         }
     }
 
+    fun fetchRouteToCourse(
+        course: CourseItem,
+        origin: Coordinate,
+    ) {
+        _state.value = state.value?.copy(isLoading = true, isFailure = false, isNoInternet = false)
+
+        val selectedCourse: CourseItem = course.copy(selected = true)
+        val oldCourses: List<CourseItem> = state.value?.courses ?: return
+        val newCourses: List<CourseItem> = newCourses(oldCourses, course)
+        _state.value = state.value?.copy(courses = newCourses)
+
+        viewModelScope.launch {
+            runCatching {
+                courseRepository.routeToCourse(selectedCourse.course, origin)
+            }.onSuccess { route: List<Coordinate> ->
+                Logger.log(Logger.Event.Success("fetch_route_to_course"))
+                _state.value =
+                    state.value?.copy(isLoading = false, isFailure = false, isNoInternet = false)
+                _event.value = CoursesUiEvent.FetchRouteToCourseSuccess(route, selectedCourse)
+            }.onFailure { error: Throwable ->
+                when (error) {
+                    is IOException -> {
+                        _state.value =
+                            state.value?.copy(
+                                isLoading = false,
+                                isFailure = false,
+                                isNoInternet = true,
+                            )
+                    }
+
+                    else -> {
+                        _state.value =
+                            state.value?.copy(
+                                isLoading = false,
+                                isFailure = true,
+                                isNoInternet = false,
+                            )
+                    }
+                }
+                Logger.log(
+                    Logger.Event.Failure("fetch_route_to_course"),
+                    "message" to error.message.toString(),
+                )
+                _event.value = CoursesUiEvent.FetchRouteToCourseFailure
+            }
+        }
+    }
+
     fun fetchNearestCoordinate(
         selectedCourse: CourseItem,
         location: Coordinate,
+        routeFinder: RouteFinderApplication.ThirdParty,
     ) {
         viewModelScope.launch {
             runCatching {
@@ -131,6 +183,7 @@ class CoursesViewModel(
                         origin = location,
                         destination = nearest,
                         destinationName = selectedCourse.name,
+                        routeFinder,
                     )
             }.onFailure { error: Throwable ->
                 Logger.log(

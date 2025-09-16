@@ -17,9 +17,21 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.presentation.course.CourseItem
 
 class KakaoMapDrawer(
-    context: Context,
+    private val context: Context,
 ) {
     private val routeLineOptionsFactory = RouteLineOptionsFactory(context)
+
+    fun drawRouteToCourse(
+        map: KakaoMap,
+        route: List<Coordinate>,
+        course: CourseItem,
+    ) {
+        val layer: RouteLineLayer = map.routeLineManager?.layer ?: return
+        layer.removeAll()
+        val courseOptions = routeLineOptionsFactory.routeLineOptions(course)
+        layer.addRouteLine(routeLineOptionsFactory.routeLineOptions(route))
+        layer.addRouteLine(courseOptions)
+    }
 
     fun drawCourses(
         map: KakaoMap,
