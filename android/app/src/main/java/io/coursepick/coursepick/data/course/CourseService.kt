@@ -14,7 +14,7 @@ interface CourseService {
         @Query("scope") scopeMeter: Int,
     ): List<CourseDto>
 
-    @GET("")
+    @GET("/courses/{id}/route")
     suspend fun routeToCourse(
         @Query("courseId") courseId: String,
         @Query("originLat") originLatitude: Double,
