@@ -31,6 +31,7 @@ class KakaoMapCameraController(
         coordinates: List<Coordinate>,
         map: KakaoMap,
     ) {
+        if (coordinates.isEmpty()) return
         val latLngs: Array<LatLng> =
             coordinates.map(Coordinate::toLatLng).toTypedArray()
         val cameraUpdate: CameraUpdate = CameraUpdateFactory.fitMapPoints(latLngs, fitMapPadding)
