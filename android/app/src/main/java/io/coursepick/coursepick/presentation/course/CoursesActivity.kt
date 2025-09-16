@@ -11,7 +11,6 @@ import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
@@ -563,15 +562,12 @@ class CoursesActivity :
                 }
 
                 is CoursesUiEvent.SelectCourseManually -> {
-                    Log.wtf("asdf", "SelectCourseManually")
                     mapManager.fitTo(event.course)
                 }
 
                 is CoursesUiEvent.FetchRouteToCourseSuccess -> {
-                    Log.wtf("asdf", "FetchRouteToCourseSuccess")
                     mapManager.fitTo(event.route)
                     mapManager.drawRouteToCourse(event.route, event.course)
-                    Log.wtf("asdf", "${event.course.selected}")
                 }
 
                 is CoursesUiEvent.FetchRouteToCourseFailure -> {
