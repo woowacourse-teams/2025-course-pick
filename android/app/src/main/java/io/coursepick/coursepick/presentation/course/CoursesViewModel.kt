@@ -124,6 +124,8 @@ class CoursesViewModel(
         course: CourseItem,
         origin: Coordinate,
     ) {
+        _state.value = state.value?.copy(isLoading = true, isFailure = false, isNoInternet = false)
+
         val selectedCourse: CourseItem = course.copy(selected = true)
         val oldCourses: List<CourseItem> = state.value?.courses ?: return
         val newCourses: List<CourseItem> = newCourses(oldCourses, course)
@@ -134,8 +136,29 @@ class CoursesViewModel(
                 courseRepository.routeToCourse(selectedCourse.course, origin)
             }.onSuccess { route: List<Coordinate> ->
                 Logger.log(Logger.Event.Success("fetch_route_to_course"))
+                _state.value =
+                    state.value?.copy(isLoading = false, isFailure = false, isNoInternet = false)
                 _event.value = CoursesUiEvent.FetchRouteToCourseSuccess(route, selectedCourse)
             }.onFailure { error: Throwable ->
+                when (error) {
+                    is IOException -> {
+                        _state.value =
+                            state.value?.copy(
+                                isLoading = false,
+                                isFailure = false,
+                                isNoInternet = true,
+                            )
+                    }
+
+                    else -> {
+                        _state.value =
+                            state.value?.copy(
+                                isLoading = false,
+                                isFailure = true,
+                                isNoInternet = false,
+                            )
+                    }
+                }
                 Logger.log(
                     Logger.Event.Failure("fetch_route_to_course"),
                     "message" to error.message.toString(),
