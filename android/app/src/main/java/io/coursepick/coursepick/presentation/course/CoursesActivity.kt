@@ -402,11 +402,11 @@ class CoursesActivity :
                             CoursePickPreferences.selectedRouteFinder
                         if (selectedApp == null) {
                             supportFragmentManager.setFragmentResultListener(
-                                "requestKey",
+                                IntentKeys.KEYS_ROUTE_FINDER_CHOICE_REQUEST,
                                 this@CoursesActivity,
                             ) { _, bundle: Bundle ->
                                 val selectedApp: RouteFinderApplication =
-                                    bundle.getSerializableCompat<RouteFinderApplication>("resultKey")
+                                    bundle.getSerializableCompat<RouteFinderApplication>(IntentKeys.KEYS_ROUTE_FINDER_CHOICE_RESULT)
                                         ?: return@setFragmentResultListener
                                 handleNavigation(course, origin, selectedApp)
                             }
