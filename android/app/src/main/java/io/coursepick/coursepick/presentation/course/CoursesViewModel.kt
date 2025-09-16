@@ -14,6 +14,7 @@ import io.coursepick.coursepick.domain.course.CourseRepository
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.Logger
+import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
 import kotlinx.coroutines.launch
@@ -140,6 +141,7 @@ class CoursesViewModel(
     fun fetchNearestCoordinate(
         selectedCourse: CourseItem,
         location: Coordinate,
+        routeFinder: RouteFinderApplication,
     ) {
         viewModelScope.launch {
             runCatching {
@@ -151,6 +153,7 @@ class CoursesViewModel(
                         origin = location,
                         destination = nearest,
                         destinationName = selectedCourse.name,
+                        routeFinder,
                     )
             }.onFailure { error: Throwable ->
                 Logger.log(

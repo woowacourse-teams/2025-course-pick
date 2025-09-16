@@ -413,8 +413,20 @@ class CoursesActivity :
                                         viewModel.fetchRouteToCourse(course, origin)
                                     }
 
-                                    RouteFinderApplication.KAKAO_MAP, RouteFinderApplication.NAVER_MAP -> {
-                                        viewModel.fetchNearestCoordinate(course, origin)
+                                    RouteFinderApplication.KAKAO_MAP -> {
+                                        viewModel.fetchNearestCoordinate(
+                                            course,
+                                            origin,
+                                            RouteFinderApplication.KAKAO_MAP,
+                                        )
+                                    }
+
+                                    RouteFinderApplication.NAVER_MAP -> {
+                                        viewModel.fetchNearestCoordinate(
+                                            course,
+                                            origin,
+                                            RouteFinderApplication.NAVER_MAP,
+                                        )
                                     }
 
                                     null -> return@setFragmentResultListener
@@ -429,8 +441,20 @@ class CoursesActivity :
                                 viewModel.fetchRouteToCourse(course, origin)
                             }
 
-                            RouteFinderApplication.KAKAO_MAP, RouteFinderApplication.NAVER_MAP -> {
-                                viewModel.fetchNearestCoordinate(course, origin)
+                            RouteFinderApplication.KAKAO_MAP -> {
+                                viewModel.fetchNearestCoordinate(
+                                    course,
+                                    origin,
+                                    RouteFinderApplication.KAKAO_MAP,
+                                )
+                            }
+
+                            RouteFinderApplication.NAVER_MAP -> {
+                                viewModel.fetchNearestCoordinate(
+                                    course,
+                                    origin,
+                                    RouteFinderApplication.NAVER_MAP,
+                                )
                             }
                         }
                     },
@@ -575,6 +599,11 @@ class CoursesActivity :
                             }
 
                         selectedApp?.launch(
+                            this@CoursesActivity,
+                            event.origin,
+                            event.destination,
+                            event.destinationName,
+                        ) ?: event.routeFinder.launch(
                             this@CoursesActivity,
                             event.origin,
                             event.destination,
