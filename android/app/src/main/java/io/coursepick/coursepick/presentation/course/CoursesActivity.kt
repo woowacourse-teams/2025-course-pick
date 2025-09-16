@@ -44,6 +44,7 @@ import io.coursepick.coursepick.presentation.CoursePickUpdateManager
 import io.coursepick.coursepick.presentation.IntentKeys
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
+import io.coursepick.coursepick.presentation.compat.getSerializableCompat
 import io.coursepick.coursepick.presentation.map.kakao.KakaoMapManager
 import io.coursepick.coursepick.presentation.map.kakao.toCoordinate
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
@@ -395,7 +396,6 @@ class CoursesActivity :
 
                 mapManager.fetchCurrentLocation(
                     onSuccess = { latitude: Latitude, longitude: Longitude ->
-                        viewModel.fetchNearestCoordinate(course, Coordinate(latitude, longitude))
                         val origin = Coordinate(latitude, longitude)
 
                         val selectedApp: RouteFinderApplication? =
@@ -408,8 +408,30 @@ class CoursesActivity :
                             ) { _, bundle: Bundle ->
                                 val result =
                                     bundle.getSerializableCompat<RouteFinderApplication>("resultKey")
+                                when (result) {
+                                    RouteFinderApplication.IN_APP -> {
+                                        viewModel.fetchRouteToCourse(course, origin)
+                                    }
+
+                                    RouteFinderApplication.KAKAO_MAP, RouteFinderApplication.NAVER_MAP -> {
+                                        viewModel.fetchNearestCoordinate(course, origin)
+                                    }
+
+                                    null -> return@setFragmentResultListener
+                                }
+                            }
                             RouteFinderChoiceDialogFragment().show(supportFragmentManager, null)
                             return@fetchCurrentLocation
+                        }
+
+                        when (selectedApp) {
+                            RouteFinderApplication.IN_APP -> {
+                                viewModel.fetchRouteToCourse(course, origin)
+                            }
+
+                            RouteFinderApplication.KAKAO_MAP, RouteFinderApplication.NAVER_MAP -> {
+                                viewModel.fetchNearestCoordinate(course, origin)
+                            }
                         }
                     },
                     onFailure = {
@@ -533,6 +555,16 @@ class CoursesActivity :
 
                 is CoursesUiEvent.SelectNewCourse -> {
                     selectCourse(event.course)
+                }
+
+                is CoursesUiEvent.FetchRouteToCourseSuccess -> {
+                    mapManager.drawRoute(event.route)
+                }
+
+                is CoursesUiEvent.FetchRouteToCourseFailure -> {
+                    Toast
+                        .makeText(this, "코스까지 가는 길을 찾지 못했습니다.", Toast.LENGTH_SHORT)
+                        .show()
                 }
 
                 is CoursesUiEvent.FetchNearestCoordinateSuccess -> {

@@ -9,6 +9,13 @@ sealed interface CoursesUiEvent {
         val course: CourseItem,
     ) : CoursesUiEvent
 
+    class FetchRouteToCourseSuccess(
+        val origin: Coordinate,
+        val route: List<Coordinate>,
+    ) : CoursesUiEvent
+
+    object FetchRouteToCourseFailure : CoursesUiEvent
+
     class FetchNearestCoordinateSuccess(
         val origin: Coordinate,
         val destination: Coordinate,
