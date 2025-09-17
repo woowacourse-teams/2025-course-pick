@@ -12,6 +12,7 @@ import org.springframework.web.client.RestClient;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -37,7 +38,10 @@ public class OsrmWalkingRouteService implements WalkingRouteService {
                     .body(new ParameterizedTypeReference<>() {
                     });
 
-            return parseResponseToCoordinates(response);
+            List<Coordinate> coordinates = parseResponseToCoordinates(response);
+            coordinates.addFirst(origin);
+            coordinates.addLast(destination);
+            return coordinates;
         } catch (Exception e) {
             log.warn("[EXCEPTION] OSRM 길찾기 실패", LogContent.exception(e));
             throw new IllegalStateException("길찾기에 실패했습니다.", e);
@@ -60,7 +64,7 @@ public class OsrmWalkingRouteService implements WalkingRouteService {
 
             return coordinates.stream()
                     .map(lnglat -> new Coordinate(lnglat.get(1), lnglat.get(0)))
-                    .toList();
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             log.warn("[EXCEPTION] OSRM 응답 파싱 실패", LogContent.exception(e));
             throw new IllegalStateException("길찾기에 실패했습니다.", e);
