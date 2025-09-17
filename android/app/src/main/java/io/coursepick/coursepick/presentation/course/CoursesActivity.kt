@@ -66,8 +66,6 @@ class CoursesActivity :
     private var searchLauncher: ActivityResultLauncher<Intent>? = null
     private val binding by lazy { ActivityCoursesBinding.inflate(layoutInflater) }
     private val viewModel: CoursesViewModel by viewModels { CoursesViewModel.Factory }
-    private val exploreCoursesFragment = ExploreCoursesFragment()
-    private val favoriteCoursesFragment = FavoriteCoursesFragment()
     private val doublePressDetector = DoublePressDetector()
     private val mapManager by lazy { KakaoMapManager(binding.mainMap) }
     private var systemBars: Insets? = null
@@ -316,21 +314,22 @@ class CoursesActivity :
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun switchContent(content: CoursesContent) {
         val headerText: String
-        val fragment: Fragment
+        val fragmentClass: Class<*>
 
         when (content) {
             CoursesContent.EXPLORE -> {
                 headerText = getString(R.string.main_courses_header)
-                fragment = exploreCoursesFragment
+                fragmentClass = ExploreCoursesFragment::class.java
             }
 
             CoursesContent.FAVORITES -> {
                 headerText = getString(R.string.favorites_header)
-                fragment = favoriteCoursesFragment
+                fragmentClass = FavoriteCoursesFragment::class.java
             }
         }
 
         binding.mainCoursesHeader.text = headerText
+
         supportFragmentManager.commit {
             setReorderingAllowed(true)
             supportFragmentManager.fragments.forEach { fragment: Fragment ->
@@ -338,9 +337,15 @@ class CoursesActivity :
                     hide(fragment)
                 }
             }
-            supportFragmentManager.findFragmentByTag(fragment.javaClass.name)?.let(::show) ?: run {
-                add(R.id.mainFragmentContainer, fragment, fragment.javaClass.name)
-            }
+            supportFragmentManager.findFragmentByTag(fragmentClass.javaClass.name)?.let(::show)
+                ?: run {
+                    add(
+                        R.id.mainFragmentContainer,
+                        fragmentClass,
+                        null,
+                        fragmentClass.javaClass.name,
+                    )
+                }
         }
     }
 
