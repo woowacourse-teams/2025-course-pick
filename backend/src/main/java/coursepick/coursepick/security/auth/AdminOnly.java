@@ -1,4 +1,4 @@
-package coursepick.coursepick.auth;
+package coursepick.coursepick.security.auth;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

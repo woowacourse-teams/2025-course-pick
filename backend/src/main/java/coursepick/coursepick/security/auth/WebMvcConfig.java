@@ -1,7 +1,6 @@
-package coursepick.coursepick.auth.config;
+package coursepick.coursepick.security.auth;
 
 import coursepick.coursepick.application.JwtProvider;
-import coursepick.coursepick.auth.interceptor.AuthenticationInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;

@@ -1,8 +1,7 @@
-package coursepick.coursepick.auth.interceptor;
+package coursepick.coursepick.security.auth;
 
 import coursepick.coursepick.application.JwtProvider;
 import coursepick.coursepick.application.exception.ErrorType;
-import coursepick.coursepick.auth.AdminOnly;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.http.HttpHeaders;
