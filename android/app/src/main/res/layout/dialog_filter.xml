@@ -6,9 +6,11 @@
 
         <import type="io.coursepick.coursepick.domain.course.Difficulty" />
 
+        <import type="java.util.Arrays" />
+
         <variable
             name="viewModel"
-            type="io.coursepick.coursepick.presentation.course.CoursesViewModel" />
+            type="io.coursepick.coursepick.presentation.filter.FilterViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -32,6 +34,7 @@
             android:id="@+id/mainFilterReset"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onClick="@{() -> viewModel.reset()}"
             android:padding="20dp"
             android:text="초기화"
             android:textAlignment="center"
@@ -54,11 +57,13 @@
 
         <TextView
             android:id="@+id/mainDifficultyEasy"
-            isSelected="@{viewModel.state.filterCondition.difficulties.contains(Difficulty.EASY)}"
+
+            isSelected="@{viewModel.uiState.difficulties.contains(Difficulty.EASY)}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
             android:background="@drawable/background_difficulty_selector"
+            android:onClick="@{() -> viewModel.toggleDifficulty(Difficulty.EASY)}"
             android:padding="20dp"
             android:text="쉬움"
             android:textAlignment="center"
@@ -70,10 +75,12 @@
 
         <TextView
             android:id="@+id/mainDifficultyNormal"
+            isSelected="@{viewModel.uiState.difficulties.contains(Difficulty.NORMAL)}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
             android:background="@drawable/background_difficulty_selector"
+            android:onClick="@{() -> viewModel.toggleDifficulty(Difficulty.NORMAL)}"
             android:padding="20dp"
             android:text="보통"
             android:textAlignment="center"
@@ -85,10 +92,12 @@
 
         <TextView
             android:id="@+id/mainDifficultyHard"
+            isSelected="@{viewModel.uiState.difficulties.contains(Difficulty.HARD)}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
             android:background="@drawable/background_difficulty_selector"
+            android:onClick="@{() -> viewModel.toggleDifficulty(Difficulty.HARD)}"
             android:padding="20dp"
             android:text="어려움"
             android:textAlignment="center"
@@ -131,6 +140,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/mainFilterLengthHeader"
+            app:onRangeChanged="@{(min, max) -> viewModel.updateLengthRange(min, max)}"
+            app:rangeSliderValues="@{viewModel.uiState != null ? Arrays.asList((float)viewModel.uiState.lengthMinimum, (float)viewModel.uiState.lengthMaximum) : null}"
             app:values="@array/length_range" />
 
         <TextView
@@ -151,8 +162,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@drawable/background_filter_result_selector"
-            android:enabled="false"
+            android:enabled="@{viewModel.filteredCourses > 0}"
             android:padding="20dp"
+            android:text="@{@string/filter_result_count(viewModel.filteredCourses)}"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="18sp"

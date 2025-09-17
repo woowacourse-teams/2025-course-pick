@@ -44,6 +44,8 @@ import io.coursepick.coursepick.presentation.CoursePickUpdateManager
 import io.coursepick.coursepick.presentation.IntentKeys
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
+import io.coursepick.coursepick.presentation.filter.FilterBottomSheet
+import io.coursepick.coursepick.presentation.filter.FilterCondition
 import io.coursepick.coursepick.presentation.map.kakao.KakaoMapManager
 import io.coursepick.coursepick.presentation.map.kakao.toCoordinate
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
@@ -232,8 +234,11 @@ class CoursesActivity :
     }
 
     override fun filter() {
-        val bottomSheet = FilterBottomSheet()
-        bottomSheet.show(supportFragmentManager, bottomSheet.tag)
+        val dialog =
+            FilterBottomSheet.newInstance(
+                viewModel.state.value?.filterCondition ?: FilterCondition(),
+            )
+        dialog.show(supportFragmentManager, "FilterBottomSheet")
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])

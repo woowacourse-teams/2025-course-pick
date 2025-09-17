@@ -11,6 +11,7 @@ import androidx.databinding.BindingAdapter
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.slider.RangeSlider
 import io.coursepick.coursepick.R
 
 @BindingAdapter("isSelected")
@@ -87,4 +88,34 @@ private fun formattedMeter(
 @BindingAdapter("onNavigationClick")
 fun MaterialToolbar.setOnNavigationClick(listener: View.OnClickListener) {
     setNavigationOnClickListener(listener)
+}
+
+@BindingAdapter("rangeSliderValues")
+fun setRangeSliderValues(
+    slider: RangeSlider,
+    values: List<*>?,
+) {
+    values?.mapNotNull { (it as? Float) }?.let { floatList ->
+        if (slider.values != floatList) slider.values = floatList
+    }
+}
+
+@BindingAdapter("onRangeChanged")
+fun setRangeSliderListener(
+    slider: RangeSlider,
+    listener: RangeSliderListener?,
+) {
+    listener?.let { l ->
+        slider.addOnChangeListener { _, _, _ ->
+            val values = slider.values
+            l.onRangeChanged(values[0].toInt(), values[1].toInt())
+        }
+    }
+}
+
+fun interface RangeSliderListener {
+    fun onRangeChanged(
+        min: Int,
+        max: Int,
+    )
 }

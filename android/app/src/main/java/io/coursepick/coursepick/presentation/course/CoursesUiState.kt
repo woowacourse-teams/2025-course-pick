@@ -1,5 +1,7 @@
 package io.coursepick.coursepick.presentation.course
 
+import io.coursepick.coursepick.presentation.filter.FilterCondition
+
 data class CoursesUiState(
     val courses: List<CourseItem>,
     val query: String = "",
