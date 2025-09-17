@@ -18,7 +18,7 @@ import java.util.Map;
 @Profile({"dev", "prod"})
 public class OsrmWalkingRouteService implements WalkingRouteService {
 
-    private static final String REQUEST_FORMAT = "/route/v1/foot/{origin_longitude},{origin_latitude};{destination_longitude},{destination_latitude}?geometries=geojson";
+    private static final String REQUEST_FORMAT = "/route/v1/foot/{origin_longitude},{origin_latitude};{destination_longitude},{destination_latitude}?geometries=geojson&overview=full&generate_hints=false";
 
     private final RestClient restClient;
 
