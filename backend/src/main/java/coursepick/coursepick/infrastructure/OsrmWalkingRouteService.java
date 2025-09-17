@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 import java.util.Map;
@@ -18,8 +19,6 @@ import java.util.stream.Collectors;
 @Component
 @Profile({"dev", "prod"})
 public class OsrmWalkingRouteService implements WalkingRouteService {
-
-    private static final String REQUEST_FORMAT = "/route/v1/foot/{origin_longitude},{origin_latitude};{destination_longitude},{destination_latitude}?geometries=geojson&overview=full&generate_hints=false";
 
     private final RestClient restClient;
 
@@ -49,11 +48,16 @@ public class OsrmWalkingRouteService implements WalkingRouteService {
     }
 
     private static String createUriOf(Coordinate origin, Coordinate destination) {
-        return REQUEST_FORMAT
-                .replace("{origin_longitude}", String.valueOf(origin.longitude()))
-                .replace("{origin_latitude}", String.valueOf(origin.latitude()))
-                .replace("{destination_longitude}", String.valueOf(destination.longitude()))
-                .replace("{destination_latitude}", String.valueOf(destination.latitude()));
+        return UriComponentsBuilder
+                .fromPath("/route/v1/foot/{origin_longitude},{origin_latitude};{destination_longitude},{destination_latitude}")
+                .queryParam("geometries", "geojson")
+                .queryParam("overview", "full")
+                .queryParam("generate_hints", "false")
+                .buildAndExpand(
+                        origin.longitude(), origin.latitude(),
+                        destination.longitude(), destination.latitude()
+                )
+                .toUriString();
     }
 
     private static List<Coordinate> parseResponseToCoordinates(Map<String, Object> response) {
