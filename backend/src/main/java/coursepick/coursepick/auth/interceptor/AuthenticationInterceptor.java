@@ -3,18 +3,15 @@ package coursepick.coursepick.auth.interceptor;
 import coursepick.coursepick.application.JwtProvider;
 import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.auth.AdminOnly;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.http.HttpHeaders;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import java.util.Arrays;
-import java.util.Optional;
-
 public class AuthenticationInterceptor implements HandlerInterceptor {
 
-    private static final String COOKIE_NAME = "token";
+    private static final String BEARER_TYPE = "Bearer";
 
     private final JwtProvider jwtProvider;
 
@@ -31,19 +28,16 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         if (!handlerMethod.hasMethodAnnotation(AdminOnly.class)) {
             return true;
         }
-        String token = extract(request).orElseThrow(ErrorType.NOT_EXIST_TOKEN::create);
+        String token = extractToken(request);
         jwtProvider.validateToken(token);
         return true;
     }
 
-    public Optional<String> extract(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            return Optional.empty();
+    private String extractToken(HttpServletRequest request) {
+        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (header == null || header.length() < BEARER_TYPE.length()) {
+            throw ErrorType.NOT_EXIST_TOKEN.create();
         }
-        return Arrays.stream(cookies)
-                .filter(cookie -> COOKIE_NAME.equals(cookie.getName()))
-                .map(Cookie::getValue)
-                .findFirst();
+        return header.substring(BEARER_TYPE.length());
     }
 }

@@ -1,6 +1,6 @@
 package coursepick.coursepick.presentation.dto;
 
-public record LoginRequest(
+public record LoginWebRequest(
         String account,
         String password
 ) {

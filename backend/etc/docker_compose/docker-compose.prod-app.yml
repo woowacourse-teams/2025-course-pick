@@ -23,7 +23,6 @@ services:
       - 'GCP_CREDENTIALS_PATH=${GCP_CREDENTIALS_PATH}'
       - 'JWT_SECRET_KEY=${JWT_SECRET_KEY}'
       - 'JWT_VALID_MILLIS=${JWT_VALID_MILLIS}'
-      - 'COOKIE_MAX_AGE=${COOKIE_MAX_AGE}'
     volumes:
       - /var/lib/coursepick/logs:/var/lib/coursepick/logs
       - /var/lib/coursepick/gcp-credentials.json:/var/lib/coursepick/gcp-credentials.json

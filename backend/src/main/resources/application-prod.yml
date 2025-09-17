@@ -32,5 +32,3 @@ auth:
   jwt:
     secret-key: ${JWT_SECRET_KEY}
     valid-millis: ${JWT_VALID_MILLIS}
-  cookie:
-    max-age: ${COOKIE_MAX_AGE}

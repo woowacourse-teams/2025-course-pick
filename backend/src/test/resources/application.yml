@@ -14,5 +14,3 @@ auth:
   jwt:
     secret-key: thisistestkeythisistestkeythisistestkeythisistestkey
     valid-millis: 1111111
-  cookie:
-    max-age: 1111111

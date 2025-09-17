@@ -26,5 +26,3 @@ auth:
   jwt:
     secret-key: thisisfakekeythisisfakekeythisisfakekeythisisfakekey
     valid-millis: 1800000
-  cookie:
-    max-age: 1800000
