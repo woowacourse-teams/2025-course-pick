@@ -21,7 +21,7 @@ public class JJwtProvider implements JwtProvider {
 
     public JJwtProvider(
             @Value("${auth.jwt.secret-key}") String secretKey,
-            @Value("${auth.jwt.valid-millis}") Long tokenValidMillis
+            @Value("${auth.jwt.valid-millis}") long tokenValidMillis
     ) {
         this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         this.tokenValidMillis = tokenValidMillis;
