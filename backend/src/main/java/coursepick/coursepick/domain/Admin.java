@@ -22,6 +22,12 @@ public class Admin {
 
     private final String password;
 
+    public Admin(String account, String password) {
+        this.id = null;
+        this.account = account;
+        this.password = password;
+    }
+
     public boolean checkPassword(String password, PasswordEncoder passwordEncoder) {
         return passwordEncoder.matches(password, this.password);
     }
