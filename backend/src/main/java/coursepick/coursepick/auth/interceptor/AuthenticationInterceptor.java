@@ -11,7 +11,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 public class AuthenticationInterceptor implements HandlerInterceptor {
 
-    private static final String BEARER_TYPE = "Bearer";
+    private static final String BEARER_TYPE_PREFIX = "Bearer ";
 
     private final JwtProvider jwtProvider;
 
@@ -35,9 +35,9 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
     private String extractToken(HttpServletRequest request) {
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (header == null || header.length() < BEARER_TYPE.length()) {
+        if (header == null || header.length() < BEARER_TYPE_PREFIX.length()) {
             throw ErrorType.NOT_EXIST_TOKEN.create();
         }
-        return header.substring(BEARER_TYPE.length());
+        return header.substring(BEARER_TYPE_PREFIX.length());
     }
 }
