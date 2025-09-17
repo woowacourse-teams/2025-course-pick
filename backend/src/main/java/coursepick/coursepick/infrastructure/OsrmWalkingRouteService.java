@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 import java.util.Map;
@@ -32,7 +31,13 @@ public class OsrmWalkingRouteService implements WalkingRouteService {
     public List<Coordinate> route(Coordinate origin, Coordinate destination) {
         try {
             Map<String, Object> response = restClient.get()
-                    .uri(createUriOf(origin, destination))
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/route/v1/foot/{origin_longitude},{origin_latitude};{destination_longitude},{destination_latitude}")
+                            .queryParam("geometries", "geojson")
+                            .queryParam("overview", "full")
+                            .queryParam("generate_hints", "false")
+                            .build(origin.longitude(), origin.latitude(), destination.longitude(), destination.latitude())
+                    )
                     .retrieve()
                     .body(new ParameterizedTypeReference<>() {
                     });
@@ -45,19 +50,6 @@ public class OsrmWalkingRouteService implements WalkingRouteService {
             log.warn("[EXCEPTION] OSRM 길찾기 실패", LogContent.exception(e));
             throw new IllegalStateException("길찾기에 실패했습니다.", e);
         }
-    }
-
-    private static String createUriOf(Coordinate origin, Coordinate destination) {
-        return UriComponentsBuilder
-                .fromPath("/route/v1/foot/{origin_longitude},{origin_latitude};{destination_longitude},{destination_latitude}")
-                .queryParam("geometries", "geojson")
-                .queryParam("overview", "full")
-                .queryParam("generate_hints", "false")
-                .buildAndExpand(
-                        origin.longitude(), origin.latitude(),
-                        destination.longitude(), destination.latitude()
-                )
-                .toUriString();
     }
 
     private static List<Coordinate> parseResponseToCoordinates(Map<String, Object> response) {
