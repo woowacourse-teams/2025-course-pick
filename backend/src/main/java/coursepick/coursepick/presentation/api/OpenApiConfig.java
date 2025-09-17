@@ -64,6 +64,13 @@ public class OpenApiConfig {
                             "timestamp", TIMESTAMP
                     ));
             components.addExamples(NOT_EXIST_COURSE.name(), example);
+
+            example = new Example()
+                    .value(Map.of(
+                            "message", LOGIN_FAIL.message(),
+                            "timestamp", TIMESTAMP
+                    ));
+            components.addExamples(LOGIN_FAIL.name(), example);
         };
     }
 }
