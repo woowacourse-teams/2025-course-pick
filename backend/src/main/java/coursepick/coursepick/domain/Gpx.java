@@ -1,12 +1,16 @@
 package coursepick.coursepick.domain;
 
+import coursepick.coursepick.application.dto.CourseFile;
+import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.logging.LogContent;
 import io.jenetics.jpx.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
 
+@SuppressWarnings("ClassCanBeRecord")
 @Slf4j
 public class Gpx {
 
@@ -36,15 +40,44 @@ public class Gpx {
         return new Gpx(gpx);
     }
 
+    public static Gpx from(CourseFile file) {
+        try {
+            GPX gpx = GPX.Reader.of(GPX.Reader.Mode.LENIENT)
+                    .read(file.inputStream())
+                    .toBuilder()
+                    .creator("Coursepick - https://github.com/woowacourse-teams/2025-course-pick")
+                    .metadata(Metadata.builder()
+                            .name(file.name())
+                            .build())
+                    .build();
+            return new Gpx(gpx);
+        } catch (IOException e) {
+            throw ErrorType.FILE_PARSING_FAIL.create(e.getMessage());
+        }
+    }
+
     public String toXml() {
-        String result;
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             GPX.Writer.DEFAULT.write(gpx, baos);
-            result = baos.toString();
+            return baos.toString();
         } catch (IOException e) {
             log.warn("[EXCEPTION] GPX 파일로 변환에 실패했습니다.", LogContent.exception(e));
             throw new IllegalStateException(e);
         }
-        return result;
+    }
+
+    public List<Course> toCourses() {
+        return gpx.routes()
+                .map(route -> new Course(gpx.getMetadata().orElseThrow().getName().orElseThrow(), getCoordinates(route)))
+                .toList();
+    }
+
+    private static List<Coordinate> getCoordinates(Route route) {
+        return route.getPoints().stream()
+                .map(point -> new Coordinate(
+                        point.getLatitude().doubleValue(),
+                        point.getLongitude().doubleValue(),
+                        point.getElevation().orElse(Length.of(0, Length.Unit.METER)).doubleValue())
+                ).toList();
     }
 }
