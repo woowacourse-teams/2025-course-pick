@@ -1,5 +1,6 @@
 package coursepick.coursepick.test_util;
 
+import coursepick.coursepick.domain.Admin;
 import coursepick.coursepick.domain.Course;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestComponent;
@@ -22,5 +23,13 @@ public class DatabaseTestUtil {
 
     public long countCourses() {
         return mongoTemplate.count(new Query(), Course.class);
+    }
+
+    public Admin saveAdmin(Admin admin) {
+        return mongoTemplate.insert(admin, "admin");
+    }
+
+    public void deleteAdmins() {
+        mongoTemplate.remove(new Query(), Admin.class);
     }
 }
