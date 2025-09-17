@@ -67,9 +67,18 @@ public class Gpx {
     }
 
     public List<Course> toCourses() {
-        return gpx.routes()
-                .map(route -> new Course(gpx.getMetadata().orElseThrow().getName().orElseThrow(), getCoordinates(route)))
-                .toList();
+        boolean isRoutesEmpty = gpx.routes().findAny().isEmpty();
+        boolean isTracksEmpty = gpx.tracks().findAny().isEmpty();
+        if (isRoutesEmpty && isTracksEmpty) throw new IllegalStateException("gpx 파일의 정보가 비어있습니다. gpx=" + gpx);
+        else if (isTracksEmpty) {
+            return gpx.routes()
+                    .map(route -> new Course(gpx.getMetadata().orElseThrow().getName().orElseThrow(), getCoordinates(route)))
+                    .toList();
+        } else {
+            return gpx.tracks()
+                    .map(track -> new Course(gpx.getMetadata().orElseThrow().getName().orElseThrow(), getCoordinates(track)))
+                    .toList();
+        }
     }
 
     private static List<Coordinate> getCoordinates(Route route) {
@@ -78,6 +87,17 @@ public class Gpx {
                         point.getLatitude().doubleValue(),
                         point.getLongitude().doubleValue(),
                         point.getElevation().orElse(Length.of(0, Length.Unit.METER)).doubleValue())
+                ).toList();
+    }
+
+    private static List<Coordinate> getCoordinates(Track track) {
+        return track.getSegments().stream()
+                .flatMap(segment -> segment.getPoints().stream()
+                        .map(point -> new Coordinate(
+                                point.getLatitude().doubleValue(),
+                                point.getLongitude().doubleValue(),
+                                point.getElevation().orElse(Length.of(0, Length.Unit.METER)).doubleValue())
+                        )
                 ).toList();
     }
 }
