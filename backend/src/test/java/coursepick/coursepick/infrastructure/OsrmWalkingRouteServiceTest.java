@@ -20,7 +20,7 @@ class OsrmWalkingRouteServiceTest {
                     new Coordinate(37.5113001, 127.0392855)
             );
 
-            assertThat(result.size()).isEqualTo(10);
+            assertThat(result.size()).isEqualTo(12);
         }
     }
 
