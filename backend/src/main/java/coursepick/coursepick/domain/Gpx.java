@@ -21,17 +21,19 @@ public class Gpx {
     }
 
     public static Gpx from(Course course) {
-        Route.Builder routeBuilder = Route.builder();
-        for (Segment segment : course.segments()) {
-            for (Coordinate coordinate : segment.coordinates()) {
-                routeBuilder.addPoint(WayPoint.of(
-                        Latitude.ofDegrees(coordinate.latitude()),
-                        Longitude.ofDegrees(coordinate.longitude())
+        Track.Builder trackBuilder = Track.builder();
+        TrackSegment.Builder trackSegmentBuilder = TrackSegment.builder();
+        course.segments().stream()
+                .flatMap(segment -> segment.coordinates().stream())
+                .forEach(coordinate -> trackSegmentBuilder.addPoint(builder -> builder
+                        .lat(coordinate.latitude())
+                        .lon(coordinate.longitude())
+                        .ele(coordinate.elevation())
                 ));
-            }
-        }
+        trackBuilder.addSegment(trackSegmentBuilder.build());
+
         GPX gpx = GPX.builder()
-                .addRoute(routeBuilder.build())
+                .addTrack(trackBuilder.build())
                 .creator("Coursepick - https://github.com/woowacourse-teams/2025-course-pick")
                 .metadata(Metadata.builder()
                         .name(course.name().value())
