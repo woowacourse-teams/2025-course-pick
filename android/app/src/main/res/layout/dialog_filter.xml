@@ -127,22 +127,22 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/mainFilterLengthSlider"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/mainDifficultyHard" />
+            app:layout_constraintTop_toBottomOf="@id/mainDifficultyHard"
+            app:lengthRangeText="@{viewModel.lengthRange}" />
 
         <com.google.android.material.slider.RangeSlider
             android:id="@+id/mainFilterLengthSlider"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:paddingHorizontal="20dp"
-            android:valueFrom="10"
-            android:valueTo="1000"
+            android:valueFrom="@{viewModel.MINIMUM_LENGTH_RANGE}"
+            android:valueTo="@{viewModel.MAXIMUM_LENGTH_RANGE}"
             app:labelBehavior="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/mainFilterLengthHeader"
             app:onRangeChanged="@{(min, max) -> viewModel.updateLengthRange(min, max)}"
-            app:rangeSliderValues="@{viewModel.uiState != null ? Arrays.asList((float)viewModel.uiState.lengthMinimum, (float)viewModel.uiState.lengthMaximum) : null}"
-            app:values="@array/length_range" />
+            app:values="@={viewModel.lengthRange}" />
 
         <TextView
             android:id="@+id/mainFilterLengthCancel"

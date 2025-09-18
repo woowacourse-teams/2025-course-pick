@@ -16,6 +16,8 @@ class FilterViewModel(
     private val _filteredCourses: MutableLiveData<Int> = MutableLiveData(courses.size)
     val filteredCourses: LiveData<Int> get() = _filteredCourses
 
+    val lengthRange = MutableLiveData(listOf(MINIMUM_LENGTH_RANGE, MAXIMUM_LENGTH_RANGE))
+
     fun toggleDifficulty(difficulty: Difficulty) {
         val current = _uiState.value ?: return
         val newSet =
@@ -31,7 +33,16 @@ class FilterViewModel(
         max: Int,
     ) {
         val current = _uiState.value ?: return
-        _uiState.value = current.copy(lengthMinimum = min, lengthMaximum = max)
+
+        _uiState.value =
+            current.copy(
+                lengthMinimum = min,
+                lengthMaximum = max,
+            )
+
+        lengthRange.value = listOf(min.toFloat(), max.toFloat())
+
+        recalcFilteredCourses()
     }
 
     fun reset() {
@@ -50,4 +61,9 @@ class FilterViewModel(
     }
 
     fun toCondition(): FilterCondition = _uiState.value?.toCondition() ?: FilterCondition()
+
+    companion object {
+        const val MINIMUM_LENGTH_RANGE = 0f
+        const val MAXIMUM_LENGTH_RANGE = 21f
+    }
 }
