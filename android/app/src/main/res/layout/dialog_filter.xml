@@ -20,11 +20,11 @@
         android:padding="20dp">
 
         <TextView
-            android:id="@+id/mainFilterHeader"
+            android:id="@+id/mainFilterTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="20dp"
-            android:text="필터"
+            android:text="@string/filter_dialog_title"
             android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
@@ -36,24 +36,24 @@
             android:layout_height="wrap_content"
             android:onClick="@{() -> viewModel.resetFilterToDefault()}"
             android:padding="20dp"
-            android:text="초기화"
+            android:text="@string/filter_dialog_reset"
             android:textAlignment="center"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/mainFilterHeader"
+            app:layout_constraintBottom_toBottomOf="@+id/mainFilterTitle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/mainDifficultyHeader"
+            android:id="@+id/mainDifficultyLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="20dp"
-            android:text="난이도"
+            android:text="@string/filter_dialog_difficulty_label"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/mainFilterHeader" />
+            app:layout_constraintTop_toBottomOf="@id/mainFilterTitle" />
 
         <TextView
             android:id="@+id/mainDifficultyEasy"
@@ -65,13 +65,13 @@
             android:background="@drawable/background_difficulty_selector"
             android:onClick="@{() -> viewModel.toggleDifficulty(Difficulty.EASY)}"
             android:padding="20dp"
-            android:text="쉬움"
+            android:text="@string/filter_dialog_difficulty_easy"
             android:textAlignment="center"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/mainDifficultyNormal"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/mainDifficultyHeader" />
+            app:layout_constraintTop_toBottomOf="@id/mainDifficultyLabel" />
 
         <TextView
             android:id="@+id/mainDifficultyNormal"
@@ -82,13 +82,13 @@
             android:background="@drawable/background_difficulty_selector"
             android:onClick="@{() -> viewModel.toggleDifficulty(Difficulty.NORMAL)}"
             android:padding="20dp"
-            android:text="보통"
+            android:text="@string/filter_dialog_difficulty_normal"
             android:textAlignment="center"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/mainDifficultyHard"
             app:layout_constraintStart_toEndOf="@id/mainDifficultyEasy"
-            app:layout_constraintTop_toBottomOf="@id/mainDifficultyHeader" />
+            app:layout_constraintTop_toBottomOf="@id/mainDifficultyLabel" />
 
         <TextView
             android:id="@+id/mainDifficultyHard"
@@ -99,20 +99,20 @@
             android:background="@drawable/background_difficulty_selector"
             android:onClick="@{() -> viewModel.toggleDifficulty(Difficulty.HARD)}"
             android:padding="20dp"
-            android:text="어려움"
+            android:text="@string/filter_dialog_difficulty_hard"
             android:textAlignment="center"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/mainDifficultyNormal"
-            app:layout_constraintTop_toBottomOf="@id/mainDifficultyHeader" />
+            app:layout_constraintTop_toBottomOf="@id/mainDifficultyLabel" />
 
         <TextView
-            android:id="@+id/mainFilterLengthHeader"
+            android:id="@+id/mainFilterLengthLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="20dp"
-            android:text="길이"
+            android:text="@string/filter_dialog_length_label"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
@@ -140,16 +140,16 @@
             app:labelBehavior="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/mainFilterLengthHeader"
+            app:layout_constraintTop_toBottomOf="@id/mainFilterLengthLabel"
             app:onRangeChanged="@{(min, max) -> viewModel.updateLengthRange(min, max)}"
             app:values="@={viewModel.lengthRange}" />
 
         <TextView
-            android:id="@+id/mainFilterLengthCancel"
+            android:id="@+id/mainFilterCancel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:padding="20dp"
-            android:text="취소"
+            android:text="@string/filter_dialog_cancel"
             android:textAlignment="center"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -170,7 +170,7 @@
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/mainFilterLengthCancel"
+            app:layout_constraintStart_toEndOf="@id/mainFilterCancel"
             app:layout_constraintTop_toBottomOf="@id/mainFilterLengthSlider" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
