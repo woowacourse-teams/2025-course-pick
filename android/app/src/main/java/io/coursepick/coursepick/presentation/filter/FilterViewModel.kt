@@ -45,7 +45,7 @@ class FilterViewModel(
         updateFilteredCoursesCount()
     }
 
-    fun reset() {
+    fun resetFilterToDefault() {
         _uiState.value = FilterUiState()
         updateFilteredCoursesCount()
     }
