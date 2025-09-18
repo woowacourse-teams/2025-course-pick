@@ -306,22 +306,7 @@ class CoursesActivity :
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun switchContent(content: CoursesContent) {
-        val headerText: String
-        val fragmentClass: Class<*>
-
-        when (content) {
-            CoursesContent.EXPLORE -> {
-                headerText = getString(R.string.main_courses_header)
-                fragmentClass = ExploreCoursesFragment::class.java
-            }
-
-            CoursesContent.FAVORITES -> {
-                headerText = getString(R.string.favorites_header)
-                fragmentClass = FavoriteCoursesFragment::class.java
-            }
-        }
-
-        binding.mainCoursesHeader.text = headerText
+        binding.mainCoursesHeader.text = getString(content.headerId)
 
         supportFragmentManager.commit {
             setReorderingAllowed(true)
@@ -330,13 +315,15 @@ class CoursesActivity :
                     hide(fragment)
                 }
             }
-            supportFragmentManager.findFragmentByTag(fragmentClass.javaClass.name)?.let(::show)
+            supportFragmentManager
+                .findFragmentByTag(content.fragmentClass.javaClass.name)
+                ?.let(::show)
                 ?: run {
                     add(
                         R.id.mainFragmentContainer,
-                        fragmentClass,
+                        content.fragmentClass,
                         null,
-                        fragmentClass.javaClass.name,
+                        content.fragmentClass.javaClass.name,
                     )
                 }
         }
