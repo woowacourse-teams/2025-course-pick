@@ -103,5 +103,11 @@ object Logger {
         ) : Event() {
             override val name: String = "${target}_preference_change"
         }
+
+        class Empty(
+            target: String,
+        ) : Event() {
+            override val name: String = "empty_$target"
+        }
     }
 }

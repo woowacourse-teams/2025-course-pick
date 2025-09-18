@@ -80,7 +80,15 @@ class CoursesViewModel(
             )
         viewModelScope.launch {
             try {
-                val courses = courseRepository.courses(mapCoordinate, userCoordinate, scope)
+                val courses: List<Course> =
+                    courseRepository.courses(mapCoordinate, userCoordinate, scope)
+                if (courses.isEmpty()) {
+                    Logger.log(
+                        Logger.Event.Empty("fetched_courses"),
+                        "latitude" to mapCoordinate.latitude.value,
+                        "longitude" to mapCoordinate.longitude.value,
+                    )
+                }
                 Logger.log(Logger.Event.Success("fetch_courses"))
                 val courseItems: List<CourseItem> =
                     courses
