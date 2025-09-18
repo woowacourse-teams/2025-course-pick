@@ -105,7 +105,7 @@ class CoursesViewModel(
                 val courses = courseRepository.courses(mapCoordinate, userCoordinate, scope)
                 Logger.log(Logger.Event.Success("fetch_courses"))
                 courses
-                    .sortedBy { course: Course -> course.distance }
+                    .sortedBy(Course::distance)
                     .mapIndexed { index: Int, course: Course ->
                         CourseItem(
                             course = course,
