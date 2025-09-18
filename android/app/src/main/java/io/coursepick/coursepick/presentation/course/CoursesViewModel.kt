@@ -97,11 +97,11 @@ class CoursesViewModel(
                 isNoInternet = false,
             )
 
+        val favoritedCourseIds: Set<String> = favoritesRepository.favoritedCourseIds()
+
         viewModelScope.launch {
             runCatching {
-                val favoritedCourseIds: Set<String> = favoritesRepository.favoritedCourseIds()
                 val courses = courseRepository.courses(mapCoordinate, userCoordinate, scope)
-                Logger.log(Logger.Event.Success("fetch_courses"))
                 courses
                     .sortedBy(Course::distance)
                     .mapIndexed { index: Int, course: Course ->
@@ -112,6 +112,7 @@ class CoursesViewModel(
                         )
                     }
             }.onSuccess { courses: List<CourseItem> ->
+                Logger.log(Logger.Event.Success("fetch_courses"))
                 _state
                     .value =
                     state.value?.copy(
@@ -155,11 +156,11 @@ class CoursesViewModel(
                 isNoInternet = false,
             )
 
+        val favoritedCourseIds: Set<String> = favoritesRepository.favoritedCourseIds()
+
         viewModelScope.launch {
             runCatching {
-                val favoritedCourseIds: List<String> =
-                    favoritesRepository.favoritedCourseIds().toList()
-                courseRepository.coursesById(favoritedCourseIds)
+                courseRepository.coursesById(favoritedCourseIds.toList())
             }.onSuccess { courses: List<Course> ->
                 val courseItems: List<CourseItem> =
                     courses.map { course: Course ->
