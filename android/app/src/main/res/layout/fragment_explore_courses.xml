@@ -8,10 +8,6 @@
         <variable
             name="adapter"
             type="io.coursepick.coursepick.presentation.course.CourseAdapter" />
-
-        <variable
-            name="viewModel"
-            type="io.coursepick.coursepick.presentation.course.CoursesViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
