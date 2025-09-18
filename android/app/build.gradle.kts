@@ -45,6 +45,10 @@ android {
 
     buildTypes {
         getByName("debug") {
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+            resValue("string", "app_name", "런세권(dev)")
+
             buildConfigField("boolean", "DEBUG", "true")
             buildConfigField("String", "BASE_URL", localProperties["base.url.debug"].toString())
             buildConfigField(
@@ -81,6 +85,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+
             buildConfigField("boolean", "DEBUG", "false")
             buildConfigField("String", "BASE_URL", localProperties["base.url.release"].toString())
             buildConfigField(
