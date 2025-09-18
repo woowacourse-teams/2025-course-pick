@@ -25,7 +25,7 @@ class FilterViewModel(
                 if (contains(difficulty)) remove(difficulty) else add(difficulty)
             }
         _uiState.value = current.copy(difficulties = newSet)
-        recalcFilteredCourses()
+        updateFilteredCoursesCount()
     }
 
     fun updateLengthRange(
@@ -42,15 +42,15 @@ class FilterViewModel(
 
         lengthRange.value = listOf(min.toFloat(), max.toFloat())
 
-        recalcFilteredCourses()
+        updateFilteredCoursesCount()
     }
 
     fun reset() {
         _uiState.value = FilterUiState()
-        recalcFilteredCourses()
+        updateFilteredCoursesCount()
     }
 
-    fun recalcFilteredCourses() {
+    private fun updateFilteredCoursesCount() {
         val condition = _uiState.value?.toCondition() ?: return
         val filtered =
             courses.filter { courseItem ->
