@@ -34,7 +34,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
     private String extractToken(HttpServletRequest request) {
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (header == null || header.length() < BEARER_TYPE_PREFIX.length()) {
+        if (header == null || header.length() < BEARER_TYPE_PREFIX.length() || header.startsWith(BEARER_TYPE_PREFIX)) {
             throw ErrorType.NOT_EXIST_TOKEN.create();
         }
         return header.substring(BEARER_TYPE_PREFIX.length());
