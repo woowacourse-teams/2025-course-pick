@@ -46,11 +46,10 @@ class CoursesViewModel(
     private fun checkNetwork() {
         if (!networkMonitor.isConnected()) {
             _state
-                .postValue(
-                    state.value?.copy(
-                        isLoading = false,
-                        isNoInternet = true,
-                    ),
+                .value =
+                state.value?.copy(
+                    isLoading = false,
+                    isNoInternet = true,
                 )
         }
     }
@@ -67,7 +66,7 @@ class CoursesViewModel(
         if (selectedIndex == -1) return
 
         val newCourses: List<CourseItem> = newCourses(oldCourses, selectedCourse)
-        _state.postValue(state.value?.copy(courses = newCourses))
+        _state.value = state.value?.copy(courses = newCourses)
         _event.value = CoursesUiEvent.SelectNewCourse(selectedCourse)
     }
 
@@ -77,7 +76,7 @@ class CoursesViewModel(
                 courses.map { course: CourseItem ->
                     if (course.id == toggledCourse.id) course.copy(favorite = !course.favorite) else course
                 }
-            _state.postValue(state.value?.copy(courses = newCourses))
+            _state.value = state.value?.copy(courses = newCourses)
         }
         if (toggledCourse.favorite) {
             favoritesRepository.removeFavorite(toggledCourse.id)
@@ -91,13 +90,12 @@ class CoursesViewModel(
         userCoordinate: Coordinate?,
         scope: Scope = Scope.default(),
     ) {
-        _state.postValue(
+        _state.value =
             state.value?.copy(
                 isLoading = true,
                 isFailure = false,
                 isNoInternet = false,
-            ),
-        )
+            )
 
         viewModelScope.launch {
             runCatching {
@@ -115,8 +113,11 @@ class CoursesViewModel(
                     }
             }.onSuccess { courses: List<CourseItem> ->
                 _state
-                    .postValue(
-                        state.value?.copy(courses = courses, isLoading = false, isFailure = false),
+                    .value =
+                    state.value?.copy(
+                        courses = courses,
+                        isLoading = false,
+                        isFailure = false,
                     )
             }.onFailure { exception: Throwable ->
                 Logger.log(
@@ -125,33 +126,34 @@ class CoursesViewModel(
                 )
                 if (exception is IOException) {
                     _state
-                        .postValue(
-                            state.value?.copy(
-                                courses = emptyList(),
-                                isLoading = false,
-                                isFailure = false,
-                                isNoInternet = true,
-                            ),
+                        .value =
+                        state.value?.copy(
+                            courses = emptyList(),
+                            isLoading = false,
+                            isFailure = false,
+                            isNoInternet = true,
                         )
                     return@onFailure
                 }
-                _state.postValue(
+                _state.value =
                     state.value
                         ?.copy(
                             courses = emptyList(),
                             isLoading = false,
                             isFailure = true,
-                        ),
-                )
+                        )
                 _event.value = CoursesUiEvent.FetchCourseFailure
             }
         }
     }
 
     fun fetchFavorites() {
-        _state.postValue(
-            state.value?.copy(isLoading = true, isFailure = false, isNoInternet = false),
-        )
+        _state.value =
+            state.value?.copy(
+                isLoading = true,
+                isFailure = false,
+                isNoInternet = false,
+            )
 
         viewModelScope.launch {
             runCatching {
@@ -167,23 +169,25 @@ class CoursesViewModel(
                             favorite = true,
                         )
                     }
-                _state.postValue(
+                _state.value =
                     state.value
-                        ?.copy(courses = courseItems, isLoading = false, isNoInternet = false),
-                )
+                        ?.copy(
+                            courses = courseItems,
+                            isLoading = false,
+                            isNoInternet = false,
+                        )
             }.onFailure { throwable: Throwable ->
                 Logger.log(
                     Logger.Event.Failure("fetch_courses"),
                     "message" to throwable.message.toString(),
                 )
-                _state.postValue(
+                _state.value =
                     state.value
                         ?.copy(
                             courses = emptyList(),
                             isLoading = false,
                             isNoInternet = true,
-                        ),
-                )
+                        )
             }
         }
     }
@@ -214,7 +218,7 @@ class CoursesViewModel(
     }
 
     fun setQuery(query: String) {
-        _state.postValue(state.value?.copy(query = query))
+        _state.value = state.value?.copy(query = query)
     }
 
     private fun newCourses(
