@@ -90,9 +90,7 @@ class CoursesActivity :
             insets
         }
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.mainBottomNavigation) { _, insets: WindowInsetsCompat ->
-            insets
-        }
+        ViewCompat.setOnApplyWindowInsetsListener(binding.mainBottomNavigation, null)
 
         mapManager.start {
             setUpObservers()
