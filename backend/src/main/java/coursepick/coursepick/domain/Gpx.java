@@ -58,7 +58,7 @@ public class Gpx {
         }
     }
 
-    public String toXml() {
+    public String toXmlContent() {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             GPX.Writer.DEFAULT.write(gpx, baos);
             return baos.toString();

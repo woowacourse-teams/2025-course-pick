@@ -22,7 +22,7 @@ class GpxTest {
 
         var sut = Gpx.from(courseFile);
 
-        assertThat(sut.toXml().strip()).containsIgnoringWhitespaces(
+        assertThat(sut.toXmlContent().strip()).containsIgnoringWhitespaces(
                 """
                         <trkpt lat="0" lon="0"> <ele>0</ele> </trkpt>""",
                 """
@@ -43,7 +43,7 @@ class GpxTest {
 
         var sut = Gpx.from(course);
 
-        assertThat(sut.toXml().strip()).containsIgnoringWhitespaces(
+        assertThat(sut.toXmlContent().strip()).containsIgnoringWhitespaces(
                 """
                         <trkpt lat="0" lon="0"> <ele>0</ele> </trkpt>""",
                 """
@@ -63,7 +63,7 @@ class GpxTest {
         var course = new Course("테스트코스", coordinates);
         var sut = Gpx.from(course);
 
-        var xml = sut.toXml();
+        var xml = sut.toXmlContent();
 
         assertThat(xml.strip()).containsIgnoringWhitespaces(
                 """
