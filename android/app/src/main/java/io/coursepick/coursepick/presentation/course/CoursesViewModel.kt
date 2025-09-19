@@ -42,6 +42,7 @@ class CoursesViewModel(
     val event: SingleLiveData<CoursesUiEvent> get() = _event
 
     private var writeFavoriteJob: Job? = null
+    private val pendingFavoriteWrites: MutableMap<String, Boolean> = mutableMapOf()
 
     init {
         checkNetwork()
@@ -75,23 +76,34 @@ class CoursesViewModel(
     }
 
     fun toggleFavorite(toggledCourse: CourseItem) {
+        pendingFavoriteWrites[toggledCourse.id] = !toggledCourse.favorite
+
+        state.value?.courses?.let { courses: List<CourseItem> ->
+            val newCourses =
+                courses.map { course: CourseItem ->
+                    if (course.id == toggledCourse.id) course.copy(favorite = !course.favorite) else course
+                }
+            _state.value = state.value?.copy(courses = newCourses)
+        }
+
+        updateFavorites()
+    }
+
+    private fun updateFavorites() {
         writeFavoriteJob?.cancel()
 
         writeFavoriteJob =
             viewModelScope.launch {
-                delay(500)
-                state.value?.courses?.let { courses: List<CourseItem> ->
-                    val newCourses =
-                        courses.map { course: CourseItem ->
-                            if (course.id == toggledCourse.id) course.copy(favorite = !course.favorite) else course
-                        }
-                    _state.value = state.value?.copy(courses = newCourses)
+                delay(DEBOUNCE_LIMIT_TIME)
+
+                pendingFavoriteWrites.toMap().forEach { courseId: String, favorite: Boolean ->
+                    if (favorite) {
+                        favoritesRepository.addFavorite(courseId)
+                    } else {
+                        favoritesRepository.removeFavorite(courseId)
+                    }
                 }
-                if (toggledCourse.favorite) {
-                    favoritesRepository.removeFavorite(toggledCourse.id)
-                } else {
-                    favoritesRepository.addFavorite(toggledCourse.id)
-                }
+                pendingFavoriteWrites.clear()
             }
     }
 
@@ -245,6 +257,8 @@ class CoursesViewModel(
         }
 
     companion object {
+        private const val DEBOUNCE_LIMIT_TIME = 500L
+
         val Factory =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
