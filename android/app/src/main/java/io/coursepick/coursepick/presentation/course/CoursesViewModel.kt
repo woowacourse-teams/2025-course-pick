@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import io.coursepick.coursepick.data.NetworkMonitor
+import io.coursepick.coursepick.data.interceptor.NoNetworkException
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseRepository
@@ -18,7 +19,6 @@ import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
 import kotlinx.coroutines.launch
-import java.io.IOException
 
 class CoursesViewModel(
     private val courseRepository: CourseRepository,
@@ -125,7 +125,7 @@ class CoursesViewModel(
                     Logger.Event.Failure("fetch_courses"),
                     "message" to exception.message.toString(),
                 )
-                if (exception is IOException) {
+                if (exception is NoNetworkException) {
                     _state
                         .value =
                         state.value?.copy(
