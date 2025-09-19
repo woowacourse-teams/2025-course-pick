@@ -53,9 +53,13 @@ class FilterViewModel(
     private fun updateFilteredCoursesCount() {
         val condition = _state.value?.toCondition() ?: return
         val filtered =
-            courses.filter { courseItem ->
-                (condition.difficulties.isEmpty() || courseItem.toDomain() in condition.difficulties) &&
-                    (courseItem.length in condition.lengthRange.minimum..condition.lengthRange.maximum)
+            if (condition.difficulties.isEmpty()) {
+                emptyList()
+            } else {
+                courses.filter { courseItem ->
+                    (courseItem.toDomain() in condition.difficulties) &&
+                        (courseItem.length in condition.lengthRange.minimum..condition.lengthRange.maximum)
+                }
             }
         _filteredCourses.value = filtered.size
     }
