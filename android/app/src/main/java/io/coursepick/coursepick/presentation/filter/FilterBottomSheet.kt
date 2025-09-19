@@ -17,7 +17,7 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
 
     private val filterViewModel: FilterViewModel by viewModels {
         val condition = arguments?.getParcelable(ARG_CONDITION) ?: FilterCondition()
-        val allCourses = parentViewModel.state.value?.courses ?: emptyList()
+        val allCourses = parentViewModel.fetchedCourses.value ?: emptyList()
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T = FilterViewModel(condition, allCourses) as T
         }
@@ -39,7 +39,7 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
 
         binding.mainFilteredCoursesResult.setOnClickListener {
             val condition = filterViewModel.toCondition()
-            parentViewModel.applyfilter(condition)
+            parentViewModel.applyFilter(condition)
             dismiss()
         }
 

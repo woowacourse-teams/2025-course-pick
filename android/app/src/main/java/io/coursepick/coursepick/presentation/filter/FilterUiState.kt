@@ -20,7 +20,7 @@ data class FilterUiState(
         private const val MINIMUM_LENGTH_RANGE = 0
         private const val MAXIMUM_LENGTH_RANGE = 21
 
-        fun fromCondition(condition: FilterCondition): FilterUiState {
+        fun from(condition: FilterCondition): FilterUiState {
             val min = condition.lengthRange.minimum / 1000
             val max =
                 if (condition.lengthRange.maximum == Int.MAX_VALUE) MAXIMUM_LENGTH_RANGE else condition.lengthRange.maximum / 1000

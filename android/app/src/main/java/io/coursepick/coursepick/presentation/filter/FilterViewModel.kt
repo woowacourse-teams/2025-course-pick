@@ -10,8 +10,8 @@ class FilterViewModel(
     initialCondition: FilterCondition,
     val courses: List<CourseItem>,
 ) : ViewModel() {
-    private val _uiState = MutableLiveData(FilterUiState.fromCondition(initialCondition))
-    val uiState: LiveData<FilterUiState> = _uiState
+    private val _state = MutableLiveData(FilterUiState.from(initialCondition))
+    val state: LiveData<FilterUiState> = _state
 
     private val _filteredCourses: MutableLiveData<Int> = MutableLiveData(courses.size)
     val filteredCourses: LiveData<Int> get() = _filteredCourses
@@ -19,12 +19,12 @@ class FilterViewModel(
     val lengthRange = MutableLiveData(listOf(MINIMUM_LENGTH_RANGE, MAXIMUM_LENGTH_RANGE))
 
     fun toggleDifficulty(difficulty: Difficulty) {
-        val current = _uiState.value ?: return
+        val current = _state.value ?: return
         val newSet =
             current.difficulties.toMutableSet().apply {
                 if (contains(difficulty)) remove(difficulty) else add(difficulty)
             }
-        _uiState.value = current.copy(difficulties = newSet)
+        _state.value = current.copy(difficulties = newSet)
         updateFilteredCoursesCount()
     }
 
@@ -32,10 +32,10 @@ class FilterViewModel(
         min: Int,
         max: Int,
     ) {
-        val current = _uiState.value ?: return
+        val currentRange = _state.value ?: return
 
-        _uiState.value =
-            current.copy(
+        _state.value =
+            currentRange.copy(
                 lengthMinimum = min,
                 lengthMaximum = max,
             )
@@ -46,12 +46,12 @@ class FilterViewModel(
     }
 
     fun resetFilterToDefault() {
-        _uiState.value = FilterUiState()
+        _state.value = FilterUiState()
         updateFilteredCoursesCount()
     }
 
     private fun updateFilteredCoursesCount() {
-        val condition = _uiState.value?.toCondition() ?: return
+        val condition = _state.value?.toCondition() ?: return
         val filtered =
             courses.filter { courseItem ->
                 (condition.difficulties.isEmpty() || courseItem.toDomain() in condition.difficulties) &&
@@ -60,7 +60,7 @@ class FilterViewModel(
         _filteredCourses.value = filtered.size
     }
 
-    fun toCondition(): FilterCondition = _uiState.value?.toCondition() ?: FilterCondition()
+    fun toCondition(): FilterCondition = _state.value?.toCondition() ?: FilterCondition()
 
     companion object {
         const val MINIMUM_LENGTH_RANGE = 0f

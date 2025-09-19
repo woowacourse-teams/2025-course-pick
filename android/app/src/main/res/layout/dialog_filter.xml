@@ -58,7 +58,7 @@
         <TextView
             android:id="@+id/mainDifficultyEasy"
 
-            isSelected="@{viewModel.uiState.difficulties.contains(Difficulty.EASY)}"
+            isSelected="@{viewModel.state.difficulties.contains(Difficulty.EASY)}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
@@ -75,7 +75,7 @@
 
         <TextView
             android:id="@+id/mainDifficultyNormal"
-            isSelected="@{viewModel.uiState.difficulties.contains(Difficulty.NORMAL)}"
+            isSelected="@{viewModel.state.difficulties.contains(Difficulty.NORMAL)}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
@@ -92,7 +92,7 @@
 
         <TextView
             android:id="@+id/mainDifficultyHard"
-            isSelected="@{viewModel.uiState.difficulties.contains(Difficulty.HARD)}"
+            isSelected="@{viewModel.state.difficulties.contains(Difficulty.HARD)}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"

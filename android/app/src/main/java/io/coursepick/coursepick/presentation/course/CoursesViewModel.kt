@@ -24,7 +24,8 @@ class CoursesViewModel(
     private val courseRepository: CourseRepository,
     private val networkMonitor: NetworkMonitor,
 ) : ViewModel() {
-    private var fetchedCourses: List<CourseItem> = emptyList()
+    private var _fetchedCourses: MutableLiveData<List<CourseItem>> = MutableLiveData(emptyList())
+    val fetchedCourses: LiveData<List<CourseItem>> = _fetchedCourses
     private val _state: MutableLiveData<CoursesUiState> =
         MutableLiveData(
             CoursesUiState(
@@ -93,7 +94,7 @@ class CoursesViewModel(
                                 index == 0,
                             )
                         }
-                fetchedCourses = courseItems
+                _fetchedCourses.value = courseItems
                 _state.value =
                     state.value?.copy(courses = courseItems, isLoading = false, isFailure = false)
             } catch (exception: IOException) {
@@ -149,17 +150,17 @@ class CoursesViewModel(
         _state.value = state.value?.copy(query = query)
     }
 
-    fun applyfilter(condition: FilterCondition) {
-        _state.value = _state.value?.copy(filterCondition = condition)
+    fun applyFilter(condition: FilterCondition) {
+        _state.value = state.value?.copy(filterCondition = condition)
 
         val filtered =
-            fetchedCourses
-                .filter { courseItem ->
+            _fetchedCourses.value
+                ?.filter { courseItem ->
                     (condition.difficulties.isEmpty() || courseItem.toDomain() in condition.difficulties) &&
                         (courseItem.length in condition.lengthRange.minimum..condition.lengthRange.maximum)
-                }
+                } ?: emptyList()
 
-        _state.value = _state.value?.copy(courses = filtered)
+        _state.value = state.value?.copy(courses = filtered)
     }
 
     private fun newCourses(
