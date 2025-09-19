@@ -49,7 +49,6 @@ android {
             versionNameSuffix = "-dev"
             resValue("string", "app_name", "런세권(dev)")
 
-            buildConfigField("boolean", "DEBUG", "true")
             buildConfigField("String", "BASE_URL", localProperties["base.url.debug"].toString())
             buildConfigField(
                 "String",
@@ -86,7 +85,6 @@ android {
                 "proguard-rules.pro",
             )
 
-            buildConfigField("boolean", "DEBUG", "false")
             buildConfigField("String", "BASE_URL", localProperties["base.url.release"].toString())
             buildConfigField(
                 "String",
