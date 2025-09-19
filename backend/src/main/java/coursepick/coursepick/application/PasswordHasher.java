@@ -1,8 +1,8 @@
 package coursepick.coursepick.application;
 
-public interface PasswordEncoder {
+public interface PasswordHasher {
 
-    String encode(String password);
+    String hash(String password);
 
     boolean matches(String rawPassword, String encodedPassword);
 }

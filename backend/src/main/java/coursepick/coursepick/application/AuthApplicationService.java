@@ -11,13 +11,13 @@ import org.springframework.stereotype.Service;
 public class AuthApplicationService {
 
     private final JwtProvider jwtProvider;
-    private final PasswordEncoder passwordEncoder;
+    private final PasswordHasher passwordHasher;
     private final AdminRepository adminRepository;
 
     public String validateAndCreateToken(String username, String password) {
         Admin admin = adminRepository.findByUsername(username)
                 .orElseThrow(ErrorType.LOGIN_FAIL::create);
-        if (!admin.checkPassword(password, passwordEncoder)) {
+        if (!admin.checkPassword(password, passwordHasher)) {
             throw ErrorType.LOGIN_FAIL.create();
         }
         return jwtProvider.createToken(admin);

@@ -1,6 +1,6 @@
 package coursepick.coursepick.domain;
 
-import coursepick.coursepick.application.PasswordEncoder;
+import coursepick.coursepick.application.PasswordHasher;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,7 +28,7 @@ public class Admin {
         this.password = password;
     }
 
-    public boolean checkPassword(String password, PasswordEncoder passwordEncoder) {
-        return passwordEncoder.matches(password, this.password);
+    public boolean checkPassword(String password, PasswordHasher passwordHasher) {
+        return passwordHasher.matches(password, this.password);
     }
 }

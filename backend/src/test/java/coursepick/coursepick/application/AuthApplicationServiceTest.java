@@ -14,7 +14,7 @@ class AuthApplicationServiceTest extends IntegrationTest {
     AuthApplicationService sut;
 
     @Autowired
-    PasswordEncoder passwordEncoder;
+    PasswordHasher passwordHasher;
 
     @Test
     void 존재하지_않는_어드민_계정인_경우_예외가_발생한다() {
@@ -36,7 +36,7 @@ class AuthApplicationServiceTest extends IntegrationTest {
     void 로그인_검증에_성공하면_토큰을_리턴한다() {
         var username = "adminId";
         var rawPassword = "password";
-        var encodedPassword = passwordEncoder.encode(rawPassword);
+        var encodedPassword = passwordHasher.hash(rawPassword);
         dbUtil.saveAdmin(new Admin("adminId", encodedPassword));
 
         String token = sut.validateAndCreateToken(username, rawPassword);
