@@ -23,6 +23,7 @@ class CoursePickUpdateManager(
     private val activity: ComponentActivity,
 ) {
     private val appUpdateManager: AppUpdateManager = AppUpdateManagerFactory.create(activity)
+    private var currentUpdateType: Int = AppUpdateType.FLEXIBLE
 
     private val onDownloadedListener =
         InstallStateUpdatedListener { state: InstallState ->
@@ -34,7 +35,24 @@ class CoursePickUpdateManager(
     private val activityResultLauncher: ActivityResultLauncher<IntentSenderRequest> =
         activity.registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result: ActivityResult ->
             if (result.resultCode != Activity.RESULT_OK) {
-                Toast.makeText(activity, R.string.app_update_cancelled, Toast.LENGTH_SHORT).show()
+                when (currentUpdateType) {
+                    AppUpdateType.FLEXIBLE -> {
+                        Toast
+                            .makeText(activity, R.string.app_update_cancelled, Toast.LENGTH_SHORT)
+                            .show()
+                    }
+
+                    AppUpdateType.IMMEDIATE -> {
+                        Toast
+                            .makeText(
+                                activity,
+                                R.string.app_update_must_be_completed,
+                                Toast.LENGTH_LONG,
+                            ).show()
+
+                        activity.finish()
+                    }
+                }
             }
         }
 
@@ -75,16 +93,22 @@ class CoursePickUpdateManager(
     private fun AppUpdateInfo.handleAvailableUpdate() {
         val priority = updatePriority()
 
-        if (priority == PRIORITY_IMMEDIATE && isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+        if (priority >= PRIORITY_IMMEDIATE && isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
             startUpdateFlowForResult(AppUpdateType.IMMEDIATE)
-        } else if (isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
+            return
+        }
+
+        if (priority >= PRIORITY_FLEXIBLE && isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
             startUpdateFlowForResult(AppUpdateType.FLEXIBLE)
+            return
         }
     }
 
     private fun AppUpdateInfo.startUpdateFlowForResult(
         @AppUpdateType appUpdateType: Int,
     ) {
+        currentUpdateType = appUpdateType
+
         appUpdateManager.startUpdateFlowForResult(
             this,
             activityResultLauncher,
@@ -94,5 +118,6 @@ class CoursePickUpdateManager(
 
     companion object {
         private const val PRIORITY_IMMEDIATE = 5
+        private const val PRIORITY_FLEXIBLE = 3
     }
 }

@@ -4,17 +4,15 @@ on:
   # Github Action 탭에서 수동으로 실행
   workflow_dispatch:
     inputs:
-      updatePriority:
-        description: '업데이트 우선순위 (1-5). 5는 즉시 업데이트.'
-        required: true
-        default: '1'
-        type: choice
-        options:
-          - '1'
-          - '2'
-          - '3'
-          - '4'
-          - '5'
+      updateType:
+          description: '배포할 업데이트의 종류를 선택하세요.'
+          required: true
+          default: '일반 업데이트 (앱 내 제안 X)'
+          type: choice
+          options:
+            - '일반 업데이트 (앱 내 제안 X)'
+            - '유연한 업데이트 (앱 내 제안 O, 강제 X)'
+            - '즉시 업데이트 (앱 내 제안 O, 강제 O)'
 
 jobs:
   deploy:
@@ -26,26 +24,35 @@ jobs:
       id-token: 'write'
 
     steps:
-      # 1. 저장소 코드 체크아웃
+      # 저장소 코드 체크아웃
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. JDK 21 설정
+      # JDK 21 설정
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '21'
 
-      # 3. Gradle 캐시 설정
+      # Gradle 캐시 설정
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      # 4. Keystore 파일 디코딩
+      # google-services.json 파일 디코딩
+      - name: Decode google-services.json
+        run: |
+          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > android/app/google-services.json
+
+      # Keystore 파일 디코딩
       - name: Decode Keystore
         run: echo "${{ secrets.SIGNING_KEYSTORE_BASE64 }}" | base64 -d > android/app/keystore.jks
 
-      # 5. Release AAB 빌드
+      # local.properties 파일 생성
+      - name: Create local.properties
+        run: echo "${{ secrets.ANDROID_LOCAL_PROPERTIES_BASE64 }}" | base64 --decode > android/local.properties
+
+      # Release AAB 빌드
       - name: Build Release AAB
         run: cd android && ./gradlew bundleRelease
         env:
@@ -53,63 +60,85 @@ jobs:
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
 
-      # 6. Google Cloud 인증 (액세스 토큰 획득)
+      # Google Cloud 인증
       - name: Authenticate with Google Cloud
-        id: auth
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.PLAY_STORE_JSON_KEY }}'
 
-      # 7. Play Store에 AAB 업로드 및 출시 (API 직접 호출)
+      # Play Store API용 Access Token 발급
+      - name: Generate Access Token for Play Store API
+        id: generate_token
+        run: |
+          # scope가 적용된 토큰을 발급받아, 다음 스텝에서 사용할 수 있도록 output으로 설정합니다.
+          echo "access_token=$(gcloud auth print-access-token --scopes='https://www.googleapis.com/auth/androidpublisher')" >> $GITHUB_OUTPUT
+
+      # Play Store에 AAB 업로드 및 출시 (API 직접 호출)
       - name: Upload and Release to Play Store
         run: |
-          set -e # 오류 발생 시 즉시 스크립트 중단
-
+          set -euo pipefail
+          
           # 변수 설정
+          UPDATE_TYPE="${{ github.event.inputs.updateType }}"
+          PRIORITY_VALUE=1 # 기본값
+          if [[ "$UPDATE_TYPE" == "유연한 업데이트 (앱 내 제안 O, 강제 X)" ]]; then
+            PRIORITY_VALUE=3
+          elif [[ "$UPDATE_TYPE" == "즉시 업데이트 (앱 내 제안 O, 강제 O)" ]]; then
+            PRIORITY_VALUE=5
+          fi
+          echo "Selected Update Type: $UPDATE_TYPE -> Priority: $PRIORITY_VALUE"
           PACKAGE_NAME="${{ secrets.ANDROID_PACKAGE_NAME }}"
           AAB_PATH="android/app/build/outputs/bundle/release/app-release.aab"
-          TRACK="internal" # 배포할 트랙: internal, alpha, beta, production
-          
-          # 인증된 액세스 토큰 가져오기
-          ACCESS_TOKEN="${{ steps.auth.outputs.access_token }}"
-          
+          TRACK="production"
+
+          # 인증된 액세스 토큰 가져오기 (참조 방식 변경)
+          ACCESS_TOKEN="${{ steps.generate_token.outputs.access_token }}"
+
+          if [[ ! -f "$AAB_PATH" ]]; then
+            echo "AAB not found at $AAB_PATH"; exit 1
+          fi
+
           # 1. 편집 세션 시작 및 editId 획득
           echo "1. Creating a new edit session..."
-          EDIT_RESPONSE=$(curl -s -X POST \
+          EDIT_RESPONSE=$(curl -fSs -X POST \
             -H "Authorization: Bearer $ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
             "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/$PACKAGE_NAME/edits")
           EDIT_ID=$(echo $EDIT_RESPONSE | jq -r .id)
+          if [[ -z "$EDIT_ID" || "$EDIT_ID" == "null" ]]; then
+            echo "Failed to create edit: $EDIT_RESPONSE"; exit 1; fi
           echo "   - Success! Edit ID: $EDIT_ID"
-          
+
           # 2. AAB 업로드 및 versionCode 획득
           echo "2. Uploading AAB..."
-          UPLOAD_RESPONSE=$(curl -s -X POST \
+          UPLOAD_RESPONSE=$(curl -fSs -X POST \
             -H "Authorization: Bearer $ACCESS_TOKEN" \
             -H "Content-Type: application/octet-stream" \
             --data-binary "@$AAB_PATH" \
-            "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/$PACKAGE_NAME/edits/$EDIT_ID/bundles")
+            "https://androidpublisher.googleapis.com/upload/androidpublisher/v3/applications/$PACKAGE_NAME/edits/$EDIT_ID/bundles?uploadType=media")
           VERSION_CODE=$(echo $UPLOAD_RESPONSE | jq -r .versionCode)
+          if [[ -z "$VERSION_CODE" || "$VERSION_CODE" == "null" ]]; then
+            echo "Failed to upload bundle: $UPLOAD_RESPONSE"; exit 1; fi
           echo "   - Success! Version Code: $VERSION_CODE"
-          
+
           # 3. 트랙 업데이트 (⭐ inAppUpdatePriority 설정)
-          echo "3. Assigning build to the '$TRACK' track with high priority..."
-          curl -s -X PUT \
+          echo "3. Assigning build to the '$TRACK' track..."
+          TRACK_RESPONSE=$(curl -fSs -X PUT \
             -H "Authorization: Bearer $ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
             -d '{
                   "releases": [{
                     "versionCodes": ["'"$VERSION_CODE"'"],
-                    "status": "draft",
-                    "inAppUpdatePriority": ${{ github.event.inputs.updatePriority }}
+                    "status": "completed",
+                    "inAppUpdatePriority": '$PRIORITY_VALUE'
                   }]
                 }' \
-            "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/$PACKAGE_NAME/edits/$EDIT_ID/tracks/$TRACK"
-          echo "   - Success!"
-          
+            "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/$PACKAGE_NAME/edits/$EDIT_ID/tracks/$TRACK")
+          echo "   - Success! Track updated."
+
           # 4. 모든 변경사항 적용(Commit)
           echo "4. Committing all changes..."
-          curl -s -X POST \
+          COMMIT_RESPONSE=$(curl -fSs -X POST \
             -H "Authorization: Bearer $ACCESS_TOKEN" \
-            "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/$PACKAGE_NAME/edits/$EDIT_ID:commit"
+            "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/$PACKAGE_NAME/edits/$EDIT_ID:commit")
           echo "   - 🎉 Deploy complete!"
