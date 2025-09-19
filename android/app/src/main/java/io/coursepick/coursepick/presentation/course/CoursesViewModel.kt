@@ -18,6 +18,8 @@ import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class CoursesViewModel(
@@ -38,6 +40,8 @@ class CoursesViewModel(
 
     private val _event: MutableSingleLiveData<CoursesUiEvent> = MutableSingleLiveData()
     val event: SingleLiveData<CoursesUiEvent> get() = _event
+
+    private var writeFavoriteJob: Job? = null
 
     init {
         checkNetwork()
@@ -71,18 +75,24 @@ class CoursesViewModel(
     }
 
     fun toggleFavorite(toggledCourse: CourseItem) {
-        state.value?.courses?.let { courses: List<CourseItem> ->
-            val newCourses =
-                courses.map { course: CourseItem ->
-                    if (course.id == toggledCourse.id) course.copy(favorite = !course.favorite) else course
+        writeFavoriteJob?.cancel()
+
+        writeFavoriteJob =
+            viewModelScope.launch {
+                delay(500)
+                state.value?.courses?.let { courses: List<CourseItem> ->
+                    val newCourses =
+                        courses.map { course: CourseItem ->
+                            if (course.id == toggledCourse.id) course.copy(favorite = !course.favorite) else course
+                        }
+                    _state.value = state.value?.copy(courses = newCourses)
                 }
-            _state.value = state.value?.copy(courses = newCourses)
-        }
-        if (toggledCourse.favorite) {
-            favoritesRepository.removeFavorite(toggledCourse.id)
-        } else {
-            favoritesRepository.addFavorite(toggledCourse.id)
-        }
+                if (toggledCourse.favorite) {
+                    favoritesRepository.removeFavorite(toggledCourse.id)
+                } else {
+                    favoritesRepository.addFavorite(toggledCourse.id)
+                }
+            }
     }
 
     fun fetchCourses(
