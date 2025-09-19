@@ -14,8 +14,8 @@ public class AuthApplicationService {
     private final PasswordEncoder passwordEncoder;
     private final AdminRepository adminRepository;
 
-    public String validateAndCreateToken(String account, String password) {
-        Admin admin = adminRepository.findByAccount(account)
+    public String validateAndCreateToken(String username, String password) {
+        Admin admin = adminRepository.findByUsername(username)
                 .orElseThrow(ErrorType.LOGIN_FAIL::create);
         if (!admin.checkPassword(password, passwordEncoder)) {
             throw ErrorType.LOGIN_FAIL.create();

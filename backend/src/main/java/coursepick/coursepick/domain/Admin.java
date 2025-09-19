@@ -18,13 +18,13 @@ public class Admin {
     @Id
     private final String id;
 
-    private final String account;
+    private final String username;
 
     private final String password;
 
-    public Admin(String account, String password) {
+    public Admin(String username, String password) {
         this.id = null;
-        this.account = account;
+        this.username = username;
         this.password = password;
     }
 
