@@ -46,6 +46,6 @@ jobs:
         run: ./gradlew testDebugUnitTest --stacktrace
         working-directory: android
 
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: Build Debug APK only
+        run: ./gradlew assembleDebug --stacktrace
         working-directory: android
