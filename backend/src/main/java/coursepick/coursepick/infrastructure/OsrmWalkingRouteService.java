@@ -14,13 +14,14 @@ import org.springframework.web.client.RestClient;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import static org.springframework.http.HttpHeaders.ACCEPT_ENCODING;
 
 @Slf4j
 @Component
 @Profile({"dev", "prod"})
 public class OsrmWalkingRouteService implements WalkingRouteService {
-
-    private static final String REQUEST_FORMAT = "/route/v1/foot/{origin_longitude},{origin_latitude};{destination_longitude},{destination_latitude}?geometries=geojson";
 
     private final RestClient restClient;
 
@@ -39,24 +40,26 @@ public class OsrmWalkingRouteService implements WalkingRouteService {
     public List<Coordinate> route(Coordinate origin, Coordinate destination) {
         try {
             Map<String, Object> response = restClient.get()
-                    .uri(createUriOf(origin, destination))
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/route/v1/foot/{origin_longitude},{origin_latitude};{destination_longitude},{destination_latitude}")
+                            .queryParam("geometries", "geojson")
+                            .queryParam("overview", "full")
+                            .queryParam("generate_hints", "false")
+                            .build(origin.longitude(), origin.latitude(), destination.longitude(), destination.latitude())
+                    )
+                    .header(ACCEPT_ENCODING, "gzip")
                     .retrieve()
                     .body(new ParameterizedTypeReference<>() {
                     });
 
-            return parseResponseToCoordinates(response);
+            List<Coordinate> coordinates = parseResponseToCoordinates(response);
+            coordinates.addFirst(origin);
+            coordinates.addLast(destination);
+            return coordinates;
         } catch (Exception e) {
             log.warn("[EXCEPTION] OSRM 길찾기 실패", LogContent.exception(e));
             throw new IllegalStateException("길찾기에 실패했습니다.", e);
         }
-    }
-
-    private static String createUriOf(Coordinate origin, Coordinate destination) {
-        return REQUEST_FORMAT
-                .replace("{origin_longitude}", String.valueOf(origin.longitude()))
-                .replace("{origin_latitude}", String.valueOf(origin.latitude()))
-                .replace("{destination_longitude}", String.valueOf(destination.longitude()))
-                .replace("{destination_latitude}", String.valueOf(destination.latitude()));
     }
 
     private static List<Coordinate> parseResponseToCoordinates(Map<String, Object> response) {
@@ -67,7 +70,7 @@ public class OsrmWalkingRouteService implements WalkingRouteService {
 
             return coordinates.stream()
                     .map(lnglat -> new Coordinate(lnglat.get(1), lnglat.get(0)))
-                    .toList();
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             log.warn("[EXCEPTION] OSRM 응답 파싱 실패", LogContent.exception(e));
             throw new IllegalStateException("길찾기에 실패했습니다.", e);
