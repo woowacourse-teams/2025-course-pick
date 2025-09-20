@@ -26,7 +26,7 @@ class OsrmWalkingRouteServiceTest extends AbstractMockServerTest {
 
     @Test
     void 응답이_오래걸리면_타임아웃이_발생한다() {
-        mock(ormsResponse(), 3000);
+        mock(ormsResponse(), 6000);
         var sut = new OsrmWalkingRouteService(url());
 
         assertThatThrownBy(() -> sut.route(new Coordinate(0, 0), new Coordinate(0, 0)))
