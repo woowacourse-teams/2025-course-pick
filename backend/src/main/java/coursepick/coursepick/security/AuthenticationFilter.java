@@ -37,10 +37,11 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         try {
             String token = extractToken(request);
             jwtProvider.validateToken(token);
-            filterChain.doFilter(request, response);
         } catch (SecurityException e) {
             handleAuthenticationError(response, e);
+            return;
         }
+        filterChain.doFilter(request, response);
     }
 
     private String extractToken(HttpServletRequest request) {
