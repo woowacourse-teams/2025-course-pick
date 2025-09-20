@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.springframework.http.HttpHeaders.ACCEPT_ENCODING;
+
 @Slf4j
 @Component
 @Profile({"dev", "prod"})
@@ -38,6 +40,7 @@ public class OsrmWalkingRouteService implements WalkingRouteService {
                             .queryParam("generate_hints", "false")
                             .build(origin.longitude(), origin.latitude(), destination.longitude(), destination.latitude())
                     )
+                    .header(ACCEPT_ENCODING, "gzip")
                     .retrieve()
                     .body(new ParameterizedTypeReference<>() {
                     });
