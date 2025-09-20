@@ -1,6 +1,5 @@
 package coursepick.coursepick.domain;
 
-import coursepick.coursepick.application.PasswordHasher;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

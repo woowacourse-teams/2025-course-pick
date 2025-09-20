@@ -3,6 +3,7 @@ package coursepick.coursepick.application;
 import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.Admin;
 import coursepick.coursepick.domain.AdminRepository;
+import coursepick.coursepick.domain.PasswordHasher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
