@@ -4,7 +4,7 @@ import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.dto.CourseFileExtension;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
-import coursepick.coursepick.test_util.IntegrationTest;
+import coursepick.coursepick.test_util.AbstractIntegrationTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.batch.core.BatchStatus;
@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @SpringBatchTest
-class CourseBatchTest extends IntegrationTest {
+class CourseBatchTest extends AbstractIntegrationTest {
 
     @Autowired
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")

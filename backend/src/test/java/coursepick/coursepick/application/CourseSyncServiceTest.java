@@ -3,7 +3,7 @@ package coursepick.coursepick.application;
 import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.dto.CourseFileExtension;
 import coursepick.coursepick.domain.Coordinate;
-import coursepick.coursepick.test_util.IntegrationTest;
+import coursepick.coursepick.test_util.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.Mockito.when;
 
-class CourseSyncServiceTest extends IntegrationTest {
+class CourseSyncServiceTest extends AbstractIntegrationTest {
 
     @Autowired
     CourseSyncService sut;

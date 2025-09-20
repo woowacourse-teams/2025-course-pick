@@ -9,7 +9,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @Import({GpxTestUtil.class, DatabaseTestUtil.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-public abstract class IntegrationTest {
+public abstract class AbstractIntegrationTest {
 
     @Autowired
     protected DatabaseTestUtil dbUtil;

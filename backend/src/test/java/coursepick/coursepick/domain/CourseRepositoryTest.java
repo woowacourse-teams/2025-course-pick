@@ -1,6 +1,6 @@
 package coursepick.coursepick.domain;
 
-import coursepick.coursepick.test_util.IntegrationTest;
+import coursepick.coursepick.test_util.AbstractIntegrationTest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +9,7 @@ import static coursepick.coursepick.test_util.CoordinateTestUtil.square;
 import static coursepick.coursepick.test_util.CoordinateTestUtil.upright;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class CourseRepositoryTest extends IntegrationTest {
+class CourseRepositoryTest extends AbstractIntegrationTest {
 
     @Autowired
     CourseRepository sut;
