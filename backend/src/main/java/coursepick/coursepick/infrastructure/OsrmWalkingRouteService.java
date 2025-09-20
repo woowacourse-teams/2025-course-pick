@@ -27,7 +27,7 @@ public class OsrmWalkingRouteService implements WalkingRouteService {
     public OsrmWalkingRouteService(@Value("${osrm.url}") String osrmUrl) {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setConnectTimeout(Duration.ofSeconds(1));
-        requestFactory.setReadTimeout(Duration.ofSeconds(2));
+        requestFactory.setReadTimeout(Duration.ofSeconds(5));
 
         this.restClient = RestClient.builder()
                 .requestFactory(requestFactory)
