@@ -12,7 +12,7 @@ class OsrmWalkingRouteServiceTest {
 
     @Test
     void 두_좌표_사이의_걷기_경로를_조회할_수_있다() throws IOException {
-        try (var mockServer = new SimpleMockServer(ormsResponse())) {
+        try (var mockServer = new SimpleMockServer(osrmResponse())) {
             var sut = new OsrmWalkingRouteService(mockServer.url());
 
             var result = sut.route(
@@ -24,7 +24,7 @@ class OsrmWalkingRouteServiceTest {
         }
     }
 
-    private static String ormsResponse() {
+    private static String osrmResponse() {
         return """
                 {
                   "code": "Ok",
