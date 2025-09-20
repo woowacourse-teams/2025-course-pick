@@ -16,7 +16,6 @@ public class AuthWebController implements AuthWebApi {
 
     private final AuthApplicationService authApplicationService;
 
-
     @PostMapping("admin/auth/login")
     public ResponseEntity<LoginWebResponse> login(@RequestBody LoginWebRequest request) {
         String token = authApplicationService.validateAndCreateToken(request.username(), request.password());
