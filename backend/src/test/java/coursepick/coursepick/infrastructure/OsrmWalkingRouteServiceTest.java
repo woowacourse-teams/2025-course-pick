@@ -5,8 +5,10 @@ import coursepick.coursepick.test_util.SimpleMockServer;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class OsrmWalkingRouteServiceTest {
 
@@ -21,6 +23,16 @@ class OsrmWalkingRouteServiceTest {
             );
 
             assertThat(result.size()).isEqualTo(10);
+        }
+    }
+
+    @Test
+    void 응답이_오래걸리면_타임아웃이_발생한다() throws IOException {
+        try (var mockServer = new SimpleMockServer(ormsResponse(), 3000)) {
+            var sut = new OsrmWalkingRouteService(mockServer.url());
+
+            assertThatThrownBy(() -> sut.route(new Coordinate(0, 0), new Coordinate(0, 0)))
+                    .hasRootCauseExactlyInstanceOf(SocketTimeoutException.class);
         }
     }
 
