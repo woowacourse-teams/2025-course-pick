@@ -14,6 +14,7 @@ import io.coursepick.coursepick.domain.course.CourseRepository
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.Logger
+import io.coursepick.coursepick.presentation.filter.FilterCondition
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
 import kotlinx.coroutines.launch
@@ -23,6 +24,8 @@ class CoursesViewModel(
     private val courseRepository: CourseRepository,
     private val networkMonitor: NetworkMonitor,
 ) : ViewModel() {
+    private var _fetchedCourses: MutableLiveData<List<CourseItem>> = MutableLiveData(emptyList())
+    val fetchedCourses: LiveData<List<CourseItem>> = _fetchedCourses
     private val _state: MutableLiveData<CoursesUiState> =
         MutableLiveData(
             CoursesUiState(
@@ -91,6 +94,7 @@ class CoursesViewModel(
                                 index == 0,
                             )
                         }
+                _fetchedCourses.value = courseItems
                 _state.value =
                     state.value?.copy(courses = courseItems, isLoading = false, isFailure = false)
             } catch (exception: IOException) {
@@ -144,6 +148,19 @@ class CoursesViewModel(
 
     fun setQuery(query: String) {
         _state.value = state.value?.copy(query = query)
+    }
+
+    fun applyFilter(condition: FilterCondition) {
+        _state.value = state.value?.copy(filterCondition = condition)
+
+        val filtered =
+            _fetchedCourses.value
+                ?.filter { courseItem ->
+                    (condition.difficulties.isEmpty() || courseItem.toDomain() in condition.difficulties) &&
+                        (courseItem.length in condition.lengthRange.minimum..condition.lengthRange.maximum)
+                } ?: emptyList()
+
+        _state.value = state.value?.copy(courses = filtered)
     }
 
     private fun newCourses(

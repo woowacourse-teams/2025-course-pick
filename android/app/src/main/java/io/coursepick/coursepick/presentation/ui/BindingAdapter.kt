@@ -8,10 +8,14 @@ import android.widget.ListView
 import android.widget.TextView
 import androidx.core.widget.ContentLoadingProgressBar
 import androidx.databinding.BindingAdapter
+import androidx.databinding.InverseBindingAdapter
+import androidx.databinding.InverseBindingListener
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.slider.RangeSlider
 import io.coursepick.coursepick.R
+import io.coursepick.coursepick.presentation.filter.FilterViewModel
 
 @BindingAdapter("isSelected")
 fun View.selected(isSelected: Boolean) {
@@ -87,4 +91,74 @@ private fun formattedMeter(
 @BindingAdapter("onNavigationClick")
 fun MaterialToolbar.setOnNavigationClick(listener: View.OnClickListener) {
     setNavigationOnClickListener(listener)
+}
+
+@BindingAdapter("onRangeChanged")
+fun setRangeSliderListener(
+    slider: RangeSlider,
+    listener: RangeSliderListener?,
+) {
+    listener?.let { l ->
+        slider.addOnChangeListener { _, _, _ ->
+            val values = slider.values
+            l.onRangeChanged(values[0].toInt(), values[1].toInt())
+        }
+    }
+}
+
+fun interface RangeSliderListener {
+    fun onRangeChanged(
+        min: Int,
+        max: Int,
+    )
+}
+
+@BindingAdapter("values")
+fun setSliderValues(
+    rangeSlider: RangeSlider,
+    values: List<Float>?,
+) {
+    values?.let {
+        if (rangeSlider.values != it) {
+            rangeSlider.values = it
+        }
+    }
+}
+
+@InverseBindingAdapter(attribute = "values", event = "valuesAttrChanged")
+fun getSliderValues(rangeSlider: RangeSlider): List<Float> = rangeSlider.values
+
+@BindingAdapter("valuesAttrChanged")
+fun setSliderValuesListener(
+    rangeSlider: RangeSlider,
+    listener: InverseBindingListener?,
+) {
+    if (listener == null) return
+    rangeSlider.addOnChangeListener { _, _, _ ->
+        listener.onChange()
+    }
+}
+
+@BindingAdapter("lengthRangeText")
+fun setLengthRangeText(
+    textView: TextView,
+    values: List<Float>?,
+) {
+    if (values == null) return
+    val min = values[0].toInt()
+    val max = values[1].toInt()
+    textView.text =
+        when {
+            min == FilterViewModel.MINIMUM_LENGTH_RANGE.toInt() && max != FilterViewModel.MAXIMUM_LENGTH_RANGE.toInt() ->
+                textView.context.getString(R.string.length_range_open_start, max)
+
+            min != FilterViewModel.MINIMUM_LENGTH_RANGE.toInt() && max == FilterViewModel.MAXIMUM_LENGTH_RANGE.toInt() ->
+                textView.context.getString(R.string.length_range_open_end, min)
+
+            min != FilterViewModel.MINIMUM_LENGTH_RANGE.toInt() && max != FilterViewModel.MAXIMUM_LENGTH_RANGE.toInt() ->
+                textView.context.getString(R.string.length_range, min, max)
+
+            else ->
+                textView.context.getString(R.string.total_length_range)
+        }
 }
