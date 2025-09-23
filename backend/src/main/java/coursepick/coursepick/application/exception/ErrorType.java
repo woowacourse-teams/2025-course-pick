@@ -44,6 +44,22 @@ public enum ErrorType {
             "0을 기준으로 비율을 계산할 수 없습니다.",
             IllegalArgumentException::new
     ),
+    NOT_EXIST_TOKEN(
+            "토큰이 존재하지 않습니다.",
+            SecurityException::new
+    ),
+    TOKEN_EXPIRED(
+            "만료된 토큰입니다.",
+            SecurityException::new
+    ),
+    TOKEN_INVALID(
+            "잘못된 토큰입니다.",
+            SecurityException::new
+    ),
+    LOGIN_FAIL(
+            "로그인에 실패했습니다.",
+            SecurityException::new
+    ),
     ;
 
     private final String message;
