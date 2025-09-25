@@ -21,21 +21,42 @@ class KakaoMapDrawer(
 ) {
     private val routeLineOptionsFactory = RouteLineOptionsFactory(context)
 
+    fun drawCourse(
+        map: KakaoMap,
+        course: CourseItem,
+    ) {
+        val layer: RouteLineLayer = map.routeLineManager?.layer ?: return
+        val options: RouteLineOptions =
+            routeLineOptionsFactory.routeLineOptions(course).apply {
+                zOrder = if (course.selected) SELECTED_COURSE_Z_ORDER else UNSELECTED_COURSE_Z_ORDER
+            }
+        layer.addRouteLine(options)
+    }
+
     fun drawCourses(
         map: KakaoMap,
         courses: List<CourseItem>,
     ) {
         val layer: RouteLineLayer = map.routeLineManager?.layer ?: return
-        layer.removeAll()
         courses.forEach { course: CourseItem ->
-            val options: RouteLineOptions = routeLineOptionsFactory.routeLineOptions(course)
-            layer.addRouteLine(
-                options.apply {
+            val options: RouteLineOptions =
+                routeLineOptionsFactory.routeLineOptions(course).apply {
                     zOrder =
                         if (course.selected) SELECTED_COURSE_Z_ORDER else UNSELECTED_COURSE_Z_ORDER
-                },
-            )
+                }
+            layer.addRouteLine(options)
         }
+    }
+
+    fun drawRouteToCourse(
+        map: KakaoMap,
+        route: List<Coordinate>,
+        course: CourseItem,
+    ) {
+        val layer: RouteLineLayer = map.routeLineManager?.layer ?: return
+        val courseOptions = routeLineOptionsFactory.routeLineOptions(course)
+        layer.addRouteLine(routeLineOptionsFactory.routeLineOptions(route))
+        layer.addRouteLine(courseOptions)
     }
 
     fun showUserPosition(
@@ -77,6 +98,11 @@ class KakaoMapDrawer(
         updateLabel(map, options) { label: Label ->
             label.moveTo(latLng)
         }
+    }
+
+    fun removeAllLines(map: KakaoMap) {
+        val layer: RouteLineLayer = map.routeLineManager?.layer ?: return
+        layer.removeAll()
     }
 
     fun removeAllLabels(map: KakaoMap) {

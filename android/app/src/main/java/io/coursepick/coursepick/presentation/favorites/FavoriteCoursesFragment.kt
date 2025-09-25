@@ -8,16 +8,18 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import io.coursepick.coursepick.databinding.FragmentFavoriteCoursesBinding
 import io.coursepick.coursepick.presentation.course.CourseAdapter
+import io.coursepick.coursepick.presentation.course.CourseItemListener
 import io.coursepick.coursepick.presentation.course.CoursesUiState
 import io.coursepick.coursepick.presentation.course.CoursesViewModel
-import io.coursepick.coursepick.presentation.course.DefaultCourseItemListener
 
-class FavoriteCoursesFragment : Fragment() {
+class FavoriteCoursesFragment(
+    listener: CourseItemListener,
+) : Fragment() {
     @Suppress("ktlint:standard:backing-property-naming")
     private var _binding: FragmentFavoriteCoursesBinding? = null
     private val binding get() = _binding!!
     private val viewModel: CoursesViewModel by activityViewModels { CoursesViewModel.Factory }
-    private val courseAdapter by lazy { CourseAdapter(DefaultCourseItemListener(viewModel)) }
+    private val courseAdapter by lazy { CourseAdapter(listener) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
