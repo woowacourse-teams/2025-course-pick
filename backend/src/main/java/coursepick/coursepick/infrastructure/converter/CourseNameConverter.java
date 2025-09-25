@@ -5,7 +5,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.data.convert.WritingConverter;
 
-public class CourseNameConverter {
+public abstract class CourseNameConverter {
 
     @WritingConverter
     public static class Writer implements Converter<CourseName, String> {
