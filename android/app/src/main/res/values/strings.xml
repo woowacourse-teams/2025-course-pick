@@ -45,4 +45,5 @@
     <string name="app_update_downloaded">업데이트가 다운로드되었습니다. 설치하려면 눌러주세요.</string>
     <string name="app_update_action_after_downloaded">설치</string>
     <string name="app_update_must_be_completed">업데이트를 완료해야 앱을 사용할 수 있습니다.</string>
+    <string name="title_activity_new_search">NewSearchActivity</string>
 </resources>

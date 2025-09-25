@@ -20,6 +20,11 @@
         android:usesCleartextTraffic="true"
         tools:ignore="DiscouragedApi,LockedOrientationActivity">
         <activity
+            android:name=".presentation.search.NewSearchActivity"
+            android:exported="false"
+            android:label="@string/title_activity_new_search"
+            android:theme="@style/Theme.CoursePick" />
+        <activity
             android:name=".presentation.preference.PreferencesActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
