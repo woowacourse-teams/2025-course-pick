@@ -1,6 +1,7 @@
 package coursepick.coursepick.domain;
 
 import coursepick.coursepick.test_util.AbstractIntegrationTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -16,6 +17,20 @@ class CourseRepositoryTest extends AbstractIntegrationTest {
     @Autowired
     CourseRepository sut;
 
+    final Coordinate target = new Coordinate(37.514647, 127.086592);
+
+    @BeforeEach
+    void setUp() {
+        var course1 = new Course("코스1", square(upright(target, 300), 1000, 1000));
+        var course2 = new Course("코스2", square(upright(target, 500), 1000, 1000));
+        var course3 = new Course("코스3", square(upright(target, 700), 1000, 1000));
+        var course4 = new Course("코스4", square(upright(target, 900), 1000, 1000));
+        dbUtil.saveCourse(course1);
+        dbUtil.saveCourse(course2);
+        dbUtil.saveCourse(course3);
+        dbUtil.saveCourse(course4);
+    }
+
     @ParameterizedTest
     @CsvSource({
             "1300, 4",
@@ -24,17 +39,6 @@ class CourseRepositoryTest extends AbstractIntegrationTest {
             "700, 1"
     })
     void 거리를_줄여가면서_검색되는_코스_수가_줄어든다(int distance, int expectedSize) {
-        var target = new Coordinate(37.514647, 127.086592);
-
-        var course1 = new Course("코스1", square(upright(target, 300), 1000, 1000));
-        var course2 = new Course("코스2", square(upright(target, 500), 1000, 1000));
-        var course3 = new Course("코스3", square(upright(target, 700), 1000, 1000));
-        var course4 = new Course("코스4", square(upright(target, 900), 1000, 1000));
-        dbUtil.saveCourse(course1);
-        dbUtil.saveCourse(course2);
-        dbUtil.saveCourse(course3);
-        dbUtil.saveCourse(course4);
-
         var courses = sut.findAllHasDistanceWithin(target, new Meter(distance), PageRequest.of(0, 100));
 
         assertThat(courses).hasSize(expectedSize);
@@ -42,17 +46,6 @@ class CourseRepositoryTest extends AbstractIntegrationTest {
 
     @Test
     void 검색하는_코스를_페이징한다() {
-        var target = new Coordinate(37.514647, 127.086592);
-
-        var course1 = new Course("코스1", square(upright(target, 300), 1000, 1000));
-        var course2 = new Course("코스2", square(upright(target, 500), 1000, 1000));
-        var course3 = new Course("코스3", square(upright(target, 700), 1000, 1000));
-        var course4 = new Course("코스4", square(upright(target, 900), 1000, 1000));
-        dbUtil.saveCourse(course1);
-        dbUtil.saveCourse(course2);
-        dbUtil.saveCourse(course3);
-        dbUtil.saveCourse(course4);
-
         var courses = sut.findAllHasDistanceWithin(target, new Meter(1500), PageRequest.of(1, 2));
 
         assertThat(courses).hasSize(2);
@@ -60,17 +53,6 @@ class CourseRepositoryTest extends AbstractIntegrationTest {
 
     @Test
     void PageRequest가_널이면_페이징하지_않는다() {
-        var target = new Coordinate(37.514647, 127.086592);
-
-        var course1 = new Course("코스1", square(upright(target, 300), 1000, 1000));
-        var course2 = new Course("코스2", square(upright(target, 500), 1000, 1000));
-        var course3 = new Course("코스3", square(upright(target, 700), 1000, 1000));
-        var course4 = new Course("코스4", square(upright(target, 900), 1000, 1000));
-        dbUtil.saveCourse(course1);
-        dbUtil.saveCourse(course2);
-        dbUtil.saveCourse(course3);
-        dbUtil.saveCourse(course4);
-
         var courses = sut.findAllHasDistanceWithin(target, new Meter(1500), null);
 
         assertThat(courses).hasSize(4);
