@@ -21,7 +21,7 @@ class DefaultCourseItemListener(
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    override fun navigateToMap(course: CourseItem) {
+    override fun navigateToCourse(course: CourseItem) {
         Logger.log(
             Logger.Event.Click("navigate"),
             "id" to course.id,

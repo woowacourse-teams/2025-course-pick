@@ -241,7 +241,7 @@ class CoursesViewModel(
                 _event.value = CoursesUiEvent.FetchRouteToCourseSuccess(route, selectedCourse)
             }.onFailure { error: Throwable ->
                 when (error) {
-                    is IOException -> {
+                    is NoNetworkException -> {
                         _state.value =
                             state.value?.copy(
                                 isLoading = false,
