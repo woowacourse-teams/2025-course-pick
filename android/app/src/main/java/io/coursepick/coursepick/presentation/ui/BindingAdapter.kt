@@ -6,7 +6,6 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.TextView
-import androidx.core.widget.ContentLoadingProgressBar
 import androidx.databinding.BindingAdapter
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.appbar.MaterialToolbar
@@ -63,15 +62,6 @@ fun ListView.setSimpleListItems(items: List<String>) {
 @BindingAdapter("onItemClick")
 fun ListView.setOnItemClick(listener: AdapterView.OnItemClickListener) {
     this.onItemClickListener = listener
-}
-
-@BindingAdapter("loading")
-fun ContentLoadingProgressBar.setLoading(loading: Boolean) {
-    if (loading) {
-        this.show()
-    } else {
-        this.hide()
-    }
 }
 
 private fun formattedMeter(

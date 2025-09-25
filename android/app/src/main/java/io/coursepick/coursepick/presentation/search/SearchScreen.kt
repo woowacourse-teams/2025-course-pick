@@ -80,17 +80,14 @@ fun SearchScreen(
                     items(uiState.places) { place: Place ->
                         SearchResult(
                             place = place,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { onPlaceSelect(place) })
+                            modifier = Modifier.fillMaxWidth().clickable { onPlaceSelect(place) },
+                        )
                     }
                 }
             }
         }
     }
 }
-
-
 
 @Preview(showBackground = true)
 @Composable

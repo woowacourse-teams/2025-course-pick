@@ -8,19 +8,23 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import io.coursepick.coursepick.data.NetworkMonitor
+import io.coursepick.coursepick.data.interceptor.NoNetworkException
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseRepository
 import io.coursepick.coursepick.domain.course.Scope
+import io.coursepick.coursepick.domain.favorites.FavoritesRepository
 import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.io.IOException
 
 class CoursesViewModel(
     private val courseRepository: CourseRepository,
+    private val favoritesRepository: FavoritesRepository,
     private val networkMonitor: NetworkMonitor,
 ) : ViewModel() {
     private val _state: MutableLiveData<CoursesUiState> =
@@ -37,13 +41,17 @@ class CoursesViewModel(
     private val _event: MutableSingleLiveData<CoursesUiEvent> = MutableSingleLiveData()
     val event: SingleLiveData<CoursesUiEvent> get() = _event
 
+    private var writeFavoriteJob: Job? = null
+    private val pendingFavoriteWrites: MutableMap<String, Boolean> = mutableMapOf()
+
     init {
         checkNetwork()
     }
 
     private fun checkNetwork() {
         if (!networkMonitor.isConnected()) {
-            _state.value =
+            _state
+                .value =
                 state.value?.copy(
                     isLoading = false,
                     isNoInternet = true,
@@ -67,6 +75,38 @@ class CoursesViewModel(
         _event.value = CoursesUiEvent.SelectNewCourse(selectedCourse)
     }
 
+    fun toggleFavorite(toggledCourse: CourseItem) {
+        pendingFavoriteWrites[toggledCourse.id] = !toggledCourse.favorite
+
+        state.value?.courses?.let { courses: List<CourseItem> ->
+            val newCourses =
+                courses.map { course: CourseItem ->
+                    if (course.id == toggledCourse.id) course.copy(favorite = !course.favorite) else course
+                }
+            _state.value = state.value?.copy(courses = newCourses)
+        }
+
+        updateFavorites()
+    }
+
+    private fun updateFavorites() {
+        writeFavoriteJob?.cancel()
+
+        writeFavoriteJob =
+            viewModelScope.launch {
+                delay(DEBOUNCE_LIMIT_TIME)
+
+                pendingFavoriteWrites.toMap().forEach { courseId: String, favorite: Boolean ->
+                    if (favorite) {
+                        favoritesRepository.addFavorite(courseId)
+                    } else {
+                        favoritesRepository.removeFavorite(courseId)
+                    }
+                }
+                pendingFavoriteWrites.clear()
+            }
+    }
+
     fun fetchCourses(
         mapCoordinate: Coordinate,
         userCoordinate: Coordinate?,
@@ -78,41 +118,99 @@ class CoursesViewModel(
                 isFailure = false,
                 isNoInternet = false,
             )
+
+        val favoritedCourseIds: Set<String> = favoritesRepository.favoritedCourseIds()
+
         viewModelScope.launch {
-            try {
+            runCatching {
                 val courses = courseRepository.courses(mapCoordinate, userCoordinate, scope)
+                courses
+                    .sortedBy(Course::distance)
+                    .mapIndexed { index: Int, course: Course ->
+                        CourseItem(
+                            course = course,
+                            selected = index == 0,
+                            favorite = favoritedCourseIds.contains(course.id),
+                        )
+                    }
+            }.onSuccess { courses: List<CourseItem> ->
                 Logger.log(Logger.Event.Success("fetch_courses"))
-                val courseItems: List<CourseItem> =
-                    courses
-                        .sortedBy { course: Course -> course.distance }
-                        .mapIndexed { index: Int, course: Course ->
-                            CourseItem(
-                                course,
-                                index == 0,
-                            )
-                        }
-                _state.value =
-                    state.value?.copy(courses = courseItems, isLoading = false, isFailure = false)
-            } catch (exception: IOException) {
-                _state.value =
+                _state
+                    .value =
                     state.value?.copy(
-                        courses = emptyList(),
+                        courses = courses,
                         isLoading = false,
                         isFailure = false,
-                        isNoInternet = true,
                     )
-            } catch (exception: Exception) {
+            }.onFailure { exception: Throwable ->
                 Logger.log(
                     Logger.Event.Failure("fetch_courses"),
                     "message" to exception.message.toString(),
                 )
+                if (exception is NoNetworkException) {
+                    _state
+                        .value =
+                        state.value?.copy(
+                            courses = emptyList(),
+                            isLoading = false,
+                            isFailure = false,
+                            isNoInternet = true,
+                        )
+                    return@onFailure
+                }
                 _state.value =
-                    state.value?.copy(
-                        courses = emptyList(),
-                        isLoading = false,
-                        isFailure = true,
-                    )
+                    state.value
+                        ?.copy(
+                            courses = emptyList(),
+                            isLoading = false,
+                            isFailure = true,
+                        )
                 _event.value = CoursesUiEvent.FetchCourseFailure
+            }
+        }
+    }
+
+    fun fetchFavorites() {
+        _state.value =
+            state.value?.copy(
+                isLoading = true,
+                isFailure = false,
+                isNoInternet = false,
+            )
+
+        val favoritedCourseIds: Set<String> = favoritesRepository.favoritedCourseIds()
+
+        viewModelScope.launch {
+            runCatching {
+                courseRepository.coursesById(favoritedCourseIds.toList())
+            }.onSuccess { courses: List<Course> ->
+                val courseItems: List<CourseItem> =
+                    courses.map { course: Course ->
+                        CourseItem(
+                            course = course,
+                            selected = false,
+                            favorite = true,
+                        )
+                    }
+                _state.value =
+                    state.value
+                        ?.copy(
+                            courses = courseItems,
+                            isLoading = false,
+                            isNoInternet = false,
+                        )
+            }.onFailure { throwable: Throwable ->
+                Logger.log(
+                    Logger.Event.Failure("fetch_courses"),
+                    "message" to throwable.message.toString(),
+                )
+                _state.value =
+                    state.value
+                        ?.copy(
+                            courses = emptyList(),
+                            isLoading = false,
+                            isNoInternet = true,
+                        )
             }
         }
     }
@@ -159,6 +257,8 @@ class CoursesViewModel(
         }
 
     companion object {
+        private const val DEBOUNCE_LIMIT_TIME = 500L
+
         val Factory =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
@@ -169,6 +269,7 @@ class CoursesViewModel(
                     val application = checkNotNull(extras[APPLICATION_KEY]) as CoursePickApplication
                     return CoursesViewModel(
                         application.courseRepository,
+                        application.favoritesRepository,
                         application.networkMonitor,
                     ) as T
                 }
