@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.firebase.crashlytics)
     alias(libs.plugins.oss.licenses.plugin)
     alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.kotlin.compose)
 }
 
 private val localProperties: Properties =
@@ -127,10 +128,18 @@ android {
     buildFeatures {
         buildConfig = true
         dataBinding = true
+        compose = true
     }
 }
 
 dependencies {
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.runtime.livedata)
     debugImplementation(libs.leakcanary.android)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -157,11 +166,16 @@ dependencies {
     implementation(libs.mixpanel.android)
     implementation(libs.mixpanel.android.session.replay)
     implementation(libs.app.update)
+    implementation(libs.androidx.activity.compose)
     testImplementation(libs.assertj.core)
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.kotest.runner.junit5)
     testImplementation(libs.kotlinx.coroutines.test)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
 }
