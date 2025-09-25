@@ -10,8 +10,12 @@ class OffLineInterceptor(
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         if (!networkMonitor.isConnected()) {
-            throw IOException("인터넷 없음")
+            throw NoNetworkException
         }
         return chain.proceed(chain.request())
     }
+}
+
+object NoNetworkException : IOException("네트워크에 연결되지 않았습니다.") {
+    private fun readResolve(): Any = NoNetworkException
 }

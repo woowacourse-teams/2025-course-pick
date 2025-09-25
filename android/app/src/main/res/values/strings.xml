@@ -23,6 +23,7 @@
     <string name="search_query_hint">장소를 검색하세요</string>
     <string name="search_no_result">검색 결과가 없어요 🥲</string>
     <string name="selected_route_finder_application_key">selected_route_finder_application</string>
+    <string name="favorited_courses_key">favorited_courses_key</string>
     <string name="selected_route_finder_application_value_kakao">kakao map</string>
     <string name="selected_route_finder_application_value_naver">naver map</string>
     <string name="selected_route_finder_application_value_none">none</string>
@@ -46,4 +47,5 @@
     <string name="app_update_action_after_downloaded">설치</string>
     <string name="app_update_must_be_completed">업데이트를 완료해야 앱을 사용할 수 있습니다.</string>
     <string name="title_activity_new_search">NewSearchActivity</string>
+    <string name="favorites_header">즐겨찾기</string>
 </resources>
