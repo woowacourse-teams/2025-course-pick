@@ -28,6 +28,18 @@ class KakaoMapCameraController(
     }
 
     fun fitTo(
+        coordinates: List<Coordinate>,
+        map: KakaoMap,
+    ) {
+        if (coordinates.isEmpty()) return
+        val latLngs: Array<LatLng> =
+            coordinates.map(Coordinate::toLatLng).toTypedArray()
+        val cameraUpdate: CameraUpdate = CameraUpdateFactory.fitMapPoints(latLngs, fitMapPadding)
+        val cameraAnimation = CameraAnimation.from(MOVE_ANIMATION_DURATION, true, false)
+        map.moveCamera(cameraUpdate, cameraAnimation)
+    }
+
+    fun fitTo(
         course: CourseItem,
         map: KakaoMap,
     ) {
@@ -39,17 +51,6 @@ class KakaoMapCameraController(
     fun resetZoomLevel(map: KakaoMap) {
         val cameraUpdate: CameraUpdate = CameraUpdateFactory.zoomTo(DEFAULT_ZOOM_LEVEL)
         map.moveCamera(cameraUpdate)
-    }
-
-    private fun fitTo(
-        coordinates: List<Coordinate>,
-        map: KakaoMap,
-    ) {
-        val latLngs: Array<LatLng> =
-            coordinates.map(Coordinate::toLatLng).toTypedArray()
-        val cameraUpdate: CameraUpdate = CameraUpdateFactory.fitMapPoints(latLngs, fitMapPadding)
-        val cameraAnimation = CameraAnimation.from(MOVE_ANIMATION_DURATION, true, false)
-        map.moveCamera(cameraUpdate, cameraAnimation)
     }
 
     companion object {

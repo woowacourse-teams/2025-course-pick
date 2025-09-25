@@ -5,5 +5,5 @@ interface CourseItemListener {
 
     fun toggleFavorite(course: CourseItem)
 
-    fun navigateToMap(course: CourseItem)
+    fun navigateToCourse(course: CourseItem)
 }

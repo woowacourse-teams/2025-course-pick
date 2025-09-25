@@ -25,6 +25,17 @@ class DefaultCourseRepository(
                 scope.meter,
             ).mapNotNull(CourseDto::toCourseOrNull)
 
+    override suspend fun routeToCourse(
+        course: Course,
+        origin: Coordinate,
+    ): List<Coordinate> =
+        service
+            .routeToCourse(
+                course.id,
+                origin.latitude.value,
+                origin.longitude.value,
+            ).map(CoordinateDto::toCoordinate)
+
     override suspend fun nearestCoordinate(
         selected: Course,
         current: Coordinate,

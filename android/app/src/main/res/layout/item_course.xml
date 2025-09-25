@@ -136,7 +136,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/background_navigate"
             android:gravity="center"
-            android:onClick="@{() -> courseItemListener.navigateToMap(course)}"
+            android:onClick="@{() -> courseItemListener.navigateToCourse(course)}"
             android:paddingVertical="6dp"
             android:paddingStart="2dp"
             android:paddingEnd="8dp"
