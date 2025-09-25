@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Slf4j
-public class SegmentListConverter {
+public abstract class SegmentListConverter {
 
     @WritingConverter
     public static class Writer implements Converter<List<Segment>, Document> {

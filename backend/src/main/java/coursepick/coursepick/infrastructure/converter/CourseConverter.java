@@ -9,7 +9,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.data.convert.WritingConverter;
 
-public class CourseConverter {
+public abstract class CourseConverter {
 
     private static final SegmentListConverter.Reader SEGMENTS_READER = new SegmentListConverter.Reader();
     private static final SegmentListConverter.Writer SEGMENTS_WRITER = new SegmentListConverter.Writer();

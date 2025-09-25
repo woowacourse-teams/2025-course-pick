@@ -5,7 +5,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.data.convert.WritingConverter;
 
-public class MeterConverter {
+public abstract class MeterConverter {
 
     @WritingConverter
     public static class Writer implements Converter<Meter, Double> {
