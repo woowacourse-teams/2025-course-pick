@@ -40,9 +40,10 @@ public class CourseWebController implements CourseWebApi {
             @RequestParam("mapLng") double mapLongitude,
             @RequestParam(value = "userLat", required = false) Double userLatitude,
             @RequestParam(value = "userLng", required = false) Double userLongitude,
-            @RequestParam("scope") int scope
+            @RequestParam("scope") int scope,
+            @RequestParam(value = "page", required = false) Integer page
     ) {
-        List<CourseResponse> responses = courseApplicationService.findNearbyCourses(mapLatitude, mapLongitude, userLatitude, userLongitude, scope);
+        List<CourseResponse> responses = courseApplicationService.findNearbyCourses(mapLatitude, mapLongitude, userLatitude, userLongitude, scope, page);
         return CourseWebResponse.from(responses);
     }
 
