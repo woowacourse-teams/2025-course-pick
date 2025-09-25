@@ -23,7 +23,7 @@ class NewSearchViewModel(
     private val _state: MutableLiveData<NewSearchUiState> =
         MutableLiveData<NewSearchUiState>(
             NewSearchUiState(
-                isLoading = true,
+                isLoading = false,
                 query = "",
                 places = emptyList(),
             ),
@@ -65,7 +65,7 @@ class NewSearchViewModel(
                     extras: CreationExtras,
                 ): T {
                     val application = checkNotNull(extras[APPLICATION_KEY]) as CoursePickApplication
-                    return SearchViewModel(application.searchRepository) as T
+                    return NewSearchViewModel(application.searchRepository) as T
                 }
             }
     }

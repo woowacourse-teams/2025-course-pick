@@ -1,10 +1,13 @@
 package io.coursepick.coursepick.presentation.search
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -39,10 +42,12 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.domain.search.Place
+import io.coursepick.coursepick.presentation.IntentKeys
+import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 
 class NewSearchActivity : ComponentActivity() {
-    private val viewModel: NewSearchViewModel by viewModels { SearchViewModel.Factory }
+    private val viewModel: NewSearchViewModel by viewModels { NewSearchViewModel.Factory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,11 +66,28 @@ class NewSearchActivity : ComponentActivity() {
                                 places = emptyList(),
                             ),
                         onQueryChange = viewModel::search,
+                        onPlaceSelect = ::submit,
                         modifier = Modifier.padding(innerPadding),
                     )
                 }
             }
         }
+    }
+
+    private fun submit(place: Place) {
+        Logger.log(Logger.Event.Click("place"), "place" to place)
+        val resultIntent =
+            Intent().apply {
+                putExtra(IntentKeys.EXTRA_KEYS_PLACE_LATITUDE, place.latitude)
+                putExtra(IntentKeys.EXTRA_KEYS_PLACE_LONGITUDE, place.longitude)
+                putExtra(IntentKeys.EXTRA_KEYS_PLACE_NAME, place.placeName)
+            }
+        setResult(RESULT_OK, resultIntent)
+        finish()
+    }
+
+    companion object {
+        fun intent(context: Context): Intent = Intent(context, NewSearchActivity::class.java)
     }
 }
 
@@ -73,6 +95,7 @@ class NewSearchActivity : ComponentActivity() {
 fun SearchScreen(
     uiState: NewSearchUiState,
     onQueryChange: (query: String) -> Unit,
+    onPlaceSelect: (place: Place) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -84,7 +107,7 @@ fun SearchScreen(
             placeholder = {
                 Text(
                     text = stringResource(R.string.search_query_hint),
-                    color = colorResource(R.color.gray3),
+                    color = colorResource(R.color.item_tertiary),
                     fontSize = 18.sp,
                 )
             },
@@ -117,7 +140,11 @@ fun SearchScreen(
             else -> {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(uiState.places) { place: Place ->
-                        SearchResult(place = place, modifier = modifier.fillMaxWidth())
+                        SearchResult(
+                            place = place,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { onPlaceSelect(place) })
                     }
                 }
             }
@@ -152,7 +179,7 @@ private fun SearchResult(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun SearchScreenPreview(
     @PreviewParameter(SearchScreenPreviewParameter::class) state: NewSearchUiState,
@@ -160,6 +187,7 @@ private fun SearchScreenPreview(
     SearchScreen(
         uiState = state,
         onQueryChange = {},
+        onPlaceSelect = {},
         modifier = Modifier.fillMaxSize(),
     )
 }
