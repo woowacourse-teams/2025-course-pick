@@ -8,12 +8,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import io.coursepick.coursepick.databinding.FragmentExploreCoursesBinding
 
-class ExploreCoursesFragment : Fragment() {
+class ExploreCoursesFragment(
+    listener: CourseItemListener,
+) : Fragment() {
     @Suppress("ktlint:standard:backing-property-naming")
     private var _binding: FragmentExploreCoursesBinding? = null
     private val binding get() = _binding!!
     private val viewModel: CoursesViewModel by activityViewModels { CoursesViewModel.Factory }
-    private val courseAdapter by lazy { CourseAdapter(DefaultCourseItemListener(viewModel)) }
+    private val courseAdapter by lazy { CourseAdapter(listener) }
 
     override fun onCreateView(
         inflater: LayoutInflater,

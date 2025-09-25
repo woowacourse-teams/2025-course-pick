@@ -29,6 +29,7 @@ import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.commit
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -302,6 +303,27 @@ class CoursesActivity :
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun switchContent(content: CoursesContent) {
         binding.mainCoursesHeader.text = getString(content.headerId)
+
+        supportFragmentManager.fragmentFactory =
+            object : FragmentFactory() {
+                override fun instantiate(
+                    classLoader: ClassLoader,
+                    className: String,
+                ): Fragment =
+                    when (className) {
+                        ExploreCoursesFragment::class.java.name -> {
+                            ExploreCoursesFragment(CourseItemListener())
+                        }
+
+                        FavoriteCoursesFragment::class.java.name -> {
+                            FavoriteCoursesFragment(CourseItemListener())
+                        }
+
+                        else -> {
+                            super.instantiate(classLoader, className)
+                        }
+                    }
+            }
 
         supportFragmentManager.commit {
             setReorderingAllowed(true)
