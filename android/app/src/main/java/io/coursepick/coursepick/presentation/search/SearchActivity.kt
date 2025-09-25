@@ -19,8 +19,8 @@ import io.coursepick.coursepick.presentation.IntentKeys
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 
-class NewSearchActivity : ComponentActivity() {
-    private val viewModel: NewSearchViewModel by viewModels { NewSearchViewModel.Factory }
+class SearchActivity : ComponentActivity() {
+    private val viewModel: SearchViewModel by viewModels { SearchViewModel.Factory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,11 +29,11 @@ class NewSearchActivity : ComponentActivity() {
             CoursePickTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding: PaddingValues ->
 
-                    val state: NewSearchUiState? by viewModel.state.observeAsState()
+                    val state: SearchUiState? by viewModel.state.observeAsState()
 
                     SearchScreen(
                         uiState =
-                            state ?: NewSearchUiState(
+                            state ?: SearchUiState(
                                 isLoading = false,
                                 query = "",
                                 places = emptyList(),
@@ -60,6 +60,6 @@ class NewSearchActivity : ComponentActivity() {
     }
 
     companion object {
-        fun intent(context: Context): Intent = Intent(context, NewSearchActivity::class.java)
+        fun intent(context: Context): Intent = Intent(context, SearchActivity::class.java)
     }
 }

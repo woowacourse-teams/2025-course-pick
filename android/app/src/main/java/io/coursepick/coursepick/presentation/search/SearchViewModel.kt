@@ -15,20 +15,20 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class NewSearchViewModel(
+class SearchViewModel(
     private val searchRepository: SearchRepository,
 ) : ViewModel() {
     private var searchJob: Job? = null
 
-    private val _state: MutableLiveData<NewSearchUiState> =
-        MutableLiveData<NewSearchUiState>(
-            NewSearchUiState(
+    private val _state: MutableLiveData<SearchUiState> =
+        MutableLiveData<SearchUiState>(
+            SearchUiState(
                 isLoading = false,
                 query = "",
                 places = emptyList(),
             ),
         )
-    val state: LiveData<NewSearchUiState> get() = _state
+    val state: LiveData<SearchUiState> get() = _state
 
     fun search(query: String) {
         searchJob?.cancel()
@@ -65,7 +65,7 @@ class NewSearchViewModel(
                     extras: CreationExtras,
                 ): T {
                     val application = checkNotNull(extras[APPLICATION_KEY]) as CoursePickApplication
-                    return NewSearchViewModel(application.searchRepository) as T
+                    return SearchViewModel(application.searchRepository) as T
                 }
             }
     }

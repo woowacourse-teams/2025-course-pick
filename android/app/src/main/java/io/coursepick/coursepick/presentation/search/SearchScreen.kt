@@ -31,7 +31,7 @@ import io.coursepick.coursepick.domain.search.Place
 
 @Composable
 fun SearchScreen(
-    uiState: NewSearchUiState,
+    uiState: SearchUiState,
     onQueryChange: (query: String) -> Unit,
     onPlaceSelect: (place: Place) -> Unit,
     modifier: Modifier = Modifier,
@@ -95,7 +95,7 @@ fun SearchScreen(
 @Preview(showBackground = true)
 @Composable
 private fun SearchScreenPreview(
-    @PreviewParameter(SearchScreenPreviewParameter::class) state: NewSearchUiState,
+    @PreviewParameter(SearchScreenPreviewParameter::class) state: SearchUiState,
 ) {
     SearchScreen(
         uiState = state,
@@ -105,25 +105,25 @@ private fun SearchScreenPreview(
     )
 }
 
-private class SearchScreenPreviewParameter : PreviewParameterProvider<NewSearchUiState> {
-    override val values: Sequence<NewSearchUiState> =
+private class SearchScreenPreviewParameter : PreviewParameterProvider<SearchUiState> {
+    override val values: Sequence<SearchUiState> =
         sequenceOf(
-            NewSearchUiState(
+            SearchUiState(
                 isLoading = false,
                 query = "",
                 places = emptyList(),
             ),
-            NewSearchUiState(
+            SearchUiState(
                 isLoading = true,
                 query = "테크살롱",
                 places = emptyList(),
             ),
-            NewSearchUiState(
+            SearchUiState(
                 isLoading = false,
                 query = "테크살롱",
                 places = emptyList(),
             ),
-            NewSearchUiState(
+            SearchUiState(
                 isLoading = false,
                 query = "테크살롱",
                 places =

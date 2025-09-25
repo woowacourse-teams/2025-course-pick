@@ -50,7 +50,7 @@ import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 import io.coursepick.coursepick.presentation.preference.PreferencesActivity
 import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 import io.coursepick.coursepick.presentation.routefinder.RouteFinderChoiceDialogFragment
-import io.coursepick.coursepick.presentation.search.NewSearchActivity
+import io.coursepick.coursepick.presentation.search.SearchActivity
 import io.coursepick.coursepick.presentation.ui.DoublePressDetector
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -204,7 +204,7 @@ class CoursesActivity :
     }
 
     override fun search() {
-        val intent = NewSearchActivity.intent(this)
+        val intent = SearchActivity.intent(this)
         val query: String? = viewModel.state.value?.query
         if (!query.isNullOrBlank()) intent.putExtra(IntentKeys.EXTRA_KEYS_PLACE_NAME, query)
         searchLauncher?.launch(intent) ?: Toast
