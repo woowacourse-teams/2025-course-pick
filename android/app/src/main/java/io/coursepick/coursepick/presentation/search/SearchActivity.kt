@@ -3,69 +3,51 @@ package io.coursepick.coursepick.presentation.search
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.SearchView
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import io.coursepick.coursepick.databinding.ActivitySearchBinding
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
 import io.coursepick.coursepick.domain.search.Place
 import io.coursepick.coursepick.presentation.IntentKeys
 import io.coursepick.coursepick.presentation.Logger
+import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 
-class SearchActivity : AppCompatActivity() {
-    private val binding by lazy { ActivitySearchBinding.inflate(layoutInflater) }
+class SearchActivity : ComponentActivity() {
     private val viewModel: SearchViewModel by viewModels { SearchViewModel.Factory }
-    private val adapter: SearchAdapter by lazy { SearchAdapter(::submitPlace) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view: View, insets: WindowInsetsCompat ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        setContent {
+            CoursePickTheme {
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding: PaddingValues ->
 
-        setUpBindingVariables()
-        setUpViews()
-        setUpObservers()
-        intent.getStringExtra(IntentKeys.EXTRA_KEYS_PLACE_NAME)?.let { placeName: String ->
-            binding.searchView.setQuery(placeName, false)
-        }
-    }
+                    val state: SearchUiState? by viewModel.state.observeAsState()
 
-    private fun setUpBindingVariables() {
-        binding.viewModel = viewModel
-        binding.adapter = adapter
-        binding.lifecycleOwner = this
-    }
-
-    private fun setUpViews() {
-        binding.searchView.requestFocus()
-        binding.searchView.setOnQueryTextListener(
-            object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String?): Boolean = true
-
-                override fun onQueryTextChange(newText: String?): Boolean {
-                    viewModel.updateQueryState(newText.isNullOrBlank())
-                    viewModel.search(newText.orEmpty())
-                    return true
+                    SearchScreen(
+                        uiState =
+                            state ?: SearchUiState(
+                                isLoading = false,
+                                query = "",
+                                places = emptyList(),
+                            ),
+                        onQueryChange = viewModel::search,
+                        onPlaceSelect = ::submit,
+                        modifier = Modifier.padding(innerPadding),
+                    )
                 }
-            },
-        )
-    }
-
-    private fun setUpObservers() {
-        viewModel.state.observe(this) { state: SearchUiState ->
-            adapter.submitList(state.places)
+            }
         }
     }
 
-    private fun submitPlace(place: Place) {
+    private fun submit(place: Place) {
         Logger.log(Logger.Event.Click("place"), "place" to place)
         val resultIntent =
             Intent().apply {
