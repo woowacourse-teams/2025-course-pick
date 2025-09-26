@@ -99,9 +99,9 @@ class CoursesViewModel(
 
                 pendingFavoriteWrites.toMap().forEach { courseId: String, favorite: Boolean ->
                     if (favorite) {
-                        favoritesRepository.addFavorite(courseId)
+                        favoritesRepository.addFavoriteCourse(courseId)
                     } else {
-                        favoritesRepository.removeFavorite(courseId)
+                        favoritesRepository.removeFavoriteCourse(courseId)
                     }
                 }
                 pendingFavoriteWrites.clear()
@@ -120,7 +120,7 @@ class CoursesViewModel(
                 isNoInternet = false,
             )
 
-        val favoritedCourseIds: Set<String> = favoritesRepository.favoritedCourseIds()
+        val favoritedCourseIds: Set<String> = favoritesRepository.favoriteCourseIds()
 
         viewModelScope.launch {
             runCatching {
@@ -184,7 +184,7 @@ class CoursesViewModel(
                 isNoInternet = false,
             )
 
-        val favoritedCourseIds: Set<String> = favoritesRepository.favoritedCourseIds()
+        val favoritedCourseIds: Set<String> = favoritesRepository.favoriteCourseIds()
         if (favoritedCourseIds.isEmpty()) {
             _state.value = state.value?.copy(courses = emptyList(), isLoading = false)
             return
