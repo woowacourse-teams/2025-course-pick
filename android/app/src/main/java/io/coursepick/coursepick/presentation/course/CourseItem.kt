@@ -18,7 +18,7 @@ data class CourseItem(
     val length: Int = course.length.meter
     val segments: List<Segment> = course.segments
     val roadType: String = course.roadType
-    val difficulty: String = course.difficulty
+    val difficulty: Difficulty = Difficulty.from(course.difficulty)
 
     @StringRes
     val inclineSummaryStringResourceId: Int = course.inclineSummary.stringResourceId
@@ -36,12 +36,4 @@ data class CourseItem(
                 InclineSummary.CONTINUOUS_DOWNHILL -> R.string.incline_summary_continuous_downhill
                 InclineSummary.UNKNOWN -> R.string.incline_summary_continuous_unknown
             }
-
-    fun toDifficulty(): Difficulty =
-        when (this.difficulty) {
-            "쉬움" -> Difficulty.EASY
-            "보통" -> Difficulty.NORMAL
-            "어려움" -> Difficulty.HARD
-            else -> Difficulty.UNKNOWN
-        }
 }
