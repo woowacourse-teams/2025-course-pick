@@ -192,7 +192,7 @@ class CoursesViewModel(
 
         viewModelScope.launch {
             runCatching {
-                courseRepository.coursesById(favoritedCourseIds.toList())
+                courseRepository.courses(favoritedCourseIds.toList())
             }.onSuccess { courses: List<Course> ->
                 val courseItems: List<CourseItem> =
                     courses.map { course: Course ->
