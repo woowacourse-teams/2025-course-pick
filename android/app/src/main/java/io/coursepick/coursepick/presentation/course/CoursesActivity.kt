@@ -303,6 +303,11 @@ class CoursesActivity :
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun switchContent(content: CoursesContent) {
         binding.mainCoursesHeader.text = getString(content.headerId)
+        binding.mainEmptyCourses.text =
+            when (content) {
+                CoursesContent.EXPLORE -> getString(R.string.main_empty_courses_description)
+                CoursesContent.FAVORITES -> getString(R.string.main_empty_favorites_description)
+            }
 
         supportFragmentManager.fragmentFactory =
             object : FragmentFactory() {

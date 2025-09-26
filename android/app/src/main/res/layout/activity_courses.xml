@@ -199,12 +199,12 @@
                     android:layout_height="0dp"
                     android:layout_marginTop="10dp"
                     android:gravity="center"
-                    android:text="@string/main_empty_courses_description"
                     android:textSize="20sp"
                     android:visibility="@{viewModel.state.isLoading || !viewModel.state.areCoursesEmpty || viewModel.state.isNoInternet ? View.GONE : View.VISIBLE}"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
-                    tools:listitem="@layout/item_course" />
+                    tools:listitem="@layout/item_course"
+                    tools:text="@string/main_empty_courses_description" />
 
                 <include
                     android:id="@+id/noInternet"
