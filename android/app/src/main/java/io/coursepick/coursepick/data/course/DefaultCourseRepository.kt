@@ -38,12 +38,12 @@ class DefaultCourseRepository(
 
     override suspend fun nearestCoordinate(
         selected: Course,
-        current: Coordinate,
+        origin: Coordinate,
     ): Coordinate =
         service
             .nearestCoordinate(
                 courseId = selected.id,
-                currentLatitude = current.latitude.value,
-                currentLongitude = current.longitude.value,
+                originLatitude = origin.latitude.value,
+                originLongitude = origin.longitude.value,
             ).toCoordinate()
 }

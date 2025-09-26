@@ -24,6 +24,6 @@ class FakeCourseRepository : CourseRepository {
 
     override suspend fun nearestCoordinate(
         selected: Course,
-        current: Coordinate,
+        origin: Coordinate,
     ): Coordinate = COORDINATE_FIXTURE
 }
