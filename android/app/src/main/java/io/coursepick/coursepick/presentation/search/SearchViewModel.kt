@@ -45,7 +45,7 @@ class SearchViewModel(
                 delay(DEBOUNCE_LIMIT_TIME)
                 Logger.log(Logger.Event.Search("place"), "query" to query)
                 runCatching {
-                    searchRepository.searchPlaces(query)
+                    searchRepository.places(query)
                 }.onSuccess { places: List<Place> ->
                     _state.value = state.value?.copy(places = places, isLoading = false)
                 }.onFailure {
