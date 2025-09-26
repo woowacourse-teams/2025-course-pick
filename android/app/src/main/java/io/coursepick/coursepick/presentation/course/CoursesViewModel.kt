@@ -329,7 +329,7 @@ class CoursesViewModel(
         val filtered =
             fetchedCourses
                 .filter { courseItem ->
-                    (courseFilter.difficulties.isEmpty() || courseItem.toDifficulty() in courseFilter.difficulties) &&
+                    (courseFilter.difficulties.isEmpty() || courseItem.difficulty in courseFilter.difficulties) &&
                         (courseItem.length in courseFilter.lengthRange.first..courseFilter.lengthRange.last)
                 }
 

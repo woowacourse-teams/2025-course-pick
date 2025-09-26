@@ -71,7 +71,7 @@ class FilterViewModel(
                 emptyList()
             } else {
                 courses.filter { courseItem ->
-                    (courseItem.toDifficulty() in courseFilter.difficulties) &&
+                    (courseItem.difficulty in courseFilter.difficulties) &&
                         (courseItem.length in courseFilter.lengthRange.first..courseFilter.lengthRange.last)
                 }
             }
