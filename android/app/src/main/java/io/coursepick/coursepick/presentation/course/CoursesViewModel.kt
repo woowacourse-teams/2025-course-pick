@@ -200,18 +200,30 @@ class CoursesViewModel(
                             isLoading = false,
                             isNoInternet = false,
                         )
-            }.onFailure { throwable: Throwable ->
+            }.onFailure { exception: Throwable ->
                 Logger.log(
                     Logger.Event.Failure("fetch_courses"),
-                    "message" to throwable.message.toString(),
+                    "message" to exception.message.toString(),
                 )
+                if (exception is NoNetworkException) {
+                    _state.value =
+                        state.value
+                            ?.copy(
+                                courses = emptyList(),
+                                isLoading = false,
+                                isFailure = false,
+                                isNoInternet = true,
+                            )
+                    return@onFailure
+                }
                 _state.value =
                     state.value
                         ?.copy(
                             courses = emptyList(),
                             isLoading = false,
-                            isNoInternet = true,
+                            isFailure = true,
                         )
+                _event.value = CoursesUiEvent.FetchCourseFailure
             }
         }
     }
