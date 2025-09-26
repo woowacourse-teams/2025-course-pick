@@ -12,9 +12,9 @@ class FakeCourseRepository : CourseRepository {
     override suspend fun coursesById(courseIds: List<String>): List<Course> = FAKE_COURSES
 
     override suspend fun courses(
+        scope: Scope,
         mapCoordinate: Coordinate,
         userCoordinate: Coordinate?,
-        scope: Scope,
     ): List<Course> = FAKE_COURSES
 
     override suspend fun routeToCourse(
