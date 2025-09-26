@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import org.springframework.util.Assert;
+
 import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_COURSE;
 
 @Slf4j
@@ -59,10 +61,10 @@ public class CourseApplicationService {
 
     @Transactional(readOnly = true)
     public List<CourseResponse> findFavoriteCourses(List<String> ids) {
-        List<Course> courses = courseRepository.findByIdIn(ids);
-        if (courses.isEmpty()) {
+        if (ids == null) {
             return List.of();
         }
+        List<Course> courses = courseRepository.findByIdIn(ids);
 
         loggingForNotExistsCourse(ids, courses);
 
