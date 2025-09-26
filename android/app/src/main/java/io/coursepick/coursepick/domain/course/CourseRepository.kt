@@ -16,6 +16,6 @@ interface CourseRepository {
 
     suspend fun nearestCoordinate(
         selected: Course,
-        current: Coordinate,
+        origin: Coordinate,
     ): Coordinate
 }
