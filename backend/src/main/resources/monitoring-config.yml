@@ -16,7 +16,7 @@ management:
       http.server.requests: true
       system.cpu.usage: true
       spring.data.repository.invocations: true
-      jvm.memory.used: true
+      jvm.memory: true
       tomcat.threads: true
       mongodb.driver:
         commands: true
