@@ -60,6 +60,10 @@ public class CourseApplicationService {
     @Transactional(readOnly = true)
     public List<CourseResponse> findFavoriteCourses(List<String> ids) {
         List<Course> courses = courseRepository.findByIdIn(ids);
+        if (courses.isEmpty()) {
+            return List.of();
+        }
+
         loggingForNotExistsCourse(ids, courses);
 
         return courses.stream()
