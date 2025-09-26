@@ -7,7 +7,7 @@ value class Meter(
     constructor(value: Double) : this(value.toInt())
 
     init {
-        require(value > 0)
+        require(value >= 0)
     }
 
     override fun compareTo(other: Meter): Int = this.value.compareTo(other.value)
