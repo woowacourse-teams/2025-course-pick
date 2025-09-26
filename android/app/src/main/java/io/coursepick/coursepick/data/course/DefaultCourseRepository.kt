@@ -12,9 +12,9 @@ class DefaultCourseRepository(
         service.coursesById(courseIds).mapNotNull(CourseDto::toCourseOrNull)
 
     override suspend fun courses(
+        scope: Scope,
         mapCoordinate: Coordinate,
         userCoordinate: Coordinate?,
-        scope: Scope,
     ): List<Course> =
         service
             .courses(

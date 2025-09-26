@@ -124,7 +124,12 @@ class CoursesViewModel(
 
         viewModelScope.launch {
             runCatching {
-                val courses = courseRepository.courses(mapCoordinate, userCoordinate, scope)
+                val courses =
+                    courseRepository.courses(
+                        scope = scope,
+                        mapCoordinate = mapCoordinate,
+                        userCoordinate = userCoordinate,
+                    )
                 courses
                     .sortedBy(Course::distance)
                     .mapIndexed { index: Int, course: Course ->
