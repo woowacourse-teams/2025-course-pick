@@ -22,7 +22,7 @@ public class Course {
     @Id
     private final String id;
 
-    @Indexed(name = "idx_name")
+    @Indexed(name = "idx_name", unique = true)
     private final CourseName name;
 
     private final RoadType roadType;
