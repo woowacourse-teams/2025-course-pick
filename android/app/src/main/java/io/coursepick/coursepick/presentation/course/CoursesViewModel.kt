@@ -180,6 +180,10 @@ class CoursesViewModel(
             )
 
         val favoritedCourseIds: Set<String> = favoritesRepository.favoritedCourseIds()
+        if (favoritedCourseIds.isEmpty()) {
+            _state.value = state.value?.copy(courses = emptyList(), isLoading = false)
+            return
+        }
 
         viewModelScope.launch {
             runCatching {
