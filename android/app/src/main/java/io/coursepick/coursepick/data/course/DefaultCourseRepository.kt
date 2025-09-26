@@ -8,13 +8,13 @@ import io.coursepick.coursepick.domain.course.Scope
 class DefaultCourseRepository(
     private val service: CourseService,
 ) : CourseRepository {
-    override suspend fun coursesById(courseIds: List<String>): List<Course> =
+    override suspend fun courses(courseIds: List<String>): List<Course> =
         service.coursesById(courseIds).mapNotNull(CourseDto::toCourseOrNull)
 
     override suspend fun courses(
+        scope: Scope,
         mapCoordinate: Coordinate,
         userCoordinate: Coordinate?,
-        scope: Scope,
     ): List<Course> =
         service
             .courses(
@@ -38,12 +38,12 @@ class DefaultCourseRepository(
 
     override suspend fun nearestCoordinate(
         selected: Course,
-        current: Coordinate,
+        origin: Coordinate,
     ): Coordinate =
         service
             .nearestCoordinate(
                 courseId = selected.id,
-                currentLatitude = current.latitude.value,
-                currentLongitude = current.longitude.value,
+                originLatitude = origin.latitude.value,
+                originLongitude = origin.longitude.value,
             ).toCoordinate()
 }

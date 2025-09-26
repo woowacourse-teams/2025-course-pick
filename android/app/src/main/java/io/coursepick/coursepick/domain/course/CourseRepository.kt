@@ -1,12 +1,12 @@
 package io.coursepick.coursepick.domain.course
 
 interface CourseRepository {
-    suspend fun coursesById(courseIds: List<String>): List<Course>
+    suspend fun courses(courseIds: List<String>): List<Course>
 
     suspend fun courses(
+        scope: Scope,
         mapCoordinate: Coordinate,
         userCoordinate: Coordinate? = null,
-        scope: Scope,
     ): List<Course>
 
     suspend fun routeToCourse(
@@ -16,6 +16,6 @@ interface CourseRepository {
 
     suspend fun nearestCoordinate(
         selected: Course,
-        current: Coordinate,
+        origin: Coordinate,
     ): Coordinate
 }
