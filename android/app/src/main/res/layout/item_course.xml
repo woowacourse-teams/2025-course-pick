@@ -110,7 +110,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="16dp"
-            android:text="@{@string/item_course_summary_format(course.difficulty, context.getString(course.inclineSummaryStringResourceId))}"
+            android:text="@{@string/item_course_summary_format(course.difficulty.label, context.getString(course.inclineSummaryStringResourceId))}"
             android:textColor="@color/item_secondary"
             android:textSize="12sp"
             android:visibility="@{course.inclineSummaryUnknown ? View.GONE : View.VISIBLE }"

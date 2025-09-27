@@ -167,6 +167,7 @@ dependencies {
     implementation(libs.mixpanel.android.session.replay)
     implementation(libs.app.update)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.fragment.ktx)
     testImplementation(libs.assertj.core)
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)

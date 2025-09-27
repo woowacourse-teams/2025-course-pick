@@ -7,6 +7,8 @@
 
         <import type="android.view.View" />
 
+        <import type="io.coursepick.coursepick.presentation.filter.CourseFilter" />
+
         <variable
             name="viewModel"
             type="io.coursepick.coursepick.presentation.course.CoursesViewModel" />
@@ -172,6 +174,21 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/mainCoursesHeader" />
 
+                <TextView
+                    android:id="@+id/mainCourseFilter"
+                    isActive="@{viewModel.state.courses.size() != viewModel.originalCourses.size()}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/background_filter_selector"
+                    android:onClick="@{() -> action.showFilters()}"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="6dp"
+                    android:text="@string/main_course_filter"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="@id/mainCoursesHeader"
+                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader" />
+
                 <androidx.core.widget.ContentLoadingProgressBar
                     android:id="@+id/mainCoursesLoadingIndicator"
                     style="?android:attr/progressBarStyleLarge"
@@ -181,7 +198,7 @@
                     android:visibility="@{viewModel.state.isLoading ? View.VISIBLE : View.GONE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader" />
+                    app:layout_constraintTop_toBottomOf="@id/mainCourseFilter" />
 
                 <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/mainFragmentContainer"
@@ -190,8 +207,10 @@
                     android:visibility="@{viewModel.state.isLoading || viewModel.state.areCoursesEmpty || viewModel.state.isNoInternet ? View.GONE : View.VISIBLE}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader" />
+                    app:layout_constraintTop_toBottomOf="@id/mainCourseFilter"
+                    app:layout_constraintVertical_bias="0.0" />
 
                 <TextView
                     android:id="@+id/mainEmptyCourses"
@@ -203,7 +222,7 @@
                     android:textSize="20sp"
                     android:visibility="@{viewModel.state.isLoading || !viewModel.state.areCoursesEmpty || viewModel.state.isNoInternet ? View.GONE : View.VISIBLE}"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
+                    app:layout_constraintTop_toBottomOf="@id/mainCourseFilter"
                     tools:listitem="@layout/item_course" />
 
                 <include
@@ -214,7 +233,7 @@
                     android:visibility="@{viewModel.state.isNoInternet ? View.VISIBLE : View.GONE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
+                    app:layout_constraintTop_toBottomOf="@id/mainCourseFilter"
                     app:listener="@{listener}" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
