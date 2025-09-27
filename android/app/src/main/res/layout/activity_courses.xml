@@ -45,16 +45,7 @@
             <com.kakao.vectormap.MapView
                 android:id="@+id/mainMap"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <com.google.android.material.bottomnavigation.BottomNavigationView
-                    android:id="@+id/mainBottomNavigation"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:clickable="true"
-                    app:menu="@menu/menu_bottom_navigation" />
-            </com.kakao.vectormap.MapView>
+                android:layout_height="match_parent" />
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/mainToolBar"
