@@ -29,8 +29,8 @@ class CoursesViewModel(
     private val favoritesRepository: FavoritesRepository,
     private val networkMonitor: NetworkMonitor,
 ) : ViewModel() {
-    private var _fetchedCourses: List<CourseItem> = emptyList()
-    val fetchedCourses: List<CourseItem> get() = _fetchedCourses
+    var originalCourses: List<CourseItem> = emptyList()
+        private set
 
     private val _state: MutableLiveData<CoursesUiState> =
         MutableLiveData(
@@ -145,7 +145,7 @@ class CoursesViewModel(
                     }
             }.onSuccess { courses: List<CourseItem> ->
                 Logger.log(Logger.Event.Success("fetch_courses"))
-                _fetchedCourses = courses
+                originalCourses = courses
                 _state
                     .value =
                     state.value?.copy(
@@ -327,7 +327,7 @@ class CoursesViewModel(
 
     fun applyFilter(courseFilter: CourseFilter) {
         val filtered =
-            fetchedCourses
+            originalCourses
                 .filter { courseItem ->
                     (courseFilter.difficulties.isEmpty() || courseItem.difficulty in courseFilter.difficulties) &&
                         (courseItem.length in courseFilter.lengthRange.first..courseFilter.lengthRange.last)

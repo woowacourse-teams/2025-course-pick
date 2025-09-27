@@ -18,7 +18,7 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
     private val filterViewModel: FilterViewModel by viewModels {
         FilterViewModel.factory(
             arguments?.getParcelableCompat(ARG_COURSE_FILTER) ?: CourseFilter(),
-            coursesViewModel.fetchedCourses,
+            coursesViewModel.originalCourses,
         )
     }
 
@@ -43,7 +43,7 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
         binding.viewModel = filterViewModel
         coursesViewModel.state.observe(viewLifecycleOwner) { courses ->
             if (courses.courses.isNotEmpty()) {
-                filterViewModel.updateCourses(coursesViewModel.fetchedCourses)
+                filterViewModel.updateCourses(coursesViewModel.originalCourses)
             }
         }
     }
