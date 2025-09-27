@@ -185,7 +185,7 @@
 
                 <TextView
                     android:id="@+id/mainCourseFilter"
-                    isActive="@{viewModel.state.courses.size() != viewModel.fetchedCourses.size()}"
+                    isActive="@{viewModel.state.courses.size() != viewModel.originalCourses.size()}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
