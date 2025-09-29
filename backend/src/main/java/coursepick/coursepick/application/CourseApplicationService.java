@@ -22,16 +22,14 @@ import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_CO
 @RequiredArgsConstructor
 public class CourseApplicationService {
 
-    private static final PageRequest DEFAULT_PAGE_REQUEST = PageRequest.of(0, 10);
-
     private final CourseRepository courseRepository;
     private final WalkingRouteService walkingRouteService;
 
     @Transactional(readOnly = true)
-    public List<CourseResponse> findNearbyCourses(double mapLatitude, double mapLongitude, Double userLatitude, Double userLongitude, int scope, Integer page) {
+    public List<CourseResponse> findNearbyCourses(double mapLatitude, double mapLongitude, Double userLatitude, Double userLongitude, int scope, Integer pageNumber) {
         final Coordinate mapPosition = new Coordinate(mapLatitude, mapLongitude);
         final Meter meter = new Meter(scope).clamp(1000, 3000);
-        Pageable pageable = page == null ? DEFAULT_PAGE_REQUEST : PageRequest.of(page, 10);
+        Pageable pageable = createPageable(pageNumber);
 
         Slice<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(mapPosition, meter, pageable);
 
@@ -47,6 +45,11 @@ public class CourseApplicationService {
                 .stream()
                 .map(course -> CourseResponse.from(course, userPosition))
                 .toList();
+    }
+
+    private static Pageable createPageable(Integer pageNumber) {
+        if (pageNumber == null || pageNumber < 0) return PageRequest.of(0, 10);
+        else return PageRequest.of(pageNumber, 10);
     }
 
     @Transactional(readOnly = true)
