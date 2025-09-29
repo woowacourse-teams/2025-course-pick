@@ -5,6 +5,7 @@ import coursepick.coursepick.domain.Difficulty;
 import coursepick.coursepick.domain.InclineSummary;
 import coursepick.coursepick.domain.RoadType;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.data.convert.WritingConverter;
@@ -23,6 +24,9 @@ public abstract class CourseConverter {
         @Override
         public Document convert(Course source) {
             Document document = new Document();
+            if (source.id() != null && !source.id().isBlank()) {
+                document.put("_id", new ObjectId(source.id()));
+            }
             document.put("name", COURSENAME_WRITER.convert(source.name()));
             document.put("road_type", source.roadType().name());
             document.put("incline_summary", source.inclineSummary().name());
