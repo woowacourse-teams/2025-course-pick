@@ -6,9 +6,9 @@ value class Meter(
 ) : Comparable<Meter> {
     constructor(value: Double) : this(value.toInt())
 
-    init {
-        require(value >= 0)
-    }
-
     override fun compareTo(other: Meter): Int = this.value.compareTo(other.value)
+
+    operator fun compareTo(other: Int): Int = this.value.compareTo(other)
+
+    operator fun compareTo(other: Double): Int = this.value.compareTo(other)
 }

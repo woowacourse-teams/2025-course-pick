@@ -4,6 +4,10 @@ package io.coursepick.coursepick.domain.course
 value class Distance(
     val meter: Meter,
 ) : Comparable<Distance> {
+    init {
+        require(meter >= 0)
+    }
+
     constructor(meter: Double) : this(Meter(meter))
 
     override fun compareTo(other: Distance): Int = this.meter.compareTo(other.meter)

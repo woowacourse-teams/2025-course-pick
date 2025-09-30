@@ -4,6 +4,10 @@ package io.coursepick.coursepick.domain.course
 value class Scope private constructor(
     val meter: Meter,
 ) {
+    init {
+        require(meter >= 0)
+    }
+
     companion object {
         private const val DEFAULT_SCOPE = 1_000
 
