@@ -174,21 +174,6 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/mainCoursesHeader" />
 
-                <TextView
-                    android:id="@+id/mainCourseFilter"
-                    isActive="@{viewModel.state.courses.size() != viewModel.originalCourses.size()}"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:background="@drawable/background_filter_selector"
-                    android:onClick="@{() -> action.showFilters()}"
-                    android:paddingHorizontal="10dp"
-                    android:paddingVertical="6dp"
-                    android:text="@string/main_course_filter"
-                    android:textSize="16sp"
-                    app:layout_constraintStart_toStartOf="@id/mainCoursesHeader"
-                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader" />
-
                 <androidx.core.widget.ContentLoadingProgressBar
                     android:id="@+id/mainCoursesLoadingIndicator"
                     style="?android:attr/progressBarStyleLarge"
@@ -233,7 +218,7 @@
                     android:visibility="@{viewModel.state.isNoInternet ? View.VISIBLE : View.GONE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/mainCourseFilter"
+                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
                     app:listener="@{listener}" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
