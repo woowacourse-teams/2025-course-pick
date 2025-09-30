@@ -3,9 +3,9 @@ package io.coursepick.coursepick.domain.course
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-class MeterTest {
+class LengthTest {
     @Test
-    fun `Meter는 0 이상이다`() {
-        assertThrows<IllegalArgumentException> { Meter(-1) }
+    fun `길이는 0 이상이다`() {
+        assertThrows<IllegalArgumentException> { Length(-1) }
     }
 }
