@@ -183,7 +183,7 @@
                     android:visibility="@{viewModel.state.isLoading ? View.VISIBLE : View.GONE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/mainCourseFilter" />
+                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader" />
 
                 <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/mainFragmentContainer"
@@ -194,7 +194,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/mainCourseFilter"
+                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
                     app:layout_constraintVertical_bias="0.0" />
 
                 <TextView
@@ -206,7 +206,7 @@
                     android:textSize="20sp"
                     android:visibility="@{viewModel.state.isLoading || !viewModel.state.areCoursesEmpty || viewModel.state.isNoInternet ? View.GONE : View.VISIBLE}"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintTop_toBottomOf="@id/mainCourseFilter"
+                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
                     tools:listitem="@layout/item_course"
                     tools:text="@string/main_empty_courses_description" />
 

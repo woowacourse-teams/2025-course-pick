@@ -43,6 +43,7 @@ class ExploreCoursesFragment(
     private fun setUpBindingVariables() {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.adapter = courseAdapter
+        binding.action = requireActivity() as CoursesAction
     }
 
     private fun setUpStateObserver() {
