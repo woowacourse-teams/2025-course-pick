@@ -13,21 +13,28 @@ class FilterViewModel(
     initCourseFilter: CourseFilter,
     private var courses: List<CourseItem>,
 ) : ViewModel() {
-    private val _state = MutableLiveData(FilterUiState.from(initCourseFilter))
+    private val _state = MutableLiveData(FilterUiState(initCourseFilter))
     val state: LiveData<FilterUiState> = _state
 
     private val _event: MutableSingleLiveData<FilterUiEvent> = MutableSingleLiveData()
     val event: SingleLiveData<FilterUiEvent> get() = _event
 
     fun toggleDifficulty(difficulty: Difficulty) {
-        _state.value =
-            state.value?.let { state ->
-                val updatedDifficulties =
-                    state.difficulties.toMutableSet().apply {
-                        if (contains(difficulty)) remove(difficulty) else add(difficulty)
-                    }
-                state.copy(difficulties = updatedDifficulties)
-            }
+        val updatedDifficulties =
+            state.value
+                ?.courseFilter
+                ?.difficulties
+                ?.toMutableSet()
+                ?.apply {
+                    if (contains(difficulty)) remove(difficulty) else add(difficulty)
+                }
+                ?: mutableSetOf(difficulty)
+
+        val courseFilter =
+            state.value?.courseFilter?.copy(difficulties = updatedDifficulties)
+                ?: CourseFilter(difficulties = updatedDifficulties)
+
+        _state.value = state.value?.copy(courseFilter = courseFilter)
         updateFilteredCoursesCount()
     }
 
@@ -35,14 +42,12 @@ class FilterViewModel(
         min: Int,
         max: Int,
     ) {
-        val currentRange = _state.value ?: return
-
-        _state.value =
-            currentRange.copy(
-                minimumLengthKm = min,
-                maximumLengthKm = max,
+        val updatedLengthRange = min..max
+        val courseFilter =
+            state.value?.courseFilter?.copy(lengthRange = updatedLengthRange) ?: CourseFilter(
+                lengthRange = updatedLengthRange,
             )
-
+        _state.value = state.value?.copy(courseFilter = courseFilter)
         updateFilteredCoursesCount()
     }
 
@@ -65,7 +70,7 @@ class FilterViewModel(
     }
 
     private fun updateFilteredCoursesCount() {
-        val courseFilter = _state.value?.toCourseFilter() ?: return
+        val courseFilter = _state.value?.courseFilter ?: return
         val filtered =
             if (courseFilter.difficulties.isEmpty()) {
                 emptyList()

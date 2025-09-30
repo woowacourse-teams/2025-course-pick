@@ -57,7 +57,7 @@
 
         <TextView
             android:id="@+id/mainDifficultyEasy"
-            isSelected="@{viewModel.state.difficulties.contains(Difficulty.EASY)}"
+            isSelected="@{viewModel.state.courseFilter.difficulties.contains(Difficulty.EASY)}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
@@ -75,7 +75,7 @@
 
         <TextView
             android:id="@+id/mainDifficultyNormal"
-            isSelected="@{viewModel.state.difficulties.contains(Difficulty.NORMAL)}"
+            isSelected="@{viewModel.state.courseFilter.difficulties.contains(Difficulty.NORMAL)}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
@@ -93,7 +93,7 @@
 
         <TextView
             android:id="@+id/mainDifficultyHard"
-            isSelected="@{viewModel.state.difficulties.contains(Difficulty.HARD)}"
+            isSelected="@{viewModel.state.courseFilter.difficulties.contains(Difficulty.HARD)}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
@@ -130,8 +130,8 @@
             app:layout_constraintBottom_toTopOf="@+id/mainFilterLengthSlider"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/mainDifficultyHard"
-            app:maxValueText="@{viewModel.state.maximumLengthKm}"
-            app:minValueText="@{viewModel.state.minimumLengthKm}" />
+            app:maxValueText="@{viewModel.state.courseFilter.maximumLengthKm}"
+            app:minValueText="@{viewModel.state.courseFilter.minimumLengthKm}" />
 
         <com.google.android.material.slider.RangeSlider
             android:id="@+id/mainFilterLengthSlider"
@@ -142,8 +142,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/mainFilterLengthLabel"
-            app:maxValue="@{viewModel.state.maximumLengthKm}"
-            app:minValue="@{viewModel.state.minimumLengthKm}"
+            app:maxValue="@{viewModel.state.courseFilter.maximumLengthKm}"
+            app:minValue="@{viewModel.state.courseFilter.minimumLengthKm}"
             app:onRangeChanged="@{(min, max) -> viewModel.updateLengthRange(min, max)}"
             app:thumbColor="@color/point_secondary"
             app:trackColorActive="@color/point_secondary"

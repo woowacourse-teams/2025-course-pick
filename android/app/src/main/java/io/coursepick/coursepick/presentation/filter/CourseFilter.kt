@@ -9,4 +9,13 @@ import kotlinx.parcelize.RawValue
 data class CourseFilter(
     val lengthRange: @RawValue IntRange = IntRange(0, Int.MAX_VALUE),
     val difficulties: Set<Difficulty> = setOf(Difficulty.EASY, Difficulty.NORMAL, Difficulty.HARD),
-) : Parcelable
+) : Parcelable {
+    val minimumLengthKm: Int get() = lengthRange.first / 1000
+    val maximumLengthKm: Int
+        get() =
+            if (lengthRange.last == Int.MAX_VALUE) MAXIMUM_LENGTH_RANGE else lengthRange.last / 1000
+
+    companion object {
+        private const val MAXIMUM_LENGTH_RANGE = 21
+    }
+}

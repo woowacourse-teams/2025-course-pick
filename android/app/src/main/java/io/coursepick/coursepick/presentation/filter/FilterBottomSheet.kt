@@ -54,7 +54,7 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
                 FilterUiEvent.FilterCancel -> dismiss()
                 FilterUiEvent.FilterResult -> {
                     val courseFilter =
-                        filterViewModel.state.value?.toCourseFilter() ?: CourseFilter()
+                        filterViewModel.state.value?.courseFilter ?: CourseFilter()
                     parentFragmentManager.setFragmentResult(
                         "course_filter_request",
                         bundleOf("courseFilter" to courseFilter),
