@@ -192,10 +192,8 @@
                     android:visibility="@{viewModel.state.isLoading || viewModel.state.areCoursesEmpty || viewModel.state.isNoInternet ? View.GONE : View.VISIBLE}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
-                    app:layout_constraintVertical_bias="0.0" />
+                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader" />
 
                 <TextView
                     android:id="@+id/mainEmptyCourses"

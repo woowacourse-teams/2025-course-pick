@@ -359,7 +359,7 @@ class CoursesActivity :
                 }
             }
             supportFragmentManager
-                .findFragmentByTag(content.fragmentClass.javaClass.name)
+                .findFragmentByTag(content.fragmentClass.name)
                 ?.let(::show)
                 ?: run {
                     add(
