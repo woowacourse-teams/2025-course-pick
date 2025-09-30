@@ -8,9 +8,9 @@ value class Length(
         require(meter >= 0)
     }
 
-    constructor(meter: Double) : this(Meter(meter))
+    constructor(meter: Int) : this(Meter(meter))
 
     companion object {
-        operator fun invoke(meter: Int): Length = Length(Meter(meter))
+        operator fun invoke(meter: Double): Length = Length(Meter(meter))
     }
 }

@@ -23,7 +23,7 @@ data class CourseDto(
             Course(
                 id = id,
                 name = CourseName(name),
-                distance = distance?.let(::Distance),
+                distance = distance?.let { Distance(it) },
                 length = Length(length),
                 roadType = roadType,
                 difficulty = difficulty,

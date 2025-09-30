@@ -2,9 +2,9 @@ package io.coursepick.coursepick.domain.course
 
 @JvmInline
 value class Meter(
-    val value: Int,
+    val value: Double,
 ) : Comparable<Meter> {
-    constructor(value: Double) : this(value.toInt())
+    constructor(value: Int) : this(value.toDouble())
 
     override fun compareTo(other: Meter): Int = this.value.compareTo(other.value)
 

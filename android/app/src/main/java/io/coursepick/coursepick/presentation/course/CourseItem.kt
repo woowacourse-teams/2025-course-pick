@@ -13,8 +13,14 @@ data class CourseItem(
 ) {
     val id: String = course.id
     val name: String = course.name.value
-    val distance: Int? = course.distance?.meter?.value
-    val length: Int = course.length.meter.value
+    val distance: Int? =
+        course.distance
+            ?.meter
+            ?.value
+            ?.toInt()
+    val length: Int =
+        course.length.meter.value
+            .toInt()
     val segments: List<Segment> = course.segments
     val roadType: String = course.roadType
     val difficulty: String = course.difficulty

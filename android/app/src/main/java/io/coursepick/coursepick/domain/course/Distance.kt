@@ -8,11 +8,11 @@ value class Distance(
         require(meter >= 0)
     }
 
-    constructor(meter: Double) : this(Meter(meter))
+    constructor(meter: Int) : this(Meter(meter))
 
     override fun compareTo(other: Distance): Int = this.meter.compareTo(other.meter)
 
     companion object {
-        operator fun invoke(meter: Int): Distance = Distance(Meter(meter))
+        operator fun invoke(meter: Double): Distance = Distance(Meter(meter))
     }
 }
