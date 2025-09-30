@@ -4,7 +4,7 @@ package io.coursepick.coursepick.domain.course
 value class Length(
     val meter: Meter,
 ) {
-    constructor(meter: Double) : this(Meter(meter.toInt()))
+    constructor(meter: Double) : this(Meter(meter))
 
     companion object {
         operator fun invoke(meter: Int): Length = Length(Meter(meter))
