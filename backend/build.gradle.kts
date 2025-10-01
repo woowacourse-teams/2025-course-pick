@@ -58,6 +58,9 @@ dependencies {
     // MockWebServer
     testImplementation("com.squareup.okhttp3:mockwebserver3:5.1.0")
 
+    // XmlParser
+    implementation("com.fasterxml.woodstox:woodstox-core:7.1.1")
+
     // Test
     testRuntimeOnly("de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring30x:4.21.0")
     testImplementation("org.springframework.batch:spring-batch-test")
