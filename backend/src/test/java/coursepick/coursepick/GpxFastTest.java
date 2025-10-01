@@ -1,49 +1,56 @@
 package coursepick.coursepick;
 
-import coursepick.coursepick.domain.Course;
+import coursepick.coursepick.application.dto.CourseFile;
+import coursepick.coursepick.application.dto.CourseFileExtension;
 import coursepick.coursepick.domain.Gpx;
-import coursepick.coursepick.test_util.CoordinateTestUtil;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 public class GpxFastTest {
 
-    private static final Course COURSE = new Course("테스트코스", CoordinateTestUtil.square(0, 0, 0.0001, 0.0001));
+    private static CourseFile COURSE_FILE;
 
     /*
-    기존                  : 172, 177, 170
-    XmlProvider 구현 후    : 174, 173, 175
+    기존                  : 170, 164, 164
+    XmlProvider 구현 후    : 159, 163, 161
      */
     @Test
     void GPX파싱_성능테스트() {
         final int testCount = 10;
-        final int testUnitCount = 100000;
 
         // warm up
-        testIt(testRunnable(), testUnitCount);
+        for (int i = 0; i < 3; i++) {
+            testIt(testRunnable(), testCount);
+        }
 
         // speed test
-        long avg = 0;
-        for (int i = 0; i < testCount; i++) {
-            avg += testIt(testRunnable(), testUnitCount);
-        }
-        System.out.println("avg : " + (avg / testCount) + "ms");
+        long test = testIt(testRunnable(), testCount);
+        System.out.println("result : " + test + "ms");
     }
 
     long testIt(Runnable target, int time) {
-        long start = System.currentTimeMillis();
+        long sum = 0;
         for (int i = 0; i < time; i++) {
+            long start = System.currentTimeMillis();
             target.run();
+            long end = System.currentTimeMillis();
+            sum += end - start;
         }
-        long end = System.currentTimeMillis();
-        return (end - start);
+        return sum / time;
     }
 
-    @NotNull
-    private static Runnable testRunnable() {
+    Runnable testRunnable() {
         return () -> {
-            var sut = Gpx.from(COURSE);
+            initCourseFile();
+            var sut = Gpx.from(COURSE_FILE);
             sut.toCourses();
         };
+    }
+
+    private void initCourseFile() {
+        COURSE_FILE = new CourseFile(
+                "테스트코스",
+                CourseFileExtension.GPX,
+                getClass().getClassLoader().getResourceAsStream("test.gpx")
+        );
     }
 }
