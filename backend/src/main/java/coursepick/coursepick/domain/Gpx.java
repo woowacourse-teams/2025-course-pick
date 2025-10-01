@@ -23,15 +23,10 @@ public class Gpx {
     }
 
     public static Gpx from(Course course) {
-        List<Coordinate> coordinates = new ArrayList<>();
-        course.segments().stream()
+        List<Coordinate> coordinates = course.segments().stream()
                 .flatMap(segment -> segment.coordinates().stream())
-                .forEach(coordinate -> coordinates.add(new Coordinate(
-                                coordinate.latitude(),
-                                coordinate.longitude(),
-                                coordinate.elevation()
-                        ))
-                );
+                .toList();
+
         return new Gpx(course.name().value(), coordinates);
     }
 
