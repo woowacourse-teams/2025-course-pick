@@ -1,23 +1,28 @@
 package coursepick.coursepick;
 
-import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
 import coursepick.coursepick.domain.Gpx;
+import coursepick.coursepick.test_util.CoordinateTestUtil;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 public class GpxFastTest {
 
+    private static final Course COURSE = new Course("테스트코스", CoordinateTestUtil.square(0, 0, 0.0001, 0.0001));
+
+    /*
+    기존                  : 172, 177, 170
+    XmlProvider 구현 후    : 174, 173, 175
+     */
     @Test
-    void Gpx_깩체를_Course로_변환한다() {
-        final int testCount = 100;
+    void GPX파싱_성능테스트() {
+        final int testCount = 10;
         final int testUnitCount = 100000;
 
         // warm up
         testIt(testRunnable(), testUnitCount);
 
+        // speed test
         long avg = 0;
         for (int i = 0; i < testCount; i++) {
             avg += testIt(testRunnable(), testUnitCount);
@@ -37,14 +42,7 @@ public class GpxFastTest {
     @NotNull
     private static Runnable testRunnable() {
         return () -> {
-            var coordinates = List.of(
-                    new Coordinate(0, 0, 0),
-                    new Coordinate(0.0001, 0.0001, 0.0001),
-                    new Coordinate(0, 0, 0)
-            );
-            var course = new Course("테스트코스", coordinates);
-            var sut = Gpx.from(course);
-
+            var sut = Gpx.from(COURSE);
             sut.toCourses();
         };
     }
