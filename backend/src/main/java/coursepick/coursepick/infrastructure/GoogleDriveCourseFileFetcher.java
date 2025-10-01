@@ -19,6 +19,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
@@ -48,7 +49,7 @@ public class GoogleDriveCourseFileFetcher implements CourseFileFetcher {
     }
 
     @Override
-    public List<CourseFile> fetchNextPage() {
+    public List<CourseFile> fetchNextPage() throws IOException {
         List<File> files = listNextPageFiles();
 
         return files.parallelStream()
@@ -62,7 +63,7 @@ public class GoogleDriveCourseFileFetcher implements CourseFileFetcher {
      *
      * @return 조회한 File 리스트
      */
-    private List<File> listNextPageFiles() {
+    private List<File> listNextPageFiles() throws IOException {
         if (isListingOver()) {
             isInitialRequest = true;
             return Collections.emptyList();
@@ -80,20 +81,14 @@ public class GoogleDriveCourseFileFetcher implements CourseFileFetcher {
         return !isInitialRequest && nextPageToken == null;
     }
 
-    private FileList getFileList(String pageToken) {
+    private FileList getFileList(String pageToken) throws IOException {
         String query = QUERY_FORMAT.formatted(folderId);
-        FileList result;
-        try {
-            result = drive.files().list()
-                    .setQ(query)
-                    .setSpaces("drive")
-                    .setFields("nextPageToken, files(id, name)")
-                    .setPageToken(pageToken)
-                    .execute();
-        } catch (IOException e) {
-            throw new RuntimeException("파일 메타데이터 가져오기에 실패했습니다.", e);
-        }
-        return result;
+        return drive.files().list()
+                .setQ(query)
+                .setSpaces("drive")
+                .setFields("nextPageToken, files(id, name)")
+                .setPageToken(pageToken)
+                .execute();
     }
 
     private CourseFile fetchDriveFileToCourseFile(File file) {
@@ -104,7 +99,7 @@ public class GoogleDriveCourseFileFetcher implements CourseFileFetcher {
                     drive.files().get(file.getId()).executeMediaAsInputStream()
             );
         } catch (IOException e) {
-            throw new RuntimeException("파일 다운로드에 실패했습니다. 파일명=" + file.getName(), e);
+            throw new UncheckedIOException("파일 다운로드에 실패했습니다. 파일명=" + file.getName(), e);
         }
     }
 
