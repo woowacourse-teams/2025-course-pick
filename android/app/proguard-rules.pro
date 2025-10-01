@@ -21,4 +21,5 @@
 #-renamesourcefileattribute SourceFile
 
 # Custom rules
--keep class com.kakao.** { *; }
+-keep class com.kakao.vectormap.** { *; }
+-keep interface com.kakao.vectormap.**
