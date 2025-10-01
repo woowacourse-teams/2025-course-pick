@@ -1,17 +1,11 @@
 package coursepick.coursepick.domain;
 
 import coursepick.coursepick.application.dto.CourseFile;
-import coursepick.coursepick.application.exception.ErrorType;
-import coursepick.coursepick.logging.LogContent;
-import io.jenetics.jpx.*;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import javax.xml.stream.*;
+import java.io.StringWriter;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,79 +13,53 @@ import java.util.List;
 @Slf4j
 public class Gpx {
 
-    private List<Coordinate> coordinates;
-    private final GPX gpx;
+    private static final String CREATOR = "Coursepick - https://github.com/woowacourse-teams/2025-course-pick";
+    private final String name;
+    private final List<Coordinate> coordinates;
 
-    public Gpx(List<Coordinate> coordinates) {
-        this.gpx = null;
+    private Gpx(String name, List<Coordinate> coordinates) {
+        this.name = name;
         this.coordinates = coordinates;
     }
 
-    private Gpx(GPX gpx) {
-        this.gpx = gpx;
-    }
-
     public static Gpx from(Course course) {
-        Track.Builder trackBuilder = Track.builder();
-        TrackSegment.Builder trackSegmentBuilder = TrackSegment.builder();
+        List<Coordinate> coordinates = new ArrayList<>();
         course.segments().stream()
                 .flatMap(segment -> segment.coordinates().stream())
-                .forEach(coordinate -> trackSegmentBuilder.addPoint(builder -> builder
-                        .lat(coordinate.latitude())
-                        .lon(coordinate.longitude())
-                        .ele(coordinate.elevation())
-                ));
-        trackBuilder.addSegment(trackSegmentBuilder.build());
-
-        GPX gpx = GPX.builder()
-                .addTrack(trackBuilder.build())
-                .creator("Coursepick - https://github.com/woowacourse-teams/2025-course-pick")
-                .metadata(Metadata.builder()
-                        .name(course.name().value())
-                        .build())
-                .build();
-        return new Gpx(gpx);
+                .forEach(coordinate -> coordinates.add(new Coordinate(
+                                coordinate.latitude(),
+                                coordinate.longitude(),
+                                coordinate.elevation()
+                        ))
+                );
+        return new Gpx(course.name().value(), coordinates);
     }
 
     public static Gpx from(CourseFile file) {
         try {
-            GPX gpx = GPX.Reader.of(GPX.Reader.Mode.LENIENT)
-                    .read(file.inputStream())
-                    .toBuilder()
-                    .creator("Coursepick - https://github.com/woowacourse-teams/2025-course-pick")
-                    .metadata(Metadata.builder()
-                            .name(file.name())
-                            .build())
-                    .build();
-            return new Gpx(gpx);
-        } catch (IOException e) {
-            throw ErrorType.FILE_PARSING_FAIL.create(e.getMessage());
-        }
-    }
-
-    public static Gpx from_manual_impl(CourseFile file) {
-        try {
-            XMLInputFactory factory = XMLInputFactory.newInstance();
-            XMLStreamReader reader = factory.createXMLStreamReader(file.inputStream());
+            XMLInputFactory xif = XMLInputFactory.newInstance();
+            XMLStreamReader xsr = xif.createXMLStreamReader(file.inputStream());
             Double lat = null, lon = null, ele = null;
 
             List<Coordinate> coordinates = new ArrayList<>();
-            while (reader.hasNext()) {
-                int event = reader.next();
+
+            while (xsr.hasNext()) {
+                int event = xsr.next();
 
                 if (event == XMLStreamConstants.START_ELEMENT) {
-                    String localName = reader.getLocalName();
+                    String localName = xsr.getLocalName();
                     if ("trkpt".equals(localName)) {
-                        lat = Double.parseDouble(reader.getAttributeValue(null, "lat"));
-                        lon = Double.parseDouble(reader.getAttributeValue(null, "lon"));
+                        lat = Double.parseDouble(xsr.getAttributeValue(null, "lat"));
+                        lon = Double.parseDouble(xsr.getAttributeValue(null, "lon"));
                     } else if ("ele".equals(localName)) {
-                        reader.next();
-                        if (reader.getEventType() == XMLStreamConstants.CHARACTERS) {
-                            ele = Double.parseDouble(reader.getText());
+                        xsr.next();
+                        if (xsr.getEventType() == XMLStreamConstants.CHARACTERS) {
+                            ele = Double.parseDouble(xsr.getText());
                         }
                     }
                 } else if (event == XMLStreamConstants.END_ELEMENT) {
-                    if ("trkpt".equals(reader.getLocalName())) {
+                    String localName = xsr.getLocalName();
+                    if ("trkpt".equals(localName)) {
                         if (lat != null && lon != null) {
                             coordinates.add(new Coordinate(lat, lon, ele));
                         }
@@ -100,59 +68,65 @@ public class Gpx {
                 }
             }
 
-            return new Gpx(coordinates);
-
+            return new Gpx(file.name(), coordinates);
         } catch (XMLStreamException e) {
             throw new RuntimeException(e);
         }
     }
 
     public String toXmlContent() {
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            GPX.Writer.DEFAULT.write(gpx, baos);
-            return baos.toString();
-        } catch (IOException e) {
-            log.warn("[EXCEPTION] GPX 파일로 변환에 실패했습니다.", LogContent.exception(e));
-            throw new IllegalStateException(e);
+        StringWriter sw = new StringWriter();
+        XMLOutputFactory xof = XMLOutputFactory.newInstance();
+        try {
+            XMLStreamWriter xsw = xof.createXMLStreamWriter(sw);
+
+            xsw.writeStartDocument("UTF-8", "1.0");
+            xsw.writeStartElement("gpx");
+            writeRootAttributes(xsw);
+            writeTrk(xsw);
+            xsw.writeEndElement();
+            xsw.writeEndDocument();
+            xsw.flush();
+            xsw.close();
+            return sw.toString();
+        } catch (XMLStreamException e) {
+            throw new RuntimeException(e);
         }
+    }
+
+    private void writeRootAttributes(XMLStreamWriter xsw) throws XMLStreamException {
+        xsw.writeDefaultNamespace("http://www.topografix.com/GPX/1/1");
+        xsw.writeNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        xsw.writeAttribute("creator", CREATOR);
+        xsw.writeAttribute("version", "1.1");
+        xsw.writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "schemaLocation",
+                "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd");
+    }
+
+    private void writeTrk(XMLStreamWriter xsw) throws XMLStreamException {
+        DecimalFormat decimalFormat = new DecimalFormat("0.#######");
+
+        xsw.writeStartElement("trk");
+        xsw.writeStartElement("name");
+        xsw.writeCharacters(name);
+        xsw.writeEndElement();
+        xsw.writeStartElement("trkseg");
+        if (coordinates != null) {
+            for (var p : coordinates) {
+                xsw.writeStartElement("trkpt");
+                xsw.writeAttribute("lat", decimalFormat.format(p.latitude()));
+                xsw.writeAttribute("lon", decimalFormat.format(p.longitude()));
+                xsw.writeStartElement("ele");
+                xsw.writeCharacters(decimalFormat.format(p.elevation()));
+                xsw.writeEndElement();
+                xsw.writeEndElement();
+            }
+        }
+        xsw.writeEndElement();
+        xsw.writeEndElement();
     }
 
     public List<Course> toCourses() {
-        boolean isRoutesEmpty = gpx.routes().findAny().isEmpty();
-        boolean isTracksEmpty = gpx.tracks().findAny().isEmpty();
-        if (isRoutesEmpty && isTracksEmpty) throw new IllegalStateException("gpx 파일의 정보가 비어있습니다. gpx=" + gpx);
-        else if (isTracksEmpty) {
-            return gpx.routes()
-                    .map(route -> new Course(gpx.getMetadata().orElseThrow().getName().orElseThrow(), getCoordinates(route)))
-                    .toList();
-        } else {
-            return gpx.tracks()
-                    .map(track -> new Course(gpx.getMetadata().orElseThrow().getName().orElseThrow(), getCoordinates(track)))
-                    .toList();
-        }
-    }
-
-    public List<Course> toCourses_manual() {
-        return List.of(new Course("코스이름", coordinates));
-    }
-
-    private static List<Coordinate> getCoordinates(Route route) {
-        return route.getPoints().stream()
-                .map(point -> new Coordinate(
-                        point.getLatitude().doubleValue(),
-                        point.getLongitude().doubleValue(),
-                        point.getElevation().orElse(Length.of(0, Length.Unit.METER)).doubleValue())
-                ).toList();
-    }
-
-    private static List<Coordinate> getCoordinates(Track track) {
-        return track.getSegments().stream()
-                .flatMap(segment -> segment.getPoints().stream()
-                        .map(point -> new Coordinate(
-                                point.getLatitude().doubleValue(),
-                                point.getLongitude().doubleValue(),
-                                point.getElevation().orElse(Length.of(0, Length.Unit.METER)).doubleValue())
-                        )
-                ).toList();
+        return List.of(new Course(name, coordinates));
     }
 }

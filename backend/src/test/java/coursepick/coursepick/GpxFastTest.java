@@ -42,8 +42,8 @@ public class GpxFastTest {
     Runnable testRunnable() {
         return () -> {
             initCourseFile();
-            var sut = Gpx.from_manual_impl(COURSE_FILE);
-            sut.toCourses_manual();
+            var sut = Gpx.from(COURSE_FILE);
+            sut.toCourses();
         };
     }
 
