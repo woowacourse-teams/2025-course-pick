@@ -2,6 +2,7 @@ package io.coursepick.coursepick.presentation.map.kakao
 
 import android.content.Context
 import androidx.annotation.ColorRes
+import androidx.annotation.DimenRes
 import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.route.RouteLineOptions
 import com.kakao.vectormap.route.RouteLinePattern
@@ -17,16 +18,21 @@ import io.coursepick.coursepick.presentation.course.CourseItem
 class RouteLineOptionsFactory(
     private val context: Context,
 ) {
-    private val lineWidth: Float = context.resources.getDimension(R.dimen.course_route_width)
     private val patternDistance: Float =
         context.resources.getDimension(R.dimen.course_pattern_between_distance)
 
-    private val uphillStyle = RouteLineStyles((R.color.course_uphill), true)
-    private val flatStyle = RouteLineStyles((R.color.course_flat), true)
-    private val downhillStyle = RouteLineStyles((R.color.course_downhill), true)
-    private val unknownStyle = RouteLineStyles((R.color.course_unknown), true)
-    private val unselectedStyle = RouteLineStyles(R.color.course_unselected, false)
-    private val routeStyle = RouteLineStyles(R.color.course_route, false)
+    private val uphillStyle =
+        RouteLineStyles(R.color.course_uphill, R.dimen.selected_course_width, true)
+    private val flatStyle =
+        RouteLineStyles(R.color.course_flat, R.dimen.selected_course_width, true)
+    private val downhillStyle =
+        RouteLineStyles(R.color.course_downhill, R.dimen.selected_course_width, true)
+    private val unknownStyle =
+        RouteLineStyles(R.color.course_unknown, R.dimen.selected_course_width, true)
+    private val unselectedStyle =
+        RouteLineStyles(R.color.course_unselected, R.dimen.unselected_course_width, false)
+    private val routeStyle =
+        RouteLineStyles(R.color.course_route, R.dimen.course_route_width, false)
 
     fun routeLineOptions(route: List<Coordinate>): RouteLineOptions =
         RouteLineOptions.from(
@@ -49,11 +55,12 @@ class RouteLineOptionsFactory(
 
     private fun RouteLineStyles(
         @ColorRes colorRes: Int,
+        @DimenRes dimenRes: Int,
         withPattern: Boolean,
     ): RouteLineStyles {
         val baseStyle =
             RouteLineStyle
-                .from(lineWidth, context.getColor(colorRes))
+                .from(context.resources.getDimension(dimenRes), context.getColor(colorRes))
                 .apply {
                     if (withPattern) {
                         setPattern(RouteLinePattern.from(R.drawable.image_arrow, patternDistance))
