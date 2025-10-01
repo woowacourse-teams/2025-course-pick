@@ -6,15 +6,26 @@ import coursepick.coursepick.logging.LogContent;
 import io.jenetics.jpx.*;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("ClassCanBeRecord")
 @Slf4j
 public class Gpx {
 
+    private List<Coordinate> coordinates;
     private final GPX gpx;
+
+    public Gpx(List<Coordinate> coordinates) {
+        this.gpx = null;
+        this.coordinates = coordinates;
+    }
 
     private Gpx(GPX gpx) {
         this.gpx = gpx;
@@ -58,6 +69,44 @@ public class Gpx {
         }
     }
 
+    public static Gpx from_manual_impl(CourseFile file) {
+        try {
+            XMLInputFactory factory = XMLInputFactory.newInstance();
+            XMLStreamReader reader = factory.createXMLStreamReader(file.inputStream());
+            Double lat = null, lon = null, ele = null;
+
+            List<Coordinate> coordinates = new ArrayList<>();
+            while (reader.hasNext()) {
+                int event = reader.next();
+
+                if (event == XMLStreamConstants.START_ELEMENT) {
+                    String localName = reader.getLocalName();
+                    if ("trkpt".equals(localName)) {
+                        lat = Double.parseDouble(reader.getAttributeValue(null, "lat"));
+                        lon = Double.parseDouble(reader.getAttributeValue(null, "lon"));
+                    } else if ("ele".equals(localName)) {
+                        reader.next();
+                        if (reader.getEventType() == XMLStreamConstants.CHARACTERS) {
+                            ele = Double.parseDouble(reader.getText());
+                        }
+                    }
+                } else if (event == XMLStreamConstants.END_ELEMENT) {
+                    if ("trkpt".equals(reader.getLocalName())) {
+                        if (lat != null && lon != null) {
+                            coordinates.add(new Coordinate(lat, lon, ele));
+                        }
+                        lat = lon = ele = null;
+                    }
+                }
+            }
+
+            return new Gpx(coordinates);
+
+        } catch (XMLStreamException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public String toXmlContent() {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             GPX.Writer.DEFAULT.write(gpx, baos);
@@ -81,6 +130,10 @@ public class Gpx {
                     .map(track -> new Course(gpx.getMetadata().orElseThrow().getName().orElseThrow(), getCoordinates(track)))
                     .toList();
         }
+    }
+
+    public List<Course> toCourses_manual() {
+        return List.of(new Course("코스이름", coordinates));
     }
 
     private static List<Coordinate> getCoordinates(Route route) {

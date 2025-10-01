@@ -12,6 +12,7 @@ public class GpxFastTest {
     /*
     기존                  : 170, 164, 164
     XmlProvider 구현 후    : 159, 163, 161
+    직접 간단 구현           : 100, 95, 99
      */
     @Test
     void GPX파싱_성능테스트() {
@@ -41,8 +42,8 @@ public class GpxFastTest {
     Runnable testRunnable() {
         return () -> {
             initCourseFile();
-            var sut = Gpx.from(COURSE_FILE);
-            sut.toCourses();
+            var sut = Gpx.from_manual_impl(COURSE_FILE);
+            sut.toCourses_manual();
         };
     }
 
