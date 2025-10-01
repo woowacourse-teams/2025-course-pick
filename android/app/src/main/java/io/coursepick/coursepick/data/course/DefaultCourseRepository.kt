@@ -22,7 +22,7 @@ class DefaultCourseRepository(
                 mapCoordinate.longitude.value,
                 userCoordinate?.latitude?.value,
                 userCoordinate?.longitude?.value,
-                scope.meter,
+                scope.meter.value.toInt(),
             ).mapNotNull(CourseDto::toCourseOrNull)
 
     override suspend fun routeToCourse(
