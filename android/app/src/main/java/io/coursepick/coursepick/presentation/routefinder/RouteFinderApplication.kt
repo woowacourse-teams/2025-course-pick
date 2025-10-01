@@ -14,6 +14,7 @@ import kotlin.math.tan
 
 @Parcelize
 sealed interface RouteFinderApplication : Parcelable {
+    @get:StringRes
     val nameId: Int
 
     object InApp : RouteFinderApplication {
