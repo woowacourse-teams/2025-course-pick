@@ -7,6 +7,6 @@
         android:entryValues="@array/selected_route_finder_application_values"
         android:key="@string/selected_route_finder_application_key"
         android:summary="@string/selected_route_finder_application_summary"
-        android:title="@string/selected_route_finder_application_title" />
+        android:title="@string/selected_route_finder_application_setting_title" />
 
 </PreferenceScreen>
