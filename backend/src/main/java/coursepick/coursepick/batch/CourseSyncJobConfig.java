@@ -1,7 +1,6 @@
 package coursepick.coursepick.batch;
 
 import coursepick.coursepick.domain.Course;
-import io.jenetics.jpx.format.ParseException;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
@@ -49,7 +48,6 @@ public class CourseSyncJobConfig {
                 .retry(PessimisticLockingFailureException.class)
                 .retry(IOException.class)
                 .skipLimit(15)
-                .skip(ParseException.class)
                 .skip(XMLStreamException.class)
                 .skip(NumberFormatException.class)
                 .skip(IllegalArgumentException.class)
