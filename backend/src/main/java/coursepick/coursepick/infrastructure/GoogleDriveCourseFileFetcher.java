@@ -114,11 +114,20 @@ public class GoogleDriveCourseFileFetcher implements CourseFileFetcher {
                     .createScoped(Collections.singleton(DriveScopes.DRIVE_READONLY));
 
             NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-            return new Drive.Builder(httpTransport, JSON_FACTORY, new HttpCredentialsAdapter(credentials))
+            return new Drive.Builder(httpTransport, JSON_FACTORY, setHttpTimeout(new HttpCredentialsAdapter(credentials)))
                     .setApplicationName(APPLICATION_NAME)
                     .build();
         } catch (GeneralSecurityException | IOException e) {
             throw new IllegalStateException("구글 드라이브 서비스 초기화에 실패했습니다.", e);
         }
+    }
+
+    @SuppressWarnings("PointlessArithmeticExpression")
+    private static HttpRequestInitializer setHttpTimeout(final HttpRequestInitializer requestInitializer) {
+        return httpRequest -> {
+            requestInitializer.initialize(httpRequest);
+            httpRequest.setConnectTimeout(3 * 60 * 1000);
+            httpRequest.setReadTimeout(1 * 60 * 1000);
+        };
     }
 }
