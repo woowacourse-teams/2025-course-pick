@@ -6,7 +6,7 @@ import io.coursepick.coursepick.domain.search.SearchRepository
 class DefaultSearchRepository(
     private val service: SearchService,
 ) : SearchRepository {
-    override suspend fun searchPlaces(
+    override suspend fun places(
         query: String,
         page: Int?,
         size: Int?,

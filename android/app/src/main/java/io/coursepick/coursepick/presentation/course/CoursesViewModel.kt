@@ -99,9 +99,9 @@ class CoursesViewModel(
 
                 pendingFavoriteWrites.toMap().forEach { courseId: String, favorite: Boolean ->
                     if (favorite) {
-                        favoritesRepository.addFavorite(courseId)
+                        favoritesRepository.addFavoriteCourse(courseId)
                     } else {
-                        favoritesRepository.removeFavorite(courseId)
+                        favoritesRepository.removeFavoriteCourse(courseId)
                     }
                 }
                 pendingFavoriteWrites.clear()
@@ -120,11 +120,16 @@ class CoursesViewModel(
                 isNoInternet = false,
             )
 
-        val favoritedCourseIds: Set<String> = favoritesRepository.favoritedCourseIds()
+        val favoritedCourseIds: Set<String> = favoritesRepository.favoriteCourseIds()
 
         viewModelScope.launch {
             runCatching {
-                val courses = courseRepository.courses(mapCoordinate, userCoordinate, scope)
+                val courses =
+                    courseRepository.courses(
+                        scope = scope,
+                        mapCoordinate = mapCoordinate,
+                        userCoordinate = userCoordinate,
+                    )
                 courses
                     .sortedBy(Course::distance)
                     .mapIndexed { index: Int, course: Course ->
@@ -179,7 +184,7 @@ class CoursesViewModel(
                 isNoInternet = false,
             )
 
-        val favoritedCourseIds: Set<String> = favoritesRepository.favoritedCourseIds()
+        val favoritedCourseIds: Set<String> = favoritesRepository.favoriteCourseIds()
         if (favoritedCourseIds.isEmpty()) {
             _state.value = state.value?.copy(courses = emptyList(), isLoading = false)
             return
@@ -187,7 +192,7 @@ class CoursesViewModel(
 
         viewModelScope.launch {
             runCatching {
-                courseRepository.coursesById(favoritedCourseIds.toList())
+                courseRepository.courses(favoritedCourseIds.toList())
             }.onSuccess { courses: List<Course> ->
                 val courseItems: List<CourseItem> =
                     courses.map { course: Course ->
