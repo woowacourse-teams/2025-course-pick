@@ -1,6 +1,7 @@
 package coursepick.coursepick.domain;
 
 import coursepick.coursepick.application.dto.CourseFile;
+import coursepick.coursepick.logging.LogContent;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.xml.stream.*;
@@ -65,7 +66,8 @@ public class Gpx {
 
             return new Gpx(file.name(), coordinates);
         } catch (XMLStreamException e) {
-            throw new RuntimeException(e);
+            log.warn("[EXCEPTION] CourseFile -> Gpx 변환에 실패했습니다.", LogContent.exception(e));
+            throw new IllegalArgumentException(e);
         }
     }
 
@@ -85,7 +87,8 @@ public class Gpx {
             xsw.close();
             return sw.toString();
         } catch (XMLStreamException e) {
-            throw new RuntimeException(e);
+            log.warn("[EXCEPTION] Gpx -> Xml 변환에 실패했습니다.", LogContent.exception(e));
+            throw new IllegalStateException(e);
         }
     }
 
