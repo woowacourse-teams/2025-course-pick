@@ -4,6 +4,8 @@
     <dimen name="main_bottom_sheet_expanded_offset">80dp</dimen>
     <dimen name="map_logo_position_offset">10dp</dimen>
     <dimen name="course_route_padding">80dp</dimen>
+    <dimen name="selected_course_width">4dp</dimen>
+    <dimen name="unselected_course_width">3dp</dimen>
     <dimen name="course_route_width">4dp</dimen>
     <dimen name="course_pattern_between_distance">12dp</dimen>
 </resources>
