@@ -108,26 +108,26 @@ public class GoogleDriveCourseFileFetcher implements CourseFileFetcher {
         }
     }
 
+    @SuppressWarnings("PointlessArithmeticExpression")
     private static Drive initDrive(Resource credentialsResource) {
         try {
             GoogleCredentials credentials = GoogleCredentials.fromStream(credentialsResource.getInputStream())
                     .createScoped(Collections.singleton(DriveScopes.DRIVE_READONLY));
 
+            HttpRequestInitializer initializer = request -> {
+                HttpCredentialsAdapter adapter = new HttpCredentialsAdapter(credentials);
+                adapter.initialize(request);
+                request.setConnectTimeout(3 * 60 * 1000);
+                request.setReadTimeout(1 * 60 * 1000);
+            };
+
             NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-            return new Drive.Builder(httpTransport, JSON_FACTORY, setHttpTimeout(new HttpCredentialsAdapter(credentials)))
+
+            return new Drive.Builder(httpTransport, JSON_FACTORY, initializer)
                     .setApplicationName(APPLICATION_NAME)
                     .build();
         } catch (GeneralSecurityException | IOException e) {
             throw new IllegalStateException("구글 드라이브 서비스 초기화에 실패했습니다.", e);
         }
-    }
-
-    @SuppressWarnings("PointlessArithmeticExpression")
-    private static HttpRequestInitializer setHttpTimeout(final HttpRequestInitializer requestInitializer) {
-        return httpRequest -> {
-            requestInitializer.initialize(httpRequest);
-            httpRequest.setConnectTimeout(3 * 60 * 1000);
-            httpRequest.setReadTimeout(1 * 60 * 1000);
-        };
     }
 }
