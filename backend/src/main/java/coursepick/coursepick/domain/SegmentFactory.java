@@ -1,27 +1,22 @@
 package coursepick.coursepick.domain;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-public class SegmentBuilder {
+public class SegmentFactory {
 
-    private final List<Segment> segments;
-
-    private SegmentBuilder(List<Segment> segments) {
-        this.segments = segments;
-    }
-
-    public static SegmentBuilder fromGeoLines(List<GeoLine> geoLines) {
-        List<Segment> segments = geoLines.stream()
+    public static List<Segment> create(List<Coordinate> rawCoordinates) {
+        List<Segment> rawSegments = GeoLineFactory.create(rawCoordinates).stream()
                 .map(GeoLine::toSegment)
                 .toList();
 
-        return new SegmentBuilder(segments);
+        List<Segment> mergedSegments = mergeSameElevationDirection(rawSegments);
+
+        return mergeSameInclineType(mergedSegments);
     }
 
     // 경향성이 같은 것끼리 합친다.
-    public SegmentBuilder mergeSameElevationDirection() {
+    private static List<Segment> mergeSameElevationDirection(List<Segment> segments) {
         List<Segment> mergedSegments = new ArrayList<>();
         mergedSegments.add(segments.getFirst());
         for (int i = 1; i < segments.size(); i++) {
@@ -35,11 +30,11 @@ public class SegmentBuilder {
                 mergedSegments.add(currentSegment);
             }
         }
-        return new SegmentBuilder(mergedSegments);
+        return mergedSegments;
     }
 
     // 경사타입이 같은 것끼리 합친다.
-    public SegmentBuilder mergeSameInclineType() {
+    private static List<Segment> mergeSameInclineType(List<Segment> segments) {
         List<Segment> mergedSegments = new ArrayList<>();
         mergedSegments.add(segments.getFirst());
         for (int i = 1; i < segments.size(); i++) {
@@ -55,10 +50,6 @@ public class SegmentBuilder {
                 mergedSegments.add(currentSegment);
             }
         }
-        return new SegmentBuilder(mergedSegments);
-    }
-
-    public List<Segment> build() {
-        return Collections.unmodifiableList(segments);
+        return mergedSegments;
     }
 }

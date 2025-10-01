@@ -1,9 +1,6 @@
 package coursepick.coursepick.infrastructure.converter;
 
-import coursepick.coursepick.domain.Coordinate;
-import coursepick.coursepick.domain.GeoLine;
-import coursepick.coursepick.domain.GeoLineBuilder;
-import coursepick.coursepick.domain.Segment;
+import coursepick.coursepick.domain.*;
 import coursepick.coursepick.logging.LogContent;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
@@ -69,7 +66,7 @@ public class SegmentListConverter {
                     .map(coordinate -> new Coordinate(coordinate.get(1), coordinate.get(0), coordinate.get(2))) // lat, lng, ele
                     .toList();
 
-            return new Segment(GeoLineBuilder.fromCoordinates(coordinates).build());
+            return SegmentFactory.create(coordinates).getFirst();
         }
     }
 }
