@@ -61,9 +61,6 @@ public class CourseApplicationService {
 
     @Transactional(readOnly = true)
     public List<CourseResponse> findFavoriteCourses(List<String> ids) {
-        if (ids == null) {
-            return List.of();
-        }
         List<Course> courses = courseRepository.findByIdIn(ids);
 
         loggingForNotExistsCourse(ids, courses);
