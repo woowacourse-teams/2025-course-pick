@@ -69,7 +69,7 @@ public class CourseWebController implements CourseWebApi {
     }
 
     @GetMapping("/courses/favorites")
-    public List<CourseWebResponse> findFavoriteCourses(@RequestParam(value = "courseIds", required = false) List<String> ids) {
+    public List<CourseWebResponse> findFavoriteCourses(@RequestParam(value = "courseIds") List<String> ids) {
         return courseApplicationService.findFavoriteCourses(ids).stream()
                 .map(CourseWebResponse::from)
                 .toList();
