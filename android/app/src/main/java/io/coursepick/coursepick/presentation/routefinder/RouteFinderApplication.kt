@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Parcelable
 import android.widget.Toast
+import androidx.annotation.StringRes
 import androidx.core.net.toUri
+import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Coordinate
 import kotlinx.parcelize.Parcelize
 import kotlin.math.ln
@@ -12,14 +14,18 @@ import kotlin.math.tan
 
 @Parcelize
 sealed interface RouteFinderApplication : Parcelable {
-    val name: String
+    @get:StringRes
+    val nameId: Int
 
     object InApp : RouteFinderApplication {
-        override val name: String = "인앱"
+        @StringRes
+        override val nameId: Int = R.string.selected_route_finder_application_entry_in_app
     }
 
     @Parcelize
-    object KakaoMap : ThirdParty("카카오맵"), Parcelable {
+    object KakaoMap :
+        ThirdParty(R.string.selected_route_finder_application_entry_kakao_map),
+        Parcelable {
         override fun navigationUrl(
             origin: Coordinate,
             destination: Coordinate,
@@ -31,7 +37,9 @@ sealed interface RouteFinderApplication : Parcelable {
     }
 
     @Parcelize
-    object NaverMap : ThirdParty("네이버 지도"), Parcelable {
+    object NaverMap :
+        ThirdParty(R.string.selected_route_finder_application_entry_naver_map),
+        Parcelable {
         override fun navigationUrl(
             origin: Coordinate,
             destination: Coordinate,
@@ -58,7 +66,7 @@ sealed interface RouteFinderApplication : Parcelable {
     }
 
     sealed class ThirdParty(
-        override val name: String,
+        @StringRes override val nameId: Int,
     ) : RouteFinderApplication {
         protected abstract fun navigationUrl(
             origin: Coordinate,
