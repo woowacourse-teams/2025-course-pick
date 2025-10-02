@@ -28,8 +28,10 @@ public class CourseImportApi {
     @PostMapping("/import")
     public ResponseEntity<Void> importFiles(@RequestParam("files") List<MultipartFile> files) throws IOException {
         for (MultipartFile file : files) {
-            List<Course> courses = courseParserService.parseAndCloseInputStream(CourseFile.from(file));
-            courseRepository.saveAll(courses);
+            try (CourseFile courseFile = CourseFile.from(file)) {
+                List<Course> courses = courseParserService.parse(courseFile);
+                courseRepository.saveAll(courses);
+            }
         }
         return ResponseEntity.ok().build();
     }
