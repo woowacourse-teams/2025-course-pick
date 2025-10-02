@@ -6,6 +6,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.TextView
+import androidx.annotation.StringRes
 import androidx.databinding.BindingAdapter
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.appbar.MaterialToolbar
@@ -48,12 +49,14 @@ fun NavigationView.setOnNavigationItemSelected(listener: NavigationView.OnNaviga
 }
 
 @BindingAdapter("simpleListItems")
-fun ListView.setSimpleListItems(items: List<String>) {
+fun ListView.setSimpleListItems(
+    @StringRes items: List<Int>,
+) {
     val adapter =
         ArrayAdapter(
             context,
             android.R.layout.simple_list_item_1,
-            items,
+            items.map(context::getString),
         )
 
     this.adapter = adapter

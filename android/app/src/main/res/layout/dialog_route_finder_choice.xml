@@ -24,7 +24,7 @@
             android:id="@+id/routeFinderChoiceTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="길찾기 앱 선택"
+            android:text="@string/selected_route_finder_application_dialog_title"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent" />
@@ -34,14 +34,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="목적지까지 길찾기에 사용할 앱을 선택하세요."
+            android:text="@string/selected_route_finder_application_dialog_description"
             android:textSize="16sp"
             app:layout_constraintTop_toBottomOf="@id/routeFinderChoiceTitle" />
 
         <ListView
             android:id="@+id/routeFinderChoiceItems"
             onItemClick="@{(parent, view, position, id) -> onChosenListener.onChosen(position)}"
-            simpleListItems="@{state.routeFinderNames}"
+            simpleListItems="@{state.routeFinderNameIds}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
@@ -56,7 +56,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:checked="@={state.defaultAppChecked}"
-            android:text="기본 앱으로 설정하기"
+            android:text="@string/selected_route_finder_application_dialog_set_default"
             app:layout_constraintTop_toBottomOf="@id/routeFinderChoiceItems" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
