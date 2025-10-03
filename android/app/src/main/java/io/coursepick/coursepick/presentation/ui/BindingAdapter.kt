@@ -11,7 +11,9 @@ import androidx.databinding.BindingAdapter
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.slider.RangeSlider
 import io.coursepick.coursepick.R
+import io.coursepick.coursepick.presentation.filter.FilterViewModel
 
 @BindingAdapter("isSelected")
 fun View.selected(isSelected: Boolean) {
@@ -80,4 +82,67 @@ private fun formattedMeter(
 @BindingAdapter("onNavigationClick")
 fun MaterialToolbar.setOnNavigationClick(listener: View.OnClickListener) {
     setNavigationOnClickListener(listener)
+}
+
+@BindingAdapter("onRangeChanged")
+fun RangeSlider.setRangeSliderListener(listener: RangeSliderListener?) {
+    listener?.let {
+        this.addOnChangeListener { _, _, _ ->
+            val values = this.values
+            it.onRangeChanged(values[0].toInt(), values[1].toInt())
+        }
+    }
+}
+
+fun interface RangeSliderListener {
+    fun onRangeChanged(
+        min: Int,
+        max: Int,
+    )
+}
+
+// @BindingAdapter("values")
+// fun RangeSlider.setSliderValues(values: List<Float>?) {
+//    values?.let {
+//        if (this.values != it) {
+//            this.values = it
+//        }
+//    }
+// }
+
+@BindingAdapter("minValueText", "maxValueText")
+fun TextView.setLengthRangeText(
+    min: Float,
+    max: Float,
+) {
+    val min = min.toInt()
+    val max = max.toInt()
+
+    text =
+        when {
+            min == FilterViewModel.MINIMUM_LENGTH_RANGE.toInt() && max != FilterViewModel.MAXIMUM_LENGTH_RANGE.toInt() ->
+                context.getString(R.string.length_range_open_start, max)
+
+            min != FilterViewModel.MINIMUM_LENGTH_RANGE.toInt() && max == FilterViewModel.MAXIMUM_LENGTH_RANGE.toInt() ->
+                context.getString(R.string.length_range_open_end, min)
+
+            min != FilterViewModel.MINIMUM_LENGTH_RANGE.toInt() && max != FilterViewModel.MAXIMUM_LENGTH_RANGE.toInt() ->
+                context.getString(R.string.length_range, min, max)
+
+            else ->
+                context.getString(R.string.total_length_range)
+        }
+}
+
+@BindingAdapter("minValue", "maxValue")
+fun RangeSlider.setRange(
+    min: Float,
+    max: Float,
+) {
+    this.values = listOf(min, max)
+}
+
+@BindingAdapter("isActive")
+fun TextView.setActive(isActive: Boolean) {
+    this.isActivated = isActive
 }
