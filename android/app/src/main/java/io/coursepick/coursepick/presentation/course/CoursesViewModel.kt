@@ -17,6 +17,8 @@ import io.coursepick.coursepick.domain.favorites.FavoritesRepository
 import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.filter.CourseFilter
+import io.coursepick.coursepick.presentation.filter.FilterUiEvent
+import io.coursepick.coursepick.presentation.model.Difficulty
 import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
@@ -45,6 +47,9 @@ class CoursesViewModel(
 
     private val _event: MutableSingleLiveData<CoursesUiEvent> = MutableSingleLiveData()
     val event: SingleLiveData<CoursesUiEvent> get() = _event
+
+    private val _filterEvent: MutableSingleLiveData<FilterUiEvent> = MutableSingleLiveData()
+    val filterEvent: SingleLiveData<FilterUiEvent> get() = _filterEvent
 
     private var writeFavoriteJob: Job? = null
     private val pendingFavoriteWrites: MutableMap<String, Boolean> = mutableMapOf()
@@ -325,15 +330,58 @@ class CoursesViewModel(
         _state.value = state.value?.copy(query = query)
     }
 
-    fun applyFilter(courseFilter: CourseFilter) {
+    fun resetFilterToDefault() {
+        _filterEvent.value = FilterUiEvent.ResetFilter
+        _state.value = state.value?.copy(courseFilter = CourseFilter())
+    }
+
+    fun toggleDifficulty(difficulty: Difficulty) {
+        val updatedDifficulties =
+            state.value
+                ?.courseFilter
+                ?.difficulties
+                ?.toMutableSet()
+                ?.apply {
+                    if (contains(difficulty)) remove(difficulty) else add(difficulty)
+                }
+                ?: mutableSetOf(difficulty)
+
+        val courseFilter =
+            state.value?.courseFilter?.copy(difficulties = updatedDifficulties)
+                ?: CourseFilter(difficulties = updatedDifficulties)
+
+        _state.value = state.value?.copy(courseFilter = courseFilter)
+    }
+
+    fun updateLengthRange(
+        min: Int,
+        max: Int,
+    ) {
+        val updatedLengthRange = min..max
+        val courseFilter =
+            state.value?.courseFilter?.copy(lengthRange = updatedLengthRange) ?: CourseFilter(
+                lengthRange = updatedLengthRange,
+            )
+        _state.value = state.value?.copy(courseFilter = courseFilter)
+    }
+
+    fun cancelFilter() {
+        _filterEvent.value = FilterUiEvent.CancelFilter
+    }
+
+    fun filter(courseFilter: CourseFilter) {
         val filtered =
             originalCourses
                 .filter { courseItem ->
                     (courseFilter.difficulties.isEmpty() || courseItem.difficulty in courseFilter.difficulties) &&
                         (courseItem.length in courseFilter.lengthRange.first..courseFilter.lengthRange.last)
                 }
-
         _state.value = state.value?.copy(courses = filtered, courseFilter = courseFilter)
+    }
+
+    fun applyFilter() {
+        val courseFilter = state.value?.courseFilter ?: CourseFilter()
+        _filterEvent.value = FilterUiEvent.ApplyFilter(courseFilter)
     }
 
     private fun newCourses(
@@ -350,6 +398,8 @@ class CoursesViewModel(
 
     companion object {
         private const val DEBOUNCE_LIMIT_TIME = 500L
+        const val MINIMUM_LENGTH_RANGE = 0f
+        const val MAXIMUM_LENGTH_RANGE = 21f
 
         val Factory =
             object : ViewModelProvider.Factory {

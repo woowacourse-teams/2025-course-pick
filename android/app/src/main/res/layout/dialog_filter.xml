@@ -10,7 +10,11 @@
 
         <variable
             name="viewModel"
-            type="io.coursepick.coursepick.presentation.filter.FilterViewModel" />
+            type="io.coursepick.coursepick.presentation.course.CoursesViewModel" />
+
+        <variable
+            name="courseFilter"
+            type="io.coursepick.coursepick.presentation.filter.CourseFilter" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -148,14 +152,14 @@
             app:thumbColor="@color/point_secondary"
             app:trackColorActive="@color/point_secondary"
             app:trackColorInactive="@color/gray2"
-            app:valueFrom="@{viewModel.MINIMUM_LENGTH_RANGE}"
-            app:valueTo="@{viewModel.MAXIMUM_LENGTH_RANGE}" />
+            app:valueFrom="@{courseFilter.MINIMUM_LENGTH_RANGE}"
+            app:valueTo="@{courseFilter.MAXIMUM_LENGTH_RANGE}" />
 
         <TextView
             android:id="@+id/mainFilterCancel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:onClick="@{() -> viewModel.cancel()}"
+            android:onClick="@{() -> viewModel.cancelFilter()}"
             android:padding="20dp"
             android:text="@string/filter_dialog_cancel"
             android:textAlignment="center"
@@ -170,10 +174,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@drawable/background_filter_result_selector"
-            android:enabled="@{viewModel.state.coursesCount > 0}"
-            android:onClick="@{() -> viewModel.result()}"
+            android:enabled="@{viewModel.state.filteredCount > 0}"
+            android:onClick="@{() -> viewModel.applyFilter()}"
             android:padding="20dp"
-            android:text="@{@string/filter_result_count(viewModel.state.coursesCount)}"
+            android:text="@{viewModel.state.isLoading ? @string/filter_result : @string/filter_result_count(viewModel.state.filteredCount)}"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="18sp"

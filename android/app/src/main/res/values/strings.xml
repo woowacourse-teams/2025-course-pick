@@ -58,6 +58,7 @@
     <string name="length_range">%1$d km ~ %2$d km</string>
     <string name="length_range_open_start">~ %1$d km</string>
     <string name="length_range_open_end">%1$d km ~</string>
+    <string name="filter_result">검색 결과</string>
     <string name="filter_result_count">검색 결과(%1$d개)</string>
     <string name="filter_dialog_title">필터</string>
     <string name="filter_dialog_reset">초기화</string>

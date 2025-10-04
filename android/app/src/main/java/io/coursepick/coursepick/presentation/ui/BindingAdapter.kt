@@ -13,7 +13,7 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.slider.RangeSlider
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.presentation.filter.FilterViewModel
+import io.coursepick.coursepick.presentation.course.CoursesViewModel
 
 @BindingAdapter("isSelected")
 fun View.selected(isSelected: Boolean) {
@@ -101,15 +101,6 @@ fun interface RangeSliderListener {
     )
 }
 
-// @BindingAdapter("values")
-// fun RangeSlider.setSliderValues(values: List<Float>?) {
-//    values?.let {
-//        if (this.values != it) {
-//            this.values = it
-//        }
-//    }
-// }
-
 @BindingAdapter("minValueText", "maxValueText")
 fun TextView.setLengthRangeText(
     min: Float,
@@ -120,13 +111,13 @@ fun TextView.setLengthRangeText(
 
     text =
         when {
-            min == FilterViewModel.MINIMUM_LENGTH_RANGE.toInt() && max != FilterViewModel.MAXIMUM_LENGTH_RANGE.toInt() ->
+            min == CoursesViewModel.MINIMUM_LENGTH_RANGE.toInt() && max != CoursesViewModel.MAXIMUM_LENGTH_RANGE.toInt() ->
                 context.getString(R.string.length_range_open_start, max)
 
-            min != FilterViewModel.MINIMUM_LENGTH_RANGE.toInt() && max == FilterViewModel.MAXIMUM_LENGTH_RANGE.toInt() ->
+            min != CoursesViewModel.MINIMUM_LENGTH_RANGE.toInt() && max == CoursesViewModel.MAXIMUM_LENGTH_RANGE.toInt() ->
                 context.getString(R.string.length_range_open_end, min)
 
-            min != FilterViewModel.MINIMUM_LENGTH_RANGE.toInt() && max != FilterViewModel.MAXIMUM_LENGTH_RANGE.toInt() ->
+            min != CoursesViewModel.MINIMUM_LENGTH_RANGE.toInt() && max != CoursesViewModel.MAXIMUM_LENGTH_RANGE.toInt() ->
                 context.getString(R.string.length_range, min, max)
 
             else ->

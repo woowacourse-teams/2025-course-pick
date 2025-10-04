@@ -11,5 +11,7 @@ data class CoursesUiState(
     val courseFilter: CourseFilter = CourseFilter(),
 ) {
     val isQueryBlank: Boolean get() = query.isBlank()
-    val areCoursesEmpty: Boolean get() = courses.isEmpty()
+    val areCoursesEmpty: Boolean get() = courses.isEmpty() && courseFilter == CourseFilter()
+    val isFilteredAndEmpty: Boolean get() = courses.isEmpty() && courseFilter != CourseFilter()
+    val filteredCount: Int get() = courses.size
 }

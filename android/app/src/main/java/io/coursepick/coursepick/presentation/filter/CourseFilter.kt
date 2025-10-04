@@ -16,6 +16,7 @@ data class CourseFilter(
             if (lengthRange.last == Int.MAX_VALUE) MAXIMUM_LENGTH_RANGE else lengthRange.last / 1000
 
     companion object {
-        private const val MAXIMUM_LENGTH_RANGE = 21
+        const val MINIMUM_LENGTH_RANGE = 0
+        const val MAXIMUM_LENGTH_RANGE = 21
     }
 }

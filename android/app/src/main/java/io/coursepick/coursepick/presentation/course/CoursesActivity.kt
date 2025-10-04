@@ -48,7 +48,6 @@ import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
-import io.coursepick.coursepick.presentation.filter.CourseFilter
 import io.coursepick.coursepick.presentation.filter.FilterBottomSheet
 import io.coursepick.coursepick.presentation.map.kakao.KakaoMapManager
 import io.coursepick.coursepick.presentation.map.kakao.toCoordinate
@@ -139,16 +138,15 @@ class CoursesActivity :
         updateManager = CoursePickUpdateManager(this)
         updateManager.checkForUpdate()
 
-        supportFragmentManager.setFragmentResultListener(
-            "course_filter_request",
-            this,
-        ) { _, bundle ->
-            val courseFilter: CourseFilter? =
-                bundle.getParcelableCompat<CourseFilter>("courseFilter")
-            if (courseFilter != null) {
-                viewModel.applyFilter(courseFilter)
-            }
-        }
+//        supportFragmentManager.setFragmentResultListener(
+//            "course_filter_request",
+//            this,
+//        ) { _, bundle ->
+//            val courseFilter: CourseFilter = viewModel.state.
+//            if (courseFilter != null) {
+//                viewModel.applyFilter()
+//            }
+//        }
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -255,10 +253,7 @@ class CoursesActivity :
     }
 
     override fun showFilters() {
-        val dialog =
-            FilterBottomSheet.newInstance(
-                viewModel.state.value?.courseFilter ?: CourseFilter(),
-            )
+        val dialog = FilterBottomSheet()
         dialog.show(supportFragmentManager, null)
     }
 
