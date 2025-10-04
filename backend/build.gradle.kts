@@ -38,9 +38,6 @@ dependencies {
     // Spatial4J
     implementation("org.locationtech.spatial4j:spatial4j:0.8")
 
-    // GPX Parser
-    implementation("io.jenetics:jpx:3.2.1")
-
     // Logback Logstash Encoder (JSON Format)
     implementation("net.logstash.logback:logstash-logback-encoder:8.1")
 
@@ -51,9 +48,6 @@ dependencies {
     // Google Drive
     implementation("com.google.api-client:google-api-client:2.8.0")
     implementation("com.google.apis:google-api-services-drive:v3-rev20250723-2.0.0")
-
-    // Google Maps
-    implementation("com.google.maps:google-maps-services:2.2.0")
 
     // MockWebServer
     testImplementation("com.squareup.okhttp3:mockwebserver3:5.1.0")
