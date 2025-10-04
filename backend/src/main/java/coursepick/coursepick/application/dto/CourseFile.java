@@ -12,7 +12,7 @@ public record CourseFile(
         String name,
         CourseFileExtension extension,
         InputStream inputStream
-) {
+) implements AutoCloseable {
     public CourseFile {
         String extensionSuffix = "." + extension.name().toLowerCase();
         if (name.toLowerCase().endsWith(extensionSuffix)) {
@@ -28,5 +28,10 @@ public record CourseFile(
         String extension = originalFilename.substring(dotIndex + 1);
 
         return new CourseFile(fileName, CourseFileExtension.from(extension), file.getInputStream());
+    }
+
+    @Override
+    public void close() throws IOException {
+        inputStream.close();
     }
 }
