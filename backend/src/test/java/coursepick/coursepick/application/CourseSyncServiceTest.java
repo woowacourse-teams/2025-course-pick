@@ -7,6 +7,7 @@ import coursepick.coursepick.test_util.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 
@@ -21,7 +22,7 @@ class CourseSyncServiceTest extends AbstractIntegrationTest {
     CourseSyncService sut;
 
     @Test
-    void 코스의_싱크를_맞춘다() {
+    void 코스의_싱크를_맞춘다() throws IOException {
         var gpxInputStream1 = createGpxInputStreamOf(new Coordinate(1, 1, 1), new Coordinate(2, 2, 2), new Coordinate(3, 3, 3));
         var gpxInputStream2 = createGpxInputStreamOf(new Coordinate(1, 1, 1), new Coordinate(2, 2, 2), new Coordinate(3, 3, 3), new Coordinate(1, 1, 1));
         when(courseFileFetcher.fetchNextPage())

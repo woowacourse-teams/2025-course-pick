@@ -19,6 +19,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 
 @Configuration
 public class CourseSyncJobConfig {
@@ -48,6 +49,7 @@ public class CourseSyncJobConfig {
                 .retry(OptimisticLockingFailureException.class)
                 .retry(PessimisticLockingFailureException.class)
                 .retry(IOException.class)
+                .retry(UncheckedIOException.class)
                 .skipLimit(15)
                 .skip(ParseException.class)
                 .skip(XMLStreamException.class)
