@@ -35,3 +35,7 @@ gcp:
 
 osrm.url: ${OSRM_URL}
 admin.token: ${ADMIN_TOKEN}
+
+auth.admin:
+  password: ${AUTH_ADMIN_PASSWORD}
+  login-ttl: ${AUTH_ADMIN_LOGIN_TTL}

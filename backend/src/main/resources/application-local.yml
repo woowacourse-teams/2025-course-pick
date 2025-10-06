@@ -18,6 +18,10 @@ spring:
 
 admin.token: secret
 
+auth.admin:
+  password: secret
+  login-ttl: 30
+
 server:
   tomcat:
     max-part-count: 500
