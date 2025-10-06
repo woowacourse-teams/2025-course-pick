@@ -44,6 +44,10 @@ public enum ErrorType {
             "0을 기준으로 비율을 계산할 수 없습니다.",
             IllegalArgumentException::new
     ),
+    LOGIN_FAIL(
+            "로그인에 실패했습니다.",
+            IllegalArgumentException::new
+    ),
     ;
 
     private final String message;
