@@ -10,6 +10,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -20,6 +21,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Component
+@Profile({"dev", "prod"})
 public class AuthenticationFilter extends OncePerRequestFilter {
 
     private static final String TOKEN_COOKIE_NAME = "ADMIN_TOKEN";
