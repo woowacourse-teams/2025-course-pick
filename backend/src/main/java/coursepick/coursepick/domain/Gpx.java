@@ -9,6 +9,7 @@ import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @SuppressWarnings("ClassCanBeRecord")
 @Slf4j
@@ -57,7 +58,7 @@ public class Gpx {
                     String localName = xsr.getLocalName();
                     if ("trkpt".equals(localName)) {
                         if (lat != null && lon != null) {
-                            coordinates.add(new Coordinate(lat, lon, ele));
+                            coordinates.add(new Coordinate(lat, lon, Objects.requireNonNullElse(ele, 0.0)));
                         }
                         lat = lon = ele = null;
                     }
