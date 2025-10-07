@@ -40,19 +40,23 @@ public class Course {
         this.id = null;
         this.name = new CourseName(name);
         this.roadType = roadType;
+        this.segments = refineCoordinates(rawCoordinates);
+        this.length = calculateLength(segments);
+        this.inclineSummary = InclineSummary.of(segments);
+        this.difficulty = Difficulty.fromLengthAndRoadType(length(), roadType);
+    }
+
+    private List<Segment> refineCoordinates(List<Coordinate> rawCoordinates) {
         List<Coordinate> coordinates = CoordinateBuilder.fromRawCoordinates(rawCoordinates)
                 .removeSimilar()
                 .smooth()
                 .build();
         List<GeoLine> geoLines = GeoLineBuilder.fromCoordinates(coordinates)
                 .build();
-        this.segments = SegmentBuilder.fromGeoLines(geoLines)
+        return SegmentBuilder.fromGeoLines(geoLines)
                 .mergeSameElevationDirection()
                 .mergeSameInclineType()
                 .build();
-        this.length = calculateLength(segments);
-        this.inclineSummary = InclineSummary.of(segments);
-        this.difficulty = Difficulty.fromLengthAndRoadType(length(), roadType);
     }
 
     public Course(String name, List<Coordinate> coordinates) {
