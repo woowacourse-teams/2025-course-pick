@@ -41,7 +41,7 @@ class CoursesViewModel(
             CoursesUiState(
                 query = "",
                 courses = emptyList(),
-                status = UiStatus.Loading,
+                status = UiStatus.Initial,
             ),
         )
     val state: LiveData<CoursesUiState> get() = _state
@@ -417,8 +417,6 @@ class CoursesViewModel(
 
     companion object {
         private const val DEBOUNCE_LIMIT_TIME = 500L
-        const val MINIMUM_LENGTH_RANGE = 0f
-        const val MAXIMUM_LENGTH_RANGE = 21f
 
         val Factory =
             object : ViewModelProvider.Factory {

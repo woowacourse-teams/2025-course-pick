@@ -14,8 +14,8 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.slider.RangeSlider
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.presentation.course.CoursesUiState
-import io.coursepick.coursepick.presentation.course.CoursesViewModel
 import io.coursepick.coursepick.presentation.course.UiStatus
+import io.coursepick.coursepick.presentation.filter.CourseFilter
 import io.coursepick.coursepick.presentation.filter.FloatRange
 
 @BindingAdapter("isSelected")
@@ -128,13 +128,13 @@ fun TextView.setLengthRangeText(
 
     val newText =
         when {
-            min == CoursesViewModel.MINIMUM_LENGTH_RANGE.toInt() && max != CoursesViewModel.MAXIMUM_LENGTH_RANGE.toInt() ->
+            min == CourseFilter.MINIMUM_LENGTH_RANGE.toInt() && max != CourseFilter.MAXIMUM_LENGTH_RANGE.toInt() ->
                 context.getString(R.string.length_range_open_start, max)
 
-            min != CoursesViewModel.MINIMUM_LENGTH_RANGE.toInt() && max == CoursesViewModel.MAXIMUM_LENGTH_RANGE.toInt() ->
+            min != CourseFilter.MINIMUM_LENGTH_RANGE.toInt() && max == CourseFilter.MAXIMUM_LENGTH_RANGE.toInt() ->
                 context.getString(R.string.length_range_open_end, min)
 
-            min != CoursesViewModel.MINIMUM_LENGTH_RANGE.toInt() && max != CoursesViewModel.MAXIMUM_LENGTH_RANGE.toInt() ->
+            min != CourseFilter.MINIMUM_LENGTH_RANGE.toInt() && max != CourseFilter.MAXIMUM_LENGTH_RANGE.toInt() ->
                 context.getString(R.string.length_range, min, max)
 
             else ->

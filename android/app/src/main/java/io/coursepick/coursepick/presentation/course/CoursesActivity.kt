@@ -137,16 +137,6 @@ class CoursesActivity :
 
         updateManager = CoursePickUpdateManager(this)
         updateManager.checkForUpdate()
-
-//        supportFragmentManager.setFragmentResultListener(
-//            "course_filter_request",
-//            this,
-//        ) { _, bundle ->
-//            val courseFilter: CourseFilter = viewModel.state.
-//            if (courseFilter != null) {
-//                viewModel.applyFilter()
-//            }
-//        }
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -354,7 +344,7 @@ class CoursesActivity :
                 }
             }
             supportFragmentManager
-                .findFragmentByTag(content.fragmentClass.name)
+                .findFragmentByTag(content.fragmentClass.javaClass.name)
                 ?.let(::show)
                 ?: run {
                     add(
