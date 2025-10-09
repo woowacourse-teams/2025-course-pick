@@ -61,7 +61,7 @@
 
         <TextView
             android:id="@+id/mainDifficultyEasy"
-            isSelected="@{viewModel.state.courseFilter.difficulties.contains(Difficulty.EASY)}"
+            isSelected="@{viewModel.filterState.courseFilter.difficulties.contains(Difficulty.EASY)}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
@@ -79,7 +79,7 @@
 
         <TextView
             android:id="@+id/mainDifficultyNormal"
-            isSelected="@{viewModel.state.courseFilter.difficulties.contains(Difficulty.NORMAL)}"
+            isSelected="@{viewModel.filterState.courseFilter.difficulties.contains(Difficulty.NORMAL)}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
@@ -97,7 +97,7 @@
 
         <TextView
             android:id="@+id/mainDifficultyHard"
-            isSelected="@{viewModel.state.courseFilter.difficulties.contains(Difficulty.HARD)}"
+            isSelected="@{viewModel.filterState.courseFilter.difficulties.contains(Difficulty.HARD)}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
@@ -134,26 +134,26 @@
             app:layout_constraintBottom_toTopOf="@+id/mainFilterLengthSlider"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/mainDifficultyHard"
-            app:maxValueText="@{viewModel.state.courseFilter.maximumLengthKm}"
-            app:minValueText="@{viewModel.state.courseFilter.minimumLengthKm}" />
+            app:maxValueText="@{viewModel.filterState.courseFilter.lengthRange.last}"
+            app:minValueText="@{viewModel.filterState.courseFilter.lengthRange.first}" />
 
         <com.google.android.material.slider.RangeSlider
             android:id="@+id/mainFilterLengthSlider"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:paddingHorizontal="20dp"
+            android:valueFrom="@{courseFilter.MINIMUM_LENGTH_RANGE}"
+            android:valueTo="@{courseFilter.MAXIMUM_LENGTH_RANGE}"
             app:labelBehavior="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/mainFilterLengthLabel"
-            app:maxValue="@{viewModel.state.courseFilter.maximumLengthKm}"
-            app:minValue="@{viewModel.state.courseFilter.minimumLengthKm}"
+            app:minSeparation="@{1f}"
             app:onRangeChanged="@{(min, max) -> viewModel.updateLengthRange(min, max)}"
+            app:sliderValues="@{viewModel.filterState.courseFilter.lengthRange}"
             app:thumbColor="@color/point_secondary"
             app:trackColorActive="@color/point_secondary"
-            app:trackColorInactive="@color/gray2"
-            app:valueFrom="@{courseFilter.MINIMUM_LENGTH_RANGE}"
-            app:valueTo="@{courseFilter.MAXIMUM_LENGTH_RANGE}" />
+            app:trackColorInactive="@color/gray2" />
 
         <TextView
             android:id="@+id/mainFilterCancel"
@@ -174,10 +174,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@drawable/background_filter_result_selector"
-            android:enabled="@{viewModel.state.filteredCount > 0}"
+            android:enabled="@{viewModel.filterState.filteredCourseCount > 0}"
             android:onClick="@{() -> viewModel.applyFilter()}"
             android:padding="20dp"
-            android:text="@{viewModel.state.isLoading ? @string/filter_result : @string/filter_result_count(viewModel.state.filteredCount)}"
+            android:text="@{@string/filter_result_count(viewModel.filterState.filteredCourseCount)}"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="18sp"

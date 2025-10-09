@@ -36,12 +36,9 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
     private fun setUpEventObserver() {
         coursesViewModel.filterEvent.observe(this) { event: FilterUiEvent ->
             when (event) {
-                FilterUiEvent.ResetFilter -> dismiss()
+                FilterUiEvent.ResetFilter -> Unit
                 FilterUiEvent.CancelFilter -> dismiss()
-                is FilterUiEvent.ApplyFilter -> {
-                    coursesViewModel.filter(event.courseFilter)
-                    dismiss()
-                }
+                is FilterUiEvent.ApplyFilter -> dismiss()
             }
         }
     }
