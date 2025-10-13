@@ -13,11 +13,7 @@ public class MongoConfig {
     public MongoCustomConversions mongoCustomConversions() {
         return new MongoCustomConversions(List.of(
                 new CourseConverter.Reader(),
-                new CourseConverter.Writer(),
-                new CourseNameConverter.Reader(),
-                new CourseNameConverter.Writer(),
-                new MeterConverter.Reader(),
-                new MeterConverter.Writer()
+                new CourseConverter.Writer()
         ));
     }
 }
