@@ -338,14 +338,14 @@ class CoursesActivity :
                 }
             }
             supportFragmentManager
-                .findFragmentByTag(content.fragmentClass.javaClass.name)
+                .findFragmentByTag(content.fragmentClass.name)
                 ?.let(::show)
                 ?: run {
                     add(
                         R.id.mainFragmentContainer,
                         content.fragmentClass,
                         null,
-                        content.fragmentClass.javaClass.name,
+                        content.fragmentClass.name,
                     )
                 }
         }
