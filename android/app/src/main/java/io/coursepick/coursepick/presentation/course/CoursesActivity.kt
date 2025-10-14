@@ -131,6 +131,8 @@ class CoursesActivity :
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun onCreate(savedInstanceState: Bundle?) {
+        setUpFragmentFactory()
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(binding.root)
@@ -362,27 +364,6 @@ class CoursesActivity :
                 CoursesContent.FAVORITES -> getString(R.string.main_empty_favorites_description)
             }
 
-        supportFragmentManager.fragmentFactory =
-            object : FragmentFactory() {
-                override fun instantiate(
-                    classLoader: ClassLoader,
-                    className: String,
-                ): Fragment =
-                    when (className) {
-                        ExploreCoursesFragment::class.java.name -> {
-                            ExploreCoursesFragment(courseItemListener)
-                        }
-
-                        FavoriteCoursesFragment::class.java.name -> {
-                            FavoriteCoursesFragment(courseItemListener)
-                        }
-
-                        else -> {
-                            super.instantiate(classLoader, className)
-                        }
-                    }
-            }
-
         supportFragmentManager.commit {
             setReorderingAllowed(true)
             supportFragmentManager.fragments.forEach { fragment: Fragment ->
@@ -560,6 +541,29 @@ class CoursesActivity :
                 )
             }
         }
+    }
+
+    private fun setUpFragmentFactory() {
+        supportFragmentManager.fragmentFactory =
+            object : FragmentFactory() {
+                override fun instantiate(
+                    classLoader: ClassLoader,
+                    className: String,
+                ): Fragment =
+                    when (className) {
+                        ExploreCoursesFragment::class.java.name -> {
+                            ExploreCoursesFragment(courseItemListener)
+                        }
+
+                        FavoriteCoursesFragment::class.java.name -> {
+                            FavoriteCoursesFragment(courseItemListener)
+                        }
+
+                        else -> {
+                            super.instantiate(classLoader, className)
+                        }
+                    }
+            }
     }
 
     private fun setUpNavigation(systemBars: Insets) {
