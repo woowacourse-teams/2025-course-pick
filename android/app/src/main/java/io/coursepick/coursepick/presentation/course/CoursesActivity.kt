@@ -65,7 +65,7 @@ class CoursesActivity :
     private var searchLauncher: ActivityResultLauncher<Intent>? = null
     private val binding by lazy { ActivityCoursesBinding.inflate(layoutInflater) }
     private val viewModel: CoursesViewModel by viewModels { CoursesViewModel.Factory }
-    private val courseAdapter by lazy { CourseAdapter(CourseItemListener()) }
+    private val courseAdapter by lazy { CourseAdapter(courseItemListener) }
     private val doublePressDetector = DoublePressDetector()
     private val mapManager by lazy { KakaoMapManager(binding.mainMap) }
     private var systemBars: Insets? = null
@@ -75,6 +75,59 @@ class CoursesActivity :
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions(),
         ) {}
+
+    private val courseItemListener =
+        object : CourseItemListener {
+            override fun select(course: CourseItem) {
+                Logger.log(
+                    Logger.Event.Click("course_on_list"),
+                    "id" to course.id,
+                    "name" to course.name,
+                )
+                viewModel.select(course)
+            }
+
+            override fun toggleFavorite(course: CourseItem) {
+                viewModel.toggleFavorite(course)
+            }
+
+            @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+            override fun navigateToCourse(course: CourseItem) {
+                Logger.log(
+                    Logger.Event.Click("navigate"),
+                    "id" to course.id,
+                    "name" to course.name,
+                )
+
+                mapManager.fetchCurrentLocation(
+                    onSuccess = { latitude: Latitude, longitude: Longitude ->
+                        val origin = Coordinate(latitude, longitude)
+                        val selectedApp: RouteFinderApplication? =
+                            CoursePickPreferences.selectedRouteFinder
+                        if (selectedApp == null) {
+                            supportFragmentManager.setFragmentResultListener(
+                                DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_REQUEST,
+                                this@CoursesActivity,
+                            ) { _, bundle: Bundle ->
+                                supportFragmentManager.clearFragmentResultListener(DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_REQUEST)
+                                val selectedApp: RouteFinderApplication =
+                                    bundle.getParcelableCompat<RouteFinderApplication>(DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_RESULT)
+                                        ?: return@setFragmentResultListener
+                                handleNavigation(course, origin, selectedApp)
+                            }
+                            RouteFinderChoiceDialogFragment().show(supportFragmentManager, null)
+                            return@fetchCurrentLocation
+                        }
+                        handleNavigation(course, origin, selectedApp)
+                    },
+                    onFailure = {
+                        Toast
+                            .makeText(this@CoursesActivity, "현재 위치를 가져올 수 없어요.", Toast.LENGTH_SHORT)
+                            .show()
+                    },
+                )
+            }
+        }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -317,11 +370,11 @@ class CoursesActivity :
                 ): Fragment =
                     when (className) {
                         ExploreCoursesFragment::class.java.name -> {
-                            ExploreCoursesFragment(CourseItemListener())
+                            ExploreCoursesFragment(courseItemListener)
                         }
 
                         FavoriteCoursesFragment::class.java.name -> {
-                            FavoriteCoursesFragment(CourseItemListener())
+                            FavoriteCoursesFragment(courseItemListener)
                         }
 
                         else -> {
@@ -480,59 +533,6 @@ class CoursesActivity :
         Logger.log(Logger.Event.Click("navigate_to_open_source_notice"))
         startActivity(Intent(this, OssLicensesMenuActivity::class.java))
     }
-
-    private fun CourseItemListener(): CourseItemListener =
-        object : CourseItemListener {
-            override fun select(course: CourseItem) {
-                Logger.log(
-                    Logger.Event.Click("course_on_list"),
-                    "id" to course.id,
-                    "name" to course.name,
-                )
-                viewModel.select(course)
-            }
-
-            override fun toggleFavorite(course: CourseItem) {
-                viewModel.toggleFavorite(course)
-            }
-
-            @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-            override fun navigateToCourse(course: CourseItem) {
-                Logger.log(
-                    Logger.Event.Click("navigate"),
-                    "id" to course.id,
-                    "name" to course.name,
-                )
-
-                mapManager.fetchCurrentLocation(
-                    onSuccess = { latitude: Latitude, longitude: Longitude ->
-                        val origin = Coordinate(latitude, longitude)
-                        val selectedApp: RouteFinderApplication? =
-                            CoursePickPreferences.selectedRouteFinder
-                        if (selectedApp == null) {
-                            supportFragmentManager.setFragmentResultListener(
-                                DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_REQUEST,
-                                this@CoursesActivity,
-                            ) { _, bundle: Bundle ->
-                                supportFragmentManager.clearFragmentResultListener(DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_REQUEST)
-                                val selectedApp: RouteFinderApplication =
-                                    bundle.getParcelableCompat<RouteFinderApplication>(DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_RESULT)
-                                        ?: return@setFragmentResultListener
-                                handleNavigation(course, origin, selectedApp)
-                            }
-                            RouteFinderChoiceDialogFragment().show(supportFragmentManager, null)
-                            return@fetchCurrentLocation
-                        }
-                        handleNavigation(course, origin, selectedApp)
-                    },
-                    onFailure = {
-                        Toast
-                            .makeText(this@CoursesActivity, "현재 위치를 가져올 수 없어요.", Toast.LENGTH_SHORT)
-                            .show()
-                    },
-                )
-            }
-        }
 
     private fun handleNavigation(
         course: CourseItem,
