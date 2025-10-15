@@ -44,11 +44,18 @@ class CourseRepositoryTest extends AbstractIntegrationTest {
         assertThat(courses).hasSize(expectedSize);
     }
 
-    @Test
-    void 검색하는_코스를_페이징한다() {
-        var courses = sut.findAllHasDistanceWithin(target, new Meter(1500), PageRequest.of(1, 2));
+    @ParameterizedTest
+    @CsvSource({
+            "0, 2, 2, true",
+            "1, 2, 2, false",
+            "0, 4, 4, false",
+            "0, 5, 4, false"
+    })
+    void 검색하는_코스를_페이징한다(int pageNumber, int pageSize, int expectedResultSize, boolean expectedHasNext) {
+        var courses = sut.findAllHasDistanceWithin(target, new Meter(1500), PageRequest.of(pageNumber, pageSize));
 
-        assertThat(courses).hasSize(2);
+        assertThat(courses).hasSize(expectedResultSize);
+        assertThat(courses.hasNext()).isEqualTo(expectedHasNext);
     }
 
     @Test
@@ -56,5 +63,6 @@ class CourseRepositoryTest extends AbstractIntegrationTest {
         var courses = sut.findAllHasDistanceWithin(target, new Meter(1500), null);
 
         assertThat(courses).hasSize(4);
+        assertThat(courses.hasNext()).isFalse();
     }
 }
