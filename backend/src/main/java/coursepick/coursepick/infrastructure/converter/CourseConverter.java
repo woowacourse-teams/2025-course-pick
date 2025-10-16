@@ -1,12 +1,10 @@
 package coursepick.coursepick.infrastructure.converter;
 
-import coursepick.coursepick.domain.Coordinate;
-import coursepick.coursepick.domain.GeoLine;
-import coursepick.coursepick.domain.GeoLineBuilder;
-import coursepick.coursepick.domain.Segment;
+import coursepick.coursepick.domain.*;
 import coursepick.coursepick.logging.LogContent;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.data.convert.WritingConverter;
@@ -15,16 +13,52 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Slf4j
-public class SegmentListConverter {
+public abstract class CourseConverter {
+
+    private static final SegmentListReader SEGMENTS_READER = new SegmentListReader();
+    private static final SegmentListWriter SEGMENTS_WRITER = new SegmentListWriter();
 
     @WritingConverter
-    public static class Writer implements Converter<List<Segment>, Document> {
+    public static class Writer implements Converter<Course, Document> {
+        @Override
+        public Document convert(Course source) {
+            Document document = new Document();
+            if (source.id() != null && !source.id().isBlank()) {
+                document.put("_id", new ObjectId(source.id()));
+            }
+            document.put("name", source.name().value());
+            document.put("road_type", source.roadType().name());
+            document.put("incline_summary", source.inclineSummary().name());
+            document.put("segments", SEGMENTS_WRITER.convert(source.segments()));
+            document.put("length", source.length().value());
+            document.put("difficulty", source.difficulty().name());
+            return document;
+        }
+    }
+
+    @ReadingConverter
+    public static class Reader implements Converter<Document, Course> {
+        @Override
+        public Course convert(Document source) {
+            return new Course(
+                    source.getObjectId("_id").toHexString(),
+                    new CourseName(source.getString("name")),
+                    RoadType.valueOf(source.getString("road_type")),
+                    InclineSummary.valueOf(source.getString("incline_summary")),
+                    SEGMENTS_READER.convert(source.get("segments", Document.class)),
+                    new Meter(source.getDouble("length")),
+                    Difficulty.valueOf(source.getString("difficulty"))
+            );
+        }
+    }
+
+    @WritingConverter
+    private static class SegmentListWriter implements Converter<List<Segment>, Document> {
         @Override
         public Document convert(List<Segment> source) {
             if (source == null) return null;
             List<List<List<Double>>> segmentsData = source.stream()
-                    .map(Writer::parseSegment)
+                    .map(SegmentListWriter::parseSegment)
                     .toList();
 
             Document document = new Document();
@@ -47,8 +81,9 @@ public class SegmentListConverter {
         }
     }
 
+    @Slf4j
     @ReadingConverter
-    public static class Reader implements Converter<Document, List<Segment>> {
+    private static class SegmentListReader implements Converter<Document, List<Segment>> {
         @Override
         public List<Segment> convert(Document source) {
             try {
@@ -56,7 +91,7 @@ public class SegmentListConverter {
                 List<List<List<Double>>> segmentsData = (List<List<List<Double>>>) source.get("coordinates");
 
                 return segmentsData.stream()
-                        .map(Reader::parseSegment)
+                        .map(SegmentListReader::parseSegment)
                         .toList();
             } catch (Exception e) {
                 log.warn("[EXCEPTION] 세그먼트 파싱 중 예외 발생", LogContent.exception(source, e));

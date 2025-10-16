@@ -48,7 +48,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         var latitude = 37.5122;
         var longitude = 127.0276;
 
-        var nearbyCourses = sut.findNearbyCourses(latitude, longitude, null, null, 300);
+        var nearbyCourses = sut.findNearbyCourses(latitude, longitude, null, null, 300, null);
 
         assertThat(nearbyCourses).hasSize(2)
                 .extracting(CourseResponse::name)
@@ -78,7 +78,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         var latitude = 37.5122;
         var longitude = 127.0276;
 
-        var nearbyCourses = sut.findNearbyCourses(latitude, longitude, null, null, 15000);
+        var nearbyCourses = sut.findNearbyCourses(latitude, longitude, null, null, 15000, null);
 
         assertThat(nearbyCourses).hasSize(1)
                 .extracting(CourseResponse::name)
@@ -113,7 +113,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         var latitude = 37.5172;
         var longitude = 127.0276;
 
-        var courses = sut.findNearbyCourses(latitude, longitude, null, null, 1000);
+        var courses = sut.findNearbyCourses(latitude, longitude, null, null, 1000, null);
 
         assertThat(courses).hasSize(2)
                 .extracting(CourseResponse::name)
@@ -151,7 +151,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         var userLatitude = 37.5153291;
         var userLongitude = 127.1031347;
 
-        var courses = sut.findNearbyCourses(mapLatitude, mapLongitude, userLatitude, userLongitude, 1000);
+        var courses = sut.findNearbyCourses(mapLatitude, mapLongitude, userLatitude, userLongitude, 1000, null);
 
         assertThat(course1.distanceFrom(new Coordinate(mapLatitude, mapLongitude)).value()).isLessThan(1000.0);
         assertThat(course2.distanceFrom(new Coordinate(mapLatitude, mapLongitude)).value()).isLessThan(1000.0);
