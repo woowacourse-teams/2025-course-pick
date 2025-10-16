@@ -7,6 +7,9 @@ import coursepick.coursepick.domain.CourseRepository;
 import coursepick.coursepick.domain.Meter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,11 +26,12 @@ public class CourseApplicationService {
     private final WalkingRouteService walkingRouteService;
 
     @Transactional(readOnly = true)
-    public List<CourseResponse> findNearbyCourses(double mapLatitude, double mapLongitude, Double userLatitude, Double userLongitude, int scope) {
+    public List<CourseResponse> findNearbyCourses(double mapLatitude, double mapLongitude, Double userLatitude, Double userLongitude, int scope, Integer pageNumber) {
         final Coordinate mapPosition = new Coordinate(mapLatitude, mapLongitude);
-        Meter meter = new Meter(scope).clamp(1000, 3000);
+        final Meter meter = new Meter(scope).clamp(1000, 3000);
+        Pageable pageable = createPageable(pageNumber);
 
-        List<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(mapPosition, meter);
+        Slice<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(mapPosition, meter, pageable);
 
         if (userLatitude == null || userLongitude == null) {
             return coursesWithinScope
@@ -41,6 +45,11 @@ public class CourseApplicationService {
                 .stream()
                 .map(course -> CourseResponse.from(course, userPosition))
                 .toList();
+    }
+
+    private static Pageable createPageable(Integer pageNumber) {
+        if (pageNumber == null || pageNumber < 0) return PageRequest.of(0, 10);
+        else return PageRequest.of(pageNumber, 10);
     }
 
     @Transactional(readOnly = true)

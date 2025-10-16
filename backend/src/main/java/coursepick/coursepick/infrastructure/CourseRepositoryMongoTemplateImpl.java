@@ -2,7 +2,10 @@ package coursepick.coursepick.infrastructure;
 
 import coursepick.coursepick.domain.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.geo.Point;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -30,16 +33,33 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
          */
         List<? extends Course> listCourses = StreamSupport.stream(courses.spliterator(), false)
                 .toList();
+
         mongoTemplate.insertAll(listCourses);
     }
 
     @Override
-    public List<Course> findAllHasDistanceWithin(Coordinate target, Meter distance) {
-        if (target == null || distance == null) return List.of();
+    public Slice<Course> findAllHasDistanceWithin(Coordinate target, Meter distance, Pageable pageable) {
+        if (target == null || distance == null) return Page.empty(pageable);
 
-        Point center = new GeoJsonPoint(target.longitude(), target.latitude());
-        Query query = Query.query(Criteria.where("segments").near(center).maxDistance(distance.value()));
-        return mongoTemplate.find(query, Course.class);
+        Criteria criteria = Criteria.where("segments")
+                .near(new GeoJsonPoint(target.longitude(), target.latitude()))
+                .maxDistance(distance.value());
+
+        if (pageable == null) {
+            Query query = Query.query(criteria);
+
+            return new SliceImpl<>(mongoTemplate.find(query, Course.class));
+        }
+
+        Query query = Query.query(criteria)
+                .with(pageable)
+                .limit(pageable.getPageSize() + 1);
+
+        List<Course> result = mongoTemplate.find(query, Course.class);
+
+        boolean hasNext = result.size() > pageable.getPageSize();
+        if (hasNext) result.removeLast();
+        return new SliceImpl<>(result, pageable, hasNext);
     }
 
     @Override
@@ -47,6 +67,7 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
         if (ids == null || ids.isEmpty()) return List.of();
 
         Query query = Query.query(Criteria.where("_id").in(ids));
+
         return mongoTemplate.find(query, Course.class);
     }
 
@@ -62,6 +83,7 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
         if (courseName == null) return false;
 
         Query query = Query.query(Criteria.where("name").is(courseName.value()));
+
         return mongoTemplate.exists(query, Course.class);
     }
 }

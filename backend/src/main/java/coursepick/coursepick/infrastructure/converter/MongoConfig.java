@@ -12,12 +12,8 @@ public class MongoConfig {
     @Bean
     public MongoCustomConversions mongoCustomConversions() {
         return new MongoCustomConversions(List.of(
-                new SegmentListConverter.Reader(),
-                new SegmentListConverter.Writer(),
-                new CourseNameConverter.Reader(),
-                new CourseNameConverter.Writer(),
-                new MeterConverter.Reader(),
-                new MeterConverter.Writer()
+                new CourseConverter.Reader(),
+                new CourseConverter.Writer()
         ));
     }
 }
