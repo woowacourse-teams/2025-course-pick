@@ -27,8 +27,8 @@ public abstract class CourseConverter {
                 document.put("_id", new ObjectId(source.id()));
             }
             document.put("name", source.name().value());
-            document.put("road_type", source.roadType().name());
-            document.put("incline_summary", source.inclineSummary().name());
+            document.put("roadType", source.roadType().name());
+            document.put("inclineSummary", source.inclineSummary().name());
             document.put("segments", SEGMENTS_WRITER.convert(source.segments()));
             document.put("length", source.length().value());
             document.put("difficulty", source.difficulty().name());
@@ -43,8 +43,8 @@ public abstract class CourseConverter {
             return new Course(
                     source.getObjectId("_id").toHexString(),
                     new CourseName(source.getString("name")),
-                    RoadType.valueOf(source.getString("road_type")),
-                    InclineSummary.valueOf(source.getString("incline_summary")),
+                    RoadType.valueOf(source.getString("roadType")),
+                    InclineSummary.valueOf(source.getString("inclineSummary")),
                     SEGMENTS_READER.convert(source.get("segments", Document.class)),
                     new Meter(source.getDouble("length")),
                     Difficulty.valueOf(source.getString("difficulty"))
