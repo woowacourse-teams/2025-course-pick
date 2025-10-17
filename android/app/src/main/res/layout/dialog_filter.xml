@@ -6,8 +6,6 @@
 
         <import type="io.coursepick.coursepick.presentation.model.Difficulty" />
 
-        <import type="java.util.Arrays" />
-
         <variable
             name="viewModel"
             type="io.coursepick.coursepick.presentation.course.CoursesViewModel" />
@@ -44,7 +42,7 @@
             android:textAlignment="center"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/mainFilterTitle"
+            app:layout_constraintBottom_toBottomOf="@id/mainFilterTitle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

@@ -65,11 +65,7 @@ class CoursesViewModel(
 
     private fun checkNetwork() {
         if (!networkMonitor.isConnected()) {
-            _state
-                .value =
-                state.value?.copy(
-                    status = UiStatus.NoInternet,
-                )
+            _state.value = state.value?.copy(status = UiStatus.NoInternet)
         }
     }
 
@@ -126,10 +122,7 @@ class CoursesViewModel(
         userCoordinate: Coordinate?,
         scope: Scope = Scope.default(),
     ) {
-        _state.value =
-            state.value?.copy(
-                status = UiStatus.Loading,
-            )
+        _state.value = state.value?.copy(status = UiStatus.Loading)
 
         val favoritedCourseIds: Set<String> = favoritesRepository.favoriteCourseIds()
 
@@ -153,8 +146,7 @@ class CoursesViewModel(
             }.onSuccess { courses: List<CourseItem> ->
                 Logger.log(Logger.Event.Success("fetch_courses"))
                 originalCourses = courses
-                _state
-                    .value =
+                _state.value =
                     state.value?.copy(
                         courses = courses,
                         status = UiStatus.Success,
@@ -169,8 +161,7 @@ class CoursesViewModel(
                     "message" to exception.message.toString(),
                 )
                 if (exception is NoNetworkException) {
-                    _state
-                        .value =
+                    _state.value =
                         state.value?.copy(
                             courses = emptyList(),
                             status = UiStatus.NoInternet,
@@ -189,10 +180,7 @@ class CoursesViewModel(
     }
 
     fun fetchFavorites() {
-        _state.value =
-            state.value?.copy(
-                status = UiStatus.Loading,
-            )
+        _state.value = state.value?.copy(status = UiStatus.Loading)
 
         val favoritedCourseIds: Set<String> = favoritesRepository.favoriteCourseIds()
         if (favoritedCourseIds.isEmpty()) {
@@ -351,7 +339,7 @@ class CoursesViewModel(
 
         val filteredCourse =
             originalCourses
-                .filter { courseItem ->
+                .filter { courseItem: CourseItem ->
                     (courseItem.difficulty in courseFilter.difficulties) &&
                         (courseItem.length in courseFilter.minimumLengthMeter..courseFilter.maximumLengthMeter)
                 }
