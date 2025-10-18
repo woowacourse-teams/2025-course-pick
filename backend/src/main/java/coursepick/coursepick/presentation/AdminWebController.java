@@ -1,11 +1,11 @@
 package coursepick.coursepick.presentation;
 
+import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.presentation.dto.AdminLoginWebRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +23,7 @@ public class AdminWebController {
     @PostMapping("/admin/login")
     public ResponseEntity<Void> login(@RequestBody @Valid AdminLoginWebRequest request) {
         if (!adminPassword.equals(request.password())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            throw ErrorType.INVALID_ADMIN_PASSWORD.create();
         }
         ResponseCookie tokenCookie = ResponseCookie.from(TOKEN_COOKIE_KEY, adminPassword)
                 .httpOnly(true)
