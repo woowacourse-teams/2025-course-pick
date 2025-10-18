@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>런세권 관리자 로그인</title>
+    <link rel="stylesheet" href="css/admin-login.css">
+</head>
+<body>
+<div class="admin-login-page-container">
+    <div class="admin-login-container">
+        <h1 class="admin-login-title">🏃 런세권 관리자 페이지</h1>
+        <p class="admin-login-subtitle">안녕하세요 👋</p>
+        <form class="admin-login-form" id="admin-login-form">
+            <input
+                    type="password"
+                    id="admin-password"
+                    placeholder="비밀번호를 입력하세요"
+                    class="admin-login-input"
+                    required
+                    autocomplete="current-password">
+            <button type="submit" class="admin-login-button">로그인</button>
+        </form>
+        <div id="error-message" class="error-message"></div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="js/admin-login.js"></script>
+</body>
+</html>
