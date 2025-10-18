@@ -6,6 +6,9 @@ spring:
   batch:
     jdbc.initialize-schema: always
     job.enabled: false
+  web:
+    resources:
+      add-mappings: false
 
 server:
   forward-headers-strategy: framework
