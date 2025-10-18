@@ -1,6 +1,7 @@
 package coursepick.coursepick.presentation;
 
 import coursepick.coursepick.presentation.dto.AdminLoginWebRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
@@ -20,7 +21,7 @@ public class AdminWebController {
     private String adminPassword;
 
     @PostMapping("/admin/login")
-    public ResponseEntity<Void> login(@RequestBody AdminLoginWebRequest request) {
+    public ResponseEntity<Void> login(@RequestBody @Valid AdminLoginWebRequest request) {
         if (!adminPassword.equals(request.password())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }

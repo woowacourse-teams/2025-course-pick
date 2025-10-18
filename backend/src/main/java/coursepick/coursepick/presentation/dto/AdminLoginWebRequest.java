@@ -1,4 +1,8 @@
 package coursepick.coursepick.presentation.dto;
 
-public record AdminLoginWebRequest(String password) {
+import jakarta.validation.constraints.NotBlank;
+
+public record AdminLoginWebRequest(
+        @NotBlank String password
+) {
 }
