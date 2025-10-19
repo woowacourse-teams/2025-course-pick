@@ -89,6 +89,7 @@ public class GoogleDriveCourseFileFetcher implements CourseFileFetcher {
                 .setSpaces("drive")
                 .setFields("nextPageToken, files(id, name)")
                 .setPageToken(pageToken)
+                .setPageSize(10)
                 .execute();
     }
 
