@@ -13,9 +13,4 @@
         <item>@string/selected_route_finder_application_value_naver</item>
         <item>@string/selected_route_finder_application_value_none</item>
     </string-array>
-
-    <array name="length_range">
-        <item>1000</item>
-        <item>200000</item>
-    </array>
 </resources>
