@@ -147,10 +147,10 @@
             app:layout_constraintTop_toBottomOf="@id/mainFilterLengthLabel"
             app:minSeparation="@{1f}"
             app:onRangeChanged="@{(min, max) -> viewModel.updateLengthRange(min, max)}"
-            app:sliderValues="@{viewModel.filterState.courseFilter.lengthRange}"
             app:thumbColor="@color/point_secondary"
             app:trackColorActive="@color/point_secondary"
-            app:trackColorInactive="@color/gray2" />
+            app:trackColorInactive="@color/gray2"
+            app:values="@{viewModel.filterState.courseFilter.lengthRange.toList}" />
 
         <TextView
             android:id="@+id/mainFilterCancel"

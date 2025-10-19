@@ -16,7 +16,6 @@ import io.coursepick.coursepick.R
 import io.coursepick.coursepick.presentation.course.CoursesUiState
 import io.coursepick.coursepick.presentation.course.UiStatus
 import io.coursepick.coursepick.presentation.filter.CourseFilter
-import io.coursepick.coursepick.presentation.filter.FloatRange
 
 @BindingAdapter("isSelected")
 fun View.selected(isSelected: Boolean) {
@@ -85,15 +84,6 @@ private fun formattedMeter(
 @BindingAdapter("onNavigationClick")
 fun MaterialToolbar.setOnNavigationClick(listener: View.OnClickListener) {
     setNavigationOnClickListener(listener)
-}
-
-@BindingAdapter("sliderValues")
-fun RangeSlider.setSliderValues(range: FloatRange?) {
-    range ?: return
-    val newValues = listOf(range.first, range.last)
-    if (this.values != newValues) {
-        this.values = newValues
-    }
 }
 
 @BindingAdapter("onRangeChanged")

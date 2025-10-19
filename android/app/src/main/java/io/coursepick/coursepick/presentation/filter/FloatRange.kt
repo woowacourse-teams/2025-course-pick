@@ -7,4 +7,6 @@ import kotlinx.parcelize.Parcelize
 data class FloatRange(
     val first: Float,
     val last: Float,
-) : Parcelable
+) : Parcelable {
+    val toList: List<Float> get() = listOf(first, last)
+}
