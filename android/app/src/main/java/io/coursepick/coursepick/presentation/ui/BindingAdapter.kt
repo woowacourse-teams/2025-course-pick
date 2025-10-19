@@ -96,11 +96,6 @@ fun RangeSlider.setSliderValues(range: FloatRange?) {
     }
 }
 
-@BindingAdapter("minSeparation")
-fun RangeSlider.setMinSeparation(minSeparation: Float) {
-    this.setMinSeparationValue(minSeparation)
-}
-
 @BindingAdapter("onRangeChanged")
 fun RangeSlider.setRangeSliderListener(listener: RangeSliderListener?) {
     listener?.let {
