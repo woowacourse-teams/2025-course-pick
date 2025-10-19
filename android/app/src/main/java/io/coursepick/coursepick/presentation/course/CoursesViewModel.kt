@@ -41,7 +41,7 @@ class CoursesViewModel(
             CoursesUiState(
                 query = "",
                 courses = emptyList(),
-                status = UiStatus.Initial,
+                status = UiStatus.Loading,
             ),
         )
     val state: LiveData<CoursesUiState> get() = _state
