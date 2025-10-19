@@ -9,10 +9,6 @@
         <variable
             name="viewModel"
             type="io.coursepick.coursepick.presentation.course.CoursesViewModel" />
-
-        <variable
-            name="courseFilter"
-            type="io.coursepick.coursepick.presentation.filter.CourseFilter" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -140,8 +136,8 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:paddingHorizontal="20dp"
-            android:valueFrom="@{courseFilter.MINIMUM_LENGTH_RANGE}"
-            android:valueTo="@{courseFilter.MAXIMUM_LENGTH_RANGE}"
+            android:valueFrom="@{viewModel.filterState.courseFilter.MINIMUM_LENGTH_RANGE}"
+            android:valueTo="@{viewModel.filterState.courseFilter.MAXIMUM_LENGTH_RANGE}"
             app:labelBehavior="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
