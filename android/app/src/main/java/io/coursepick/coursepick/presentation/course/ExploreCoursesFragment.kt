@@ -7,13 +7,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import io.coursepick.coursepick.databinding.FragmentExploreCoursesBinding
-import io.coursepick.coursepick.presentation.filter.FilterAction
 import io.coursepick.coursepick.presentation.filter.FilterBottomSheet
 
 class ExploreCoursesFragment(
     listener: CourseItemListener,
 ) : Fragment(),
-    FilterAction {
+    ExploreCoursesAction {
     @Suppress("ktlint:standard:backing-property-naming")
     private var _binding: FragmentExploreCoursesBinding? = null
     private val binding get() = _binding!!

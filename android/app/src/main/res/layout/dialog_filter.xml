@@ -9,6 +9,10 @@
         <variable
             name="viewModel"
             type="io.coursepick.coursepick.presentation.course.CoursesViewModel" />
+
+        <variable
+            name="action"
+            type="io.coursepick.coursepick.presentation.filter.FilterAction" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -32,7 +36,7 @@
             android:id="@+id/mainFilterReset"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="@{() -> viewModel.resetFilterToDefault()}"
+            android:onClick="@{() -> action.reset()}"
             android:padding="20dp"
             android:text="@string/filter_dialog_reset"
             android:textAlignment="center"
@@ -153,7 +157,7 @@
             android:id="@+id/mainFilterCancel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:onClick="@{() -> viewModel.cancelFilter()}"
+            android:onClick="@{() -> action.cancel()}"
             android:padding="20dp"
             android:text="@string/filter_dialog_cancel"
             android:textAlignment="center"
@@ -169,7 +173,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/background_filter_result_selector"
             android:enabled="@{viewModel.filterState.filteredCourseCount > 0}"
-            android:onClick="@{() -> viewModel.applyFilter()}"
+            android:onClick="@{() -> action.apply()}"
             android:padding="20dp"
             android:text="@{@string/filter_result_count(viewModel.filterState.filteredCourseCount)}"
             android:textAlignment="center"

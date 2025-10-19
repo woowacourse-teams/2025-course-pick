@@ -12,10 +12,10 @@
         <variable
             name="viewModel"
             type="io.coursepick.coursepick.presentation.course.CoursesViewModel" />
-        
+
         <variable
             name="action"
-            type="io.coursepick.coursepick.presentation.filter.FilterAction" />
+            type="io.coursepick.coursepick.presentation.course.ExploreCoursesAction" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -9,7 +9,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.coursepick.coursepick.databinding.DialogFilterBinding
 import io.coursepick.coursepick.presentation.course.CoursesViewModel
 
-class FilterBottomSheet : BottomSheetDialogFragment() {
+class FilterBottomSheet :
+    BottomSheetDialogFragment(),
+    FilterAction {
     private val coursesViewModel: CoursesViewModel by activityViewModels()
 
     @Suppress("ktlint:standard:backing-property-naming")
@@ -23,7 +25,6 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
     ): View {
         _binding = DialogFilterBinding.inflate(inflater, container, false)
         setUpBindingVariables()
-        setUpEventObserver()
 
         return binding.root
     }
@@ -31,20 +32,24 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
     private fun setUpBindingVariables() {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = coursesViewModel
-    }
-
-    private fun setUpEventObserver() {
-        coursesViewModel.filterEvent.observe(this) { event: FilterUiEvent ->
-            when (event) {
-                FilterUiEvent.ResetFilter -> Unit
-                FilterUiEvent.CancelFilter -> dismiss()
-                is FilterUiEvent.ApplyFilter -> dismiss()
-            }
-        }
+        binding.action = this
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun cancel() {
+        dismiss()
+    }
+
+    override fun reset() {
+        coursesViewModel.resetFilterToDefault()
+    }
+
+    override fun apply() {
+        coursesViewModel.applyFilter()
+        dismiss()
     }
 }

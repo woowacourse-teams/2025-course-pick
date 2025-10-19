@@ -17,7 +17,6 @@ import io.coursepick.coursepick.domain.favorites.FavoritesRepository
 import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.filter.CourseFilter
-import io.coursepick.coursepick.presentation.filter.FilterUiEvent
 import io.coursepick.coursepick.presentation.filter.FilterUiState
 import io.coursepick.coursepick.presentation.filter.FloatRange
 import io.coursepick.coursepick.presentation.model.Difficulty
@@ -52,9 +51,6 @@ class CoursesViewModel(
     private val _filterState: MutableLiveData<FilterUiState> =
         MutableLiveData(FilterUiState())
     val filterState: LiveData<FilterUiState> get() = _filterState
-
-    private val _filterEvent: MutableSingleLiveData<FilterUiEvent> = MutableSingleLiveData()
-    val filterEvent: SingleLiveData<FilterUiEvent> get() = _filterEvent
 
     private var writeFavoriteJob: Job? = null
     private val pendingFavoriteWrites: MutableMap<String, Boolean> = mutableMapOf()
@@ -315,7 +311,6 @@ class CoursesViewModel(
     }
 
     fun resetFilterToDefault() {
-        _filterEvent.value = FilterUiEvent.ResetFilter
         _filterState.value = filterState.value?.copy(
             courseFilter = CourseFilter(),
             filteredCourseCount = originalCourses.size,
@@ -375,10 +370,6 @@ class CoursesViewModel(
         ) ?: FilterUiState()
     }
 
-    fun cancelFilter() {
-        _filterEvent.value = FilterUiEvent.CancelFilter
-    }
-
     fun applyFilter() {
         val courseFilter = filterState.value?.courseFilter ?: CourseFilter()
         val filteredCourse =
@@ -388,7 +379,6 @@ class CoursesViewModel(
                         (courseItem.length in courseFilter.minimumLengthMeter..courseFilter.maximumLengthMeter)
                 }
         _state.value = state.value?.copy(courses = filteredCourse)
-        _filterEvent.value = FilterUiEvent.ApplyFilter(courseFilter)
     }
 
     private fun newCourses(
