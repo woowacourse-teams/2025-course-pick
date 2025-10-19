@@ -132,8 +132,7 @@
             app:layout_constraintBottom_toTopOf="@+id/mainFilterLengthSlider"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/mainDifficultyHard"
-            app:maxValueText="@{viewModel.filterState.courseFilter.lengthRange.last}"
-            app:minValueText="@{viewModel.filterState.courseFilter.lengthRange.first}" />
+            app:lengthRangeText="@{viewModel.filterState.courseFilter}" />
 
         <com.google.android.material.slider.RangeSlider
             android:id="@+id/mainFilterLengthSlider"

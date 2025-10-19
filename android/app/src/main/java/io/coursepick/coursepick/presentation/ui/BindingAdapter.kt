@@ -118,13 +118,10 @@ fun interface RangeSliderListener {
     )
 }
 
-@BindingAdapter("minValueText", "maxValueText")
-fun TextView.setLengthRangeText(
-    min: Float,
-    max: Float,
-) {
-    val min = min.toInt()
-    val max = max.toInt()
+@BindingAdapter("lengthRangeText")
+fun TextView.setLengthRangeText(filter: CourseFilter) {
+    val min = filter.lengthRange.first.toInt()
+    val max = filter.lengthRange.last.toInt()
 
     val newText =
         when {
@@ -137,8 +134,7 @@ fun TextView.setLengthRangeText(
             min != CourseFilter.MINIMUM_LENGTH_RANGE.toInt() && max != CourseFilter.MAXIMUM_LENGTH_RANGE.toInt() ->
                 context.getString(R.string.length_range, min, max)
 
-            else ->
-                context.getString(R.string.total_length_range)
+            else -> context.getString(R.string.total_length_range)
         }
 
     if (text.toString() != newText) {
