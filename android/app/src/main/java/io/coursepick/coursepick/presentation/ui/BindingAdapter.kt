@@ -87,12 +87,10 @@ fun MaterialToolbar.setOnNavigationClick(listener: View.OnClickListener) {
 }
 
 @BindingAdapter("onRangeChanged")
-fun RangeSlider.setRangeSliderListener(listener: RangeSliderListener?) {
-    listener?.let {
-        this.addOnChangeListener { _, _, _ ->
-            val values = this.values
-            it.onRangeChanged(values[0], values[1])
-        }
+fun RangeSlider.setRangeSliderListener(listener: RangeSliderListener) {
+    this.addOnChangeListener { _, _, _ ->
+        val values = this.values
+        listener.onRangeChanged(values[0], values[1])
     }
 }
 
