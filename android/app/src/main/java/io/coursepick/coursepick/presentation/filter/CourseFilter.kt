@@ -1,6 +1,7 @@
 package io.coursepick.coursepick.presentation.filter
 
 import android.os.Parcelable
+import io.coursepick.coursepick.presentation.course.CourseItem
 import io.coursepick.coursepick.presentation.model.Difficulty
 import kotlinx.parcelize.Parcelize
 
@@ -13,6 +14,10 @@ data class CourseFilter(
     val maximumLengthMeter: Int
         get() =
             if (lengthRange.last == MAXIMUM_LENGTH_RANGE) Float.MAX_VALUE.toInt() else (lengthRange.last * KM_TO_METER).toInt()
+
+    fun match(courseItem: CourseItem): Boolean =
+        (difficulties.isEmpty() || courseItem.difficulty in difficulties) &&
+            (courseItem.length in minimumLengthMeter..maximumLengthMeter)
 
     companion object {
         const val MINIMUM_LENGTH_RANGE = 0F

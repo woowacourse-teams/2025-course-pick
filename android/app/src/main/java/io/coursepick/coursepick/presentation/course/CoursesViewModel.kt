@@ -333,11 +333,7 @@ class CoursesViewModel(
                 ?: CourseFilter(difficulties = updatedDifficulties)
 
         val filteredCourse =
-            originalCourses
-                .filter { courseItem: CourseItem ->
-                    (courseItem.difficulty in courseFilter.difficulties) &&
-                        (courseItem.length in courseFilter.minimumLengthMeter..courseFilter.maximumLengthMeter)
-                }
+            originalCourses.filter { courseItem: CourseItem -> courseFilter.match(courseItem) }
 
         _filterState.value = filterState.value?.copy(
             courseFilter = courseFilter,
@@ -359,11 +355,7 @@ class CoursesViewModel(
                 lengthRange = updatedLengthRange,
             )
         val filteredCourse =
-            originalCourses
-                .filter { courseItem ->
-                    (courseItem.difficulty in updatedCourseFilter.difficulties) &&
-                        (courseItem.length in updatedCourseFilter.minimumLengthMeter..updatedCourseFilter.maximumLengthMeter)
-                }
+            originalCourses.filter { courseItem: CourseItem -> updatedCourseFilter.match(courseItem) }
         _filterState.value = filterState.value?.copy(
             courseFilter = updatedCourseFilter,
             filteredCourseCount = filteredCourse.size,
@@ -373,11 +365,7 @@ class CoursesViewModel(
     fun applyFilter() {
         val courseFilter = filterState.value?.courseFilter ?: CourseFilter()
         val filteredCourse =
-            originalCourses
-                .filter { courseItem ->
-                    (courseItem.difficulty in courseFilter.difficulties) &&
-                        (courseItem.length in courseFilter.minimumLengthMeter..courseFilter.maximumLengthMeter)
-                }
+            originalCourses.filter { courseItem: CourseItem -> courseFilter.match(courseItem) }
         _state.value = state.value?.copy(courses = filteredCourse)
     }
 
