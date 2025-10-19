@@ -24,7 +24,7 @@ data class CourseItem(
             .toInt()
     val segments: List<Segment> = course.segments
     val roadType: String = course.roadType
-    val difficulty: Difficulty = Difficulty.from(course.difficulty)
+    val difficulty: Difficulty = Difficulty(course.difficulty)
 
     @StringRes
     val inclineSummaryStringResourceId: Int = course.inclineSummary.stringResourceId

@@ -10,7 +10,7 @@ enum class Difficulty(
     ;
 
     companion object {
-        fun from(value: String): Difficulty =
+        operator fun invoke(value: String): Difficulty =
             when (value) {
                 "쉬움" -> EASY
                 "보통" -> NORMAL
