@@ -38,7 +38,7 @@ class CoursesViewModelTest {
         // given
         val expected =
             CoursesUiState(
-                courses =
+                originalCourses =
                     FAKE_COURSES.mapIndexed { index: Int, course: Course ->
                         CourseItem(course, selected = index == 0, favorite = false)
                     },

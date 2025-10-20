@@ -7,7 +7,7 @@
         <import type="io.coursepick.coursepick.presentation.model.Difficulty" />
 
         <import type="java.util.Arrays" />
-        
+
         <import type="java.util.List" />
 
         <variable
@@ -63,7 +63,7 @@
 
         <TextView
             android:id="@+id/mainDifficultyEasy"
-            isSelected="@{viewModel.filterState.courseFilter.difficulties.contains(Difficulty.EASY)}"
+            isSelected="@{viewModel.state.courseFilter.difficulties.contains(Difficulty.EASY)}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
@@ -81,7 +81,7 @@
 
         <TextView
             android:id="@+id/mainDifficultyNormal"
-            isSelected="@{viewModel.filterState.courseFilter.difficulties.contains(Difficulty.NORMAL)}"
+            isSelected="@{viewModel.state.courseFilter.difficulties.contains(Difficulty.NORMAL)}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
@@ -99,7 +99,7 @@
 
         <TextView
             android:id="@+id/mainDifficultyHard"
-            isSelected="@{viewModel.filterState.courseFilter.difficulties.contains(Difficulty.HARD)}"
+            isSelected="@{viewModel.state.courseFilter.difficulties.contains(Difficulty.HARD)}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
@@ -136,15 +136,15 @@
             app:layout_constraintBottom_toTopOf="@+id/mainFilterLengthSlider"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/mainDifficultyHard"
-            app:lengthRangeText="@{viewModel.filterState.courseFilter}" />
+            app:lengthRangeText="@{viewModel.state.courseFilter}" />
 
         <com.google.android.material.slider.RangeSlider
             android:id="@+id/mainFilterLengthSlider"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:paddingHorizontal="20dp"
-            android:valueFrom="@{viewModel.filterState.courseFilter.MINIMUM_LENGTH_RANGE}"
-            android:valueTo="@{viewModel.filterState.courseFilter.MAXIMUM_LENGTH_RANGE}"
+            android:valueFrom="@{viewModel.state.courseFilter.MINIMUM_LENGTH_RANGE}"
+            android:valueTo="@{viewModel.state.courseFilter.MAXIMUM_LENGTH_RANGE}"
             app:labelBehavior="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -154,7 +154,7 @@
             app:thumbColor="@color/point_secondary"
             app:trackColorActive="@color/point_secondary"
             app:trackColorInactive="@color/gray2"
-            app:values="@{(List&lt;Float>) Arrays.asList(viewModel.filterState.courseFilter.lengthRange.start, viewModel.filterState.courseFilter.lengthRange.endInclusive)}" />
+            app:values="@{(List&lt;Float>) Arrays.asList(viewModel.state.courseFilter.lengthRange.start, viewModel.state.courseFilter.lengthRange.endInclusive)}" />
 
         <TextView
             android:id="@+id/mainFilterCancel"
@@ -175,10 +175,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@drawable/background_filter_result_selector"
-            android:enabled="@{viewModel.filterState.filteredCourseCount > 0}"
+            android:enabled="@{viewModel.state.courses.size > 0}"
             android:onClick="@{() -> action.apply()}"
             android:padding="20dp"
-            android:text="@{@string/filter_result_count(viewModel.filterState.filteredCourseCount)}"
+            android:text="@{@string/filter_result_count(viewModel.state.courses.size)}"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="18sp"

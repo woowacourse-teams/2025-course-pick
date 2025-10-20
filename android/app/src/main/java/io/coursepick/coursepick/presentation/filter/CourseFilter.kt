@@ -8,18 +8,16 @@ data class CourseFilter(
     val lengthRange: ClosedFloatingPointRange<Float> = MINIMUM_LENGTH_RANGE..MAXIMUM_LENGTH_RANGE,
     val difficulties: Set<Difficulty> = setOf(Difficulty.EASY, Difficulty.NORMAL, Difficulty.HARD),
 ) {
-    private val minimumLength: Meter get() = Meter.kmToMeter(lengthRange.start)
-    private val maximumLength: Meter
-        get() =
-            if (lengthRange.start == MAXIMUM_LENGTH_RANGE) {
-                Meter.MAX_VALUE
-            } else {
-                Meter.kmToMeter(lengthRange.endInclusive)
-            }
+    private val minimumLength: Meter = Meter.kmToMeter(lengthRange.start)
+    private val maximumLength: Meter =
+        if (lengthRange.endInclusive == MAXIMUM_LENGTH_RANGE) {
+            Meter.MAX_VALUE
+        } else {
+            Meter.kmToMeter(lengthRange.endInclusive)
+        }
 
     fun matches(courseItem: CourseItem): Boolean =
-        (difficulties.isEmpty() || courseItem.difficulty in difficulties) &&
-            (Meter(courseItem.length) in minimumLength..maximumLength)
+        courseItem.difficulty in difficulties && Meter(courseItem.length) in minimumLength..maximumLength
 
     companion object {
         const val MINIMUM_LENGTH_RANGE = 0F

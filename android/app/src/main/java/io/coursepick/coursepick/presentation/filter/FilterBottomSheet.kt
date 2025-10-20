@@ -49,7 +49,6 @@ class FilterBottomSheet :
     }
 
     override fun apply() {
-        coursesViewModel.applyFilter()
         dismiss()
     }
 }
