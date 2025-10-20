@@ -11,7 +11,11 @@ import androidx.databinding.BindingAdapter
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.slider.RangeSlider
 import io.coursepick.coursepick.R
+import io.coursepick.coursepick.presentation.course.CoursesUiState
+import io.coursepick.coursepick.presentation.course.UiStatus
+import io.coursepick.coursepick.presentation.filter.CourseFilter
 
 @BindingAdapter("isSelected")
 fun View.selected(isSelected: Boolean) {
@@ -80,4 +84,70 @@ private fun formattedMeter(
 @BindingAdapter("onNavigationClick")
 fun MaterialToolbar.setOnNavigationClick(listener: View.OnClickListener) {
     setNavigationOnClickListener(listener)
+}
+
+@BindingAdapter("onRangeChanged")
+fun RangeSlider.setRangeSliderListener(listener: RangeSliderListener) {
+    this.addOnChangeListener { _, _, _ ->
+        val values = this.values
+        listener.onRangeChanged(values[0], values[1])
+    }
+}
+
+fun interface RangeSliderListener {
+    fun onRangeChanged(
+        min: Float,
+        max: Float,
+    )
+}
+
+@BindingAdapter("lengthRangeText")
+fun TextView.setLengthRangeText(filter: CourseFilter) {
+    val min = filter.lengthRange.start.toInt()
+    val max = filter.lengthRange.endInclusive.toInt()
+
+    val newText =
+        when {
+            min == CourseFilter.MINIMUM_LENGTH_RANGE.toInt() && max != CourseFilter.MAXIMUM_LENGTH_RANGE.toInt() ->
+                context.getString(R.string.length_range_open_start, max)
+
+            min != CourseFilter.MINIMUM_LENGTH_RANGE.toInt() && max == CourseFilter.MAXIMUM_LENGTH_RANGE.toInt() ->
+                context.getString(R.string.length_range_open_end, min)
+
+            min != CourseFilter.MINIMUM_LENGTH_RANGE.toInt() && max != CourseFilter.MAXIMUM_LENGTH_RANGE.toInt() ->
+                context.getString(R.string.length_range, min, max)
+
+            else -> context.getString(R.string.total_length_range)
+        }
+
+    if (text.toString() != newText) {
+        text = newText
+    }
+}
+
+@BindingAdapter("isActive")
+fun TextView.setActive(isActive: Boolean) {
+    this.isActivated = isActive
+}
+
+@BindingAdapter("visibleWhenNoInternet")
+fun View.visibleWhenNoInternet(status: UiStatus?) {
+    visibility = if (status == UiStatus.NoInternet) View.VISIBLE else View.GONE
+}
+
+@BindingAdapter("visibleWhenLoading")
+fun View.visibleWhenLoading(status: UiStatus?) {
+    visibility = if (status == UiStatus.Loading) View.VISIBLE else View.GONE
+}
+
+@BindingAdapter("visibleWhenSuccess")
+fun View.visibleWhenSuccess(status: UiStatus?) {
+    visibility =
+        if (status == UiStatus.Success) View.VISIBLE else View.GONE
+}
+
+@BindingAdapter("visibleWhenEmpty")
+fun View.visibleWhenEmpty(state: CoursesUiState) {
+    visibility =
+        if (state.courses.isEmpty() && state.status == UiStatus.Success) View.VISIBLE else View.GONE
 }
