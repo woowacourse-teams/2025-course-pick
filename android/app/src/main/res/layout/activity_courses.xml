@@ -7,6 +7,8 @@
 
         <import type="android.view.View" />
 
+        <import type="io.coursepick.coursepick.presentation.filter.CourseFilter" />
+
         <variable
             name="viewModel"
             type="io.coursepick.coursepick.presentation.course.CoursesViewModel" />
@@ -178,20 +180,20 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:visibility="@{viewModel.state.isLoading ? View.VISIBLE : View.GONE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader" />
+                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
+                    app:visibleWhenLoading="@{viewModel.state.status}" />
 
                 <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/mainFragmentContainer"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:visibility="@{viewModel.state.isLoading || viewModel.state.areCoursesEmpty || viewModel.state.isNoInternet ? View.GONE : View.VISIBLE}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader" />
+                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
+                    app:visibleWhenSuccess="@{viewModel.state.status}" />
 
                 <TextView
                     android:id="@+id/mainEmptyCourses"
@@ -200,9 +202,9 @@
                     android:layout_marginTop="10dp"
                     android:gravity="center"
                     android:textSize="20sp"
-                    android:visibility="@{viewModel.state.isLoading || !viewModel.state.areCoursesEmpty || viewModel.state.isNoInternet ? View.GONE : View.VISIBLE}"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
+                    app:visibleWhenEmpty="@{viewModel.state}"
                     tools:listitem="@layout/item_course"
                     tools:text="@string/main_empty_courses_description" />
 
@@ -211,11 +213,11 @@
                     layout="@layout/layout_no_internet"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:visibility="@{viewModel.state.isNoInternet ? View.VISIBLE : View.GONE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
-                    app:listener="@{listener}" />
+                    app:listener="@{listener}"
+                    app:visibleWhenNoInternet="@{viewModel.state.status}" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

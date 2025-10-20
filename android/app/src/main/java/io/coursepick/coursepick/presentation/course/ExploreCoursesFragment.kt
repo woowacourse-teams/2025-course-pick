@@ -7,10 +7,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import io.coursepick.coursepick.databinding.FragmentExploreCoursesBinding
+import io.coursepick.coursepick.presentation.filter.FilterBottomSheet
 
 class ExploreCoursesFragment(
     listener: CourseItemListener,
-) : Fragment() {
+) : Fragment(),
+    ShowFiltersListener {
     @Suppress("ktlint:standard:backing-property-naming")
     private var _binding: FragmentExploreCoursesBinding? = null
     private val binding get() = _binding!!
@@ -43,11 +45,17 @@ class ExploreCoursesFragment(
     private fun setUpBindingVariables() {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.adapter = courseAdapter
+        binding.showFiltersListener = this
     }
 
     private fun setUpStateObserver() {
         viewModel.state.observe(viewLifecycleOwner) { state: CoursesUiState ->
             courseAdapter.submitList(state.courses)
         }
+    }
+
+    override fun showFilters() {
+        val dialog = FilterBottomSheet()
+        dialog.show(childFragmentManager, null)
     }
 }

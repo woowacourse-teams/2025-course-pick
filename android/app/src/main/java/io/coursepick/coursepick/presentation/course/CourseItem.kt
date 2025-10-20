@@ -5,6 +5,7 @@ import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.InclineSummary
 import io.coursepick.coursepick.domain.course.Segment
+import io.coursepick.coursepick.presentation.model.Difficulty
 
 data class CourseItem(
     val course: Course,
@@ -23,7 +24,7 @@ data class CourseItem(
             .toInt()
     val segments: List<Segment> = course.segments
     val roadType: String = course.roadType
-    val difficulty: String = course.difficulty
+    val difficulty: Difficulty = Difficulty(course.difficulty)
 
     @StringRes
     val inclineSummaryStringResourceId: Int = course.inclineSummary.stringResourceId
