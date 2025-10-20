@@ -14,8 +14,8 @@
             type="io.coursepick.coursepick.presentation.course.CoursesViewModel" />
 
         <variable
-            name="action"
-            type="io.coursepick.coursepick.presentation.course.ExploreCoursesAction" />
+            name="showFiltersListener"
+            type="io.coursepick.coursepick.presentation.course.ShowFiltersListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -30,7 +30,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="6dp"
             android:background="@drawable/background_filter_selector"
-            android:onClick="@{() -> action.showFilters()}"
+            android:onClick="@{() -> showFiltersListener.showFilters()}"
             android:paddingHorizontal="10dp"
             android:paddingVertical="6dp"
             android:text="@string/main_course_filter"

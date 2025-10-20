@@ -1,5 +1,5 @@
 package io.coursepick.coursepick.presentation.course
 
-interface ExploreCoursesAction {
+fun interface ShowFiltersListener {
     fun showFilters()
 }

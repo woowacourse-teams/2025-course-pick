@@ -12,7 +12,7 @@ import io.coursepick.coursepick.presentation.filter.FilterBottomSheet
 class ExploreCoursesFragment(
     listener: CourseItemListener,
 ) : Fragment(),
-    ExploreCoursesAction {
+    ShowFiltersListener {
     @Suppress("ktlint:standard:backing-property-naming")
     private var _binding: FragmentExploreCoursesBinding? = null
     private val binding get() = _binding!!
@@ -45,7 +45,7 @@ class ExploreCoursesFragment(
     private fun setUpBindingVariables() {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.adapter = courseAdapter
-        binding.action = this
+        binding.showFiltersListener = this
     }
 
     private fun setUpStateObserver() {
