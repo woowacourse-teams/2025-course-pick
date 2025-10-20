@@ -20,7 +20,7 @@ data class CourseFilter(
                 Meter.kmToMeter(lengthRange.last)
             }
 
-    fun match(courseItem: CourseItem): Boolean =
+    fun matches(courseItem: CourseItem): Boolean =
         (difficulties.isEmpty() || courseItem.difficulty in difficulties) &&
             (Meter(courseItem.length) in minimumLength..maximumLength)
 
