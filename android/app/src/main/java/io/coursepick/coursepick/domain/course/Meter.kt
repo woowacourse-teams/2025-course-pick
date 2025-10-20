@@ -15,8 +15,8 @@ value class Meter(
     companion object {
         private const val KM_TO_METER = 1000
 
-        fun kmToMeter(km: Float): Meter = Meter((km * KM_TO_METER).toInt())
+        val MAX_VALUE = Meter(Double.MAX_VALUE)
 
-        val Infinite = Meter(Int.MAX_VALUE)
+        fun kmToMeter(km: Float): Meter = Meter((km * KM_TO_METER).toInt())
     }
 }

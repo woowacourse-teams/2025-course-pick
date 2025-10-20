@@ -15,7 +15,7 @@ data class CourseFilter(
     private val maximumLength: Meter
         get() =
             if (lengthRange.last == MAXIMUM_LENGTH_RANGE) {
-                Meter(Int.MAX_VALUE)
+                Meter.MAX_VALUE
             } else {
                 Meter.kmToMeter(lengthRange.last)
             }
