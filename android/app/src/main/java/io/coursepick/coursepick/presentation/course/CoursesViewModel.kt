@@ -18,7 +18,6 @@ import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.filter.CourseFilter
 import io.coursepick.coursepick.presentation.filter.FilterUiState
-import io.coursepick.coursepick.presentation.filter.FloatRange
 import io.coursepick.coursepick.presentation.model.Difficulty
 import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
@@ -346,9 +345,9 @@ class CoursesViewModel(
         max: Float,
     ) {
         val currentRange = filterState.value?.courseFilter?.lengthRange
-        if (currentRange?.first == min && currentRange.last == max) return
+        if (currentRange?.start == min && currentRange.endInclusive == max) return
 
-        val updatedLengthRange = FloatRange(min, max)
+        val updatedLengthRange = (min..max)
 
         val updatedCourseFilter =
             filterState.value?.courseFilter?.copy(lengthRange = updatedLengthRange) ?: CourseFilter(

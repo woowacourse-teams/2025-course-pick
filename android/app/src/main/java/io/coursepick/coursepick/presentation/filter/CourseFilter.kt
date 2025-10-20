@@ -1,23 +1,20 @@
 package io.coursepick.coursepick.presentation.filter
 
-import android.os.Parcelable
 import io.coursepick.coursepick.domain.course.Meter
 import io.coursepick.coursepick.presentation.course.CourseItem
 import io.coursepick.coursepick.presentation.model.Difficulty
-import kotlinx.parcelize.Parcelize
 
-@Parcelize
 data class CourseFilter(
-    val lengthRange: FloatRange = FloatRange(MINIMUM_LENGTH_RANGE, MAXIMUM_LENGTH_RANGE),
+    val lengthRange: ClosedFloatingPointRange<Float> = MINIMUM_LENGTH_RANGE..MAXIMUM_LENGTH_RANGE,
     val difficulties: Set<Difficulty> = setOf(Difficulty.EASY, Difficulty.NORMAL, Difficulty.HARD),
-) : Parcelable {
-    private val minimumLength: Meter get() = Meter.kmToMeter(lengthRange.first)
+) {
+    private val minimumLength: Meter get() = Meter.kmToMeter(lengthRange.start)
     private val maximumLength: Meter
         get() =
-            if (lengthRange.last == MAXIMUM_LENGTH_RANGE) {
+            if (lengthRange.start == MAXIMUM_LENGTH_RANGE) {
                 Meter.MAX_VALUE
             } else {
-                Meter.kmToMeter(lengthRange.last)
+                Meter.kmToMeter(lengthRange.endInclusive)
             }
 
     fun matches(courseItem: CourseItem): Boolean =

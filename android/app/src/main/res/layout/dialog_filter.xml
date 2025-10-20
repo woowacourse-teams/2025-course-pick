@@ -6,6 +6,10 @@
 
         <import type="io.coursepick.coursepick.presentation.model.Difficulty" />
 
+        <import type="java.util.Arrays" />
+        
+        <import type="java.util.List" />
+
         <variable
             name="viewModel"
             type="io.coursepick.coursepick.presentation.course.CoursesViewModel" />
@@ -150,7 +154,7 @@
             app:thumbColor="@color/point_secondary"
             app:trackColorActive="@color/point_secondary"
             app:trackColorInactive="@color/gray2"
-            app:values="@{viewModel.filterState.courseFilter.lengthRange.toList}" />
+            app:values="@{(List&lt;Float>) Arrays.asList(viewModel.filterState.courseFilter.lengthRange.start, viewModel.filterState.courseFilter.lengthRange.endInclusive)}" />
 
         <TextView
             android:id="@+id/mainFilterCancel"
