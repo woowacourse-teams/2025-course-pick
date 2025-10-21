@@ -17,8 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminWebController {
 
     private static final String TOKEN_COOKIE_KEY = "admin-token";
-    @Value("${admin.token}")
-    private String adminPassword;
+    private final String adminPassword;
+
+    public AdminWebController(@Value("${admin.token}") String adminPassword) {
+        this.adminPassword = adminPassword;
+    }
 
     @PostMapping("/admin/login")
     public ResponseEntity<Void> login(@RequestBody @Valid AdminLoginWebRequest request) {
