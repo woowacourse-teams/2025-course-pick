@@ -6,6 +6,8 @@
         <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/point_primary</item>
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:ambientShadowAlpha">0.25</item>
+        <item name="android:spotShadowAlpha">1.0</item>
     </style>
 
     <style name="Theme.CoursePick" parent="Base.Theme.CoursePick" />
