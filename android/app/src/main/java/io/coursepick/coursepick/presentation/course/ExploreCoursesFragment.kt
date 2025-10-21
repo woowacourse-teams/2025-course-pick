@@ -61,7 +61,7 @@ class ExploreCoursesFragment(
     }
 
     fun scrollTo(courseItem: CourseItem) {
-        val position = courseAdapter.currentList.indexOfFirst { it.id == courseItem.id }
+        val position = courseAdapter.currentList.indexOfFirst { item: CourseItem -> item.id == courseItem.id }
         if (position != -1) {
             binding.mainCourses.post {
                 binding.mainCourses.smoothScrollToPosition(position)
