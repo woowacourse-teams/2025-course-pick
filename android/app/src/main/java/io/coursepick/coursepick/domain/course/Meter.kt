@@ -12,6 +12,8 @@ value class Meter(
 
     operator fun compareTo(other: Double): Int = this.value.compareTo(other)
 
+    fun toKilometer(): Kilometer = Kilometer(value * METRIC_MULTIPLIER / Kilometer.METRIC_MULTIPLIER)
+
     companion object {
         const val METRIC_MULTIPLIER = 1
 

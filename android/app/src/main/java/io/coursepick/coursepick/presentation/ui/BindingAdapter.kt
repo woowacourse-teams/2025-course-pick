@@ -13,6 +13,8 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.slider.RangeSlider
 import io.coursepick.coursepick.R
+import io.coursepick.coursepick.domain.course.Kilometer
+import io.coursepick.coursepick.domain.course.Meter
 import io.coursepick.coursepick.presentation.course.CoursesUiState
 import io.coursepick.coursepick.presentation.course.UiStatus
 import io.coursepick.coursepick.presentation.filter.CourseFilter
@@ -24,7 +26,7 @@ fun View.selected(isSelected: Boolean) {
 
 @BindingAdapter("courseLength")
 fun TextView.setCourseLength(meter: Int) {
-    this.text = formattedMeter(this.context, meter)
+    this.text = formattedMeter(this.context, Meter(meter))
 }
 
 @BindingAdapter("courseDistance")
@@ -32,7 +34,7 @@ fun TextView.setCourseDistance(meter: Int) {
     this.text =
         this.context.getString(
             R.string.main_course_distance_suffix,
-            formattedMeter(this.context, meter),
+            formattedMeter(this.context, Meter(meter)),
         )
 }
 
@@ -73,12 +75,12 @@ fun ListView.setOnItemClick(listener: AdapterView.OnItemClickListener) {
 
 private fun formattedMeter(
     context: Context,
-    meter: Int,
+    meter: Meter,
 ): String =
-    if (meter < 1000) {
-        context.getString(R.string.main_course_unit_meter, meter)
+    if (meter < Kilometer.METRIC_MULTIPLIER) {
+        context.getString(R.string.main_course_unit_meter, meter.value.toInt())
     } else {
-        context.getString(R.string.main_course_unit_kilometer, meter / 1000.0)
+        context.getString(R.string.main_course_unit_kilometer, meter.toKilometer().value)
     }
 
 @BindingAdapter("onNavigationClick")
