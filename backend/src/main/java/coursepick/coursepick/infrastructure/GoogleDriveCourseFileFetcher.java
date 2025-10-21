@@ -32,6 +32,7 @@ public class GoogleDriveCourseFileFetcher implements CourseFileFetcher {
     private static final String APPLICATION_NAME = "coursepick";
     private static final String QUERY_FORMAT = "'%s' in parents and name contains '.gpx' and trashed = false";
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
+    private static final int PAGE_SIZE = 10;
 
     private final String folderId;
     private final Drive drive;
@@ -89,6 +90,7 @@ public class GoogleDriveCourseFileFetcher implements CourseFileFetcher {
                 .setSpaces("drive")
                 .setFields("nextPageToken, files(id, name)")
                 .setPageToken(pageToken)
+                .setPageSize(PAGE_SIZE)
                 .execute();
     }
 
