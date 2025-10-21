@@ -81,6 +81,7 @@
                 android:layout_gravity="top|center"
                 android:background="@drawable/background_search_this_area"
                 android:clickable="true"
+                android:elevation="4dp"
                 android:onClick="@{() -> action.searchThisArea()}"
                 android:orientation="horizontal"
                 android:padding="10dp"
