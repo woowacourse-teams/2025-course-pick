@@ -15,7 +15,7 @@ class FilterBottomSheet :
     BottomSheetDialogFragment(),
     FilterAction {
     private val coursesViewModel: CoursesViewModel by activityViewModels()
-    private lateinit var committedState: CoursesUiState
+    private lateinit var origianlState: CoursesUiState
 
     @Suppress("ktlint:standard:backing-property-naming")
     private var _binding: DialogFilterBinding? = null
@@ -29,14 +29,14 @@ class FilterBottomSheet :
         _binding = DialogFilterBinding.inflate(inflater, container, false)
         setUpBindingVariables()
         coursesViewModel.state.value?.let { state: CoursesUiState ->
-            committedState = state
+            origianlState = state
         } ?: dismiss()
         return binding.root
     }
 
     override fun onCancel(dialog: DialogInterface) {
         super.onCancel(dialog)
-        coursesViewModel.restore(committedState)
+        coursesViewModel.restore(origianlState)
     }
 
     private fun setUpBindingVariables() {
@@ -51,7 +51,7 @@ class FilterBottomSheet :
     }
 
     override fun cancel() {
-        coursesViewModel.restore(committedState)
+        coursesViewModel.restore(origianlState)
         dismiss()
     }
 
