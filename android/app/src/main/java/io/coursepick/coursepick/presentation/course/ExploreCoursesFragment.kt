@@ -63,13 +63,12 @@ class ExploreCoursesFragment(
     fun scrollTo(courseItem: CourseItem) {
         val position =
             courseAdapter.currentList.indexOfFirst { item: CourseItem -> item.id == courseItem.id }
-        if (position != -1) {
-            binding.mainCourses.smoothScrollToPosition(position)
-            binding.mainCourses.postDelayed({
-                val layoutManager =
-                    binding.mainCourses.layoutManager as? LinearLayoutManager ?: return@postDelayed
-                layoutManager.scrollToPositionWithOffset(position, 0)
-            }, 100)
-        }
+        if (position == -1) return
+        binding.mainCourses.smoothScrollToPosition(position)
+        binding.mainCourses.postDelayed({
+            val layoutManager =
+                binding.mainCourses.layoutManager as? LinearLayoutManager ?: return@postDelayed
+            layoutManager.scrollToPositionWithOffset(position, 0)
+        }, 100)
     }
 }
