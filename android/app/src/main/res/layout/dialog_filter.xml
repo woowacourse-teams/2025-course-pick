@@ -10,6 +10,12 @@
 
         <import type="java.util.List" />
 
+        <import type="io.coursepick.coursepick.presentation.filter.CourseFilter" />
+
+        <import type="io.coursepick.coursepick.presentation.filter.CourseFilter.Companion" />
+
+        <import type="io.coursepick.coursepick.domain.course.Kilometer" />
+
         <variable
             name="viewModel"
             type="io.coursepick.coursepick.presentation.course.CoursesViewModel" />
@@ -143,8 +149,8 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:paddingHorizontal="20dp"
-            android:valueFrom="@{viewModel.state.courseFilter.MINIMUM_LENGTH_RANGE}"
-            android:valueTo="@{viewModel.state.courseFilter.MAXIMUM_LENGTH_RANGE}"
+            android:valueFrom="@{(int) CourseFilter.MINIMUM_LENGTH_RANGE}"
+            android:valueTo="@{(int) CourseFilter.MAXIMUM_LENGTH_RANGE}"
             app:labelBehavior="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -154,7 +160,7 @@
             app:thumbColor="@color/point_secondary"
             app:trackColorActive="@color/point_secondary"
             app:trackColorInactive="@color/gray2"
-            app:values="@{(List&lt;Float>) Arrays.asList(viewModel.state.courseFilter.lengthRange.start, viewModel.state.courseFilter.lengthRange.endInclusive)}" />
+            app:values="@{(List&lt;Float>) Arrays.asList((float) viewModel.state.courseFilter.lengthRange.start.value, (float) viewModel.state.courseFilter.lengthRange.endInclusive.value)}" />
 
         <TextView
             android:id="@+id/mainFilterCancel"

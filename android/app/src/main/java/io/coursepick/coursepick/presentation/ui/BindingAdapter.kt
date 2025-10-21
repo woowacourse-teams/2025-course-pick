@@ -103,20 +103,21 @@ fun interface RangeSliderListener {
 
 @BindingAdapter("lengthRangeText")
 fun TextView.setLengthRangeText(filter: CourseFilter) {
-    val min = filter.lengthRange.start.toInt()
-    val max = filter.lengthRange.endInclusive.toInt()
+    val start =
+        filter.lengthRange.start.value
+            .toInt()
+    val end =
+        filter.lengthRange.endInclusive.value
+            .toInt()
+
+    val min = CourseFilter.MINIMUM_LENGTH_RANGE.toInt()
+    val max = CourseFilter.MAXIMUM_LENGTH_RANGE.toInt()
 
     val newText =
         when {
-            min == CourseFilter.MINIMUM_LENGTH_RANGE.toInt() && max != CourseFilter.MAXIMUM_LENGTH_RANGE.toInt() ->
-                context.getString(R.string.length_range_open_start, max)
-
-            min != CourseFilter.MINIMUM_LENGTH_RANGE.toInt() && max == CourseFilter.MAXIMUM_LENGTH_RANGE.toInt() ->
-                context.getString(R.string.length_range_open_end, min)
-
-            min != CourseFilter.MINIMUM_LENGTH_RANGE.toInt() && max != CourseFilter.MAXIMUM_LENGTH_RANGE.toInt() ->
-                context.getString(R.string.length_range, min, max)
-
+            start == min && end != max -> context.getString(R.string.length_range_open_start, end)
+            start != min && end == max -> context.getString(R.string.length_range_open_end, start)
+            start != min && end != max -> context.getString(R.string.length_range, start, end)
             else -> context.getString(R.string.total_length_range)
         }
 
