@@ -130,6 +130,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/background_courses"
+                android:elevation="10dp"
                 app:behavior_fitToContents="true"
                 app:behavior_peekHeight="@dimen/main_bottom_sheet_peek_height"
                 app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
