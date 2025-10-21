@@ -334,6 +334,10 @@ class CoursesViewModel(
         _state.value = state.value?.copy(courseFilter = updatedCourseFilter)
     }
 
+    fun restore(coursesUiState: CoursesUiState) {
+        _state.value = coursesUiState
+    }
+
     private fun newCourses(
         oldCourses: List<CourseItem>,
         selectedCourse: CourseItem,
