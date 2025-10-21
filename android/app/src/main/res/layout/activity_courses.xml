@@ -138,7 +138,7 @@
 
                 <View
                     android:id="@+id/mainCoursesHandle"
-                    android:layout_width="160dp"
+                    android:layout_width="50dp"
                     android:layout_height="4dp"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/background_courses_handle"
