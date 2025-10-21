@@ -41,6 +41,7 @@ class FilterBottomSheet :
     }
 
     override fun cancel() {
+        coursesViewModel
         dismiss()
     }
 

@@ -334,10 +334,6 @@ class CoursesViewModel(
         _state.value = state.value?.copy(courseFilter = updatedCourseFilter)
     }
 
-    fun applyFilter() {
-        state.value?.courseFilter ?: CourseFilter()
-    }
-
     private fun newCourses(
         oldCourses: List<CourseItem>,
         selectedCourse: CourseItem,
