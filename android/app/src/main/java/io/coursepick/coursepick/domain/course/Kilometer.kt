@@ -8,8 +8,6 @@ value class Kilometer(
 
     fun toMeter(): Meter = Meter(value * METRIC_MULTIPLIER / Meter.METRIC_MULTIPLIER)
 
-    fun toInt(): Int = value.toInt()
-
     companion object {
         const val METRIC_MULTIPLIER = 1_000
     }
