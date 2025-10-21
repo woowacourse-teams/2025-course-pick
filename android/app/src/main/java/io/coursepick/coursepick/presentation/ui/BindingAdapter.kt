@@ -13,6 +13,8 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.slider.RangeSlider
 import io.coursepick.coursepick.R
+import io.coursepick.coursepick.domain.course.Kilometer
+import io.coursepick.coursepick.domain.course.Meter
 import io.coursepick.coursepick.presentation.course.CoursesUiState
 import io.coursepick.coursepick.presentation.course.UiStatus
 import io.coursepick.coursepick.presentation.filter.CourseFilter
@@ -24,7 +26,7 @@ fun View.selected(isSelected: Boolean) {
 
 @BindingAdapter("courseLength")
 fun TextView.setCourseLength(meter: Int) {
-    this.text = formattedMeter(this.context, meter)
+    this.text = formattedMeter(this.context, Meter(meter))
 }
 
 @BindingAdapter("courseDistance")
@@ -32,7 +34,7 @@ fun TextView.setCourseDistance(meter: Int) {
     this.text =
         this.context.getString(
             R.string.main_course_distance_suffix,
-            formattedMeter(this.context, meter),
+            formattedMeter(this.context, Meter(meter)),
         )
 }
 
@@ -73,12 +75,12 @@ fun ListView.setOnItemClick(listener: AdapterView.OnItemClickListener) {
 
 private fun formattedMeter(
     context: Context,
-    meter: Int,
+    meter: Meter,
 ): String =
-    if (meter < 1000) {
-        context.getString(R.string.main_course_unit_meter, meter)
+    if (meter < Kilometer.METRIC_MULTIPLIER) {
+        context.getString(R.string.main_course_unit_meter, meter.value.toInt())
     } else {
-        context.getString(R.string.main_course_unit_kilometer, meter / 1000.0)
+        context.getString(R.string.main_course_unit_kilometer, meter.toKilometer().value)
     }
 
 @BindingAdapter("onNavigationClick")
@@ -103,20 +105,21 @@ fun interface RangeSliderListener {
 
 @BindingAdapter("lengthRangeText")
 fun TextView.setLengthRangeText(filter: CourseFilter) {
-    val min = filter.lengthRange.start.toInt()
-    val max = filter.lengthRange.endInclusive.toInt()
+    val start =
+        filter.lengthRange.start.value
+            .toInt()
+    val end =
+        filter.lengthRange.endInclusive.value
+            .toInt()
+
+    val min = CourseFilter.MINIMUM_LENGTH_RANGE.toInt()
+    val max = CourseFilter.MAXIMUM_LENGTH_RANGE.toInt()
 
     val newText =
         when {
-            min == CourseFilter.MINIMUM_LENGTH_RANGE.toInt() && max != CourseFilter.MAXIMUM_LENGTH_RANGE.toInt() ->
-                context.getString(R.string.length_range_open_start, max)
-
-            min != CourseFilter.MINIMUM_LENGTH_RANGE.toInt() && max == CourseFilter.MAXIMUM_LENGTH_RANGE.toInt() ->
-                context.getString(R.string.length_range_open_end, min)
-
-            min != CourseFilter.MINIMUM_LENGTH_RANGE.toInt() && max != CourseFilter.MAXIMUM_LENGTH_RANGE.toInt() ->
-                context.getString(R.string.length_range, min, max)
-
+            start == min && end != max -> context.getString(R.string.length_range_open_start, end)
+            start != min && end == max -> context.getString(R.string.length_range_open_end, start)
+            start != min && end != max -> context.getString(R.string.length_range, start, end)
             else -> context.getString(R.string.total_length_range)
         }
 
