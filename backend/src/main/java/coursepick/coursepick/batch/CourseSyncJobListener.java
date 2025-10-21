@@ -18,7 +18,7 @@ public class CourseSyncJobListener implements JobExecutionListener {
         JobParameters params = jobExecution.getJobParameters();
         String runId = params.getString("run.id");
 
-        log.debug("[CourseSyncJob 시작] run-id: {} | startTime: {}", runId, jobExecution.getStartTime());
+        log.info("[CourseSyncJob 시작] run-id: {} | startTime: {}", runId, jobExecution.getStartTime());
     }
 
     @Override
@@ -29,11 +29,11 @@ public class CourseSyncJobListener implements JobExecutionListener {
 
         Duration duration = Duration.between(jobExecution.getStartTime(), jobExecution.getEndTime());
 
-        log.debug("[CourseSyncJob 종료] run-id: {} | endTime: {}", runId, jobExecution.getEndTime());
-        log.debug("상태: {}", status);
-        log.debug("처리 시간: {}시간 {}분 {}초", duration.toHoursPart(), duration.toMinutesPart(), duration.toSecondsPart());
+        log.info("[CourseSyncJob 종료] run-id: {} | endTime: {}", runId, jobExecution.getEndTime());
+        log.info("상태: {}", status);
+        log.info("처리 시간: {}시간 {}분 {}초", duration.toHoursPart(), duration.toMinutesPart(), duration.toSecondsPart());
         jobExecution.getStepExecutions().forEach(stepExecution ->
-                log.debug("Step [{}]: Read={}, Write={}, Skip={}",
+                log.info("Step [{}]: Read={}, Write={}, Skip={}",
                 stepExecution.getStepName(),
                 stepExecution.getReadCount(),
                 stepExecution.getWriteCount(),
