@@ -66,11 +66,10 @@ class ExploreCoursesFragment(
             courseAdapter.currentList.indexOfFirst { item: CourseItem -> item.id == courseItem.id }
         if (position == -1) return
         val layoutManager = binding.mainCourses.layoutManager as? LinearLayoutManager ?: return
-        val smoothScroller = object : LinearSmoothScroller(requireContext()) {
-            override fun getVerticalSnapPreference(): Int {
-                return SNAP_TO_START
+        val smoothScroller =
+            object : LinearSmoothScroller(requireContext()) {
+                override fun getVerticalSnapPreference(): Int = SNAP_TO_START
             }
-        }
         smoothScroller.targetPosition = position
         layoutManager.startSmoothScroll(smoothScroller)
     }
