@@ -29,7 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:background="@drawable/background_search_this_area"
+            android:background="@drawable/background_retry_connection"
             android:onClick="@{() -> listener.onReconnect()}"
             android:paddingHorizontal="20dp"
             android:paddingVertical="10dp"
