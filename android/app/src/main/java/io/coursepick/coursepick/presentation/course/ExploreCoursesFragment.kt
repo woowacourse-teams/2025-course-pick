@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
 import io.coursepick.coursepick.databinding.FragmentExploreCoursesBinding
 import io.coursepick.coursepick.presentation.filter.FilterBottomSheet
 
@@ -57,5 +59,18 @@ class ExploreCoursesFragment(
     override fun showFilters() {
         val dialog = FilterBottomSheet()
         dialog.show(childFragmentManager, null)
+    }
+
+    fun scrollTo(courseItem: CourseItem) {
+        val position =
+            courseAdapter.currentList.indexOfFirst { item: CourseItem -> item.id == courseItem.id }
+        if (position == -1) return
+        val layoutManager = binding.mainCourses.layoutManager as? LinearLayoutManager ?: return
+        val smoothScroller =
+            object : LinearSmoothScroller(requireContext()) {
+                override fun getVerticalSnapPreference(): Int = SNAP_TO_START
+            }
+        smoothScroller.targetPosition = position
+        layoutManager.startSmoothScroll(smoothScroller)
     }
 }
