@@ -4,6 +4,7 @@ import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.presentation.dto.AdminLoginWebRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.server.Cookie;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -11,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.Duration;
 
 @RestController
 @Profile("dev")
@@ -30,7 +33,9 @@ public class AdminWebController {
         }
         ResponseCookie tokenCookie = ResponseCookie.from(TOKEN_COOKIE_KEY, adminPassword)
                 .httpOnly(true)
-                .path("/")
+                .maxAge(Duration.ofHours(1))
+                .sameSite(Cookie.SameSite.STRICT.attributeValue())
+                .path("/admin")
                 .build();
 
         return ResponseEntity.ok()
