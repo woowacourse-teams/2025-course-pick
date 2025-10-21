@@ -28,13 +28,9 @@ class FilterBottomSheet :
     ): View {
         _binding = DialogFilterBinding.inflate(inflater, container, false)
         setUpBindingVariables()
-        val state = coursesViewModel.state.value
-        if (state == null) {
-            dismiss()
-            return binding.root
-        }
-        committedState = state
-
+        coursesViewModel.state.value?.let { state: CoursesUiState ->
+            committedState = state
+        } ?: dismiss()
         return binding.root
     }
 
