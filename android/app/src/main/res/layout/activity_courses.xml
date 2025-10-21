@@ -230,6 +230,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:clickable="true"
+                android:translationZ="9999dp"
                 app:menu="@menu/menu_bottom_navigation" />
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
