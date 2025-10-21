@@ -140,7 +140,7 @@
                     android:id="@+id/mainCoursesHandle"
                     android:layout_width="50dp"
                     android:layout_height="4dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="15dp"
                     android:background="@drawable/background_courses_handle"
                     app:layout_constraintBottom_toTopOf="@id/mainCoursesHeader"
                     app:layout_constraintEnd_toEndOf="parent"
