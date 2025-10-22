@@ -685,11 +685,6 @@ class CoursesActivity :
 
                 is CoursesUiEvent.SelectCourseManually -> {
                     mapManager.fitTo(event.course)
-                    val fragment =
-                        supportFragmentManager.findFragmentByTag(
-                            ExploreCoursesFragment::class.java.name,
-                        ) as? ExploreCoursesFragment
-                    fragment?.scrollTo(event.course)
                 }
 
                 is CoursesUiEvent.FetchRouteToCourseSuccess -> {
