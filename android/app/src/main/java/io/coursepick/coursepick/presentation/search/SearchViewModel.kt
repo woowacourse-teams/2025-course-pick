@@ -21,24 +21,18 @@ class SearchViewModel(
     private var searchJob: Job? = null
 
     private val _state: MutableLiveData<SearchUiState> =
-        MutableLiveData<SearchUiState>(
-            SearchUiState(
-                isLoading = false,
-                query = "",
-                places = emptyList(),
-            ),
-        )
+        MutableLiveData<SearchUiState>(SearchUiState(true, emptyList(), false))
     val state: LiveData<SearchUiState> get() = _state
 
     fun search(query: String) {
         searchJob?.cancel()
 
         if (query.isBlank()) {
-            _state.value = state.value?.copy(places = emptyList(), query = query, isLoading = false)
+            _state.value = state.value?.copy(places = emptyList(), isLoading = false)
             return
         }
 
-        _state.value = state.value?.copy(places = emptyList(), query = query, isLoading = true)
+        _state.value = state.value?.copy(isLoading = true)
 
         searchJob =
             viewModelScope.launch {
@@ -52,6 +46,10 @@ class SearchViewModel(
                     _state.value = state.value?.copy(places = emptyList(), isLoading = false)
                 }
             }
+    }
+
+    fun updateQueryState(isBlank: Boolean) {
+        _state.value = state.value?.copy(isQueryBlank = isBlank)
     }
 
     companion object {
