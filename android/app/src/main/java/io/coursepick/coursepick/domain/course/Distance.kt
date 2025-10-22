@@ -2,17 +2,13 @@ package io.coursepick.coursepick.domain.course
 
 @JvmInline
 value class Distance(
-    val meter: Meter,
+    val meter: Int,
 ) : Comparable<Distance> {
     init {
         require(meter >= 0)
     }
 
-    constructor(meter: Int) : this(Meter(meter))
+    constructor(meter: Double) : this(meter.toInt())
 
     override fun compareTo(other: Distance): Int = this.meter.compareTo(other.meter)
-
-    companion object {
-        operator fun invoke(meter: Double): Distance = Distance(Meter(meter))
-    }
 }
