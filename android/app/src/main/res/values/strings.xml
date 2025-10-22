@@ -24,11 +24,9 @@
     <string name="search_no_result">검색 결과가 없어요 🥲</string>
     <string name="selected_route_finder_application_key">selected_route_finder_application</string>
     <string name="favorited_courses_key">favorited_courses_key</string>
-    <string name="selected_route_finder_application_value_in_app">in-app</string>
     <string name="selected_route_finder_application_value_kakao">kakao map</string>
     <string name="selected_route_finder_application_value_naver">naver map</string>
     <string name="selected_route_finder_application_value_none">none</string>
-    <string name="selected_route_finder_application_entry_in_app">인앱</string>
     <string name="selected_route_finder_application_entry_kakao_map">카카오맵</string>
     <string name="selected_route_finder_application_entry_naver_map">네이버 지도</string>
     <string name="selected_route_finder_application_entry_none_map">선택 안 함</string>

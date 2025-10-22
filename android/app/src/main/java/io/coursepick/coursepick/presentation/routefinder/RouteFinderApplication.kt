@@ -2,24 +2,16 @@ package io.coursepick.coursepick.presentation.routefinder
 
 import android.content.Context
 import android.content.Intent
-import android.os.Parcelable
 import android.widget.Toast
 import androidx.core.net.toUri
 import io.coursepick.coursepick.domain.course.Coordinate
-import kotlinx.parcelize.Parcelize
 import kotlin.math.ln
 import kotlin.math.tan
 
-@Parcelize
-sealed interface RouteFinderApplication : Parcelable {
-    val name: String
-
-    object InApp : RouteFinderApplication {
-        override val name: String = "인앱"
-    }
-
-    @Parcelize
-    object KakaoMap : ThirdParty("카카오맵"), Parcelable {
+enum class RouteFinderApplication(
+    val appName: String,
+) {
+    KAKAO_MAP("카카오맵") {
         override fun navigationUrl(
             origin: Coordinate,
             destination: Coordinate,
@@ -28,10 +20,9 @@ sealed interface RouteFinderApplication : Parcelable {
             "https://map.kakao.com/link/by/walk/" +
                 "$ORIGIN_NAME,${origin.latitude.value},${origin.longitude.value}/" +
                 "$destinationName,${destination.latitude.value},${destination.longitude.value}/"
-    }
+    },
 
-    @Parcelize
-    object NaverMap : ThirdParty("네이버 지도"), Parcelable {
+    NAVER_MAP("네이버 지도") {
         override fun navigationUrl(
             origin: Coordinate,
             destination: Coordinate,
@@ -55,39 +46,35 @@ sealed interface RouteFinderApplication : Parcelable {
 
             return x to y
         }
-    }
+    },
+    ;
 
-    sealed class ThirdParty(
-        override val name: String,
-    ) : RouteFinderApplication {
-        protected abstract fun navigationUrl(
-            origin: Coordinate,
-            destination: Coordinate,
-            destinationName: String,
-        ): String
+    protected abstract fun navigationUrl(
+        origin: Coordinate,
+        destination: Coordinate,
+        destinationName: String,
+    ): String
 
-        fun launch(
-            context: Context,
-            origin: Coordinate,
-            destination: Coordinate,
-            destinationName: String,
-        ) {
-            runCatching {
-                val intent =
-                    Intent(
-                        Intent.ACTION_VIEW,
-                        navigationUrl(origin, destination, destinationName).toUri(),
-                    )
+    fun launch(
+        context: Context,
+        origin: Coordinate,
+        destination: Coordinate,
+        destinationName: String,
+    ) {
+        runCatching {
+            val intent =
+                Intent(
+                    Intent.ACTION_VIEW,
+                    navigationUrl(origin, destination, destinationName).toUri(),
+                )
 
-                context.startActivity(intent)
-            }.onFailure {
-                Toast.makeText(context, "길찾기 앱을 실행할 수 없습니다.", Toast.LENGTH_SHORT).show()
-            }
+            context.startActivity(intent)
+        }.onFailure {
+            Toast.makeText(context, "길찾기 앱을 실행할 수 없습니다.", Toast.LENGTH_SHORT).show()
         }
     }
 
     companion object {
-        val ALL = listOf(InApp, KakaoMap, NaverMap)
         private const val ORIGIN_NAME = "현위치"
         private const val EARTH_RADIUS_METERS = 6378137
     }

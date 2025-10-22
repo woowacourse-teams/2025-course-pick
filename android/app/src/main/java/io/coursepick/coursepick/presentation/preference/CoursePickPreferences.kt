@@ -13,7 +13,6 @@ object CoursePickPreferences {
     private lateinit var preferences: SharedPreferences
     private lateinit var selectedRouteFinderApplicationKey: String
     private lateinit var favoritedCoursesKey: String
-    private lateinit var inApp: String
     private lateinit var kakaoMap: String
     private lateinit var naverMap: String
     private lateinit var none: String
@@ -48,7 +47,6 @@ object CoursePickPreferences {
             context.getString(R.string.selected_route_finder_application_key)
         favoritedCoursesKey = context.getString(R.string.favorited_courses_key)
 
-        inApp = context.getString(R.string.selected_route_finder_application_value_in_app)
         kakaoMap = context.getString(R.string.selected_route_finder_application_value_kakao)
         naverMap = context.getString(R.string.selected_route_finder_application_value_naver)
         none = context.getString(R.string.selected_route_finder_application_value_none)
@@ -59,9 +57,8 @@ object CoursePickPreferences {
     var selectedRouteFinder: RouteFinderApplication?
         get() =
             when (preferences.getString(selectedRouteFinderApplicationKey, null)) {
-                inApp -> RouteFinderApplication.InApp
-                kakaoMap -> RouteFinderApplication.KakaoMap
-                naverMap -> RouteFinderApplication.NaverMap
+                kakaoMap -> RouteFinderApplication.KAKAO_MAP
+                naverMap -> RouteFinderApplication.NAVER_MAP
                 else -> null
             }
         set(mapApplication) {
@@ -90,9 +87,8 @@ object CoursePickPreferences {
     private val RouteFinderApplication?.serialized: String
         get() =
             when (this) {
-                is RouteFinderApplication.InApp -> inApp
-                is RouteFinderApplication.KakaoMap -> kakaoMap
-                is RouteFinderApplication.NaverMap -> naverMap
+                RouteFinderApplication.KAKAO_MAP -> kakaoMap
+                RouteFinderApplication.NAVER_MAP -> naverMap
                 null -> none
             }
 }

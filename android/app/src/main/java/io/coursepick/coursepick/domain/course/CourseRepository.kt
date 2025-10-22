@@ -9,11 +9,6 @@ interface CourseRepository {
         scope: Scope,
     ): List<Course>
 
-    suspend fun routeToCourse(
-        course: Course,
-        origin: Coordinate,
-    ): List<Coordinate>
-
     suspend fun nearestCoordinate(
         selected: Course,
         current: Coordinate,

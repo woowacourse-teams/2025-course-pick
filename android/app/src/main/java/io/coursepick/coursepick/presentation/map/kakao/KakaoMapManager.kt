@@ -59,30 +59,9 @@ class KakaoMapManager(
 
     fun pause() = lifecycleHandler.pause()
 
-    fun draw(course: CourseItem) {
-        kakaoMap?.let { kakaoMap: KakaoMap ->
-            drawer.drawCourse(kakaoMap, course)
-        } ?: Timber.w("kakaoMap is null")
-    }
-
     fun draw(courses: List<CourseItem>) {
         kakaoMap?.let { kakaoMap: KakaoMap ->
             drawer.drawCourses(kakaoMap, courses)
-        } ?: Timber.w("kakaoMap is null")
-    }
-
-    fun drawRouteToCourse(
-        route: List<Coordinate>,
-        course: CourseItem,
-    ) {
-        kakaoMap?.let { kakaoMap: KakaoMap ->
-            drawer.drawRouteToCourse(kakaoMap, route, course)
-        } ?: Timber.w("kakaoMap is null")
-    }
-
-    fun removeAllLines() {
-        kakaoMap?.let { kakaoMap: KakaoMap ->
-            drawer.removeAllLines(kakaoMap)
         } ?: Timber.w("kakaoMap is null")
     }
 
@@ -111,12 +90,6 @@ class KakaoMapManager(
                     ).show()
             },
         )
-    }
-
-    fun fitTo(coordinates: List<Coordinate>) {
-        kakaoMap?.let { kakaoMap: KakaoMap ->
-            cameraController.fitTo(coordinates, kakaoMap)
-        } ?: Timber.w("kakaoMap is null")
     }
 
     fun fitTo(course: CourseItem) {
