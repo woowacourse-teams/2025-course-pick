@@ -29,7 +29,7 @@ interface CourseService {
     @GET("/courses/{id}/closest-coordinate")
     suspend fun nearestCoordinate(
         @Path("id") courseId: String,
-        @Query("lat") originLatitude: Double,
-        @Query("lng") originLongitude: Double,
+        @Query("lat") currentLatitude: Double,
+        @Query("lng") currentLongitude: Double,
     ): CoordinateDto
 }

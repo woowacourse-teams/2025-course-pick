@@ -1,7 +1,7 @@
 package io.coursepick.coursepick.domain.search
 
 interface SearchRepository {
-    suspend fun places(
+    suspend fun searchPlaces(
         query: String,
         page: Int? = null,
         size: Int? = null,

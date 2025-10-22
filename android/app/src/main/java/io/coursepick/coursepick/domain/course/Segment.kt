@@ -9,6 +9,6 @@ data class Segment(
     }
 
     companion object {
-        private const val MIN_COORDINATES_SIZE = 2
+        const val MIN_COORDINATES_SIZE = 2
     }
 }
