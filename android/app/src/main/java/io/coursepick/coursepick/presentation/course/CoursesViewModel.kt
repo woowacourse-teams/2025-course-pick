@@ -16,8 +16,6 @@ import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.domain.favorites.FavoritesRepository
 import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.Logger
-import io.coursepick.coursepick.presentation.filter.CourseFilter
-import io.coursepick.coursepick.presentation.model.Difficulty
 import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
@@ -34,8 +32,9 @@ class CoursesViewModel(
         MutableLiveData(
             CoursesUiState(
                 query = "",
-                originalCourses = emptyList(),
-                status = UiStatus.Loading,
+                courses = emptyList(),
+                isLoading = true,
+                isNoInternet = false,
             ),
         )
     val state: LiveData<CoursesUiState> get() = _state
@@ -52,7 +51,12 @@ class CoursesViewModel(
 
     private fun checkNetwork() {
         if (!networkMonitor.isConnected()) {
-            _state.value = state.value?.copy(status = UiStatus.NoInternet)
+            _state
+                .value =
+                state.value?.copy(
+                    isLoading = false,
+                    isNoInternet = true,
+                )
         }
     }
 
@@ -68,7 +72,7 @@ class CoursesViewModel(
         if (selectedIndex == -1) return
 
         val newCourses: List<CourseItem> = newCourses(oldCourses, course)
-        _state.value = state.value?.copy(originalCourses = newCourses)
+        _state.value = state.value?.copy(courses = newCourses)
         _event.value = CoursesUiEvent.SelectCourseManually(course)
     }
 
@@ -80,7 +84,7 @@ class CoursesViewModel(
                 courses.map { course: CourseItem ->
                     if (course.id == toggledCourse.id) course.copy(favorite = !course.favorite) else course
                 }
-            _state.value = state.value?.copy(originalCourses = newCourses)
+            _state.value = state.value?.copy(courses = newCourses)
         }
 
         updateFavorites()
@@ -109,7 +113,12 @@ class CoursesViewModel(
         userCoordinate: Coordinate?,
         scope: Scope = Scope.default(),
     ) {
-        _state.value = state.value?.copy(status = UiStatus.Loading)
+        _state.value =
+            state.value?.copy(
+                isLoading = true,
+                isFailure = false,
+                isNoInternet = false,
+            )
 
         val favoritedCourseIds: Set<String> = favoritesRepository.favoriteCourseIds()
 
@@ -132,10 +141,12 @@ class CoursesViewModel(
                     }
             }.onSuccess { courses: List<CourseItem> ->
                 Logger.log(Logger.Event.Success("fetch_courses"))
-                _state.value =
+                _state
+                    .value =
                     state.value?.copy(
-                        originalCourses = courses,
-                        status = UiStatus.Success,
+                        courses = courses,
+                        isLoading = false,
+                        isFailure = false,
                     )
             }.onFailure { exception: Throwable ->
                 Logger.log(
@@ -143,18 +154,22 @@ class CoursesViewModel(
                     "message" to exception.message.toString(),
                 )
                 if (exception is NoNetworkException) {
-                    _state.value =
+                    _state
+                        .value =
                         state.value?.copy(
-                            originalCourses = emptyList(),
-                            status = UiStatus.NoInternet,
+                            courses = emptyList(),
+                            isLoading = false,
+                            isFailure = false,
+                            isNoInternet = true,
                         )
                     return@onFailure
                 }
                 _state.value =
                     state.value
                         ?.copy(
-                            originalCourses = emptyList(),
-                            status = UiStatus.Failure,
+                            courses = emptyList(),
+                            isLoading = false,
+                            isFailure = true,
                         )
                 _event.value = CoursesUiEvent.FetchCourseFailure
             }
@@ -162,15 +177,16 @@ class CoursesViewModel(
     }
 
     fun fetchFavorites() {
-        _state.value = state.value?.copy(status = UiStatus.Loading)
+        _state.value =
+            state.value?.copy(
+                isLoading = true,
+                isFailure = false,
+                isNoInternet = false,
+            )
 
         val favoritedCourseIds: Set<String> = favoritesRepository.favoriteCourseIds()
         if (favoritedCourseIds.isEmpty()) {
-            _state.value =
-                state.value?.copy(
-                    originalCourses = emptyList(),
-                    status = UiStatus.Success,
-                )
+            _state.value = state.value?.copy(courses = emptyList(), isLoading = false)
             return
         }
 
@@ -189,8 +205,9 @@ class CoursesViewModel(
                 _state.value =
                     state.value
                         ?.copy(
-                            originalCourses = courseItems,
-                            status = UiStatus.Success,
+                            courses = courseItems,
+                            isLoading = false,
+                            isNoInternet = false,
                         )
             }.onFailure { exception: Throwable ->
                 Logger.log(
@@ -201,16 +218,19 @@ class CoursesViewModel(
                     _state.value =
                         state.value
                             ?.copy(
-                                originalCourses = emptyList(),
-                                status = UiStatus.NoInternet,
+                                courses = emptyList(),
+                                isLoading = false,
+                                isFailure = false,
+                                isNoInternet = true,
                             )
                     return@onFailure
                 }
                 _state.value =
                     state.value
                         ?.copy(
-                            originalCourses = emptyList(),
-                            status = UiStatus.Failure,
+                            courses = emptyList(),
+                            isLoading = false,
+                            isFailure = true,
                         )
                 _event.value = CoursesUiEvent.FetchCourseFailure
             }
@@ -225,8 +245,10 @@ class CoursesViewModel(
         val newCourses: List<CourseItem> = newCourses(oldCourses, course)
         _state.value =
             state.value?.copy(
-                originalCourses = newCourses,
-                status = UiStatus.Loading,
+                courses = newCourses,
+                isLoading = true,
+                isFailure = false,
+                isNoInternet = false,
             )
 
         val selectedCourse: CourseItem = course.copy(selected = true)
@@ -236,23 +258,25 @@ class CoursesViewModel(
             }.onSuccess { route: List<Coordinate> ->
                 Logger.log(Logger.Event.Success("fetch_route_to_course"))
                 _state.value =
-                    state.value?.copy(
-                        status = UiStatus.Success,
-                    )
+                    state.value?.copy(isLoading = false, isFailure = false, isNoInternet = false)
                 _event.value = CoursesUiEvent.FetchRouteToCourseSuccess(route, selectedCourse)
             }.onFailure { error: Throwable ->
                 when (error) {
                     is NoNetworkException -> {
                         _state.value =
                             state.value?.copy(
-                                status = UiStatus.NoInternet,
+                                isLoading = false,
+                                isFailure = false,
+                                isNoInternet = true,
                             )
                     }
 
                     else -> {
                         _state.value =
                             state.value?.copy(
-                                status = UiStatus.Failure,
+                                isLoading = false,
+                                isFailure = true,
+                                isNoInternet = false,
                             )
                     }
                 }
@@ -294,48 +318,6 @@ class CoursesViewModel(
 
     fun setQuery(query: String) {
         _state.value = state.value?.copy(query = query)
-    }
-
-    fun resetFilterToDefault() {
-        _state.value = state.value?.copy(courseFilter = CourseFilter())
-    }
-
-    fun toggleDifficulty(difficulty: Difficulty) {
-        val updatedDifficulties =
-            state.value
-                ?.courseFilter
-                ?.difficulties
-                ?.toMutableSet()
-                ?.apply {
-                    if (contains(difficulty)) remove(difficulty) else add(difficulty)
-                }
-                ?: mutableSetOf(difficulty)
-
-        val courseFilter =
-            state.value?.courseFilter?.copy(difficulties = updatedDifficulties)
-                ?: CourseFilter(difficulties = updatedDifficulties)
-
-        _state.value = state.value?.copy(courseFilter = courseFilter)
-    }
-
-    fun updateLengthRange(
-        min: Float,
-        max: Float,
-    ) {
-        val currentRange = state.value?.courseFilter?.lengthRange
-        if (currentRange?.start == min && currentRange.endInclusive == max) return
-
-        val updatedLengthRange = (min..max)
-
-        val updatedCourseFilter =
-            state.value?.courseFilter?.copy(lengthRange = updatedLengthRange) ?: CourseFilter(
-                lengthRange = updatedLengthRange,
-            )
-        _state.value = state.value?.copy(courseFilter = updatedCourseFilter)
-    }
-
-    fun applyFilter() {
-        state.value?.courseFilter ?: CourseFilter()
     }
 
     private fun newCourses(

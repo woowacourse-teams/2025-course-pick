@@ -38,11 +38,9 @@ class CoursesViewModelTest {
         // given
         val expected =
             CoursesUiState(
-                originalCourses =
-                    FAKE_COURSES.mapIndexed { index: Int, course: Course ->
-                        CourseItem(course, selected = index == 0, favorite = false)
-                    },
-                status = UiStatus.Success,
+                FAKE_COURSES.mapIndexed { index: Int, course: Course ->
+                    CourseItem(course, selected = index == 0, favorite = false)
+                },
             )
         val actual = mainViewModel.state.getOrAwaitValue()
 
@@ -58,7 +56,6 @@ class CoursesViewModelTest {
                 FAKE_COURSES.map { course: Course ->
                     CourseItem(course, selected = course == COURSE_FIXTURE_20, favorite = false)
                 },
-                status = UiStatus.Success,
             )
 
         // when
@@ -78,7 +75,6 @@ class CoursesViewModelTest {
                 FAKE_COURSES.map { course: Course ->
                     CourseItem(course, selected = course == COURSE_FIXTURE_20, favorite = false)
                 },
-                status = UiStatus.Success,
             )
 
         // when

@@ -1,13 +1,12 @@
 package io.coursepick.coursepick.presentation.course
 
-import io.coursepick.coursepick.presentation.filter.CourseFilter
-
 data class CoursesUiState(
-    private val originalCourses: List<CourseItem>,
+    val courses: List<CourseItem>,
     val query: String = "",
-    val status: UiStatus = UiStatus.Loading,
-    val courseFilter: CourseFilter = CourseFilter(),
+    val isLoading: Boolean = false,
+    val isFailure: Boolean = false,
+    val isNoInternet: Boolean = false,
 ) {
-    val isQueryBlank: Boolean = query.isBlank()
-    val courses: List<CourseItem> = originalCourses.filter(courseFilter::matches)
+    val isQueryBlank: Boolean get() = query.isBlank()
+    val areCoursesEmpty: Boolean get() = courses.isEmpty()
 }
