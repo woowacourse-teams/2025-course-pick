@@ -39,6 +39,26 @@
             <discardingThreshold>0</discardingThreshold>
             <queueSize>256</queueSize>
         </appender>
+        <appender name="BATCH_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_FILE_PATH}/batch.log</file>
+
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss} [%X{run.id}] %-5level %logger{36} - %msg%n</pattern>
+            </encoder>
+
+            <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_FILE_PATH}/batch.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                <maxHistory>30</maxHistory>
+                <maxFileSize>10MB</maxFileSize>
+                <totalSizeCap>1GB</totalSizeCap>
+            </rollingPolicy>
+        </appender>
+        <logger name="coursepick.coursepick.batch" level="INFO" additivity="false">
+            <appender-ref ref="BATCH_FILE" />
+        </logger>
+        <logger name="coursepick.coursepick.application.CourseSyncService" level="INFO" additivity="false">
+            <appender-ref ref="BATCH_FILE" />
+        </logger>
         <root level="INFO">
             <appender-ref ref="ASYNC_FILE"/>
         </root>
