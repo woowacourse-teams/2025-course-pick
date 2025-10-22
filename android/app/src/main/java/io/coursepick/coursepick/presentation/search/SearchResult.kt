@@ -43,6 +43,7 @@ fun SearchResult(
     }
 }
 
+
 @Preview(showBackground = true)
 @Composable
 private fun SearchResultPreview() {

@@ -1,6 +1,7 @@
 package io.coursepick.coursepick.presentation.course
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.DialogInterface
@@ -19,7 +20,6 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.annotation.IdRes
 import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -28,8 +28,6 @@ import androidx.core.graphics.Insets
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -46,7 +44,6 @@ import io.coursepick.coursepick.presentation.CoursePickUpdateManager
 import io.coursepick.coursepick.presentation.IntentKeys
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
-import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
 import io.coursepick.coursepick.presentation.map.kakao.KakaoMapManager
 import io.coursepick.coursepick.presentation.map.kakao.toCoordinate
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
@@ -67,11 +64,13 @@ class CoursesActivity :
     private var searchLauncher: ActivityResultLauncher<Intent>? = null
     private val binding by lazy { ActivityCoursesBinding.inflate(layoutInflater) }
     private val viewModel: CoursesViewModel by viewModels { CoursesViewModel.Factory }
+    private val courseAdapter by lazy { CourseAdapter(CourseItemListener()) }
     private val doublePressDetector = DoublePressDetector()
     private val mapManager by lazy { KakaoMapManager(binding.mainMap) }
     private var systemBars: Insets? = null
     private lateinit var updateManager: CoursePickUpdateManager
 
+    @SuppressLint("MissingPermission")
     private val locationPermissionLauncher: ActivityResultLauncher<Array<String>> =
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions(),
@@ -90,8 +89,6 @@ class CoursesActivity :
             setUpBottomSheet(systemBars)
             insets
         }
-
-        ViewCompat.setOnApplyWindowInsetsListener(binding.mainBottomNavigation, null)
 
         mapManager.start {
             setUpObservers()
@@ -114,19 +111,13 @@ class CoursesActivity :
                 },
                 onFailure = {
                     val mapCoordinate: Coordinate =
-                        mapManager.cameraPosition?.toCoordinate()
-                            ?: return@fetchCurrentLocation
+                        mapManager.cameraPosition?.toCoordinate() ?: return@fetchCurrentLocation
                     viewModel.fetchCourses(
                         mapCoordinate = mapCoordinate,
                         userCoordinate = null,
                     )
                 },
             )
-
-            setUpBottomNavigation()
-            if (savedInstanceState == null) {
-                binding.mainBottomNavigation.selectedItemId = R.id.coursesMenu
-            }
         }
 
         setUpBindingVariables()
@@ -164,8 +155,6 @@ class CoursesActivity :
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun searchThisArea() {
-        selectMenuWithoutListener(R.id.coursesMenu)
-
         val mapPosition: LatLng =
             mapManager.cameraPosition ?: run {
                 Toast.makeText(this, "지도 위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
@@ -271,8 +260,6 @@ class CoursesActivity :
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun handleLocationResult(intent: Intent?) {
-        selectMenuWithoutListener(R.id.coursesMenu)
-
         if (intent == null) {
             Toast.makeText(this@CoursesActivity, "검색 정보가 전달되지 않았습니다.", Toast.LENGTH_SHORT).show()
             return
@@ -302,78 +289,6 @@ class CoursesActivity :
         mapManager.showSearchPosition(coordinate)
         mapManager.moveTo(latitude, longitude)
         fetchCourses(coordinate, Scope.default())
-    }
-
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    private fun switchContent(content: CoursesContent) {
-        binding.mainCoursesHeader.text = getString(content.headerId)
-
-        supportFragmentManager.commit {
-            setReorderingAllowed(true)
-            supportFragmentManager.fragments.forEach { fragment: Fragment ->
-                if (fragment is ExploreCoursesFragment || fragment is FavoriteCoursesFragment) {
-                    hide(fragment)
-                }
-            }
-            supportFragmentManager
-                .findFragmentByTag(content.fragmentClass.javaClass.name)
-                ?.let(::show)
-                ?: run {
-                    add(
-                        R.id.mainFragmentContainer,
-                        content.fragmentClass,
-                        null,
-                        content.fragmentClass.javaClass.name,
-                    )
-                }
-        }
-    }
-
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    private fun selectMenuWithoutListener(
-        @IdRes menuId: Int,
-    ) {
-        binding.mainBottomNavigation.setOnItemSelectedListener(null)
-        when (menuId) {
-            R.id.coursesMenu -> {
-                switchContent(CoursesContent.EXPLORE)
-                binding.mainBottomNavigation.selectedItemId = menuId
-            }
-
-            R.id.favoritesMenu -> {
-                switchContent(CoursesContent.FAVORITES)
-                binding.mainBottomNavigation.selectedItemId = menuId
-            }
-
-            else -> Unit
-        }
-        setUpBottomNavigation()
-    }
-
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    private fun setUpBottomNavigation() {
-        binding.mainBottomNavigation.setOnItemSelectedListener { item: MenuItem ->
-            when (item.itemId) {
-                R.id.coursesMenu -> {
-                    switchContent(CoursesContent.EXPLORE)
-                    mapManager.cameraPosition?.toCoordinate()?.let { mapCoordinate: Coordinate ->
-                        viewModel.fetchCourses(
-                            mapCoordinate = mapCoordinate,
-                            userCoordinate = null,
-                        )
-                    }
-                    true
-                }
-
-                R.id.favoritesMenu -> {
-                    switchContent(CoursesContent.FAVORITES)
-                    viewModel.fetchFavorites()
-                    true
-                }
-
-                else -> false
-            }
-        }
     }
 
     private fun navigateToPreferences() {
@@ -459,6 +374,37 @@ class CoursesActivity :
         startActivity(Intent(this, OssLicensesMenuActivity::class.java))
     }
 
+    private fun CourseItemListener(): CourseItemListener =
+        object : CourseItemListener {
+            override fun select(course: CourseItem) {
+                Logger.log(
+                    Logger.Event.Click("course_on_list"),
+                    "id" to course.id,
+                    "name" to course.name,
+                )
+                viewModel.select(course)
+            }
+
+            @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+            override fun navigateToMap(course: CourseItem) {
+                Logger.log(
+                    Logger.Event.Click("navigate"),
+                    "id" to course.id,
+                    "name" to course.name,
+                )
+                mapManager.fetchCurrentLocation(
+                    onSuccess = { latitude: Latitude, longitude: Longitude ->
+                        viewModel.fetchNearestCoordinate(course, Coordinate(latitude, longitude))
+                    },
+                    onFailure = {
+                        Toast
+                            .makeText(this@CoursesActivity, "현재 위치를 가져올 수 없어요.", Toast.LENGTH_SHORT)
+                            .show()
+                    },
+                )
+            }
+        }
+
     private fun setUpNavigation(systemBars: Insets) {
         binding.mainNavigation.setPadding(0, 0, 0, systemBars.bottom)
     }
@@ -474,12 +420,7 @@ class CoursesActivity :
         val screenHeight = Resources.getSystem().displayMetrics.heightPixels
 
         bottomSheet.layoutParams.height = screenHeight / 2
-        bottomSheet.setPadding(
-            systemBars.left,
-            0,
-            systemBars.right,
-            systemBars.bottom + binding.mainBottomNavigation.height,
-        )
+        bottomSheet.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom)
 
         val behavior = BottomSheetBehavior.from(bottomSheet)
         behavior.state = BottomSheetBehavior.STATE_EXPANDED
@@ -505,6 +446,7 @@ class CoursesActivity :
     private fun setUpBindingVariables() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
+        binding.adapter = courseAdapter
         binding.action = this
         binding.clientId = coursePickApplication.installationId.value
         binding.listener = this
@@ -550,15 +492,14 @@ class CoursesActivity :
         onBackPressedDispatcher.addCallback(this, callback)
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun setUpObservers() {
         setUpStateObserver()
         setUpEventObserver()
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun setUpStateObserver() {
         viewModel.state.observe(this) { state: CoursesUiState ->
+            courseAdapter.submitList(state.courses)
             mapManager.setOnCourseClickListener(state.courses) { course: CourseItem ->
                 viewModel.select(course)
             }

@@ -12,46 +12,27 @@ import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 object CoursePickPreferences {
     private lateinit var preferences: SharedPreferences
     private lateinit var selectedRouteFinderApplicationKey: String
-    private lateinit var favoritedCoursesKey: String
     private lateinit var kakaoMap: String
     private lateinit var naverMap: String
     private lateinit var none: String
 
-    private val mapPreferencesChangeListener =
+    private val sharedPreferencesChangeListener =
         OnSharedPreferenceChangeListener { _, key: String? ->
-            when (key) {
-                selectedRouteFinderApplicationKey -> {
-                    Logger.log(
-                        Logger.Event.PreferenceChange(key),
-                        "map_preference_change" to preferences.getString(key, null).toString(),
-                    )
-                }
-
-                favoritedCoursesKey -> {
-                    Logger.log(
-                        Logger.Event.PreferenceChange(key),
-                        "map_preference_change" to
-                            preferences
-                                .getStringSet(key, null)
-                                ?.joinToString()
-                                .toString(),
-                    )
-                }
-            }
+            Logger.log(
+                Logger.Event.PreferenceChange(key.toString()),
+                "new_preference" to preferences.getString(key, null).toString(),
+            )
         }
 
     fun init(context: Context) {
         preferences = PreferenceManager.getDefaultSharedPreferences(context)
+        preferences.registerOnSharedPreferenceChangeListener(sharedPreferencesChangeListener)
 
         selectedRouteFinderApplicationKey =
             context.getString(R.string.selected_route_finder_application_key)
-        favoritedCoursesKey = context.getString(R.string.favorited_courses_key)
-
         kakaoMap = context.getString(R.string.selected_route_finder_application_value_kakao)
         naverMap = context.getString(R.string.selected_route_finder_application_value_naver)
         none = context.getString(R.string.selected_route_finder_application_value_none)
-
-        preferences.registerOnSharedPreferenceChangeListener(mapPreferencesChangeListener)
     }
 
     var selectedRouteFinder: RouteFinderApplication?
@@ -69,20 +50,6 @@ object CoursePickPreferences {
                 )
             }
         }
-
-    fun favoritedCourseIds(): Set<String> = preferences.getStringSet(favoritedCoursesKey, emptySet()) ?: emptySet()
-
-    fun addFavorite(courseId: String) {
-        preferences.edit {
-            putStringSet(favoritedCoursesKey, favoritedCourseIds() + courseId)
-        }
-    }
-
-    fun removeFavorite(courseId: String) {
-        preferences.edit {
-            putStringSet(favoritedCoursesKey, favoritedCourseIds() - courseId)
-        }
-    }
 
     private val RouteFinderApplication?.serialized: String
         get() =
