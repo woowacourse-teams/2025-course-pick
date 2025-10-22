@@ -12,11 +12,11 @@ value class Meter(
 
     operator fun compareTo(other: Double): Int = this.value.compareTo(other)
 
-    fun toKilometer(): Kilometer = Kilometer(value * METRIC_MULTIPLIER / Kilometer.METRIC_MULTIPLIER)
-
     companion object {
-        const val METRIC_MULTIPLIER = 1
+        private const val KM_TO_METER = 1000
 
         val MAX_VALUE = Meter(Double.MAX_VALUE)
+
+        fun kmToMeter(km: Float): Meter = Meter((km * KM_TO_METER).toInt())
     }
 }

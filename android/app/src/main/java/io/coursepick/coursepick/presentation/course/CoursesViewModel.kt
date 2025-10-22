@@ -12,7 +12,6 @@ import io.coursepick.coursepick.data.interceptor.NoNetworkException
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseRepository
-import io.coursepick.coursepick.domain.course.Kilometer
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.domain.favorites.FavoritesRepository
 import io.coursepick.coursepick.presentation.CoursePickApplication
@@ -320,16 +319,13 @@ class CoursesViewModel(
     }
 
     fun updateLengthRange(
-        min: Double,
-        max: Double,
+        min: Float,
+        max: Float,
     ) {
-        val minKm = Kilometer(min)
-        val maxKm = Kilometer(max)
-
         val currentRange = state.value?.courseFilter?.lengthRange
-        if (currentRange?.start == minKm && currentRange.endInclusive == maxKm) return
+        if (currentRange?.start == min && currentRange.endInclusive == max) return
 
-        val updatedLengthRange = minKm..maxKm
+        val updatedLengthRange = (min..max)
 
         val updatedCourseFilter =
             state.value?.courseFilter?.copy(lengthRange = updatedLengthRange) ?: CourseFilter(
