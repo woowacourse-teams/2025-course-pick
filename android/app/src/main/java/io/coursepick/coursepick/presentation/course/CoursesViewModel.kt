@@ -180,10 +180,6 @@ class CoursesViewModel(
             )
 
         val favoritedCourseIds: Set<String> = favoritesRepository.favoritedCourseIds()
-        if (favoritedCourseIds.isEmpty()) {
-            _state.value = state.value?.copy(courses = emptyList(), isLoading = false)
-            return
-        }
 
         viewModelScope.launch {
             runCatching {
@@ -204,30 +200,18 @@ class CoursesViewModel(
                             isLoading = false,
                             isNoInternet = false,
                         )
-            }.onFailure { exception: Throwable ->
+            }.onFailure { throwable: Throwable ->
                 Logger.log(
                     Logger.Event.Failure("fetch_courses"),
-                    "message" to exception.message.toString(),
+                    "message" to throwable.message.toString(),
                 )
-                if (exception is NoNetworkException) {
-                    _state.value =
-                        state.value
-                            ?.copy(
-                                courses = emptyList(),
-                                isLoading = false,
-                                isFailure = false,
-                                isNoInternet = true,
-                            )
-                    return@onFailure
-                }
                 _state.value =
                     state.value
                         ?.copy(
                             courses = emptyList(),
                             isLoading = false,
-                            isFailure = true,
+                            isNoInternet = true,
                         )
-                _event.value = CoursesUiEvent.FetchCourseFailure
             }
         }
     }
