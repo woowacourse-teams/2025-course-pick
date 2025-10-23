@@ -41,11 +41,10 @@ object NetworkModule {
 
     @Provides
     fun provideRetrofit(
-        @ApplicationContext applicationContext: Context,
         loggingInterceptor: HttpLoggingInterceptor,
         networkMonitor: NetworkMonitor,
+        installationId: InstallationId,
     ): Retrofit {
-        val installationId = InstallationId(applicationContext)
         val client: OkHttpClient =
             OkHttpClient
                 .Builder()
