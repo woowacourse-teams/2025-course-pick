@@ -5,6 +5,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.coursepick.coursepick.data.course.CourseService
+import io.coursepick.coursepick.data.search.SearchService
 import retrofit2.Retrofit
 
 @Module
@@ -12,4 +13,7 @@ import retrofit2.Retrofit
 object ServiceModule {
     @Provides
     fun provideCourseService(retrofit: Retrofit): CourseService = retrofit.create(CourseService::class.java)
+
+    @Provides
+    fun provideSearchService(retrofit: Retrofit): SearchService = retrofit.create(SearchService::class.java)
 }
