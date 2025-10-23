@@ -17,15 +17,21 @@ public class CourseSyncJobListener implements JobExecutionListener {
         BatchStatus status = jobExecution.getStatus();
         Duration duration = Duration.between(jobExecution.getStartTime(), jobExecution.getEndTime());
 
-        log.info("CourseSyncJob 종료");
-        log.info("상태: {}", status);
-        log.info("처리 시간: {}시간 {}분 {}초", duration.toHoursPart(), duration.toMinutesPart(), duration.toSecondsPart());
+        StringBuilder stepInfo = new StringBuilder();
         jobExecution.getStepExecutions().forEach(stepExecution ->
-                log.info("Step [{}]: Read={}, Write={}, Skip={}",
-                stepExecution.getStepName(),
-                stepExecution.getReadCount(),
-                stepExecution.getWriteCount(),
-                stepExecution.getSkipCount()
-        ));
+                stepInfo.append(String.format(" | Step [%s]: Read=%d, Write=%d, Skip=%d",
+                        stepExecution.getStepName(),
+                        stepExecution.getReadCount(),
+                        stepExecution.getWriteCount(),
+                        stepExecution.getSkipCount()
+                ))
+        );
+
+        log.info("[CourseSyncJob 종료] 상태: {} | 처리 시간: {}시간 {}분 {}초{}",
+                status,
+                duration.toHoursPart(),
+                duration.toMinutesPart(),
+                duration.toSecondsPart(),
+                stepInfo);
     }
 }
