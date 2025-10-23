@@ -3,10 +3,7 @@ package io.coursepick.coursepick.presentation.course
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.CreationExtras
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.coursepick.coursepick.data.NetworkMonitor
 import io.coursepick.coursepick.data.interceptor.NoNetworkException
@@ -16,7 +13,6 @@ import io.coursepick.coursepick.domain.course.CourseRepository
 import io.coursepick.coursepick.domain.course.Kilometer
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.domain.favorites.FavoritesRepository
-import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.filter.CourseFilter
 import io.coursepick.coursepick.presentation.model.Difficulty
@@ -361,21 +357,5 @@ class CoursesViewModel
 
         companion object {
             private const val DEBOUNCE_LIMIT_TIME = 500L
-
-            val Factory =
-                object : ViewModelProvider.Factory {
-                    @Suppress("UNCHECKED_CAST")
-                    override fun <T : ViewModel> create(
-                        modelClass: Class<T>,
-                        extras: CreationExtras,
-                    ): T {
-                        val application = checkNotNull(extras[APPLICATION_KEY]) as CoursePickApplication
-                        return CoursesViewModel(
-                            application.courseRepository,
-                            application.favoritesRepository,
-                            application.networkMonitor,
-                        ) as T
-                    }
-                }
         }
     }
