@@ -34,6 +34,7 @@ import androidx.fragment.app.commit
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.kakao.vectormap.LatLng
+import dagger.hilt.android.AndroidEntryPoint
 import io.coursepick.coursepick.BuildConfig
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.databinding.ActivityCoursesBinding
@@ -57,6 +58,7 @@ import io.coursepick.coursepick.presentation.routefinder.RouteFinderChoiceDialog
 import io.coursepick.coursepick.presentation.search.SearchActivity
 import io.coursepick.coursepick.presentation.ui.DoublePressDetector
 
+@AndroidEntryPoint
 class CoursesActivity :
     AppCompatActivity(),
     CoursesAction,
@@ -64,7 +66,7 @@ class CoursesActivity :
     private val coursePickApplication by lazy { application as CoursePickApplication }
     private var searchLauncher: ActivityResultLauncher<Intent>? = null
     private val binding by lazy { ActivityCoursesBinding.inflate(layoutInflater) }
-    private val viewModel: CoursesViewModel by viewModels { CoursesViewModel.Factory }
+    private val viewModel: CoursesViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(courseItemListener) }
     private val doublePressDetector = DoublePressDetector()
     private val mapManager by lazy { KakaoMapManager(binding.mainMap) }
