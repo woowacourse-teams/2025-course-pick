@@ -11,6 +11,8 @@ plugins {
     alias(libs.plugins.oss.licenses.plugin)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt.android)
 }
 
 private val localProperties: Properties =
@@ -133,6 +135,7 @@ android {
 }
 
 dependencies {
+    ksp(libs.hilt.android.compiler)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
@@ -140,7 +143,6 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.runtime.livedata)
-    debugImplementation(libs.leakcanary.android)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -168,11 +170,13 @@ dependencies {
     implementation(libs.app.update)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.fragment.ktx)
+    implementation(libs.hilt.android)
     testImplementation(libs.assertj.core)
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.kotest.runner.junit5)
     testImplementation(libs.kotlinx.coroutines.test)
+    debugImplementation(libs.leakcanary.android)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     androidTestImplementation(libs.androidx.junit)
