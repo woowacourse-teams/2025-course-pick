@@ -3,6 +3,8 @@ android-junit5 = "1.12.0.0"
 agp = "8.10.0"
 firebaseBom = "34.0.0"
 fragmentKtx = "1.6.1"
+hiltAndroid = "2.57.1"
+hiltAndroidCompiler = "2.57.1"
 kotlin = "2.0.21"
 coreKtx = "1.16.0"
 junit = "4.13.2"
@@ -39,6 +41,7 @@ lifecycleRuntimeKtx = "2.9.4"
 activityCompose = "1.10.0"
 composeBom = "2024.09.00"
 runtimeLivedata = "1.9.1"
+ksp = "2.0.21-1.0.27"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -47,6 +50,8 @@ androidx-preference-ktx = { module = "androidx.preference:preference-ktx", versi
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-crashlytics-ndk = { module = "com.google.firebase:firebase-crashlytics-ndk" }
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
+hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junit-jupiter" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -99,3 +104,5 @@ firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "
 oss-licenses-plugin = { id = "com.google.android.gms.oss-licenses-plugin" }
 kotlin-parcelize = { id = "kotlin-parcelize" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
