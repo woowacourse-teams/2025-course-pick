@@ -20,9 +20,6 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 200MB
-  web:
-    resources:
-      add-mappings: true
 
 server:
   tomcat:
