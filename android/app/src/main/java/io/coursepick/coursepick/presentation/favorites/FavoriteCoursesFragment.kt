@@ -18,7 +18,7 @@ class FavoriteCoursesFragment(
     @Suppress("ktlint:standard:backing-property-naming")
     private var _binding: FragmentFavoriteCoursesBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: CoursesViewModel by activityViewModels { CoursesViewModel.Factory }
+    private val viewModel: CoursesViewModel by activityViewModels()
     private val courseAdapter by lazy { CourseAdapter(listener) }
 
     override fun onCreateView(

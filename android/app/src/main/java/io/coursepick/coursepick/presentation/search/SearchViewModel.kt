@@ -3,14 +3,10 @@ package io.coursepick.coursepick.presentation.search
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.CreationExtras
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.coursepick.coursepick.domain.search.Place
 import io.coursepick.coursepick.domain.search.SearchRepository
-import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.Logger
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -61,17 +57,5 @@ class SearchViewModel
 
         companion object {
             private const val DEBOUNCE_LIMIT_TIME = 500L
-
-            val Factory =
-                object : ViewModelProvider.Factory {
-                    @Suppress("UNCHECKED_CAST")
-                    override fun <T : ViewModel> create(
-                        modelClass: Class<T>,
-                        extras: CreationExtras,
-                    ): T {
-                        val application = checkNotNull(extras[APPLICATION_KEY]) as CoursePickApplication
-                        return SearchViewModel(application.searchRepository) as T
-                    }
-                }
         }
     }

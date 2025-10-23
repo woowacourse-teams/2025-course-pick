@@ -6,25 +6,14 @@ import android.os.Bundle
 import com.kakao.vectormap.KakaoMapSdk
 import dagger.hilt.android.HiltAndroidApp
 import io.coursepick.coursepick.BuildConfig
-import io.coursepick.coursepick.data.DefaultNetworkMonitor
-import io.coursepick.coursepick.data.Services
-import io.coursepick.coursepick.data.course.DefaultCourseRepository
-import io.coursepick.coursepick.data.favorites.DefaultFavoritesRepository
-import io.coursepick.coursepick.data.search.DefaultSearchRepository
-import io.coursepick.coursepick.domain.course.CourseRepository
-import io.coursepick.coursepick.domain.favorites.FavoritesRepository
-import io.coursepick.coursepick.domain.search.SearchRepository
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 import timber.log.Timber
+import javax.inject.Inject
 
 @HiltAndroidApp
 class CoursePickApplication : Application() {
-    val installationId: InstallationId by lazy { InstallationId(this) }
-    val networkMonitor: DefaultNetworkMonitor by lazy { DefaultNetworkMonitor(this) }
-    private val services: Services by lazy { Services(installationId, networkMonitor) }
-    val courseRepository: CourseRepository by lazy { DefaultCourseRepository(services.courseService) }
-    val favoritesRepository: FavoritesRepository by lazy { DefaultFavoritesRepository() }
-    val searchRepository: SearchRepository by lazy { DefaultSearchRepository(services.searchService) }
+    @Inject
+    lateinit var installationId: InstallationId
 
     override fun onCreate() {
         super.onCreate()
