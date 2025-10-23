@@ -22,33 +22,25 @@ public class CourseSyncService {
 
     @Scheduled(cron = "0 0 2 * * *", zone = "Asia/Seoul")
     public void runScheduledCourseSyncJob() {
-        String runId = "scheduled-" + System.currentTimeMillis();
-        MDC.put("run.id", runId);
-        try {
-            log.info("CourseSyncJob 자동 시작");
-            JobParameters jobParameters = new JobParametersBuilder()
-                    .addString("run.id", runId)
-                    .toJobParameters();
-            jobLauncher.run(courseSyncJob, jobParameters);
-        } catch (Exception e) {
-            log.warn("[EXCEPTION] CourseSyncJob 자동 실행 중 예외 발생", LogContent.exception(e));
-        } finally {
-            MDC.remove("run.id");
-        }
+        executeJob("scheduled-", "자동");
     }
 
     @Async("asyncExecutor")
     public void runCourseSyncJob() {
-        String runId = "manual-" + System.currentTimeMillis();
+        executeJob("manual-", "수동");
+    }
+
+    private void executeJob(String prefix, String jobType) {
+        String runId = prefix + System.currentTimeMillis();
         MDC.put("run.id", runId);
         try {
-            log.info("CourseSyncJob 수동 시작");
+            log.info("CourseSyncJob {} 시작", jobType);
             JobParameters jobParameters = new JobParametersBuilder()
                     .addString("run.id", runId)
                     .toJobParameters();
             jobLauncher.run(courseSyncJob, jobParameters);
         } catch (Exception e) {
-            log.warn("[EXCEPTION] CourseSyncJob 수동 실행 중 예외 발생", LogContent.exception(e));
+            log.warn("[EXCEPTION] CourseSyncJob {} 실행 중 예외 발생 {}", jobType, LogContent.exception(e));
         } finally {
             MDC.remove("run.id");
         }
