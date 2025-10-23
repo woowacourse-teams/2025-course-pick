@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.os.Bundle
 import com.kakao.vectormap.KakaoMapSdk
+import dagger.hilt.android.HiltAndroidApp
 import io.coursepick.coursepick.BuildConfig
 import io.coursepick.coursepick.data.DefaultNetworkMonitor
 import io.coursepick.coursepick.data.Services
@@ -16,6 +17,7 @@ import io.coursepick.coursepick.domain.search.SearchRepository
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 import timber.log.Timber
 
+@HiltAndroidApp
 class CoursePickApplication : Application() {
     val installationId: InstallationId by lazy { InstallationId(this) }
     val networkMonitor: DefaultNetworkMonitor by lazy { DefaultNetworkMonitor(this) }
