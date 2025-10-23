@@ -12,8 +12,12 @@ import retrofit2.Retrofit
 @InstallIn(SingletonComponent::class)
 object ServiceModule {
     @Provides
-    fun provideCourseService(retrofit: Retrofit): CourseService = retrofit.create(CourseService::class.java)
+    fun provideCourseService(
+        @CoursePickRetrofit retrofit: Retrofit,
+    ): CourseService = retrofit.create(CourseService::class.java)
 
     @Provides
-    fun provideSearchService(retrofit: Retrofit): SearchService = retrofit.create(SearchService::class.java)
+    fun provideSearchService(
+        @KakaoRetrofit retrofit: Retrofit,
+    ): SearchService = retrofit.create(SearchService::class.java)
 }
