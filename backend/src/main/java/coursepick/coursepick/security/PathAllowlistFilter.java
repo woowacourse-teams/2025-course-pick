@@ -31,9 +31,7 @@ public class PathAllowlistFilter extends OncePerRequestFilter {
             Pattern.compile("^/api-docs.html$"),
             Pattern.compile("^/swagger-ui.*$"),
             Pattern.compile("^/v3/api-docs.*$"),
-            Pattern.compile("^/admin-login.html$"),
-            Pattern.compile("^/js/admin-login.js$"),
-            Pattern.compile("^/css/admin-login.css$")
+            Pattern.compile("^/admin-login$")
     );
 
     @Override
