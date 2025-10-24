@@ -39,14 +39,15 @@ class SearchViewModel
                 return
             }
 
-            _state.value = state.value?.copy(places = emptyList(), query = query, isLoading = true)
+            val singleLineQuery: String = query.lines().joinToString("")
+            _state.value = state.value?.copy(places = emptyList(), query = singleLineQuery, isLoading = true)
 
             searchJob =
                 viewModelScope.launch {
                     delay(DEBOUNCE_LIMIT_TIME)
-                    Logger.log(Logger.Event.Search("place"), "query" to query)
+                    Logger.log(Logger.Event.Search("place"), "query" to singleLineQuery)
                     runCatching {
-                        searchRepository.places(query)
+                        searchRepository.places(singleLineQuery)
                     }.onSuccess { places: List<Place> ->
                         _state.value = state.value?.copy(places = places, isLoading = false)
                     }.onFailure {
