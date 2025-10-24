@@ -24,11 +24,11 @@
 
         <TextView
             android:id="@+id/mainCourseFilter"
-            isActive="@{viewModel.state.courses.size() != viewModel.state.courses.size()}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="6dp"
+            android:activated="@{!viewModel.state.isFilterDefault}"
             android:background="@drawable/background_filter_selector"
             android:onClick="@{() -> showFiltersListener.showFilters()}"
             android:paddingHorizontal="10dp"

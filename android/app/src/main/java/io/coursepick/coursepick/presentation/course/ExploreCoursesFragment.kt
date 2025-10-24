@@ -47,6 +47,7 @@ class ExploreCoursesFragment(
     private fun setUpBindingVariables() {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.adapter = courseAdapter
+        binding.viewModel = viewModel
         binding.showFiltersListener = this
     }
 
