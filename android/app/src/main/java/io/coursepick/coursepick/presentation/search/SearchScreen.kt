@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -55,6 +57,7 @@ fun SearchScreen(
                     contentDescription = null,
                 )
             },
+            singleLine = true,
         )
         when {
             uiState.isLoading -> {
@@ -80,7 +83,10 @@ fun SearchScreen(
                     items(uiState.places) { place: Place ->
                         SearchResult(
                             place = place,
-                            modifier = Modifier.fillMaxWidth().clickable { onPlaceSelect(place) },
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .clickable { onPlaceSelect(place) },
                         )
                     }
                 }
@@ -112,7 +118,7 @@ private class SearchScreenPreviewParameter : PreviewParameterProvider<SearchUiSt
             ),
             SearchUiState(
                 isLoading = true,
-                query = "테크살롱",
+                query = "테크살롱\nasdfasdfasdf\nasdfasdfasdf",
                 places = emptyList(),
             ),
             SearchUiState(
