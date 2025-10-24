@@ -15,8 +15,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -38,11 +42,17 @@ fun SearchScreen(
     onPlaceSelect: (place: Place) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
+
     Column(modifier = modifier) {
         TextField(
             value = uiState.query,
             onValueChange = onQueryChange,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
             textStyle = TextStyle(fontSize = 18.sp),
             placeholder = {
                 Text(
@@ -84,10 +94,7 @@ fun SearchScreen(
                     items(uiState.places) { place: Place ->
                         SearchResult(
                             place = place,
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .clickable { onPlaceSelect(place) },
+                            modifier = Modifier.fillMaxWidth().clickable { onPlaceSelect(place) },
                         )
                     }
                 }
