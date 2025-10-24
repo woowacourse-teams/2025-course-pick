@@ -58,6 +58,7 @@ fun SearchScreen(
                 )
             },
             singleLine = true,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         )
         when {
             uiState.isLoading -> {
