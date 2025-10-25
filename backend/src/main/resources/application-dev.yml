@@ -34,4 +34,6 @@ gcp:
   credentials.path: ${GCP_CREDENTIALS_PATH}
 
 osrm.url: ${OSRM_URL}
-admin.token: ${ADMIN_TOKEN}
+admin:
+  token: ${ADMIN_TOKEN}
+  kakao-map-api-key: ${ADMIN_KAKAO_MAP_API_KEY}
