@@ -24,8 +24,9 @@ import java.io.UncheckedIOException;
 public class CourseSyncJobConfig {
 
     @Bean
-    public Job courseSyncJob(JobRepository jobRepository, Step syncStep) {
+    public Job courseSyncJob(JobRepository jobRepository, Step syncStep, CourseSyncJobListener jobListener) {
         return new JobBuilder("courseSyncJob", jobRepository)
+                .listener(jobListener)
                 .start(syncStep)
                 .build();
     }
