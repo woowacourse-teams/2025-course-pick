@@ -21,6 +21,7 @@ public class PathAllowlistFilter extends OncePerRequestFilter {
 
     private static final Set<Pattern> ALLOW_URI_PATTERNS = Set.of(
             Pattern.compile("^/admin/courses/sync$"),
+            Pattern.compile("^/admin/login$"),
             Pattern.compile("^/courses$"),
             Pattern.compile("^/courses/favorites$"),
             Pattern.compile("^/courses/[^/]+/closest-coordinate$"),
@@ -29,7 +30,8 @@ public class PathAllowlistFilter extends OncePerRequestFilter {
             Pattern.compile("^/actuator/health$"),
             Pattern.compile("^/api-docs.html$"),
             Pattern.compile("^/swagger-ui.*$"),
-            Pattern.compile("^/v3/api-docs.*$")
+            Pattern.compile("^/v3/api-docs.*$"),
+            Pattern.compile("^/admin-login$")
     );
 
     @Override

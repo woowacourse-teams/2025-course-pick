@@ -44,6 +44,10 @@ public enum ErrorType {
             "0을 기준으로 비율을 계산할 수 없습니다.",
             IllegalArgumentException::new
     ),
+    INVALID_ADMIN_PASSWORD(
+            "잘못된 관리자 비밀번호입니다.",
+            SecurityException::new
+    ),
     ;
 
     private final String message;
