@@ -40,8 +40,8 @@ public class CourseProcessor implements ItemProcessor<Course, Course> {
 
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] courseBytes = getCourseToBytes(course);
-            byte[] itemBytes = getCourseToBytes(item);
+            byte[] courseBytes = serializeCourse(course);
+            byte[] itemBytes = serializeCourse(item);
             byte[] courseDigest = md.digest(courseBytes);
             byte[] itemDigest = md.digest(itemBytes);
 
@@ -58,7 +58,7 @@ public class CourseProcessor implements ItemProcessor<Course, Course> {
         return item;
     }
 
-    private byte[] getCourseToBytes(Course course) {
+    private byte[] serializeCourse(Course course) {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
              ObjectOutputStream oos = new ObjectOutputStream(bos)) {
             oos.writeObject(course);
