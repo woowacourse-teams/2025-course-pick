@@ -38,21 +38,11 @@ public class CourseProcessor implements ItemProcessor<Course, Course> {
         }
         Course course = findCourse.get();
 
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] courseBytes = serializeCourse(course);
-            byte[] itemBytes = serializeCourse(item);
-            byte[] courseDigest = md.digest(courseBytes);
-            byte[] itemDigest = md.digest(itemBytes);
+        String courseHash = hash(course);
+        String itemHash = hash(item);
 
-            String courseHash = HexFormat.of().formatHex(courseDigest);
-            String itemHash = HexFormat.of().formatHex(itemDigest);
-
-            if (courseHash.equals(itemHash)) {
-                return null;
-            }
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+        if (courseHash.equals(itemHash)) {
+            return null;
         }
 
         return item;
@@ -66,6 +56,18 @@ public class CourseProcessor implements ItemProcessor<Course, Course> {
 
             return bos.toByteArray();
         } catch (IOException e) {
+            throw new RuntimeException();
+        }
+    }
+
+    private String hash(Course course) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] bytes = serializeCourse(course);
+            byte[] digest = md.digest(bytes);
+
+            return HexFormat.of().formatHex(digest);
+        } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException();
         }
     }
