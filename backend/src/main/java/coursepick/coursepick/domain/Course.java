@@ -46,6 +46,16 @@ public class Course {
         this.difficulty = Difficulty.fromLengthAndRoadType(length(), roadType);
     }
 
+    private Course(String id, String name, RoadType roadType, List<Coordinate> rawCoordinates) {
+        this.id = id;
+        this.name = new CourseName(name);
+        this.roadType = roadType;
+        this.segments = refineCoordinates(rawCoordinates);
+        this.length = calculateLength(segments);
+        this.inclineSummary = InclineSummary.of(segments);
+        this.difficulty = Difficulty.fromLengthAndRoadType(length(), roadType);
+    }
+
     private List<Segment> refineCoordinates(List<Coordinate> rawCoordinates) {
         List<Coordinate> coordinates = CoordinateBuilder.fromRawCoordinates(rawCoordinates)
                 .removeSimilar()
@@ -59,8 +69,12 @@ public class Course {
                 .build();
     }
 
+    public Course(String id, String name, List<Coordinate> coordinates) {
+        this(id, name, RoadType.알수없음, coordinates);
+    }
+
     public Course(String name, List<Coordinate> coordinates) {
-        this(name, RoadType.알수없음, coordinates);
+        this(null, name, RoadType.알수없음, coordinates);
     }
 
     public Coordinate closestCoordinateFrom(Coordinate target) {
