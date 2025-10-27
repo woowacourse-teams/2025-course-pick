@@ -16,10 +16,12 @@ import java.util.Objects;
 public class Gpx {
 
     private static final String CREATOR = "Coursepick - https://github.com/woowacourse-teams/2025-course-pick";
+    private final String id;
     private final String name;
     private final List<Coordinate> coordinates;
 
-    private Gpx(String name, List<Coordinate> coordinates) {
+    private Gpx(String id, String name, List<Coordinate> coordinates) {
+        this.id = id;
         this.name = name;
         this.coordinates = coordinates;
     }
@@ -29,13 +31,14 @@ public class Gpx {
                 .flatMap(segment -> segment.coordinates().stream())
                 .toList();
 
-        return new Gpx(course.name().value(), coordinates);
+        return new Gpx(course.id(), course.name().value(), coordinates);
     }
 
     public static Gpx from(CourseFile file) {
         try {
             XMLInputFactory xif = XMLInputFactory.newInstance();
             XMLStreamReader xsr = xif.createXMLStreamReader(file.inputStream());
+            String id = null;
             Double lat = null, lon = null, ele = null;
 
             List<Coordinate> coordinates = new ArrayList<>();
@@ -53,6 +56,11 @@ public class Gpx {
                         if (xsr.getEventType() == XMLStreamConstants.CHARACTERS) {
                             ele = Double.parseDouble(xsr.getText());
                         }
+                    } else if ("id".equals(localName)) {
+                        xsr.next();
+                        if (xsr.getEventType() == XMLStreamConstants.CHARACTERS) {
+                            id = xsr.getText();
+                        }
                     }
                 } else if (event == XMLStreamConstants.END_ELEMENT) {
                     String localName = xsr.getLocalName();
@@ -65,7 +73,7 @@ public class Gpx {
                 }
             }
 
-            return new Gpx(file.name(), coordinates);
+            return new Gpx(id, file.name(), coordinates);
         } catch (XMLStreamException e) {
             log.warn("[EXCEPTION] CourseFile -> Gpx 변환에 실패했습니다.", LogContent.exception(e));
             throw new IllegalArgumentException(e);
@@ -126,6 +134,6 @@ public class Gpx {
     }
 
     public List<Course> toCourses() {
-        return List.of(new Course(name, coordinates));
+        return List.of(new Course(id, name, coordinates));
     }
 }
