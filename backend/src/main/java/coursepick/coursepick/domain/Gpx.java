@@ -40,6 +40,7 @@ public class Gpx {
             XMLStreamReader xsr = xif.createXMLStreamReader(file.inputStream());
             String id = null;
             Double lat = null, lon = null, ele = null;
+            boolean hasExtensions = false;
 
             List<Coordinate> coordinates = new ArrayList<>();
 
@@ -48,7 +49,9 @@ public class Gpx {
 
                 if (event == XMLStreamConstants.START_ELEMENT) {
                     String localName = xsr.getLocalName();
-                    if ("trkpt".equals(localName)) {
+                    if ("extensions".equals(localName)) {
+                        hasExtensions = true;
+                    } else if ("trkpt".equals(localName)) {
                         lat = Double.parseDouble(xsr.getAttributeValue(null, "lat"));
                         lon = Double.parseDouble(xsr.getAttributeValue(null, "lon"));
                     } else if ("ele".equals(localName)) {
@@ -56,7 +59,7 @@ public class Gpx {
                         if (xsr.getEventType() == XMLStreamConstants.CHARACTERS) {
                             ele = Double.parseDouble(xsr.getText());
                         }
-                    } else if ("id".equals(localName)) {
+                    } else if ("id".equals(localName) && hasExtensions) {
                         xsr.next();
                         if (xsr.getEventType() == XMLStreamConstants.CHARACTERS) {
                             id = xsr.getText();
@@ -69,6 +72,8 @@ public class Gpx {
                             coordinates.add(new Coordinate(lat, lon, Objects.requireNonNullElse(ele, 0.0)));
                         }
                         lat = lon = ele = null;
+                    } else if ("extensions".equals(localName)) {
+                        hasExtensions = false;
                     }
                 }
             }
