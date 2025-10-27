@@ -26,11 +26,6 @@ public class CourseProcessor implements ItemProcessor<Course, Course> {
 
     @Override
     public Course process(Course item) {
-        boolean exists = courseRepository.existsByName(item.name());
-        return exists ? null : item;
-    }
-
-    public Course process2(Course item) {
         if (item.id() == null) {
             return item;
         }
