@@ -6,9 +6,8 @@ import io.coursepick.coursepick.presentation.course.CourseItem
 import io.coursepick.coursepick.presentation.model.Difficulty
 
 data class CourseFilter(
-    val lengthRange: ClosedRange<Kilometer> =
-        Kilometer(MINIMUM_LENGTH_RANGE)..Kilometer(MAXIMUM_LENGTH_RANGE),
-    val difficulties: Set<Difficulty> = setOf(Difficulty.EASY, Difficulty.NORMAL, Difficulty.HARD),
+    val lengthRange: ClosedRange<Kilometer>,
+    val difficulties: Set<Difficulty>,
 ) {
     private val minimumLength: Meter = lengthRange.start.toMeter()
     private val maximumLength: Meter =
@@ -24,6 +23,10 @@ data class CourseFilter(
     companion object {
         const val MINIMUM_LENGTH_RANGE = 0.0
         const val MAXIMUM_LENGTH_RANGE = 21.0
-        val Default = CourseFilter()
+        val Default =
+            CourseFilter(
+                lengthRange = Kilometer(MINIMUM_LENGTH_RANGE)..Kilometer(MAXIMUM_LENGTH_RANGE),
+                difficulties = setOf(Difficulty.EASY, Difficulty.NORMAL, Difficulty.HARD),
+            )
     }
 }
