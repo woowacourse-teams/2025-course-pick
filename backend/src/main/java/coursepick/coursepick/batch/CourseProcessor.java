@@ -1,24 +1,27 @@
 package coursepick.coursepick.batch;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import coursepick.coursepick.domain.Course;
 import coursepick.coursepick.domain.CourseRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.item.ItemProcessor;
+import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 import java.util.Optional;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.batch.item.ItemProcessor;
-import org.springframework.stereotype.Component;
-
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class CourseProcessor implements ItemProcessor<Course, Course> {
 
+    private final ObjectMapper objectMapper;
     private final CourseRepository courseRepository;
 
     @Override
@@ -49,14 +52,10 @@ public class CourseProcessor implements ItemProcessor<Course, Course> {
     }
 
     private byte[] serializeCourse(Course course) {
-        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
-             ObjectOutputStream oos = new ObjectOutputStream(bos)) {
-            oos.writeObject(course);
-            oos.flush();
-
-            return bos.toByteArray();
-        } catch (IOException e) {
-            throw new RuntimeException();
+        try {
+            return objectMapper.writeValueAsString(course).getBytes(StandardCharsets.UTF_8);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -68,7 +67,7 @@ public class CourseProcessor implements ItemProcessor<Course, Course> {
 
             return HexFormat.of().formatHex(digest);
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
 }
