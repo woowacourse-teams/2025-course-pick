@@ -32,7 +32,7 @@ public class AdminWebController {
         this.kakaoMapApiKey = kakaoMapApiKey;
     }
 
-    @PostMapping("/admin/login")
+    @PostMapping("/api/admin/login")
     public ResponseEntity<Void> login(@RequestBody @Valid AdminLoginWebRequest request) {
         if (!adminToken.equals(request.password())) {
             throw ErrorType.INVALID_ADMIN_PASSWORD.create();
@@ -49,7 +49,7 @@ public class AdminWebController {
                 .build();
     }
 
-    @GetMapping("/admin-login")
+    @GetMapping("/admin/login")
     public ResponseEntity<String> adminLoginPage() {
         return ResponseEntity.ok()
                 .contentType(MediaType.TEXT_HTML)
@@ -256,7 +256,7 @@ public class AdminWebController {
                                 loginButton.textContent = '로그인 중...';
 
                                 try {
-                                    const response = await axios.post('/admin/login', {
+                                    const response = await axios.post('/api/admin/login', {
                                         password: password
                                     }, {
                                         withCredentials: true
