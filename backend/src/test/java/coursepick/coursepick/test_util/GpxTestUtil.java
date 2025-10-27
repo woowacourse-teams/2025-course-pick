@@ -27,8 +27,29 @@ public class GpxTestUtil {
             </gpx>
             """;
 
+    private static final String GPX_WITH_ID_FORMAT = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <gpx xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd" creator="StravaGPX" version="1.1" xmlns="http://www.topografix.com/GPX/1/1" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3">
+             <trk>
+              <name>test-course</name>
+              <type>running</type>
+              <extensions>
+                <id>%s</id>
+              </extensions>
+                <trkseg>
+                %s
+                </trkseg>
+              </trk>
+            </gpx>
+            """;
+
     public static InputStream createGpxInputStreamOf(Coordinate... coordinates) {
         String gpx = createGpxOf(coordinates);
+        return new ByteArrayInputStream(gpx.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public static InputStream createGpxInputStreamOf(String id, Coordinate... coordinates) {
+        String gpx = createGpxOf(id, coordinates);
         return new ByteArrayInputStream(gpx.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -39,6 +60,15 @@ public class GpxTestUtil {
             trackPoints.append(trackPoint).append("\n");
         }
         return GPX_FORMAT.formatted(trackPoints);
+    }
+
+    public static String createGpxOf(String id, Coordinate... coordinates) {
+        StringBuilder trackPoints = new StringBuilder();
+        for (Coordinate coordinate : coordinates) {
+            String trackPoint = createTrackPointOf(coordinate);
+            trackPoints.append(trackPoint).append("\n");
+        }
+        return GPX_WITH_ID_FORMAT.formatted(id, trackPoints);
     }
 
     private static String createTrackPointOf(Coordinate coordinate) {
