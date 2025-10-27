@@ -65,11 +65,16 @@ class CourseBatchTest extends AbstractIntegrationTest {
     }
 
     @Test
-    void 이미_동일한_이름의_코스가_존재한다면_넘어간다() throws Exception {
-        var file1 = new CourseFile("파일1", CourseFileExtension.GPX, createGpxInputStreamOf(new Coordinate(1, 1, 1), new Coordinate(2, 2, 2)));
-        var file2 = new CourseFile("파일2", CourseFileExtension.GPX, createGpxInputStreamOf(new Coordinate(2, 2, 2), new Coordinate(3, 3, 3)));
-        var file3 = new CourseFile("파일3", CourseFileExtension.GPX, createGpxInputStreamOf(new Coordinate(3, 3, 3), new Coordinate(4, 4, 4)));
-        var file4 = new CourseFile("파일4", CourseFileExtension.GPX, createGpxInputStreamOf(new Coordinate(4, 4, 4), new Coordinate(5, 5, 5)));
+    void 이미_동일한_해시의_코스가_존재한다면_넘어간다() throws Exception {
+        String id1 = "507f1f77bcf86cd799439011";
+        String id2 = "507f1f77bcf86cd799439022";
+        String id3 = "507f1f77bcf86cd799439033";
+        String id4 = "507f1f77bcf86cd799439044";
+
+        var file1 = new CourseFile("파일1", CourseFileExtension.GPX, createGpxInputStreamOf(id1, new Coordinate(1, 1, 1), new Coordinate(2, 2, 2)));
+        var file2 = new CourseFile("파일2", CourseFileExtension.GPX, createGpxInputStreamOf(id2, new Coordinate(2, 2, 2), new Coordinate(3, 3, 3)));
+        var file3 = new CourseFile("파일3", CourseFileExtension.GPX, createGpxInputStreamOf(id3, new Coordinate(3, 3, 3), new Coordinate(4, 4, 4)));
+        var file4 = new CourseFile("파일4", CourseFileExtension.GPX, createGpxInputStreamOf(id4, new Coordinate(4, 4, 4), new Coordinate(5, 5, 5)));
         when(courseFileFetcher.fetchNextPage())
                 .thenReturn(List.of(file1, file2, file3))
                 .thenReturn(List.of(file4))
@@ -78,8 +83,8 @@ class CourseBatchTest extends AbstractIntegrationTest {
         var params = new JobParametersBuilder()
                 .addLocalDateTime("timestamp", LocalDateTime.now())
                 .toJobParameters();
-        dbUtil.saveCourse(new Course("파일1", List.of(new Coordinate(1, 1, 1), new Coordinate(2, 2, 2))));
-        dbUtil.saveCourse(new Course("파일3", List.of(new Coordinate(3, 3, 3), new Coordinate(4, 4, 4))));
+        dbUtil.saveCourse(new Course(id1, "파일1", List.of(new Coordinate(1, 1, 1), new Coordinate(2, 2, 2))));
+        dbUtil.saveCourse(new Course(id3, "파일3", List.of(new Coordinate(3, 3, 3), new Coordinate(4, 4, 4))));
 
         var execution = jobLauncherTestUtils.launchJob(params);
 
