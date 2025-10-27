@@ -21,23 +21,23 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminWebController {
 
     private static final String TOKEN_COOKIE_KEY = "admin-token";
-    private final String adminPassword;
+    private final String adminToken;
     private final String kakaoMapApiKey;
 
     public AdminWebController(
-            @Value("${admin.token}") String adminPassword,
+            @Value("${admin.token}") String adminToken,
             @Value("${admin.kakao-map-api-key}") String kakaoMapApiKey
     ) {
-        this.adminPassword = adminPassword;
+        this.adminToken = adminToken;
         this.kakaoMapApiKey = kakaoMapApiKey;
     }
 
     @PostMapping("/admin/login")
     public ResponseEntity<Void> login(@RequestBody @Valid AdminLoginWebRequest request) {
-        if (!adminPassword.equals(request.password())) {
+        if (!adminToken.equals(request.password())) {
             throw ErrorType.INVALID_ADMIN_PASSWORD.create();
         }
-        ResponseCookie tokenCookie = ResponseCookie.from(TOKEN_COOKIE_KEY, adminPassword)
+        ResponseCookie tokenCookie = ResponseCookie.from(TOKEN_COOKIE_KEY, adminToken)
                 .httpOnly(true)
                 .maxAge(Duration.ofHours(1))
                 .sameSite(Cookie.SameSite.STRICT.attributeValue())
