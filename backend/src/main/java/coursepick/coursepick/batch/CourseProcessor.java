@@ -50,7 +50,7 @@ public class CourseProcessor implements ItemProcessor<Course, Course> {
         try {
             return objectMapper.writeValueAsString(course).getBytes(StandardCharsets.UTF_8);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("코스 직렬화에 실패했습니다", e);
         }
     }
 
@@ -62,7 +62,7 @@ public class CourseProcessor implements ItemProcessor<Course, Course> {
 
             return HexFormat.of().formatHex(digest);
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("해시 계산에 실패했습니다.", e);
         }
     }
 }
