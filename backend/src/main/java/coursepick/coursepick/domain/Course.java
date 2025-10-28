@@ -37,13 +37,7 @@ public class Course {
     private final Difficulty difficulty;
 
     public Course(String name, RoadType roadType, List<Coordinate> rawCoordinates) {
-        this.id = null;
-        this.name = new CourseName(name);
-        this.roadType = roadType;
-        this.segments = refineCoordinates(rawCoordinates);
-        this.length = calculateLength(segments);
-        this.inclineSummary = InclineSummary.of(segments);
-        this.difficulty = Difficulty.fromLengthAndRoadType(length(), roadType);
+        this(null, name, roadType, rawCoordinates);
     }
 
     private Course(String id, String name, RoadType roadType, List<Coordinate> rawCoordinates) {
