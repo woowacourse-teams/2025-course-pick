@@ -66,8 +66,25 @@ public class AdminWebController {
             @PathVariable("id") String courseId,
             @RequestBody CourseRelaceWebRequest request
     ) {
-        adminCourseApplicationService.modifyCourse(courseId, request.coordinates(), request.name(),
-                request.roadType());
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(ErrorType.NOT_EXIST_COURSE::create);
+        List<List<Double>> rawCoordinates = request.coordinates();
+
+        if (rawCoordinates != null && !rawCoordinates.isEmpty()) {
+            List<Coordinate> coordinates = rawCoordinates.stream()
+                    .map(rawCoordinate -> new Coordinate(rawCoordinate.get(0), rawCoordinate.get(1),
+                            rawCoordinate.get(2)))
+                    .toList();
+            course.changeCoordinates(coordinates);
+        }
+        if (request.name() != null) {
+            course.changeName(request.name());
+        }
+        if (request.roadType() != null) {
+            course.changeRoadType(request.roadType());
+        }
+
+        courseRepository.save(course);
         return ResponseEntity.ok().build();
     }
 

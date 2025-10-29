@@ -1,19 +1,22 @@
 package coursepick.coursepick.application;
 
 import coursepick.coursepick.domain.*;
+import coursepick.coursepick.presentation.AdminWebController;
+import coursepick.coursepick.presentation.dto.CourseRelaceWebRequest;
 import coursepick.coursepick.test_util.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-class AdminCourseApplicationServiceTest extends AbstractIntegrationTest {
+@ActiveProfiles("dev")
+class AdminWebControllerTest extends AbstractIntegrationTest {
 
     @Autowired
-    AdminCourseApplicationService sut;
+    AdminWebController sut;
 
     @Test
     void 코스_좌표_이름_길유형을_수정한다() {
@@ -34,7 +37,7 @@ class AdminCourseApplicationServiceTest extends AbstractIntegrationTest {
         String newName = "newName";
         RoadType newRoadType = RoadType.트레일;
 
-        sut.modifyCourse(savedCourse.id(), newRawCoordinates, newName, newRoadType);
+        sut.modifyCourse(savedCourse.id(), new CourseRelaceWebRequest(newRawCoordinates, newName, newRoadType));
 
         Course findCourse = dbUtil.findCourseById(savedCourse.id());
         List<Segment> segments = findCourse.segments();
@@ -64,7 +67,7 @@ class AdminCourseApplicationServiceTest extends AbstractIntegrationTest {
                 List.of(36.5180, 127.0280, 0.0)
         );
 
-        sut.modifyCourse(savedCourse.id(), newRawCoordinates, null, null);
+        sut.modifyCourse(savedCourse.id(), new CourseRelaceWebRequest(newRawCoordinates, null, null));
 
         Course findCourse = dbUtil.findCourseById(savedCourse.id());
         List<Segment> segments = findCourse.segments();
@@ -87,11 +90,9 @@ class AdminCourseApplicationServiceTest extends AbstractIntegrationTest {
         ));
         Course savedCourse = dbUtil.saveCourse(course);
 
-        List<List<Double>> newCoordinates = null;
         String newName = "newName";
-        RoadType newRoadType = null;
 
-        sut.modifyCourse(savedCourse.id(), newCoordinates, newName, newRoadType);
+        sut.modifyCourse(savedCourse.id(), new CourseRelaceWebRequest(null, newName, null));
 
         Course findCourse = dbUtil.findCourseById(savedCourse.id());
         assertThat(findCourse.segments()).isEqualTo(savedCourse.segments());
@@ -109,11 +110,9 @@ class AdminCourseApplicationServiceTest extends AbstractIntegrationTest {
         ));
         Course savedCourse = dbUtil.saveCourse(course);
 
-        List<List<Double>> newCoordinates = null;
-        String newName = null;
         RoadType newRoadType = RoadType.트레일;
 
-        sut.modifyCourse(savedCourse.id(), newCoordinates, newName, newRoadType);
+        sut.modifyCourse(savedCourse.id(), new CourseRelaceWebRequest(null, null, newRoadType));
 
         Course findCourse = dbUtil.findCourseById(savedCourse.id());
         assertThat(findCourse.segments()).isEqualTo(savedCourse.segments());
