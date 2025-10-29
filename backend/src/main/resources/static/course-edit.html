@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>코스 편집 - 런세권</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+            'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .back-button, .save-button {
+            padding: 10px 20px;
+            border: 2px solid white;
+            background: transparent;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        .save-button {
+            background: white;
+            color: #667eea;
+        }
+
+        .save-button:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.3);
+        }
+
+        .save-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .content {
+            display: flex;
+            height: 70vh;
+            overflow: hidden;
+        }
+
+        .map-section {
+            flex: 3;
+            position: relative;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .map-controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            max-width: 300px;
+        }
+
+        .map-controls h3 {
+            margin-bottom: 15px;
+            color: #2d3748;
+            font-size: 18px;
+        }
+
+        .map-controls p {
+            font-size: 14px;
+            color: #718096;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .control-button {
+            padding: 10px 20px;
+            border: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .control-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.4);
+        }
+
+        .control-button:active {
+            transform: translateY(0);
+        }
+
+        .control-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .control-button.secondary {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+
+        .control-button.secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .info-section {
+            flex: 1;
+            background: white;
+            overflow-y: auto;
+            border-left: 1px solid #e2e8f0;
+            padding: 20px;
+        }
+
+        .info-section h2 {
+            color: #2d3748;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .course-info {
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: #2d3748;
+        }
+
+        .info-value.editable {
+            width: 100%;
+        }
+
+        .info-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #2d3748;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .info-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .segment-list {
+            margin-top: 20px;
+        }
+
+        .segment-item {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .segment-header {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .incline-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .incline-badge.UPHILL {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .incline-badge.FLAT {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        .incline-badge.DOWNHILL {
+            background: #bee3f8;
+            color: #2c5282;
+        }
+
+        .coordinate-count {
+            font-size: 12px;
+            color: #718096;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #718096;
+        }
+
+        .error-message {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .success-message {
+            background: #c6f6d5;
+            color: #276749;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .marker-dragging {
+            cursor: move;
+        }
+
+        .coordinates-section {
+            background: white;
+            padding: 30px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .coordinates-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .coordinates-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .bulk-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .bulk-button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .bulk-button.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .bulk-button.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .bulk-button.secondary {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+
+        .bulk-button.secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .bulk-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .coordinates-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        .coordinates-table thead {
+            background: #f7fafc;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .coordinates-table th {
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            color: #4a5568;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .coordinates-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #2d3748;
+        }
+
+        .coordinates-table tr:hover {
+            background: #f7fafc;
+        }
+
+        .coordinates-table tr.selected {
+            background: #e6f0ff;
+        }
+
+        .coord-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .coord-number {
+            font-family: 'Monaco', 'Menlo', monospace;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .coord-value {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+        }
+
+        .coord-edit-btn {
+            padding: 4px 12px;
+            border: 1px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .coord-edit-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .segment-group-header {
+            background: #edf2f7;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .select-all-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #4a5568;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>코스 편집</h1>
+        <div class="header-buttons">
+            <button class="save-button" onclick="saveCourse()">저장</button>
+            <button class="back-button" onclick="window.history.back()">← 뒤로 가기</button>
+        </div>
+    </div>
+    <div class="content">
+        <div class="map-section">
+            <div id="map"></div>
+            <div class="map-controls">
+                <h3>편집 가이드</h3>
+                <p>지도 위의 마커를 드래그하여 코스 좌표를 수정할 수 있습니다.</p>
+                <p>변경사항은 자동으로 저장됩니다.</p>
+                <button class="control-button secondary" onclick="resetChanges()">변경사항 초기화</button>
+            </div>
+        </div>
+        <div class="info-section">
+            <h2>코스 정보</h2>
+            <div id="message-container"></div>
+            <div id="course-info" class="loading">코스 정보를 불러오는 중...</div>
+        </div>
+    </div>
+    <div id="coordinates-container" class="coordinates-section" style="display: none;">
+        <div class="loading">좌표 목록을 불러오는 중...</div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=71f900d9b14c079c34329764a15e7ae2"></script>
+<script>
+    // URL에서 코스 ID 추출
+    const urlParams = new URLSearchParams(window.location.search);
+    const courseId = urlParams.get('id');
+
+    if (!courseId) {
+        alert('코스 ID가 지정되지 않았습니다.');
+        window.history.back();
+    }
+
+    let map;
+    let course = null;
+    let markers = [];
+    let polylines = [];
+    let originalCourse = null;
+    let isInitialLoad = true; // 초기 로드 여부 플래그
+    let selectedCoordinates = new Set(); // 선택된 좌표 (seg-idx_coord-idx 형식)
+
+    // 마커 이미지 설정
+    let normalMarkerImage;
+    let selectedMarkerImage;
+
+    // 페이지 초기화
+    initializePage();
+
+    async function initializePage() {
+        // 카카오 맵 초기화
+        const mapContainer = document.getElementById('map');
+        const mapOption = {
+            center: new kakao.maps.LatLng(37.5665, 126.9780),
+            level: 5
+        };
+
+        map = new kakao.maps.Map(mapContainer, mapOption);
+
+        // 마커 이미지 초기화
+        const imageSize = new kakao.maps.Size(24, 35);
+        normalMarkerImage = new kakao.maps.MarkerImage(
+            'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png',
+            imageSize
+        );
+        selectedMarkerImage = new kakao.maps.MarkerImage(
+            'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',
+            imageSize
+        );
+
+        // 코스 정보 로드
+        await loadCourse();
+    }
+
+    // 메시지 표시
+    function showMessage(message, type = 'error') {
+        const messageContainer = document.getElementById('message-container');
+        const className = type === 'error' ? 'error-message' : 'success-message';
+        messageContainer.innerHTML = `<div class="${className}">${message}</div>`;
+        setTimeout(() => {
+            messageContainer.innerHTML = '';
+        }, 5000);
+    }
+
+    // 코스 정보 로드
+    async function loadCourse() {
+        try {
+            const response = await axios.get('/courses/favorites', {
+                params: {
+                    courseIds: [courseId]
+                },
+                withCredentials: true
+            });
+
+            console.log('API Response:', response.data);
+
+            if (response.data && response.data.length > 0) {
+                course = response.data[0];
+                console.log('Course loaded:', course);
+                console.log('Segments:', course.segments);
+                originalCourse = JSON.parse(JSON.stringify(course)); // 깊은 복사
+                displayCourseInfo();
+                displayCoordinatesList();
+                drawCourseOnMap();
+            } else {
+                showMessage('코스를 찾을 수 없습니다.');
+            }
+        } catch (error) {
+            console.error('코스 로드 실패:', error);
+            if (error.response && error.response.status === 401) {
+                alert('로그인 세션이 만료되었습니다.');
+                window.location.href = '/admin-login';
+            } else {
+                showMessage('코스 정보를 불러오는데 실패했습니다.');
+            }
+        }
+    }
+
+    // 코스 정보 표시
+    function displayCourseInfo() {
+        try {
+            console.log('displayCourseInfo 시작');
+            const infoContainer = document.getElementById('course-info');
+
+            const totalCoordinates = course.segments.reduce((sum, segment) =>
+                sum + segment.coordinates.length, 0
+            );
+
+            let html = `
+                <div class="course-info">
+                    <div class="info-item">
+                        <div class="info-label">코스 이름</div>
+                        <div class="info-value editable">
+                            <input type="text"
+                                   id="course-name-input"
+                                   class="info-input"
+                                   value="${course.name}"
+                                   onchange="updateCourseName(this.value)">
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">코스 길이</div>
+                        <div class="info-value">${(course.length / 1000).toFixed(2)} km</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">도로 타입</div>
+                        <div class="info-value">${course.roadType}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">난이도</div>
+                        <div class="info-value">${course.difficulty}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">총 좌표 수</div>
+                        <div class="info-value">${totalCoordinates}개</div>
+                    </div>
+                </div>
+                <div class="segment-list">
+                    <h3 style="margin-bottom: 15px; color: #2d3748;">세그먼트 목록</h3>
+            `;
+
+            course.segments.forEach((segment, index) => {
+                html += `
+                    <div class="segment-item">
+                        <div class="segment-header">
+                            <span>세그먼트 ${index + 1}</span>
+                            <span class="incline-badge ${segment.inclineType}">${segment.inclineType}</span>
+                        </div>
+                        <div class="coordinate-count">좌표 ${segment.coordinates.length}개</div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+
+            infoContainer.innerHTML = html;
+            console.log('displayCourseInfo 완료');
+        } catch (error) {
+            console.error('displayCourseInfo 에러:', error);
+            console.error('Error stack:', error.stack);
+            showMessage('코스 정보 표시 중 오류가 발생했습니다: ' + error.message, 'error');
+        }
+    }
+
+    // 좌표 목록 표시
+    function displayCoordinatesList() {
+        try {
+            console.log('displayCoordinatesList 시작');
+            const coordinatesContainer = document.getElementById('coordinates-container');
+            coordinatesContainer.style.display = 'block';
+
+            let html = `
+                <div class="coordinates-header">
+                    <div class="coordinates-title">전체 좌표 목록</div>
+                    <div class="bulk-actions">
+                        <button class="bulk-button secondary" onclick="showSelectedOnMap()" id="show-on-map-btn" disabled>
+                            지도에서 보기
+                        </button>
+                        <button class="bulk-button primary" onclick="bulkEditCoordinates()" id="bulk-edit-btn" disabled>
+                            일괄 수정
+                        </button>
+                    </div>
+                </div>
+                <table class="coordinates-table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <label class="select-all-label">
+                                    <input type="checkbox" class="coord-checkbox" id="select-all-checkbox" onchange="toggleAllCoordinates()">
+                                    전체 선택
+                                </label>
+                            </th>
+                            <th>번호</th>
+                            <th>세그먼트</th>
+                            <th>위도</th>
+                            <th>경도</th>
+                            <th>고도(m)</th>
+                            <th>편집</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            let coordNumber = 1;
+            course.segments.forEach((segment, segIdx) => {
+                segment.coordinates.forEach((coord, coordIdx) => {
+                    const coordId = `${segIdx}_${coordIdx}`;
+                    const lat = (coord.latitude != null && !isNaN(coord.latitude)) ? Number(coord.latitude).toFixed(6) : 'N/A';
+                    const lng = (coord.longitude != null && !isNaN(coord.longitude)) ? Number(coord.longitude).toFixed(6) : 'N/A';
+                    const elev = (coord.elevation != null && !isNaN(coord.elevation)) ? Number(coord.elevation).toFixed(1) : 'N/A';
+
+                    html += `
+                        <tr id="coord-row-${coordId}" class="${selectedCoordinates.has(coordId) ? 'selected' : ''}">
+                            <td>
+                                <input type="checkbox" class="coord-checkbox"
+                                       id="checkbox-${coordId}"
+                                       ${selectedCoordinates.has(coordId) ? 'checked' : ''}
+                                       onchange="toggleCoordinate(${segIdx}, ${coordIdx})">
+                            </td>
+                            <td class="coord-number">#${coordNumber}</td>
+                            <td>세그먼트 ${segIdx + 1}</td>
+                            <td class="coord-value">${lat}</td>
+                            <td class="coord-value">${lng}</td>
+                            <td class="coord-value">${elev}</td>
+                            <td>
+                                <button class="coord-edit-btn" onclick="editSingleCoordinate(${segIdx}, ${coordIdx})">
+                                    수정
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    coordNumber++;
+                });
+            });
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+
+            coordinatesContainer.innerHTML = html;
+            updateBulkActionButtons();
+            console.log('displayCoordinatesList 완료');
+        } catch (error) {
+            console.error('displayCoordinatesList 에러:', error);
+            console.error('Error stack:', error.stack);
+            showMessage('좌표 목록 표시 중 오류가 발생했습니다: ' + error.message, 'error');
+        }
+    }
+
+    // inclineType에 따른 색상 반환
+    function getColorByInclineType(inclineType) {
+        switch (inclineType) {
+            case 'UPHILL':
+                return '#FF0000';
+            case 'FLAT':
+                return '#00FF00';
+            case 'DOWNHILL':
+                return '#0000FF';
+            default:
+                return '#808080';
+        }
+    }
+
+    // 지도에 코스 그리기
+    function drawCourseOnMap() {
+        try {
+            console.log('drawCourseOnMap 시작');
+            console.log('course:', course);
+            console.log('map:', map);
+
+            // 기존 마커와 폴리라인 제거
+            clearMap();
+
+            if (!course || !course.segments || course.segments.length === 0) {
+                console.log('코스 데이터 없음:', { course, segments: course?.segments });
+                return;
+            }
+
+            console.log('세그먼트 개수:', course.segments.length);
+
+            let allCoordinates = [];
+
+            // 각 세그먼트별로 폴리라인 그리기
+            course.segments.forEach((segment, segmentIndex) => {
+                console.log(`세그먼트 ${segmentIndex}:`, segment);
+
+                if (!segment.coordinates || segment.coordinates.length === 0) {
+                    console.log(`세그먼트 ${segmentIndex} 좌표 없음`);
+                    return;
+                }
+
+                console.log(`세그먼트 ${segmentIndex} 좌표 개수:`, segment.coordinates.length);
+
+                // 좌표 배열을 카카오맵 LatLng 객체로 변환
+                const path = segment.coordinates.map(coord => {
+                    console.log('좌표:', coord);
+                    return new kakao.maps.LatLng(coord.latitude, coord.longitude);
+                });
+
+                allCoordinates.push(...path);
+
+                // 폴리라인 생성
+                const polyline = new kakao.maps.Polyline({
+                    path: path,
+                    strokeWeight: 5,
+                    strokeColor: getColorByInclineType(segment.inclineType),
+                    strokeOpacity: 0.8,
+                    strokeStyle: 'solid'
+                });
+
+                polyline.setMap(map);
+                polylines.push(polyline);
+                console.log(`세그먼트 ${segmentIndex} 폴리라인 추가됨`);
+
+                // 각 좌표에 드래그 가능한 마커 추가
+                segment.coordinates.forEach((coord, coordIndex) => {
+                    const position = new kakao.maps.LatLng(coord.latitude, coord.longitude);
+
+                    const marker = new kakao.maps.Marker({
+                        position: position,
+                        draggable: true,
+                        map: map
+                    });
+
+                    // 마커 드래그 이벤트
+                    kakao.maps.event.addListener(marker, 'dragend', function () {
+                        const newPosition = marker.getPosition();
+                        onMarkerDragEnd(segmentIndex, coordIndex, newPosition);
+                    });
+
+                    markers.push({
+                        marker: marker,
+                        segmentIndex: segmentIndex,
+                        coordIndex: coordIndex
+                    });
+                });
+                console.log(`세그먼트 ${segmentIndex} 마커 추가됨`);
+            });
+
+            console.log('총 마커 개수:', markers.length);
+            console.log('총 폴리라인 개수:', polylines.length);
+
+            // 지도 중심을 코스에 맞추기 (초기 로드 시에만)
+            if (isInitialLoad && allCoordinates.length > 0) {
+                console.log('지도 중심 설정 중...');
+                const bounds = new kakao.maps.LatLngBounds();
+                allCoordinates.forEach(coord => bounds.extend(coord));
+                map.setBounds(bounds);
+                isInitialLoad = false;
+                console.log('지도 중심 설정 완료');
+            }
+
+            console.log('drawCourseOnMap 완료');
+        } catch (error) {
+            console.error('drawCourseOnMap 에러:', error);
+            console.error('Error stack:', error.stack);
+            showMessage('지도에 코스를 그리는 중 오류가 발생했습니다: ' + error.message, 'error');
+        }
+    }
+
+    // 마커 드래그 종료 시 처리
+    function onMarkerDragEnd(segmentIndex, coordIndex, newPosition) {
+        const segment = course.segments[segmentIndex];
+        const isFirstCoord = coordIndex === 0;
+        const isLastCoord = coordIndex === segment.coordinates.length - 1;
+
+        // 현재 좌표 업데이트
+        segment.coordinates[coordIndex].latitude = newPosition.getLat();
+        segment.coordinates[coordIndex].longitude = newPosition.getLng();
+
+        // 업데이트할 세그먼트 인덱스 수집
+        const segmentsToUpdate = [segmentIndex];
+        const markersToUpdate = [];
+
+        // 세그먼트 경계 좌표인 경우 인접 세그먼트와 마커도 업데이트
+        if (isFirstCoord && segmentIndex > 0) {
+            // 첫 번째 좌표이고 이전 세그먼트가 있는 경우
+            const prevSegment = course.segments[segmentIndex - 1];
+            const prevLastIndex = prevSegment.coordinates.length - 1;
+            prevSegment.coordinates[prevLastIndex].latitude = newPosition.getLat();
+            prevSegment.coordinates[prevLastIndex].longitude = newPosition.getLng();
+            segmentsToUpdate.push(segmentIndex - 1);
+
+            // 이전 세그먼트의 마지막 마커 찾아서 위치 업데이트
+            const prevMarkerInfo = markers.find(m =>
+                m.segmentIndex === segmentIndex - 1 &&
+                m.coordIndex === prevLastIndex
+            );
+            if (prevMarkerInfo) {
+                prevMarkerInfo.marker.setPosition(newPosition);
+            }
+        }
+
+        if (isLastCoord && segmentIndex < course.segments.length - 1) {
+            // 마지막 좌표이고 다음 세그먼트가 있는 경우
+            const nextSegment = course.segments[segmentIndex + 1];
+            nextSegment.coordinates[0].latitude = newPosition.getLat();
+            nextSegment.coordinates[0].longitude = newPosition.getLng();
+            segmentsToUpdate.push(segmentIndex + 1);
+
+            // 다음 세그먼트의 첫 번째 마커 찾아서 위치 업데이트
+            const nextMarkerInfo = markers.find(m =>
+                m.segmentIndex === segmentIndex + 1 &&
+                m.coordIndex === 0
+            );
+            if (nextMarkerInfo) {
+                nextMarkerInfo.marker.setPosition(newPosition);
+            }
+        }
+
+        // 영향받은 세그먼트의 폴리라인만 업데이트
+        updateSegmentPolylines(segmentsToUpdate);
+
+        // 변경 알림
+        let message = '좌표가 변경되었습니다.';
+        if (isFirstCoord && segmentIndex > 0) {
+            message += ' (이전 세그먼트와 연결됨)';
+        } else if (isLastCoord && segmentIndex < course.segments.length - 1) {
+            message += ' (다음 세그먼트와 연결됨)';
+        }
+        message += ' (자동 저장 기능은 추후 구현 예정)';
+        showMessage(message, 'success');
+        console.log('Updated course:', course);
+    }
+
+    // 특정 세그먼트들의 폴리라인만 업데이트
+    function updateSegmentPolylines(segmentIndices) {
+        segmentIndices.forEach(segmentIndex => {
+            const segment = course.segments[segmentIndex];
+            if (!segment || !segment.coordinates || segment.coordinates.length === 0) {
+                return;
+            }
+
+            // 기존 폴리라인 제거 (해당 세그먼트만)
+            const oldPolyline = polylines[segmentIndex];
+            if (oldPolyline) {
+                oldPolyline.setMap(null);
+            }
+
+            // 새 경로로 폴리라인 생성
+            const path = segment.coordinates.map(coord =>
+                new kakao.maps.LatLng(coord.latitude, coord.longitude)
+            );
+
+            const newPolyline = new kakao.maps.Polyline({
+                path: path,
+                strokeWeight: 5,
+                strokeColor: getColorByInclineType(segment.inclineType),
+                strokeOpacity: 0.8,
+                strokeStyle: 'solid'
+            });
+
+            newPolyline.setMap(map);
+            polylines[segmentIndex] = newPolyline;
+        });
+    }
+
+    // 모든 폴리라인 업데이트
+    function updatePolylines() {
+        // 기존 폴리라인 제거
+        polylines.forEach(polyline => polyline.setMap(null));
+        polylines = [];
+
+        // 폴리라인 다시 그리기
+        course.segments.forEach(segment => {
+            if (!segment.coordinates || segment.coordinates.length === 0) {
+                return;
+            }
+
+            const path = segment.coordinates.map(coord =>
+                new kakao.maps.LatLng(coord.latitude, coord.longitude)
+            );
+
+            const polyline = new kakao.maps.Polyline({
+                path: path,
+                strokeWeight: 5,
+                strokeColor: getColorByInclineType(segment.inclineType),
+                strokeOpacity: 0.8,
+                strokeStyle: 'solid'
+            });
+
+            polyline.setMap(map);
+            polylines.push(polyline);
+        });
+    }
+
+    // 지도 초기화
+    function clearMap() {
+        markers.forEach(item => item.marker.setMap(null));
+        markers = [];
+        polylines.forEach(polyline => polyline.setMap(null));
+        polylines = [];
+    }
+
+    // 변경사항 초기화
+    function resetChanges() {
+        if (confirm('모든 변경사항을 초기화하시겠습니까?')) {
+            course = JSON.parse(JSON.stringify(originalCourse));
+            displayCourseInfo();
+            displayCoordinatesList();
+            drawCourseOnMap();
+            showMessage('변경사항이 초기화되었습니다.', 'success');
+        }
+    }
+
+    // 좌표 선택/해제
+    function toggleCoordinate(segIdx, coordIdx) {
+        const coordId = `${segIdx}_${coordIdx}`;
+        const row = document.getElementById(`coord-row-${coordId}`);
+        const checkbox = document.getElementById(`checkbox-${coordId}`);
+
+        // 마커 찾기
+        const markerInfo = markers.find(m =>
+            m.segmentIndex === segIdx && m.coordIndex === coordIdx
+        );
+
+        if (checkbox.checked) {
+            selectedCoordinates.add(coordId);
+            row.classList.add('selected');
+            // 마커 이미지를 선택 이미지로 변경
+            if (markerInfo && selectedMarkerImage) {
+                markerInfo.marker.setImage(selectedMarkerImage);
+                markerInfo.marker.setZIndex(1000);
+            }
+        } else {
+            selectedCoordinates.delete(coordId);
+            row.classList.remove('selected');
+            // 마커 이미지를 일반 이미지로 변경
+            if (markerInfo && normalMarkerImage) {
+                markerInfo.marker.setImage(normalMarkerImage);
+                markerInfo.marker.setZIndex(1);
+            }
+        }
+
+        updateBulkActionButtons();
+        updateSelectAllCheckbox();
+    }
+
+    // 전체 선택/해제
+    function toggleAllCoordinates() {
+        const selectAllCheckbox = document.getElementById('select-all-checkbox');
+        const isChecked = selectAllCheckbox.checked;
+
+        course.segments.forEach((segment, segIdx) => {
+            segment.coordinates.forEach((coord, coordIdx) => {
+                const coordId = `${segIdx}_${coordIdx}`;
+                const row = document.getElementById(`coord-row-${coordId}`);
+                const checkbox = document.getElementById(`checkbox-${coordId}`);
+
+                // 마커 찾기
+                const markerInfo = markers.find(m =>
+                    m.segmentIndex === segIdx && m.coordIndex === coordIdx
+                );
+
+                if (checkbox) {
+                    checkbox.checked = isChecked;
+                    if (isChecked) {
+                        selectedCoordinates.add(coordId);
+                        row.classList.add('selected');
+                        // 마커 이미지를 선택 이미지로 변경
+                        if (markerInfo && selectedMarkerImage) {
+                            markerInfo.marker.setImage(selectedMarkerImage);
+                            markerInfo.marker.setZIndex(1000);
+                        }
+                    } else {
+                        selectedCoordinates.delete(coordId);
+                        row.classList.remove('selected');
+                        // 마커 이미지를 일반 이미지로 변경
+                        if (markerInfo && normalMarkerImage) {
+                            markerInfo.marker.setImage(normalMarkerImage);
+                            markerInfo.marker.setZIndex(1);
+                        }
+                    }
+                }
+            });
+        });
+
+        updateBulkActionButtons();
+    }
+
+    // 전체 선택 체크박스 상태 업데이트
+    function updateSelectAllCheckbox() {
+        const selectAllCheckbox = document.getElementById('select-all-checkbox');
+        if (!selectAllCheckbox) return;
+
+        const totalCoordinates = course.segments.reduce((sum, segment) =>
+            sum + segment.coordinates.length, 0
+        );
+
+        if (selectedCoordinates.size === 0) {
+            selectAllCheckbox.checked = false;
+            selectAllCheckbox.indeterminate = false;
+        } else if (selectedCoordinates.size === totalCoordinates) {
+            selectAllCheckbox.checked = true;
+            selectAllCheckbox.indeterminate = false;
+        } else {
+            selectAllCheckbox.checked = false;
+            selectAllCheckbox.indeterminate = true;
+        }
+    }
+
+    // 일괄 수정 버튼 상태 업데이트
+    function updateBulkActionButtons() {
+        const showOnMapBtn = document.getElementById('show-on-map-btn');
+        const bulkEditBtn = document.getElementById('bulk-edit-btn');
+
+        const hasSelection = selectedCoordinates.size > 0;
+
+        if (showOnMapBtn) {
+            showOnMapBtn.disabled = !hasSelection;
+        }
+        if (bulkEditBtn) {
+            bulkEditBtn.disabled = !hasSelection;
+        }
+    }
+
+    // 선택된 좌표 지도에 표시
+    function showSelectedOnMap() {
+        if (selectedCoordinates.size === 0) {
+            showMessage('선택된 좌표가 없습니다.', 'error');
+            return;
+        }
+
+        // 모든 마커의 zIndex를 기본값으로 설정
+        markers.forEach(item => {
+            item.marker.setZIndex(1);
+        });
+
+        // 선택된 좌표의 마커만 강조
+        const selectedBounds = new kakao.maps.LatLngBounds();
+        let selectedCount = 0;
+
+        selectedCoordinates.forEach(coordId => {
+            const [segIdx, coordIdx] = coordId.split('_').map(Number);
+            const markerInfo = markers.find(m =>
+                m.segmentIndex === segIdx && m.coordIndex === coordIdx
+            );
+
+            if (markerInfo) {
+                markerInfo.marker.setZIndex(1000);
+                const position = markerInfo.marker.getPosition();
+                selectedBounds.extend(position);
+                selectedCount++;
+            }
+        });
+
+        if (selectedCount > 0) {
+            map.setBounds(selectedBounds);
+            showMessage(`${selectedCount}개의 선택된 좌표가 강조되었습니다.`, 'success');
+        }
+    }
+
+    // 단일 좌표 수정
+    function editSingleCoordinate(segIdx, coordIdx) {
+        const coord = course.segments[segIdx].coordinates[coordIdx];
+
+        const latitude = prompt('위도를 입력하세요:', coord.latitude.toFixed(6));
+        if (latitude === null) return;
+
+        const longitude = prompt('경도를 입력하세요:', coord.longitude.toFixed(6));
+        if (longitude === null) return;
+
+        const elevation = prompt('고도(m)를 입력하세요:', coord.elevation.toFixed(1));
+        if (elevation === null) return;
+
+        const newLat = parseFloat(latitude);
+        const newLng = parseFloat(longitude);
+        const newElev = parseFloat(elevation);
+
+        // 유효성 검사
+        if (isNaN(newLat) || isNaN(newLng) || isNaN(newElev)) {
+            showMessage('잘못된 입력입니다. 숫자를 입력해주세요.', 'error');
+            return;
+        }
+
+        if (newLat < -90 || newLat > 90) {
+            showMessage('위도는 -90 ~ 90 사이의 값이어야 합니다.', 'error');
+            return;
+        }
+
+        if (newLng < -180 || newLng > 180) {
+            showMessage('경도는 -180 ~ 180 사이의 값이어야 합니다.', 'error');
+            return;
+        }
+
+        // 좌표 업데이트
+        coord.latitude = newLat;
+        coord.longitude = newLng;
+        coord.elevation = newElev;
+
+        // 세그먼트 경계 좌표인 경우 인접 세그먼트도 업데이트
+        const segment = course.segments[segIdx];
+        const isFirstCoord = coordIdx === 0;
+        const isLastCoord = coordIdx === segment.coordinates.length - 1;
+        const segmentsToUpdate = [segIdx];
+
+        if (isFirstCoord && segIdx > 0) {
+            const prevSegment = course.segments[segIdx - 1];
+            const prevLastIndex = prevSegment.coordinates.length - 1;
+            prevSegment.coordinates[prevLastIndex].latitude = newLat;
+            prevSegment.coordinates[prevLastIndex].longitude = newLng;
+            prevSegment.coordinates[prevLastIndex].elevation = newElev;
+            segmentsToUpdate.push(segIdx - 1);
+        }
+
+        if (isLastCoord && segIdx < course.segments.length - 1) {
+            const nextSegment = course.segments[segIdx + 1];
+            nextSegment.coordinates[0].latitude = newLat;
+            nextSegment.coordinates[0].longitude = newLng;
+            nextSegment.coordinates[0].elevation = newElev;
+            segmentsToUpdate.push(segIdx + 1);
+        }
+
+        // 지도의 마커 위치 업데이트
+        const newPosition = new kakao.maps.LatLng(newLat, newLng);
+        const markerInfo = markers.find(m =>
+            m.segmentIndex === segIdx && m.coordIndex === coordIdx
+        );
+        if (markerInfo) {
+            markerInfo.marker.setPosition(newPosition);
+        }
+
+        // 인접 마커들도 업데이트
+        if (isFirstCoord && segIdx > 0) {
+            const prevSegment = course.segments[segIdx - 1];
+            const prevLastIndex = prevSegment.coordinates.length - 1;
+            const prevMarkerInfo = markers.find(m =>
+                m.segmentIndex === segIdx - 1 && m.coordIndex === prevLastIndex
+            );
+            if (prevMarkerInfo) {
+                prevMarkerInfo.marker.setPosition(newPosition);
+            }
+        }
+
+        if (isLastCoord && segIdx < course.segments.length - 1) {
+            const nextMarkerInfo = markers.find(m =>
+                m.segmentIndex === segIdx + 1 && m.coordIndex === 0
+            );
+            if (nextMarkerInfo) {
+                nextMarkerInfo.marker.setPosition(newPosition);
+            }
+        }
+
+        // 폴리라인 업데이트
+        updateSegmentPolylines(segmentsToUpdate);
+
+        // UI 업데이트
+        displayCoordinatesList();
+        showMessage('좌표가 수정되었습니다.', 'success');
+    }
+
+    // 일괄 수정
+    function bulkEditCoordinates() {
+        if (selectedCoordinates.size === 0) {
+            showMessage('선택된 좌표가 없습니다.', 'error');
+            return;
+        }
+
+        const elevationOffset = prompt(`${selectedCoordinates.size}개의 선택된 좌표의 고도를 일괄 수정합니다.\n고도 변경값(m)을 입력하세요 (예: +10, -5):`, '+0');
+        if (elevationOffset === null) return;
+
+        const offset = parseFloat(elevationOffset);
+        if (isNaN(offset)) {
+            showMessage('잘못된 입력입니다. 숫자를 입력해주세요.', 'error');
+            return;
+        }
+
+        // 선택된 좌표들의 고도 일괄 수정
+        const updatedSegments = new Set();
+        selectedCoordinates.forEach(coordId => {
+            const [segIdx, coordIdx] = coordId.split('_').map(Number);
+            const coord = course.segments[segIdx].coordinates[coordIdx];
+            coord.elevation += offset;
+            updatedSegments.add(segIdx);
+
+            // 세그먼트 경계 좌표인 경우 인접 세그먼트도 체크
+            const segment = course.segments[segIdx];
+            const isFirstCoord = coordIdx === 0;
+            const isLastCoord = coordIdx === segment.coordinates.length - 1;
+
+            if (isFirstCoord && segIdx > 0) {
+                const prevSegment = course.segments[segIdx - 1];
+                const prevLastIndex = prevSegment.coordinates.length - 1;
+                prevSegment.coordinates[prevLastIndex].elevation = coord.elevation;
+                updatedSegments.add(segIdx - 1);
+            }
+
+            if (isLastCoord && segIdx < course.segments.length - 1) {
+                const nextSegment = course.segments[segIdx + 1];
+                nextSegment.coordinates[0].elevation = coord.elevation;
+                updatedSegments.add(segIdx + 1);
+            }
+        });
+
+        // UI 업데이트
+        displayCoordinatesList();
+        showMessage(`${selectedCoordinates.size}개 좌표의 고도가 ${offset > 0 ? '+' : ''}${offset}m 변경되었습니다.`, 'success');
+    }
+
+    // 코스 이름 업데이트
+    function updateCourseName(newName) {
+        if (!course) {
+            showMessage('코스 정보를 찾을 수 없습니다.', 'error');
+            return;
+        }
+
+        // 빈 문자열 체크
+        if (!newName.trim()) {
+            showMessage('코스 이름을 입력해주세요.', 'error');
+            // 이전 값으로 복원
+            const nameInput = document.getElementById('course-name-input');
+            if (nameInput) {
+                nameInput.value = course.name;
+            }
+            return;
+        }
+
+        // 코스 이름 업데이트
+        course.name = newName.trim();
+        showMessage('코스 이름이 변경되었습니다.', 'success');
+        console.log('코스 이름 변경:', course.name);
+    }
+
+    // 코스 저장
+    async function saveCourse() {
+        if (!course) {
+            showMessage('저장할 코스가 없습니다.', 'error');
+            return;
+        }
+
+        if (!confirm('변경사항을 저장하시겠습니까?')) {
+            return;
+        }
+
+        try {
+            console.log('=== 저장할 코스 데이터 ===');
+            console.log('Course ID:', courseId);
+            console.log('Course Data:', JSON.stringify(course, null, 2));
+
+            // TODO: API 구현 후 아래 코드 활성화
+            /*
+            const response = await axios.put(`/admin/courses/${courseId}`, course, {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                withCredentials: true
+            });
+
+            if (response.status === 200) {
+                // 저장 성공 시 originalCourse 업데이트
+                originalCourse = JSON.parse(JSON.stringify(course));
+                showMessage('코스가 성공적으로 저장되었습니다.', 'success');
+            }
+            */
+
+            // API 미구현 상태이므로 임시로 성공 메시지 표시
+            showMessage('코스 데이터가 콘솔에 출력되었습니다. (API 미구현)', 'success');
+            console.log('=== API 구현 시 위 데이터를 PUT /admin/courses/' + courseId + ' 로 전송 ===');
+
+        } catch (error) {
+            console.error('코스 저장 실패:', error);
+            if (error.response && error.response.status === 401) {
+                alert('로그인 세션이 만료되었습니다.');
+                window.location.href = '/admin-login';
+            } else {
+                showMessage('코스 저장에 실패했습니다: ' + (error.response?.data?.message || error.message), 'error');
+            }
+        }
+    }
+</script>
+</body>
+</html>
