@@ -8,6 +8,8 @@ import java.util.Optional;
 
 public interface CourseRepository {
 
+    void save(Course course);
+
     void saveAll(Iterable<? extends Course> courses);
 
     Slice<Course> findAllHasDistanceWithin(Coordinate target, Meter distance, Pageable pageable);

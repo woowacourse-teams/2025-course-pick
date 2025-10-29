@@ -1,7 +1,9 @@
 package coursepick.coursepick.presentation;
 
+import coursepick.coursepick.application.AdminCourseApplicationService;
 import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.presentation.dto.AdminLoginWebRequest;
+import coursepick.coursepick.presentation.dto.CourseRelaceWebRequest;
 import jakarta.validation.Valid;
 import java.time.Duration;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,7 +14,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,12 +28,16 @@ public class AdminWebController {
     private final String adminToken;
     private final String kakaoMapApiKey;
 
+    private final AdminCourseApplicationService adminCourseApplicationService;
+
     public AdminWebController(
             @Value("${admin.token}") String adminToken,
-            @Value("${admin.kakao-map-api-key}") String kakaoMapApiKey
+            @Value("${admin.kakao-map-api-key}") String kakaoMapApiKey,
+            AdminCourseApplicationService adminCourseApplicationService
     ) {
         this.adminToken = adminToken;
         this.kakaoMapApiKey = kakaoMapApiKey;
+        this.adminCourseApplicationService = adminCourseApplicationService;
     }
 
     @PostMapping("/api/admin/login")
@@ -47,6 +55,16 @@ public class AdminWebController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, tokenCookie.toString())
                 .build();
+    }
+
+    @PutMapping("/admin/course/{courseId}")
+    public ResponseEntity<Void> replaceCourse(
+            @PathVariable("courseId") String courseId,
+            @RequestBody CourseRelaceWebRequest request
+    ) {
+        adminCourseApplicationService.replaceCourse(courseId, request.coordinates(), request.name(),
+                request.roadType());
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/admin/login")

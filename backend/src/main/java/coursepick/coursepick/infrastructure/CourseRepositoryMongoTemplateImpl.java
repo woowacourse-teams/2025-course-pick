@@ -23,6 +23,11 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
     private final MongoTemplate mongoTemplate;
 
     @Override
+    public void save(Course course) {
+        mongoTemplate.save(course);
+    }
+
+    @Override
     public void saveAll(Iterable<? extends Course> courses) {
         /*
         배치 삽입을 통해 성능을 높일 수 있다. 단, 현재 새벽2시에만 호출되는 메서드라, 크게 필요해보이지는 않는다.

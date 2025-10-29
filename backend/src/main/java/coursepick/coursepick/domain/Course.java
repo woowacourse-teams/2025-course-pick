@@ -23,14 +23,14 @@ public class Course {
     private final String id;
 
     @Indexed(name = "idx_name", unique = true)
-    private final CourseName name;
+    private CourseName name;
 
-    private final RoadType roadType;
+    private RoadType roadType;
 
     private final InclineSummary inclineSummary;
 
     @GeoSpatialIndexed(name = "idx_geo_segments", type = GeoSpatialIndexType.GEO_2DSPHERE)
-    private final List<Segment> segments;
+    private List<Segment> segments;
 
     private final Meter length;
 
@@ -89,5 +89,17 @@ public class Course {
         return segments.stream()
                 .map(Segment::length)
                 .reduce(Meter.zero(), Meter::add);
+    }
+
+    public void changeCoordinates(List<Coordinate> coordinates) {
+        this.segments = refineCoordinates(coordinates);
+    }
+
+    public void changeName(String courseName) {
+        this.name = new CourseName(courseName);
+    }
+
+    public void changeRoadType(RoadType roadType) {
+        this.roadType = roadType;
     }
 }
