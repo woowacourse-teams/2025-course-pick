@@ -40,6 +40,13 @@ public class AdminWebController {
         this.courseRepository = courseRepository;
     }
 
+    @GetMapping("/admin/login")
+    public ResponseEntity<String> adminLoginPage() {
+        return ResponseEntity.ok()
+                .contentType(MediaType.TEXT_HTML)
+                .body(ADMIN_LOGIN_PAGE);
+    }
+
     @PostMapping("/admin/login")
     public ResponseEntity<Void> login(@RequestBody @Valid AdminLoginWebRequest request) {
         if (!adminToken.equals(request.password())) {
@@ -55,6 +62,28 @@ public class AdminWebController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, tokenCookie.toString())
                 .build();
+    }
+
+    @GetMapping("/admin")
+    public ResponseEntity<String> adminPage() {
+        return ResponseEntity.ok()
+                .contentType(MediaType.TEXT_HTML)
+                .body(ADMIN_MAIN_PAGE.replace("KAKAO_API_KEY_PLACEHOLDER", kakaoMapApiKey));
+    }
+
+    @GetMapping("/admin/courses/{id}")
+    public AdminCourseWebResponse findCourseById(@PathVariable("id") String id) {
+        Course course = courseRepository.findById(id)
+                .orElseThrow(ErrorType.NOT_EXIST_COURSE::create);
+
+        return AdminCourseWebResponse.from(course);
+    }
+
+    @GetMapping("/admin/courses/edit")
+    public ResponseEntity<String> courseEditPage() {
+        return ResponseEntity.ok()
+                .contentType(MediaType.TEXT_HTML)
+                .body(ADMIN_EDIT_PAGE.replace("KAKAO_API_KEY_PLACEHOLDER", kakaoMapApiKey));
     }
 
     @PatchMapping("/admin/courses/{id}")
@@ -79,14 +108,6 @@ public class AdminWebController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/admin/courses/{id}")
-    public AdminCourseWebResponse findCourseById(@PathVariable("id") String id) {
-        Course course = courseRepository.findById(id)
-                .orElseThrow(ErrorType.NOT_EXIST_COURSE::create);
-
-        return AdminCourseWebResponse.from(course);
-    }
-
     @DeleteMapping("/admin/courses/{id}")
     public ResponseEntity<Void> deleteCourse(@PathVariable("id") String id) {
         Course course = courseRepository.findById(id)
@@ -94,27 +115,6 @@ public class AdminWebController {
         courseRepository.delete(course);
 
         return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/admin/login")
-    public ResponseEntity<String> adminLoginPage() {
-        return ResponseEntity.ok()
-                .contentType(MediaType.TEXT_HTML)
-                .body(ADMIN_LOGIN_PAGE);
-    }
-
-    @GetMapping("/admin")
-    public ResponseEntity<String> adminPage() {
-        return ResponseEntity.ok()
-                .contentType(MediaType.TEXT_HTML)
-                .body(ADMIN_MAIN_PAGE.replace("KAKAO_API_KEY_PLACEHOLDER", kakaoMapApiKey));
-    }
-
-    @GetMapping("/admin/courses/edit")
-    public ResponseEntity<String> courseEditPage() {
-        return ResponseEntity.ok()
-                .contentType(MediaType.TEXT_HTML)
-                .body(ADMIN_EDIT_PAGE.replace("KAKAO_API_KEY_PLACEHOLDER", kakaoMapApiKey));
     }
 
     private static final String ADMIN_LOGIN_PAGE = """
@@ -940,7 +940,9 @@ public class AdminWebController {
                                        const courseId = this.dataset.courseId;
                                        const courseName = this.dataset.courseName;
 
-                                       if (!confirm(`정말로 "${courseName}" 코스를 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.`)) {
+                                       if (!confirm(`정말로 "${courseName}" 코스를 삭제하시겠습니까?
+
+            이 작업은 되돌릴 수 없습니다.`)) {
                                            return;
                                        }
 
