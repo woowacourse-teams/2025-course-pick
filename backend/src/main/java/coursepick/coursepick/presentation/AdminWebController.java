@@ -12,12 +12,16 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.server.Cookie;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
 
@@ -26,9 +30,9 @@ import java.util.List;
 public class AdminWebController {
 
     private static final String TOKEN_COOKIE_KEY = "admin-token";
+
     private final String adminToken;
     private final String kakaoMapApiKey;
-
     private final CourseRepository courseRepository;
     private final CourseFileModifier courseFileModifier;
 
@@ -67,11 +71,6 @@ public class AdminWebController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, tokenCookie.toString())
                 .build();
-    }
-
-    private String loadHtmlFile(String filename) throws IOException {
-        Resource resource = new ClassPathResource("static/admin/" + filename);
-        return new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
     }
 
     @GetMapping("/admin/courses/{id}")
@@ -134,5 +133,10 @@ public class AdminWebController {
         return ResponseEntity.ok()
                 .contentType(MediaType.TEXT_HTML)
                 .body(html);
+    }
+
+    private String loadHtmlFile(String filename) throws IOException {
+        Resource resource = new ClassPathResource("static/admin/" + filename);
+        return new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
     }
 }
