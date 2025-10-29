@@ -1,5 +1,6 @@
 package coursepick.coursepick.presentation;
 
+import coursepick.coursepick.application.CourseFileModifier;
 import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
@@ -29,15 +30,18 @@ public class AdminWebController {
     private final String kakaoMapApiKey;
 
     private final CourseRepository courseRepository;
+    private final CourseFileModifier courseFileModifier;
 
     public AdminWebController(
             @Value("${admin.token}") String adminToken,
             @Value("${admin.kakao-map-api-key}") String kakaoMapApiKey,
-            CourseRepository courseRepository
+            CourseRepository courseRepository,
+            CourseFileModifier courseFileModifier
     ) {
         this.adminToken = adminToken;
         this.kakaoMapApiKey = kakaoMapApiKey;
         this.courseRepository = courseRepository;
+        this.courseFileModifier = courseFileModifier;
     }
 
     @GetMapping("/admin/login")
@@ -105,6 +109,7 @@ public class AdminWebController {
         if (request.roadType() != null) course.changeRoadType(request.roadType());
 
         courseRepository.save(course);
+        courseFileModifier.modify(course);
         return ResponseEntity.ok().build();
     }
 
@@ -113,6 +118,7 @@ public class AdminWebController {
         Course course = courseRepository.findById(id)
                 .orElseThrow(ErrorType.NOT_EXIST_COURSE::create);
         courseRepository.delete(course);
+        courseFileModifier.delete(course.id());
 
         return ResponseEntity.ok().build();
     }
