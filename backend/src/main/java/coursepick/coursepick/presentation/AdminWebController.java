@@ -14,14 +14,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Profile("dev")
+@Profile({"local", "dev"})
 public class AdminWebController {
 
     private static final String TOKEN_COOKIE_KEY = "admin-token";
@@ -57,12 +57,12 @@ public class AdminWebController {
                 .build();
     }
 
-    @PutMapping("/admin/course/{courseId}")
-    public ResponseEntity<Void> replaceCourse(
-            @PathVariable("courseId") String courseId,
+    @PatchMapping("/admin/course/{id}")
+    public ResponseEntity<Void> modifyCourse(
+            @PathVariable("id") String courseId,
             @RequestBody CourseRelaceWebRequest request
     ) {
-        adminCourseApplicationService.replaceCourse(courseId, request.coordinates(), request.name(),
+        adminCourseApplicationService.modifyCourse(courseId, request.coordinates(), request.name(),
                 request.roadType());
         return ResponseEntity.ok().build();
     }

@@ -18,16 +18,22 @@ public class AdminCourseApplicationService {
     private final CourseRepository courseRepository;
 
     @Transactional
-    public void replaceCourse(String courseId, List<List<Double>> rawCoordinates, String name, RoadType roadType) {
+    public void modifyCourse(String courseId, List<List<Double>> rawCoordinates, String name, RoadType roadType) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(ErrorType.NOT_EXIST_COURSE::create);
 
-        List<Coordinate> coordinates = rawCoordinates.stream()
-                .map(rawCoordinate -> new Coordinate(rawCoordinate.get(0), rawCoordinate.get(1), rawCoordinate.get(2)))
-                .toList();
-        course.changeCoordinates(coordinates);
-        course.changeName(name);
-        course.changeRoadType(roadType);
+        if (rawCoordinates != null && !rawCoordinates.isEmpty()) {
+            List<Coordinate> coordinates = rawCoordinates.stream()
+                    .map(rawCoordinate -> new Coordinate(rawCoordinate.get(0), rawCoordinate.get(1), rawCoordinate.get(2)))
+                    .toList();
+            course.changeCoordinates(coordinates);
+        }
+        if (name != null) {
+            course.changeName(name);
+        }
+        if (roadType != null) {
+            course.changeRoadType(roadType);
+        }
 
         courseRepository.save(course);
     }

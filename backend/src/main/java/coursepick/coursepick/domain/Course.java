@@ -92,7 +92,13 @@ public class Course {
     }
 
     public void changeCoordinates(List<Coordinate> coordinates) {
-        this.segments = refineCoordinates(coordinates);
+        List<GeoLine> geoLines = GeoLineBuilder.fromCoordinates(coordinates)
+                .build();
+
+        this.segments = SegmentBuilder.fromGeoLines(geoLines)
+                .mergeSameElevationDirection()
+                .mergeSameInclineType()
+                .build();
     }
 
     public void changeName(String courseName) {
