@@ -91,4 +91,9 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
 
         return mongoTemplate.exists(query, Course.class);
     }
+
+    @Override
+    public void delete(Course course) {
+        mongoTemplate.remove(course);
+    }
 }

@@ -17,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -94,6 +95,15 @@ public class AdminWebController {
                 .orElseThrow(ErrorType.NOT_EXIST_COURSE::create);
 
         return AdminCourseWebResponse.from(course);
+    }
+
+    @DeleteMapping("/admin/course/{id}")
+    public ResponseEntity<Void> deleteCourse(@PathVariable("id") String id) {
+        Course course = courseRepository.findById(id)
+                .orElseThrow(ErrorType.NOT_EXIST_COURSE::create);
+        courseRepository.delete(course);
+
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/admin/login")
@@ -563,6 +573,24 @@ public class AdminWebController {
                                            box-shadow: 0 2px 6px rgba(102, 126, 234, 0.4);
                                        }
 
+                                       .delete-button {
+                                           flex: 1;
+                                           padding: 8px 16px;
+                                           border: none;
+                                           background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+                                           color: white;
+                                           border-radius: 5px;
+                                           cursor: pointer;
+                                           font-size: 13px;
+                                           font-weight: 600;
+                                           transition: all 0.3s ease;
+                                       }
+
+                                       .delete-button:hover {
+                                           transform: translateY(-1px);
+                                           box-shadow: 0 2px 6px rgba(229, 62, 62, 0.4);
+                                       }
+
                                        .loading {
                                            text-align: center;
                                            padding: 40px;
@@ -883,7 +911,7 @@ public class AdminWebController {
                                            }
 
                                            courseList.innerHTML = courses.map((course, index) => `
-                                               <div class="course-item" data-index="${index}">
+                                               <div class="course-item" data-index="${index}" data-course-id="${course.id}" data-course-name="${course.name}">
                                                    <div class="course-name">${course.name}</div>
                                                    <div class="course-detail"><strong>코스 길이:</strong> ${(course.length / 1000).toFixed(2)} km</div>
                                                    <div class="course-detail"><strong>도로 타입:</strong> ${course.roadType}</div>
@@ -891,6 +919,7 @@ public class AdminWebController {
                                                    ${course.distance !== null ? `<div class="course-detail"><strong>거리:</strong> ${(course.distance / 1000).toFixed(2)} km</div>` : ''}
                                                    <div class="course-actions">
                                                        <button class="edit-button" onclick="event.stopPropagation(); window.location.href='/course-edit.html?id=${course.id}'">편집</button>
+                                                       <button class="delete-button" data-course-id="${course.id}" data-course-name="${course.name}">삭제</button>
                                                    </div>
                                                </div>
                                            `).join('');
@@ -900,6 +929,42 @@ public class AdminWebController {
                                                item.addEventListener('click', function () {
                                                    const index = parseInt(this.dataset.index);
                                                    selectCourse(index);
+                                               });
+                                           });
+
+                                           // 삭제 버튼 클릭 이벤트
+                                           document.querySelectorAll('.delete-button').forEach(button => {
+                                               button.addEventListener('click', async function (event) {
+                                                   event.stopPropagation();
+                                                   const courseId = this.dataset.courseId;
+                                                   const courseName = this.dataset.courseName;
+
+                                                   if (!confirm(`정말로 "${courseName}" 코스를 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.`)) {
+                                                       return;
+                                                   }
+
+                                                   try {
+                                                       await axios.delete(`/admin/course/${courseId}`, {
+                                                           withCredentials: true
+                                                       });
+
+                                                       alert(`"${courseName}" 코스가 삭제되었습니다.`);
+
+                                                       // 현재 페이지 새로고침
+                                                       if (lastSearchParams) {
+                                                           await loadCoursesPage(currentPage);
+                                                       }
+                                                   } catch (error) {
+                                                       console.error('코스 삭제 실패:', error);
+                                                       if (error.response && error.response.status === 401) {
+                                                           alert('로그인 세션이 만료되었습니다.');
+                                                           window.location.href = '/admin-login';
+                                                       } else if (error.response && error.response.status === 404) {
+                                                           showError('삭제하려는 코스를 찾을 수 없습니다.');
+                                                       } else {
+                                                           showError('코스 삭제에 실패했습니다. 다시 시도해주세요.');
+                                                       }
+                                                   }
                                                });
                                            });
                                        }
