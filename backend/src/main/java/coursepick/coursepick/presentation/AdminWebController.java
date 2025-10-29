@@ -108,6 +108,7 @@ public class AdminWebController {
         if (request.name() != null) course.changeName(request.name());
         if (request.roadType() != null) course.changeRoadType(request.roadType());
 
+        // TODO : 분산 트랜잭션 고민
         courseRepository.save(course);
         courseFileModifier.modify(course);
         return ResponseEntity.ok().build();
@@ -117,6 +118,8 @@ public class AdminWebController {
     public ResponseEntity<Void> deleteCourse(@PathVariable("id") String id) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(ErrorType.NOT_EXIST_COURSE::create);
+
+        // TODO : 분산 트랜잭션 고민
         courseRepository.delete(course);
         courseFileModifier.delete(course.id());
 
