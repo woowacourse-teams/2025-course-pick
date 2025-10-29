@@ -21,7 +21,7 @@ import java.time.Duration;
 import java.util.List;
 
 @RestController
-@Profile({"local", "dev"})
+@Profile("dev")
 public class AdminWebController {
 
     private static final String TOKEN_COOKIE_KEY = "admin-token";
