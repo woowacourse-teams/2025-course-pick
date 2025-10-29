@@ -40,7 +40,7 @@ public class AdminWebController {
         this.courseRepository = courseRepository;
     }
 
-    @PostMapping("/api/admin/login")
+    @PostMapping("/admin/login")
     public ResponseEntity<Void> login(@RequestBody @Valid AdminLoginWebRequest request) {
         if (!adminToken.equals(request.password())) {
             throw ErrorType.INVALID_ADMIN_PASSWORD.create();
@@ -57,7 +57,7 @@ public class AdminWebController {
                 .build();
     }
 
-    @PatchMapping("/admin/course/{id}")
+    @PatchMapping("/admin/courses/{id}")
     public ResponseEntity<Void> modifyCourse(
             @PathVariable("id") String courseId,
             @RequestBody CourseRelaceWebRequest request
@@ -87,7 +87,7 @@ public class AdminWebController {
         return AdminCourseWebResponse.from(course);
     }
 
-    @DeleteMapping("/admin/course/{id}")
+    @DeleteMapping("/admin/courses/{id}")
     public ResponseEntity<Void> deleteCourse(@PathVariable("id") String id) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(ErrorType.NOT_EXIST_COURSE::create);
@@ -110,7 +110,7 @@ public class AdminWebController {
                 .body(ADMIN_MAIN_PAGE.replace("KAKAO_API_KEY_PLACEHOLDER", kakaoMapApiKey));
     }
 
-    @GetMapping("/course-edit")
+    @GetMapping("/admin/courses/edit")
     public ResponseEntity<String> courseEditPage() {
         return ResponseEntity.ok()
                 .contentType(MediaType.TEXT_HTML)
@@ -320,7 +320,7 @@ public class AdminWebController {
                     loginButton.textContent = '로그인 중...';
 
                     try {
-                        const response = await axios.post('/api/admin/login', {
+                        const response = await axios.post('/admin/login', {
                             password: password
                         }, {
                             withCredentials: true
@@ -860,7 +860,7 @@ public class AdminWebController {
                                    console.error('에러 상세:', error.response, error.request, error.message);
                                    if (error.response && error.response.status === 401) {
                                        alert('로그인 세션이 만료되었습니다.');
-                                       window.location.href = '/admin-login';
+                                       window.location.href = '/admin/login';
                                    } else {
                                        showError('코스 검색에 실패했습니다. 다시 시도해주세요.');
                                    }
@@ -919,7 +919,7 @@ public class AdminWebController {
                                        <div class="course-detail"><strong>난이도:</strong> ${course.difficulty}</div>
                                        ${course.distance !== null ? `<div class="course-detail"><strong>거리:</strong> ${(course.distance / 1000).toFixed(2)} km</div>` : ''}
                                        <div class="course-actions">
-                                           <button class="edit-button" onclick="event.stopPropagation(); window.location.href='/course-edit?id=${course.id}'">편집</button>
+                                           <button class="edit-button" onclick="event.stopPropagation(); window.location.href='/admin/courses/edit?id=${course.id}'">편집</button>
                                            <button class="delete-button" data-course-id="${course.id}" data-course-name="${course.name}">삭제</button>
                                        </div>
                                    </div>
@@ -945,7 +945,7 @@ public class AdminWebController {
                                        }
 
                                        try {
-                                           await axios.delete(`/admin/course/${courseId}`, {
+                                           await axios.delete(`/admin/courses/${courseId}`, {
                                                withCredentials: true
                                            });
 
@@ -959,7 +959,7 @@ public class AdminWebController {
                                            console.error('코스 삭제 실패:', error);
                                            if (error.response && error.response.status === 401) {
                                                alert('로그인 세션이 만료되었습니다.');
-                                               window.location.href = '/admin-login';
+                                               window.location.href = '/admin/login';
                                            } else if (error.response && error.response.status === 404) {
                                                showError('삭제하려는 코스를 찾을 수 없습니다.');
                                            } else {
@@ -1989,10 +1989,10 @@ public class AdminWebController {
                         console.error('코스 로드 실패:', error);
                         if (error.response && error.response.status === 401) {
                             alert('로그인 세션이 만료되었습니다.');
-                            window.location.href = '/admin-login';
+                            window.location.href = '/admin/login';
                         } else if (error.response && error.response.status === 403) {
                             alert('권한이 없습니다. 관리자 로그인이 필요합니다.');
-                            window.location.href = '/admin-login';
+                            window.location.href = '/admin/login';
                         } else {
                             showMessage('코스 정보를 불러오는데 실패했습니다.');
                         }
@@ -2821,7 +2821,7 @@ public class AdminWebController {
                         console.log('Request Data:', JSON.stringify(requestData, null, 2));
 
                         // API 호출
-                        const response = await axios.patch(`/admin/course/${courseId}`, requestData, {
+                        const response = await axios.patch(`/admin/courses/${courseId}`, requestData, {
                             headers: {
                                 'Content-Type': 'application/json'
                             },
@@ -2839,10 +2839,10 @@ public class AdminWebController {
                         console.error('코스 저장 실패:', error);
                         if (error.response && error.response.status === 401) {
                             alert('로그인 세션이 만료되었습니다.');
-                            window.location.href = '/admin-login';
+                            window.location.href = '/admin/login';
                         } else if (error.response && error.response.status === 403) {
                             alert('권한이 없습니다. 관리자 로그인이 필요합니다.');
-                            window.location.href = '/admin-login';
+                            window.location.href = '/admin/login';
                         } else {
                             const errorMessage = error.response?.data?.message || error.message || '알 수 없는 오류';
                             showMessage('코스 저장에 실패했습니다: ' + errorMessage, 'error');
