@@ -1,11 +1,15 @@
 package coursepick.coursepick.presentation;
 
-import coursepick.coursepick.application.AdminCourseApplicationService;
 import coursepick.coursepick.application.exception.ErrorType;
+import coursepick.coursepick.domain.Coordinate;
+import coursepick.coursepick.domain.Course;
+import coursepick.coursepick.domain.CourseRepository;
+import coursepick.coursepick.presentation.dto.AdminCourseWebResponse;
 import coursepick.coursepick.presentation.dto.AdminLoginWebRequest;
 import coursepick.coursepick.presentation.dto.CourseRelaceWebRequest;
 import jakarta.validation.Valid;
 import java.time.Duration;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.server.Cookie;
 import org.springframework.context.annotation.Profile;
@@ -28,16 +32,16 @@ public class AdminWebController {
     private final String adminToken;
     private final String kakaoMapApiKey;
 
-    private final AdminCourseApplicationService adminCourseApplicationService;
+    private final CourseRepository courseRepository;
 
     public AdminWebController(
             @Value("${admin.token}") String adminToken,
             @Value("${admin.kakao-map-api-key}") String kakaoMapApiKey,
-            AdminCourseApplicationService adminCourseApplicationService
+            CourseRepository courseRepository
     ) {
         this.adminToken = adminToken;
         this.kakaoMapApiKey = kakaoMapApiKey;
-        this.adminCourseApplicationService = adminCourseApplicationService;
+        this.courseRepository = courseRepository;
     }
 
     @PostMapping("/api/admin/login")
@@ -65,6 +69,14 @@ public class AdminWebController {
         adminCourseApplicationService.modifyCourse(courseId, request.coordinates(), request.name(),
                 request.roadType());
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/admin/courses/{id}")
+    public AdminCourseWebResponse findCourseById(@PathVariable("id") String id) {
+        Course course = courseRepository.findById(id)
+                .orElseThrow(ErrorType.NOT_EXIST_COURSE::create);
+
+        return AdminCourseWebResponse.from(course);
     }
 
     @GetMapping("/admin/login")
