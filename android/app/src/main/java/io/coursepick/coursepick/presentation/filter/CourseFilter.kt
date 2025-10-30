@@ -7,8 +7,10 @@ import io.coursepick.coursepick.presentation.model.Difficulty
 
 data class CourseFilter(
     val lengthRange: ClosedRange<Kilometer>,
-    val difficulties: Set<Difficulty>,
+    private val _difficulties: Set<Difficulty>,
 ) {
+    val difficulties: Set<Difficulty> get() = _difficulties.toSet()
+
     private val minimumLength: Meter = lengthRange.start.toMeter()
     private val maximumLength: Meter =
         if (lengthRange.endInclusive == Kilometer(MAXIMUM_LENGTH_RANGE)) {
@@ -26,7 +28,7 @@ data class CourseFilter(
         val Default =
             CourseFilter(
                 lengthRange = Kilometer(MINIMUM_LENGTH_RANGE)..Kilometer(MAXIMUM_LENGTH_RANGE),
-                difficulties = setOf(Difficulty.EASY, Difficulty.NORMAL, Difficulty.HARD),
+                _difficulties = setOf(Difficulty.EASY, Difficulty.NORMAL, Difficulty.HARD),
             )
     }
 }
