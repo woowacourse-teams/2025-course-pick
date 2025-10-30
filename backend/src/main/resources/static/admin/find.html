@@ -301,6 +301,11 @@
             <div class="map-controls">
                 <h3>코스 검색</h3>
                 <div class="control-row">
+                    <input id="course-name-input" placeholder="코스 이름을 입력하세요" style="flex: 2;" type="text">
+                    <button id="search-by-name-btn" style="flex: 1;">이름 검색</button>
+                </div>
+                <div style="margin: 15px 0; border-top: 1px solid #e2e8f0;"></div>
+                <div class="control-row">
                     <button id="search-btn">현재 화면에서 검색</button>
                 </div>
                 <div style="margin-top: 10px; font-size: 13px; color: #718096;">
@@ -453,6 +458,67 @@
 
             // 첫 페이지 로드
             await loadCoursesPage(0);
+        }
+
+        // 이름으로 코스 검색
+        async function searchCourseByName() {
+            const nameInput = document.getElementById('course-name-input');
+            const searchBtn = document.getElementById('search-by-name-btn');
+            const courseName = nameInput.value.trim();
+
+            if (!courseName) {
+                alert('코스 이름을 입력해주세요.');
+                return;
+            }
+
+            searchBtn.disabled = true;
+            searchBtn.textContent = '검색 중...';
+
+            try {
+                const response = await axios.get('/admin/api/courses', {
+                    params: {name: courseName},
+                    withCredentials: true
+                });
+
+                console.log('이름 검색 API 응답:', response.data);
+
+                // 단일 코스를 배열로 감싸서 표시
+                const courseArray = [response.data];
+                courses = courseArray;
+
+                // lastSearchParams 초기화 (페이지네이션 방지)
+                lastSearchParams = null;
+
+                displayCourses(courseArray);
+                drawAllCoursesOnMap(courseArray);
+
+                // 페이지네이션 숨김
+                document.getElementById('pagination').style.display = 'none';
+
+                // 검색된 코스 위치로 지도 이동
+                if (response.data.segments && response.data.segments.length > 0) {
+                    const firstSegment = response.data.segments[0];
+                    if (firstSegment.coordinates && firstSegment.coordinates.length > 0) {
+                        const firstCoord = firstSegment.coordinates[0];
+                        const moveLatLon = new kakao.maps.LatLng(firstCoord.latitude, firstCoord.longitude);
+                        map.setCenter(moveLatLon);
+                        map.setLevel(5); // 적절한 줌 레벨로 설정
+                    }
+                }
+            } catch (error) {
+                console.error('이름 검색 실패:', error);
+                if (error.response && error.response.status === 401) {
+                    alert('로그인 세션이 만료되었습니다.');
+                    window.location.href = '/admin/login';
+                } else if (error.response && error.response.status === 404) {
+                    alert('해당 이름의 코스를 찾을 수 없습니다.');
+                } else {
+                    alert('코스 검색에 실패했습니다. 다시 시도해주세요.');
+                }
+            } finally {
+                searchBtn.disabled = false;
+                searchBtn.textContent = '이름 검색';
+            }
         }
 
         // 특정 페이지의 코스 로드
@@ -857,6 +923,12 @@
 
         // 이벤트 리스너
         document.getElementById('search-btn').addEventListener('click', searchCourses);
+        document.getElementById('search-by-name-btn').addEventListener('click', searchCourseByName);
+        document.getElementById('course-name-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                searchCourseByName();
+            }
+        });
         document.getElementById('prev-page-btn').addEventListener('click', function () {
             if (currentPage > 0) {
                 loadCoursesPage(currentPage - 1);
