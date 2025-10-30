@@ -1,4 +1,4 @@
-package coursepick.coursepick.application;
+package coursepick.coursepick.domain;
 
 public enum Notice {
     VERIFIED_LOCATION(
