@@ -64,7 +64,7 @@ public class KmlCourseParser implements CourseParser {
         if (courseName == null || courseName.isBlank()) return null;
         if (coordinates.isEmpty()) return null;
 
-        return new Course(courseName, coordinates);
+        return new Course(null, courseName, coordinates);
     }
 
     private String parseCourseName(Element placemark) {
