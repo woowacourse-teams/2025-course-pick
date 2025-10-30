@@ -31,6 +31,7 @@ public class PathAllowlistFilter extends OncePerRequestFilter {
             Pattern.compile("^/admin$"),
             Pattern.compile("^/admin/login$"),
             Pattern.compile("^/admin/import$"),
+            Pattern.compile("^/admin/courses$"),
             Pattern.compile("^/admin/courses/[^/]+$"),
             Pattern.compile("^/admin/courses/edit.*$"),
             Pattern.compile("^/admin/courses/sync$")

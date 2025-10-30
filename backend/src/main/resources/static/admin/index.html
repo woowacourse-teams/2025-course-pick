@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>런세권 관리자 - 메뉴 선택</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+            'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .menu-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .menu-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .menu-card .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .menu-card h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .menu-card p {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .menu-card.import {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .menu-card.import h2,
+        .menu-card.import p {
+            color: white;
+        }
+
+        .menu-card.edit {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .menu-card.edit h2,
+        .menu-card.edit p {
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .header p {
+                font-size: 16px;
+            }
+
+            .menu-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>런세권 관리자 페이지</h1>
+        <p>원하는 작업을 선택해주세요</p>
+    </div>
+
+    <div class="menu-container">
+        <a class="menu-card import" href="/admin/import">
+            <div class="icon">📤</div>
+            <h2>코스 추가</h2>
+            <p>새로운 코스 파일(GPX/KML)을 업로드하여 시스템에 추가합니다.</p>
+        </a>
+
+        <a class="menu-card edit" href="/admin/courses">
+            <div class="icon">✏️</div>
+            <h2>코스 수정</h2>
+            <p>기존 코스를 조회하고 수정하거나 삭제합니다.</p>
+        </a>
+    </div>
+</div>
+</body>
+</html>

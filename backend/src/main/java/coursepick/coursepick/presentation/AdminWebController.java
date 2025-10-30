@@ -44,13 +44,18 @@ public class AdminWebController {
         return loadHtmlFile("login.html");
     }
 
+    @GetMapping("/admin")
+    public String adminPage() throws IOException {
+        return loadHtmlFile("index.html");
+    }
+
     @GetMapping("/admin/import")
     public String importFiles() throws IOException {
         return loadHtmlFile("import.html");
     }
 
-    @GetMapping("/admin")
-    public String adminPage() throws IOException {
+    @GetMapping("/admin/courses")
+    public String adminCoursesPage() throws IOException {
         return loadHtmlFile("main.html").replace(KAKAO_API_KEY_PLACEHOLDER, kakaoMapApiKey);
     }
 
