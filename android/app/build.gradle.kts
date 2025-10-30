@@ -172,6 +172,7 @@ dependencies {
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.hilt.android)
     implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
     testImplementation(libs.assertj.core)
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
