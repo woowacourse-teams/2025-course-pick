@@ -6,28 +6,15 @@
     <title>코스 파일 업로드</title>
     <style>
         :root {
-            --bg: #0b0c0f;
-            --card: #12141a;
-            --text: #e7e9ee;
-            --muted: #9aa3b2;
-            --primary: #6ea8fe;
-            --primary-weak: #1b2a4b;
-            --border: #222733;
-            --danger: #ff6b6b;
-            --ok: #58d68d;
-            --focus: 0 0 0 3px rgba(110, 168, 254, .35);
-        }
-
-        @media (prefers-color-scheme: light) {
-            :root {
-                --bg: #f6f7fb;
-                --card: #ffffff;
-                --text: #12141a;
-                --muted: #697386;
-                --primary: #2f6feb;
-                --primary-weak: #e7efff;
-                --border: #e6e8ee;
-            }
+            --bg: #f5f5f5;
+            --card: #ffffff;
+            --text: #2d3748;
+            --muted: #718096;
+            --primary: #2d3748;
+            --primary-weak: #e2e8f0;
+            --border: #e2e8f0;
+            --danger: #e53e3e;
+            --ok: #48bb78;
         }
 
         * {
@@ -51,9 +38,9 @@
         .card {
             background: var(--card);
             border: 1px solid var(--border);
-            border-radius: 16px;
+            border-radius: 12px;
             padding: 24px 20px 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, .15);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
         h1 {
@@ -73,28 +60,33 @@
 
         .btn {
             appearance: none;
-            border: 1px solid var(--border);
+            border: none;
             background: var(--primary);
             color: #fff;
             padding: 10px 14px;
-            border-radius: 10px;
+            border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform .05s ease;
+            transition: all 0.2s ease;
         }
 
         .btn.secondary {
-            background: transparent;
-            color: var(--text)
+            background: var(--primary-weak);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn:hover {
+            opacity: 0.9;
         }
 
         .btn:active {
-            transform: translateY(1px)
+            transform: scale(0.98)
         }
 
         .btn:focus-visible {
             outline: none;
-            box-shadow: var(--focus)
+            box-shadow: 0 0 0 3px rgba(45, 55, 72, 0.15)
         }
 
         .hint {
@@ -104,24 +96,26 @@
 
         .dropzone {
             border: 2px dashed var(--border);
-            border-radius: 14px;
+            border-radius: 12px;
             padding: 28px;
             text-align: center;
-            background: linear-gradient(180deg, transparent, rgba(110, 168, 254, .05));
+            background: transparent;
             transition: border-color .15s ease, background-color .15s ease;
         }
 
         .file-list {
-            margin: 12px 0 6px;
-            border-top: 1px solid var(--border)
+            margin: 16px 0 0;
         }
 
         .file-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid var(--border)
+            padding: 12px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--card);
         }
 
         .file-name {
@@ -144,8 +138,8 @@
         }
 
         .progress {
-            height: 10px;
-            background: #0d1117;
+            height: 8px;
+            background: var(--primary-weak);
             border: 1px solid var(--border);
             border-radius: 999px;
             overflow: hidden;
@@ -169,10 +163,12 @@
 
         .badge {
             font-size: .8rem;
-            padding: 4px 8px;
-            border-radius: 999px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: var(--primary-weak);
             border: 1px solid var(--border);
-            color: var(--muted)
+            color: var(--text);
+            font-weight: 600;
         }
 
         .warn {
@@ -200,11 +196,11 @@
         .modal {
             background: var(--card);
             border: 1px solid var(--border);
-            border-radius: 14px;
+            border-radius: 12px;
             padding: 20px;
             max-width: 420px;
             width: calc(100% - 32px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, .45);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             text-align: center;
         }
 

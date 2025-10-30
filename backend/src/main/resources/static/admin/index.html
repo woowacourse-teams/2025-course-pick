@@ -16,7 +16,7 @@
             'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-color: #f5f5f5;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -25,96 +25,77 @@
         }
 
         .container {
-            max-width: 800px;
+            max-width: 900px;
             width: 100%;
         }
 
         .header {
             text-align: center;
-            color: white;
-            margin-bottom: 50px;
+            margin-bottom: 40px;
         }
 
         .header h1 {
-            font-size: 36px;
+            font-size: 32px;
             font-weight: 700;
-            margin-bottom: 10px;
+            color: #2d3748;
+            margin-bottom: 8px;
         }
 
         .header p {
-            font-size: 18px;
-            opacity: 0.9;
+            font-size: 16px;
+            color: #718096;
         }
 
         .menu-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
+            gap: 20px;
         }
 
         .menu-card {
             background: white;
-            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
             padding: 40px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
             text-decoration: none;
             color: inherit;
             display: block;
         }
 
         .menu-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            border-color: #cbd5e0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
         }
 
         .menu-card .icon {
-            font-size: 64px;
-            margin-bottom: 20px;
+            font-size: 48px;
+            margin-bottom: 16px;
         }
 
         .menu-card h2 {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: #333;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2d3748;
         }
 
         .menu-card p {
-            font-size: 16px;
-            color: #666;
+            font-size: 14px;
+            color: #718096;
             line-height: 1.5;
-        }
-
-        .menu-card.import {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .menu-card.import h2,
-        .menu-card.import p {
-            color: white;
-        }
-
-        .menu-card.edit {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-
-        .menu-card.edit h2,
-        .menu-card.edit p {
-            color: white;
         }
 
         @media (max-width: 768px) {
             .header h1 {
-                font-size: 28px;
+                font-size: 24px;
             }
 
             .header p {
-                font-size: 16px;
+                font-size: 14px;
             }
 
             .menu-container {
