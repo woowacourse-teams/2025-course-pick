@@ -25,7 +25,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
-    implementation("org.springframework.boot:spring-boot-starter-batch")
 
     // DB Connector
     runtimeOnly("com.mysql:mysql-connector-j")
@@ -44,10 +43,6 @@ dependencies {
     // JVM/Spring Metric To CloudWatch
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-metrics:3.4.0")
-
-    // Google Drive
-    implementation("com.google.api-client:google-api-client:2.8.0")
-    implementation("com.google.apis:google-api-services-drive:v3-rev20250723-2.0.0")
 
     // MockWebServer
     testImplementation("com.squareup.okhttp3:mockwebserver3:5.1.0")
