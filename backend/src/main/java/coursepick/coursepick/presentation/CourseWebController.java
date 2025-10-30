@@ -1,14 +1,12 @@
 package coursepick.coursepick.presentation;
 
 import coursepick.coursepick.application.CourseApplicationService;
-import coursepick.coursepick.application.CourseSyncService;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.presentation.api.CourseWebApi;
 import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
 import coursepick.coursepick.presentation.dto.CourseWebResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,17 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-import static coursepick.coursepick.application.exception.ErrorType.INVALID_ADMIN_TOKEN;
-
 @RestController
 @RequiredArgsConstructor
 public class CourseWebController implements CourseWebApi {
 
     private final CourseApplicationService courseApplicationService;
-    private final CourseSyncService courseSyncService;
-
-    @Value("${admin.token}")
-    private String adminToken;
 
     @Override
     @GetMapping("/courses")
@@ -69,11 +61,5 @@ public class CourseWebController implements CourseWebApi {
         return courseApplicationService.findFavoriteCourses(ids).stream()
                 .map(CourseWebResponse::from)
                 .toList();
-    }
-
-    private void validateAdminToken(String token) {
-        if (adminToken.isEmpty() || !adminToken.equals(token)) {
-            throw INVALID_ADMIN_TOKEN.create();
-        }
     }
 }
