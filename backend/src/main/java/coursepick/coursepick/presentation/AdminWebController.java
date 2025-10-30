@@ -32,6 +32,7 @@ import java.util.List;
 public class AdminWebController {
 
     private static final String TOKEN_COOKIE_KEY = "admin-token";
+    private static final String KAKAO_API_KEY_PLACEHOLDER = "KAKAO_API_KEY_PLACEHOLDER";
 
     private final String adminToken;
     private final String kakaoMapApiKey;
@@ -58,6 +59,31 @@ public class AdminWebController {
                 .body(html);
     }
 
+    @GetMapping("/import")
+    public ResponseEntity<String> importFiles() throws IOException {
+        String html = loadHtmlFile("import.html");
+        return ResponseEntity.ok()
+                .contentType(MediaType.TEXT_HTML)
+                .body(html);
+    }
+
+    @GetMapping("/admin")
+    public ResponseEntity<String> adminPage() throws IOException {
+        String html = loadHtmlFile("main.html")
+                .replace(KAKAO_API_KEY_PLACEHOLDER, kakaoMapApiKey);
+        return ResponseEntity.ok()
+                .contentType(MediaType.TEXT_HTML)
+                .body(html);
+    }
+
+    @GetMapping("/admin/courses/edit")
+    public ResponseEntity<String> courseEditPage() throws IOException {
+        String html = loadHtmlFile("edit.html").replace(KAKAO_API_KEY_PLACEHOLDER, kakaoMapApiKey);
+        return ResponseEntity.ok()
+                .contentType(MediaType.TEXT_HTML)
+                .body(html);
+    }
+
     @PostMapping("/admin/login")
     public ResponseEntity<Void> login(@RequestBody @Valid AdminLoginWebRequest request) {
         if (!adminToken.equals(request.password())) {
@@ -73,14 +99,6 @@ public class AdminWebController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, tokenCookie.toString())
                 .build();
-    }
-
-    @GetMapping("/import")
-    public ResponseEntity<String> importFiles() throws IOException {
-        String html = loadHtmlFile("import.html");
-        return ResponseEntity.ok()
-                .contentType(MediaType.TEXT_HTML)
-                .body(html);
     }
 
     @PostMapping("/import")
@@ -100,15 +118,6 @@ public class AdminWebController {
                 .orElseThrow(ErrorType.NOT_EXIST_COURSE::create);
 
         return AdminCourseWebResponse.from(course);
-    }
-
-    @GetMapping("/admin")
-    public ResponseEntity<String> adminPage() throws IOException {
-        String html = loadHtmlFile("main.html")
-                .replace("KAKAO_API_KEY_PLACEHOLDER", kakaoMapApiKey);
-        return ResponseEntity.ok()
-                .contentType(MediaType.TEXT_HTML)
-                .body(html);
     }
 
     @PatchMapping("/admin/courses/{id}")
@@ -142,15 +151,6 @@ public class AdminWebController {
         // TODO : 분산 트랜잭션 고민
         courseRepository.delete(course);
         return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/admin/courses/edit")
-    public ResponseEntity<String> courseEditPage() throws IOException {
-        String html = loadHtmlFile("edit.html")
-                .replace("KAKAO_API_KEY_PLACEHOLDER", kakaoMapApiKey);
-        return ResponseEntity.ok()
-                .contentType(MediaType.TEXT_HTML)
-                .body(html);
     }
 
     private String loadHtmlFile(String filename) throws IOException {
