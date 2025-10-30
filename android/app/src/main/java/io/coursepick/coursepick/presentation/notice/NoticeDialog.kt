@@ -1,18 +1,14 @@
-package io.coursepick.coursepick.presentation.notice
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,16 +23,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil3.compose.AsyncImage
 import io.coursepick.coursepick.R
+import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 
-/**
- * 공지사항 다이얼로그
- *
- * @param imageUrl 표시할 이미지 URL
- * @param title 다이얼로그 제목
- * @param description 다이얼로그 설명
- * @param onDismissRequest 다이얼로그가 닫힐 때 호출되는 콜백
- * @param onDoNotShowAgain "다시 보지 않음" 버튼 클릭 시 호출되는 콜백
- */
 @Composable
 fun NoticeDialog(
     imageUrl: String,
@@ -51,7 +39,8 @@ fun NoticeDialog(
                 Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp))
-                    .background(color = colorResource(R.color.background_primary)),
+                    .background(color = colorResource(R.color.background_primary))
+                    .padding(top = 20.dp, start = 20.dp, end = 20.dp),
         ) {
             AsyncImage(
                 model = imageUrl,
@@ -68,6 +57,7 @@ fun NoticeDialog(
             Text(
                 text = title,
                 fontSize = 16.sp,
+                color = colorResource(R.color.item_primary),
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
@@ -84,8 +74,6 @@ fun NoticeDialog(
             )
 
             Spacer(modifier = Modifier.height(12.dp))
-
-            HorizontalDivider()
 
             Row(
                 modifier =
@@ -106,8 +94,6 @@ fun NoticeDialog(
                     )
                 }
 
-                VerticalDivider(modifier = Modifier.fillMaxHeight())
-
                 TextButton(
                     onClick = onDismissRequest,
                     modifier = Modifier.weight(1f),
@@ -125,13 +111,15 @@ fun NoticeDialog(
 @Preview(showBackground = true)
 @Composable
 private fun NoticeDialogPreview() {
-    NoticeDialog(
-        imageUrl = "",
-        title =
-            "강남·송파 코스는 저희가 검증했어요\n" +
-                " 다른 지역은 아직 검증 중이에요 \uD83C\uDFC3",
-        description = "* 메뉴 탭에서 다시 확인할 수 있어요.",
-        onDismissRequest = {},
-        onDoNotShowAgain = {},
-    )
+    CoursePickTheme {
+        NoticeDialog(
+            imageUrl = "",
+            title =
+                "강남·송파 코스는 저희가 검증했어요\n" +
+                    "다른 지역은 아직 검증 중이에요 🏃",
+            description = "* 메뉴 탭에서 다시 확인할 수 있어요.",
+            onDismissRequest = {},
+            onDoNotShowAgain = {},
+        )
+    }
 }
