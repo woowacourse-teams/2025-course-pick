@@ -6,9 +6,9 @@ data class CoursesUiState(
     private val originalCourses: List<CourseItem>,
     val query: String = "",
     val status: UiStatus = UiStatus.Loading,
-    val courseFilter: CourseFilter = CourseFilter.Default,
+    val courseFilter: CourseFilter = CourseFilter.None,
 ) {
     val isQueryBlank: Boolean = query.isBlank()
-    val isFilterDefault: Boolean = courseFilter == CourseFilter.Default
+    val isFilterDefault: Boolean = courseFilter == CourseFilter.None
     val courses: List<CourseItem> = originalCourses.filter(courseFilter::matches)
 }
