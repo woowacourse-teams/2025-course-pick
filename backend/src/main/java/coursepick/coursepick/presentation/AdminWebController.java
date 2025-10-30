@@ -10,6 +10,7 @@ import coursepick.coursepick.presentation.dto.AdminCourseWebResponse;
 import coursepick.coursepick.presentation.dto.AdminLoginWebRequest;
 import coursepick.coursepick.presentation.dto.CourseRelaceWebRequest;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.server.Cookie;
 import org.springframework.context.annotation.Profile;
@@ -29,27 +30,17 @@ import java.util.List;
 
 @RestController
 @Profile("dev")
+@RequiredArgsConstructor
 public class AdminWebController {
 
     private static final String TOKEN_COOKIE_KEY = "admin-token";
     private static final String KAKAO_API_KEY_PLACEHOLDER = "KAKAO_API_KEY_PLACEHOLDER";
-
-    private final String adminToken;
-    private final String kakaoMapApiKey;
     private final CourseRepository courseRepository;
     private final CourseParserService courseParserService;
-
-    public AdminWebController(
-            @Value("${admin.token}") String adminToken,
-            @Value("${admin.kakao-map-api-key}") String kakaoMapApiKey,
-            CourseRepository courseRepository,
-            CourseParserService courseParserService
-    ) {
-        this.adminToken = adminToken;
-        this.kakaoMapApiKey = kakaoMapApiKey;
-        this.courseRepository = courseRepository;
-        this.courseParserService = courseParserService;
-    }
+    @Value("${admin.token}")
+    private String adminToken;
+    @Value("${admin.kakao-map-api-key}")
+    private String kakaoMapApiKey;
 
     @GetMapping("/admin/login")
     public ResponseEntity<String> adminLoginPage() throws IOException {
@@ -69,8 +60,7 @@ public class AdminWebController {
 
     @GetMapping("/admin")
     public ResponseEntity<String> adminPage() throws IOException {
-        String html = loadHtmlFile("main.html")
-                .replace(KAKAO_API_KEY_PLACEHOLDER, kakaoMapApiKey);
+        String html = loadHtmlFile("main.html").replace(KAKAO_API_KEY_PLACEHOLDER, kakaoMapApiKey);
         return ResponseEntity.ok()
                 .contentType(MediaType.TEXT_HTML)
                 .body(html);
