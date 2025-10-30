@@ -25,7 +25,7 @@ data class CourseFilter(
     companion object {
         const val MINIMUM_LENGTH_RANGE = 0.0
         const val MAXIMUM_LENGTH_RANGE = 21.0
-        val Default =
+        val None =
             CourseFilter(
                 lengthRange = Kilometer(MINIMUM_LENGTH_RANGE)..Kilometer(MAXIMUM_LENGTH_RANGE),
                 _difficulties = setOf(Difficulty.EASY, Difficulty.NORMAL, Difficulty.HARD),

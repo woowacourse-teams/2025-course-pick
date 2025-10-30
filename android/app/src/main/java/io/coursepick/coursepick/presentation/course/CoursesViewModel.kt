@@ -299,7 +299,7 @@ class CoursesViewModel
         }
 
         fun resetFilterToDefault() {
-            _state.value = state.value?.copy(courseFilter = CourseFilter.Default)
+            _state.value = state.value?.copy(courseFilter = CourseFilter.None)
         }
 
         fun toggleDifficulty(difficulty: Difficulty) {
@@ -315,7 +315,7 @@ class CoursesViewModel
 
             val courseFilter =
                 state.value?.courseFilter?.copy(_difficulties = updatedDifficulties)
-                    ?: CourseFilter.Default.copy(_difficulties = updatedDifficulties)
+                    ?: CourseFilter.None.copy(_difficulties = updatedDifficulties)
 
             _state.value = state.value?.copy(courseFilter = courseFilter)
         }
@@ -334,7 +334,7 @@ class CoursesViewModel
 
             val updatedCourseFilter =
                 state.value?.courseFilter?.copy(lengthRange = updatedLengthRange)
-                    ?: CourseFilter.Default.copy(lengthRange = updatedLengthRange)
+                    ?: CourseFilter.None.copy(lengthRange = updatedLengthRange)
             _state.value = state.value?.copy(courseFilter = updatedCourseFilter)
         }
 
