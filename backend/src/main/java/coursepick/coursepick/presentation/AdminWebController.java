@@ -48,7 +48,7 @@ public class AdminWebController {
                 .body(html);
     }
 
-    @GetMapping("/import")
+    @GetMapping("/admin/import")
     public ResponseEntity<String> importFiles() throws IOException {
         String html = loadHtmlFile("import.html");
         return ResponseEntity.ok()
@@ -89,7 +89,7 @@ public class AdminWebController {
                 .build();
     }
 
-    @PostMapping("/import")
+    @PostMapping("/admin/import")
     public ResponseEntity<Void> importFiles(@RequestParam("files") List<MultipartFile> files) throws IOException {
         for (MultipartFile file : files) {
             try (CourseFile courseFile = CourseFile.from(file)) {
