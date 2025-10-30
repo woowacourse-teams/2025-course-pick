@@ -56,6 +56,7 @@ public class CourseWebController implements CourseWebApi {
         return CoordinateWebResponse.from(responses);
     }
 
+    @Override
     @GetMapping("/courses/favorites")
     public List<CourseWebResponse> findFavoriteCourses(@RequestParam("courseIds") List<String> ids) {
         return courseApplicationService.findFavoriteCourses(ids).stream()
