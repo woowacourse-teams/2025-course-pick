@@ -84,12 +84,12 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
     }
 
     @Override
-    public boolean existsByName(CourseName courseName) {
-        if (courseName == null) return false;
+    public Optional<Course> findByName(CourseName courseName) {
+        if (courseName == null) return Optional.empty();
 
         Query query = Query.query(Criteria.where("name").is(courseName.value()));
 
-        return mongoTemplate.exists(query, Course.class);
+        return Optional.ofNullable(mongoTemplate.findOne(query, Course.class));
     }
 
     @Override

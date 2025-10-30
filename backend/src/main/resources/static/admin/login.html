@@ -178,7 +178,7 @@
             loginButton.textContent = '로그인 중...';
 
             try {
-                const response = await axios.post('/admin/login', {
+                const response = await axios.post('/admin/api/login', {
                     password: password
                 }, {
                     withCredentials: true

@@ -728,7 +728,7 @@
     // 코스 정보 로드
     async function loadCourse() {
         try {
-            const response = await axios.get(`/admin/courses/${courseId}`, {
+            const response = await axios.get(`/admin/api/courses/${courseId}`, {
                 withCredentials: true
             });
 
@@ -1677,7 +1677,7 @@
             console.log('Request Data:', JSON.stringify(requestData, null, 2));
 
             // API 호출
-            const response = await axios.patch(`/admin/courses/${courseId}`, requestData, {
+            const response = await axios.patch(`/admin/api/courses/${courseId}`, requestData, {
                 headers: {
                     'Content-Type': 'application/json'
                 },
