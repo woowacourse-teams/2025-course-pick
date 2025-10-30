@@ -33,15 +33,13 @@ public class AdminAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String requestUri = request.getRequestURI();
-        if (requestUri.equals("/api/admin/login") || requestUri.equals("/admin/login")) {
+        if (requestUri.equals("/admin/login")) {
             filterChain.doFilter(request, response);
             return;
         }
-        if (!(requestUri.startsWith("/admin") || requestUri.startsWith("/api/admin"))) {
+        if (!requestUri.startsWith("/admin")) {
             filterChain.doFilter(request, response);
             return;
         }
