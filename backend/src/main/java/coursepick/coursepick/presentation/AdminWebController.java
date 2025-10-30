@@ -16,7 +16,6 @@ import org.springframework.boot.web.server.Cookie;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,35 +40,23 @@ public class AdminWebController {
     private String kakaoMapApiKey;
 
     @GetMapping("/admin/login")
-    public ResponseEntity<String> adminLoginPage() throws IOException {
-        String html = loadHtmlFile("login.html");
-        return ResponseEntity.ok()
-                .contentType(MediaType.TEXT_HTML)
-                .body(html);
+    public String adminLoginPage() throws IOException {
+        return loadHtmlFile("login.html");
     }
 
     @GetMapping("/admin/import")
-    public ResponseEntity<String> importFiles() throws IOException {
-        String html = loadHtmlFile("import.html");
-        return ResponseEntity.ok()
-                .contentType(MediaType.TEXT_HTML)
-                .body(html);
+    public String importFiles() throws IOException {
+        return loadHtmlFile("import.html");
     }
 
     @GetMapping("/admin")
-    public ResponseEntity<String> adminPage() throws IOException {
-        String html = loadHtmlFile("main.html").replace(KAKAO_API_KEY_PLACEHOLDER, kakaoMapApiKey);
-        return ResponseEntity.ok()
-                .contentType(MediaType.TEXT_HTML)
-                .body(html);
+    public String adminPage() throws IOException {
+        return loadHtmlFile("main.html").replace(KAKAO_API_KEY_PLACEHOLDER, kakaoMapApiKey);
     }
 
     @GetMapping("/admin/courses/edit")
-    public ResponseEntity<String> courseEditPage() throws IOException {
-        String html = loadHtmlFile("edit.html").replace(KAKAO_API_KEY_PLACEHOLDER, kakaoMapApiKey);
-        return ResponseEntity.ok()
-                .contentType(MediaType.TEXT_HTML)
-                .body(html);
+    public String courseEditPage() throws IOException {
+        return loadHtmlFile("edit.html").replace(KAKAO_API_KEY_PLACEHOLDER, kakaoMapApiKey);
     }
 
     @PostMapping("/admin/login")
@@ -89,17 +76,6 @@ public class AdminWebController {
                 .build();
     }
 
-    @PostMapping("/admin/import")
-    public ResponseEntity<Void> importFiles(@RequestParam("files") List<MultipartFile> files) throws IOException {
-        for (MultipartFile file : files) {
-            try (CourseFile courseFile = CourseFile.from(file)) {
-                List<Course> courses = courseParserService.parse(courseFile);
-                courseRepository.saveAll(courses);
-            }
-        }
-        return ResponseEntity.ok().build();
-    }
-
     @GetMapping("/admin/courses/{id}")
     public AdminCourseWebResponse findCourseById(@PathVariable("id") String id) {
         Course course = courseRepository.findById(id)
@@ -108,8 +84,18 @@ public class AdminWebController {
         return AdminCourseWebResponse.from(course);
     }
 
+    @PostMapping("/admin/import")
+    public void importFiles(@RequestParam("files") List<MultipartFile> files) throws IOException {
+        for (MultipartFile file : files) {
+            try (CourseFile courseFile = CourseFile.from(file)) {
+                List<Course> courses = courseParserService.parse(courseFile);
+                courseRepository.saveAll(courses);
+            }
+        }
+    }
+
     @PatchMapping("/admin/courses/{id}")
-    public ResponseEntity<Void> modifyCourse(
+    public void modifyCourse(
             @PathVariable("id") String courseId,
             @RequestBody CourseRelaceWebRequest request
     ) {
@@ -128,17 +114,15 @@ public class AdminWebController {
 
         // TODO : 분산 트랜잭션 고민
         courseRepository.save(course);
-        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/admin/courses/{id}")
-    public ResponseEntity<Void> deleteCourse(@PathVariable("id") String id) {
+    public void deleteCourse(@PathVariable("id") String id) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(ErrorType.NOT_EXIST_COURSE::create);
 
         // TODO : 분산 트랜잭션 고민
         courseRepository.delete(course);
-        return ResponseEntity.ok().build();
     }
 
     private String loadHtmlFile(String filename) throws IOException {
