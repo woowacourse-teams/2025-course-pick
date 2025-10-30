@@ -1,6 +1,7 @@
 package coursepick.coursepick.presentation;
 
-import coursepick.coursepick.application.CourseFileModifier;
+import coursepick.coursepick.application.CourseParserService;
+import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
@@ -19,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -34,18 +36,18 @@ public class AdminWebController {
     private final String adminToken;
     private final String kakaoMapApiKey;
     private final CourseRepository courseRepository;
-    private final CourseFileModifier courseFileModifier;
+    private final CourseParserService courseParserService;
 
     public AdminWebController(
             @Value("${admin.token}") String adminToken,
             @Value("${admin.kakao-map-api-key}") String kakaoMapApiKey,
             CourseRepository courseRepository,
-            CourseFileModifier courseFileModifier
+            CourseParserService courseParserService
     ) {
         this.adminToken = adminToken;
         this.kakaoMapApiKey = kakaoMapApiKey;
         this.courseRepository = courseRepository;
-        this.courseFileModifier = courseFileModifier;
+        this.courseParserService = courseParserService;
     }
 
     @GetMapping("/admin/login")
@@ -71,6 +73,25 @@ public class AdminWebController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, tokenCookie.toString())
                 .build();
+    }
+
+    @GetMapping("/import")
+    public ResponseEntity<String> importFiles() throws IOException {
+        String html = loadHtmlFile("import.html");
+        return ResponseEntity.ok()
+                .contentType(MediaType.TEXT_HTML)
+                .body(html);
+    }
+
+    @PostMapping("/import")
+    public ResponseEntity<Void> importFiles(@RequestParam("files") List<MultipartFile> files) throws IOException {
+        for (MultipartFile file : files) {
+            try (CourseFile courseFile = CourseFile.from(file)) {
+                List<Course> courses = courseParserService.parse(courseFile);
+                courseRepository.saveAll(courses);
+            }
+        }
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/admin/courses/{id}")
@@ -110,7 +131,6 @@ public class AdminWebController {
 
         // TODO : 분산 트랜잭션 고민
         courseRepository.save(course);
-        courseFileModifier.modify(course);
         return ResponseEntity.ok().build();
     }
 
@@ -121,8 +141,6 @@ public class AdminWebController {
 
         // TODO : 분산 트랜잭션 고민
         courseRepository.delete(course);
-        courseFileModifier.delete(course.id());
-
         return ResponseEntity.ok().build();
     }
 
