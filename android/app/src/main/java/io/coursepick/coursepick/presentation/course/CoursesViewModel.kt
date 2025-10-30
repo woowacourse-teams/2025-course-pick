@@ -314,8 +314,8 @@ class CoursesViewModel
                     ?: mutableSetOf(difficulty)
 
             val courseFilter =
-                state.value?.courseFilter?.copy(difficulties = updatedDifficulties)
-                    ?: CourseFilter.Default.copy(difficulties = updatedDifficulties)
+                state.value?.courseFilter?.copy(_difficulties = updatedDifficulties)
+                    ?: CourseFilter.Default.copy(_difficulties = updatedDifficulties)
 
             _state.value = state.value?.copy(courseFilter = courseFilter)
         }
