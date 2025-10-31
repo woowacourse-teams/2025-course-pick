@@ -480,8 +480,6 @@
                     withCredentials: true
                 });
 
-                console.log('이름 검색 API 응답:', response.data);
-
                 // 단일 코스를 배열로 감싸서 표시
                 const courseArray = [response.data];
                 courses = courseArray;
@@ -506,7 +504,6 @@
                     }
                 }
             } catch (error) {
-                console.error('이름 검색 실패:', error);
                 if (error.response && error.response.status === 401) {
                     alert('로그인 세션이 만료되었습니다.');
                     window.location.href = '/admin/login';
@@ -538,7 +535,6 @@
                     withCredentials: true
                 });
 
-                console.log('API 응답 성공:', response.data);
                 courses = response.data;
                 currentPage = page;
 
@@ -547,12 +543,9 @@
                     drawAllCoursesOnMap(courses);
                     updatePagination();
                 } catch (displayError) {
-                    console.error('코스 표시 중 에러:', displayError);
                     showError('코스를 표시하는 중 오류가 발생했습니다: ' + displayError.message);
                 }
             } catch (error) {
-                console.error('코스 검색 실패:', error);
-                console.error('에러 상세:', error.response, error.request, error.message);
                 if (error.response && error.response.status === 401) {
                     alert('로그인 세션이 만료되었습니다.');
                     window.location.href = '/admin/login';
@@ -653,7 +646,6 @@
                             await loadCoursesPage(currentPage);
                         }
                     } catch (error) {
-                        console.error('코스 삭제 실패:', error);
                         if (error.response && error.response.status === 401) {
                             alert('로그인 세션이 만료되었습니다.');
                             window.location.href = '/admin/login';
