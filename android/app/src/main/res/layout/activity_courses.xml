@@ -47,32 +47,40 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/mainToolBar"
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:background="@drawable/background_toolbar"
-                android:onClick="@{() -> action.search()}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:navigationIcon="@drawable/icon_menu"
-                app:onNavigationClick="@{() -> action.openMenu()}"
-                app:title="@{viewModel.state.isQueryBlank ? @string/search_query_hint : viewModel.state.query}"
-                app:titleTextAppearance="@style/Toolbar.TitleText"
-                app:titleTextColor="@{viewModel.state.isQueryBlank ? @color/gray3 : @color/item_primary }">
+                app:cardCornerRadius="25dp"
+                app:cardElevation="10dp">
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end|center_vertical"
-                    android:layout_marginEnd="15dp"
-                    android:onClick="@{() -> action.clearQuery()}"
-                    android:src="@drawable/icon_clear_query"
-                    android:visibility="@{viewModel.state.isQueryBlank ? View.GONE : View.VISIBLE }" />
+                <com.google.android.material.appbar.MaterialToolbar
+                    android:id="@+id/mainToolBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/background_toolbar"
+                    android:onClick="@{() -> action.search()}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:navigationIcon="@drawable/icon_menu"
+                    app:onNavigationClick="@{() -> action.openMenu()}"
+                    app:title="@{viewModel.state.isQueryBlank ? @string/search_query_hint : viewModel.state.query}"
+                    app:titleTextAppearance="@style/Toolbar.TitleText"
+                    app:titleTextColor="@{viewModel.state.isQueryBlank ? @color/gray3 : @color/item_primary }">
 
-            </com.google.android.material.appbar.MaterialToolbar>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end|center_vertical"
+                        android:layout_marginEnd="15dp"
+                        android:onClick="@{() -> action.clearQuery()}"
+                        android:src="@drawable/icon_clear_query"
+                        android:visibility="@{viewModel.state.isQueryBlank ? View.GONE : View.VISIBLE }" />
+
+                </com.google.android.material.appbar.MaterialToolbar>
+
+            </androidx.cardview.widget.CardView>
 
             <LinearLayout
                 android:id="@+id/mainSearchThisAreaButton"
@@ -81,7 +89,7 @@
                 android:layout_gravity="top|center"
                 android:background="@drawable/background_search_this_area"
                 android:clickable="true"
-                android:elevation="4dp"
+                android:elevation="10dp"
                 android:onClick="@{() -> action.searchThisArea()}"
                 android:orientation="horizontal"
                 android:padding="10dp"
@@ -119,7 +127,7 @@
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/background_move_to_current_location"
                 android:clickable="true"
-                android:elevation="4dp"
+                android:elevation="10dp"
                 android:onClick="@{() -> action.moveToCurrentLocation()}"
                 android:padding="8dp"
                 android:src="@drawable/icon_move_to_current_location"
