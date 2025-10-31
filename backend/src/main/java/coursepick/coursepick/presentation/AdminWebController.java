@@ -7,7 +7,7 @@ import coursepick.coursepick.domain.Course;
 import coursepick.coursepick.domain.CourseRepository;
 import coursepick.coursepick.presentation.dto.AdminCourseWebResponse;
 import coursepick.coursepick.presentation.dto.AdminLoginWebRequest;
-import coursepick.coursepick.presentation.dto.CourseRelaceWebRequest;
+import coursepick.coursepick.presentation.dto.CourseReplaceWebRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.server.Cookie;
@@ -93,7 +93,7 @@ public class AdminWebController {
     @PatchMapping("/admin/courses/{id}")
     public ResponseEntity<Void> modifyCourse(
             @PathVariable("id") String courseId,
-            @RequestBody CourseRelaceWebRequest request
+            @RequestBody CourseReplaceWebRequest request
     ) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(ErrorType.NOT_EXIST_COURSE::create);

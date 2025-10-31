@@ -4,7 +4,7 @@ import coursepick.coursepick.domain.RoadType;
 
 import java.util.List;
 
-public record CourseRelaceWebRequest(
+public record CourseReplaceWebRequest(
         List<List<Double>> coordinates,
         String name,
         RoadType roadType
