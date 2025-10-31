@@ -23,4 +23,8 @@ public class DatabaseTestUtil {
     public long countCourses() {
         return mongoTemplate.count(new Query(), Course.class);
     }
+
+    public Course findCourseById(String id) {
+        return mongoTemplate.findById(id, Course.class);
+    }
 }
