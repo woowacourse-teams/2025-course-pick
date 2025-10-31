@@ -140,6 +140,7 @@ public class AdminWebController {
     }
 
     private String loadHtmlFile(String filename) throws IOException {
+        if (filename.contains("..")) throw new SecurityException("파일 경로에 ..은 포함될 수 없습니다.");
         Resource resource = new ClassPathResource("static/admin/" + filename);
         return new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
     }
