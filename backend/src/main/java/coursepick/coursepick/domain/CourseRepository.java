@@ -18,7 +18,7 @@ public interface CourseRepository {
 
     Optional<Course> findById(String id);
 
-    boolean existsByName(CourseName courseName);
+    Optional<Course> findByName(CourseName courseName);
 
     void delete(Course course);
 }

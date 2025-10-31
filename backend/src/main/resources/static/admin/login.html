@@ -178,7 +178,7 @@
             loginButton.textContent = '로그인 중...';
 
             try {
-                const response = await axios.post('/admin/login', {
+                const response = await axios.post('/admin/api/login', {
                     password: password
                 }, {
                     withCredentials: true
@@ -186,7 +186,6 @@
 
                 window.location.href = '/admin';
             } catch (error) {
-                console.error('Admin login failed:', error);
 
                 if (error.response) {
                     const status = error.response.status;
