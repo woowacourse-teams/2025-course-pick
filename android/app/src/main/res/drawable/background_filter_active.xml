@@ -4,5 +4,5 @@
     <solid android:color="@color/point_tertiary" />
     <stroke
         android:width="1dp"
-        android:color="@color/background_border" />
+        android:color="@color/point_primary" />
 </shape>
