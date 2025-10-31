@@ -34,7 +34,8 @@ public class PathAllowlistFilter extends OncePerRequestFilter {
             Pattern.compile("^/api/admin/login$"),
             Pattern.compile("^/admin/login$"),
             Pattern.compile("^/admin$"),
-            Pattern.compile("^/notice/[^/]$")
+            Pattern.compile("^/notice/[^/]$"),
+            Pattern.compile("^/images/verified_location.png$")
     );
 
     @Override
