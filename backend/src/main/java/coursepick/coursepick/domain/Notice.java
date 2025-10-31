@@ -1,5 +1,9 @@
 package coursepick.coursepick.domain;
 
+import coursepick.coursepick.application.exception.ErrorType;
+
+import java.util.Arrays;
+
 public enum Notice {
     VERIFIED_LOCATION(
             "verified_location",
@@ -18,6 +22,13 @@ public enum Notice {
         this.imageUrl = imageUrl;
         this.title = title;
         this.description = description;
+    }
+
+    public static Notice findById(String id) {
+        return Arrays.stream(Notice.values())
+                .filter(notice -> notice.id.equals(id))
+                .findFirst()
+                .orElseThrow(ErrorType.NOT_FOUND_NOTICE::create);
     }
 
     public String getId() {
