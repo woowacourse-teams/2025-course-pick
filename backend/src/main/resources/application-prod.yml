@@ -21,9 +21,7 @@ springdoc:
   api-docs.enabled: false
   swagger-ui.enabled: false
 
-gcp:
-  drive.folder-id: ${GCP_DRIVE_FOLDER_ID}
-  credentials.path: ${GCP_CREDENTIALS_PATH}
-
 osrm.url: ${OSRM_URL}
-admin.token: ${ADMIN_TOKEN}
+admin:
+  token: ${ADMIN_TOKEN}
+  kakao-map-api-key: ${ADMIN_KAKAO_MAP_API_KEY}

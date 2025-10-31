@@ -16,9 +16,6 @@ import java.util.List;
 @Tag(name = "코스")
 public interface CourseWebApi {
 
-    @Operation(hidden = true)
-    String syncCourses(String token) throws Exception;
-
     @Operation(summary = "좌표 근처 1km 내 코스 전체 조회")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),

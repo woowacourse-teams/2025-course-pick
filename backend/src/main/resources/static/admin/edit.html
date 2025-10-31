@@ -26,18 +26,18 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: white;
+            color: #2d3748;
             padding: 20px 30px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid #e2e8f0;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .header h1 {
-            font-size: 24px;
-            font-weight: 700;
+            font-size: 22px;
+            font-weight: 600;
         }
 
         .header-buttons {
@@ -47,30 +47,29 @@
 
         .back-button, .save-button {
             padding: 10px 20px;
-            border: 2px solid white;
-            background: transparent;
-            color: white;
-            border-radius: 5px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: #2d3748;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 14px;
             font-weight: 600;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .back-button:hover {
-            background: white;
-            color: #667eea;
+            background: #f7fafc;
+            border-color: #cbd5e0;
         }
 
         .save-button {
-            background: white;
-            color: #667eea;
+            background: #2d3748;
+            color: white;
+            border-color: #2d3748;
         }
 
         .save-button:hover {
-            background: #f0f0f0;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.3);
+            background: #1a202c;
         }
 
         .save-button:disabled {
@@ -123,24 +122,23 @@
         .control-button {
             padding: 10px 20px;
             border: none;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #2d3748;
             color: white;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 14px;
             font-weight: 600;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             width: 100%;
             margin-top: 10px;
         }
 
         .control-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.4);
+            background: #1a202c;
         }
 
         .control-button:active {
-            transform: translateY(0);
+            transform: scale(0.98);
         }
 
         .control-button:disabled {
@@ -214,8 +212,7 @@
         }
 
         .info-input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #a0aec0;
         }
 
         .info-select {
@@ -232,8 +229,7 @@
         }
 
         .info-select:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #a0aec0;
         }
 
         .info-select:hover {
@@ -351,13 +347,12 @@
         }
 
         .bulk-button.primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #2d3748;
             color: white;
         }
 
         .bulk-button.primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+            background: #1a202c;
         }
 
         .bulk-button.secondary {
@@ -419,7 +414,7 @@
 
         .coord-number {
             font-family: 'Monaco', 'Menlo', monospace;
-            color: #667eea;
+            color: #2d3748;
             font-weight: 600;
         }
 
@@ -430,9 +425,9 @@
 
         .coord-edit-btn {
             padding: 4px 12px;
-            border: 1px solid #667eea;
+            border: 1px solid #2d3748;
             background: white;
-            color: #667eea;
+            color: #2d3748;
             border-radius: 4px;
             font-size: 12px;
             cursor: pointer;
@@ -440,7 +435,7 @@
         }
 
         .coord-edit-btn:hover {
-            background: #667eea;
+            background: #2d3748;
             color: white;
         }
 
@@ -560,8 +555,7 @@
         }
 
         .modal-input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #a0aec0;
         }
 
         .modal-actions {
@@ -582,13 +576,12 @@
         }
 
         .modal-button.primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #2d3748;
             color: white;
         }
 
         .modal-button.primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            background: #1a202c;
         }
 
         .modal-button.secondary {
@@ -601,13 +594,12 @@
         }
 
         .modal-button.danger {
-            background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+            background: #e53e3e;
             color: white;
         }
 
         .modal-button.danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(229, 62, 62, 0.4);
+            background: #c53030;
         }
     </style>
 </head>
@@ -859,7 +851,7 @@
                                     <button class="bulk-button primary" onclick="bulkEditCoordinates()" id="bulk-edit-btn" disabled>
                                         일괄 수정
                                     </button>
-                                    <button class="bulk-button danger" onclick="bulkDeleteCoordinates()" id="bulk-delete-btn" disabled style="background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%); color: white;">
+                                    <button class="bulk-button danger" onclick="bulkDeleteCoordinates()" id="bulk-delete-btn" disabled style="background: #e53e3e; color: white;">
                                         일괄 삭제
                                     </button>
                                 </div>

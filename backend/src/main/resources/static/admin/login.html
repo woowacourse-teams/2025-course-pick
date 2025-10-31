@@ -17,6 +17,7 @@
             sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            background-color: #f5f5f5;
         }
 
         .admin-login-page-container {
@@ -24,36 +25,24 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 20px;
         }
 
         .admin-login-container {
-            padding: 50px 40px;
+            padding: 40px;
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             width: 100%;
-            max-width: 450px;
+            max-width: 400px;
             text-align: center;
-            animation: slideIn 0.5s ease-out;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .admin-login-title {
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             color: #2d3748;
-            font-size: 32px;
+            font-size: 24px;
             font-weight: 700;
         }
 
@@ -66,21 +55,20 @@
         .admin-login-form {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
         }
 
         .admin-login-input {
-            padding: 16px 20px;
-            border-radius: 10px;
-            border: 2px solid #e2e8f0;
-            font-size: 16px;
-            transition: all 0.3s ease;
+            padding: 14px 16px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            font-size: 15px;
+            transition: all 0.2s ease;
             outline: none;
         }
 
         .admin-login-input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #a0aec0;
         }
 
         .admin-login-input::placeholder {
@@ -88,67 +76,51 @@
         }
 
         .admin-login-button {
-            padding: 16px;
+            padding: 14px;
             border: none;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #2d3748;
             color: white;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.2s ease;
         }
 
         .admin-login-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+            background: #1a202c;
         }
 
         .admin-login-button:active {
-            transform: translateY(0);
+            transform: scale(0.98);
         }
 
         .admin-login-button:disabled {
             opacity: 0.6;
             cursor: not-allowed;
-            transform: none;
         }
 
         .error-message {
-            margin-top: 15px;
+            margin-top: 12px;
             padding: 12px;
             border-radius: 8px;
             background-color: #fed7d7;
             color: #c53030;
             font-size: 14px;
             display: none;
-            animation: shake 0.5s ease;
         }
 
         .error-message.show {
             display: block;
         }
 
-        @keyframes shake {
-            0%, 100% {
-                transform: translateX(0);
-            }
-            10%, 30%, 50%, 70%, 90% {
-                transform: translateX(-5px);
-            }
-            20%, 40%, 60%, 80% {
-                transform: translateX(5px);
-            }
-        }
-
         @media (max-width: 480px) {
             .admin-login-container {
-                padding: 40px 30px;
+                padding: 30px 24px;
             }
 
             .admin-login-title {
-                font-size: 28px;
+                font-size: 20px;
             }
         }
     </style>
@@ -156,8 +128,8 @@
 <body>
 <div class="admin-login-page-container">
     <div class="admin-login-container">
-        <h1 class="admin-login-title">🏃 런세권 관리자 페이지</h1>
-        <p class="admin-login-subtitle">안녕하세요 👋</p>
+        <h1 class="admin-login-title">런세권 관리자 페이지</h1>
+        <p class="admin-login-subtitle">비밀번호를 입력해주세요</p>
         <form class="admin-login-form" id="admin-login-form">
             <input
                     autocomplete="current-password"
