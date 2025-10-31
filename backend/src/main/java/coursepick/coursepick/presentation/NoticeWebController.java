@@ -12,6 +12,6 @@ public class NoticeWebController implements NoticeWebApi {
 
     @GetMapping("/notice/{id}")
     public NoticeResponse getNotice(@PathVariable("id") String id) {
-        return NoticeResponse.create(Notice.VERIFIED_LOCATION);
+        return NoticeResponse.create(Notice.findById(id));
     }
 }
