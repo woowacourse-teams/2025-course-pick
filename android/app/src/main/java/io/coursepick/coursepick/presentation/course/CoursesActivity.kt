@@ -51,6 +51,7 @@ import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
 import io.coursepick.coursepick.presentation.map.kakao.KakaoMapManager
 import io.coursepick.coursepick.presentation.map.kakao.toCoordinate
+import io.coursepick.coursepick.presentation.notice.NoticeDialogFragment
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 import io.coursepick.coursepick.presentation.preference.PreferencesActivity
 import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
@@ -193,6 +194,8 @@ class CoursesActivity :
 
         updateManager = CoursePickUpdateManager(this)
         updateManager.checkForUpdate()
+
+        showNoticeIfNeeded()
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -720,6 +723,16 @@ class CoursesActivity :
                     Toast
                         .makeText(this, "코스까지 가는 길을 찾지 못했습니다.", Toast.LENGTH_SHORT)
                         .show()
+
+                is CoursesUiEvent.ShowNotice -> {
+                    NoticeDialogFragment.show(
+                        fragmentManager = supportFragmentManager,
+                        notice = event.notice,
+                        onDoNotShowAgain = {
+                            CoursePickPreferences.setDoNotShowNotice(event.notice.id)
+                        },
+                    )
+                }
             }
         }
     }
@@ -731,6 +744,16 @@ class CoursesActivity :
                 Manifest.permission.ACCESS_COARSE_LOCATION,
             ),
         )
+    }
+
+    private fun showNoticeIfNeeded() {
+        val noticeId = "verified_location"
+
+        if (!CoursePickPreferences.shouldShowNotice(noticeId)) {
+            return
+        }
+
+        viewModel.fetchNotice(noticeId)
     }
 
     private companion object {
