@@ -64,7 +64,7 @@ class CoursesActivity :
     AppCompatActivity(),
     CoursesAction,
     OnReconnectListener {
-    private val coursePickApplication by lazy { application as CoursePickApplication }
+    private val coursePickApplication: CoursePickApplication by lazy { application as CoursePickApplication }
     private var searchLauncher: ActivityResultLauncher<Intent>? = null
     private val binding by lazy { ActivityCoursesBinding.inflate(layoutInflater) }
     private val viewModel: CoursesViewModel by viewModels()
@@ -195,7 +195,9 @@ class CoursesActivity :
         updateManager = CoursePickUpdateManager(this)
         updateManager.checkForUpdate()
 
-        showNoticeIfNeeded()
+        if (savedInstanceState == null) {
+            showNoticeIfNeeded()
+        }
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -747,12 +749,16 @@ class CoursesActivity :
     }
 
     private fun showNoticeIfNeeded() {
-        val noticeId = "verified_location"
+        if (coursePickApplication.hasShownNoticeThisSession) {
+            return
+        }
 
+        val noticeId = "verified_location"
         if (!CoursePickPreferences.shouldShowNotice(noticeId)) {
             return
         }
 
+        coursePickApplication.markNoticeAsShown()
         viewModel.fetchNotice(noticeId)
     }
 

@@ -15,6 +15,13 @@ class CoursePickApplication : Application() {
     @Inject
     lateinit var installationId: InstallationId
 
+    var hasShownNoticeThisSession: Boolean = false
+        private set
+
+    fun markNoticeAsShown() {
+        hasShownNoticeThisSession = true
+    }
+
     override fun onCreate() {
         super.onCreate()
 
