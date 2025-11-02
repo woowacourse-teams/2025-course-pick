@@ -10,6 +10,7 @@ import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 
 object CoursePickPreferences {
+    private const val DO_NOT_SHOW_NOTICE_PREFIX = "do_not_show_notice_"
     private lateinit var preferences: SharedPreferences
     private lateinit var selectedRouteFinderApplicationKey: String
     private lateinit var favoritedCoursesKey: String
@@ -84,6 +85,14 @@ object CoursePickPreferences {
     fun removeFavorite(courseId: String) {
         preferences.edit {
             putStringSet(favoritedCoursesKey, favoritedCourseIds() - courseId)
+        }
+    }
+
+    fun shouldShowNotice(noticeId: String): Boolean = !preferences.getBoolean("$DO_NOT_SHOW_NOTICE_PREFIX$noticeId", false)
+
+    fun setDoNotShowNotice(noticeId: String) {
+        preferences.edit {
+            putBoolean("$DO_NOT_SHOW_NOTICE_PREFIX$noticeId", true)
         }
     }
 
