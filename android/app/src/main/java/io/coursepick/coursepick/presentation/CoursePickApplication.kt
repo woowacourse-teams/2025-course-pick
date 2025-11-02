@@ -18,10 +18,6 @@ class CoursePickApplication : Application() {
     var hasShownNoticeThisSession: Boolean = false
         private set
 
-    fun markNoticeAsShown() {
-        hasShownNoticeThisSession = true
-    }
-
     override fun onCreate() {
         super.onCreate()
 
@@ -39,6 +35,10 @@ class CoursePickApplication : Application() {
         KakaoMapSdk.init(this, BuildConfig.KAKAO_NATIVE_APP_KEY)
         CoursePickPreferences.init(this)
         setUpCallbacks()
+    }
+
+    fun markNoticeAsShown() {
+        hasShownNoticeThisSession = true
     }
 
     private fun setUpCallbacks() {
