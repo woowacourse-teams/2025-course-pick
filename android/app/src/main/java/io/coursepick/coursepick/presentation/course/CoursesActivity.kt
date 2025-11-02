@@ -64,7 +64,7 @@ class CoursesActivity :
     AppCompatActivity(),
     CoursesAction,
     OnReconnectListener {
-    private val coursePickApplication: CoursePickApplication by lazy { application as CoursePickApplication }
+    private val coursePickApplication by lazy { application as CoursePickApplication }
     private var searchLauncher: ActivityResultLauncher<Intent>? = null
     private val binding by lazy { ActivityCoursesBinding.inflate(layoutInflater) }
     private val viewModel: CoursesViewModel by viewModels()
