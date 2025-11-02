@@ -1,6 +1,5 @@
 package io.coursepick.coursepick.presentation.notice
 
-import NoticeDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +7,8 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
+import io.coursepick.coursepick.domain.notice.Notice
+import io.coursepick.coursepick.presentation.compat.getSerializableCompat
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 
 /**
@@ -17,9 +18,7 @@ import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
  * ```
  * NoticeDialogFragment.show(
  *     fragmentManager = supportFragmentManager,
- *     imageUrl = "https://example.com/image.png",
- *     title = "공지사항",
- *     description = "공지사항 내용입니다.",
+ *     notice = notice,
  *     onDoNotShowAgain = {
  *         // "다시 보지 않음" 처리 로직
  *     }
@@ -27,18 +26,14 @@ import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
  * ```
  */
 class NoticeDialogFragment : DialogFragment() {
-    private var imageUrl: String = ""
-    private var title: String = ""
-    private var description: String = ""
+    private var notice: Notice? = null
     private var onDoNotShowAgain: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         arguments?.let { arguments: Bundle ->
-            imageUrl = arguments.getString(ARGUMENT_IMAGE_URL, "")
-            title = arguments.getString(ARGUMENT_TITLE, "")
-            description = arguments.getString(ARGUMENT_DESCRIPTION, "")
+            notice = arguments.getSerializableCompat<Notice>(ARGUMENT_NOTICE)
         }
     }
 
@@ -50,50 +45,42 @@ class NoticeDialogFragment : DialogFragment() {
         ComposeView(requireContext()).apply {
             setContent {
                 CoursePickTheme {
-                    NoticeDialog(
-                        imageUrl = imageUrl,
-                        title = title,
-                        description = description,
-                        onDismissRequest = { dismiss() },
-                        onDoNotShowAgain = { onDoNotShowAgain?.invoke() },
-                    )
+                    notice?.let { notice ->
+                        NoticeDialog(
+                            notice = notice,
+                            onDismissRequest = { dismiss() },
+                            onDoNotShowAgain = { onDoNotShowAgain?.invoke() },
+                        )
+                    }
                 }
             }
         }
 
     companion object {
-        private const val ARGUMENT_IMAGE_URL = "image_url"
-        private const val ARGUMENT_TITLE = "title"
-        private const val ARGUMENT_DESCRIPTION = "description"
+        private const val ARGUMENT_NOTICE = "notice"
 
         /**
          * NoticeDialogFragment를 생성하고 표시합니다.
          *
          * @param fragmentManager FragmentManager 인스턴스
-         * @param imageUrl 표시할 이미지 URL
-         * @param title 다이얼로그 제목
-         * @param description 다이얼로그 설명
+         * @param notice 표시할 공지사항 객체
          * @param onDoNotShowAgain "다시 보지 않음" 버튼 클릭 시 호출되는 콜백
          * @param tag 프래그먼트의 태그
          */
         fun show(
             fragmentManager: FragmentManager,
-            imageUrl: String,
-            title: String,
-            description: String,
+            notice: Notice,
             onDoNotShowAgain: () -> Unit,
             tag: String? = null,
         ) {
+            val arguments =
+                Bundle().apply {
+                    putSerializable(ARGUMENT_NOTICE, notice)
+                }
+
             val dialog =
                 NoticeDialogFragment().apply {
-                    arguments =
-                        Bundle().apply {
-                            putString(ARGUMENT_IMAGE_URL, imageUrl)
-                            putString(ARGUMENT_TITLE, title)
-                            putString(ARGUMENT_DESCRIPTION, description)
-                        }
-                    this
-                    this.title = title
+                    this.arguments = arguments
                     this.onDoNotShowAgain = onDoNotShowAgain
                 }
 

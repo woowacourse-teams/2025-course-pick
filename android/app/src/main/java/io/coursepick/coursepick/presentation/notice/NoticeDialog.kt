@@ -1,3 +1,5 @@
+package io.coursepick.coursepick.presentation.notice
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -23,13 +25,12 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil3.compose.AsyncImage
 import io.coursepick.coursepick.R
+import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 
 @Composable
 fun NoticeDialog(
-    imageUrl: String,
-    title: String,
-    description: String,
+    notice: Notice,
     onDismissRequest: () -> Unit,
     onDoNotShowAgain: () -> Unit,
 ) {
@@ -43,7 +44,7 @@ fun NoticeDialog(
                     .padding(top = 20.dp, start = 20.dp, end = 20.dp),
         ) {
             AsyncImage(
-                model = imageUrl,
+                model = notice.imageUrl,
                 contentDescription = null,
                 modifier =
                     Modifier
@@ -55,7 +56,7 @@ fun NoticeDialog(
             Spacer(modifier = Modifier.height(20.dp))
 
             Text(
-                text = title,
+                text = notice.title,
                 fontSize = 16.sp,
                 color = colorResource(R.color.item_primary),
                 fontWeight = FontWeight.Bold,
@@ -66,7 +67,7 @@ fun NoticeDialog(
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = description,
+                text = notice.description,
                 fontSize = 14.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
@@ -113,11 +114,15 @@ fun NoticeDialog(
 private fun NoticeDialogPreview() {
     CoursePickTheme {
         NoticeDialog(
-            imageUrl = "",
-            title =
-                "강남·송파 코스는 저희가 검증했어요\n" +
-                    "다른 지역은 아직 검증 중이에요 🏃",
-            description = "* 메뉴 탭에서 다시 확인할 수 있어요.",
+            notice =
+                Notice(
+                    id = "",
+                    imageUrl = "",
+                    title =
+                        "강남·송파 코스는 저희가 검증했어요\n" +
+                            "다른 지역은 아직 검증 중이에요 🏃",
+                    description = "* 메뉴 탭에서 다시 확인할 수 있어요.",
+                ),
             onDismissRequest = {},
             onDoNotShowAgain = {},
         )
