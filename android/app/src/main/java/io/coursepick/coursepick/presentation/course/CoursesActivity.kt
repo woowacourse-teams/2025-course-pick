@@ -58,6 +58,7 @@ import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 import io.coursepick.coursepick.presentation.routefinder.RouteFinderChoiceDialogFragment
 import io.coursepick.coursepick.presentation.search.SearchActivity
 import io.coursepick.coursepick.presentation.ui.DoublePressDetector
+import io.coursepick.coursepick.presentation.verifiedlocations.VerifiedLocationsDialogFragment
 
 @AndroidEntryPoint
 class CoursesActivity :
@@ -268,11 +269,27 @@ class CoursesActivity :
             R.id.item_user_feedback -> navigateToFeedback()
             R.id.item_privacy_policy -> navigateToPrivacyPolicy()
             R.id.item_open_source_notice -> navigateToOpenSourceNotice()
+            R.id.item_verified_location -> showVerifiedLocations()
         }
 
         binding.mainDrawer.close()
 
         return true
+    }
+
+    private fun showVerifiedLocations() {
+        val verifiedLocations = viewModel.state.value?.verifiedLocations
+
+        if (verifiedLocations != null) {
+            VerifiedLocationsDialogFragment.show(
+                fragmentManager = supportFragmentManager,
+                imageUrl = verifiedLocations.imageUrl,
+                title = verifiedLocations.title,
+                description = verifiedLocations.description,
+            )
+        } else {
+            Toast.makeText(this, "정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun search() {
