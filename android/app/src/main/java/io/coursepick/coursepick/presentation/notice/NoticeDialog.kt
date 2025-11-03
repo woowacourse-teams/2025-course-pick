@@ -32,7 +32,7 @@ import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 fun NoticeDialog(
     notice: Notice,
     onDismissRequest: () -> Unit,
-    onDoNotShowAgain: () -> Unit,
+    onDoNotShowAgain: (noticeId: String) -> Unit,
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
         Column(
@@ -84,7 +84,7 @@ fun NoticeDialog(
             ) {
                 TextButton(
                     onClick = {
-                        onDoNotShowAgain()
+                        onDoNotShowAgain(notice.id)
                         onDismissRequest()
                     },
                     modifier = Modifier.weight(1f),

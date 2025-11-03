@@ -730,9 +730,6 @@ class CoursesActivity :
                     NoticeDialogFragment.show(
                         fragmentManager = supportFragmentManager,
                         notice = event.notice,
-                        onDoNotShowAgain = {
-                            CoursePickPreferences.setDoNotShowNotice(event.notice.id)
-                        },
                     )
                 }
             }
