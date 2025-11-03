@@ -15,6 +15,7 @@ class CoursePickApplication : Application() {
     @Inject
     lateinit var installationId: InstallationId
 
+    @Volatile
     var hasShownNoticeThisSession: Boolean = false
         private set
 
