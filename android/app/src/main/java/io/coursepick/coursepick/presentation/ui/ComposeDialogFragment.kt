@@ -31,11 +31,11 @@ abstract class ComposeDialogFragment : DialogFragment() {
         ComposeView(requireContext()).apply {
             setContent {
                 CoursePickTheme {
-                    Content()
+                    Dialog()
                 }
             }
         }
 
     @Composable
-    abstract fun Content()
+    abstract fun Dialog()
 }

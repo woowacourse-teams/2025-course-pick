@@ -58,11 +58,9 @@ class NoticeDialogFragment : ComposeDialogFragment() {
         }
 
     @Composable
-    override fun Content() {
-        val currentNotice: Notice = notice ?: return
-
+    override fun Dialog() {
         NoticeDialog(
-            notice = currentNotice,
+            notice = notice ?: return,
             onDismissRequest = ::dismiss,
             onDoNotShowAgain = CoursePickPreferences::setDoNotShowNotice,
         )
