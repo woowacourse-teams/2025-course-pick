@@ -10,4 +10,10 @@ class DefaultNoticeRepository
         private val service: NoticeService,
     ) : NoticeRepository {
         override suspend fun notice(id: String): Notice = service.notice(id).toNotice()
+
+        override suspend fun verifiedLocations(): Notice = service.notice(NOTICE_ID_VERIFIED_LOCATION).toNotice()
+
+        private companion object {
+            const val NOTICE_ID_VERIFIED_LOCATION = "verified_location"
+        }
     }
