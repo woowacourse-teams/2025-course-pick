@@ -753,7 +753,7 @@ class CoursesActivity :
             return
         }
 
-        val noticeId = "verified_location"
+        val noticeId = NOTICE_ID_VERIFIED_LOCATION
         if (!CoursePickPreferences.shouldShowNotice(noticeId)) {
             return
         }
@@ -764,5 +764,6 @@ class CoursesActivity :
 
     private companion object {
         const val COURSE_COLOR_DIALOG_TAG = "CourseColorDescriptionDialog"
+        const val NOTICE_ID_VERIFIED_LOCATION = "verified_location"
     }
 }
