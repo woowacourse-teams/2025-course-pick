@@ -345,10 +345,10 @@ class CoursesViewModel
             _state.value = coursesUiState
         }
 
-        fun fetchNotice(noticeId: String) {
+        fun fetchNotice(id: String) {
             viewModelScope.launch {
                 runCatching {
-                    noticeRepository.notice(noticeId)
+                    noticeRepository.notice(id)
                 }.onSuccess { notice ->
                     _event.value = CoursesUiEvent.ShowNotice(notice)
                 }

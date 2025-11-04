@@ -9,5 +9,5 @@ class DefaultNoticeRepository
     constructor(
         private val service: NoticeService,
     ) : NoticeRepository {
-        override suspend fun notice(noticeId: String): Notice = service.notice(noticeId).toNotice()
+        override suspend fun notice(id: String): Notice = service.notice(id).toNotice()
     }

@@ -4,7 +4,7 @@ import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.domain.notice.NoticeRepository
 
 class FakeNoticeRepository : NoticeRepository {
-    override suspend fun notice(noticeId: String): Notice =
+    override suspend fun notice(id: String): Notice =
         Notice(
             id = "",
             imageUrl = "",

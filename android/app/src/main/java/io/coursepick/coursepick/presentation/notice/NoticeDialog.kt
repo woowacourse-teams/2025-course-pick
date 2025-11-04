@@ -32,7 +32,7 @@ import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 fun NoticeDialog(
     notice: Notice,
     onDismissRequest: () -> Unit,
-    onDoNotShowAgain: (noticeId: String) -> Unit,
+    onDoNotShowAgain: (id: String) -> Unit,
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
         Column(

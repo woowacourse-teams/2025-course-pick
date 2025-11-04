@@ -88,11 +88,11 @@ object CoursePickPreferences {
         }
     }
 
-    fun shouldShowNotice(noticeId: String): Boolean = !preferences.getBoolean("$DO_NOT_SHOW_NOTICE_PREFIX$noticeId", false)
+    fun shouldShowNotice(id: String): Boolean = !preferences.getBoolean("$DO_NOT_SHOW_NOTICE_PREFIX$id", false)
 
-    fun setDoNotShowNotice(noticeId: String) {
+    fun setDoNotShowNotice(id: String) {
         preferences.edit {
-            putBoolean("$DO_NOT_SHOW_NOTICE_PREFIX$noticeId", true)
+            putBoolean("$DO_NOT_SHOW_NOTICE_PREFIX$id", true)
         }
     }
 

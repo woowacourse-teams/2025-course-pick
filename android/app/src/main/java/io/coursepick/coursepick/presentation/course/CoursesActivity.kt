@@ -750,7 +750,7 @@ class CoursesActivity :
             return
         }
 
-        val noticeId = NOTICE_ID_VERIFIED_LOCATION
+        val noticeId: String = NOTICE_ID_VERIFIED_LOCATION
         if (!CoursePickPreferences.shouldShowNotice(noticeId)) {
             return
         }

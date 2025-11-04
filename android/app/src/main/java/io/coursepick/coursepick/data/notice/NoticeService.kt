@@ -6,6 +6,6 @@ import retrofit2.http.Path
 interface NoticeService {
     @GET("/notice/{id}")
     suspend fun notice(
-        @Path("id") noticeId: String,
+        @Path("id") id: String,
     ): NoticeDto
 }
