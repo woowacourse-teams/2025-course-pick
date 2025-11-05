@@ -37,7 +37,11 @@ public class Course {
     private final Difficulty difficulty;
 
     public Course(String name, RoadType roadType, List<Coordinate> rawCoordinates) {
-        this.id = null;
+        this(null, name, roadType, rawCoordinates);
+    }
+
+    private Course(String id, String name, RoadType roadType, List<Coordinate> rawCoordinates) {
+        this.id = id;
         this.name = new CourseName(name);
         this.roadType = roadType;
         this.segments = refineCoordinates(rawCoordinates);
@@ -59,8 +63,12 @@ public class Course {
                 .build();
     }
 
+    public Course(String id, String name, List<Coordinate> coordinates) {
+        this(id, name, RoadType.알수없음, coordinates);
+    }
+
     public Course(String name, List<Coordinate> coordinates) {
-        this(name, RoadType.알수없음, coordinates);
+        this(null, name, RoadType.알수없음, coordinates);
     }
 
     public Coordinate closestCoordinateFrom(Coordinate target) {
