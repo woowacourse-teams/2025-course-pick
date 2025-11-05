@@ -49,8 +49,8 @@ public enum ErrorType {
             SecurityException::new
     ),
     NOT_FOUND_NOTICE(
-            "존재하지 않는 노티입니다.",
-            IllegalArgumentException::new
+            "존재하지 않는 공지 사항입니다. 공지 사항id=%s",
+            NotFoundException::new
     ),
     ;
 
