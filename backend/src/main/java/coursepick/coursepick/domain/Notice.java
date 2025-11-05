@@ -10,7 +10,7 @@ import lombok.Getter;
 public enum Notice {
     VERIFIED_LOCATION(
             "verified_location",
-            "/images/verified_location.png",
+            "https://prod.coursepick.run/images/verified_location.png",
             "강남·송파 코스는 저희가 검증했어요\n 다른 지역은 아직 검증 중이에요 🏃",
             "* 메뉴 탭에서 다시 확인할 수 있어요."
     );
