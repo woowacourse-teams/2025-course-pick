@@ -21,6 +21,15 @@ public class CoordinateBuilder {
         return new CoordinateBuilder(coordinates);
     }
 
+    public static CoordinateBuilder fromSegments(List<Segment> segments) {
+        List<Coordinate> coordinates = new ArrayList<>();
+        for (Segment segment : segments) {
+            if (!coordinates.isEmpty()) coordinates.removeLast();
+            coordinates.addAll(segment.coordinates());
+        }
+        return new CoordinateBuilder(coordinates);
+    }
+
     /**
      * 비슷한 좌표들을 제거하여 좌표의 밀집도를 줄입니다.
      * <br>
