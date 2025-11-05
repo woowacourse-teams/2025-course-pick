@@ -4,6 +4,9 @@ import coursepick.coursepick.application.exception.ErrorType;
 
 import java.util.Arrays;
 
+import lombok.Getter;
+
+@Getter
 public enum Notice {
     VERIFIED_LOCATION(
             "verified_location",
@@ -12,10 +15,10 @@ public enum Notice {
             "* 메뉴 탭에서 다시 확인할 수 있어요."
     );
 
-    private String id;
-    private String imageUrl;
-    private String title;
-    private String description;
+    private final String id;
+    private final String imageUrl;
+    private final String title;
+    private final String description;
 
     Notice(String id, String imageUrl, String title, String description) {
         this.id = id;
@@ -28,22 +31,6 @@ public enum Notice {
         return Arrays.stream(Notice.values())
                 .filter(notice -> notice.id.equals(id))
                 .findFirst()
-                .orElseThrow(ErrorType.NOT_FOUND_NOTICE::create);
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
+                .orElseThrow(() -> ErrorType.NOT_FOUND_NOTICE.create(id));
     }
 }
