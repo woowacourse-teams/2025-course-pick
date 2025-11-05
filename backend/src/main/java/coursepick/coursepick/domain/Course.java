@@ -27,14 +27,14 @@ public class Course {
 
     private RoadType roadType;
 
-    private final InclineSummary inclineSummary;
+    private InclineSummary inclineSummary;
 
     @GeoSpatialIndexed(name = "idx_geo_segments", type = GeoSpatialIndexType.GEO_2DSPHERE)
     private List<Segment> segments;
 
-    private final Meter length;
+    private Meter length;
 
-    private final Difficulty difficulty;
+    private Difficulty difficulty;
 
     public Course(String name, RoadType roadType, List<Coordinate> rawCoordinates) {
         this(null, name, roadType, rawCoordinates);
@@ -101,6 +101,9 @@ public class Course {
 
     public void changeCoordinates(List<Coordinate> coordinates) {
         this.segments = refineCoordinates(coordinates);
+        this.length = calculateLength(segments);
+        this.inclineSummary = InclineSummary.of(segments);
+        this.difficulty = Difficulty.fromLengthAndRoadType(length, roadType);
     }
 
     public void changeName(String courseName) {
