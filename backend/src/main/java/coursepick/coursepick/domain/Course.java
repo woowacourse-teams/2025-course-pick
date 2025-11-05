@@ -112,5 +112,6 @@ public class Course {
 
     public void changeRoadType(RoadType roadType) {
         this.roadType = roadType;
+        this.difficulty = Difficulty.fromLengthAndRoadType(this.length, this.roadType);
     }
 }
