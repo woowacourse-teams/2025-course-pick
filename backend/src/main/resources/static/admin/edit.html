@@ -728,16 +728,12 @@
     // 코스 정보 로드
     async function loadCourse() {
         try {
-            const response = await axios.get(`/admin/courses/${courseId}`, {
+            const response = await axios.get(`/admin/api/courses/${courseId}`, {
                 withCredentials: true
             });
 
-            console.log('API Response:', response.data);
-
             if (response.data) {
                 course = response.data;
-                console.log('Course loaded:', course);
-                console.log('Segments:', course.segments);
                 originalCourse = JSON.parse(JSON.stringify(course)); // 깊은 복사
                 displayCourseInfo();
                 displayCoordinatesList();
@@ -746,7 +742,6 @@
                 showMessage('코스를 찾을 수 없습니다.');
             }
         } catch (error) {
-            console.error('코스 로드 실패:', error);
             if (error.response && error.response.status === 401) {
                 alert('로그인 세션이 만료되었습니다.');
                 window.location.href = '/admin/login';
@@ -762,7 +757,6 @@
     // 코스 정보 표시
     function displayCourseInfo() {
         try {
-            console.log('displayCourseInfo 시작');
             const infoContainer = document.getElementById('course-info');
 
             const totalCoordinates = course.segments.reduce((sum, segment) =>
@@ -826,10 +820,7 @@
             html += '</div>';
 
             infoContainer.innerHTML = html;
-            console.log('displayCourseInfo 완료');
         } catch (error) {
-            console.error('displayCourseInfo 에러:', error);
-            console.error('Error stack:', error.stack);
             showMessage('코스 정보 표시 중 오류가 발생했습니다: ' + error.message, 'error');
         }
     }
@@ -837,7 +828,6 @@
     // 좌표 목록 표시
     function displayCoordinatesList() {
         try {
-            console.log('displayCoordinatesList 시작');
             const coordinatesContainer = document.getElementById('coordinates-container');
             coordinatesContainer.style.display = 'block';
 
@@ -915,10 +905,7 @@
 
             coordinatesContainer.innerHTML = html;
             updateBulkActionButtons();
-            console.log('displayCoordinatesList 완료');
         } catch (error) {
-            console.error('displayCoordinatesList 에러:', error);
-            console.error('Error stack:', error.stack);
             showMessage('좌표 목록 표시 중 오류가 발생했습니다: ' + error.message, 'error');
         }
     }
@@ -940,36 +927,24 @@
     // 지도에 코스 그리기
     function drawCourseOnMap() {
         try {
-            console.log('drawCourseOnMap 시작');
-            console.log('course:', course);
-            console.log('map:', map);
-
             // 기존 마커와 폴리라인 제거
             clearMap();
 
             if (!course || !course.segments || course.segments.length === 0) {
-                console.log('코스 데이터 없음:', {course, segments: course?.segments});
                 return;
             }
-
-            console.log('세그먼트 개수:', course.segments.length);
 
             let allCoordinates = [];
 
             // 각 세그먼트별로 폴리라인 그리기
             course.segments.forEach((segment, segmentIndex) => {
-                console.log(`세그먼트 ${segmentIndex}:`, segment);
 
                 if (!segment.coordinates || segment.coordinates.length === 0) {
-                    console.log(`세그먼트 ${segmentIndex} 좌표 없음`);
                     return;
                 }
 
-                console.log(`세그먼트 ${segmentIndex} 좌표 개수:`, segment.coordinates.length);
-
                 // 좌표 배열을 카카오맵 LatLng 객체로 변환
                 const path = segment.coordinates.map(coord => {
-                    console.log('좌표:', coord);
                     return new kakao.maps.LatLng(coord.latitude, coord.longitude);
                 });
 
@@ -986,7 +961,6 @@
 
                 polyline.setMap(map);
                 polylines.push(polyline);
-                console.log(`세그먼트 ${segmentIndex} 폴리라인 추가됨`);
 
                 // 각 좌표에 드래그 가능한 마커 추가
                 segment.coordinates.forEach((coord, coordIndex) => {
@@ -1016,26 +990,16 @@
                         coordIndex: coordIndex
                     });
                 });
-                console.log(`세그먼트 ${segmentIndex} 마커 추가됨`);
             });
-
-            console.log('총 마커 개수:', markers.length);
-            console.log('총 폴리라인 개수:', polylines.length);
 
             // 지도 중심을 코스에 맞추기 (초기 로드 시에만)
             if (isInitialLoad && allCoordinates.length > 0) {
-                console.log('지도 중심 설정 중...');
                 const bounds = new kakao.maps.LatLngBounds();
                 allCoordinates.forEach(coord => bounds.extend(coord));
                 map.setBounds(bounds);
                 isInitialLoad = false;
-                console.log('지도 중심 설정 완료');
             }
-
-            console.log('drawCourseOnMap 완료');
         } catch (error) {
-            console.error('drawCourseOnMap 에러:', error);
-            console.error('Error stack:', error.stack);
             showMessage('지도에 코스를 그리는 중 오류가 발생했습니다: ' + error.message, 'error');
         }
     }
@@ -1102,7 +1066,6 @@
         }
         message += ' (자동 저장 기능은 추후 구현 예정)';
         showMessage(message, 'success');
-        console.log('Updated course:', course);
     }
 
     // 특정 세그먼트들의 폴리라인만 업데이트
@@ -1603,7 +1566,6 @@
         // 코스 이름 업데이트
         course.name = newName.trim();
         showMessage('코스 이름이 변경되었습니다.', 'success');
-        console.log('코스 이름 변경:', course.name);
     }
 
     // 도로 타입 업데이트
@@ -1628,7 +1590,6 @@
         // 도로 타입 업데이트
         course.roadType = newRoadType;
         showMessage('도로 타입이 변경되었습니다.', 'success');
-        console.log('도로 타입 변경:', course.roadType);
     }
 
     // 코스 저장
@@ -1650,10 +1611,6 @@
         }
 
         try {
-            console.log('=== 저장할 코스 데이터 ===');
-            console.log('Course ID:', courseId);
-            console.log('Course Data:', JSON.stringify(course, null, 2));
-
             // 모든 세그먼트의 좌표를 평탄화하여 [[lat, lng, elev], ...] 형식으로 변환
             const coordinates = [];
             course.segments.forEach(segment => {
@@ -1673,11 +1630,8 @@
                 roadType: course.roadType
             };
 
-            console.log('=== API 요청 데이터 ===');
-            console.log('Request Data:', JSON.stringify(requestData, null, 2));
-
             // API 호출
-            const response = await axios.patch(`/admin/courses/${courseId}`, requestData, {
+            const response = await axios.patch(`/admin/api/courses/${courseId}`, requestData, {
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -1688,11 +1642,9 @@
                 // 저장 성공 시 originalCourse 업데이트
                 originalCourse = JSON.parse(JSON.stringify(course));
                 showMessage('코스가 성공적으로 저장되었습니다.', 'success');
-                console.log('코스 저장 성공');
             }
 
         } catch (error) {
-            console.error('코스 저장 실패:', error);
             if (error.response && error.response.status === 401) {
                 alert('로그인 세션이 만료되었습니다.');
                 window.location.href = '/admin/login';

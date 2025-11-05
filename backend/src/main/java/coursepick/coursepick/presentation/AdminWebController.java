@@ -5,6 +5,7 @@ import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
+import coursepick.coursepick.domain.CourseName;
 import coursepick.coursepick.domain.CourseRepository;
 import coursepick.coursepick.presentation.dto.AdminCourseWebResponse;
 import coursepick.coursepick.presentation.dto.AdminLoginWebRequest;
@@ -39,24 +40,24 @@ public class AdminWebController {
     @Value("${admin.kakao-map-api-key}")
     private String kakaoMapApiKey;
 
-    @GetMapping("/admin/login")
-    public String adminLoginPage() throws IOException {
-        return loadHtmlFile("login.html");
-    }
-
     @GetMapping("/admin")
     public String adminPage() throws IOException {
         return loadHtmlFile("index.html");
     }
 
+    @GetMapping("/admin/login")
+    public String loginPage() throws IOException {
+        return loadHtmlFile("login.html");
+    }
+
     @GetMapping("/admin/import")
-    public String importFiles() throws IOException {
+    public String importPage() throws IOException {
         return loadHtmlFile("import.html");
     }
 
     @GetMapping("/admin/courses")
-    public String adminCoursesPage() throws IOException {
-        return loadHtmlFile("main.html").replace(KAKAO_API_KEY_PLACEHOLDER, kakaoMapApiKey);
+    public String courseFindPage() throws IOException {
+        return loadHtmlFile("find.html").replace(KAKAO_API_KEY_PLACEHOLDER, kakaoMapApiKey);
     }
 
     @GetMapping("/admin/courses/edit")
@@ -64,7 +65,7 @@ public class AdminWebController {
         return loadHtmlFile("edit.html").replace(KAKAO_API_KEY_PLACEHOLDER, kakaoMapApiKey);
     }
 
-    @PostMapping("/admin/login")
+    @PostMapping("/admin/api/login")
     public ResponseEntity<Void> login(@RequestBody @Valid AdminLoginWebRequest request) {
         if (!adminToken.equals(request.password())) {
             throw ErrorType.INVALID_ADMIN_PASSWORD.create();
@@ -81,7 +82,7 @@ public class AdminWebController {
                 .build();
     }
 
-    @GetMapping("/admin/courses/{id}")
+    @GetMapping("/admin/api/courses/{id}")
     public AdminCourseWebResponse findCourseById(@PathVariable("id") String id) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(ErrorType.NOT_EXIST_COURSE::create);
@@ -89,7 +90,15 @@ public class AdminWebController {
         return AdminCourseWebResponse.from(course);
     }
 
-    @PostMapping("/admin/import")
+    @GetMapping("/admin/api/courses")
+    public AdminCourseWebResponse findCourseByName(@RequestParam("name") String name) {
+        Course course = courseRepository.findByName(new CourseName(name))
+                .orElseThrow(ErrorType.NOT_EXIST_COURSE::create);
+
+        return AdminCourseWebResponse.from(course);
+    }
+
+    @PostMapping("/admin/api/import")
     public void importFiles(@RequestParam("files") List<MultipartFile> files) throws IOException {
         for (MultipartFile file : files) {
             try (CourseFile courseFile = CourseFile.from(file)) {
@@ -99,7 +108,7 @@ public class AdminWebController {
         }
     }
 
-    @PatchMapping("/admin/courses/{id}")
+    @PatchMapping("/admin/api/courses/{id}")
     public void modifyCourse(
             @PathVariable("id") String courseId,
             @RequestBody CourseRelaceWebRequest request
@@ -121,7 +130,7 @@ public class AdminWebController {
         courseRepository.save(course);
     }
 
-    @DeleteMapping("/admin/courses/{id}")
+    @DeleteMapping("/admin/api/courses/{id}")
     public void deleteCourse(@PathVariable("id") String id) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(ErrorType.NOT_EXIST_COURSE::create);
@@ -131,6 +140,7 @@ public class AdminWebController {
     }
 
     private String loadHtmlFile(String filename) throws IOException {
+        if (filename.contains("..")) throw new SecurityException("파일 경로에 ..은 포함될 수 없습니다.");
         Resource resource = new ClassPathResource("static/admin/" + filename);
         return new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
     }
