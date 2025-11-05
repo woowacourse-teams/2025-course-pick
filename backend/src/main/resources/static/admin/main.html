@@ -26,15 +26,15 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: white;
+            color: #2d3748;
             padding: 20px 30px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid #e2e8f0;
         }
 
         .header h1 {
-            font-size: 24px;
-            font-weight: 700;
+            font-size: 22px;
+            font-weight: 600;
         }
 
         .content {
@@ -86,29 +86,28 @@
 
         .map-controls input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #a0aec0;
         }
 
         .map-controls button {
             padding: 10px 20px;
             border: none;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #2d3748;
             color: white;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 14px;
             font-weight: 600;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             white-space: nowrap;
         }
 
         .map-controls button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.4);
+            background: #1a202c;
         }
 
         .map-controls button:active {
-            transform: translateY(0);
+            transform: scale(0.98);
         }
 
         .map-controls button:disabled {
@@ -147,23 +146,22 @@
 
         .course-item {
             background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
             padding: 15px;
             margin-bottom: 10px;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             cursor: pointer;
         }
 
         .course-item:hover {
-            border-color: #667eea;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
-            transform: translateY(-2px);
+            border-color: #cbd5e0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
         .course-item.selected {
-            border-color: #667eea;
-            background: #f0f4ff;
+            border-color: #2d3748;
+            background: #f7fafc;
         }
 
         .course-name {
@@ -193,36 +191,34 @@
             flex: 1;
             padding: 8px 16px;
             border: none;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #2d3748;
             color: white;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 13px;
             font-weight: 600;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .edit-button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 6px rgba(102, 126, 234, 0.4);
+            background: #1a202c;
         }
 
         .delete-button {
             flex: 1;
             padding: 8px 16px;
             border: none;
-            background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+            background: #e53e3e;
             color: white;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 13px;
             font-weight: 600;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .delete-button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 6px rgba(229, 62, 62, 0.4);
+            background: #c53030;
         }
 
         .loading {
@@ -274,9 +270,9 @@
         }
 
         .pagination button:hover:not(:disabled) {
-            border-color: #667eea;
-            color: #667eea;
-            transform: translateY(-1px);
+            border-color: #2d3748;
+            color: #2d3748;
+            background: #f7fafc;
         }
 
         .pagination button:disabled {
@@ -818,7 +814,7 @@
                     const content = `<div style="
                                            padding: 5px 10px;
                                            background: white;
-                                           border: 2px solid ${isSelected ? '#667eea' : '#cccccc'};
+                                           border: 2px solid ${isSelected ? '#2d3748' : '#cccccc'};
                                            border-radius: 5px;
                                            font-size: 12px;
                                            font-weight: ${isSelected ? '700' : '400'};

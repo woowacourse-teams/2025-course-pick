@@ -1,24 +1,25 @@
 package coursepick.coursepick.presentation;
 
-import coursepick.coursepick.application.CourseFileModifier;
+import coursepick.coursepick.application.CourseParserService;
+import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
 import coursepick.coursepick.domain.CourseRepository;
 import coursepick.coursepick.presentation.dto.AdminCourseWebResponse;
 import coursepick.coursepick.presentation.dto.AdminLoginWebRequest;
-import coursepick.coursepick.presentation.dto.CourseReplaceWebRequest;
+import coursepick.coursepick.presentation.dto.CourseRelaceWebRequest;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.server.Cookie;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -26,34 +27,41 @@ import java.time.Duration;
 import java.util.List;
 
 @RestController
-@Profile("dev")
+@RequiredArgsConstructor
 public class AdminWebController {
 
     private static final String TOKEN_COOKIE_KEY = "admin-token";
-
-    private final String adminToken;
-    private final String kakaoMapApiKey;
+    private static final String KAKAO_API_KEY_PLACEHOLDER = "KAKAO_API_KEY_PLACEHOLDER";
     private final CourseRepository courseRepository;
-    private final CourseFileModifier courseFileModifier;
-
-    public AdminWebController(
-            @Value("${admin.token}") String adminToken,
-            @Value("${admin.kakao-map-api-key}") String kakaoMapApiKey,
-            CourseRepository courseRepository,
-            CourseFileModifier courseFileModifier
-    ) {
-        this.adminToken = adminToken;
-        this.kakaoMapApiKey = kakaoMapApiKey;
-        this.courseRepository = courseRepository;
-        this.courseFileModifier = courseFileModifier;
-    }
+    private final CourseParserService courseParserService;
+    @Value("${admin.token}")
+    private String adminToken;
+    @Value("${admin.kakao-map-api-key}")
+    private String kakaoMapApiKey;
 
     @GetMapping("/admin/login")
-    public ResponseEntity<String> adminLoginPage() throws IOException {
-        String html = loadHtmlFile("login.html");
-        return ResponseEntity.ok()
-                .contentType(MediaType.TEXT_HTML)
-                .body(html);
+    public String adminLoginPage() throws IOException {
+        return loadHtmlFile("login.html");
+    }
+
+    @GetMapping("/admin")
+    public String adminPage() throws IOException {
+        return loadHtmlFile("index.html");
+    }
+
+    @GetMapping("/admin/import")
+    public String importFiles() throws IOException {
+        return loadHtmlFile("import.html");
+    }
+
+    @GetMapping("/admin/courses")
+    public String adminCoursesPage() throws IOException {
+        return loadHtmlFile("main.html").replace(KAKAO_API_KEY_PLACEHOLDER, kakaoMapApiKey);
+    }
+
+    @GetMapping("/admin/courses/edit")
+    public String courseEditPage() throws IOException {
+        return loadHtmlFile("edit.html").replace(KAKAO_API_KEY_PLACEHOLDER, kakaoMapApiKey);
     }
 
     @PostMapping("/admin/login")
@@ -81,19 +89,20 @@ public class AdminWebController {
         return AdminCourseWebResponse.from(course);
     }
 
-    @GetMapping("/admin")
-    public ResponseEntity<String> adminPage() throws IOException {
-        String html = loadHtmlFile("main.html")
-                .replace("KAKAO_API_KEY_PLACEHOLDER", kakaoMapApiKey);
-        return ResponseEntity.ok()
-                .contentType(MediaType.TEXT_HTML)
-                .body(html);
+    @PostMapping("/admin/import")
+    public void importFiles(@RequestParam("files") List<MultipartFile> files) throws IOException {
+        for (MultipartFile file : files) {
+            try (CourseFile courseFile = CourseFile.from(file)) {
+                List<Course> courses = courseParserService.parse(courseFile);
+                courseRepository.saveAll(courses);
+            }
+        }
     }
 
     @PatchMapping("/admin/courses/{id}")
-    public ResponseEntity<Void> modifyCourse(
+    public void modifyCourse(
             @PathVariable("id") String courseId,
-            @RequestBody CourseReplaceWebRequest request
+            @RequestBody CourseRelaceWebRequest request
     ) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(ErrorType.NOT_EXIST_COURSE::create);
@@ -110,29 +119,15 @@ public class AdminWebController {
 
         // TODO : 분산 트랜잭션 고민
         courseRepository.save(course);
-        courseFileModifier.modify(course);
-        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/admin/courses/{id}")
-    public ResponseEntity<Void> deleteCourse(@PathVariable("id") String id) {
+    public void deleteCourse(@PathVariable("id") String id) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(ErrorType.NOT_EXIST_COURSE::create);
 
         // TODO : 분산 트랜잭션 고민
         courseRepository.delete(course);
-        courseFileModifier.delete(course.id());
-
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/admin/courses/edit")
-    public ResponseEntity<String> courseEditPage() throws IOException {
-        String html = loadHtmlFile("edit.html")
-                .replace("KAKAO_API_KEY_PLACEHOLDER", kakaoMapApiKey);
-        return ResponseEntity.ok()
-                .contentType(MediaType.TEXT_HTML)
-                .body(html);
     }
 
     private String loadHtmlFile(String filename) throws IOException {
