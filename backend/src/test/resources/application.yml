@@ -8,4 +8,6 @@ spring:
 
 de.flapdoodle.mongodb.embedded.version: 8.0.12
 
-admin.token: secret
+admin:
+  token: secret
+  kakao-map-api-key: secret
