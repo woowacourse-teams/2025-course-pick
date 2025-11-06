@@ -13,6 +13,7 @@ import io.coursepick.coursepick.domain.course.CourseRepository
 import io.coursepick.coursepick.domain.course.Kilometer
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.domain.favorites.FavoritesRepository
+import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.domain.notice.NoticeRepository
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.filter.CourseFilter
@@ -349,7 +350,7 @@ class CoursesViewModel
             viewModelScope.launch {
                 runCatching {
                     noticeRepository.notice(id)
-                }.onSuccess { notice ->
+                }.onSuccess { notice: Notice ->
                     _event.value = CoursesUiEvent.ShowNotice(notice)
                 }
             }

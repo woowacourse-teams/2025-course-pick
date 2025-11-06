@@ -43,7 +43,7 @@ class NoticeDialogFragment : DialogFragment() {
         ComposeView(requireContext()).apply {
             setContent {
                 CoursePickTheme {
-                    notice?.let { notice ->
+                    notice?.let { notice: Notice ->
                         NoticeDialog(
                             notice = notice,
                             onDismissRequest = ::dismiss,
