@@ -51,6 +51,7 @@ import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
 import io.coursepick.coursepick.presentation.map.kakao.KakaoMapManager
 import io.coursepick.coursepick.presentation.map.kakao.toCoordinate
+import io.coursepick.coursepick.presentation.notice.NoticeDialogFragment
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 import io.coursepick.coursepick.presentation.preference.PreferencesActivity
 import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
@@ -193,6 +194,10 @@ class CoursesActivity :
 
         updateManager = CoursePickUpdateManager(this)
         updateManager.checkForUpdate()
+
+        if (savedInstanceState == null) {
+            showNoticeIfNeeded()
+        }
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -720,6 +725,13 @@ class CoursesActivity :
                     Toast
                         .makeText(this, "코스까지 가는 길을 찾지 못했습니다.", Toast.LENGTH_SHORT)
                         .show()
+
+                is CoursesUiEvent.ShowNotice -> {
+                    NoticeDialogFragment.show(
+                        fragmentManager = supportFragmentManager,
+                        notice = event.notice,
+                    )
+                }
             }
         }
     }
@@ -733,7 +745,22 @@ class CoursesActivity :
         )
     }
 
+    private fun showNoticeIfNeeded() {
+        if (coursePickApplication.hasShownNoticeThisSession) {
+            return
+        }
+
+        val noticeId: String = NOTICE_ID_VERIFIED_LOCATION
+        if (!CoursePickPreferences.shouldShowNotice(noticeId)) {
+            return
+        }
+
+        coursePickApplication.markNoticeAsShown()
+        viewModel.fetchNotice(noticeId)
+    }
+
     private companion object {
         const val COURSE_COLOR_DIALOG_TAG = "CourseColorDescriptionDialog"
+        const val NOTICE_ID_VERIFIED_LOCATION = "verified_location"
     }
 }
