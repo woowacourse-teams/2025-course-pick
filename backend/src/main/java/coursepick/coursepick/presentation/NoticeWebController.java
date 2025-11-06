@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class NoticeWebController implements NoticeWebApi {
 
-    @GetMapping("/notice/{id}")
+    @GetMapping("/notices/{id}")
     public NoticeWebResponse getNotice(@PathVariable("id") String id) {
         return NoticeWebResponse.create(Notice.findById(id));
     }
