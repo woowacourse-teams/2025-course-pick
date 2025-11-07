@@ -5,6 +5,7 @@ import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.domain.fixture.COORDINATE_FIXTURE
 import io.coursepick.coursepick.domain.fixture.COURSE_FIXTURE_20
 import io.coursepick.coursepick.domain.fixture.FAKE_COURSES
+import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.presentation.extension.CoroutinesTestExtension
 import io.coursepick.coursepick.presentation.extension.InstantTaskExecutorExtension
 import io.coursepick.coursepick.presentation.fixtures.FakeCourseRepository
@@ -50,8 +51,17 @@ class CoursesViewModelTest {
                         CourseItem(course, selected = index == 0, favorite = false)
                     },
                 status = UiStatus.Success,
+                verifiedLocations =
+                    Notice(
+                        id = "",
+                        imageUrl = "",
+                        title =
+                            "강남·송파 코스는 저희가 검증했어요\n" +
+                                "다른 지역은 아직 검증 중이에요 🏃",
+                        description = "* 메뉴 탭에서 다시 확인할 수 있어요.",
+                    ),
             )
-        val actual = mainViewModel.state.getOrAwaitValue()
+        val actual: CoursesUiState = mainViewModel.state.getOrAwaitValue()
 
         // then
         Assertions.assertThat(actual).isEqualTo(expected)
@@ -66,6 +76,15 @@ class CoursesViewModelTest {
                     CourseItem(course, selected = course == COURSE_FIXTURE_20, favorite = false)
                 },
                 status = UiStatus.Success,
+                verifiedLocations =
+                    Notice(
+                        id = "",
+                        imageUrl = "",
+                        title =
+                            "강남·송파 코스는 저희가 검증했어요\n" +
+                                "다른 지역은 아직 검증 중이에요 🏃",
+                        description = "* 메뉴 탭에서 다시 확인할 수 있어요.",
+                    ),
             )
 
         // when
@@ -86,6 +105,15 @@ class CoursesViewModelTest {
                     CourseItem(course, selected = course == COURSE_FIXTURE_20, favorite = false)
                 },
                 status = UiStatus.Success,
+                verifiedLocations =
+                    Notice(
+                        id = "",
+                        imageUrl = "",
+                        title =
+                            "강남·송파 코스는 저희가 검증했어요\n" +
+                                "다른 지역은 아직 검증 중이에요 🏃",
+                        description = "* 메뉴 탭에서 다시 확인할 수 있어요.",
+                    ),
             )
 
         // when
