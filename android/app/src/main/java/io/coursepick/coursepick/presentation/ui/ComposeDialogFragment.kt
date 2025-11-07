@@ -16,7 +16,7 @@ import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
  * ```
  * class MyDialogFragment : ComposeDialogFragment() {
  *     @Composable
- *     override fun Content() {
+ *     override fun Dialog() {
  *         Text("Hello World")
  *     }
  * }
