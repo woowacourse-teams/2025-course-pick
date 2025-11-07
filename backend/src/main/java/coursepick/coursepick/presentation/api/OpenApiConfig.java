@@ -64,6 +64,13 @@ public class OpenApiConfig {
                             "timestamp", TIMESTAMP
                     ));
             components.addExamples(NOT_EXIST_COURSE.name(), example);
+
+            example = new Example()
+                    .value(Map.of(
+                            "message", NOT_FOUND_NOTICE.message("notice-2022"),
+                            "timestamp", TIMESTAMP
+                    ));
+            components.addExamples(NOT_FOUND_NOTICE.name(), example);
         };
     }
 }
