@@ -362,11 +362,6 @@ class CoursesViewModel
                     noticeRepository.verifiedLocations()
                 }.onSuccess { verifiedLocations: Notice ->
                     _state.value = state.value?.copy(verifiedLocations = verifiedLocations)
-                }.onFailure { exception: Throwable ->
-                    Logger.log(
-                        Logger.Event.Failure("fetch_verified_locations"),
-                        "message" to exception.message.toString(),
-                    )
                 }
             }
         }
