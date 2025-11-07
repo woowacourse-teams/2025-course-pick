@@ -48,6 +48,10 @@ public enum ErrorType {
             "잘못된 관리자 비밀번호입니다.",
             SecurityException::new
     ),
+    NOT_FOUND_NOTICE(
+            "존재하지 않는 공지 사항입니다. 공지 사항id=%s",
+            NotFoundException::new
+    ),
     ;
 
     private final String message;
