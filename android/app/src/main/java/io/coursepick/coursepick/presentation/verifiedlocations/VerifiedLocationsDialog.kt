@@ -18,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -69,7 +70,7 @@ fun VerifiedLocationsDialog(
                 fontSize = 14.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
-                color = colorResource(R.color.gray4),
+                color = colorResource(R.color.item_secondary),
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -87,7 +88,7 @@ fun VerifiedLocationsDialog(
     }
 }
 
-@Preview(showBackground = true)
+@PreviewLightDark
 @Composable
 private fun VerifiedLocationsDialogPreview() {
     CoursePickTheme {
