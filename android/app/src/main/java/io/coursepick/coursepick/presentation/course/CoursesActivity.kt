@@ -42,6 +42,7 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.domain.course.Scope
+import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.CoursePickUpdateManager
 import io.coursepick.coursepick.presentation.DataKeys
@@ -278,18 +279,18 @@ class CoursesActivity :
     }
 
     private fun showVerifiedLocations() {
-        val verifiedLocations = viewModel.state.value?.verifiedLocations
+        val verifiedLocations: Notice =
+            viewModel.state.value?.verifiedLocations
+                ?: return Toast
+                    .makeText(this, "코스가 검증된 지역 정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT)
+                    .show()
 
-        if (verifiedLocations != null) {
-            VerifiedLocationsDialogFragment.show(
-                fragmentManager = supportFragmentManager,
-                imageUrl = verifiedLocations.imageUrl,
-                title = verifiedLocations.title,
-                description = verifiedLocations.description,
-            )
-        } else {
-            Toast.makeText(this, "정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show()
-        }
+        VerifiedLocationsDialogFragment.show(
+            fragmentManager = supportFragmentManager,
+            imageUrl = verifiedLocations.imageUrl,
+            title = verifiedLocations.title,
+            description = verifiedLocations.description,
+        )
     }
 
     override fun search() {
