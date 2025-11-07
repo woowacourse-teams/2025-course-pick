@@ -31,7 +31,7 @@ class NoticeDialogFragment : ComposeDialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        notice = arguments?.getSerializableCompat<Notice>(ARGUMENT_NOTICE)
+        notice = arguments?.getSerializableCompat(ARGUMENT_NOTICE)
 
         if (notice == null) {
             dismiss()
