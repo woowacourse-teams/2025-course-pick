@@ -618,7 +618,8 @@
             <div class="map-controls">
                 <h3>편집 가이드</h3>
                 <p>지도 위의 마커를 드래그하여 코스 좌표를 수정할 수 있습니다.</p>
-                <p>변경사항은 자동으로 저장됩니다.</p>
+                <p><strong>Shift + 클릭</strong>으로 마커를 다중 선택하고, 선택된 마커를 함께 드래그할 수 있습니다.</p>
+                <p>변경사항은 저장 버튼을 눌러야 저장됩니다.</p>
                 <button class="control-button secondary" onclick="resetChanges()">변경사항 초기화</button>
             </div>
         </div>
@@ -683,6 +684,10 @@
     let isInitialLoad = true; // 초기 로드 여부 플래그
     let selectedCoordinates = new Set(); // 선택된 좌표 (seg-idx_coord-idx 형식)
     let currentEditingCoord = null; // 현재 수정 중인 좌표 {segIdx, coordIdx}
+    let isShiftPressed = false; // Shift 키 눌림 상태
+    let isDraggingMultiple = false; // 다중 마커 드래그 중 상태
+    let dragStartPosition = null; // 드래그 시작 위치
+    let selectedMarkersInitialPositions = new Map(); // 선택된 마커들의 초기 위치 저장
 
     // 마커 이미지 설정
     let normalMarkerImage;
@@ -691,12 +696,30 @@
     // 페이지 초기화
     initializePage();
 
+    // Shift 키 및 ESC 키 이벤트 리스너
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Shift') {
+            isShiftPressed = true;
+        } else if (e.key === 'Escape') {
+            const modal = document.getElementById('coordinate-edit-modal');
+            if (modal && modal.classList.contains('active')) {
+                closeCoordinateModal();
+            }
+        }
+    });
+
+    document.addEventListener('keyup', function (e) {
+        if (e.key === 'Shift') {
+            isShiftPressed = false;
+        }
+    });
+
     async function initializePage() {
         // 카카오 맵 초기화
         const mapContainer = document.getElementById('map');
         const mapOption = {
             center: new kakao.maps.LatLng(37.5665, 126.9780),
-            level: 5
+            level: 1 // 최대 확대 레벨
         };
 
         map = new kakao.maps.Map(mapContainer, mapOption);
@@ -973,10 +996,91 @@
                         // image를 설정하지 않아 카카오맵 기본 마커 사용
                     });
 
-                    // 마커 드래그 이벤트
+                    // 마커 클릭 이벤트 (Shift + 클릭으로 다중 선택)
+                    kakao.maps.event.addListener(marker, 'click', function () {
+                        if (isShiftPressed) {
+                            const coordId = `${segmentIndex}_${coordIndex}`;
+                            const checkbox = document.getElementById(`checkbox-${coordId}`);
+                            if (checkbox) {
+                                checkbox.checked = !checkbox.checked;
+                                toggleCoordinate(segmentIndex, coordIndex);
+                            }
+                        }
+                    });
+
+                    // 마커 드래그 시작 이벤트
+                    kakao.maps.event.addListener(marker, 'dragstart', function () {
+                        const coordId = `${segmentIndex}_${coordIndex}`;
+                        if (selectedCoordinates.has(coordId) && selectedCoordinates.size > 1) {
+                            // 선택된 마커를 드래그하는 경우 다중 드래그 모드
+                            isDraggingMultiple = true;
+                            dragStartPosition = marker.getPosition();
+
+                            // 모든 선택된 마커의 초기 위치 저장
+                            selectedMarkersInitialPositions.clear();
+                            selectedCoordinates.forEach(selectedCoordId => {
+                                const [segIdx, coordIdx] = selectedCoordId.split('_').map(Number);
+                                const markerInfo = markers.find(m =>
+                                    m.segmentIndex === segIdx && m.coordIndex === coordIdx
+                                );
+                                if (markerInfo) {
+                                    selectedMarkersInitialPositions.set(selectedCoordId, markerInfo.marker.getPosition());
+                                }
+                            });
+                        } else {
+                            isDraggingMultiple = false;
+                            selectedMarkersInitialPositions.clear();
+                        }
+                    });
+
+                    // 마커 드래그 중 이벤트
+                    kakao.maps.event.addListener(marker, 'drag', function () {
+                        if (isDraggingMultiple && dragStartPosition && selectedMarkersInitialPositions.size > 0) {
+                            const currentPosition = marker.getPosition();
+                            // 드래그 시작 위치로부터의 전체 이동량 계산
+                            const totalLatDiff = currentPosition.getLat() - dragStartPosition.getLat();
+                            const totalLngDiff = currentPosition.getLng() - dragStartPosition.getLng();
+
+                            // 선택된 다른 마커들도 함께 이동
+                            selectedCoordinates.forEach(coordId => {
+                                const [segIdx, coordIdx] = coordId.split('_').map(Number);
+                                // 현재 드래그 중인 마커는 제외
+                                if (segIdx === segmentIndex && coordIdx === coordIndex) {
+                                    return;
+                                }
+
+                                const initialPosition = selectedMarkersInitialPositions.get(coordId);
+                                if (initialPosition) {
+                                    const markerInfo = markers.find(m =>
+                                        m.segmentIndex === segIdx && m.coordIndex === coordIdx
+                                    );
+                                    if (markerInfo) {
+                                        // 초기 위치 + 전체 이동량으로 새 위치 계산
+                                        const newPos = new kakao.maps.LatLng(
+                                            initialPosition.getLat() + totalLatDiff,
+                                            initialPosition.getLng() + totalLngDiff
+                                        );
+                                        markerInfo.marker.setPosition(newPos);
+                                    }
+                                }
+                            });
+                        }
+                    });
+
+                    // 마커 드래그 종료 이벤트
                     kakao.maps.event.addListener(marker, 'dragend', function () {
                         const newPosition = marker.getPosition();
-                        onMarkerDragEnd(segmentIndex, coordIndex, newPosition);
+                        if (isDraggingMultiple) {
+                            // 다중 드래그인 경우 모든 선택된 좌표 업데이트
+                            onMultipleMarkersDragEnd();
+                        } else {
+                            // 단일 마커 드래그
+                            onMarkerDragEnd(segmentIndex, coordIndex, newPosition);
+                        }
+                        // 상태 초기화
+                        isDraggingMultiple = false;
+                        dragStartPosition = null;
+                        selectedMarkersInitialPositions.clear();
                     });
 
                     // 마커 오른쪽 클릭 이벤트
@@ -1002,6 +1106,77 @@
         } catch (error) {
             showMessage('지도에 코스를 그리는 중 오류가 발생했습니다: ' + error.message, 'error');
         }
+    }
+
+    // 다중 마커 드래그 종료 시 처리
+    function onMultipleMarkersDragEnd() {
+        const affectedSegments = new Set();
+
+        // 모든 선택된 마커의 현재 위치를 좌표 데이터에 반영
+        selectedCoordinates.forEach(coordId => {
+            const [segIdx, coordIdx] = coordId.split('_').map(Number);
+            const markerInfo = markers.find(m =>
+                m.segmentIndex === segIdx && m.coordIndex === coordIdx
+            );
+
+            if (markerInfo) {
+                const currentPos = markerInfo.marker.getPosition();
+                const segment = course.segments[segIdx];
+                const isFirstCoord = coordIdx === 0;
+                const isLastCoord = coordIdx === segment.coordinates.length - 1;
+
+                // 좌표 데이터 업데이트
+                segment.coordinates[coordIdx].latitude = currentPos.getLat();
+                segment.coordinates[coordIdx].longitude = currentPos.getLng();
+                affectedSegments.add(segIdx);
+
+                // 세그먼트 경계 좌표인 경우 인접 세그먼트도 업데이트
+                if (isFirstCoord && segIdx > 0) {
+                    const prevSegment = course.segments[segIdx - 1];
+                    const prevLastIndex = prevSegment.coordinates.length - 1;
+                    prevSegment.coordinates[prevLastIndex].latitude = currentPos.getLat();
+                    prevSegment.coordinates[prevLastIndex].longitude = currentPos.getLng();
+                    affectedSegments.add(segIdx - 1);
+
+                    // 이전 세그먼트의 마지막 마커도 업데이트 (선택되지 않은 경우)
+                    const prevCoordId = `${segIdx - 1}_${prevLastIndex}`;
+                    if (!selectedCoordinates.has(prevCoordId)) {
+                        const prevMarkerInfo = markers.find(m =>
+                            m.segmentIndex === segIdx - 1 && m.coordIndex === prevLastIndex
+                        );
+                        if (prevMarkerInfo) {
+                            prevMarkerInfo.marker.setPosition(currentPos);
+                        }
+                    }
+                }
+
+                if (isLastCoord && segIdx < course.segments.length - 1) {
+                    const nextSegment = course.segments[segIdx + 1];
+                    nextSegment.coordinates[0].latitude = currentPos.getLat();
+                    nextSegment.coordinates[0].longitude = currentPos.getLng();
+                    affectedSegments.add(segIdx + 1);
+
+                    // 다음 세그먼트의 첫 번째 마커도 업데이트 (선택되지 않은 경우)
+                    const nextCoordId = `${segIdx + 1}_0`;
+                    if (!selectedCoordinates.has(nextCoordId)) {
+                        const nextMarkerInfo = markers.find(m =>
+                            m.segmentIndex === segIdx + 1 && m.coordIndex === 0
+                        );
+                        if (nextMarkerInfo) {
+                            nextMarkerInfo.marker.setPosition(currentPos);
+                        }
+                    }
+                }
+            }
+        });
+
+        // 영향받은 세그먼트의 폴리라인 업데이트
+        updateSegmentPolylines(Array.from(affectedSegments));
+
+        // 좌표 목록 UI 업데이트
+        displayCoordinatesList();
+
+        showMessage(`${selectedCoordinates.size}개의 좌표가 함께 이동되었습니다.`, 'success');
     }
 
     // 마커 드래그 종료 시 처리
@@ -1864,15 +2039,7 @@
         }
     });
 
-    // ESC 키로 모달 닫기
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') {
-            const modal = document.getElementById('coordinate-edit-modal');
-            if (modal.classList.contains('active')) {
-                closeCoordinateModal();
-            }
-        }
-    });
+    // ESC 키로 모달 닫기 (이미 위에서 keydown 이벤트에 통합됨)
 
     // Enter 키로 모달 저장
     document.getElementById('coordinate-edit-modal').addEventListener('keydown', function (e) {
