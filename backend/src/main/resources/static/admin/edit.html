@@ -611,6 +611,38 @@
         .modal-button.danger:hover {
             background: #c53030;
         }
+
+        /* 선택 해제 버튼 */
+        .clear-selection-button {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            padding: 12px 24px;
+            background: white;
+            color: #2d3748;
+            border: 2px solid #2d3748;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+
+        .clear-selection-button:hover {
+            background: #2d3748;
+            color: white;
+        }
+
+        .clear-selection-button:active {
+            transform: scale(0.98);
+        }
+
+        .clear-selection-button.visible {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -626,6 +658,7 @@
         <div class="map-section">
             <div id="map"></div>
             <div id="selection-box" class="selection-box"></div>
+            <button id="clear-selection-btn" class="clear-selection-button" onclick="clearAllSelections()">선택 해제 (ESC)</button>
             <div class="map-controls">
                 <h3>편집 가이드</h3>
                 <p>지도 위의 마커를 드래그하여 코스 좌표를 수정할 수 있습니다.</p>
@@ -763,6 +796,8 @@
             const modal = document.getElementById('coordinate-edit-modal');
             if (modal && modal.classList.contains('active')) {
                 closeCoordinateModal();
+            } else if (selectedCoordinates.size > 0) {
+                clearAllSelections();
             }
         }
     });
@@ -908,19 +943,19 @@
         mapContainer.addEventListener('mouseup', completeAreaSelection);
 
         // 마커 이미지 초기화
-        const dotSize = new kakao.maps.Size(5.2, 5.2); // 점 크기 (30% 증가: 4 * 1.3 = 5.2)
-        const pinSize = new kakao.maps.Size(16, 24); // 핀 크기
+        const dotSize = new kakao.maps.Size(6.76, 6.76); // 점 크기 (30% 증가: 5.2 * 1.3 = 6.76)
+        const pinSize = new kakao.maps.Size(20.8, 31.2); // 핀 크기 (30% 증가: 16 * 1.3 = 20.8, 24 * 1.3 = 31.2)
 
         // 점 형태 마커 (SVG로 작은 원 생성)
         const normalDotSvg = `data:image/svg+xml;base64,${btoa(`
-            <svg xmlns="http://www.w3.org/2000/svg" width="5.2" height="5.2">
-                <circle cx="2.6" cy="2.6" r="2.6" fill="#4A90E2" stroke="white" stroke-width="0.65"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="6.76" height="6.76">
+                <circle cx="3.38" cy="3.38" r="3.38" fill="#4A90E2" stroke="white" stroke-width="0.845"/>
             </svg>
         `)}`;
 
         const selectedDotSvg = `data:image/svg+xml;base64,${btoa(`
-            <svg xmlns="http://www.w3.org/2000/svg" width="5.2" height="5.2">
-                <circle cx="2.6" cy="2.6" r="2.6" fill="#FF0000" stroke="white" stroke-width="0.65"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="6.76" height="6.76">
+                <circle cx="3.38" cy="3.38" r="3.38" fill="#FF0000" stroke="white" stroke-width="0.845"/>
             </svg>
         `)}`;
 
@@ -1711,6 +1746,7 @@
         const showOnMapBtn = document.getElementById('show-on-map-btn');
         const bulkEditBtn = document.getElementById('bulk-edit-btn');
         const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
+        const clearSelectionBtn = document.getElementById('clear-selection-btn');
 
         const hasSelection = selectedCoordinates.size > 0;
 
@@ -1722,6 +1758,13 @@
         }
         if (bulkDeleteBtn) {
             bulkDeleteBtn.disabled = !hasSelection;
+        }
+        if (clearSelectionBtn) {
+            if (hasSelection) {
+                clearSelectionBtn.classList.add('visible');
+            } else {
+                clearSelectionBtn.classList.remove('visible');
+            }
         }
     }
 
