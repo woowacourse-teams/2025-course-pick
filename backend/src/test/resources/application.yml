@@ -11,3 +11,6 @@ de.flapdoodle.mongodb.embedded.version: 8.0.12
 admin:
   token: secret
   kakao-map-api-key: secret
+
+notice:
+  base-url: http://localhost:8080/images
