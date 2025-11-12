@@ -312,6 +312,16 @@
             cursor: move;
         }
 
+        /* 영역 선택 스타일 */
+        .selection-box {
+            position: absolute;
+            border: 2px solid #4A90E2;
+            background-color: rgba(74, 144, 226, 0.2);
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+        }
+
         .coordinates-section {
             background: white;
             padding: 30px;
@@ -615,6 +625,7 @@
     <div class="content">
         <div class="map-section">
             <div id="map"></div>
+            <div id="selection-box" class="selection-box"></div>
             <div class="map-controls">
                 <h3>편집 가이드</h3>
                 <p>지도 위의 마커를 드래그하여 코스 좌표를 수정할 수 있습니다.</p>
@@ -691,9 +702,16 @@
     let dragAnimationFrameId = null; // 드래그 애니메이션 프레임 ID
     let currentDraggingMarker = null; // 현재 드래그 중인 마커
 
+    // 영역 선택 관련 변수
+    let isAreaSelecting = false; // 영역 선택 중 여부
+    let areaSelectionStart = null; // 영역 선택 시작 지점 {x, y}
+    let selectionBox = document.getElementById('selection-box'); // 선택 영역 DOM 요소
+
     // 마커 이미지 설정
-    let normalMarkerImage;
-    let selectedMarkerImage;
+    let normalMarkerImage; // 일반 마커 (점 형태)
+    let selectedMarkerImage; // 선택된 마커 (점 형태)
+    let normalMarkerImagePin; // 일반 마커 핀 형태
+    let selectedMarkerImagePin; // 선택된 마커 핀 형태
 
     // 페이지 초기화
     initializePage();
@@ -737,6 +755,10 @@
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Shift') {
             isShiftPressed = true;
+            // Shift 누르면 지도 드래그 비활성화
+            if (map) {
+                map.setDraggable(false);
+            }
         } else if (e.key === 'Escape') {
             const modal = document.getElementById('coordinate-edit-modal');
             if (modal && modal.classList.contains('active')) {
@@ -748,8 +770,127 @@
     document.addEventListener('keyup', function (e) {
         if (e.key === 'Shift') {
             isShiftPressed = false;
+            // Shift 떼면 지도 드래그 활성화
+            if (map) {
+                map.setDraggable(true);
+            }
+            // 영역 선택 중이었다면 취소
+            if (isAreaSelecting) {
+                cancelAreaSelection();
+            }
         }
     });
+
+    // 영역 선택 시작
+    function startAreaSelection(e) {
+        if (!isShiftPressed) return;
+
+        const mapContainer = document.getElementById('map');
+        const rect = mapContainer.getBoundingClientRect();
+
+        areaSelectionStart = {
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top
+        };
+
+        isAreaSelecting = true;
+
+        // 선택 박스 초기화
+        selectionBox.style.left = areaSelectionStart.x + 'px';
+        selectionBox.style.top = areaSelectionStart.y + 'px';
+        selectionBox.style.width = '0px';
+        selectionBox.style.height = '0px';
+        selectionBox.style.display = 'block';
+    }
+
+    // 영역 선택 업데이트
+    function updateAreaSelection(e) {
+        if (!isAreaSelecting || !areaSelectionStart) return;
+
+        const mapContainer = document.getElementById('map');
+        const rect = mapContainer.getBoundingClientRect();
+
+        const currentX = e.clientX - rect.left;
+        const currentY = e.clientY - rect.top;
+
+        const width = Math.abs(currentX - areaSelectionStart.x);
+        const height = Math.abs(currentY - areaSelectionStart.y);
+        const left = Math.min(currentX, areaSelectionStart.x);
+        const top = Math.min(currentY, areaSelectionStart.y);
+
+        selectionBox.style.left = left + 'px';
+        selectionBox.style.top = top + 'px';
+        selectionBox.style.width = width + 'px';
+        selectionBox.style.height = height + 'px';
+    }
+
+    // 영역 선택 완료
+    function completeAreaSelection(e) {
+        if (!isAreaSelecting || !areaSelectionStart) return;
+
+        const mapContainer = document.getElementById('map');
+        const rect = mapContainer.getBoundingClientRect();
+
+        const currentX = e.clientX - rect.left;
+        const currentY = e.clientY - rect.top;
+
+        const selectionRect = {
+            left: Math.min(currentX, areaSelectionStart.x),
+            top: Math.min(currentY, areaSelectionStart.y),
+            right: Math.max(currentX, areaSelectionStart.x),
+            bottom: Math.max(currentY, areaSelectionStart.y)
+        };
+
+        // 선택 영역 내의 마커 찾기
+        const selectedCount = selectMarkersInRect(selectionRect, rect);
+
+        // 선택 박스 숨기기
+        selectionBox.style.display = 'none';
+        isAreaSelecting = false;
+        areaSelectionStart = null;
+
+        if (selectedCount > 0) {
+            showMessage(`${selectedCount}개의 좌표가 선택되었습니다.`, 'success');
+        }
+    }
+
+    // 영역 선택 취소
+    function cancelAreaSelection() {
+        selectionBox.style.display = 'none';
+        isAreaSelecting = false;
+        areaSelectionStart = null;
+    }
+
+    // 사각형 영역 내의 마커 선택
+    function selectMarkersInRect(selectionRect, mapRect) {
+        let selectedCount = 0;
+
+        markers.forEach(markerInfo => {
+            const marker = markerInfo.marker;
+            const position = marker.getPosition();
+
+            // 지도 좌표를 화면 좌표로 변환
+            const projection = map.getProjection();
+            const point = projection.containerPointFromCoords(position);
+
+            // 선택 영역 내에 있는지 확인
+            if (point.x >= selectionRect.left && point.x <= selectionRect.right &&
+                point.y >= selectionRect.top && point.y <= selectionRect.bottom) {
+
+                const coordId = `${markerInfo.segmentIndex}_${markerInfo.coordIndex}`;
+                const checkbox = document.getElementById(`checkbox-${coordId}`);
+
+                // 이미 선택되어 있지 않다면 선택
+                if (checkbox && !checkbox.checked) {
+                    checkbox.checked = true;
+                    toggleCoordinate(markerInfo.segmentIndex, markerInfo.coordIndex);
+                    selectedCount++;
+                }
+            }
+        });
+
+        return selectedCount;
+    }
 
     async function initializePage() {
         // 카카오 맵 초기화
@@ -761,14 +902,39 @@
 
         map = new kakao.maps.Map(mapContainer, mapOption);
 
+        // 영역 선택을 위한 마우스 이벤트 리스너 추가
+        mapContainer.addEventListener('mousedown', startAreaSelection);
+        mapContainer.addEventListener('mousemove', updateAreaSelection);
+        mapContainer.addEventListener('mouseup', completeAreaSelection);
+
         // 마커 이미지 초기화
-        const imageSize = new kakao.maps.Size(24, 35);
-        // normalMarkerImage는 null (카카오맵 기본 마커 사용)
-        normalMarkerImage = null;
-        // selectedMarkerImage는 빨간색 마커
-        selectedMarkerImage = new kakao.maps.MarkerImage(
-                'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',
-                imageSize
+        const dotSize = new kakao.maps.Size(5.2, 5.2); // 점 크기 (30% 증가: 4 * 1.3 = 5.2)
+        const pinSize = new kakao.maps.Size(16, 24); // 핀 크기
+
+        // 점 형태 마커 (SVG로 작은 원 생성)
+        const normalDotSvg = `data:image/svg+xml;base64,${btoa(`
+            <svg xmlns="http://www.w3.org/2000/svg" width="5.2" height="5.2">
+                <circle cx="2.6" cy="2.6" r="2.6" fill="#4A90E2" stroke="white" stroke-width="0.65"/>
+            </svg>
+        `)}`;
+
+        const selectedDotSvg = `data:image/svg+xml;base64,${btoa(`
+            <svg xmlns="http://www.w3.org/2000/svg" width="5.2" height="5.2">
+                <circle cx="2.6" cy="2.6" r="2.6" fill="#FF0000" stroke="white" stroke-width="0.65"/>
+            </svg>
+        `)}`;
+
+        normalMarkerImage = new kakao.maps.MarkerImage(normalDotSvg, dotSize);
+        selectedMarkerImage = new kakao.maps.MarkerImage(selectedDotSvg, dotSize);
+
+        // 핀 형태 마커
+        normalMarkerImagePin = new kakao.maps.MarkerImage(
+            'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png',
+            pinSize
+        );
+        selectedMarkerImagePin = new kakao.maps.MarkerImage(
+            'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',
+            pinSize
         );
 
         // 코스 정보 로드
@@ -1029,25 +1195,58 @@
                     const marker = new kakao.maps.Marker({
                         position: position,
                         draggable: true,
-                        map: map
-                        // image를 설정하지 않아 카카오맵 기본 마커 사용
+                        map: map,
+                        image: normalMarkerImage // 점 형태로 시작
                     });
 
                     // 마커 클릭 이벤트 (Shift + 클릭으로 다중 선택)
                     kakao.maps.event.addListener(marker, 'click', function () {
+                        const coordId = `${segmentIndex}_${coordIndex}`;
+                        const checkbox = document.getElementById(`checkbox-${coordId}`);
+
                         if (isShiftPressed) {
-                            const coordId = `${segmentIndex}_${coordIndex}`;
-                            const checkbox = document.getElementById(`checkbox-${coordId}`);
+                            // Shift 누른 상태: 토글 (기존 선택 유지)
                             if (checkbox) {
                                 checkbox.checked = !checkbox.checked;
+                                toggleCoordinate(segmentIndex, coordIndex);
+                            }
+                        } else {
+                            // Shift 안 누른 상태: 기존 선택 모두 해제 후 현재 마커만 선택
+                            clearAllSelections();
+                            if (checkbox) {
+                                checkbox.checked = true;
                                 toggleCoordinate(segmentIndex, coordIndex);
                             }
                         }
                     });
 
+                    // 마커 마우스오버 이벤트 (점 → 핀)
+                    kakao.maps.event.addListener(marker, 'mouseover', function () {
+                        const coordId = `${segmentIndex}_${coordIndex}`;
+                        const isSelected = selectedCoordinates.has(coordId);
+                        const pinImage = isSelected ? selectedMarkerImagePin : normalMarkerImagePin;
+                        marker.setImage(pinImage);
+                        marker.setZIndex(2000); // 가장 위에 표시
+                    });
+
+                    // 마커 마우스아웃 이벤트 (핀 → 점)
+                    kakao.maps.event.addListener(marker, 'mouseout', function () {
+                        const coordId = `${segmentIndex}_${coordIndex}`;
+                        const isSelected = selectedCoordinates.has(coordId);
+                        const dotImage = isSelected ? selectedMarkerImage : normalMarkerImage;
+                        marker.setImage(dotImage);
+                        marker.setZIndex(isSelected ? 1000 : 1);
+                    });
+
                     // 마커 드래그 시작 이벤트
                     kakao.maps.event.addListener(marker, 'dragstart', function () {
                         const coordId = `${segmentIndex}_${coordIndex}`;
+                        const isSelected = selectedCoordinates.has(coordId);
+
+                        // 드래그 시작 시 핀 형태로 변경
+                        const pinImage = isSelected ? selectedMarkerImagePin : normalMarkerImagePin;
+                        marker.setImage(pinImage);
+
                         if (selectedCoordinates.has(coordId) && selectedCoordinates.size > 1) {
                             // 선택된 마커를 드래그하는 경우 다중 드래그 모드
                             isDraggingMultiple = true;
@@ -1070,6 +1269,9 @@
                                         selectedCoordId,
                                         new kakao.maps.LatLng(pos.getLat(), pos.getLng())
                                     );
+
+                                    // 선택된 다른 마커들도 핀 형태로 변경
+                                    markerInfo.marker.setImage(selectedMarkerImagePin);
                                 }
                             });
 
@@ -1092,12 +1294,29 @@
                         }
 
                         const newPosition = marker.getPosition();
+                        const coordId = `${segmentIndex}_${coordIndex}`;
+                        const isSelected = selectedCoordinates.has(coordId);
+
                         if (isDraggingMultiple) {
                             // 다중 드래그인 경우 모든 선택된 좌표 업데이트
                             onMultipleMarkersDragEnd();
+
+                            // 모든 선택된 마커를 점 형태로 복원
+                            selectedCoordinates.forEach(selectedCoordId => {
+                                const markerInfo = markers.find(m => {
+                                    const mCoordId = `${m.segmentIndex}_${m.coordIndex}`;
+                                    return mCoordId === selectedCoordId;
+                                });
+                                if (markerInfo) {
+                                    markerInfo.marker.setImage(selectedMarkerImage);
+                                }
+                            });
                         } else {
                             // 단일 마커 드래그
                             onMarkerDragEnd(segmentIndex, coordIndex, newPosition);
+                            // 점 형태로 복원
+                            const dotImage = isSelected ? selectedMarkerImage : normalMarkerImage;
+                            marker.setImage(dotImage);
                         }
                         // 상태 초기화
                         isDraggingMultiple = false;
@@ -1344,6 +1563,41 @@
             drawCourseOnMap();
             showMessage('변경사항이 초기화되었습니다.', 'success');
         }
+    }
+
+    // 모든 선택 해제
+    function clearAllSelections() {
+        // 선택된 모든 좌표를 배열로 복사 (Set을 순회하면서 삭제하면 문제가 생김)
+        const selectedArray = Array.from(selectedCoordinates);
+
+        selectedArray.forEach(coordId => {
+            const [segIdx, coordIdx] = coordId.split('_').map(Number);
+            const row = document.getElementById(`coord-row-${coordId}`);
+            const checkbox = document.getElementById(`checkbox-${coordId}`);
+
+            if (checkbox) {
+                checkbox.checked = false;
+            }
+            if (row) {
+                row.classList.remove('selected');
+            }
+
+            // 마커 찾기
+            const markerInfo = markers.find(m =>
+                m.segmentIndex === segIdx && m.coordIndex === coordIdx
+            );
+
+            // 마커 이미지를 기본 이미지로 변경
+            if (markerInfo && normalMarkerImage) {
+                markerInfo.marker.setImage(normalMarkerImage);
+                markerInfo.marker.setZIndex(1);
+            }
+        });
+
+        // 선택 상태 초기화
+        selectedCoordinates.clear();
+        updateBulkActionButtons();
+        updateSelectAllCheckbox();
     }
 
     // 좌표 선택/해제
@@ -1689,8 +1943,8 @@
             return b.coordIdx - a.coordIdx;
         });
 
-        // 세그먼트 경계 좌표 처리를 위한 Set
-        const processedBoundaries = new Set();
+        // 삭제할 좌표를 Set으로 변환 (빠른 검색을 위해)
+        const coordsToDeleteSet = new Set(selectedCoordinates);
 
         // 역순으로 삭제 (인덱스 변경 문제 방지)
         coordsToDelete.forEach(({segIdx, coordIdx}) => {
@@ -1699,24 +1953,39 @@
                 return; // 이미 삭제된 경우 스킵
             }
 
+            const coordToDelete = segment.coordinates[coordIdx];
             const isFirstCoord = coordIdx === 0;
             const isLastCoord = coordIdx === segment.coordinates.length - 1;
-            const boundaryKey = `${segIdx}_${coordIdx}`;
 
             // 세그먼트 경계 좌표인 경우 인접 세그먼트에서도 삭제
-            if (isFirstCoord && segIdx > 0 && !processedBoundaries.has(boundaryKey)) {
+            if (isFirstCoord && segIdx > 0) {
                 const prevSegment = course.segments[segIdx - 1];
-                if (prevSegment && prevSegment.coordinates.length > 0) {
-                    prevSegment.coordinates.pop(); // 마지막 좌표 제거
-                    processedBoundaries.add(boundaryKey);
+                const prevLastIdx = prevSegment.coordinates.length - 1;
+                const prevCoordId = `${segIdx - 1}_${prevLastIdx}`;
+
+                // 대응하는 경계 좌표가 삭제 목록에 없을 때만 삭제
+                if (prevSegment && prevSegment.coordinates.length > 0 && !coordsToDeleteSet.has(prevCoordId)) {
+                    // 실제로 같은 좌표인지 확인 (lat, lng 비교)
+                    const prevLastCoord = prevSegment.coordinates[prevLastIdx];
+                    if (prevLastCoord.latitude === coordToDelete.latitude &&
+                        prevLastCoord.longitude === coordToDelete.longitude) {
+                        prevSegment.coordinates.pop(); // 마지막 좌표 제거
+                    }
                 }
             }
 
-            if (isLastCoord && segIdx < course.segments.length - 1 && !processedBoundaries.has(boundaryKey)) {
+            if (isLastCoord && segIdx < course.segments.length - 1) {
+                const nextCoordId = `${segIdx + 1}_0`;
+
+                // 대응하는 경계 좌표가 삭제 목록에 없을 때만 삭제
                 const nextSegment = course.segments[segIdx + 1];
-                if (nextSegment && nextSegment.coordinates.length > 0) {
-                    nextSegment.coordinates.shift(); // 첫 번째 좌표 제거
-                    processedBoundaries.add(boundaryKey);
+                if (nextSegment && nextSegment.coordinates.length > 0 && !coordsToDeleteSet.has(nextCoordId)) {
+                    // 실제로 같은 좌표인지 확인 (lat, lng 비교)
+                    const nextFirstCoord = nextSegment.coordinates[0];
+                    if (nextFirstCoord.latitude === coordToDelete.latitude &&
+                        nextFirstCoord.longitude === coordToDelete.longitude) {
+                        nextSegment.coordinates.shift(); // 첫 번째 좌표 제거
+                    }
                 }
             }
 
