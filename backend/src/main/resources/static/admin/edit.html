@@ -688,6 +688,8 @@
     let isDraggingMultiple = false; // 다중 마커 드래그 중 상태
     let dragStartPosition = null; // 드래그 시작 위치
     let selectedMarkersInitialPositions = new Map(); // 선택된 마커들의 초기 위치 저장
+    let dragAnimationFrameId = null; // 드래그 애니메이션 프레임 ID
+    let currentDraggingMarker = null; // 현재 드래그 중인 마커
 
     // 마커 이미지 설정
     let normalMarkerImage;
@@ -695,6 +697,41 @@
 
     // 페이지 초기화
     initializePage();
+
+    // 다중 드래그 중 마커 위치 업데이트 함수
+    function updateMultipleDragPositions() {
+        if (!isDraggingMultiple || !currentDraggingMarker || !dragStartPosition) {
+            return;
+        }
+
+        const currentPosition = currentDraggingMarker.getPosition();
+        const totalLatDiff = currentPosition.getLat() - dragStartPosition.getLat();
+        const totalLngDiff = currentPosition.getLng() - dragStartPosition.getLng();
+
+        // 선택된 다른 마커들도 함께 이동
+        selectedCoordinates.forEach(coordId => {
+            const initialPosition = selectedMarkersInitialPositions.get(coordId);
+            if (initialPosition) {
+                const markerInfo = markers.find(m => {
+                    const mCoordId = `${m.segmentIndex}_${m.coordIndex}`;
+                    return mCoordId === coordId;
+                });
+
+                if (markerInfo && markerInfo.marker !== currentDraggingMarker) {
+                    const newPos = new kakao.maps.LatLng(
+                        initialPosition.getLat() + totalLatDiff,
+                        initialPosition.getLng() + totalLngDiff
+                    );
+                    markerInfo.marker.setPosition(newPos);
+                }
+            }
+        });
+
+        // 다음 프레임에서 다시 실행
+        if (isDraggingMultiple) {
+            dragAnimationFrameId = requestAnimationFrame(updateMultipleDragPositions);
+        }
+    }
 
     // Shift 키 및 ESC 키 이벤트 리스너
     document.addEventListener('keydown', function (e) {
@@ -1014,7 +1051,10 @@
                         if (selectedCoordinates.has(coordId) && selectedCoordinates.size > 1) {
                             // 선택된 마커를 드래그하는 경우 다중 드래그 모드
                             isDraggingMultiple = true;
-                            dragStartPosition = marker.getPosition();
+                            currentDraggingMarker = marker;
+                            const startPos = marker.getPosition();
+                            // 위치 복사 (참조가 아닌 새로운 객체 생성)
+                            dragStartPosition = new kakao.maps.LatLng(startPos.getLat(), startPos.getLng());
 
                             // 모든 선택된 마커의 초기 위치 저장
                             selectedMarkersInitialPositions.clear();
@@ -1024,51 +1064,33 @@
                                     m.segmentIndex === segIdx && m.coordIndex === coordIdx
                                 );
                                 if (markerInfo) {
-                                    selectedMarkersInitialPositions.set(selectedCoordId, markerInfo.marker.getPosition());
+                                    const pos = markerInfo.marker.getPosition();
+                                    // 위치 복사 (참조가 아닌 새로운 객체 생성)
+                                    selectedMarkersInitialPositions.set(
+                                        selectedCoordId,
+                                        new kakao.maps.LatLng(pos.getLat(), pos.getLng())
+                                    );
                                 }
                             });
+
+                            // 드래그 업데이트 시작
+                            dragAnimationFrameId = requestAnimationFrame(updateMultipleDragPositions);
                         } else {
                             isDraggingMultiple = false;
+                            currentDraggingMarker = null;
                             selectedMarkersInitialPositions.clear();
                         }
                     });
 
-                    // 마커 드래그 중 이벤트
-                    kakao.maps.event.addListener(marker, 'drag', function () {
-                        if (isDraggingMultiple && dragStartPosition && selectedMarkersInitialPositions.size > 0) {
-                            const currentPosition = marker.getPosition();
-                            // 드래그 시작 위치로부터의 전체 이동량 계산
-                            const totalLatDiff = currentPosition.getLat() - dragStartPosition.getLat();
-                            const totalLngDiff = currentPosition.getLng() - dragStartPosition.getLng();
-
-                            // 선택된 다른 마커들도 함께 이동
-                            selectedCoordinates.forEach(coordId => {
-                                const [segIdx, coordIdx] = coordId.split('_').map(Number);
-                                // 현재 드래그 중인 마커는 제외
-                                if (segIdx === segmentIndex && coordIdx === coordIndex) {
-                                    return;
-                                }
-
-                                const initialPosition = selectedMarkersInitialPositions.get(coordId);
-                                if (initialPosition) {
-                                    const markerInfo = markers.find(m =>
-                                        m.segmentIndex === segIdx && m.coordIndex === coordIdx
-                                    );
-                                    if (markerInfo) {
-                                        // 초기 위치 + 전체 이동량으로 새 위치 계산
-                                        const newPos = new kakao.maps.LatLng(
-                                            initialPosition.getLat() + totalLatDiff,
-                                            initialPosition.getLng() + totalLngDiff
-                                        );
-                                        markerInfo.marker.setPosition(newPos);
-                                    }
-                                }
-                            });
-                        }
-                    });
 
                     // 마커 드래그 종료 이벤트
                     kakao.maps.event.addListener(marker, 'dragend', function () {
+                        // 애니메이션 프레임 취소
+                        if (dragAnimationFrameId) {
+                            cancelAnimationFrame(dragAnimationFrameId);
+                            dragAnimationFrameId = null;
+                        }
+
                         const newPosition = marker.getPosition();
                         if (isDraggingMultiple) {
                             // 다중 드래그인 경우 모든 선택된 좌표 업데이트
@@ -1079,6 +1101,7 @@
                         }
                         // 상태 초기화
                         isDraggingMultiple = false;
+                        currentDraggingMarker = null;
                         dragStartPosition = null;
                         selectedMarkersInitialPositions.clear();
                     });
