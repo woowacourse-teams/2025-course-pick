@@ -37,6 +37,19 @@ public class Course {
     @Enumerated(EnumType.STRING)
     private final Difficulty difficulty;
 
+    /*
+    1 2
+    2 3
+    3 4
+    ---
+    4 5
+    5 6
+    6 7
+
+
+    1 2 3 4 5 6 7
+    <- 세그먼트 구성 하려면 다시 높낮이 고려해야함 but 저장공간 + 역직렬화 성능 확보 가능
+     */
     public Course(String name, RoadType roadType, List<Coordinate> rawCoordinates) {
         this.id = null;
         this.name = new CourseName(name);

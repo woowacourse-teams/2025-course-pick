@@ -12,8 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_COURSE;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -40,13 +38,5 @@ public class CourseApplicationService {
                 .stream()
                 .map(course -> CourseResponse.from(course, userPosition))
                 .toList();
-    }
-
-    @Transactional(readOnly = true)
-    public Coordinate findClosestCoordinate(long id, double latitude, double longitude) {
-        Course course = courseRepository.findById(id)
-                .orElseThrow(() -> NOT_EXIST_COURSE.create(id));
-
-        return course.closestCoordinateFrom(new Coordinate(latitude, longitude));
     }
 }

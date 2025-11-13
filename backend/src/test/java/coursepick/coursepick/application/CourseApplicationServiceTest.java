@@ -5,8 +5,6 @@ import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
 import coursepick.coursepick.domain.RoadType;
 import coursepick.coursepick.test_util.IntegrationTest;
-import jakarta.persistence.EntityNotFoundException;
-import org.assertj.core.api.Assertions;
 import org.assertj.core.data.Percentage;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -164,27 +162,5 @@ class CourseApplicationServiceTest extends IntegrationTest {
         assertThat(courses).extracting(CourseResponse::distance).allMatch(Optional::isPresent);
         assertThat(courses.get(0).distance().get().value()).isCloseTo(6640, Percentage.withPercentage(1));
         assertThat(courses.get(1).distance().get().value()).isCloseTo(6583, Percentage.withPercentage(1));
-    }
-
-    @Test
-    void 코스의_좌표_중에서_가장_가까운_좌표를_계산한다() {
-        var course = new Course("한강 러닝 코스", List.of(
-                new Coordinate(0, 0),
-                new Coordinate(0, 0.0001),
-                new Coordinate(0.0001, 0.0001),
-                new Coordinate(0.0001, 0),
-                new Coordinate(0, 0)
-        ));
-        dbUtil.saveCourse(course);
-
-        var result = sut.findClosestCoordinate(course.id(), 0.0002, 0.0002);
-
-        assertThat(result).isEqualTo(new Coordinate(0.0001, 0.0001));
-    }
-
-    @Test
-    void 코스가_존재하지_않을_경우_예외가_발생한다() {
-        Assertions.assertThatThrownBy(() -> sut.findClosestCoordinate(1L, 0, 0))
-                .isInstanceOf(EntityNotFoundException.class);
     }
 }
