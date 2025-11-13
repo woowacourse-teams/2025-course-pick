@@ -1,5 +1,6 @@
 package coursepick.coursepick.domain;
 
+import coursepick.coursepick.infrastructure.SegmentListJsonConverter;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -31,9 +32,8 @@ public class Course {
     @Enumerated(EnumType.STRING)
     private final RoadType roadType;
 
-    @BatchSize(size = 30)
-    @ElementCollection
-    @CollectionTable(name = "segment")
+    @Convert(converter = SegmentListJsonConverter.class)
+    @Column(columnDefinition = "json")
     private final List<Segment> segments;
 
     @Column
