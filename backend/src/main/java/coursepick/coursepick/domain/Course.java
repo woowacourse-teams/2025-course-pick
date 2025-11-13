@@ -1,11 +1,11 @@
 package coursepick.coursepick.domain;
 
+import coursepick.coursepick.infrastructure.SegmentListJsonConverter;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import org.hibernate.annotations.BatchSize;
 
 import java.util.List;
 
@@ -25,9 +25,8 @@ public class Course {
     @Enumerated(EnumType.STRING)
     private final RoadType roadType;
 
-    @BatchSize(size = 30)
-    @ElementCollection
-    @CollectionTable(name = "segment")
+    @Convert(converter = SegmentListJsonConverter.class)
+    @Column(columnDefinition = "json")
     private final List<Segment> segments;
 
     @Embedded
