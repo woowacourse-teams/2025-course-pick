@@ -29,6 +29,10 @@ public class Course {
     @Column(columnDefinition = "json")
     private final List<Segment> segments;
 
+    @ElementCollection
+    @CollectionTable(name = "query_coordinates")
+    private final List<Coordinate> coordinates;
+
     @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "length"))
     private final Meter length;
@@ -50,6 +54,7 @@ public class Course {
                 .mergeSameElevationDirection()
                 .mergeSameInclineType()
                 .build();
+        this.coordinates = coordinates;
         this.length = calculateLength(segments);
         this.difficulty = Difficulty.fromLengthAndRoadType(length(), roadType);
     }

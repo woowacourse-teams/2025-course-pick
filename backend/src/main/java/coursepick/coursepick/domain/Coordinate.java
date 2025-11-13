@@ -1,11 +1,14 @@
 package coursepick.coursepick.domain;
 
+import jakarta.persistence.Embeddable;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_LATITUDE_RANGE;
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_LONGITUDE_RANGE;
 
+@Embeddable
 public record Coordinate(
         double latitude,
         double longitude,
