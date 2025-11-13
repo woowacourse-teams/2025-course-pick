@@ -1,18 +1,23 @@
 spring:
-  application.name: coursepick
+  config.activate.on-profile: local
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 200MB
   jpa:
-    open-in-view: false
-    properties:
-      hibernate:
-        jdbc.batch_size: 50 # 한 번에 처리할 배치 크기
-        order_inserts: true  # INSERT 순서 최적화
-        order_updates: true  # UPDATE 순서 최적화
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+  datasource:
+    url: jdbc:mysql://localhost:3307/coursepick
+    username: user
+    password: secret
+  batch:
+    jdbc.initialize-schema: always
+    job.enabled: false
 
-springdoc:
-  default-consumes-media-type: application/json
-  default-produces-media-type: application/json
-  swagger-ui:
-    path: /api-docs.html
-    tags-sorter: alpha
-    operations-sorter: method
-    defaultModelsExpandDepth: 0
+admin.token: secret
+
+server:
+  tomcat:
+    max-part-count: 500

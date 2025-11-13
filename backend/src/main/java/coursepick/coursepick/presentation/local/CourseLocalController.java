@@ -22,7 +22,7 @@ public class CourseLocalController {
 
     private final CourseLocalService courseLocalService;
 
-    @PostMapping("/admin/courses/import")
+    @PostMapping("/admin/import")
     public String importGpxFileToCourse(@RequestParam("files") List<MultipartFile> files) throws IOException {
         courseLocalService.parse(files);
         return "done";
