@@ -23,10 +23,9 @@ public class CourseApplicationService {
 
     @Transactional(readOnly = true)
     public List<CourseResponse> findNearbyCourses(double mapLatitude, double mapLongitude, Double userLatitude, Double userLongitude, int scope) {
-        final Coordinate mapPosition = new Coordinate(mapLatitude, mapLongitude);
         Meter meter = new Meter(scope).clamp(1000, 3000);
 
-        List<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(mapPosition, meter);
+        List<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(mapLatitude, mapLongitude, meter.value());
 
         if (userLatitude == null || userLongitude == null) {
             return coursesWithinScope
