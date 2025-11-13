@@ -9,11 +9,17 @@ import org.hibernate.annotations.BatchSize;
 
 import java.util.List;
 
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.PrecisionModel;
+
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @Getter
 @Accessors(fluent = true)
 public class Course {
+
+    private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory(new PrecisionModel(), 4326);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +35,9 @@ public class Course {
     @ElementCollection
     @CollectionTable(name = "segment")
     private final List<Segment> segments;
+
+    @Column
+    private final LineString lineString;
 
     @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "length"))
@@ -53,6 +62,10 @@ public class Course {
                 .build();
         this.length = calculateLength(segments);
         this.difficulty = Difficulty.fromLengthAndRoadType(length(), roadType);
+        org.locationtech.jts.geom.Coordinate[] jtsCoordinates = coordinates.stream()
+                .map(coord -> new org.locationtech.jts.geom.Coordinate(coord.longitude(), coord.latitude()))
+                .toArray(org.locationtech.jts.geom.Coordinate[]::new);
+        this.lineString = GEOMETRY_FACTORY.createLineString(jtsCoordinates);
     }
 
     public Course(String name, List<Coordinate> coordinates) {

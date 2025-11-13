@@ -40,7 +40,7 @@ class CourseRepositoryTest {
         dbUtil.saveCourse(course3);
         dbUtil.saveCourse(course4);
 
-        var courses = courseRepository.findAllHasDistanceWithin(target, new Meter(distance));
+        var courses = courseRepository.findAllHasDistanceWithin(target.latitude(), target.longitude(), distance);
 
         assertThat(courses).hasSize(expectedSize);
     }

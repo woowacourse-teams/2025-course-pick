@@ -26,7 +26,11 @@ public class CourseApplicationService {
         final Coordinate mapPosition = new Coordinate(mapLatitude, mapLongitude);
         Meter meter = new Meter(scope).clamp(1000, 3000);
 
-        List<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(mapPosition, meter);
+        List<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(
+                mapPosition.latitude(),
+                mapPosition.longitude(),
+                meter.value()
+        );
 
         if (userLatitude == null || userLongitude == null) {
             return coursesWithinScope
