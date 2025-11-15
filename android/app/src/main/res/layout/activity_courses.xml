@@ -238,7 +238,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:clickable="true"
-                android:translationZ="9999dp"
+                app:backgroundTint="@color/background_primary"
+                app:itemActiveIndicatorStyle="@style/bottom_navigation_active_indicator"
                 app:menu="@menu/menu_bottom_navigation" />
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
