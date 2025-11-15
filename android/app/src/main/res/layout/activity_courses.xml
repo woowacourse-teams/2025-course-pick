@@ -34,13 +34,11 @@
         android:id="@+id/mainDrawer"
         swipeable="@{false}"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:layout_height="match_parent">
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fitsSystemWindows="true">
+            android:layout_height="match_parent">
 
             <com.kakao.vectormap.MapView
                 android:id="@+id/mainMap"
@@ -48,6 +46,7 @@
                 android:layout_height="match_parent" />
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/mainToolBarWrapper"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
@@ -257,7 +256,6 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:background="@color/background_primary"
-            android:fitsSystemWindows="true"
             app:itemTextColor="@color/item_primary"
             app:menu="@menu/menu_navigation_courses"
             app:onNavigationItemSelected="@{(menuItem) -> action.navigate(menuItem)}">

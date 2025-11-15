@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
@@ -28,6 +29,7 @@ import androidx.core.graphics.Insets
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.commit
@@ -142,13 +144,13 @@ class CoursesActivity :
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view: View, insets: WindowInsetsCompat ->
             val systemBars: Insets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             this.systemBars = systemBars
-            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            binding.mainToolBarWrapper.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                topMargin = systemBars.top
+            }
             setUpNavigation(systemBars)
             setUpBottomSheet(systemBars)
             insets
         }
-
-        ViewCompat.setOnApplyWindowInsetsListener(binding.mainBottomNavigation, null)
 
         mapManager.start {
             setUpObservers()
