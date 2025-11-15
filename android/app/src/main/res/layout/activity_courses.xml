@@ -143,7 +143,8 @@
                 app:behavior_fitToContents="true"
                 app:behavior_peekHeight="@dimen/main_bottom_sheet_peek_height"
                 app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-                app:layout_constraintBottom_toTopOf="@id/mainBottomNavigation">
+                app:layout_constraintBottom_toTopOf="@id/mainBottomNavigation"
+                app:paddingBottomSystemWindowInsets="true">
 
                 <View
                     android:id="@+id/mainCoursesHandle"
