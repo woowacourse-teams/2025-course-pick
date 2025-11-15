@@ -2,6 +2,6 @@
 <resources>
 
     <style name="bottom_navigation_active_indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
-        <item name="android:color">@color/point_tertiary</item>
+        <item name="android:color">@color/background_tertiary</item>
     </style>
 </resources>
