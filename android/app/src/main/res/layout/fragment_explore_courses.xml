@@ -12,31 +12,11 @@
         <variable
             name="viewModel"
             type="io.coursepick.coursepick.presentation.course.CoursesViewModel" />
-
-        <variable
-            name="showFiltersListener"
-            type="io.coursepick.coursepick.presentation.course.ShowFiltersListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <TextView
-            android:id="@+id/mainCourseFilter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="6dp"
-            android:activated="@{!viewModel.state.isFilterDefault}"
-            android:background="@drawable/background_filter_selector"
-            android:onClick="@{() -> showFiltersListener.showFilters()}"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="6dp"
-            android:text="@string/main_course_filter"
-            android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/mainCourses"
@@ -50,7 +30,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/mainCourseFilter"
+            app:layout_constraintTop_toTopOf="parent"
             tools:listitem="@layout/item_course" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

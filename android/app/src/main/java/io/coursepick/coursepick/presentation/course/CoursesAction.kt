@@ -18,4 +18,6 @@ interface CoursesAction {
     fun showCourseColorDescription()
 
     fun clearQuery()
+
+    fun showFilters()
 }
