@@ -378,6 +378,7 @@ class CoursesActivity :
                 CoursesContent.EXPLORE -> getString(R.string.main_empty_courses_description)
                 CoursesContent.FAVORITES -> getString(R.string.main_empty_favorites_description)
             }
+        binding.mainCourseFilter.visibility = if (content == CoursesContent.EXPLORE) View.VISIBLE else View.GONE
 
         supportFragmentManager.commit {
             setReorderingAllowed(true)
