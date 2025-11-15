@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
@@ -28,6 +29,7 @@ import androidx.core.graphics.Insets
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.commit
@@ -49,6 +51,7 @@ import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
+import io.coursepick.coursepick.presentation.filter.FilterBottomSheet
 import io.coursepick.coursepick.presentation.map.kakao.KakaoMapManager
 import io.coursepick.coursepick.presentation.map.kakao.toCoordinate
 import io.coursepick.coursepick.presentation.notice.NoticeDialogFragment
@@ -142,13 +145,13 @@ class CoursesActivity :
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view: View, insets: WindowInsetsCompat ->
             val systemBars: Insets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             this.systemBars = systemBars
-            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            binding.mainToolBarWrapper.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                topMargin = systemBars.top
+            }
             setUpNavigation(systemBars)
             setUpBottomSheet(systemBars)
             insets
         }
-
-        ViewCompat.setOnApplyWindowInsetsListener(binding.mainBottomNavigation, null)
 
         mapManager.start {
             setUpObservers()
@@ -303,6 +306,11 @@ class CoursesActivity :
         viewModel.setQuery("")
     }
 
+    override fun showFilters() {
+        val dialog = FilterBottomSheet()
+        dialog.show(supportFragmentManager, null)
+    }
+
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun onReconnect() {
         val coordinate = mapManager.cameraPosition?.toCoordinate()
@@ -370,6 +378,7 @@ class CoursesActivity :
                 CoursesContent.EXPLORE -> getString(R.string.main_empty_courses_description)
                 CoursesContent.FAVORITES -> getString(R.string.main_empty_favorites_description)
             }
+        binding.mainCourseFilter.visibility = if (content == CoursesContent.EXPLORE) View.VISIBLE else View.GONE
 
         supportFragmentManager.commit {
             setReorderingAllowed(true)
