@@ -11,6 +11,7 @@ import io.coursepick.coursepick.presentation.fixtures.FakeCourseRepository
 import io.coursepick.coursepick.presentation.fixtures.FakeFavoritesRepository
 import io.coursepick.coursepick.presentation.fixtures.FakeNetworkMonitor
 import io.coursepick.coursepick.presentation.fixtures.FakeNoticeRepository
+import io.coursepick.coursepick.presentation.fixtures.NOTICE_FIXTURE
 import io.coursepick.coursepick.presentation.ui.getOrAwaitValue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions
@@ -50,8 +51,9 @@ class CoursesViewModelTest {
                         CourseItem(course, selected = index == 0, favorite = false)
                     },
                 status = UiStatus.Success,
+                verifiedLocations = NOTICE_FIXTURE,
             )
-        val actual = mainViewModel.state.getOrAwaitValue()
+        val actual: CoursesUiState = mainViewModel.state.getOrAwaitValue()
 
         // then
         Assertions.assertThat(actual).isEqualTo(expected)
@@ -66,6 +68,7 @@ class CoursesViewModelTest {
                     CourseItem(course, selected = course == COURSE_FIXTURE_20, favorite = false)
                 },
                 status = UiStatus.Success,
+                verifiedLocations = NOTICE_FIXTURE,
             )
 
         // when
@@ -86,6 +89,7 @@ class CoursesViewModelTest {
                     CourseItem(course, selected = course == COURSE_FIXTURE_20, favorite = false)
                 },
                 status = UiStatus.Success,
+                verifiedLocations = NOTICE_FIXTURE,
             )
 
         // when

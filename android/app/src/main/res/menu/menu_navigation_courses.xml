@@ -11,4 +11,7 @@
     <item
         android:id="@+id/item_open_source_notice"
         android:title="오픈소스 라이선스 고지" />
+    <item
+        android:id="@+id/item_verified_location"
+        android:title="코스가 검증된 지역 보기" />
 </menu>

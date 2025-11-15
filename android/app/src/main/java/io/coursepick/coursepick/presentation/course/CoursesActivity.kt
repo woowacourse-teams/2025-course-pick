@@ -42,6 +42,7 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.domain.course.Scope
+import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.CoursePickUpdateManager
 import io.coursepick.coursepick.presentation.DataKeys
@@ -58,6 +59,7 @@ import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 import io.coursepick.coursepick.presentation.routefinder.RouteFinderChoiceDialogFragment
 import io.coursepick.coursepick.presentation.search.SearchActivity
 import io.coursepick.coursepick.presentation.ui.DoublePressDetector
+import io.coursepick.coursepick.presentation.verifiedlocations.VerifiedLocationsDialogFragment
 
 @AndroidEntryPoint
 class CoursesActivity :
@@ -268,11 +270,27 @@ class CoursesActivity :
             R.id.item_user_feedback -> navigateToFeedback()
             R.id.item_privacy_policy -> navigateToPrivacyPolicy()
             R.id.item_open_source_notice -> navigateToOpenSourceNotice()
+            R.id.item_verified_location -> showVerifiedLocations()
         }
 
         binding.mainDrawer.close()
 
         return true
+    }
+
+    private fun showVerifiedLocations() {
+        val verifiedLocations: Notice =
+            viewModel.state.value?.verifiedLocations
+                ?: return Toast
+                    .makeText(this, "코스가 검증된 지역 정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT)
+                    .show()
+
+        VerifiedLocationsDialogFragment.show(
+            fragmentManager = supportFragmentManager,
+            imageUrl = verifiedLocations.imageUrl,
+            title = verifiedLocations.title,
+            description = verifiedLocations.description,
+        )
     }
 
     override fun search() {

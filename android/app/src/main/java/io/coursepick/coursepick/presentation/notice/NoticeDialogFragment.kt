@@ -4,13 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.presentation.compat.getSerializableCompat
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
+import io.coursepick.coursepick.presentation.ui.ComposeDialogFragment
 
 /**
  * XML Activity에서 사용할 수 있는 NoticeDialog DialogFragment
@@ -24,15 +25,13 @@ import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
  * )
  * ```
  */
-class NoticeDialogFragment : DialogFragment() {
-    private var notice: Notice? = null
+class NoticeDialogFragment : ComposeDialogFragment() {
+    private lateinit var notice: Notice
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        arguments?.let { arguments: Bundle ->
-            notice = arguments.getSerializableCompat<Notice>(ARGUMENT_NOTICE)
-        }
+        notice = arguments?.getSerializableCompat(ARGUMENT_NOTICE) ?: return dismiss()
     }
 
     override fun onCreateView(
@@ -43,16 +42,23 @@ class NoticeDialogFragment : DialogFragment() {
         ComposeView(requireContext()).apply {
             setContent {
                 CoursePickTheme {
-                    notice?.let { notice: Notice ->
-                        NoticeDialog(
-                            notice = notice,
-                            onDismissRequest = ::dismiss,
-                            onDoNotShowAgain = CoursePickPreferences::setDoNotShowNotice,
-                        )
-                    }
+                    NoticeDialog(
+                        notice = notice,
+                        onDismissRequest = ::dismiss,
+                        onDoNotShowAgain = CoursePickPreferences::setDoNotShowNotice,
+                    )
                 }
             }
         }
+
+    @Composable
+    override fun Dialog() {
+        NoticeDialog(
+            notice = notice,
+            onDismissRequest = ::dismiss,
+            onDoNotShowAgain = CoursePickPreferences::setDoNotShowNotice,
+        )
+    }
 
     companion object {
         private const val ARGUMENT_NOTICE = "notice"
@@ -69,15 +75,8 @@ class NoticeDialogFragment : DialogFragment() {
             notice: Notice,
             tag: String? = null,
         ) {
-            val arguments =
-                Bundle().apply {
-                    putSerializable(ARGUMENT_NOTICE, notice)
-                }
-
-            val dialog =
-                NoticeDialogFragment().apply {
-                    this.arguments = arguments
-                }
+            val arguments = Bundle().apply { putSerializable(ARGUMENT_NOTICE, notice) }
+            val dialog = NoticeDialogFragment().apply { this.arguments = arguments }
 
             dialog.show(fragmentManager, tag)
         }
