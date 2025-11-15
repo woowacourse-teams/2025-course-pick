@@ -169,6 +169,23 @@
                     app:layout_constraintTop_toBottomOf="@id/mainCoursesHandle" />
 
                 <TextView
+                    android:id="@+id/mainCourseFilter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="6dp"
+                    android:activated="@{!viewModel.state.isFilterDefault}"
+                    android:background="@drawable/background_filter_selector"
+                    android:onClick="@{() -> action.showFilters()}"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="6dp"
+                    android:text="@string/main_course_filter"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="@id/mainCoursesHeader"
+                    app:layout_constraintStart_toEndOf="@id/mainCoursesHeader"
+                    app:layout_constraintTop_toTopOf="@id/mainCoursesHeader" />
+
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
