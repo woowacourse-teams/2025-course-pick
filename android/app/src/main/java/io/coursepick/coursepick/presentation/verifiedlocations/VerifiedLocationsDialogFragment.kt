@@ -19,28 +19,24 @@ import io.coursepick.coursepick.presentation.ui.ComposeDialogFragment
  * ```
  */
 class VerifiedLocationsDialogFragment : ComposeDialogFragment() {
-    private var imageUrl: String? = null
-    private var title: String? = null
-    private var description: String? = null
+    private lateinit var imageUrl: String
+    private lateinit var title: String
+    private lateinit var description: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        imageUrl = arguments?.getString(ARGUMENT_IMAGE_URL)
-        title = arguments?.getString(ARGUMENT_TITLE)
-        description = arguments?.getString(ARGUMENT_DESCRIPTION)
-
-        if (imageUrl == null || title == null || description == null) {
-            dismiss()
-        }
+        imageUrl = arguments?.getString(ARGUMENT_IMAGE_URL) ?: return dismiss()
+        title = arguments?.getString(ARGUMENT_TITLE) ?: return dismiss()
+        description = arguments?.getString(ARGUMENT_DESCRIPTION) ?: return dismiss()
     }
 
     @Composable
     override fun Dialog() {
         VerifiedLocationsDialog(
-            imageUrl = imageUrl ?: return,
-            title = title ?: return,
-            description = description ?: return,
+            imageUrl = imageUrl,
+            title = title,
+            description = description,
             onDismissRequest = ::dismiss,
         )
     }

@@ -26,16 +26,12 @@ import io.coursepick.coursepick.presentation.ui.ComposeDialogFragment
  * ```
  */
 class NoticeDialogFragment : ComposeDialogFragment() {
-    private var notice: Notice? = null
+    private lateinit var notice: Notice
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        notice = arguments?.getSerializableCompat(ARGUMENT_NOTICE)
-
-        if (notice == null) {
-            dismiss()
-        }
+        notice = arguments?.getSerializableCompat(ARGUMENT_NOTICE) ?: return dismiss()
     }
 
     override fun onCreateView(
@@ -46,13 +42,11 @@ class NoticeDialogFragment : ComposeDialogFragment() {
         ComposeView(requireContext()).apply {
             setContent {
                 CoursePickTheme {
-                    notice?.let { notice: Notice ->
-                        NoticeDialog(
-                            notice = notice,
-                            onDismissRequest = ::dismiss,
-                            onDoNotShowAgain = CoursePickPreferences::setDoNotShowNotice,
-                        )
-                    }
+                    NoticeDialog(
+                        notice = notice,
+                        onDismissRequest = ::dismiss,
+                        onDoNotShowAgain = CoursePickPreferences::setDoNotShowNotice,
+                    )
                 }
             }
         }
@@ -60,7 +54,7 @@ class NoticeDialogFragment : ComposeDialogFragment() {
     @Composable
     override fun Dialog() {
         NoticeDialog(
-            notice = notice ?: return,
+            notice = notice,
             onDismissRequest = ::dismiss,
             onDoNotShowAgain = CoursePickPreferences::setDoNotShowNotice,
         )
