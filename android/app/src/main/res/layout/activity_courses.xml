@@ -232,15 +232,22 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <com.google.android.material.bottomnavigation.BottomNavigationView
-                android:id="@+id/mainBottomNavigation"
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:clickable="true"
-                app:backgroundTint="@color/background_primary"
-                app:itemActiveIndicatorStyle="@style/bottom_navigation_active_indicator"
-                app:menu="@menu/menu_bottom_navigation" />
+                app:cardElevation="20dp">
+
+                <com.google.android.material.bottomnavigation.BottomNavigationView
+                    android:id="@+id/mainBottomNavigation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    app:backgroundTint="@color/background_primary"
+                    app:itemActiveIndicatorStyle="@style/bottom_navigation_active_indicator"
+                    app:menu="@menu/menu_bottom_navigation" />
+            </androidx.cardview.widget.CardView>
+
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
