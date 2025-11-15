@@ -7,13 +7,12 @@
         <variable
             name="listener"
             type="io.coursepick.coursepick.presentation.course.OnConfirmListener" />
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background_primary"
+        android:background="@drawable/background_course_color_description"
         android:padding="20dp">
 
         <TextView
