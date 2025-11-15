@@ -16,6 +16,7 @@
     <color name="background_secondary">#FAF8FF</color>
     <color name="background_tertiary">#EEEDF4</color>
     <color name="background_border">#C5C6D0</color>
+    <color name="background_border_light">#F0EEEE</color>
 
     <color name="point_primary">#FF8314</color>
     <color name="point_secondary">#FFA055</color>
