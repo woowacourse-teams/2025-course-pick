@@ -148,6 +148,7 @@ class CoursesActivity :
             binding.mainToolBarWrapper.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 topMargin = systemBars.top
             }
+            setUpFragmentContainer(systemBars)
             setUpBottomSheet(systemBars)
             insets
         }
@@ -581,6 +582,10 @@ class CoursesActivity :
             }
     }
 
+    private fun setUpFragmentContainer(systemBars: Insets) {
+        binding.mainFragmentContainer.setPadding(0, 0, 0, binding.mainBottomNavigation.height - systemBars.bottom)
+    }
+
     private fun setUpMapPadding(systemBars: Insets) {
         val bottomSheet = binding.mainBottomSheet
         val screenHeight = Resources.getSystem().displayMetrics.heightPixels
@@ -592,13 +597,6 @@ class CoursesActivity :
         val screenHeight = Resources.getSystem().displayMetrics.heightPixels
 
         bottomSheet.layoutParams.height = screenHeight / 2
-        bottomSheet.setPadding(
-            systemBars.left,
-            0,
-            systemBars.right,
-            systemBars.bottom + binding.mainBottomNavigation.height,
-        )
-
         val behavior = BottomSheetBehavior.from(bottomSheet)
         behavior.state = BottomSheetBehavior.STATE_EXPANDED
         behavior.addBottomSheetCallback(
