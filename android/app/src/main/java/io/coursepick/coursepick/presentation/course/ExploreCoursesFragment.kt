@@ -53,6 +53,10 @@ class ExploreCoursesFragment(
                                 range.endInclusive.toDouble(),
                             )
                         },
+                        onCancel = {
+                            viewModel.restoreState()
+                            showFilterDialog = false
+                        },
                     )
                 }
             }
@@ -80,6 +84,7 @@ class ExploreCoursesFragment(
     }
 
     override fun showFilters() {
+        viewModel.backupState()
         showFilterDialog = true
     }
 
