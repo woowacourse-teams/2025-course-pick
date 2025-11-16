@@ -38,7 +38,8 @@ fun CourseFilterContent(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.padding(horizontal = 20.dp),
+        modifier = modifier.padding(horizontal = 20.dp)
+            .padding(bottom = 10.dp),
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -139,7 +140,6 @@ fun CourseFilterContent(
                     .weight(1f)
                     .clickable(onClick = onCancel)
                     .clip(RoundedCornerShape(size = 8.dp))
-                    .background(colorResource(R.color.point_secondary))
                     .padding(vertical = 20.dp)
                     .padding(horizontal = 4.dp),
                 contentAlignment = Alignment.Center,
