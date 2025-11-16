@@ -13,6 +13,7 @@ fun CourseFilterBottomSheet(
     coursesUiState: CoursesUiState,
     onDismissRequest: () -> Unit,
     onRangeSliderValueChange: (ClosedFloatingPointRange<Float>) -> Unit,
+    onCancel: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val sheetState =
@@ -28,7 +29,7 @@ fun CourseFilterBottomSheet(
         CourseFilterContent(
             coursesUiState = coursesUiState,
             onRangeSliderValueChange = onRangeSliderValueChange,
-            onCancel = onDismissRequest,
+            onCancel = onCancel,
         )
     }
 }
