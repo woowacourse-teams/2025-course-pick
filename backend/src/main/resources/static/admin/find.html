@@ -838,7 +838,8 @@
                         strokeWeight: isSelected ? 6 : 4, // 선택된 코스는 더 두껍게
                         strokeColor: strokeColor,
                         strokeOpacity: isSelected ? 0.9 : 0.7, // 선택되지 않은 코스도 잘 보이도록
-                        strokeStyle: 'solid'
+                        strokeStyle: 'solid',
+                        zIndex: isSelected ? 100 : 1 // 선택된 코스는 맨 위에 표시
                     });
 
                     // 폴리라인 클릭 이벤트 추가
@@ -886,7 +887,8 @@
                         position: position,
                         content: content,
                         yAnchor: 1.5,
-                        clickable: true
+                        clickable: true,
+                        zIndex: isSelected ? 100 : 1 // 선택된 코스의 라벨이 위에 표시
                     });
 
                     customOverlay.setMap(map);
