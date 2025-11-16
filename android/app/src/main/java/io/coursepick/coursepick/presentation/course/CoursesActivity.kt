@@ -282,8 +282,11 @@ class CoursesActivity :
         val verifiedLocations: Notice =
             viewModel.state.value?.verifiedLocations
                 ?: return Toast
-                    .makeText(this, "코스가 검증된 지역 정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT)
-                    .show()
+                    .makeText(
+                        this,
+                        getString(R.string.can_not_fetch_verified_locations),
+                        Toast.LENGTH_SHORT,
+                    ).show()
 
         VerifiedLocationsDialogFragment.show(
             fragmentManager = supportFragmentManager,
