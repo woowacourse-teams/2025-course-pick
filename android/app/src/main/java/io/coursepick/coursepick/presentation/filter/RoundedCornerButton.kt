@@ -28,13 +28,13 @@ fun RoundedCornerButton(
     Box(
         modifier =
             modifier
-                .clip(RoundedCornerShape(size = 8.dp))
-                .background(colorResource(R.color.point_secondary))
-                .padding(vertical = 20.dp)
                 .clickable(
                     enabled = enabled,
                     onClick = onClick,
-                ).padding(horizontal = 4.dp),
+                )
+                .clip(RoundedCornerShape(size = 8.dp))
+                .background(colorResource(R.color.point_secondary))
+                .padding(vertical = 20.dp).padding(horizontal = 4.dp),
         contentAlignment = Alignment.Center,
         content = {
             Text(
