@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import io.coursepick.coursepick.databinding.FragmentExploreCoursesBinding
 import io.coursepick.coursepick.presentation.filter.CourseFilterBottomSheet
+import io.coursepick.coursepick.presentation.model.Difficulty
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 
 class ExploreCoursesFragment(
@@ -57,6 +58,11 @@ class ExploreCoursesFragment(
                             viewModel.restoreState()
                             showFilterDialog = false
                         },
+                        onReset = { viewModel.resetFilterToDefault() },
+                        onEasy = { viewModel.toggleDifficulty(Difficulty.EASY) },
+                        onNormar = { viewModel.toggleDifficulty(Difficulty.NORMAL) },
+                        onHard = { viewModel.toggleDifficulty(Difficulty.HARD) },
+                        onResult = { showFilterDialog = false },
                     )
                 }
             }

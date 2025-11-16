@@ -33,13 +33,20 @@ import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 @Composable
 fun CourseFilterContent(
     coursesUiState: CoursesUiState,
+    onReset: () -> Unit,
+    onEasy: () -> Unit,
+    onNormar: () -> Unit,
+    onHard: () -> Unit,
     onRangeSliderValueChange: (ClosedFloatingPointRange<Float>) -> Unit,
     onCancel: () -> Unit,
+    onResult: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.padding(horizontal = 20.dp)
-            .padding(bottom = 10.dp),
+        modifier =
+            modifier
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 10.dp),
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -57,6 +64,7 @@ fun CourseFilterContent(
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = colorResource(R.color.item_primary),
+                modifier = Modifier.clickable(onClick = onReset),
             )
         }
         Text(
@@ -73,19 +81,19 @@ fun CourseFilterContent(
             RoundedCornerButton(
                 label = stringResource(R.string.filter_dialog_difficulty_easy),
                 enabled = coursesUiState.courseFilter.difficulties.contains(Difficulty.EASY),
-                onClick = { },
+                onClick = onEasy,
                 modifier = Modifier.weight(1f),
             )
             RoundedCornerButton(
                 label = stringResource(R.string.filter_dialog_difficulty_normal),
                 enabled = coursesUiState.courseFilter.difficulties.contains(Difficulty.NORMAL),
-                onClick = { },
+                onClick = onNormar,
                 modifier = Modifier.weight(1f),
             )
             RoundedCornerButton(
                 label = stringResource(R.string.filter_dialog_difficulty_hard),
                 enabled = coursesUiState.courseFilter.difficulties.contains(Difficulty.HARD),
-                onClick = { },
+                onClick = onHard,
                 modifier = Modifier.weight(1f),
             )
         }
@@ -129,19 +137,20 @@ fun CourseFilterContent(
                     disabledInactiveTrackColor = colorResource(R.color.item_tertiary),
                     disabledInactiveTickColor = colorResource(R.color.item_tertiary),
                 ),
-            modifier = Modifier.padding(bottom = 20.dp)
+            modifier = Modifier.padding(bottom = 20.dp),
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .clickable(onClick = onCancel)
-                    .clip(RoundedCornerShape(size = 8.dp))
-                    .padding(vertical = 20.dp)
-                    .padding(horizontal = 4.dp),
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .clickable(onClick = onCancel)
+                        .clip(RoundedCornerShape(size = 8.dp))
+                        .padding(vertical = 20.dp)
+                        .padding(horizontal = 4.dp),
                 contentAlignment = Alignment.Center,
                 content = {
                     Text(
@@ -150,13 +159,13 @@ fun CourseFilterContent(
                         fontWeight = FontWeight.Bold,
                         color = colorResource(R.color.item_primary),
                     )
-                }
+                },
             )
 
             RoundedCornerButton(
                 label = stringResource(R.string.filter_result_count, coursesUiState.courses.size),
                 enabled = coursesUiState.courses.isNotEmpty(),
-                onClick = { },
+                onClick = onResult,
                 modifier = Modifier.weight(1f),
             )
         }
@@ -200,6 +209,11 @@ private fun CourseFilterContentPreview() {
                 ),
             onRangeSliderValueChange = { 0f..10f },
             onCancel = {},
+            onReset = {  },
+            onEasy = {},
+            onNormar = { },
+            onHard = {},
+            onResult = {},
         )
     }
 }
