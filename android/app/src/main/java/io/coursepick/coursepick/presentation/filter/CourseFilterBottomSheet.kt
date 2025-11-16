@@ -21,6 +21,7 @@ fun CourseFilterBottomSheet(
         CourseFilterContent(
             coursesUiState = coursesUiState,
             onRangeSliderValueChange = onRangeSliderValueChange,
+            onCancel = onDismissRequest,
         )
     }
 }
