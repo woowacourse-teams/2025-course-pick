@@ -1,17 +1,22 @@
 package io.coursepick.coursepick.presentation.filter
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -29,10 +34,11 @@ import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 fun CourseFilterContent(
     coursesUiState: CoursesUiState,
     onRangeSliderValueChange: (ClosedFloatingPointRange<Float>) -> Unit,
+    onCancel: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.padding(20.dp),
+        modifier = modifier.padding(horizontal = 20.dp),
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -43,12 +49,13 @@ fun CourseFilterContent(
                 text = stringResource(R.string.filter_dialog_title),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
+                color = colorResource(R.color.item_primary),
             )
             Text(
                 text = stringResource(R.string.filter_dialog_reset),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(vertical = 20.dp),
+                color = colorResource(R.color.item_primary),
             )
         }
         Text(
@@ -56,6 +63,7 @@ fun CourseFilterContent(
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(vertical = 20.dp),
+            color = colorResource(R.color.item_primary),
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -90,6 +98,7 @@ fun CourseFilterContent(
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(vertical = 20.dp),
+                color = colorResource(R.color.item_primary),
             )
             Text(
                 text = lengthRangeText(coursesUiState.courseFilter),
@@ -125,16 +134,23 @@ fun CourseFilterContent(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Box(
-                modifier = Modifier.weight(1f).padding(vertical = 20.dp),
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable(onClick = onCancel)
+                    .clip(RoundedCornerShape(size = 8.dp))
+                    .background(colorResource(R.color.point_secondary))
+                    .padding(vertical = 20.dp)
+                    .padding(horizontal = 4.dp),
                 contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = stringResource(R.string.filter_dialog_cancel),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = colorResource(R.color.item_primary),
-                )
-            }
+                content = {
+                    Text(
+                        text = stringResource(R.string.filter_dialog_cancel),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = colorResource(R.color.item_primary),
+                    )
+                }
+            )
 
             RoundedCornerButton(
                 label = stringResource(R.string.filter_result_count, coursesUiState.courses.size),
@@ -182,6 +198,7 @@ private fun CourseFilterContentPreview() {
                         ),
                 ),
             onRangeSliderValueChange = { 0f..10f },
+            onCancel = {},
         )
     }
 }
