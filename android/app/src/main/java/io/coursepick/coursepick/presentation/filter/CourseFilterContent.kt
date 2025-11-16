@@ -114,7 +114,7 @@ fun CourseFilterContent(
                     .toFloat(),
             onValueChange = onRangeSliderValueChange,
             valueRange = 0f..21f,
-            steps = 1,
+            steps = 0,
             colors =
                 SliderColors(
                     thumbColor = colorResource(R.color.point_secondary),
@@ -128,6 +128,7 @@ fun CourseFilterContent(
                     disabledInactiveTrackColor = colorResource(R.color.item_tertiary),
                     disabledInactiveTickColor = colorResource(R.color.item_tertiary),
                 ),
+            modifier = Modifier.padding(bottom = 20.dp)
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
