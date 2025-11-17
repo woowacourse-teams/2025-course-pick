@@ -1,19 +1,19 @@
 package io.coursepick.coursepick.presentation.filter
 
-import androidx.compose.foundation.background
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,6 +42,7 @@ fun CourseFilterContent(
     onResult: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    Log.d("UIRECOMPOSE", "========== RECOMPOSE ==========")
     Column(
         modifier =
             modifier
@@ -78,22 +79,22 @@ fun CourseFilterContent(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            RoundedCornerButton(
+            RoundedCornerToggleButton(
                 label = stringResource(R.string.filter_dialog_difficulty_easy),
-                enabled = coursesUiState.courseFilter.difficulties.contains(Difficulty.EASY),
-                onClick = onEasy,
+                isActive = coursesUiState.courseFilter.difficulties.contains(Difficulty.EASY),
+                onActivedChanged = onEasy,
                 modifier = Modifier.weight(1f),
             )
-            RoundedCornerButton(
+            RoundedCornerToggleButton(
                 label = stringResource(R.string.filter_dialog_difficulty_normal),
-                enabled = coursesUiState.courseFilter.difficulties.contains(Difficulty.NORMAL),
-                onClick = onNormar,
+                isActive = coursesUiState.courseFilter.difficulties.contains(Difficulty.NORMAL),
+                onActivedChanged = onNormar,
                 modifier = Modifier.weight(1f),
             )
-            RoundedCornerButton(
+            RoundedCornerToggleButton(
                 label = stringResource(R.string.filter_dialog_difficulty_hard),
-                enabled = coursesUiState.courseFilter.difficulties.contains(Difficulty.HARD),
-                onClick = onHard,
+                isActive = coursesUiState.courseFilter.difficulties.contains(Difficulty.HARD),
+                onActivedChanged = onHard,
                 modifier = Modifier.weight(1f),
             )
         }
@@ -162,11 +163,12 @@ fun CourseFilterContent(
                 },
             )
 
-            RoundedCornerButton(
+            RoundedCornerToggleButton(
                 label = stringResource(R.string.filter_result_count, coursesUiState.courses.size),
-                enabled = coursesUiState.courses.isNotEmpty(),
-                onClick = onResult,
+                isActive = coursesUiState.courses.isNotEmpty(),
+                onActivedChanged = onResult,
                 modifier = Modifier.weight(1f),
+                enabled = coursesUiState.courses.isNotEmpty(),
             )
         }
     }
@@ -209,7 +211,7 @@ private fun CourseFilterContentPreview() {
                 ),
             onRangeSliderValueChange = { 0f..10f },
             onCancel = {},
-            onReset = {  },
+            onReset = { },
             onEasy = {},
             onNormar = { },
             onHard = {},
