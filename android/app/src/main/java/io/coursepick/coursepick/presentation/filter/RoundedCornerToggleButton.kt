@@ -19,22 +19,24 @@ import io.coursepick.coursepick.R
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 
 @Composable
-fun RoundedCornerButton(
+fun RoundedCornerToggleButton(
     label: String,
-    enabled: Boolean,
-    onClick: () -> Unit,
+    isActive: Boolean,
+    onActivedChanged: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     Box(
         modifier =
             modifier
                 .clickable(
                     enabled = enabled,
-                    onClick = onClick,
+                    onClick = onActivedChanged
                 )
                 .clip(RoundedCornerShape(size = 8.dp))
-                .background(colorResource(R.color.point_secondary))
-                .padding(vertical = 20.dp).padding(horizontal = 4.dp),
+                .background(if (isActive) colorResource(R.color.point_secondary) else colorResource(R.color.gray2))
+                .padding(vertical = 20.dp)
+                .padding(horizontal = 4.dp),
         contentAlignment = Alignment.Center,
         content = {
             Text(
@@ -49,12 +51,12 @@ fun RoundedCornerButton(
 
 @PreviewLightDark
 @Composable
-private fun RoundedCornerButton() {
+private fun RoundedCornerToggleButton() {
     CoursePickTheme {
-        RoundedCornerButton(
+        RoundedCornerToggleButton(
             label = "쉬움",
-            enabled = true,
-            onClick = { },
+            isActive = true,
+            onActivedChanged = { },
         )
     }
 }
