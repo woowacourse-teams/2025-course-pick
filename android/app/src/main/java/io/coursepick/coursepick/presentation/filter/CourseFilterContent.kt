@@ -114,11 +114,14 @@ fun CourseFilterContent(
                 modifier = Modifier.padding(vertical = 20.dp),
             )
         }
+        val start =
+            coursesUiState.courseFilter.lengthRange.start.value
+                .toFloat()
+        val end =
+            coursesUiState.courseFilter.lengthRange.endInclusive.value
+                .toFloat()
         RangeSlider(
-            value =
-                coursesUiState.courseFilter.lengthRange.start.value
-                    .toFloat()..coursesUiState.courseFilter.lengthRange.endInclusive.value
-                    .toFloat(),
+            value = start..end,
             onValueChange = onRangeSliderValueChange,
             valueRange = 0f..21f,
             steps = 0,
