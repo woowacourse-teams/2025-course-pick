@@ -1,6 +1,5 @@
 package io.coursepick.coursepick.presentation.filter
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,7 +12,6 @@ import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,7 +40,6 @@ fun CourseFilterContent(
     onResult: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Log.d("UIRECOMPOSE", "========== RECOMPOSE ==========")
     Column(
         modifier =
             modifier
