@@ -31,9 +31,8 @@ fun RoundedCornerToggleButton(
             modifier
                 .clickable(
                     enabled = enabled,
-                    onClick = onActivedChanged
-                )
-                .clip(RoundedCornerShape(size = 8.dp))
+                    onClick = onActivedChanged,
+                ).clip(RoundedCornerShape(size = 8.dp))
                 .background(if (isActive) colorResource(R.color.point_secondary) else colorResource(R.color.gray2))
                 .padding(vertical = 20.dp)
                 .padding(horizontal = 4.dp),
