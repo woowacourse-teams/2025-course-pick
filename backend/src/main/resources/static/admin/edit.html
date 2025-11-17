@@ -1091,6 +1091,12 @@
                             <div class="coordinates-header">
                                 <div class="coordinates-title">전체 좌표 목록</div>
                                 <div class="bulk-actions">
+                                    <button class="bulk-button secondary" onclick="selectOddCoordinates()">
+                                        홀수 선택
+                                    </button>
+                                    <button class="bulk-button secondary" onclick="selectEvenCoordinates()">
+                                        짝수 선택
+                                    </button>
                                     <button class="bulk-button secondary" onclick="showSelectedOnMap()" id="show-on-map-btn" disabled>
                                         지도에서 보기
                                     </button>
@@ -1743,6 +1749,82 @@
         });
 
         updateBulkActionButtons();
+    }
+
+    // 홀수번째 좌표 선택
+    function selectOddCoordinates() {
+        // 기존 선택 초기화
+        clearAllSelections();
+
+        let coordNumber = 1;
+        course.segments.forEach((segment, segIdx) => {
+            segment.coordinates.forEach((coord, coordIdx) => {
+                const coordId = `${segIdx}_${coordIdx}`;
+                const row = document.getElementById(`coord-row-${coordId}`);
+                const checkbox = document.getElementById(`checkbox-${coordId}`);
+
+                // 홀수번째 좌표 선택
+                if (coordNumber % 2 === 1) {
+                    const markerInfo = markers.find(m =>
+                        m.segmentIndex === segIdx && m.coordIndex === coordIdx
+                    );
+
+                    if (checkbox) {
+                        checkbox.checked = true;
+                        selectedCoordinates.add(coordId);
+                        row.classList.add('selected');
+                        // 마커 이미지를 선택 이미지로 변경
+                        if (markerInfo && selectedMarkerImage) {
+                            markerInfo.marker.setImage(selectedMarkerImage);
+                            markerInfo.marker.setZIndex(1000);
+                        }
+                    }
+                }
+                coordNumber++;
+            });
+        });
+
+        updateBulkActionButtons();
+        updateSelectAllCheckbox();
+        showMessage(`${selectedCoordinates.size}개의 홀수번째 좌표가 선택되었습니다.`, 'success');
+    }
+
+    // 짝수번째 좌표 선택
+    function selectEvenCoordinates() {
+        // 기존 선택 초기화
+        clearAllSelections();
+
+        let coordNumber = 1;
+        course.segments.forEach((segment, segIdx) => {
+            segment.coordinates.forEach((coord, coordIdx) => {
+                const coordId = `${segIdx}_${coordIdx}`;
+                const row = document.getElementById(`coord-row-${coordId}`);
+                const checkbox = document.getElementById(`checkbox-${coordId}`);
+
+                // 짝수번째 좌표 선택
+                if (coordNumber % 2 === 0) {
+                    const markerInfo = markers.find(m =>
+                        m.segmentIndex === segIdx && m.coordIndex === coordIdx
+                    );
+
+                    if (checkbox) {
+                        checkbox.checked = true;
+                        selectedCoordinates.add(coordId);
+                        row.classList.add('selected');
+                        // 마커 이미지를 선택 이미지로 변경
+                        if (markerInfo && selectedMarkerImage) {
+                            markerInfo.marker.setImage(selectedMarkerImage);
+                            markerInfo.marker.setZIndex(1000);
+                        }
+                    }
+                }
+                coordNumber++;
+            });
+        });
+
+        updateBulkActionButtons();
+        updateSelectAllCheckbox();
+        showMessage(`${selectedCoordinates.size}개의 짝수번째 좌표가 선택되었습니다.`, 'success');
     }
 
     // 전체 선택 체크박스 상태 업데이트
