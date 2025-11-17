@@ -161,30 +161,13 @@ class CoursesActivity :
                     ),
                 )
             }
-            mapManager.fetchCurrentLocation(
-                onSuccess = { latitude: Latitude, longitude: Longitude ->
-                    viewModel.fetchCourses(
-                        mapCoordinate = Coordinate(latitude, longitude),
-                        userCoordinate = Coordinate(latitude, longitude),
-                    )
-                },
-                onFailure = {
-                    val mapCoordinate: Coordinate =
-                        mapManager.cameraPosition?.toCoordinate()
-                            ?: return@fetchCurrentLocation
-                    viewModel.fetchCourses(
-                        mapCoordinate = mapCoordinate,
-                        userCoordinate = null,
-                    )
-                },
-            )
-
-            setUpBottomNavigation()
+            loadDistance()
             if (savedInstanceState == null) {
                 binding.mainBottomNavigation.selectedItemId = R.id.coursesMenu
             }
         }
 
+        setUpBottomNavigation()
         setUpBindingVariables()
         setUpDoubleBackPress()
         requestLocationPermissions()
@@ -424,12 +407,7 @@ class CoursesActivity :
             when (item.itemId) {
                 R.id.coursesMenu -> {
                     switchContent(CoursesContent.EXPLORE)
-                    mapManager.cameraPosition?.toCoordinate()?.let { mapCoordinate: Coordinate ->
-                        viewModel.fetchCourses(
-                            mapCoordinate = mapCoordinate,
-                            userCoordinate = null,
-                        )
-                    }
+                    loadDistance()
                     true
                 }
 
@@ -442,6 +420,27 @@ class CoursesActivity :
                 else -> false
             }
         }
+    }
+
+    @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+    private fun loadDistance() {
+        mapManager.fetchCurrentLocation(
+            onSuccess = { latitude: Latitude, longitude: Longitude ->
+                viewModel.fetchCourses(
+                    mapCoordinate = Coordinate(latitude, longitude),
+                    userCoordinate = Coordinate(latitude, longitude),
+                )
+            },
+            onFailure = {
+                val mapCoordinate: Coordinate =
+                    mapManager.cameraPosition?.toCoordinate()
+                        ?: return@fetchCurrentLocation
+                viewModel.fetchCourses(
+                    mapCoordinate = mapCoordinate,
+                    userCoordinate = null,
+                )
+            },
+        )
     }
 
     private fun navigateToPreferences() {
