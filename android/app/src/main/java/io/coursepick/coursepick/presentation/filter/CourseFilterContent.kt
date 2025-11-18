@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.RangeSlider
-import androidx.compose.material3.SliderColors
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,7 +33,7 @@ fun CourseFilterContent(
     coursesUiState: CoursesUiState,
     onReset: () -> Unit,
     onEasy: () -> Unit,
-    onNormar: () -> Unit,
+    onNormal: () -> Unit,
     onHard: () -> Unit,
     onRangeSliderValueChange: (ClosedFloatingPointRange<Float>) -> Unit,
     onCancel: () -> Unit,
@@ -79,19 +79,19 @@ fun CourseFilterContent(
             RoundedCornerToggleButton(
                 label = stringResource(R.string.filter_dialog_difficulty_easy),
                 isActive = coursesUiState.courseFilter.difficulties.contains(Difficulty.EASY),
-                onActivedChanged = onEasy,
+                onActiveChanged = onEasy,
                 modifier = Modifier.weight(1f),
             )
             RoundedCornerToggleButton(
                 label = stringResource(R.string.filter_dialog_difficulty_normal),
                 isActive = coursesUiState.courseFilter.difficulties.contains(Difficulty.NORMAL),
-                onActivedChanged = onNormar,
+                onActiveChanged = onNormal,
                 modifier = Modifier.weight(1f),
             )
             RoundedCornerToggleButton(
                 label = stringResource(R.string.filter_dialog_difficulty_hard),
                 isActive = coursesUiState.courseFilter.difficulties.contains(Difficulty.HARD),
-                onActivedChanged = onHard,
+                onActiveChanged = onHard,
                 modifier = Modifier.weight(1f),
             )
         }
@@ -126,7 +126,7 @@ fun CourseFilterContent(
             valueRange = 0f..21f,
             steps = 0,
             colors =
-                SliderColors(
+                SliderDefaults.colors(
                     thumbColor = colorResource(R.color.point_secondary),
                     activeTrackColor = colorResource(R.color.point_secondary),
                     inactiveTrackColor = colorResource(R.color.item_tertiary),
@@ -166,7 +166,7 @@ fun CourseFilterContent(
             RoundedCornerToggleButton(
                 label = stringResource(R.string.filter_result_count, coursesUiState.courses.size),
                 isActive = coursesUiState.courses.isNotEmpty(),
-                onActivedChanged = onResult,
+                onActiveChanged = onResult,
                 modifier = Modifier.weight(1f),
                 enabled = coursesUiState.courses.isNotEmpty(),
             )
@@ -209,11 +209,11 @@ private fun CourseFilterContentPreview() {
                             Kilometer(0.0)..Kilometer(10.0),
                         ),
                 ),
-            onRangeSliderValueChange = { 0f..10f },
+            onRangeSliderValueChange = { _ -> },
             onCancel = {},
             onReset = { },
             onEasy = {},
-            onNormar = { },
+            onNormal = { },
             onHard = {},
             onResult = {},
         )
