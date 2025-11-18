@@ -1,7 +1,6 @@
 package io.coursepick.coursepick.presentation.filter
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.toggleable
@@ -36,7 +35,7 @@ fun RoundedCornerToggleButton(
                     enabled = enabled,
                     role = Role.Checkbox,
                     onValueChange = { onActiveChanged() },
-                    ).clip(RoundedCornerShape(size = 8.dp))
+                ).clip(RoundedCornerShape(size = 8.dp))
                 .background(if (isActive) colorResource(R.color.point_secondary) else colorResource(R.color.gray2))
                 .padding(vertical = 20.dp)
                 .padding(horizontal = 4.dp),
