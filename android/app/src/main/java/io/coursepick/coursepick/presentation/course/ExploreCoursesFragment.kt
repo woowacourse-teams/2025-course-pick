@@ -45,26 +45,28 @@ class ExploreCoursesFragment(
         binding.composeView.setContent {
             CoursePickTheme {
                 val uiState by viewModel.state.observeAsState()
-                if (showFilterDialog && uiState != null) {
-                    CourseFilterBottomSheet(
-                        coursesUiState = uiState!!,
-                        onDismissRequest = { showFilterDialog = false },
-                        onRangeSliderValueChange = { range ->
-                            viewModel.updateLengthRange(
-                                range.start.toDouble(),
-                                range.endInclusive.toDouble(),
-                            )
-                        },
-                        onCancel = {
-                            viewModel.restoreState()
-                            showFilterDialog = false
-                        },
-                        onReset = { viewModel.resetFilterToDefault() },
-                        onEasy = { viewModel.toggleDifficulty(Difficulty.EASY) },
-                        onNormar = { viewModel.toggleDifficulty(Difficulty.NORMAL) },
-                        onHard = { viewModel.toggleDifficulty(Difficulty.HARD) },
-                        onResult = { showFilterDialog = false },
-                    )
+                uiState?.let { state: CoursesUiState ->
+                    if (showFilterDialog) {
+                        CourseFilterBottomSheet(
+                            coursesUiState = state,
+                            onDismissRequest = { showFilterDialog = false },
+                            onRangeSliderValueChange = { range ->
+                                viewModel.updateLengthRange(
+                                    range.start.toDouble(),
+                                    range.endInclusive.toDouble(),
+                                )
+                            },
+                            onCancel = {
+                                viewModel.restoreState()
+                                showFilterDialog = false
+                            },
+                            onReset = { viewModel.resetFilterToDefault() },
+                            onEasy = { viewModel.toggleDifficulty(Difficulty.EASY) },
+                            onNormar = { viewModel.toggleDifficulty(Difficulty.NORMAL) },
+                            onHard = { viewModel.toggleDifficulty(Difficulty.HARD) },
+                            onResult = { showFilterDialog = false },
+                        )
+                    }
                 }
             }
         }

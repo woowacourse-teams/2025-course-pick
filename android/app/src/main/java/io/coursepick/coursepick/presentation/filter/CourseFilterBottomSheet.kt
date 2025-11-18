@@ -37,7 +37,7 @@ fun CourseFilterBottomSheet(
             onCancel = onCancel,
             onReset = onReset,
             onEasy = onEasy,
-            onNormar = onNormar,
+            onNormal = onNormar,
             onHard = onHard,
             onResult = onResult,
         )
