@@ -75,7 +75,7 @@ public class OsrmCoordinatesSnappingService implements CoordinatesSnappingServic
             List<List<Double>> coordinates = (List<List<Double>>) geometry.get("coordinates");
 
             return coordinates.stream()
-                    .map(coord -> createCoordinateWithElevationFindClosestCoordinateFrom(
+                    .map(coord -> createCoordinateWithElevation(
                             new Coordinate(coord.get(1), coord.get(0)),
                             originals)
                     )
@@ -86,8 +86,8 @@ public class OsrmCoordinatesSnappingService implements CoordinatesSnappingServic
         }
     }
 
-    private Coordinate createCoordinateWithElevationFindClosestCoordinateFrom(Coordinate matched,
-                                                                              List<Coordinate> originals) {
+    private Coordinate createCoordinateWithElevation(Coordinate matched,
+                                                     List<Coordinate> originals) {
         Coordinate closestWithElevation = null;
         double minDistance = Double.MAX_VALUE;
 
