@@ -161,7 +161,7 @@ class CoursesActivity :
                     ),
                 )
             }
-            loadDistance()
+            loadCourses()
             if (savedInstanceState == null) {
                 binding.mainBottomNavigation.selectedItemId = R.id.coursesMenu
             }
@@ -407,7 +407,7 @@ class CoursesActivity :
             when (item.itemId) {
                 R.id.coursesMenu -> {
                     switchContent(CoursesContent.EXPLORE)
-                    loadDistance()
+                    loadCourses()
                     true
                 }
 
@@ -423,7 +423,7 @@ class CoursesActivity :
     }
 
     @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    private fun loadDistance() {
+    private fun loadCourses() {
         mapManager.fetchCurrentLocation(
             onSuccess = { latitude: Latitude, longitude: Longitude ->
                 viewModel.fetchCourses(
