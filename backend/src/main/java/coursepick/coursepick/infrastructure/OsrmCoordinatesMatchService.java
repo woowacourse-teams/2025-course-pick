@@ -1,6 +1,6 @@
 package coursepick.coursepick.infrastructure;
 
-import coursepick.coursepick.application.CoordinatesSnappingService;
+import coursepick.coursepick.application.CoordinatesMatchService;
 import coursepick.coursepick.domain.Coordinate;
 
 import coursepick.coursepick.domain.GeoLine;
@@ -23,11 +23,11 @@ import org.springframework.web.client.RestClient;
 @Slf4j
 @Component
 @Profile({"dev", "prod"})
-public class OsrmCoordinatesSnappingService implements CoordinatesSnappingService {
+public class OsrmCoordinatesMatchService implements CoordinatesMatchService {
 
     private final RestClient restClient;
 
-    public OsrmCoordinatesSnappingService(@Value("${osrm.url}") String osrmUrl) {
+    public OsrmCoordinatesMatchService(@Value("${osrm.url}") String osrmUrl) {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setConnectTimeout(Duration.ofSeconds(1));
         requestFactory.setReadTimeout(Duration.ofSeconds(5));
