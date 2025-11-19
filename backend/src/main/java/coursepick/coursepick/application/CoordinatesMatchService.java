@@ -4,7 +4,7 @@ import coursepick.coursepick.domain.Coordinate;
 
 import java.util.List;
 
-public interface CoordinatesSnappingService {
+public interface CoordinatesMatchService {
 
     List<Coordinate> snapCoordinates(List<Coordinate> coordinates);
 }
