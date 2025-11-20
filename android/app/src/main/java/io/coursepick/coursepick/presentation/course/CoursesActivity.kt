@@ -24,6 +24,8 @@ import androidx.annotation.IdRes
 import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.Insets
 import androidx.core.net.toUri
@@ -44,6 +46,7 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.domain.course.Scope
+import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.CoursePickUpdateManager
 import io.coursepick.coursepick.presentation.DataKeys
@@ -54,13 +57,15 @@ import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
 import io.coursepick.coursepick.presentation.filter.FilterBottomSheet
 import io.coursepick.coursepick.presentation.map.kakao.KakaoMapManager
 import io.coursepick.coursepick.presentation.map.kakao.toCoordinate
-import io.coursepick.coursepick.presentation.notice.NoticeDialogFragment
+import io.coursepick.coursepick.presentation.notice.NoticeDialog
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 import io.coursepick.coursepick.presentation.preference.PreferencesActivity
 import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 import io.coursepick.coursepick.presentation.routefinder.RouteFinderChoiceDialogFragment
 import io.coursepick.coursepick.presentation.search.SearchActivity
+import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 import io.coursepick.coursepick.presentation.ui.DoublePressDetector
+import io.coursepick.coursepick.presentation.verifiedlocations.VerifiedLocationsDialog
 
 @AndroidEntryPoint
 class CoursesActivity :
@@ -188,6 +193,7 @@ class CoursesActivity :
         setUpBindingVariables()
         setUpDoubleBackPress()
         requestLocationPermissions()
+        setUpDialogs()
 
         searchLauncher = searchActivityResultLauncher()
 
@@ -267,11 +273,26 @@ class CoursesActivity :
             R.id.item_user_feedback -> navigateToFeedback()
             R.id.item_privacy_policy -> navigateToPrivacyPolicy()
             R.id.item_open_source_notice -> navigateToOpenSourceNotice()
+            R.id.item_verified_location -> showVerifiedLocations()
         }
 
         binding.mainDrawer.close()
 
         return true
+    }
+
+    private fun showVerifiedLocations() {
+        if (viewModel.state.value?.verifiedLocations == null) {
+            Toast
+                .makeText(
+                    this,
+                    getString(R.string.can_not_fetch_verified_locations),
+                    Toast.LENGTH_SHORT,
+                ).show()
+            return
+        }
+
+        viewModel.showVerifiedLocations()
     }
 
     override fun search() {
@@ -727,13 +748,6 @@ class CoursesActivity :
                     Toast
                         .makeText(this, "코스까지 가는 길을 찾지 못했습니다.", Toast.LENGTH_SHORT)
                         .show()
-
-                is CoursesUiEvent.ShowNotice -> {
-                    NoticeDialogFragment.show(
-                        fragmentManager = supportFragmentManager,
-                        notice = event.notice,
-                    )
-                }
             }
         }
     }
@@ -759,6 +773,35 @@ class CoursesActivity :
 
         coursePickApplication.markNoticeAsShown()
         viewModel.fetchNotice(noticeId)
+    }
+
+    private fun setUpDialogs() {
+        binding.mainDialog.apply {
+            setContent {
+                CoursePickTheme {
+                    val state: CoursesUiState? by viewModel.state.observeAsState()
+
+                    if (state?.showVerifiedLocations == true) {
+                        state?.verifiedLocations?.let { verifiedLocations: Notice ->
+                            VerifiedLocationsDialog(
+                                imageUrl = verifiedLocations.imageUrl,
+                                title = verifiedLocations.title,
+                                description = verifiedLocations.description,
+                                onDismissRequest = viewModel::dismissVerifiedLocations,
+                            )
+                        }
+                    }
+
+                    state?.notice?.let { notice: Notice ->
+                        NoticeDialog(
+                            notice = notice,
+                            onDismissRequest = viewModel::dismissNotice,
+                            onDoNotShowAgain = CoursePickPreferences::setDoNotShowNotice,
+                        )
+                    }
+                }
+            }
+        }
     }
 
     private companion object {

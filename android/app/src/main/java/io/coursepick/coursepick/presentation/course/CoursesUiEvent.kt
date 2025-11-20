@@ -1,7 +1,6 @@
 package io.coursepick.coursepick.presentation.course
 
 import io.coursepick.coursepick.domain.course.Coordinate
-import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 
 sealed interface CoursesUiEvent {
@@ -26,8 +25,4 @@ sealed interface CoursesUiEvent {
     ) : CoursesUiEvent
 
     object FetchNearestCoordinateFailure : CoursesUiEvent
-
-    class ShowNotice(
-        val notice: Notice,
-    ) : CoursesUiEvent
 }
