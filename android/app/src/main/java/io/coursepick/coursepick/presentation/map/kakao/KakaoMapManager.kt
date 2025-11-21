@@ -203,13 +203,9 @@ class KakaoMapManager(
         )
     }
 
-    fun scope(screenCenter: Coordinate): Scope {
-        val screenDiagonalTop =
-            kakaoMap?.fromScreenPoint(0, 0)
-                ?: throw IllegalStateException("화면 좌표 계산 실패")
-        val distance =
-            DistanceCalculator.distance(screenCenter, screenDiagonalTop.toCoordinate())
-                ?: throw IllegalStateException("거리 계산 실패")
+    fun scopeOrNull(screenCenter: Coordinate): Scope? {
+        val screenDiagonalTop = kakaoMap?.fromScreenPoint(0, 0) ?: return null
+        val distance = DistanceCalculator.distance(screenCenter, screenDiagonalTop.toCoordinate()) ?: return null
         return Scope(distance)
     }
 }
