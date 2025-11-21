@@ -35,7 +35,6 @@ import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.commit
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.kakao.vectormap.LatLng
 import dagger.hilt.android.AndroidEntryPoint
 import io.coursepick.coursepick.BuildConfig
 import io.coursepick.coursepick.R
@@ -161,9 +160,9 @@ class CoursesActivity :
                     ),
                 )
             }
-            loadCourses()
+            fetchCourses()
             if (savedInstanceState == null) {
-                binding.mainBottomNavigation.selectedItemId = R.id.coursesMenu
+                selectMenuWithoutListener(R.id.coursesMenu)
             }
         }
 
@@ -209,13 +208,7 @@ class CoursesActivity :
     override fun searchThisArea() {
         selectMenuWithoutListener(R.id.coursesMenu)
 
-        val mapPosition: LatLng =
-            mapManager.cameraPosition ?: run {
-                Toast.makeText(this, "지도 위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
-                return
-            }
-
-        val coordinate = mapPosition.toCoordinate()
+        val coordinate = mapCoordinateOrNull() ?: return
         Logger.log(
             Logger.Event.Click("search_this_area"),
             "latitude" to coordinate.latitude.value,
@@ -223,20 +216,8 @@ class CoursesActivity :
         )
         binding.mainSearchThisAreaButton.visibility = View.GONE
         mapManager.showSearchPosition(coordinate)
-        val scope =
-            try {
-                mapManager.scope(coordinate)
-            } catch (e: IllegalStateException) {
-                Toast
-                    .makeText(
-                        this,
-                        e.message ?: "지도를 불러올 수 없어 코스를 탐색할 수 없습니다.",
-                        Toast.LENGTH_SHORT,
-                    ).show()
-                return
-            }
 
-        fetchCourses(coordinate, scope)
+        fetchCourses()
     }
 
     override fun openMenu() {
@@ -292,20 +273,23 @@ class CoursesActivity :
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun onReconnect() {
-        val coordinate = mapManager.cameraPosition?.toCoordinate()
-        if (coordinate != null) {
-            fetchCourses(coordinate, Scope.default())
-        } else {
-            mapManager.fetchCurrentLocation(
-                onSuccess = { lat, lng ->
-                    fetchCourses(Coordinate(lat, lng), Scope.default())
-                },
-                onFailure = {
-                    Toast
-                        .makeText(this, "위치 정보를 가져올 수 없어 데이터를 갱신할 수 없습니다.", Toast.LENGTH_SHORT)
-                        .show()
-                },
-            )
+        fetchCourses()
+    }
+
+    private fun scopeOrNull(): Scope? {
+        val mapPosition: Coordinate = mapCoordinateOrNull() ?: return null
+        val scope: Scope =
+            mapManager.scopeOrNull(mapPosition) ?: run {
+                Toast.makeText(this, "탐색 범위를 계산하지 못했습니다.", Toast.LENGTH_SHORT).show()
+                return null
+            }
+        return scope
+    }
+
+    private fun mapCoordinateOrNull(): Coordinate? {
+        return mapManager.cameraPosition?.toCoordinate() ?: run {
+            Toast.makeText(this, "지도 위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
+            return null
         }
     }
 
@@ -346,7 +330,7 @@ class CoursesActivity :
         mapManager.resetZoomLevel()
         mapManager.showSearchPosition(coordinate)
         mapManager.moveTo(latitude, longitude)
-        fetchCourses(coordinate, Scope.default())
+        fetchCourses()
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -407,7 +391,7 @@ class CoursesActivity :
             when (item.itemId) {
                 R.id.coursesMenu -> {
                     switchContent(CoursesContent.EXPLORE)
-                    loadCourses()
+                    searchThisArea()
                     true
                 }
 
@@ -420,27 +404,6 @@ class CoursesActivity :
                 else -> false
             }
         }
-    }
-
-    @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    private fun loadCourses() {
-        mapManager.fetchCurrentLocation(
-            onSuccess = { latitude: Latitude, longitude: Longitude ->
-                viewModel.fetchCourses(
-                    mapCoordinate = Coordinate(latitude, longitude),
-                    userCoordinate = Coordinate(latitude, longitude),
-                )
-            },
-            onFailure = {
-                val mapCoordinate: Coordinate =
-                    mapManager.cameraPosition?.toCoordinate()
-                        ?: return@fetchCurrentLocation
-                viewModel.fetchCourses(
-                    mapCoordinate = mapCoordinate,
-                    userCoordinate = null,
-                )
-            },
-        )
     }
 
     private fun navigateToPreferences() {
@@ -626,17 +589,17 @@ class CoursesActivity :
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    private fun fetchCourses(
-        mapCenter: Coordinate,
-        scope: Scope,
-    ) {
+    private fun fetchCourses() {
+        val mapPosition: Coordinate = mapCoordinateOrNull() ?: return
+        val scope: Scope = scopeOrNull() ?: return
+
         mapManager.fetchCurrentLocation(
             onSuccess = { userLatitude: Latitude, userLongitude: Longitude ->
                 val userCoordinate = Coordinate(userLatitude, userLongitude)
-                viewModel.fetchCourses(mapCenter, userCoordinate, scope)
+                viewModel.fetchCourses(mapPosition, userCoordinate, scope)
             },
             onFailure = {
-                viewModel.fetchCourses(mapCenter, null, scope)
+                viewModel.fetchCourses(mapPosition, null, scope)
             },
         )
     }
