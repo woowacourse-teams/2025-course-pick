@@ -11,6 +11,7 @@ data class CoursesUiState(
     val verifiedLocations: Notice? = null,
     val showVerifiedLocations: Boolean = false,
     val notice: Notice? = null,
+    val showSettings: Boolean = false,
 ) {
     val isQueryBlank: Boolean = query.isBlank()
     val isFilterDefault: Boolean = courseFilter == CourseFilter.None

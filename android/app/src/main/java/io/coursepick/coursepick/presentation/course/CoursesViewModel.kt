@@ -93,14 +93,17 @@ class CoursesViewModel
                 val newCourses =
                     courses.map { item: CourseListItem ->
                         when (item) {
-                            is CourseListItem.Course ->
+                            is CourseListItem.Course -> {
                                 if (item.item.id == toggledCourse.id) {
                                     CourseListItem.Course(item.item.copy(favorite = !item.item.favorite))
                                 } else {
                                     item
                                 }
+                            }
 
-                            is CourseListItem.Loading -> item
+                            is CourseListItem.Loading -> {
+                                item
+                            }
                         }
                     }
                 _state.value = state.value?.copy(originalCourses = newCourses)
@@ -477,6 +480,14 @@ class CoursesViewModel
                     _state.value = state.value?.copy(verifiedLocations = verifiedLocations)
                 }
             }
+        }
+
+        fun showSettings() {
+            _state.value = state.value?.copy(showSettings = true)
+        }
+
+        fun hideSettings() {
+            _state.value = state.value?.copy(showSettings = false)
         }
 
         private fun newCoursesListItem(
