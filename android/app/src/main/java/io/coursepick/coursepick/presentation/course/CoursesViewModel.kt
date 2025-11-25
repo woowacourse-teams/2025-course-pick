@@ -382,7 +382,7 @@ class CoursesViewModel
             _state.value = state.value?.copy(showSettings = true)
         }
 
-        fun hideSettings() {
+        fun showCourses() {
             _state.value = state.value?.copy(showSettings = false)
         }
 
