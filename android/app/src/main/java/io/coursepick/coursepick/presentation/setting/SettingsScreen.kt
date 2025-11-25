@@ -2,7 +2,6 @@ package io.coursepick.coursepick.presentation.setting
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,7 +33,6 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        verticalArrangement = Arrangement.SpaceBetween,
         modifier =
             modifier
                 .fillMaxSize()
@@ -45,6 +43,7 @@ fun SettingsScreen(
         Column(
             modifier =
                 Modifier
+                    .weight(1F)
                     .verticalScroll(rememberScrollState()),
         ) {
             Text(
@@ -114,13 +113,14 @@ fun SettingsScreen(
         }
 
         Text(
-            text = "설치 ID: $installationId",
+            text = "사용자 ID: $installationId",
             fontSize = 14.sp,
             color = colorResource(R.color.item_primary),
             modifier =
                 Modifier
-                    .clickable { onCopyInstallationId() }
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(top = 10.dp)
+                    .clickable { onCopyInstallationId() },
         )
     }
 }
