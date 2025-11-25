@@ -267,6 +267,11 @@
             </androidx.cardview.widget.CardView>
 
 
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/mainDialog"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
         <com.google.android.material.navigation.NavigationView

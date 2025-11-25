@@ -38,8 +38,8 @@ class CoursesViewModel
         private val _state: MutableLiveData<CoursesUiState> =
             MutableLiveData(
                 CoursesUiState(
-                    query = "",
                     originalCourses = emptyList(),
+                    query = "",
                     status = UiStatus.Loading,
                 ),
             )
@@ -53,6 +53,7 @@ class CoursesViewModel
 
         init {
             checkNetwork()
+            fetchVerifiedLocations()
         }
 
         private fun checkNetwork() {
@@ -350,7 +351,29 @@ class CoursesViewModel
                 runCatching {
                     noticeRepository.notice(id)
                 }.onSuccess { notice: Notice ->
-                    _event.value = CoursesUiEvent.ShowNotice(notice)
+                    _state.value = state.value?.copy(notice = notice)
+                }
+            }
+        }
+
+        fun showVerifiedLocations() {
+            _state.value = state.value?.copy(showVerifiedLocations = true)
+        }
+
+        fun dismissVerifiedLocations() {
+            _state.value = state.value?.copy(showVerifiedLocations = false)
+        }
+
+        fun dismissNotice() {
+            _state.value = state.value?.copy(notice = null)
+        }
+
+        private fun fetchVerifiedLocations() {
+            viewModelScope.launch {
+                runCatching {
+                    noticeRepository.verifiedLocations()
+                }.onSuccess { verifiedLocations: Notice ->
+                    _state.value = state.value?.copy(verifiedLocations = verifiedLocations)
                 }
             }
         }
