@@ -227,19 +227,19 @@ class CoursesActivity :
         fetchCourses()
     }
 
-//    private fun showVerifiedLocations() {
-//        if (viewModel.state.value?.verifiedLocations == null) {
-//            Toast
-//                .makeText(
-//                    this,
-//                    getString(R.string.can_not_fetch_verified_locations),
-//                    Toast.LENGTH_SHORT,
-//                ).show()
-//            return
-//        }
-//
-//        viewModel.showVerifiedLocations()
-//    }
+    private fun showVerifiedLocations() {
+        if (viewModel.state.value?.verifiedLocations == null) {
+            Toast
+                .makeText(
+                    this,
+                    getString(R.string.can_not_fetch_verified_locations),
+                    Toast.LENGTH_SHORT,
+                ).show()
+            return
+        }
+
+        viewModel.showVerifiedLocations()
+    }
 
     override fun search() {
         val intent = SearchActivity.intent(this)
@@ -595,6 +595,7 @@ class CoursesActivity :
                         onNavigateToFeedback = { navigateToFeedback() },
                         onNavigateToPrivacyPolicy = { navigateToPrivacyPolicy() },
                         onNavigateToOpenSourceNotice = { navigateToOpenSourceNotice() },
+                        onShowVerifiedLocations = { showVerifiedLocations() },
                         installationId = coursePickApplication.installationId.value,
                         onCopyInstallationId = { copyClientId() },
                     )
