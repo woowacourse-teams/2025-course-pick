@@ -394,14 +394,14 @@ class CoursesActivity :
         binding.mainBottomNavigation.setOnItemSelectedListener { item: MenuItem ->
             when (item.itemId) {
                 R.id.coursesMenu -> {
-                    viewModel.hideSettings()
+                    viewModel.showCourses()
                     switchContent(CoursesContent.EXPLORE)
                     searchThisArea()
                     true
                 }
 
                 R.id.favoritesMenu -> {
-                    viewModel.hideSettings()
+                    viewModel.showCourses()
                     switchContent(CoursesContent.FAVORITES)
                     viewModel.fetchFavorites()
                     true
