@@ -559,7 +559,7 @@ class CoursesActivity :
 
     private fun setUpMapPadding() {
         val bottomSheet = binding.mainBottomSheet
-        mapManager.setBottomPadding(binding.mainContentWrapper.height - bottomSheet.y.toInt())
+        mapManager.setBottomPadding(binding.mainContent.height - bottomSheet.y.toInt())
     }
 
     private fun setUpBottomSheet() {
@@ -580,7 +580,7 @@ class CoursesActivity :
                     bottomSheet: View,
                     slideOffset: Float,
                 ) {
-                    mapManager.setBottomPadding(binding.mainContentWrapper.height - bottomSheet.y.toInt())
+                    mapManager.setBottomPadding(binding.mainContent.height - bottomSheet.y.toInt())
                 }
             },
         )
