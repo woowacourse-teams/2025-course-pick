@@ -6,11 +6,13 @@ import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
 import coursepick.coursepick.domain.RoadType;
 import coursepick.coursepick.test_util.AbstractIntegrationTest;
+import coursepick.coursepick.test_util.CoordinateTestUtil;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.data.Percentage;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -164,6 +166,43 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         assertThat(courses.courses()).extracting(CourseResponse::distance).allMatch(Optional::isPresent);
         assertThat(courses.courses().get(0).distance().get().value()).isCloseTo(6640, Percentage.withPercentage(1));
         assertThat(courses.courses().get(1).distance().get().value()).isCloseTo(6583, Percentage.withPercentage(1));
+    }
+
+    @Test
+    void 더_보여줄_코스가_없다() {
+        List<Coordinate> coordinates = CoordinateTestUtil.square(new Coordinate(37.5180, 127.0280), new Coordinate(37.5175, 127.0270));
+        List<Course> courses = new ArrayList<>();
+        for (int i = 0; i < 5; i++) courses.add(new Course("코스" + i, coordinates));
+        dbUtil.saveAllCourses(courses);
+
+        var result = sut.findNearbyCourses(37.5175, 127.0270, null, null, 3000, 0);
+
+        assertThat(result.hasNext()).isFalse();
+    }
+
+    @Test
+    void 더_보여줄_코스가_있다() {
+        List<Coordinate> coordinates = CoordinateTestUtil.square(new Coordinate(37.5180, 127.0280), new Coordinate(37.5175, 127.0270));
+        List<Course> courses = new ArrayList<>();
+        for (int i = 0; i < 15; i++) courses.add(new Course("코스" + i, coordinates));
+        dbUtil.saveAllCourses(courses);
+
+        var result = sut.findNearbyCourses(37.5175, 127.0270, null, null, 3000, 0);
+
+        assertThat(result.hasNext()).isTrue();
+    }
+
+    @Test
+    void 다음_페이지의_코스를_찾는다() {
+        List<Coordinate> coordinates = CoordinateTestUtil.square(new Coordinate(37.5180, 127.0280), new Coordinate(37.5175, 127.0270));
+        List<Course> courses = new ArrayList<>();
+        for (int i = 0; i < 15; i++) courses.add(new Course("코스" + i, coordinates));
+        dbUtil.saveAllCourses(courses);
+
+        var result = sut.findNearbyCourses(37.5175, 127.0270, null, null, 3000, 1);
+
+        assertThat(result.hasNext()).isFalse();
+        assertThat(result.courses().size()).isEqualTo(5);
     }
 
     @Test
