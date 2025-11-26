@@ -1,12 +1,14 @@
 package coursepick.coursepick.application;
 
 import coursepick.coursepick.application.dto.CourseResponse;
+import coursepick.coursepick.application.dto.CoursesResponse;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
 import coursepick.coursepick.domain.CourseRepository;
 import coursepick.coursepick.domain.Meter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -26,30 +28,33 @@ public class CourseApplicationService {
     private final WalkingRouteService walkingRouteService;
 
     @Transactional(readOnly = true)
-    public List<CourseResponse> findNearbyCourses(double mapLatitude, double mapLongitude, Double userLatitude, Double userLongitude, int scope, Integer pageNumber) {
+    public CoursesResponse findNearbyCourses(double mapLatitude, double mapLongitude, @Nullable Double userLatitude, @Nullable Double userLongitude, int scope, @Nullable Integer pageNumber) {
         final Coordinate mapPosition = new Coordinate(mapLatitude, mapLongitude);
         final Meter meter = new Meter(scope).clamp(1000, 3000);
-        Pageable pageable = createPageable(pageNumber);
+        final Pageable pageable = createPageable(pageNumber);
 
-        Slice<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(mapPosition, meter, pageable);
+        final Slice<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(mapPosition, meter, pageable);
 
-        if (userLatitude == null || userLongitude == null) {
-            return coursesWithinScope
-                    .stream()
-                    .map(CourseResponse::from)
-                    .toList();
-        }
-
-        final Coordinate userPosition = new Coordinate(userLatitude, userLongitude);
-        return coursesWithinScope
-                .stream()
-                .map(course -> CourseResponse.from(course, userPosition))
-                .toList();
+        return CoursesResponse.from(coursesWithinScope, createUserPositionOrNull(userLatitude, userLongitude));
     }
 
-    private static Pageable createPageable(Integer pageNumber) {
+    private static Pageable createPageable(@Nullable Integer pageNumber) {
         if (pageNumber == null || pageNumber < 0) return PageRequest.of(0, 10);
         else return PageRequest.of(pageNumber, 10);
+    }
+
+    private static Coordinate createUserPositionOrNull(@Nullable Double userLatitude, @Nullable Double userLongitude) {
+        Coordinate coordinate = null;
+        if (userLatitude != null && userLongitude != null) {
+            coordinate = new Coordinate(userLatitude, userLongitude);
+        }
+        return coordinate;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Coordinate> routesToCourse(String id, double originLatitude, double originLongitude) {
+        Coordinate destination = findClosestCoordinate(id, originLatitude, originLongitude);
+        return walkingRouteService.route(new Coordinate(originLatitude, originLongitude), destination);
     }
 
     @Transactional(readOnly = true)
@@ -58,12 +63,6 @@ public class CourseApplicationService {
                 .orElseThrow(() -> NOT_EXIST_COURSE.create(id));
 
         return course.closestCoordinateFrom(new Coordinate(latitude, longitude));
-    }
-
-    @Transactional(readOnly = true)
-    public List<Coordinate> routesToCourse(String id, double originLatitude, double originLongitude) {
-        Coordinate destination = findClosestCoordinate(id, originLatitude, originLongitude);
-        return walkingRouteService.route(new Coordinate(originLatitude, originLongitude), destination);
     }
 
     @Transactional(readOnly = true)
