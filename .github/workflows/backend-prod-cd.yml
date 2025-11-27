@@ -65,5 +65,5 @@ jobs:
           username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd ~
+            cd /home/ubuntu/coursepick
             ./deploy.sh
