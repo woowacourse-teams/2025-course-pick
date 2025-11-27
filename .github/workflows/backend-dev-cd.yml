@@ -1,7 +1,7 @@
 name: Backend Dev Server CD
 
 on:
-  push:
+  pull_request:
     branches: [ backend ]
   workflow_dispatch:
 
@@ -52,49 +52,15 @@ jobs:
   deploy:
     name: 개발서버 배포
     needs: build
-    runs-on: [ self-hosted, dev-app ]
-    defaults:
-      run:
-        working-directory: /home/ssm-user/coursepick
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Docker 로그인
-        uses: docker/login-action@v3
+      - name: SSH로 배포 스크립트 실행
+        uses: appleboy/ssh-action@v1.0.0
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: .env 파일 생성
-        run: |
-          cat > .env <<'EOF'
-          ${{ secrets.DEV_ENV_FILE }}
-          EOF
-          chmod 600 .env
-
-      - name: 새로운 서버 시작
-        run: |
-          sudo docker compose --env-file .env up -d --pull always backend
-
-      - name: 사용하지 않는 도커 이미지 정리
-        run: |
-          sudo docker image prune -a -f
-
-      - name: 시작된 서버 헬스체크
-        run: |
-          for i in $(seq 1 10)
-          do
-            SERVER_STATUS=$(curl -o /dev/null -w "%{http_code}" http://localhost:80/actuator/health || true)
-
-            if [ "$SERVER_STATUS" -eq 200 ]; then
-              echo "서버 정상적으로 실행됨 status=$SERVER_STATUS"
-              break
-            else
-              echo "헬스체크에 실패함. 5초 후 다시 시도"
-              sleep 5
-            fi
-
-            if [ $i -eq 10 ]; then
-              echo "서버가 정상적으로 실행되지 않아 종료함"
-              exit 1
-            fi
-          done
+          host: ${{ secrets.DEV_SERVER_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/ubuntu/coursepick
+            ./deploy.sh
