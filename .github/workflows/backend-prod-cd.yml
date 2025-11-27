@@ -1,8 +1,8 @@
 name: Backend Prod Server CD
 
 on:
-  push:
-    branches: [ main ]
+  pull_request:
+    branches: [ backend ]
     paths:
       - 'backend/**'
       - '.github/workflows/backend-prod-cd.yml'
@@ -52,68 +52,18 @@ jobs:
             --push \
             .
 
-  # 1) 유휴 서버 탐지
-  detect-idle:
-    name: 쉬고있는 EC2 서버 탐지
+  deploy:
+    name: Prod 서버 배포
     needs: build
-    runs-on: [ self-hosted, prod-lb ]
-    outputs:
-      idle-server: ${{ steps.find.outputs.idle }}
+    runs-on: ubuntu-latest
+
     steps:
-      - name: 탐침 스크립트 실행
-        id: find
-        run: |
-          declare -A servers=(
-            [prod-app-1]="${{ secrets.PROD_APP_1_HEALTH_URL }}"
-            [prod-app-2]="${{ secrets.PROD_APP_2_HEALTH_URL }}"
-          )
-          
-          idle_servers=()
-          
-          for name in "${!servers[@]}"; do
-            url="${servers[$name]}"
-            code=$(curl -s -o /dev/null -w "%{http_code}" "$url" || echo "")
-            if [[ "$code" -eq 200 ]]; then
-              echo "$name 응답 성공"
-            else
-              echo "$name 응답 실패"
-              idle_servers+=("$name")
-            fi
-          done
-          
-          if [[ ${#idle_servers[@]} -eq 0 ]]; then
-            echo "Both servers are healthy – cannot find idle server"
-          elif [[ ${#idle_servers[@]} -eq 1 ]]; then
-            idle="${idle_servers[0]}"
-            echo "One server is idle, idle=$idle"
-            echo "idle=$idle" >> $GITHUB_OUTPUT
-          else
-            idle="prod-app-1"
-            echo "None servers are idle – as default, deploy to server1, idle=$idle"
-            echo "idle=$idle" >> $GITHUB_OUTPUT
-          fi
-
-          echo "idle=$idle" >> $GITHUB_OUTPUT
-
-  # 2) 유휴 서버에 배포 (server1 / server2 중 하나만 실행)
-  deploy-prod-app-1:
-    name: prod-app-1 서버에 배포
-    needs: detect-idle
-    if: needs.detect-idle.outputs.idle-server == 'prod-app-1'
-    uses: ./.github/workflows/backend-prod-app-cd.yml
-    with:
-      run_id: ${{ github.run_id }}
-      main_runner: prod-app-1
-      sub_runner: prod-app-2
-    secrets: inherit
-
-  deploy-prod-app-2:
-    name: prod-app-2 서버에 배포
-    needs: detect-idle
-    if: needs.detect-idle.outputs.idle-server == 'prod-app-2'
-    uses: ./.github/workflows/backend-prod-app-cd.yml
-    with:
-      run_id: ${{ github.run_id }}
-      main_runner: prod-app-2
-      sub_runner: prod-app-1
-    secrets: inherit
+      - name: SSH로 배포 스크립트 실행
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.PROD_SERVER_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ~
+            ./deploy.sh
