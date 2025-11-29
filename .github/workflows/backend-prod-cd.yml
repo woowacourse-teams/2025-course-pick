@@ -1,7 +1,7 @@
 name: Backend Prod Server CD
 
 on:
-  push:
+  pull_request:
     branches: [ backend ]
     paths:
       - 'backend/**'
@@ -9,8 +9,14 @@ on:
   workflow_dispatch:
 
 jobs:
+  ci:
+    name: CI 실행
+    uses: ./.github/workflows/backend-ci.yml
+    secrets: inherit
+
   build:
-    name: 프로젝트 빌드
+    name: 도커 이미지 빌드 & 푸시
+    needs: ci
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -27,16 +33,11 @@ jobs:
           distribution: 'corretto'
           cache: 'gradle'
 
-      - name: 프로젝트 gradlew 빌드
-        run: ./gradlew build
+      - name: gradlew 실행 권한 부여
+        run: chmod +x gradlew
 
-      - name: 테스트 결과 보고서 작성
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: 테스트 결과
-          path: backend/build/test-results/test/*.xml
-          reporter: java-junit
+      - name: 프로젝트 gradlew 빌드
+        run: ./gradlew clean build -x test
 
       - name: Docker 로그인
         uses: docker/login-action@v3
@@ -53,7 +54,7 @@ jobs:
             .
 
   deploy:
-    name: Prod 서버 배포
+    name: 운영서버 배포
     needs: build
     runs-on: ubuntu-latest
 
@@ -66,4 +67,36 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /home/ubuntu/coursepick
-            ./deploy.sh
+            
+            echo "🚀 운영 서버 배포 시작..."
+            
+            echo "📦 최신 이미지 Pull..."
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/coursepick-backend:prod
+            
+            echo "🌳 .env 파일 생성..."
+            cat > .env <<'EOF'
+            ${{ secrets.PROD_ENV_FILE }}
+            EOF
+            chmod 600 .env
+            
+            echo "▶️ 새 서버 시작..."
+            sudo docker compose --env-file .env up -d --pull always backend
+            
+            echo "🧹 사용하지 않는 이미지 정리..."
+            sudo docker image prune -a -f
+            
+            echo "⛑️ 헬스 체크..."
+            for i in $(seq 1 10); do
+              SERVER_STATUS=$(curl -o /dev/null -w "%{http_code}" http://localhost:80/actuator/health || echo "000")
+              if [ "$SERVER_STATUS" -eq 200 ]; then
+                echo "✅ 배포 성공! 서버 동작 중..."
+                exit 0
+              else
+                echo "Attempt $i/10: 헬스 체크 실패 (status=$SERVER_STATUS). 5초 후 재시도..."
+                sleep 5
+              fi
+            done
+            
+            echo "❌ 배포 실패! 서버가 동작하지 않습니다."
+            sudo docker logs coursepick-backend --tail 50
+            exit 1
