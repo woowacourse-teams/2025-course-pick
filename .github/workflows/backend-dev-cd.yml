@@ -30,10 +30,10 @@ jobs:
           distribution: 'corretto'
           cache: 'gradle'
 
-      - name: Gradle 실행 권한 부여
+      - name: gradlew 실행 권한 부여
         run: chmod +x gradlew
 
-      - name: Gradle 빌드 (jar 생성)
+      - name: 프로젝트 gradlew 빌드
         run: ./gradlew clean build -x test
 
       - name: Docker 로그인
