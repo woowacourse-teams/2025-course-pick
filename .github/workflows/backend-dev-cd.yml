@@ -1,7 +1,7 @@
 name: Backend Dev Server CD
 
 on:
-  pull_request:
+  push:
     branches: [ backend ]
   workflow_dispatch:
 
