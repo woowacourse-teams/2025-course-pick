@@ -6,14 +6,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  ci:
-    name: CI 실행
-    uses: ./.github/workflows/backend-ci.yml
-    secrets: inherit
-
   build:
     name: 도커 이미지 빌드 & 푸시
-    needs: ci
     runs-on: ubuntu-latest
     defaults:
       run:
