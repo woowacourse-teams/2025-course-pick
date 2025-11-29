@@ -57,8 +57,14 @@ jobs:
             echo "📦 최신 이미지 Pull..."
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/coursepick-backend:dev
             
+            echo "🌳 .env 파일 생성..."
+            cat > .env <<'EOF'
+            ${{ secrets.DEV_ENV_FILE }}
+            EOF
+            chmod 600 .env
+            
             echo "▶️ 새 서버 시작..."
-            sudo docker compose up -d backend
+            sudo docker compose --env-file .env up -d --pull always backend
             
             echo "🧹 사용하지 않는 이미지 정리..."
             sudo docker image prune -a -f
