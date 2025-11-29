@@ -24,6 +24,9 @@ jobs:
           distribution: 'corretto'
           cache: 'gradle'
 
+      - name: Gradle 실행 권한 부여
+        run: chmod +x gradlew
+
       - name: 프로젝트 gradlew 빌드
         run: ./gradlew build
 
@@ -63,4 +66,30 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /home/ubuntu/coursepick
-            ./deploy.sh
+            
+            echo "🚀 개발 서버 배포 시작..."
+            
+            echo "📦 최신 이미지 Pull..."
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/coursepick-backend:dev
+            
+            echo "▶️ 새 서버 시작..."
+            sudo docker compose up -d backend
+            
+            echo "🧹 사용하지 않는 이미지 정리..."
+            sudo docker image prune -a -f
+            
+            echo "⛑️ 헬스 체크..."
+            for i in $(seq 1 10); do
+              SERVER_STATUS=$(curl -o /dev/null -w "%{http_code}" http://localhost:80/actuator/health || echo "000")
+              if [ "$SERVER_STATUS" -eq 200 ]; then
+                echo "✅ 배포 성공! 서버 동작 중..."
+                exit 0
+              else
+                echo "Attempt $i/10: 헬스 체크 실패 (status=$SERVER_STATUS). 5초 후 재시도..."
+                sleep 5
+              fi
+            done
+            
+            echo "❌ 배포 실패! 서버가 동작하지 않습니다."
+            sudo docker logs coursepick-backend --tail 50
+            exit 1
