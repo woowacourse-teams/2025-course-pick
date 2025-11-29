@@ -100,3 +100,4 @@ jobs:
             echo "❌ 배포 실패! 서버가 동작하지 않습니다."
             sudo docker logs coursepick-backend --tail 50
             exit 1
+          
