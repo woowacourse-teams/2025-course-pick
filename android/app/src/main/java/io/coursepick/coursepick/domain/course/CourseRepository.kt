@@ -9,6 +9,13 @@ interface CourseRepository {
         userCoordinate: Coordinate? = null,
     ): List<Course>
 
+    suspend fun courses(
+        scope: Scope,
+        page: Int,
+        mapCoordinate: Coordinate,
+        userCoordinate: Coordinate? = null,
+    ): CoursesPage
+
     suspend fun routeToCourse(
         course: Course,
         origin: Coordinate,
