@@ -1,6 +1,7 @@
 package io.coursepick.coursepick.presentation.course
 
 import io.coursepick.coursepick.domain.course.Course
+import io.coursepick.coursepick.domain.course.CoursesPage
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.domain.fixture.COORDINATE_FIXTURE
 import io.coursepick.coursepick.domain.fixture.COURSE_FIXTURE_20
@@ -23,7 +24,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 @ExtendWith(CoroutinesTestExtension::class)
 @ExtendWith(InstantTaskExecutorExtension::class)
 class CoursesViewModelTest {
-    private val fakeCourseRepository = FakeCourseRepository()
+    private lateinit var fakeCourseRepository: FakeCourseRepository
     private val fakeFavoritesRepository = FakeFavoritesRepository()
     private val fakeNoticeRepository = FakeNoticeRepository()
     private val fakeNetworkMonitor = FakeNetworkMonitor()
@@ -31,6 +32,7 @@ class CoursesViewModelTest {
 
     @BeforeEach
     fun setUp() {
+        fakeCourseRepository = FakeCourseRepository()
         mainViewModel =
             CoursesViewModel(
                 fakeCourseRepository,
@@ -97,5 +99,122 @@ class CoursesViewModelTest {
 
         // then
         Assertions.assertThat(mainViewModel.state.getOrAwaitValue()).isEqualTo(expected)
+    }
+
+    @Test
+    fun `첫 페이지 로드 실패 시 에러 상태로 업데이트된다`() {
+        // given
+        fakeCourseRepository.shouldThrowError = true
+        val viewModel =
+            CoursesViewModel(
+                fakeCourseRepository,
+                fakeFavoritesRepository,
+                fakeNoticeRepository,
+                fakeNetworkMonitor,
+            )
+
+        // when
+        viewModel.fetchCourses(COORDINATE_FIXTURE, null, Scope.default())
+
+        // then
+        val state: CoursesUiState = viewModel.state.getOrAwaitValue()
+        Assertions.assertThat(state.status).isEqualTo(UiStatus.Failure)
+        Assertions.assertThat(state.originalCourses).isEmpty()
+    }
+
+    @Test
+    fun `다음 페이지 로드 성공 시 기존 코스와 새 코스가 병합된다`() {
+        // given
+        val secondPageCourses = listOf(COURSE_FIXTURE_20)
+        fakeCourseRepository.customCoursesPage =
+            CoursesPage(courses = secondPageCourses, hasNext = false)
+
+        // when
+        mainViewModel.fetchNextCourses()
+
+        // then
+        val state: CoursesUiState = mainViewModel.state.getOrAwaitValue()
+        Assertions.assertThat(state.status).isEqualTo(UiStatus.Success)
+        Assertions.assertThat(state.originalCourses.size).isEqualTo(FAKE_COURSES.size + 1)
+
+        val lastCourse = state.originalCourses.last()
+        Assertions.assertThat(lastCourse.course).isEqualTo(COURSE_FIXTURE_20)
+        Assertions.assertThat(lastCourse.selected).isFalse()
+    }
+
+    @Test
+    fun `로딩 중일 때 fetchNextCourses 호출 시 중복 요청이 방지된다`() {
+        // given
+        fakeCourseRepository.customCoursesPage =
+            CoursesPage(courses = FAKE_COURSES, hasNext = true)
+
+        val viewModel =
+            CoursesViewModel(
+                fakeCourseRepository,
+                fakeFavoritesRepository,
+                fakeNoticeRepository,
+                fakeNetworkMonitor,
+            )
+        viewModel.fetchCourses(COORDINATE_FIXTURE, null, Scope.default())
+
+        val initialState: CoursesUiState = viewModel.state.getOrAwaitValue()
+        val initialCourseCount = initialState.originalCourses.size
+
+        // when - fetchNextCourses를 두 번 연속 호출
+        fakeCourseRepository.customCoursesPage =
+            CoursesPage(courses = listOf(COURSE_FIXTURE_20), hasNext = false)
+
+        viewModel.fetchNextCourses()
+        viewModel.fetchNextCourses()
+
+        // then - 한 번만 추가되었는지 확인
+        val state: CoursesUiState = viewModel.state.getOrAwaitValue()
+        Assertions.assertThat(state.originalCourses.size).isEqualTo(initialCourseCount + 1)
+    }
+
+    @Test
+    fun `hasNext가 false일 때 fetchNextCourses 호출 시 요청이 방지된다`() {
+        // given
+        fakeCourseRepository.customCoursesPage =
+            CoursesPage(courses = FAKE_COURSES, hasNext = false)
+
+        val viewModel =
+            CoursesViewModel(
+                fakeCourseRepository,
+                fakeFavoritesRepository,
+                fakeNoticeRepository,
+                fakeNetworkMonitor,
+            )
+        viewModel.fetchCourses(COORDINATE_FIXTURE, null, Scope.default())
+
+        val initialState: CoursesUiState = viewModel.state.getOrAwaitValue()
+        val initialCourseCount = initialState.originalCourses.size
+
+        fakeCourseRepository.customCoursesPage =
+            CoursesPage(courses = listOf(COURSE_FIXTURE_20), hasNext = false)
+
+        // when
+        viewModel.fetchNextCourses()
+
+        // then
+        val state: CoursesUiState = viewModel.state.getOrAwaitValue()
+        Assertions.assertThat(state.originalCourses.size).isEqualTo(initialCourseCount)
+    }
+
+    @Test
+    fun `다음 페이지 로드 실패 시 기존 코스 목록은 유지된다`() {
+        // given
+        val initialState: CoursesUiState = mainViewModel.state.getOrAwaitValue()
+        val initialCourses = initialState.originalCourses
+
+        fakeCourseRepository.shouldThrowError = true
+
+        // when
+        mainViewModel.fetchNextCourses()
+
+        // then
+        val state: CoursesUiState = mainViewModel.state.getOrAwaitValue()
+        Assertions.assertThat(state.status).isEqualTo(UiStatus.Failure)
+        Assertions.assertThat(state.originalCourses).isEqualTo(initialCourses)
     }
 }
