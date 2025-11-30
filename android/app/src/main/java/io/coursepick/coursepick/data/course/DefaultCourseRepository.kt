@@ -17,20 +17,6 @@ class DefaultCourseRepository
 
         override suspend fun courses(
             scope: Scope,
-            mapCoordinate: Coordinate,
-            userCoordinate: Coordinate?,
-        ): List<Course> =
-            service
-                .courses(
-                    mapCoordinate.latitude.value,
-                    mapCoordinate.longitude.value,
-                    userCoordinate?.latitude?.value,
-                    userCoordinate?.longitude?.value,
-                    scope.meter.value.toInt(),
-                ).mapNotNull(CourseDto::toCourseOrNull)
-
-        override suspend fun courses(
-            scope: Scope,
             page: Int,
             mapCoordinate: Coordinate,
             userCoordinate: Coordinate?,

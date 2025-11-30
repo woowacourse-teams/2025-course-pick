@@ -5,12 +5,6 @@ interface CourseRepository {
 
     suspend fun courses(
         scope: Scope,
-        mapCoordinate: Coordinate,
-        userCoordinate: Coordinate? = null,
-    ): List<Course>
-
-    suspend fun courses(
-        scope: Scope,
         page: Int,
         mapCoordinate: Coordinate,
         userCoordinate: Coordinate? = null,

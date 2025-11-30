@@ -125,63 +125,6 @@ class CoursesViewModel
         ) {
             _state.value = state.value?.copy(status = UiStatus.Loading)
 
-            val favoritedCourseIds: Set<String> = favoritesRepository.favoriteCourseIds()
-
-            viewModelScope.launch {
-                runCatching {
-                    val courses =
-                        courseRepository.courses(
-                            scope = scope,
-                            mapCoordinate = mapCoordinate,
-                            userCoordinate = userCoordinate,
-                        )
-                    courses
-                        .sortedBy(Course::distance)
-                        .mapIndexed { index: Int, course: Course ->
-                            CourseItem(
-                                course = course,
-                                selected = index == 0,
-                                favorite = favoritedCourseIds.contains(course.id),
-                            )
-                        }
-                }.onSuccess { courses: List<CourseItem> ->
-                    Logger.log(Logger.Event.Success("fetch_courses"))
-                    _state.value =
-                        state.value?.copy(
-                            originalCourses = courses,
-                            status = UiStatus.Success,
-                        )
-                }.onFailure { exception: Throwable ->
-                    Logger.log(
-                        Logger.Event.Failure("fetch_courses"),
-                        "message" to exception.message.toString(),
-                    )
-                    if (exception is NoNetworkException) {
-                        _state.value =
-                            state.value?.copy(
-                                originalCourses = emptyList(),
-                                status = UiStatus.NoInternet,
-                            )
-                        return@onFailure
-                    }
-                    _state.value =
-                        state.value
-                            ?.copy(
-                                originalCourses = emptyList(),
-                                status = UiStatus.Failure,
-                            )
-                    _event.value = CoursesUiEvent.FetchCourseFailure
-                }
-            }
-        }
-
-        fun fetchCoursesNew(
-            mapCoordinate: Coordinate,
-            userCoordinate: Coordinate?,
-            scope: Scope = Scope.default(),
-        ) {
-            _state.value = state.value?.copy(status = UiStatus.Loading)
-
             viewModelScope.launch {
                 runCatching {
                     courseRepository.courses(
