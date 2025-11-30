@@ -14,7 +14,7 @@ class OsrmCoordinatesMatchServiceTest extends AbstractMockServerTest {
     void 좌표_리스트를_도로에_매칭할_수_있다() {
         // Given: Mock OSRM Match API 응답
         mock(osrmMatchResponse());
-        var sut = new OsrmCoordinatesMatchService(url());
+        var sut = new OsrmCoordinatesMatchService(osrmRestClient);
 
         // When: 원본 좌표 3개로 매칭 실행
         List<Coordinate> originals = List.of(
@@ -33,7 +33,7 @@ class OsrmCoordinatesMatchServiceTest extends AbstractMockServerTest {
     void 매칭된_좌표에_원본_elevation이_보간된다() {
         // Given
         mock(osrmMatchResponse());
-        var sut = new OsrmCoordinatesMatchService(url());
+        var sut = new OsrmCoordinatesMatchService(osrmRestClient);
 
         // When
         List<Coordinate> originals = List.of(
@@ -51,7 +51,7 @@ class OsrmCoordinatesMatchServiceTest extends AbstractMockServerTest {
     @Test
     void 좌표가_2개_미만이면_원본을_반환한다() {
         // Given
-        var sut = new OsrmCoordinatesMatchService(url());
+        var sut = new OsrmCoordinatesMatchService(osrmRestClient);
 
         // When: 좌표 1개
         List<Coordinate> single = List.of(
@@ -66,7 +66,7 @@ class OsrmCoordinatesMatchServiceTest extends AbstractMockServerTest {
     @Test
     void 빈_리스트는_빈_리스트를_반환한다() {
         // Given
-        var sut = new OsrmCoordinatesMatchService(url());
+        var sut = new OsrmCoordinatesMatchService(osrmRestClient);
 
         // When
         var result = sut.snapCoordinates(List.of());

@@ -1,5 +1,6 @@
 package coursepick.coursepick.test_util;
 
+import coursepick.coursepick.infrastructure.OsrmRestClient;
 import mockwebserver3.MockResponse;
 import mockwebserver3.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
@@ -11,11 +12,13 @@ import java.util.concurrent.TimeUnit;
 public abstract class AbstractMockServerTest {
 
     MockWebServer mockWebServer;
+    protected OsrmRestClient osrmRestClient;
 
     @BeforeEach
     void setUp() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
+        osrmRestClient = new OsrmRestClient(url());
     }
 
     @AfterEach
