@@ -3,11 +3,13 @@ package coursepick.coursepick.infrastructure;
 import java.time.Duration;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 @Component
+@Profile({"dev", "prod"})
 public class OsrmRestClient {
 
     private final RestClient restClient;
