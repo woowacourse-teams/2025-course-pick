@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 class OsrmCoordinatesMatchServiceTest extends AbstractMockServerTest {
 
@@ -75,6 +76,76 @@ class OsrmCoordinatesMatchServiceTest extends AbstractMockServerTest {
         assertThat(result).isEmpty();
     }
 
+    @Test
+    void 응답이_오래걸리면_원본_좌표를_반환한다() {
+        // Given
+        mock(osrmMatchResponse(), 6000);
+        var sut = new OsrmCoordinatesMatchService(osrmRestClient);
+
+        // When
+        List<Coordinate> originals = List.of(
+                new Coordinate(37.5045224, 127.048996, 10.0),
+                new Coordinate(37.5113001, 127.0392855, 20.0)
+        );
+
+        // Then
+        assertThatCode(() -> sut.snapCoordinates(originals))
+                .doesNotThrowAnyException();
+
+        var result = sut.snapCoordinates(originals);
+        assertThat(result).isEqualTo(originals);
+    }
+
+    @Test
+    void NoMatch_응답이면_원본_좌표를_반환한다() {
+        // Given
+        mock(osrmNoMatchResponse());
+        var sut = new OsrmCoordinatesMatchService(osrmRestClient);
+
+        // When
+        List<Coordinate> originals = List.of(
+                new Coordinate(37.5045224, 127.048996, 10.0),
+                new Coordinate(37.5113001, 127.0392855, 20.0)
+        );
+        var result = sut.snapCoordinates(originals);
+
+        // Then
+        assertThat(result).isEqualTo(originals);
+    }
+
+    @Test
+    void TooBig_응답이면_원본_좌표를_반환한다() {
+        // Given
+        mock(osrmTooBigResponse());
+        var sut = new OsrmCoordinatesMatchService(osrmRestClient);
+
+        // When
+        List<Coordinate> originals = List.of(
+                new Coordinate(37.5045224, 127.048996, 10.0),
+                new Coordinate(37.5113001, 127.0392855, 20.0)
+        );
+        var result = sut.snapCoordinates(originals);
+
+        // Then
+        assertThat(result).isEqualTo(originals);
+    }
+
+    @Test
+    void 좌표가2개_미만이면_원본_좌표를_반환한다() {
+        // Given
+        mock(osrmLeastTwoCoordinatesResponse());
+        var sut = new OsrmCoordinatesMatchService(osrmRestClient);
+
+        // When
+        List<Coordinate> originals = List.of(
+                new Coordinate(37.5045224, 127.048996, 10.0)
+        );
+        var result = sut.snapCoordinates(originals);
+
+        // Then
+        assertThat(result).isEqualTo(originals);
+    }
+
     // Mock OSRM Match API 응답
     private static String osrmMatchResponse() {
         return """
@@ -95,6 +166,33 @@ class OsrmCoordinatesMatchServiceTest extends AbstractMockServerTest {
                         "confidence": 0.85
                       }
                     ]
+                  }
+                  """;
+    }
+
+    private static String osrmNoMatchResponse() {
+        return """
+                  {
+                    "code": "NoMatch",
+                    "message": "Could not match route"
+                  }
+                  """;
+    }
+
+    private static String osrmTooBigResponse() {
+        return """
+                  {
+                    "message": "Too many trace coordinates",
+                    "code": "TooBig"
+                  }
+                  """;
+    }
+
+    private static String osrmLeastTwoCoordinatesResponse() {
+        return """
+                  {
+                    "message":"Number of coordinates needs to be at least two.",
+                    "code":"InvalidOptions"
                   }
                   """;
     }
