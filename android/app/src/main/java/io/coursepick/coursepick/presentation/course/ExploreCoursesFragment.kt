@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
+import androidx.recyclerview.widget.RecyclerView
 import io.coursepick.coursepick.databinding.FragmentExploreCoursesBinding
 
 class ExploreCoursesFragment(
@@ -35,6 +36,7 @@ class ExploreCoursesFragment(
         super.onViewCreated(view, savedInstanceState)
         setUpBindingVariables()
         setUpStateObserver()
+        setUpScrollListener()
     }
 
     override fun onDestroyView() {
@@ -52,6 +54,31 @@ class ExploreCoursesFragment(
         viewModel.state.observe(viewLifecycleOwner) { state: CoursesUiState ->
             courseAdapter.submitList(state.courses)
         }
+    }
+
+    private fun setUpScrollListener() {
+        binding.mainCourses.addOnScrollListener(
+            object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(
+                    recyclerView: RecyclerView,
+                    dx: Int,
+                    dy: Int,
+                ) {
+                    super.onScrolled(recyclerView, dx, dy)
+
+                    val layoutManager: LinearLayoutManager =
+                        recyclerView.layoutManager as? LinearLayoutManager ?: return
+
+                    val totalItemCount: Int = layoutManager.itemCount
+
+                    val lastVisibleItem: Int = layoutManager.findLastVisibleItemPosition()
+
+                    if (lastVisibleItem >= totalItemCount - 3) {
+                        viewModel.fetchNextCourses()
+                    }
+                }
+            },
+        )
     }
 
     fun scrollTo(courseItem: CourseItem) {

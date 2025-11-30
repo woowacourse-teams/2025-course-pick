@@ -202,17 +202,6 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/mainCoursesHeader" />
 
-                <androidx.core.widget.ContentLoadingProgressBar
-                    android:id="@+id/mainCoursesLoadingIndicator"
-                    style="?android:attr/progressBarStyleLarge"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
-                    app:visibleWhenLoading="@{viewModel.state.status}" />
-
                 <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/mainFragmentContainer"
                     android:layout_width="0dp"
@@ -223,6 +212,17 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
                     app:visibleWhenSuccess="@{viewModel.state.status}" />
+
+                <androidx.core.widget.ContentLoadingProgressBar
+                    android:id="@+id/mainCoursesLoadingIndicator"
+                    style="?android:attr/progressBarStyleLarge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/mainFragmentContainer"
+                    app:visibleWhenLoading="@{viewModel.state.status}" />
 
                 <TextView
                     android:id="@+id/mainEmptyCourses"
