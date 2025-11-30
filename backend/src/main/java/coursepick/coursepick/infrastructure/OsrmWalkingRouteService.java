@@ -24,7 +24,8 @@ public class OsrmWalkingRouteService implements WalkingRouteService {
     @Override
     public List<Coordinate> route(Coordinate origin, Coordinate destination) {
         try {
-            Map<String, Object> response = osrmRestClient.get()
+            Map<String, Object> response = osrmRestClient.getRestClient()
+                    .get()
                     .uri(uriBuilder -> uriBuilder
                             .path("/route/v1/foot/{origin_longitude},{origin_latitude};{destination_longitude},{destination_latitude}")
                             .queryParam("geometries", "geojson")

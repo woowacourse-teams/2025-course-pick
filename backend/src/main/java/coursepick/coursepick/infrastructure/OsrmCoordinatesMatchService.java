@@ -34,7 +34,8 @@ public class OsrmCoordinatesMatchService implements CoordinatesMatchService {
                 .collect(Collectors.joining(";"));
 
         try {
-            Map<String, Object> response = osrmRestClient.get()
+            Map<String, Object> response = osrmRestClient.getRestClient()
+                    .get()
                     .uri(uriBuilder -> uriBuilder
                             .path("/match/v1/foot/{coordinates}")
                             .queryParam("geometries", "geojson")

@@ -14,10 +14,13 @@ public class OsrmRestClient {
 
     private final RestClient restClient;
 
-    public OsrmRestClient(@Value("${osrm.url}") String osrmUrl) {
+    public OsrmRestClient(
+            @Value("${osrm.url}") String osrmUrl,
+            @Value("${osrm.connect-timeout:1}") int connectTimeoutSeconds,
+            @Value("${osrm.read-timeout:5}") int readTimeoutSeconds) {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        requestFactory.setConnectTimeout(Duration.ofSeconds(1));
-        requestFactory.setReadTimeout(Duration.ofSeconds(5));
+        requestFactory.setConnectTimeout(Duration.ofSeconds(connectTimeoutSeconds));
+        requestFactory.setReadTimeout(Duration.ofSeconds(readTimeoutSeconds));
 
         this.restClient = RestClient.builder()
                 .requestFactory(requestFactory)
@@ -25,7 +28,7 @@ public class OsrmRestClient {
                 .build();
     }
 
-    public RestClient.RequestHeadersUriSpec<?> get() {
-        return restClient.get();
+    public RestClient getRestClient() {
+        return restClient;
     }
 }
