@@ -4,6 +4,7 @@ import coursepick.coursepick.application.CoordinatesMatchService;
 import coursepick.coursepick.domain.Coordinate;
 
 import coursepick.coursepick.domain.GeoLine;
+import coursepick.coursepick.domain.Meter;
 import coursepick.coursepick.logging.LogContent;
 
 import java.time.Duration;
@@ -89,7 +90,7 @@ public class OsrmCoordinatesMatchService implements CoordinatesMatchService {
     private Coordinate createCoordinateWithElevation(Coordinate matched,
                                                      List<Coordinate> originals) {
         Coordinate closestWithElevation = null;
-        double minDistance = Double.MAX_VALUE;
+        Meter minDistance = new Meter(Double.MAX_VALUE);
 
         for (int i = 0; i < originals.size() - 1; i++) {
             Coordinate start = originals.get(i);
@@ -98,12 +99,9 @@ public class OsrmCoordinatesMatchService implements CoordinatesMatchService {
 
             Coordinate closest = line.closestCoordinateFrom(matched);
 
-            double distance = Math.sqrt(
-                    Math.pow(matched.latitude() - closest.latitude(), 2) +
-                    Math.pow(matched.longitude() - closest.longitude(), 2)
-            );
+            Meter distance = new GeoLine(closest, matched).length();
 
-            if (distance < minDistance) {
+            if (distance.isWithin(minDistance)) {
                 minDistance = distance;
                 closestWithElevation = closest;
             }
