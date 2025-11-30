@@ -3,15 +3,12 @@ package coursepick.coursepick.infrastructure;
 import coursepick.coursepick.application.WalkingRouteService;
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.logging.LogContent;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClient;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -19,25 +16,15 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 @Profile({"dev", "prod"})
+@RequiredArgsConstructor
 public class OsrmWalkingRouteService implements WalkingRouteService {
 
-    private final RestClient restClient;
-
-    public OsrmWalkingRouteService(@Value("${osrm.url}") String osrmUrl) {
-        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        requestFactory.setConnectTimeout(Duration.ofSeconds(1));
-        requestFactory.setReadTimeout(Duration.ofSeconds(5));
-
-        this.restClient = RestClient.builder()
-                .requestFactory(requestFactory)
-                .baseUrl(osrmUrl)
-                .build();
-    }
+    private final OsrmRestClient osrmRestClient;
 
     @Override
     public List<Coordinate> route(Coordinate origin, Coordinate destination) {
         try {
-            Map<String, Object> response = restClient.get()
+            Map<String, Object> response = osrmRestClient.get()
                     .uri(uriBuilder -> uriBuilder
                             .path("/route/v1/foot/{origin_longitude},{origin_latitude};{destination_longitude},{destination_latitude}")
                             .queryParam("geometries", "geojson")

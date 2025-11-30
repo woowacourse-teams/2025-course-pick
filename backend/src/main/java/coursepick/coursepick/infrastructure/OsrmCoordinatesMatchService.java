@@ -2,42 +2,26 @@ package coursepick.coursepick.infrastructure;
 
 import coursepick.coursepick.application.CoordinatesMatchService;
 import coursepick.coursepick.domain.Coordinate;
-
 import coursepick.coursepick.domain.GeoLine;
 import coursepick.coursepick.domain.Meter;
 import coursepick.coursepick.logging.LogContent;
-
-import java.time.Duration;
-import java.util.List;
-
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClient;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
 @Profile({"dev", "prod"})
+@RequiredArgsConstructor
 public class OsrmCoordinatesMatchService implements CoordinatesMatchService {
 
-    private final RestClient restClient;
-
-    public OsrmCoordinatesMatchService(@Value("${osrm.url}") String osrmUrl) {
-        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        requestFactory.setConnectTimeout(Duration.ofSeconds(1));
-        requestFactory.setReadTimeout(Duration.ofSeconds(5));
-
-        this.restClient = RestClient.builder()
-                .requestFactory(requestFactory)
-                .baseUrl(osrmUrl)
-                .build();
-    }
+    private final OsrmRestClient osrmRestClient;
 
     @Override
     public List<Coordinate> snapCoordinates(List<Coordinate> coordinates) {
@@ -50,7 +34,7 @@ public class OsrmCoordinatesMatchService implements CoordinatesMatchService {
                 .collect(Collectors.joining(";"));
 
         try {
-            Map<String, Object> response = restClient.get()
+            Map<String, Object> response = osrmRestClient.get()
                     .uri(uriBuilder -> uriBuilder
                             .path("/match/v1/foot/{coordinates}")
                             .queryParam("geometries", "geojson")
