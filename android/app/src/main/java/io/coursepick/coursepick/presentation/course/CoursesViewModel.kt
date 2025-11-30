@@ -10,6 +10,7 @@ import io.coursepick.coursepick.data.interceptor.NoNetworkException
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseRepository
+import io.coursepick.coursepick.domain.course.CoursesPage
 import io.coursepick.coursepick.domain.course.Kilometer
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.domain.favorites.FavoritesRepository
@@ -50,6 +51,13 @@ class CoursesViewModel
 
         private var writeFavoriteJob: Job? = null
         private val pendingFavoriteWrites: MutableMap<String, Boolean> = mutableMapOf()
+
+        private var page: Int = 0
+        private var hasNext: Boolean = false
+
+        private var lastMapCoordinate: Coordinate? = null
+        private var lastUserCoordinate: Coordinate? = null
+        private var lastScope: Scope? = null
 
         init {
             checkNetwork()
@@ -163,6 +171,125 @@ class CoursesViewModel
                                 status = UiStatus.Failure,
                             )
                     _event.value = CoursesUiEvent.FetchCourseFailure
+                }
+            }
+        }
+
+        fun fetchCoursesNew(
+            mapCoordinate: Coordinate,
+            userCoordinate: Coordinate?,
+            scope: Scope = Scope.default(),
+        ) {
+            _state.value = state.value?.copy(status = UiStatus.Loading)
+
+            viewModelScope.launch {
+                runCatching {
+                    courseRepository.courses(
+                        scope = scope,
+                        page = 0,
+                        mapCoordinate = mapCoordinate,
+                        userCoordinate = userCoordinate,
+                    )
+                }.onSuccess { coursesPage: CoursesPage ->
+                    Logger.log(Logger.Event.Success("fetch_courses_new"))
+
+                    val favoritedCourseIds: Set<String> = favoritesRepository.favoriteCourseIds()
+
+                    val courseItems: List<CourseItem> =
+                        coursesPage.courses
+                            .sortedBy(Course::distance)
+                            .mapIndexed { index, course ->
+                                CourseItem(
+                                    course = course,
+                                    selected = index == 0,
+                                    favorite = favoritedCourseIds.contains(course.id),
+                                )
+                            }
+
+                    lastMapCoordinate = mapCoordinate
+                    lastUserCoordinate = userCoordinate
+                    lastScope = scope
+
+                    page = 0
+                    hasNext = coursesPage.hasNext
+
+                    _state.value =
+                        state.value?.copy(
+                            originalCourses = courseItems,
+                            status = UiStatus.Success,
+                        )
+                }.onFailure { exception: Throwable ->
+                    Logger.log(
+                        Logger.Event.Failure("fetch_courses_new"),
+                        "message" to exception.message.toString(),
+                    )
+                    if (exception is NoNetworkException) {
+                        _state.value =
+                            state.value?.copy(
+                                originalCourses = emptyList(),
+                                status = UiStatus.NoInternet,
+                            )
+                        return@onFailure
+                    }
+                    _state.value =
+                        state.value?.copy(
+                            originalCourses = emptyList(),
+                            status = UiStatus.Failure,
+                        )
+                    _event.value = CoursesUiEvent.FetchCourseFailure
+                }
+            }
+        }
+
+        fun fetchNextCourses() {
+            val currentStatus: UiStatus? = state.value?.status
+            if (currentStatus == UiStatus.Loading || !hasNext) return
+
+            _state.value = state.value?.copy(status = UiStatus.Loading)
+
+            val mapCoordinate: Coordinate = lastMapCoordinate ?: return
+            val userCoordinate: Coordinate? = lastUserCoordinate
+            val scope: Scope = lastScope ?: return
+
+            viewModelScope.launch {
+                runCatching {
+                    val nextPage: Int = page + 1
+                    courseRepository.courses(
+                        scope = scope,
+                        page = nextPage,
+                        mapCoordinate = mapCoordinate,
+                        userCoordinate = userCoordinate,
+                    )
+                }.onSuccess { coursesPage: CoursesPage ->
+                    Logger.log(Logger.Event.Success("fetch_next_courses"))
+
+                    val favoritedCourseIds: Set<String> = favoritesRepository.favoriteCourseIds()
+
+                    val existingCourses = state.value?.originalCourses ?: emptyList()
+                    val newCourses =
+                        coursesPage.courses.map { course: Course ->
+                            CourseItem(
+                                course = course,
+                                selected = false,
+                                favorite = favoritedCourseIds.contains(course.id),
+                            )
+                        }
+
+                    page += 1
+                    hasNext = coursesPage.hasNext
+
+                    _state.value =
+                        state.value?.copy(
+                            originalCourses = existingCourses + newCourses,
+                            status = UiStatus.Success,
+                        )
+                }.onFailure { exception: Throwable ->
+                    Logger.log(
+                        Logger.Event.Failure("fetch_next_courses"),
+                        "message" to exception.message.toString(),
+                    )
+                    _state.value = state.value?.copy(status = UiStatus.Failure)
+                    _event.value = CoursesUiEvent.FetchNextCoursesFailure
                 }
             }
         }

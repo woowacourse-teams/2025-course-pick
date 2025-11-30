@@ -362,7 +362,8 @@ class CoursesActivity :
                 CoursesContent.EXPLORE -> getString(R.string.main_empty_courses_description)
                 CoursesContent.FAVORITES -> getString(R.string.main_empty_favorites_description)
             }
-        binding.mainCourseFilter.visibility = if (content == CoursesContent.EXPLORE) View.VISIBLE else View.GONE
+        binding.mainCourseFilter.visibility =
+            if (content == CoursesContent.EXPLORE) View.VISIBLE else View.GONE
 
         supportFragmentManager.commit {
             setReorderingAllowed(true)
@@ -568,7 +569,12 @@ class CoursesActivity :
     }
 
     private fun setUpFragmentContainer(systemBars: Insets) {
-        binding.mainFragmentContainer.setPadding(0, 0, 0, binding.mainBottomNavigation.height - systemBars.bottom)
+        binding.mainFragmentContainer.setPadding(
+            0,
+            0,
+            0,
+            binding.mainBottomNavigation.height - systemBars.bottom,
+        )
     }
 
     private fun setUpMapPadding() {
@@ -710,6 +716,14 @@ class CoursesActivity :
                     Toast
                         .makeText(this, "코스까지 가는 길을 찾지 못했습니다.", Toast.LENGTH_SHORT)
                         .show()
+
+                CoursesUiEvent.FetchNextCoursesFailure ->
+                    Toast
+                        .makeText(
+                            this,
+                            getString(R.string.courses_fail_fetch_next_page),
+                            Toast.LENGTH_SHORT,
+                        ).show()
             }
         }
     }
