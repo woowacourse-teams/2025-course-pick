@@ -11,9 +11,9 @@ public record CoursesResponse(
         List<CourseResponse> courses,
         boolean hasNext
 ) {
-    public static CoursesResponse from(Slice<Course> courses, @Nullable Coordinate coordinate) {
+    public static CoursesResponse from(Slice<Course> courses, @Nullable Coordinate target) {
         List<CourseResponse> courseResponses = courses.stream()
-                .map(course -> CourseResponse.from(course, coordinate))
+                .map(course -> CourseResponse.from(course, target))
                 .toList();
 
         return new CoursesResponse(courseResponses, courses.hasNext());
