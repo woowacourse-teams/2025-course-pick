@@ -18,7 +18,7 @@ public abstract class AbstractMockServerTest {
     void setUp() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
-        osrmRestClient = new OsrmRestClient(url());
+        osrmRestClient = new OsrmRestClient(url(), 1, 5);
     }
 
     @AfterEach
