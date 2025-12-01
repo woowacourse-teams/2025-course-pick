@@ -48,7 +48,6 @@ dependencies {
 
     // Test
     testRuntimeOnly("de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring30x:4.21.0")
-    testImplementation("org.springframework.batch:spring-batch-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
