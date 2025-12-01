@@ -1,3 +1,4 @@
+# 모니터링서버에 docker-compose 파일과 같은 위치에 두어야 합니다.
 global:
   scrape_interval: 15s
   evaluation_interval: 15s

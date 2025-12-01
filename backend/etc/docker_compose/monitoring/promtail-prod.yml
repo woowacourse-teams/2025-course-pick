@@ -1,3 +1,4 @@
+# 개발서버에 promtail.yml 이라는 이름으로 docker-compose 파일과 같은 위치에 두어야 합니다.
 server:
   http_listen_port: 9080
   grpc_listen_port: 0
