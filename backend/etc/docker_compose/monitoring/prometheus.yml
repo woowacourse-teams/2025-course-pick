@@ -9,7 +9,7 @@ scrape_configs:
   # Prometheus 자체 모니터링
   - job_name: 'prometheus'
     static_configs:
-      - targets: ['localhost:9090']
+      - targets: [ 'localhost:9090' ]
 
   # 개발 서버 Spring Boot Actuator 메트릭
   - job_name: 'coursepick-backend-dev'
@@ -17,18 +17,18 @@ scrape_configs:
     scrape_interval: 10s
     static_configs:
       # 개발 서버 IP로 변경 필요
-      - targets: ['<DEV_SERVER_IP>:8080']
+      - targets: [ '<DEV_SERVER_IP>:8080' ]
         labels:
           application: 'coursepick-backend'
           environment: 'dev'
       # 예: - targets: ['10.0.1.50:8080']
 
-  # 프로덕션 서버 추가 시 (선택)
-  # - job_name: 'coursepick-backend-prod'
-  #   metrics_path: '/actuator/prometheus'
-  #   scrape_interval: 10s
-  #   static_configs:
-  #     - targets: ['<PROD_SERVER_IP>:8080']
-  #       labels:
-  #         application: 'coursepick-backend'
-  #         environment: 'prod'
+  # 운영 서버 Spring Boot Actuator 메트릭
+  - job_name: 'coursepick-backend-prod'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 10s
+    static_configs:
+      - targets: [ '<PROD_SERVER_IP>:8080' ]
+        labels:
+          application: 'coursepick-backend'
+          environment: 'prod'
