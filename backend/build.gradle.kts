@@ -43,6 +43,9 @@ dependencies {
     // JVM/Spring Metric To CloudWatch
     implementation("org.springframework.boot:spring-boot-starter-actuator")
 
+    // Prometheus Metrics
+    implementation("io.micrometer:micrometer-registry-prometheus")
+
     // MockWebServer
     testImplementation("com.squareup.okhttp3:mockwebserver3:5.1.0")
 
