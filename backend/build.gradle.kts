@@ -42,7 +42,6 @@ dependencies {
 
     // JVM/Spring Metric To CloudWatch
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("io.awspring.cloud:spring-cloud-aws-starter-metrics:3.4.0")
 
     // MockWebServer
     testImplementation("com.squareup.okhttp3:mockwebserver3:5.1.0")
