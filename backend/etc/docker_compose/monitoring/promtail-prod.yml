@@ -1,0 +1,45 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  # Loki 모니터링 서버 주소로 변경 필요
+  - url: http://<MONITORING_SERVER_IP>:3100/loki/api/v1/push
+    # 예: http://10.0.1.100:3100/loki/api/v1/push
+
+scrape_configs:
+  # Spring Boot 애플리케이션 로그
+  - job_name: coursepick-backend-prod
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: coursepick-backend
+          application: coursepick
+          environment: prod
+          __path__: /app/logs/*.log
+
+    # JSON 로그 파싱
+    pipeline_stages:
+      - json:
+          expressions:
+            timestamp: timestamp
+            level: level
+            logger: logger_name
+            thread: thread_name
+            message: message
+            stack_trace: stack_trace
+
+      - labels:
+          level:
+          logger:
+
+      - timestamp:
+          source: timestamp
+          format: RFC3339Nano
+
+      - output:
+          source: message
