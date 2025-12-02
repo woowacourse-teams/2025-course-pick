@@ -2,6 +2,7 @@ package coursepick.coursepick.presentation.api;
 
 import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
 import coursepick.coursepick.presentation.dto.CourseWebResponse;
+import coursepick.coursepick.presentation.dto.CoursesWebResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -30,7 +31,7 @@ public interface CourseWebApi {
                     )
             })),
     })
-    List<CourseWebResponse> findNearbyCourses(
+    CoursesWebResponse findNearbyCourses(
             @Parameter(example = "37.5165004", required = true) double mapLatitude,
             @Parameter(example = "127.1040109", required = true) double mapLongitude,
             @Parameter(example = "38.5165004") Double userLatitude,
