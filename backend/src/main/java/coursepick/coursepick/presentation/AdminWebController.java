@@ -9,7 +9,7 @@ import coursepick.coursepick.domain.CourseName;
 import coursepick.coursepick.domain.CourseRepository;
 import coursepick.coursepick.presentation.dto.AdminCourseWebResponse;
 import coursepick.coursepick.presentation.dto.AdminLoginWebRequest;
-import coursepick.coursepick.presentation.dto.CourseRelaceWebRequest;
+import coursepick.coursepick.presentation.dto.CourseReplaceWebRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,6 +43,12 @@ public class AdminWebController {
     @GetMapping("/admin")
     public String adminPage() throws IOException {
         return loadHtmlFile("index.html");
+    }
+
+    private String loadHtmlFile(String filename) throws IOException {
+        if (filename.contains("..")) throw new SecurityException("파일 경로에 ..은 포함될 수 없습니다.");
+        Resource resource = new ClassPathResource("static/admin/" + filename);
+        return new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
     }
 
     @GetMapping("/admin/login")
@@ -111,7 +117,7 @@ public class AdminWebController {
     @PatchMapping("/admin/api/courses/{id}")
     public void modifyCourse(
             @PathVariable("id") String courseId,
-            @RequestBody CourseRelaceWebRequest request
+            @RequestBody CourseReplaceWebRequest request
     ) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(ErrorType.NOT_EXIST_COURSE::create);
@@ -137,11 +143,5 @@ public class AdminWebController {
 
         // TODO : 분산 트랜잭션 고민
         courseRepository.delete(course);
-    }
-
-    private String loadHtmlFile(String filename) throws IOException {
-        if (filename.contains("..")) throw new SecurityException("파일 경로에 ..은 포함될 수 없습니다.");
-        Resource resource = new ClassPathResource("static/admin/" + filename);
-        return new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
     }
 }
