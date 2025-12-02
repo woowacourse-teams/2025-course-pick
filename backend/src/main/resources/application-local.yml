@@ -14,4 +14,5 @@ spring:
 
 admin:
   token: secret
-  kakao-map-api-key: ${ADMIN_KAKAO_MAP_API_KEY}
+  kakao-map-api-key: dummy-api-key
+notice.base-url: http://localhost:8080/images

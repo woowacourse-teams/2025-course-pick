@@ -24,6 +24,3 @@ springdoc:
     tags-sorter: alpha
     operations-sorter: method
     defaultModelsExpandDepth: 0
-
-notice:
-  base-url: ${BASE_URL}
