@@ -13,17 +13,6 @@ spring:
     username: ${MONGO_USERNAME}
     password: ${MONGO_PASSWORD}
     authentication-database: ${MONGO_AUTH_DATABASE}
-  batch:
-    jdbc.initialize-schema: never
-    job.enabled: false
-  servlet:
-    multipart:
-      max-file-size: 100MB
-      max-request-size: 200MB
-
-server:
-  tomcat:
-    max-part-count: 500
 
 springdoc:
   dev-server-url: ${DEV_SERVER_URL}
