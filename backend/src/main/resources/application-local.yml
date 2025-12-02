@@ -1,9 +1,5 @@
 spring:
   config.activate.on-profile: local
-  servlet:
-    multipart:
-      max-file-size: 100MB
-      max-request-size: 200MB
   datasource:
     url: jdbc:mysql://localhost:3307/coursepick
     username: user
@@ -15,10 +11,6 @@ spring:
     username: root
     password: secret
     authentication-database: admin
-
-server:
-  tomcat:
-    max-part-count: 500
 
 admin:
   token: secret

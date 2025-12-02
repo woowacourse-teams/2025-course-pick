@@ -3,11 +3,13 @@ spring:
   data:
     mongodb:
       auto-index-creation: true
-  batch:
-    jdbc.initialize-schema: always
-    job.enabled: false
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 200MB
 
 server:
+  tomcat.max-part-count: 500
   forward-headers-strategy: framework
   compression:
     enabled: true
