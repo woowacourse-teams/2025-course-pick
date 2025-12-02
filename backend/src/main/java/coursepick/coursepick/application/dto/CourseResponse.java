@@ -4,6 +4,7 @@ import coursepick.coursepick.domain.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,24 +23,15 @@ public class CourseResponse {
     private final Difficulty difficulty;
     private final List<SegmentResponse> segments;
 
-    public static CourseResponse from(Course course, Coordinate target) {
-        return new CourseResponse(
-                course.id(),
-                course.name().value(),
-                course.distanceFrom(target),
-                course.length(),
-                course.roadType(),
-                course.inclineSummary(),
-                course.difficulty(),
-                SegmentResponse.from(course.segments())
-        );
+    public static CourseResponse from(Course course) {
+        return from(course, null);
     }
 
-    public static CourseResponse from(Course course) {
+    public static CourseResponse from(Course course, @Nullable Coordinate target) {
         return new CourseResponse(
                 course.id(),
                 course.name().value(),
-                null,
+                target != null ? course.distanceFrom(target) : null,
                 course.length(),
                 course.roadType(),
                 course.inclineSummary(),

@@ -6,11 +6,13 @@ import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
 import coursepick.coursepick.domain.RoadType;
 import coursepick.coursepick.test_util.AbstractIntegrationTest;
+import coursepick.coursepick.test_util.CoordinateTestUtil;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.data.Percentage;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,7 +52,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         var nearbyCourses = sut.findNearbyCourses(latitude, longitude, null, null, 300, null);
 
-        assertThat(nearbyCourses).hasSize(2)
+        assertThat(nearbyCourses.courses()).hasSize(2)
                 .extracting(CourseResponse::name)
                 .containsExactlyInAnyOrder(course1.name().value(), course2.name().value());
         assertThat(course1.distanceFrom(new Coordinate(latitude, longitude)).value()).isGreaterThan(300);
@@ -80,7 +82,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         var nearbyCourses = sut.findNearbyCourses(latitude, longitude, null, null, 15000, null);
 
-        assertThat(nearbyCourses).hasSize(1)
+        assertThat(nearbyCourses.courses()).hasSize(1)
                 .extracting(CourseResponse::name)
                 .containsExactlyInAnyOrder(course1.name().value());
         assertThat(course1.distanceFrom(new Coordinate(latitude, longitude)).value()).isLessThan(3000);
@@ -115,7 +117,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         var courses = sut.findNearbyCourses(latitude, longitude, null, null, 1000, null);
 
-        assertThat(courses).hasSize(2)
+        assertThat(courses.courses()).hasSize(2)
                 .extracting(CourseResponse::name)
                 .containsExactlyInAnyOrder(course1.name().value(), course2.name().value());
         assertThat(course1.distanceFrom(new Coordinate(latitude, longitude)).value()).isLessThan(1000.0);
@@ -157,13 +159,50 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         assertThat(course2.distanceFrom(new Coordinate(mapLatitude, mapLongitude)).value()).isLessThan(1000.0);
         assertThat(course3.distanceFrom(new Coordinate(mapLatitude, mapLongitude)).value()).isGreaterThan(1000.0);
 
-        assertThat(courses).hasSize(2)
+        assertThat(courses.courses()).hasSize(2)
                 .extracting(CourseResponse::name)
                 .containsExactlyInAnyOrder(course1.name().value(), course2.name().value());
 
-        assertThat(courses).extracting(CourseResponse::distance).allMatch(Optional::isPresent);
-        assertThat(courses.get(0).distance().get().value()).isCloseTo(6640, Percentage.withPercentage(1));
-        assertThat(courses.get(1).distance().get().value()).isCloseTo(6583, Percentage.withPercentage(1));
+        assertThat(courses.courses()).extracting(CourseResponse::distance).allMatch(Optional::isPresent);
+        assertThat(courses.courses().get(0).distance().get().value()).isCloseTo(6640, Percentage.withPercentage(1));
+        assertThat(courses.courses().get(1).distance().get().value()).isCloseTo(6583, Percentage.withPercentage(1));
+    }
+
+    @Test
+    void 더_보여줄_코스가_없다() {
+        List<Coordinate> coordinates = CoordinateTestUtil.square(new Coordinate(37.5180, 127.0280), new Coordinate(37.5175, 127.0270));
+        List<Course> courses = new ArrayList<>();
+        for (int i = 0; i < 5; i++) courses.add(new Course("코스" + i, coordinates));
+        dbUtil.saveAllCourses(courses);
+
+        var result = sut.findNearbyCourses(37.5175, 127.0270, null, null, 3000, 0);
+
+        assertThat(result.hasNext()).isFalse();
+    }
+
+    @Test
+    void 더_보여줄_코스가_있다() {
+        List<Coordinate> coordinates = CoordinateTestUtil.square(new Coordinate(37.5180, 127.0280), new Coordinate(37.5175, 127.0270));
+        List<Course> courses = new ArrayList<>();
+        for (int i = 0; i < 15; i++) courses.add(new Course("코스" + i, coordinates));
+        dbUtil.saveAllCourses(courses);
+
+        var result = sut.findNearbyCourses(37.5175, 127.0270, null, null, 3000, 0);
+
+        assertThat(result.hasNext()).isTrue();
+    }
+
+    @Test
+    void 다음_페이지의_코스를_찾는다() {
+        List<Coordinate> coordinates = CoordinateTestUtil.square(new Coordinate(37.5180, 127.0280), new Coordinate(37.5175, 127.0270));
+        List<Course> courses = new ArrayList<>();
+        for (int i = 0; i < 15; i++) courses.add(new Course("코스" + i, coordinates));
+        dbUtil.saveAllCourses(courses);
+
+        var result = sut.findNearbyCourses(37.5175, 127.0270, null, null, 3000, 1);
+
+        assertThat(result.hasNext()).isFalse();
+        assertThat(result.courses().size()).isEqualTo(5);
     }
 
     @Test
