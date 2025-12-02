@@ -13,9 +13,6 @@ spring:
     username: ${MONGO_USERNAME}
     password: ${MONGO_PASSWORD}
     authentication-database: ${MONGO_AUTH_DATABASE}
-  batch:
-    jdbc.initialize-schema: never
-    job.enabled: false
 
 springdoc:
   dev-server-url: ${DEV_SERVER_URL}

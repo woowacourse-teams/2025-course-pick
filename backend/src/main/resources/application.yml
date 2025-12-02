@@ -3,9 +3,6 @@ spring:
   data:
     mongodb:
       auto-index-creation: true
-  batch:
-    jdbc.initialize-schema: always
-    job.enabled: false
   servlet:
     multipart:
       max-file-size: 100MB
