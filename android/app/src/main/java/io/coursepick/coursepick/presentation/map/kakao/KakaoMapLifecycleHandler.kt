@@ -30,6 +30,8 @@ class KakaoMapLifecycleHandler(
 
     fun pause() = mapView.pause()
 
+    fun finish() = mapView.finish()
+
     companion object {
         private const val DEFAULT_LATITUDE = 37.5100226
         private const val DEFAULT_LONGITUDE = 127.1026170
