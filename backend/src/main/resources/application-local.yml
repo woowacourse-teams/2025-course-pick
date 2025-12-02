@@ -1,9 +1,5 @@
 spring:
   config.activate.on-profile: local
-  servlet:
-    multipart:
-      max-file-size: 100MB
-      max-request-size: 200MB
   datasource:
     url: jdbc:mysql://localhost:3307/coursepick
     username: user
@@ -19,7 +15,3 @@ spring:
 admin:
   token: secret
   kakao-map-api-key: ${ADMIN_KAKAO_MAP_API_KEY}
-
-server:
-  tomcat:
-    max-part-count: 500
