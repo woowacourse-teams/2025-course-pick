@@ -2,7 +2,7 @@ package coursepick.coursepick.presentation.api;
 
 import coursepick.coursepick.presentation.dto.AdminCourseWebResponse;
 import coursepick.coursepick.presentation.dto.AdminLoginWebRequest;
-import coursepick.coursepick.presentation.dto.CourseRelaceWebRequest;
+import coursepick.coursepick.presentation.dto.CourseReplaceWebRequest;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,7 +21,7 @@ public interface AdminWebApi {
 
     void importFiles(List<MultipartFile> files) throws IOException;
 
-    void modifyCourse(String courseId, CourseRelaceWebRequest request);
+    void modifyCourse(String courseId, CourseReplaceWebRequest request);
 
     void deleteCourse(String id);
 }
