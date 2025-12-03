@@ -19,8 +19,6 @@ server:
 springdoc:
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
-  swagger-ui:
-    path: /api-docs.html
-    tags-sorter: alpha
-    operations-sorter: method
-    defaultModelsExpandDepth: 0
+
+notice:
+  base-url: ${BASE_URL}
