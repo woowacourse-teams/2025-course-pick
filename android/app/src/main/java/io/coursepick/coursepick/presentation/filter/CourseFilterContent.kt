@@ -147,22 +147,6 @@ private fun DifficultyButtons(
 }
 
 @Composable
-private fun DifficultyButton(
-    difficulty: Difficulty,
-    label: String,
-    selectedDifficulties: Set<Difficulty>,
-    onDifficultyToggle: (Difficulty) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    RoundedCornerToggleButton(
-        label = label,
-        isActive = selectedDifficulties.contains(difficulty),
-        onActiveChanged = { onDifficultyToggle(difficulty) },
-        modifier = modifier,
-    )
-}
-
-@Composable
 private fun LengthRangeSection(
     filter: CourseFilter,
     onRangeChange: (Double, Double) -> Unit,
@@ -260,7 +244,7 @@ private fun FilterActionButtons(
             label = stringResource(R.string.filter_result_count, resultCount),
             isActive = resultCount > 0,
             onActiveChanged = onApply,
-            modifier = modifier,
+            modifier = Modifier.weight(1f),
         )
     }
 }
