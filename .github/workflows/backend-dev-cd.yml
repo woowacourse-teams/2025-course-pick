@@ -6,8 +6,14 @@ on:
   workflow_dispatch:
 
 jobs:
+  ci:
+    name: CI 실행
+    uses: ./.github/workflows/backend-ci.yml
+    secrets: inherit
+
   build:
     name: 도커 이미지 빌드 & 푸시
+    needs: ci
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -24,16 +30,11 @@ jobs:
           distribution: 'corretto'
           cache: 'gradle'
 
-      - name: 프로젝트 gradlew 빌드
-        run: ./gradlew build
+      - name: gradlew 실행 권한 부여
+        run: chmod +x gradlew
 
-      - name: 테스트 결과 보고서 작성
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: 테스트 결과
-          path: backend/build/test-results/test/*.xml
-          reporter: java-junit
+      - name: 프로젝트 gradlew 빌드
+        run: ./gradlew clean build -x test
 
       - name: Docker 로그인
         uses: docker/login-action@v3
@@ -52,49 +53,47 @@ jobs:
   deploy:
     name: 개발서버 배포
     needs: build
-    runs-on: [ self-hosted, dev-app ]
-    defaults:
-      run:
-        working-directory: /home/ssm-user/coursepick
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Docker 로그인
-        uses: docker/login-action@v3
+      - name: SSH로 배포 스크립트 실행
+        uses: appleboy/ssh-action@v1.0.0
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: .env 파일 생성
-        run: |
-          cat > .env <<'EOF'
-          ${{ secrets.DEV_ENV_FILE }}
-          EOF
-          chmod 600 .env
-
-      - name: 새로운 서버 시작
-        run: |
-          sudo docker compose --env-file .env up -d --pull always backend
-
-      - name: 사용하지 않는 도커 이미지 정리
-        run: |
-          sudo docker image prune -a -f
-
-      - name: 시작된 서버 헬스체크
-        run: |
-          for i in $(seq 1 10)
-          do
-            SERVER_STATUS=$(curl -o /dev/null -w "%{http_code}" http://localhost:80/actuator/health || true)
-
-            if [ "$SERVER_STATUS" -eq 200 ]; then
-              echo "서버 정상적으로 실행됨 status=$SERVER_STATUS"
-              break
-            else
-              echo "헬스체크에 실패함. 5초 후 다시 시도"
-              sleep 5
-            fi
-
-            if [ $i -eq 10 ]; then
-              echo "서버가 정상적으로 실행되지 않아 종료함"
-              exit 1
-            fi
-          done
+          host: ${{ secrets.DEV_SERVER_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/ubuntu/coursepick
+            
+            echo "🚀 개발 서버 배포 시작..."
+            
+            echo "📦 최신 이미지 Pull..."
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/coursepick-backend:dev
+            
+            echo "🌳 .env 파일 생성..."
+            cat > .env <<'EOF'
+            ${{ secrets.DEV_ENV_FILE }}
+            EOF
+            chmod 600 .env
+            
+            echo "▶️ 새 서버 시작..."
+            sudo docker compose --env-file .env up -d --pull always backend
+            
+            echo "🧹 사용하지 않는 이미지 정리..."
+            sudo docker image prune -a -f
+            
+            echo "⛑️ 헬스 체크..."
+            for i in $(seq 1 10); do
+              SERVER_STATUS=$(curl -o /dev/null -w "%{http_code}" http://localhost:80/actuator/health || echo "000")
+              if [ "$SERVER_STATUS" -eq 200 ]; then
+                echo "✅ 배포 성공! 서버 동작 중..."
+                exit 0
+              else
+                echo "Attempt $i/10: 헬스 체크 실패 (status=$SERVER_STATUS). 5초 후 재시도..."
+                sleep 5
+              fi
+            done
+            
+            echo "❌ 배포 실패! 서버가 동작하지 않습니다."
+            sudo docker logs coursepick-backend --tail 50
+            exit 1
