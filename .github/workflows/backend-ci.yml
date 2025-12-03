@@ -1,6 +1,7 @@
 name: Backend CI
 
 on:
+  workflow_call:
   pull_request:
     branches: [ backend ]
   workflow_dispatch:
