@@ -240,7 +240,7 @@ private fun FilterActionButtons(
             modifier = Modifier.weight(1f),
         )
 
-        RoundedCornerToggleButton(
+        FilterResultButton(
             label = stringResource(R.string.filter_result_count, resultCount),
             isActive = resultCount > 0,
             onActiveChanged = onApply,
