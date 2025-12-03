@@ -47,15 +47,14 @@ fun DifficultyButton(
                 ).padding(vertical = 20.dp)
                 .padding(horizontal = 4.dp),
         contentAlignment = Alignment.Center,
-        content = {
-            Text(
-                text = label,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = colorResource(R.color.background_primary),
-            )
-        },
-    )
+    ) {
+        Text(
+            text = label,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = colorResource(R.color.background_primary),
+        )
+    }
 }
 
 @PreviewLightDark
