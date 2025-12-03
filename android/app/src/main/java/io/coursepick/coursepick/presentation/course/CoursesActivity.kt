@@ -56,7 +56,6 @@ import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
 import io.coursepick.coursepick.presentation.filter.CourseFilterBottomSheet
 import io.coursepick.coursepick.presentation.map.kakao.KakaoMapManager
 import io.coursepick.coursepick.presentation.map.kakao.toCoordinate
-import io.coursepick.coursepick.presentation.model.Difficulty
 import io.coursepick.coursepick.presentation.notice.NoticeDialog
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 import io.coursepick.coursepick.presentation.preference.PreferencesActivity
@@ -281,18 +280,7 @@ class CoursesActivity :
                     CourseFilterBottomSheet(
                         coursesUiState = state ?: return@CoursePickTheme,
                         onDismissRequest = { viewModel.restoreState() },
-                        onRangeSliderValueChange = { range ->
-                            viewModel.updateLengthRange(
-                                range.start.toDouble(),
-                                range.endInclusive.toDouble(),
-                            )
-                        },
-                        onCancel = { viewModel.restoreState() },
-                        onReset = { viewModel.resetFilterToDefault() },
-                        onEasy = { viewModel.toggleDifficulty(Difficulty.EASY) },
-                        onNormar = { viewModel.toggleDifficulty(Difficulty.NORMAL) },
-                        onHard = { viewModel.toggleDifficulty(Difficulty.HARD) },
-                        onResult = { viewModel.restoreState() },
+                        onFilterAction = { action -> viewModel.handleFilterAction(action) },
                     )
                 }
             }

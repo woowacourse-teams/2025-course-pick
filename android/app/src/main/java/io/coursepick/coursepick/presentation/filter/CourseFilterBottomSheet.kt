@@ -12,13 +12,7 @@ import io.coursepick.coursepick.presentation.course.CoursesUiState
 fun CourseFilterBottomSheet(
     coursesUiState: CoursesUiState,
     onDismissRequest: () -> Unit,
-    onReset: () -> Unit,
-    onEasy: () -> Unit,
-    onNormar: () -> Unit,
-    onHard: () -> Unit,
-    onRangeSliderValueChange: (ClosedFloatingPointRange<Float>) -> Unit,
-    onCancel: () -> Unit,
-    onResult: () -> Unit,
+    onFilterAction: (CourseFilterAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val sheetState =
@@ -33,13 +27,7 @@ fun CourseFilterBottomSheet(
     ) {
         CourseFilterContent(
             coursesUiState = coursesUiState,
-            onRangeSliderValueChange = onRangeSliderValueChange,
-            onCancel = onCancel,
-            onReset = onReset,
-            onEasy = onEasy,
-            onNormal = onNormar,
-            onHard = onHard,
-            onResult = onResult,
+            onFilterAction = onFilterAction,
         )
     }
 }
