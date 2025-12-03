@@ -53,9 +53,10 @@ import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
-import io.coursepick.coursepick.presentation.filter.FilterBottomSheet
+import io.coursepick.coursepick.presentation.filter.CourseFilterBottomSheet
 import io.coursepick.coursepick.presentation.map.kakao.KakaoMapManager
 import io.coursepick.coursepick.presentation.map.kakao.toCoordinate
+import io.coursepick.coursepick.presentation.model.Difficulty
 import io.coursepick.coursepick.presentation.notice.NoticeDialog
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 import io.coursepick.coursepick.presentation.preference.PreferencesActivity
@@ -288,8 +289,32 @@ class CoursesActivity :
     }
 
     override fun showFilters() {
-        val dialog = FilterBottomSheet()
-        dialog.show(supportFragmentManager, null)
+        viewModel.showFilterDialog()
+
+        binding.mainDialog.setContent {
+            CoursePickTheme {
+                val state: CoursesUiState? by viewModel.state.observeAsState()
+
+                if (state?.showFilterDialog == true) {
+                    CourseFilterBottomSheet(
+                        coursesUiState = state ?: return@CoursePickTheme,
+                        onDismissRequest = { viewModel.restoreState() },
+                        onRangeSliderValueChange = { range ->
+                            viewModel.updateLengthRange(
+                                range.start.toDouble(),
+                                range.endInclusive.toDouble(),
+                            )
+                        },
+                        onCancel = { viewModel.restoreState() },
+                        onReset = { viewModel.resetFilterToDefault() },
+                        onEasy = { viewModel.toggleDifficulty(Difficulty.EASY) },
+                        onNormar = { viewModel.toggleDifficulty(Difficulty.NORMAL) },
+                        onHard = { viewModel.toggleDifficulty(Difficulty.HARD) },
+                        onResult = { viewModel.restoreState() },
+                    )
+                }
+            }
+        }
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -362,7 +387,8 @@ class CoursesActivity :
                 CoursesContent.EXPLORE -> getString(R.string.main_empty_courses_description)
                 CoursesContent.FAVORITES -> getString(R.string.main_empty_favorites_description)
             }
-        binding.mainCourseFilter.visibility = if (content == CoursesContent.EXPLORE) View.VISIBLE else View.GONE
+        binding.mainCourseFilter.visibility =
+            if (content == CoursesContent.EXPLORE) View.VISIBLE else View.GONE
 
         supportFragmentManager.commit {
             setReorderingAllowed(true)
@@ -568,7 +594,12 @@ class CoursesActivity :
     }
 
     private fun setUpFragmentContainer(systemBars: Insets) {
-        binding.mainFragmentContainer.setPadding(0, 0, 0, binding.mainBottomNavigation.height - systemBars.bottom)
+        binding.mainFragmentContainer.setPadding(
+            0,
+            0,
+            0,
+            binding.mainBottomNavigation.height - systemBars.bottom,
+        )
     }
 
     private fun setUpMapPadding() {
