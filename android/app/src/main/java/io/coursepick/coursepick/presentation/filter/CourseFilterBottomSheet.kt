@@ -5,7 +5,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import io.coursepick.coursepick.presentation.course.CoursesUiState
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
@@ -40,11 +39,12 @@ fun CourseFilterBottomSheet(
 private fun CourseFilterBottomSheetPreview() {
     CoursePickTheme {
         CourseFilterBottomSheet(
-            coursesUiState = CoursesUiState(
-                originalCourses = listOf()
-            ),
+            coursesUiState =
+                CoursesUiState(
+                    originalCourses = listOf(),
+                ),
             onDismissRequest = {},
-            onFilterAction = {}
+            onFilterAction = {},
         )
     }
 }
