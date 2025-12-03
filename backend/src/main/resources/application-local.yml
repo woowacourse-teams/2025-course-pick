@@ -12,6 +12,10 @@ spring:
     password: secret
     authentication-database: admin
 
+springdoc:
+  dev-server-url: ${DEV_SERVER_URL:http://localhost:8080}
+  prod-server-url: ${PROD_SERVER_URL:http://localhost:8080}
+
 admin:
   token: secret
   kakao-map-api-key: dummy-api-key
