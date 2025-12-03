@@ -26,7 +26,7 @@ public interface NoticeWebApi {
             @Parameter(
                     example = "verified_location",
                     required = true,
-                    description = "조회할 공지 사항 ID"
+                    description = "조회할 공지사항 ID"
             )
             String id
     );
