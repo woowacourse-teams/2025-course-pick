@@ -49,7 +49,6 @@ class CoursesViewModel
         private val _event: MutableSingleLiveData<CoursesUiEvent> = MutableSingleLiveData()
         val event: SingleLiveData<CoursesUiEvent> get() = _event
 
-        private var backupState: CoursesUiState? = null
         private var writeFavoriteJob: Job? = null
         private val pendingFavoriteWrites: MutableMap<String, Boolean> = mutableMapOf()
 
@@ -447,12 +446,12 @@ class CoursesViewModel
             _state.value = state.value?.copy(courseFilter = updatedCourseFilter)
         }
 
-        fun backupState() {
-            backupState = state.value?.copy()
+        fun showFilterDialog() {
+            _state.value = state.value?.copy(showFilterDialog = true)
         }
 
         fun restoreState() {
-            backupState?.let { _state.value = it }
+            _state.value = state.value?.copy(showFilterDialog = false)
         }
 
         fun fetchNotice(id: String) {
