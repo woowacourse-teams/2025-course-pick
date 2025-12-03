@@ -304,7 +304,7 @@ private fun CourseFilterContentPreview() {
                     query = "",
                     courseFilter =
                         CourseFilter.None.copy(
-                            Kilometer(0.0)..Kilometer(10.0),
+                            lengthRange = Kilometer(0.0)..Kilometer(10.0),
                         ),
                 ),
             onFilterAction = {},
