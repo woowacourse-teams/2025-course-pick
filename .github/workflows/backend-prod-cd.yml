@@ -9,8 +9,14 @@ on:
   workflow_dispatch:
 
 jobs:
+  ci:
+    name: CI 실행
+    uses: ./.github/workflows/backend-ci.yml
+    secrets: inherit
+
   build:
-    name: 프로젝트 빌드
+    name: 도커 이미지 빌드 & 푸시
+    needs: ci
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -27,16 +33,11 @@ jobs:
           distribution: 'corretto'
           cache: 'gradle'
 
-      - name: 프로젝트 gradlew 빌드
-        run: ./gradlew build
+      - name: gradlew 실행 권한 부여
+        run: chmod +x gradlew
 
-      - name: 테스트 결과 보고서 작성
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: 테스트 결과
-          path: backend/build/test-results/test/*.xml
-          reporter: java-junit
+      - name: 프로젝트 gradlew 빌드
+        run: ./gradlew clean build -x test
 
       - name: Docker 로그인
         uses: docker/login-action@v3
@@ -52,68 +53,50 @@ jobs:
             --push \
             .
 
-  # 1) 유휴 서버 탐지
-  detect-idle:
-    name: 쉬고있는 EC2 서버 탐지
+  deploy:
+    name: 운영서버 배포
     needs: build
-    runs-on: [ self-hosted, prod-lb ]
-    outputs:
-      idle-server: ${{ steps.find.outputs.idle }}
+    runs-on: ubuntu-latest
+
     steps:
-      - name: 탐침 스크립트 실행
-        id: find
-        run: |
-          declare -A servers=(
-            [prod-app-1]="${{ secrets.PROD_APP_1_HEALTH_URL }}"
-            [prod-app-2]="${{ secrets.PROD_APP_2_HEALTH_URL }}"
-          )
-          
-          idle_servers=()
-          
-          for name in "${!servers[@]}"; do
-            url="${servers[$name]}"
-            code=$(curl -s -o /dev/null -w "%{http_code}" "$url" || echo "")
-            if [[ "$code" -eq 200 ]]; then
-              echo "$name 응답 성공"
-            else
-              echo "$name 응답 실패"
-              idle_servers+=("$name")
-            fi
-          done
-          
-          if [[ ${#idle_servers[@]} -eq 0 ]]; then
-            echo "Both servers are healthy – cannot find idle server"
-          elif [[ ${#idle_servers[@]} -eq 1 ]]; then
-            idle="${idle_servers[0]}"
-            echo "One server is idle, idle=$idle"
-            echo "idle=$idle" >> $GITHUB_OUTPUT
-          else
-            idle="prod-app-1"
-            echo "None servers are idle – as default, deploy to server1, idle=$idle"
-            echo "idle=$idle" >> $GITHUB_OUTPUT
-          fi
-
-          echo "idle=$idle" >> $GITHUB_OUTPUT
-
-  # 2) 유휴 서버에 배포 (server1 / server2 중 하나만 실행)
-  deploy-prod-app-1:
-    name: prod-app-1 서버에 배포
-    needs: detect-idle
-    if: needs.detect-idle.outputs.idle-server == 'prod-app-1'
-    uses: ./.github/workflows/backend-prod-app-cd.yml
-    with:
-      run_id: ${{ github.run_id }}
-      main_runner: prod-app-1
-      sub_runner: prod-app-2
-    secrets: inherit
-
-  deploy-prod-app-2:
-    name: prod-app-2 서버에 배포
-    needs: detect-idle
-    if: needs.detect-idle.outputs.idle-server == 'prod-app-2'
-    uses: ./.github/workflows/backend-prod-app-cd.yml
-    with:
-      run_id: ${{ github.run_id }}
-      main_runner: prod-app-2
-      sub_runner: prod-app-1
-    secrets: inherit
+      - name: SSH로 배포 스크립트 실행
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.PROD_SERVER_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/ubuntu/coursepick
+            
+            echo "🚀 운영 서버 배포 시작..."
+            
+            echo "📦 최신 이미지 Pull..."
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/coursepick-backend:prod
+            
+            echo "🌳 .env 파일 생성..."
+            cat > .env <<'EOF'
+            ${{ secrets.PROD_ENV_FILE }}
+            EOF
+            chmod 600 .env
+            
+            echo "▶️ 새 서버 시작..."
+            sudo docker compose --env-file .env up -d --pull always backend
+            
+            echo "🧹 사용하지 않는 이미지 정리..."
+            sudo docker image prune -a -f
+            
+            echo "⛑️ 헬스 체크..."
+            for i in $(seq 1 10); do
+              SERVER_STATUS=$(curl -o /dev/null -w "%{http_code}" http://localhost:80/actuator/health || echo "000")
+              if [ "$SERVER_STATUS" -eq 200 ]; then
+                echo "✅ 배포 성공! 서버 동작 중..."
+                exit 0
+              else
+                echo "Attempt $i/10: 헬스 체크 실패 (status=$SERVER_STATUS). 5초 후 재시도..."
+                sleep 5
+              fi
+            done
+            
+            echo "❌ 배포 실패! 서버가 동작하지 않습니다."
+            sudo docker logs coursepick-backend --tail 50
+            exit 1
