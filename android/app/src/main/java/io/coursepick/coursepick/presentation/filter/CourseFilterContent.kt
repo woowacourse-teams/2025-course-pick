@@ -292,7 +292,6 @@ private fun lengthRangeText(filter: CourseFilter): String {
     }
 }
 
-@Preview(showBackground = true)
 @PreviewLightDark
 @Composable
 private fun CourseFilterContentPreview() {
