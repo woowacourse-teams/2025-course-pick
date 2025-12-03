@@ -31,13 +31,7 @@ import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 @Composable
 fun CourseFilterContent(
     coursesUiState: CoursesUiState,
-    onReset: () -> Unit,
-    onEasy: () -> Unit,
-    onNormal: () -> Unit,
-    onHard: () -> Unit,
-    onRangeSliderValueChange: (ClosedFloatingPointRange<Float>) -> Unit,
-    onCancel: () -> Unit,
-    onResult: () -> Unit,
+    onFilterAction: (CourseFilterAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -46,25 +40,63 @@ fun CourseFilterContent(
                 .padding(horizontal = 20.dp)
                 .padding(bottom = 10.dp),
     ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(
-                text = stringResource(R.string.filter_dialog_title),
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = colorResource(R.color.item_primary),
-            )
-            Text(
-                text = stringResource(R.string.filter_dialog_reset),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = colorResource(R.color.item_primary),
-                modifier = Modifier.clickable(onClick = onReset),
-            )
-        }
+        FilterHeader(onReset = { onFilterAction(CourseFilterAction.Reset) })
+
+        DifficultySection(
+            selectedDifficulties = coursesUiState.courseFilter.difficulties,
+            onDifficultyToggle = { difficulty ->
+                onFilterAction(CourseFilterAction.ToggleDifficulty(difficulty))
+            },
+        )
+
+        LengthRangeSection(
+            filter = coursesUiState.courseFilter,
+            onRangeChange = { start, end ->
+                onFilterAction(CourseFilterAction.UpdateLengthRange(start, end))
+            },
+        )
+
+        FilterActionButtons(
+            resultCount = coursesUiState.courses.size,
+            onCancel = { onFilterAction(CourseFilterAction.Cancel) },
+            onApply = { onFilterAction(CourseFilterAction.Apply) },
+        )
+    }
+}
+
+@Composable
+private fun FilterHeader(
+    onReset: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier.fillMaxWidth(),
+    ) {
+        Text(
+            text = stringResource(R.string.filter_dialog_title),
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = colorResource(R.color.item_primary),
+        )
+        Text(
+            text = stringResource(R.string.filter_dialog_reset),
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = colorResource(R.color.item_primary),
+            modifier = Modifier.clickable(onClick = onReset),
+        )
+    }
+}
+
+@Composable
+private fun DifficultySection(
+    selectedDifficulties: Set<Difficulty>,
+    onDifficultyToggle: (Difficulty) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
         Text(
             text = stringResource(R.string.filter_dialog_difficulty_label),
             fontSize = 20.sp,
@@ -72,105 +104,187 @@ fun CourseFilterContent(
             modifier = Modifier.padding(vertical = 20.dp),
             color = colorResource(R.color.item_primary),
         )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            RoundedCornerToggleButton(
-                label = stringResource(R.string.filter_dialog_difficulty_easy),
-                isActive = coursesUiState.courseFilter.difficulties.contains(Difficulty.EASY),
-                onActiveChanged = onEasy,
-                modifier = Modifier.weight(1f),
-            )
-            RoundedCornerToggleButton(
-                label = stringResource(R.string.filter_dialog_difficulty_normal),
-                isActive = coursesUiState.courseFilter.difficulties.contains(Difficulty.NORMAL),
-                onActiveChanged = onNormal,
-                modifier = Modifier.weight(1f),
-            )
-            RoundedCornerToggleButton(
-                label = stringResource(R.string.filter_dialog_difficulty_hard),
-                isActive = coursesUiState.courseFilter.difficulties.contains(Difficulty.HARD),
-                onActiveChanged = onHard,
-                modifier = Modifier.weight(1f),
-            )
-        }
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(
-                text = stringResource(R.string.filter_dialog_length_label),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(vertical = 20.dp),
-                color = colorResource(R.color.item_primary),
-            )
-            Text(
-                text = lengthRangeText(coursesUiState.courseFilter),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(vertical = 20.dp),
-            )
-        }
-        val start =
-            coursesUiState.courseFilter.lengthRange.start.value
-                .toFloat()
-        val end =
-            coursesUiState.courseFilter.lengthRange.endInclusive.value
-                .toFloat()
-        RangeSlider(
-            value = start..end,
-            onValueChange = onRangeSliderValueChange,
-            valueRange = 0f..21f,
-            steps = 0,
-            colors =
-                SliderDefaults.colors(
-                    thumbColor = colorResource(R.color.point_secondary),
-                    activeTrackColor = colorResource(R.color.point_secondary),
-                    inactiveTrackColor = colorResource(R.color.item_tertiary),
-                    activeTickColor = colorResource(R.color.point_secondary),
-                    inactiveTickColor = colorResource(R.color.item_tertiary),
-                    disabledThumbColor = colorResource(R.color.item_tertiary),
-                    disabledActiveTrackColor = colorResource(R.color.item_tertiary),
-                    disabledActiveTickColor = colorResource(R.color.item_tertiary),
-                    disabledInactiveTrackColor = colorResource(R.color.item_tertiary),
-                    disabledInactiveTickColor = colorResource(R.color.item_tertiary),
-                ),
-            modifier = Modifier.padding(bottom = 20.dp),
-        )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            Box(
-                modifier =
-                    Modifier
-                        .weight(1f)
-                        .clickable(onClick = onCancel)
-                        .clip(RoundedCornerShape(size = 8.dp))
-                        .padding(vertical = 20.dp)
-                        .padding(horizontal = 4.dp),
-                contentAlignment = Alignment.Center,
-                content = {
-                    Text(
-                        text = stringResource(R.string.filter_dialog_cancel),
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = colorResource(R.color.item_primary),
-                    )
-                },
-            )
 
-            RoundedCornerToggleButton(
-                label = stringResource(R.string.filter_result_count, coursesUiState.courses.size),
-                isActive = coursesUiState.courses.isNotEmpty(),
-                onActiveChanged = onResult,
-                modifier = Modifier.weight(1f),
-                enabled = coursesUiState.courses.isNotEmpty(),
-            )
-        }
+        DifficultyButtons(
+            selectedDifficulties = selectedDifficulties,
+            onDifficultyToggle = onDifficultyToggle,
+        )
+    }
+}
+
+@Composable
+private fun DifficultyButtons(
+    selectedDifficulties: Set<Difficulty>,
+    onDifficultyToggle: (Difficulty) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        DifficultyButton(
+            difficulty = Difficulty.EASY,
+            label = stringResource(R.string.filter_dialog_difficulty_easy),
+            selectedDifficulties = selectedDifficulties,
+            onDifficultyToggle = onDifficultyToggle,
+            modifier = Modifier.weight(1f),
+        )
+        DifficultyButton(
+            difficulty = Difficulty.NORMAL,
+            label = stringResource(R.string.filter_dialog_difficulty_normal),
+            selectedDifficulties = selectedDifficulties,
+            onDifficultyToggle = onDifficultyToggle,
+            modifier = Modifier.weight(1f),
+        )
+        DifficultyButton(
+            difficulty = Difficulty.HARD,
+            label = stringResource(R.string.filter_dialog_difficulty_hard),
+            selectedDifficulties = selectedDifficulties,
+            onDifficultyToggle = onDifficultyToggle,
+            modifier = Modifier.weight(1f),
+        )
+    }
+}
+
+@Composable
+private fun DifficultyButton(
+    difficulty: Difficulty,
+    label: String,
+    selectedDifficulties: Set<Difficulty>,
+    onDifficultyToggle: (Difficulty) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    RoundedCornerToggleButton(
+        label = label,
+        isActive = selectedDifficulties.contains(difficulty),
+        onActiveChanged = { onDifficultyToggle(difficulty) },
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun LengthRangeSection(
+    filter: CourseFilter,
+    onRangeChange: (Double, Double) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
+        LengthRangeHeader(filter = filter)
+
+        LengthRangeSlider(
+            currentRange = filter.lengthRange,
+            onRangeChange = onRangeChange,
+        )
+    }
+}
+
+@Composable
+private fun LengthRangeHeader(
+    filter: CourseFilter,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier.fillMaxWidth(),
+    ) {
+        Text(
+            text = stringResource(R.string.filter_dialog_length_label),
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(vertical = 20.dp),
+            color = colorResource(R.color.item_primary),
+        )
+        Text(
+            text = lengthRangeText(filter),
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(vertical = 20.dp),
+        )
+    }
+}
+
+@Composable
+private fun LengthRangeSlider(
+    currentRange: ClosedRange<Kilometer>,
+    onRangeChange: (Double, Double) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val start = currentRange.start.value.toFloat()
+    val end = currentRange.endInclusive.value.toFloat()
+
+    RangeSlider(
+        value = start..end,
+        onValueChange = { range ->
+            onRangeChange(range.start.toDouble(), range.endInclusive.toDouble())
+        },
+        valueRange = 0f..21f,
+        steps = 0,
+        colors = sliderColors(),
+        modifier = modifier.padding(bottom = 20.dp),
+    )
+}
+
+@Composable
+private fun sliderColors() =
+    SliderDefaults.colors(
+        thumbColor = colorResource(R.color.point_secondary),
+        activeTrackColor = colorResource(R.color.point_secondary),
+        inactiveTrackColor = colorResource(R.color.item_tertiary),
+        activeTickColor = colorResource(R.color.point_secondary),
+        inactiveTickColor = colorResource(R.color.item_tertiary),
+        disabledThumbColor = colorResource(R.color.item_tertiary),
+        disabledActiveTrackColor = colorResource(R.color.item_tertiary),
+        disabledActiveTickColor = colorResource(R.color.item_tertiary),
+        disabledInactiveTrackColor = colorResource(R.color.item_tertiary),
+        disabledInactiveTickColor = colorResource(R.color.item_tertiary),
+    )
+
+@Composable
+private fun FilterActionButtons(
+    resultCount: Int,
+    onCancel: () -> Unit,
+    onApply: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        CancelButton(
+            onClick = onCancel,
+            modifier = Modifier.weight(1f),
+        )
+
+        RoundedCornerToggleButton(
+            label = stringResource(R.string.filter_result_count, resultCount),
+            isActive = resultCount > 0,
+            onActiveChanged = onApply,
+            modifier = modifier,
+        )
+    }
+}
+
+@Composable
+private fun CancelButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier =
+            modifier
+                .clickable(onClick = onClick)
+                .clip(RoundedCornerShape(size = 8.dp))
+                .padding(vertical = 20.dp)
+                .padding(horizontal = 4.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = stringResource(R.string.filter_dialog_cancel),
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = colorResource(R.color.item_primary),
+        )
     }
 }
 
@@ -209,13 +323,7 @@ private fun CourseFilterContentPreview() {
                             Kilometer(0.0)..Kilometer(10.0),
                         ),
                 ),
-            onRangeSliderValueChange = { _ -> },
-            onCancel = {},
-            onReset = { },
-            onEasy = {},
-            onNormal = { },
-            onHard = {},
-            onResult = {},
+            onFilterAction = {},
         )
     }
 }
