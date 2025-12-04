@@ -63,6 +63,7 @@ import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 import io.coursepick.coursepick.presentation.routefinder.RouteFinderChoiceDialogFragment
 import io.coursepick.coursepick.presentation.search.SearchActivity
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
+import io.coursepick.coursepick.presentation.setting.SettingsScreen
 import io.coursepick.coursepick.presentation.ui.DoublePressDetector
 import io.coursepick.coursepick.presentation.verifiedlocations.VerifiedLocationsDialog
 
@@ -148,10 +149,10 @@ class CoursesActivity :
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view: View, insets: WindowInsetsCompat ->
             val systemBars: Insets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             setUpToolbar(systemBars)
-            setUpFragmentContainer(systemBars)
             insets
         }
         setUpBottomSheet()
+        setUpSettings()
 
         mapManager.start {
             setUpObservers()
@@ -230,25 +231,6 @@ class CoursesActivity :
         mapManager.showSearchPosition(coordinate)
 
         fetchCourses()
-    }
-
-    override fun openMenu() {
-        Logger.log(Logger.Event.Click("drawer_menu"))
-        binding.mainDrawer.open()
-    }
-
-    override fun navigate(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.item_preferences -> navigateToPreferences()
-            R.id.item_user_feedback -> navigateToFeedback()
-            R.id.item_privacy_policy -> navigateToPrivacyPolicy()
-            R.id.item_open_source_notice -> navigateToOpenSourceNotice()
-            R.id.item_verified_location -> showVerifiedLocations()
-        }
-
-        binding.mainDrawer.close()
-
-        return true
     }
 
     private fun showVerifiedLocations() {
@@ -417,14 +399,21 @@ class CoursesActivity :
         binding.mainBottomNavigation.setOnItemSelectedListener { item: MenuItem ->
             when (item.itemId) {
                 R.id.coursesMenu -> {
+                    viewModel.showCourses()
                     switchContent(CoursesContent.EXPLORE)
                     searchThisArea()
                     true
                 }
 
                 R.id.favoritesMenu -> {
+                    viewModel.showCourses()
                     switchContent(CoursesContent.FAVORITES)
                     viewModel.fetchFavorites()
+                    true
+                }
+
+                R.id.settingsMenu -> {
+                    viewModel.showSettings()
                     true
                 }
 
@@ -573,21 +562,16 @@ class CoursesActivity :
         }
     }
 
-    private fun setUpFragmentContainer(systemBars: Insets) {
-        binding.mainFragmentContainer.setPadding(0, 0, 0, binding.mainBottomNavigation.height - systemBars.bottom)
-    }
-
     private fun setUpMapPadding() {
         val bottomSheet = binding.mainBottomSheet
-        val screenHeight = Resources.getSystem().displayMetrics.heightPixels
-        mapManager.setBottomPadding(screenHeight - bottomSheet.height)
+        mapManager.setBottomPadding(binding.mainContent.height - bottomSheet.y.toInt())
     }
 
     private fun setUpBottomSheet() {
         val bottomSheet = binding.mainBottomSheet
         val screenHeight = Resources.getSystem().displayMetrics.heightPixels
 
-        bottomSheet.layoutParams.height = screenHeight / 2
+        bottomSheet.layoutParams.height = (screenHeight * 0.4).toInt()
         val behavior = BottomSheetBehavior.from(bottomSheet)
         behavior.state = BottomSheetBehavior.STATE_EXPANDED
         behavior.addBottomSheetCallback(
@@ -601,10 +585,28 @@ class CoursesActivity :
                     bottomSheet: View,
                     slideOffset: Float,
                 ) {
-                    mapManager.setBottomPadding(screenHeight - bottomSheet.y.toInt())
+                    mapManager.setBottomPadding(binding.mainContent.height - bottomSheet.y.toInt())
                 }
             },
         )
+    }
+
+    private fun setUpSettings() {
+        binding.mainSettings.apply {
+            setContent {
+                CoursePickTheme {
+                    SettingsScreen(
+                        onNavigateToPreferences = { navigateToPreferences() },
+                        onNavigateToFeedback = { navigateToFeedback() },
+                        onNavigateToPrivacyPolicy = { navigateToPrivacyPolicy() },
+                        onNavigateToOpenSourceNotice = { navigateToOpenSourceNotice() },
+                        onShowVerifiedLocations = { showVerifiedLocations() },
+                        installationId = coursePickApplication.installationId.value,
+                        onCopyInstallationId = { copyClientId() },
+                    )
+                }
+            }
+        }
     }
 
     private fun setUpBindingVariables() {
@@ -635,11 +637,6 @@ class CoursesActivity :
         val callback =
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    if (binding.mainDrawer.isOpen) {
-                        binding.mainDrawer.close()
-                        return
-                    }
-
                     if (doublePressDetector.doublePressed()) {
                         finish()
                     } else {

@@ -378,6 +378,14 @@ class CoursesViewModel
             }
         }
 
+        fun showSettings() {
+            _state.value = state.value?.copy(showSettings = true)
+        }
+
+        fun showCourses() {
+            _state.value = state.value?.copy(showSettings = false)
+        }
+
         private fun newCourses(
             oldCourses: List<CourseItem>,
             selectedCourse: CourseItem,
