@@ -19,13 +19,10 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
           args: |
-            📢 **리뷰 요청이 도착했습니다!**
-            
-            🙇‍♂️️ **작성자:** {{ EVENT_PAYLOAD.sender.login }}
-            🎯 **리뷰어:** {{ EVENT_PAYLOAD.requested_reviewer.login }}
-            
-            📂 **PR명:** {{ EVENT_PAYLOAD.pull_request.title }}
-            🔗 [바로가기](<{{ EVENT_PAYLOAD.pull_request.html_url }}>)
+            ---
+            📢 **리뷰 요청**
+            {{ EVENT_PAYLOAD.sender.login }} -> {{ EVENT_PAYLOAD.requested_reviewer.login }}
+            🔗 [{{ EVENT_PAYLOAD.pull_request.title }}](<{{ EVENT_PAYLOAD.pull_request.html_url }}>)
 
       - name: 리뷰 완료 알림
         if: github.event_name == 'pull_request_review'
@@ -34,11 +31,7 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
           args: |
-            ✅ **리뷰가 등록되었습니다!**
-            
-            🙇‍♂️ **리뷰어:** {{ EVENT_PAYLOAD.sender.login }}
-            🎯 **작성자:** {{ EVENT_PAYLOAD.pull_request.user.login }}
-            
-            📝 **상태:** {{ EVENT_PAYLOAD.review.state }}
-            📂 **PR명:** {{ EVENT_PAYLOAD.pull_request.title }}
-            🔗 [바로가기](<{{ EVENT_PAYLOAD.review.html_url }}>)
+            ---
+            ✅ **리뷰 등록**
+            {{ EVENT_PAYLOAD.sender.login }} -> {{ EVENT_PAYLOAD.pull_request.user.login }}
+            🔗 [{{ EVENT_PAYLOAD.pull_request.title }}](<{{ EVENT_PAYLOAD.review.html_url }}>)
