@@ -17,7 +17,7 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
           args: |
-            {{ EVENT_PAYLOAD.sender.login }}님이 
-            PR: {{ EVENT_PAYLOAD.pull_request.title }} 에서 
-            **${{ github.event_name }}** 이벤트를 발생시켰습니다!
-            링크: {{ EVENT_PAYLOAD.pull_request.html_url }}
+            [{{ EVENT_PAYLOAD.sender.login }}] 님이 
+            [{{ EVENT_PAYLOAD.pull_request.title }}] 에서 
+            [${{ github.event_name }}] 했습니다.
+            {{ EVENT_PAYLOAD.pull_request.html_url }}
