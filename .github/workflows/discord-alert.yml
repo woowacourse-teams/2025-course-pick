@@ -1,0 +1,23 @@
+name: Discord Review Request Alert
+
+# PR 생성, 리뷰 요청, 리뷰 달렸을 때 발동
+on:
+  pull_request:
+    types: [ opened, review_requested, closed ]
+  pull_request_review:
+    types: [ submitted ]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Discord Notification
+        uses: Ilshidur/action-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        with:
+          args: |
+            {{ EVENT_PAYLOAD.sender.login }}님이 
+            PR: {{ EVENT_PAYLOAD.pull_request.title }} 에서 
+            **{{ EVENT_NAME }}** 이벤트를 발생시켰습니다!
+            링크: {{ EVENT_PAYLOAD.pull_request.html_url }}
