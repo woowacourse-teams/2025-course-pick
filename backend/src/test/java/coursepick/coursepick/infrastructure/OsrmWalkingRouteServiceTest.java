@@ -2,14 +2,32 @@ package coursepick.coursepick.infrastructure;
 
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.test_util.AbstractMockServerTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.web.client.RestClient;
 
 import java.net.SocketTimeoutException;
+import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class OsrmWalkingRouteServiceTest extends AbstractMockServerTest {
+
+    RestClient osrmRestClient;
+
+    @BeforeEach
+    void setup() {
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(Duration.ofSeconds(1));
+        requestFactory.setReadTimeout(Duration.ofSeconds(5));
+
+        this.osrmRestClient = RestClient.builder()
+                .requestFactory(requestFactory)
+                .baseUrl(url())
+                .build();
+    }
 
     @Test
     void 두_좌표_사이의_걷기_경로를_조회할_수_있다() {
