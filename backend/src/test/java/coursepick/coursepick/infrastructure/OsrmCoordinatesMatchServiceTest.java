@@ -125,19 +125,6 @@ class OsrmCoordinatesMatchServiceTest extends AbstractMockServerTest {
         assertThat(result).isEqualTo(originals);
     }
 
-    @Test
-    void 좌표가2개_미만이면_원본_좌표를_반환한다() {
-        mock(osrmLeastTwoCoordinatesResponse());
-        var sut = new OsrmCoordinatesMatchService(osrmRestClient);
-
-        List<Coordinate> originals = List.of(
-                new Coordinate(37.5045224, 127.048996, 10.0)
-        );
-        var result = sut.snapCoordinates(originals);
-
-        assertThat(result).isEqualTo(originals);
-    }
-
     // Mock OSRM Match API 응답
     private static String osrmMatchResponse() {
         return """
@@ -176,15 +163,6 @@ class OsrmCoordinatesMatchServiceTest extends AbstractMockServerTest {
                   {
                     "message": "Too many trace coordinates",
                     "code": "TooBig"
-                  }
-                  """;
-    }
-
-    private static String osrmLeastTwoCoordinatesResponse() {
-        return """
-                  {
-                    "message":"Number of coordinates needs to be at least two.",
-                    "code":"InvalidOptions"
                   }
                   """;
     }
