@@ -1,6 +1,6 @@
 name: Discord Alert
 
-# PR 생성, 리뷰 요청, 리뷰 달렸을 때 발동
+# 리뷰 요청, 리뷰 시 발동
 on:
   pull_request:
     types: [ review_requested ]
