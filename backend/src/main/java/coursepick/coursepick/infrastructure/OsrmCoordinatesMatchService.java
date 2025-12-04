@@ -15,13 +15,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.web.client.RestClient;
+
 @Slf4j
 @Component
 @Profile({"dev", "prod"})
 @RequiredArgsConstructor
 public class OsrmCoordinatesMatchService implements CoordinatesMatchService {
 
-    private final OsrmRestClient osrmRestClient;
+    private final RestClient osrmRestClient;
 
     @Override
     public List<Coordinate> snapCoordinates(List<Coordinate> coordinates) {
@@ -34,8 +36,7 @@ public class OsrmCoordinatesMatchService implements CoordinatesMatchService {
                 .collect(Collectors.joining(";"));
 
         try {
-            Map<String, Object> response = osrmRestClient.getRestClient()
-                    .get()
+            Map<String, Object> response = osrmRestClient.get()
                     .uri(uriBuilder -> uriBuilder
                             .path("/match/v1/foot/{coordinates}")
                             .queryParam("geometries", "geojson")
