@@ -17,6 +17,7 @@ import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.domain.notice.NoticeRepository
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.filter.CourseFilter
+import io.coursepick.coursepick.presentation.filter.CourseFilterAction
 import io.coursepick.coursepick.presentation.model.Difficulty
 import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
@@ -342,8 +343,12 @@ class CoursesViewModel
             _state.value = state.value?.copy(courseFilter = updatedCourseFilter)
         }
 
-        fun restore(coursesUiState: CoursesUiState) {
-            _state.value = coursesUiState
+        fun showFilterDialog() {
+            _state.value = state.value?.copy(showFilterDialog = true)
+        }
+
+        fun restoreState() {
+            _state.value = state.value?.copy(showFilterDialog = false)
         }
 
         fun fetchNotice(id: String) {
@@ -389,6 +394,21 @@ class CoursesViewModel
                     course.copy(selected = false)
                 }
             }
+
+        fun handleFilterAction(action: CourseFilterAction) {
+            when (action) {
+                is CourseFilterAction.Cancel -> restoreState()
+                is CourseFilterAction.Reset -> resetFilterToDefault()
+                is CourseFilterAction.Apply -> restoreState()
+                is CourseFilterAction.UpdateLengthRange -> {
+                    updateLengthRange(action.start, action.end)
+                }
+
+                is CourseFilterAction.ToggleDifficulty -> {
+                    toggleDifficulty(action.difficulty)
+                }
+            }
+        }
 
         companion object {
             private const val DEBOUNCE_LIMIT_TIME = 500L

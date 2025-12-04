@@ -1,0 +1,312 @@
+package io.coursepick.coursepick.presentation.filter
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.RangeSlider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import io.coursepick.coursepick.R
+import io.coursepick.coursepick.domain.course.Kilometer
+import io.coursepick.coursepick.presentation.course.CoursesUiState
+import io.coursepick.coursepick.presentation.model.Difficulty
+import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
+
+@Composable
+fun CourseFilterContent(
+    coursesUiState: CoursesUiState,
+    onFilterAction: (CourseFilterAction) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier =
+            modifier
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 10.dp),
+    ) {
+        FilterHeader(onReset = { onFilterAction(CourseFilterAction.Reset) })
+
+        DifficultySection(
+            selectedDifficulties = coursesUiState.courseFilter.difficulties,
+            onDifficultyToggle = { difficulty ->
+                onFilterAction(CourseFilterAction.ToggleDifficulty(difficulty))
+            },
+        )
+
+        LengthRangeSection(
+            filter = coursesUiState.courseFilter,
+            onRangeChange = { start, end ->
+                onFilterAction(CourseFilterAction.UpdateLengthRange(start, end))
+            },
+        )
+
+        FilterActionButtons(
+            resultCount = coursesUiState.courses.size,
+            onCancel = { onFilterAction(CourseFilterAction.Cancel) },
+            onApply = { onFilterAction(CourseFilterAction.Apply) },
+        )
+    }
+}
+
+@Composable
+private fun FilterHeader(
+    onReset: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier.fillMaxWidth(),
+    ) {
+        Text(
+            text = stringResource(R.string.filter_dialog_title),
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = colorResource(R.color.item_primary),
+        )
+        Text(
+            text = stringResource(R.string.filter_dialog_reset),
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = colorResource(R.color.item_primary),
+            modifier = Modifier.clickable(onClick = onReset),
+        )
+    }
+}
+
+@Composable
+private fun DifficultySection(
+    selectedDifficulties: Set<Difficulty>,
+    onDifficultyToggle: (Difficulty) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = stringResource(R.string.filter_dialog_difficulty_label),
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(vertical = 20.dp),
+            color = colorResource(R.color.item_primary),
+        )
+
+        DifficultyButtons(
+            selectedDifficulties = selectedDifficulties,
+            onDifficultyToggle = onDifficultyToggle,
+        )
+    }
+}
+
+@Composable
+private fun DifficultyButtons(
+    selectedDifficulties: Set<Difficulty>,
+    onDifficultyToggle: (Difficulty) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        DifficultyButton(
+            difficulty = Difficulty.EASY,
+            label = stringResource(R.string.filter_dialog_difficulty_easy),
+            selectedDifficulties = selectedDifficulties,
+            onDifficultyToggle = onDifficultyToggle,
+            modifier = Modifier.weight(1f),
+        )
+        DifficultyButton(
+            difficulty = Difficulty.NORMAL,
+            label = stringResource(R.string.filter_dialog_difficulty_normal),
+            selectedDifficulties = selectedDifficulties,
+            onDifficultyToggle = onDifficultyToggle,
+            modifier = Modifier.weight(1f),
+        )
+        DifficultyButton(
+            difficulty = Difficulty.HARD,
+            label = stringResource(R.string.filter_dialog_difficulty_hard),
+            selectedDifficulties = selectedDifficulties,
+            onDifficultyToggle = onDifficultyToggle,
+            modifier = Modifier.weight(1f),
+        )
+    }
+}
+
+@Composable
+private fun LengthRangeSection(
+    filter: CourseFilter,
+    onRangeChange: (Double, Double) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
+        LengthRangeHeader(filter = filter)
+
+        LengthRangeSlider(
+            currentRange = filter.lengthRange,
+            onRangeChange = onRangeChange,
+        )
+    }
+}
+
+@Composable
+private fun LengthRangeHeader(
+    filter: CourseFilter,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier.fillMaxWidth(),
+    ) {
+        Text(
+            text = stringResource(R.string.filter_dialog_length_label),
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(vertical = 20.dp),
+            color = colorResource(R.color.item_primary),
+        )
+        Text(
+            text = lengthRangeText(filter),
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(vertical = 20.dp),
+        )
+    }
+}
+
+@Composable
+private fun LengthRangeSlider(
+    currentRange: ClosedRange<Kilometer>,
+    onRangeChange: (Double, Double) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val start = currentRange.start.value.toFloat()
+    val end = currentRange.endInclusive.value.toFloat()
+
+    RangeSlider(
+        value = start..end,
+        onValueChange = { range ->
+            onRangeChange(range.start.toDouble(), range.endInclusive.toDouble())
+        },
+        valueRange = 0f..21f,
+        steps = 0,
+        colors = sliderColors(),
+        modifier = modifier.padding(bottom = 20.dp),
+    )
+}
+
+@Composable
+private fun sliderColors() =
+    SliderDefaults.colors(
+        thumbColor = colorResource(R.color.point_secondary),
+        activeTrackColor = colorResource(R.color.point_secondary),
+        inactiveTrackColor = colorResource(R.color.item_tertiary),
+        activeTickColor = colorResource(R.color.point_secondary),
+        inactiveTickColor = colorResource(R.color.item_tertiary),
+        disabledThumbColor = colorResource(R.color.item_tertiary),
+        disabledActiveTrackColor = colorResource(R.color.item_tertiary),
+        disabledActiveTickColor = colorResource(R.color.item_tertiary),
+        disabledInactiveTrackColor = colorResource(R.color.item_tertiary),
+        disabledInactiveTickColor = colorResource(R.color.item_tertiary),
+    )
+
+@Composable
+private fun FilterActionButtons(
+    resultCount: Int,
+    onCancel: () -> Unit,
+    onApply: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        CancelButton(
+            onClick = onCancel,
+            modifier = Modifier.weight(1f),
+        )
+
+        FilterResultButton(
+            label = stringResource(R.string.filter_result_count, resultCount),
+            isActive = resultCount > 0,
+            onActiveChanged = onApply,
+            modifier = Modifier.weight(1f),
+        )
+    }
+}
+
+@Composable
+private fun CancelButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier =
+            modifier
+                .clickable(onClick = onClick)
+                .clip(RoundedCornerShape(size = 8.dp))
+                .padding(vertical = 20.dp)
+                .padding(horizontal = 4.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = stringResource(R.string.filter_dialog_cancel),
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = colorResource(R.color.item_primary),
+        )
+    }
+}
+
+@Composable
+private fun lengthRangeText(filter: CourseFilter): String {
+    val start =
+        filter.lengthRange.start.value
+            .toInt()
+    val end =
+        filter.lengthRange.endInclusive.value
+            .toInt()
+
+    val min = CourseFilter.MINIMUM_LENGTH_RANGE.toInt()
+    val max = CourseFilter.MAXIMUM_LENGTH_RANGE.toInt()
+
+    return when {
+        start == min && end != max -> stringResource(R.string.length_range_open_start, end)
+        start != min && end == max -> stringResource(R.string.length_range_open_end, start)
+        start != min && end != max -> stringResource(R.string.length_range, start, end)
+        else -> stringResource(R.string.total_length_range)
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun CourseFilterContentPreview() {
+    CoursePickTheme {
+        CourseFilterContent(
+            coursesUiState =
+                CoursesUiState(
+                    originalCourses = listOf(),
+                    query = "",
+                    courseFilter =
+                        CourseFilter.None.copy(
+                            lengthRange = Kilometer(0.0)..Kilometer(10.0),
+                        ),
+                ),
+            onFilterAction = {},
+        )
+    }
+}

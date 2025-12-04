@@ -46,6 +46,7 @@ class ExploreCoursesFragment(
         binding.lifecycleOwner = viewLifecycleOwner
         binding.adapter = courseAdapter
         binding.viewModel = viewModel
+//        binding.showFiltersListener = this
     }
 
     private fun setUpStateObserver() {
