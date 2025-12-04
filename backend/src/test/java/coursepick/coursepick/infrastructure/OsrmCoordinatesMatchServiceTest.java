@@ -31,11 +31,9 @@ class OsrmCoordinatesMatchServiceTest extends AbstractMockServerTest {
 
     @Test
     void 좌표_리스트를_도로에_매칭할_수_있다() {
-        // Given: Mock OSRM Match API 응답
         mock(osrmMatchResponse());
         var sut = new OsrmCoordinatesMatchService(osrmRestClient);
 
-        // When: 원본 좌표 3개로 매칭 실행
         List<Coordinate> originals = List.of(
                 new Coordinate(37.5045224, 127.048996, 10.0),
                 new Coordinate(37.5050000, 127.048500, 15.0),
@@ -43,18 +41,15 @@ class OsrmCoordinatesMatchServiceTest extends AbstractMockServerTest {
         );
         var result = sut.snapCoordinates(originals);
 
-        // Then: 매칭된 좌표가 반환됨 (도로를 따라 더 많은 좌표 생성)
         assertThat(result).isNotEmpty();
         assertThat(result.size()).isEqualTo(5); // Mock 응답에 5개 좌표
     }
 
     @Test
     void 매칭된_좌표에_원본_elevation이_보간된다() {
-        // Given
         mock(osrmMatchResponse());
         var sut = new OsrmCoordinatesMatchService(osrmRestClient);
 
-        // When
         List<Coordinate> originals = List.of(
                 new Coordinate(37.5045224, 127.048996, 10.0),
                 new Coordinate(37.5050000, 127.048500, 15.0),
@@ -69,44 +64,35 @@ class OsrmCoordinatesMatchServiceTest extends AbstractMockServerTest {
 
     @Test
     void 좌표가_2개_미만이면_원본을_반환한다() {
-        // Given
         var sut = new OsrmCoordinatesMatchService(osrmRestClient);
 
-        // When: 좌표 1개
         List<Coordinate> single = List.of(
                 new Coordinate(37.5045224, 127.048996, 10.0)
         );
         var result = sut.snapCoordinates(single);
 
-        // Then: 원본 그대로 반환
         assertThat(result).isEqualTo(single);
     }
 
     @Test
     void 빈_리스트는_빈_리스트를_반환한다() {
-        // Given
         var sut = new OsrmCoordinatesMatchService(osrmRestClient);
 
-        // When
         var result = sut.snapCoordinates(List.of());
 
-        // Then
         assertThat(result).isEmpty();
     }
 
     @Test
     void 응답이_오래걸리면_원본_좌표를_반환한다() {
-        // Given
         mock(osrmMatchResponse(), 6000);
         var sut = new OsrmCoordinatesMatchService(osrmRestClient);
 
-        // When
         List<Coordinate> originals = List.of(
                 new Coordinate(37.5045224, 127.048996, 10.0),
                 new Coordinate(37.5113001, 127.0392855, 20.0)
         );
 
-        // Then
         assertThatCode(() -> sut.snapCoordinates(originals))
                 .doesNotThrowAnyException();
 
@@ -116,51 +102,42 @@ class OsrmCoordinatesMatchServiceTest extends AbstractMockServerTest {
 
     @Test
     void NoMatch_응답이면_원본_좌표를_반환한다() {
-        // Given
         mock(osrmNoMatchResponse());
         var sut = new OsrmCoordinatesMatchService(osrmRestClient);
 
-        // When
         List<Coordinate> originals = List.of(
                 new Coordinate(37.5045224, 127.048996, 10.0),
                 new Coordinate(37.5113001, 127.0392855, 20.0)
         );
         var result = sut.snapCoordinates(originals);
 
-        // Then
         assertThat(result).isEqualTo(originals);
     }
 
     @Test
     void TooBig_응답이면_원본_좌표를_반환한다() {
-        // Given
         mock(osrmTooBigResponse());
         var sut = new OsrmCoordinatesMatchService(osrmRestClient);
 
-        // When
         List<Coordinate> originals = List.of(
                 new Coordinate(37.5045224, 127.048996, 10.0),
                 new Coordinate(37.5113001, 127.0392855, 20.0)
         );
         var result = sut.snapCoordinates(originals);
 
-        // Then
         assertThat(result).isEqualTo(originals);
     }
 
     @Test
     void 좌표가2개_미만이면_원본_좌표를_반환한다() {
-        // Given
         mock(osrmLeastTwoCoordinatesResponse());
         var sut = new OsrmCoordinatesMatchService(osrmRestClient);
 
-        // When
         List<Coordinate> originals = List.of(
                 new Coordinate(37.5045224, 127.048996, 10.0)
         );
         var result = sut.snapCoordinates(originals);
 
-        // Then
         assertThat(result).isEqualTo(originals);
     }
 
