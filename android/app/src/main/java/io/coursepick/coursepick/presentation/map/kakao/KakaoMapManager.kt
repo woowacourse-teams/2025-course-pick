@@ -206,8 +206,8 @@ class KakaoMapManager(
     }
 
     fun scopeOrNull(screenCenter: Coordinate): Scope? {
-        val screenDiagonalTop = kakaoMap?.fromScreenPoint(0, 0) ?: return null
-        val distance =
+        val screenDiagonalTop: LatLng = kakaoMap?.fromScreenPoint(0, 0) ?: return null
+        val distance: Int =
             DistanceCalculator.distance(screenCenter, screenDiagonalTop.toCoordinate())
                 ?: return null
         return Scope(distance)
