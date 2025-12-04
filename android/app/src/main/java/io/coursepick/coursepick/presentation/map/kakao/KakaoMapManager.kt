@@ -59,6 +59,8 @@ class KakaoMapManager(
 
     fun pause() = lifecycleHandler.pause()
 
+    fun finish() = lifecycleHandler.finish()
+
     fun draw(course: CourseItem) {
         kakaoMap?.let { kakaoMap: KakaoMap ->
             drawer.drawCourse(kakaoMap, course)
@@ -204,8 +206,10 @@ class KakaoMapManager(
     }
 
     fun scopeOrNull(screenCenter: Coordinate): Scope? {
-        val screenDiagonalTop = kakaoMap?.fromScreenPoint(0, 0) ?: return null
-        val distance = DistanceCalculator.distance(screenCenter, screenDiagonalTop.toCoordinate()) ?: return null
+        val screenDiagonalTop: LatLng = kakaoMap?.fromScreenPoint(0, 0) ?: return null
+        val distance: Int =
+            DistanceCalculator.distance(screenCenter, screenDiagonalTop.toCoordinate())
+                ?: return null
         return Scope(distance)
     }
 }
