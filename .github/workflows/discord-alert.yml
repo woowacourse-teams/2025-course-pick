@@ -19,9 +19,9 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
           args: |
-            ***
-            📢 **리뷰 요청**
-            🎯 {{ EVENT_PAYLOAD.sender.login }} -> {{ EVENT_PAYLOAD.requested_reviewer.login }}
+            ―――――
+            🙇‍♂️ **리뷰 요청**
+            🎯 {{ EVENT_PAYLOAD.sender.login }} → {{ EVENT_PAYLOAD.requested_reviewer.login }}
             🔗 [{{ EVENT_PAYLOAD.pull_request.title }}](<{{ EVENT_PAYLOAD.pull_request.html_url }}>)
 
       - name: 리뷰 완료 알림
@@ -31,7 +31,7 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
           args: |
-            ***
+            ―――――
             ✅ **리뷰 등록**
-            🎯 {{ EVENT_PAYLOAD.sender.login }} -> {{ EVENT_PAYLOAD.pull_request.user.login }}
+            🎯 {{ EVENT_PAYLOAD.sender.login }} → {{ EVENT_PAYLOAD.pull_request.user.login }}
             🔗 [{{ EVENT_PAYLOAD.pull_request.title }}](<{{ EVENT_PAYLOAD.review.html_url }}>)
