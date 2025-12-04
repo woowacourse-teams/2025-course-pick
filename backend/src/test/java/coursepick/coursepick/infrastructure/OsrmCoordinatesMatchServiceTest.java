@@ -93,9 +93,6 @@ class OsrmCoordinatesMatchServiceTest extends AbstractMockServerTest {
                 new Coordinate(37.5113001, 127.0392855, 20.0)
         );
 
-        assertThatCode(() -> sut.snapCoordinates(originals))
-                .doesNotThrowAnyException();
-
         var result = sut.snapCoordinates(originals);
         assertThat(result).isEqualTo(originals);
     }
