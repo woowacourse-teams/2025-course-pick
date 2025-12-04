@@ -24,12 +24,12 @@ jobs:
           
           # GitHub ID(오른쪽)에 따라 Discord ID(왼쪽)를 설정
           case "$TARGET_GITHUB_ID" in
-            "Dompoo") DISCORD_ID="@dom_poo" ;;
-            "doabletuple") DISCORD_ID="@doabletuple" ;;
-            "wondroid-world") DISCORD_ID="@wondroid_world" ;;
-            "kkiseug") DISCORD_ID="@kksuk" ;;
-            "giovannijunseokim") DISCORD_ID="@giovannijunseokim" ;;
-            "vvn89") DISCORD_ID="@tobae.time" ;;
+            "Dompoo") DISCORD_ID="<@354278903130357763>" ;;
+            "doabletuple") DISCORD_ID="<@1295280090632028160>" ;;
+            "wondroid-world") DISCORD_ID="<@1114787651422277723>" ;;
+            "kkiseug") DISCORD_ID="<@476402713111035904>" ;;
+            "giovannijunseokim") DISCORD_ID="<@1000267441332555776>" ;;
+            "vvn89") DISCORD_ID="<@1438454861439041647>" ;;
             *) DISCORD_ID="$TARGET_GITHUB_ID" ;; # 목록에 없으면 GitHub 아이디 그대로 사용
           esac
           
