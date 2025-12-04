@@ -3,7 +3,7 @@ name: Discord Review Request Alert
 # PR 생성, 리뷰 요청, 리뷰 달렸을 때 발동
 on:
   pull_request:
-    types: [ opened, review_requested, closed ]
+    types: [ review_requested ]
   pull_request_review:
     types: [ submitted ]
 
