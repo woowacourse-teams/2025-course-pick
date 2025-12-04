@@ -9,9 +9,10 @@ on:
 
 jobs:
   notify:
+    name: 알림보내기
     runs-on: ubuntu-latest
     steps:
-      - name: Discord Notification
+      - name: 알림보내기
         uses: Ilshidur/action-discord@master
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
