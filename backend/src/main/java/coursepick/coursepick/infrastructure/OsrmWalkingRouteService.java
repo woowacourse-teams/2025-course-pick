@@ -13,19 +13,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.web.client.RestClient;
+
 @Slf4j
 @Component
 @Profile({"dev", "prod"})
 @RequiredArgsConstructor
 public class OsrmWalkingRouteService implements WalkingRouteService {
 
-    private final OsrmRestClient osrmRestClient;
+    private final RestClient osrmRestClient;
 
     @Override
     public List<Coordinate> route(Coordinate origin, Coordinate destination) {
         try {
-            Map<String, Object> response = osrmRestClient.getRestClient()
-                    .get()
+            Map<String, Object> response = osrmRestClient.get()
                     .uri(uriBuilder -> uriBuilder
                             .path("/route/v1/foot/{origin_longitude},{origin_latitude};{destination_longitude},{destination_latitude}")
                             .queryParam("geometries", "geojson")
