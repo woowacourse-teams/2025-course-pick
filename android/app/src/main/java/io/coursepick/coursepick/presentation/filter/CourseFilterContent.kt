@@ -34,80 +34,85 @@ fun CourseFilterContent(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier =
-            modifier
-                .padding(horizontal = 20.dp)
-                .padding(bottom = 10.dp),
+        modifier = modifier.padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
     ) {
-        FilterHeader(onReset = { onFilterAction(CourseFilterAction.Reset) })
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
+                text = stringResource(R.string.filter_dialog_title),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = colorResource(R.color.item_primary),
+            )
+            Text(
+                text = stringResource(R.string.filter_dialog_reset),
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = colorResource(R.color.item_primary),
+                modifier = Modifier.clickable(onClick = {onFilterAction(CourseFilterAction.Reset)}),
+            )
+        }
 
-        DifficultySection(
-            selectedDifficulties = coursesUiState.courseFilter.difficulties,
-            onDifficultyToggle = { difficulty ->
-                onFilterAction(CourseFilterAction.ToggleDifficulty(difficulty))
-            },
-        )
+        Column {
+            Text(
+                text = stringResource(R.string.filter_dialog_difficulty_label),
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(vertical = 20.dp),
+                color = colorResource(R.color.item_primary),
+            )
 
-        LengthRangeSection(
-            filter = coursesUiState.courseFilter,
-            onRangeChange = { start, end ->
-                onFilterAction(CourseFilterAction.UpdateLengthRange(start, end))
-            },
-        )
+            DifficultyButtons(
+                selectedDifficulties = coursesUiState.courseFilter.difficulties,
+                onDifficultyToggle = { difficulty: Difficulty ->
+                    onFilterAction(CourseFilterAction.ToggleDifficulty(difficulty))
+                },
+            )
+        }
 
-        FilterActionButtons(
-            resultCount = coursesUiState.courses.size,
-            onCancel = { onFilterAction(CourseFilterAction.Cancel) },
-            onApply = { onFilterAction(CourseFilterAction.Apply) },
-        )
-    }
-}
+        Column(modifier = modifier) {
+            LengthRangeHeader(filter = coursesUiState.courseFilter)
 
-@Composable
-private fun FilterHeader(
-    onReset: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.fillMaxWidth(),
-    ) {
-        Text(
-            text = stringResource(R.string.filter_dialog_title),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = colorResource(R.color.item_primary),
-        )
-        Text(
-            text = stringResource(R.string.filter_dialog_reset),
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            color = colorResource(R.color.item_primary),
-            modifier = Modifier.clickable(onClick = onReset),
-        )
-    }
-}
+            LengthRangeSlider(
+                currentRange = coursesUiState.courseFilter.lengthRange,
+                onRangeChange = { start: Double, end: Double ->
+                    onFilterAction(CourseFilterAction.UpdateLengthRange(start, end))
+                },
+            )
+        }
 
-@Composable
-private fun DifficultySection(
-    selectedDifficulties: Set<Difficulty>,
-    onDifficultyToggle: (Difficulty) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier = modifier) {
-        Text(
-            text = stringResource(R.string.filter_dialog_difficulty_label),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(vertical = 20.dp),
-            color = colorResource(R.color.item_primary),
-        )
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Box(
+                modifier =
+                    modifier
+                        .clickable(onClick = { onFilterAction(CourseFilterAction.Cancel) })
+                        .clip(RoundedCornerShape(size = 8.dp))
+                        .padding(vertical = 20.dp)
+                        .padding(horizontal = 4.dp)
+                        .weight(1f),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = stringResource(R.string.filter_dialog_cancel),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = colorResource(R.color.item_primary),
+                )
+            }
 
-        DifficultyButtons(
-            selectedDifficulties = selectedDifficulties,
-            onDifficultyToggle = onDifficultyToggle,
-        )
+            FilterResultButton(
+                label = stringResource(R.string.filter_result_count, coursesUiState.courses),
+                isActive = coursesUiState.courses.isNotEmpty(),
+                onActiveChanged = { onFilterAction(CourseFilterAction.Apply) },
+                modifier = Modifier.weight(1f),
+            )
+        }
     }
 }
 
@@ -141,22 +146,6 @@ private fun DifficultyButtons(
             selectedDifficulties = selectedDifficulties,
             onDifficultyToggle = onDifficultyToggle,
             modifier = Modifier.weight(1f),
-        )
-    }
-}
-
-@Composable
-private fun LengthRangeSection(
-    filter: CourseFilter,
-    onRangeChange: (Double, Double) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier = modifier) {
-        LengthRangeHeader(filter = filter)
-
-        LengthRangeSlider(
-            currentRange = filter.lengthRange,
-            onRangeChange = onRangeChange,
         )
     }
 }
@@ -222,54 +211,6 @@ private fun sliderColors() =
         disabledInactiveTrackColor = colorResource(R.color.item_tertiary),
         disabledInactiveTickColor = colorResource(R.color.item_tertiary),
     )
-
-@Composable
-private fun FilterActionButtons(
-    resultCount: Int,
-    onCancel: () -> Unit,
-    onApply: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        CancelButton(
-            onClick = onCancel,
-            modifier = Modifier.weight(1f),
-        )
-
-        FilterResultButton(
-            label = stringResource(R.string.filter_result_count, resultCount),
-            isActive = resultCount > 0,
-            onActiveChanged = onApply,
-            modifier = Modifier.weight(1f),
-        )
-    }
-}
-
-@Composable
-private fun CancelButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier =
-            modifier
-                .clickable(onClick = onClick)
-                .clip(RoundedCornerShape(size = 8.dp))
-                .padding(vertical = 20.dp)
-                .padding(horizontal = 4.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = stringResource(R.string.filter_dialog_cancel),
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            color = colorResource(R.color.item_primary),
-        )
-    }
-}
 
 @Composable
 private fun lengthRangeText(filter: CourseFilter): String {
