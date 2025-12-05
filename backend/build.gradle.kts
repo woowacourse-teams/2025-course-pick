@@ -45,14 +45,15 @@ dependencies {
 
     // JVM/Spring Metric To CloudWatch
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("io.awspring.cloud:spring-cloud-aws-starter-metrics:3.4.0")
+
+    // Prometheus Metrics
+    implementation("io.micrometer:micrometer-registry-prometheus")
 
     // MockWebServer
     testImplementation("com.squareup.okhttp3:mockwebserver3:5.1.0")
 
     // Test
     testRuntimeOnly("de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring30x:4.21.0")
-    testImplementation("org.springframework.batch:spring-batch-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
