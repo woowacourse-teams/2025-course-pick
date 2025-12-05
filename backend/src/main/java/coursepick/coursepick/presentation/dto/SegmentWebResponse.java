@@ -7,8 +7,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
 public record SegmentWebResponse(
-        @Schema(example = "UPHILL")
+        @Schema(description = "경사 타입 (UPHILL: 오르막, DOWNHILL: 내리막, FLAT: 평지)", example = "UPHILL")
         InclineType inclineType,
+        @Schema(description = "세그먼트를 구성하는 좌표 목록")
         List<CoordinateWebResponse> coordinates
 ) {
     public static List<SegmentWebResponse> from(List<SegmentResponse> segmentResponses) {
