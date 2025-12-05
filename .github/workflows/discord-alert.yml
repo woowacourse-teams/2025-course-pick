@@ -15,25 +15,15 @@ jobs:
       - name: GitHub ID와 Discord ID 매핑
         id: mapper
         shell: bash
+        env:
+          ID_MAP: ${{ secrets.DISCORD_ID_MAP }}
         run: |
           if [[ "${{ github.event.action }}" == "review_requested" ]]; then
             TARGET_GITHUB_ID="${{ github.event.requested_reviewer.login }}"
           else
             TARGET_GITHUB_ID="${{ github.event.pull_request.user.login }}"
           fi
-          
-          # GitHub ID(오른쪽)에 따라 Discord ID(왼쪽)를 설정
-          case "$TARGET_GITHUB_ID" in
-            "Dompoo") DISCORD_ID="<@354278903130357763>" ;;
-            "doabletuple") DISCORD_ID="<@1295280090632028160>" ;;
-            "wondroid-world") DISCORD_ID="<@1114787651422277723>" ;;
-            "kkiseug") DISCORD_ID="<@476402713111035904>" ;;
-            "giovannijunseokim") DISCORD_ID="<@1000267441332555776>" ;;
-            "vvn89") DISCORD_ID="<@1438454861439041647>" ;;
-            *) DISCORD_ID="$TARGET_GITHUB_ID" ;; # 목록에 없으면 GitHub 아이디 그대로 사용
-          esac
-          
-          # 3) 결과 저장
+          DISCORD_ID=$(echo "$ID_MAP" | jq -r --arg key "$TARGET_GITHUB_ID" '.[$key] // $key')
           echo "MENTION_TARGET=$DISCORD_ID" >> $GITHUB_ENV
       - name: 리뷰 요청 알림
         if: github.event.action == 'review_requested'
