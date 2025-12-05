@@ -1,0 +1,50 @@
+name: Discord Alert
+
+# 리뷰 요청, 리뷰 시 발동
+on:
+  pull_request:
+    types: [ review_requested ]
+  pull_request_review:
+    types: [ submitted ]
+
+jobs:
+  notify:
+    name: 알림보내기
+    runs-on: ubuntu-latest
+    steps:
+      - name: GitHub ID와 Discord ID 매핑
+        id: mapper
+        shell: bash
+        env:
+          ID_MAP: ${{ secrets.DISCORD_ID_MAP }}
+        run: |
+          if [[ "${{ github.event.action }}" == "review_requested" ]]; then
+            TARGET_GITHUB_ID="${{ github.event.requested_reviewer.login }}"
+          else
+            TARGET_GITHUB_ID="${{ github.event.pull_request.user.login }}"
+          fi
+          DISCORD_ID=$(echo "$ID_MAP" | jq -r --arg key "$TARGET_GITHUB_ID" '.[$key] // $key')
+          echo "MENTION_TARGET=$DISCORD_ID" >> $GITHUB_ENV
+      - name: 리뷰 요청 알림
+        if: github.event.action == 'review_requested'
+        uses: Ilshidur/action-discord@0.4.0
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        with:
+          args: |
+            ―――――――――――――――――――――――――
+            🙇‍♂️ **리뷰 요청**
+            🎯 {{ EVENT_PAYLOAD.sender.login }} → ${{ env.MENTION_TARGET }}
+            🔗 [{{ EVENT_PAYLOAD.pull_request.title }}](<{{ EVENT_PAYLOAD.pull_request.html_url }}>)
+
+      - name: 리뷰 완료 알림
+        if: github.event_name == 'pull_request_review'
+        uses: Ilshidur/action-discord@0.4.0
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        with:
+          args: |
+            ―――――――――――――――――――――――――
+            ✅ **리뷰 등록**
+            🎯 {{ EVENT_PAYLOAD.sender.login }} → ${{ env.MENTION_TARGET }}
+            🔗 [{{ EVENT_PAYLOAD.pull_request.title }}](<{{ EVENT_PAYLOAD.review.html_url }}>)
