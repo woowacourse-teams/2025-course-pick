@@ -26,7 +26,6 @@ public class PathAllowlistFilter extends OncePerRequestFilter {
             Pattern.compile("^/courses/[^/]+/route$"),
             Pattern.compile("^/actuator/health$"),
             Pattern.compile("^/api-docs.html$"),
-            Pattern.compile("^/swagger-ui.*$"),
             Pattern.compile("^/v3/api-docs.*$"),
             Pattern.compile("^/admin$"),
             Pattern.compile("^/admin/login$"),

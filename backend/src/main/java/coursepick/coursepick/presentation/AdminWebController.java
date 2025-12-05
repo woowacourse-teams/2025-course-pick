@@ -7,6 +7,7 @@ import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.Course;
 import coursepick.coursepick.domain.CourseName;
 import coursepick.coursepick.domain.CourseRepository;
+import coursepick.coursepick.presentation.api.AdminWebApi;
 import coursepick.coursepick.presentation.dto.AdminCourseWebResponse;
 import coursepick.coursepick.presentation.dto.AdminLoginWebRequest;
 import coursepick.coursepick.presentation.dto.CourseReplaceWebRequest;
@@ -29,7 +30,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class AdminWebController {
+public class AdminWebController implements AdminWebApi {
 
     private static final String TOKEN_COOKIE_KEY = "admin-token";
     private static final String KAKAO_API_KEY_PLACEHOLDER = "KAKAO_API_KEY_PLACEHOLDER";
