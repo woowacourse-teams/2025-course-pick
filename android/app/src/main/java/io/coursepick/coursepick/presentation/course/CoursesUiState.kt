@@ -16,11 +16,12 @@ data class CoursesUiState(
     val isFilterDefault: Boolean = courseFilter == CourseFilter.None
     val courses: List<CourseListItem> =
         originalCourses.filter { courseListItem: CourseListItem ->
-            courseListItem is CourseListItem.Loading || (
-                courseListItem is CourseListItem.Course &&
-                    courseFilter.matches(
-                        courseListItem.item,
-                    )
-            )
+            courseListItem is CourseListItem.Loading ||
+                (
+                    courseListItem is CourseListItem.Course &&
+                        courseFilter.matches(
+                            courseListItem.item,
+                        )
+                )
         }
 }
