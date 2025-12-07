@@ -34,7 +34,7 @@ fun CourseFilterContent(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
+        modifier = modifier.padding(start = 20.dp, end = 20.dp, bottom = 10.dp),
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -52,7 +52,7 @@ fun CourseFilterContent(
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = colorResource(R.color.item_primary),
-                modifier = Modifier.clickable(onClick = {onFilterAction(CourseFilterAction.Reset)}),
+                modifier = Modifier.clickable(onClick = { onFilterAction(CourseFilterAction.Reset) }),
             )
         }
 
