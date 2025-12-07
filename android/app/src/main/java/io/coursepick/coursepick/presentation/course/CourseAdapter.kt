@@ -3,34 +3,68 @@ package io.coursepick.coursepick.presentation.course
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
+import io.coursepick.coursepick.R
 
 class CourseAdapter(
     private val courseItemListener: CourseItemListener,
-) : ListAdapter<CourseItem, CourseViewHolder>(diffUtil) {
+) : ListAdapter<CourseListItem, RecyclerView.ViewHolder>(diffUtil) {
+    override fun getItemViewType(position: Int): Int =
+        when (getItem(position)) {
+            is CourseListItem.Course -> R.layout.item_course
+            is CourseListItem.Loading -> R.layout.item_loading
+        }
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
-    ): CourseViewHolder = CourseViewHolder.Companion(parent, courseItemListener)
+    ): RecyclerView.ViewHolder =
+        when (viewType) {
+            R.layout.item_course -> CourseViewHolder(parent, courseItemListener)
+            R.layout.item_loading -> LoadingViewHolder(parent)
+            else -> throw IllegalArgumentException("Unknown viewType: $viewType")
+        }
 
     override fun onBindViewHolder(
-        holder: CourseViewHolder,
+        holder: RecyclerView.ViewHolder,
         position: Int,
     ) {
-        holder.bind(currentList[position])
+        when (val item: CourseListItem = getItem(position)) {
+            is CourseListItem.Course -> (holder as CourseViewHolder).bind(item.item)
+            is CourseListItem.Loading -> Unit
+        }
     }
 
     companion object {
         private val diffUtil =
-            object : DiffUtil.ItemCallback<CourseItem>() {
+            object : DiffUtil.ItemCallback<CourseListItem>() {
                 override fun areItemsTheSame(
-                    oldItem: CourseItem,
-                    newItem: CourseItem,
-                ): Boolean = oldItem.id == newItem.id
+                    oldItem: CourseListItem,
+                    newItem: CourseListItem,
+                ): Boolean =
+                    when {
+                        oldItem is CourseListItem.Course && newItem is CourseListItem.Course ->
+                            oldItem.item.id == newItem.item.id
+
+                        oldItem is CourseListItem.Loading && newItem is CourseListItem.Loading ->
+                            true
+
+                        else -> false
+                    }
 
                 override fun areContentsTheSame(
-                    oldItem: CourseItem,
-                    newItem: CourseItem,
-                ): Boolean = oldItem == newItem
+                    oldItem: CourseListItem,
+                    newItem: CourseListItem,
+                ): Boolean =
+                    when {
+                        oldItem is CourseListItem.Course && newItem is CourseListItem.Course ->
+                            oldItem.item == newItem.item
+
+                        oldItem is CourseListItem.Loading && newItem is CourseListItem.Loading ->
+                            true
+
+                        else -> false
+                    }
             }
     }
 }
