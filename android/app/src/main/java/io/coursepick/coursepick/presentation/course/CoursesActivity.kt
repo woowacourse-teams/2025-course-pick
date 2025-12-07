@@ -303,7 +303,7 @@ class CoursesActivity :
                 if (state?.showFilterDialog == true) {
                     CourseFilterBottomSheet(
                         coursesUiState = state ?: return@CoursePickTheme,
-                        onDismissRequest = { viewModel.restoreState() },
+                        onDismissRequest = { viewModel.dismissFilterDialog() },
                         onFilterAction = { action -> viewModel.handleFilterAction(action) },
                     )
                 }
