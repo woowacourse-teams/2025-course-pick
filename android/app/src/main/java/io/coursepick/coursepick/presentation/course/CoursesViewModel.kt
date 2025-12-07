@@ -81,7 +81,7 @@ class CoursesViewModel
             val selectedIndex = oldCourses.indexOf(CourseListItem.Course(course))
             if (selectedIndex == -1) return
 
-            val newCourseItems: List<CourseListItem> = newCourses(oldCourses, course)
+            val newCourseItems: List<CourseListItem> = newCoursesListItem(oldCourses, course)
             _state.value = state.value?.copy(originalCourses = newCourseItems)
             _event.value = CoursesUiEvent.SelectCourseManually(course)
         }
@@ -330,7 +330,7 @@ class CoursesViewModel
             origin: Coordinate,
         ) {
             val oldCourses: List<CourseListItem> = state.value?.courses ?: return
-            val newCourseItems: List<CourseListItem> = newCourses(oldCourses, course)
+            val newCourseItems: List<CourseListItem> = newCoursesListItem(oldCourses, course)
             _state.value =
                 state.value?.copy(
                     originalCourses = newCourseItems,
@@ -480,19 +480,19 @@ class CoursesViewModel
             }
         }
 
-        private fun newCourses(
+        private fun newCoursesListItem(
             oldCourses: List<CourseListItem>,
             selectedCourse: CourseItem,
         ): List<CourseListItem> =
-            oldCourses.map { course: CourseListItem ->
-                if (course is CourseListItem.Course) {
-                    if (course.item == selectedCourse) {
-                        CourseListItem.Course(course.item.copy(selected = true))
+            oldCourses.map { courseListItem: CourseListItem ->
+                if (courseListItem is CourseListItem.Course) {
+                    if (courseListItem.item == selectedCourse) {
+                        CourseListItem.Course(courseListItem.item.copy(selected = true))
                     } else {
-                        CourseListItem.Course(course.item.copy(selected = false))
+                        CourseListItem.Course(courseListItem.item.copy(selected = false))
                     }
                 } else {
-                    course
+                    courseListItem
                 }
             }
 
