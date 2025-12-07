@@ -172,6 +172,7 @@ private fun LengthRangeHeader(
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(vertical = 20.dp),
+            color = colorResource(R.color.item_primary),
         )
     }
 }
