@@ -76,11 +76,20 @@ fun CourseFilterContent(
         Column(modifier = modifier) {
             LengthRangeHeader(filter = coursesUiState.courseFilter)
 
-            LengthRangeSlider(
-                currentRange = coursesUiState.courseFilter.lengthRange,
-                onRangeChange = { start: Double, end: Double ->
-                    onFilterAction(CourseFilterAction.UpdateLengthRange(start, end))
+            RangeSlider(
+                value = coursesUiState.courseFilter.lengthRangeAsFloat.start..coursesUiState.courseFilter.lengthRangeAsFloat.endInclusive,
+                onValueChange = { range: ClosedFloatingPointRange<Float> ->
+                    onFilterAction(
+                        CourseFilterAction.UpdateLengthRange(
+                            range.start.toDouble(),
+                            range.endInclusive.toDouble(),
+                        ),
+                    )
                 },
+                valueRange =
+                    CourseFilter.MINIMUM_LENGTH_RANGE.toFloat()..CourseFilter.MAXIMUM_LENGTH_RANGE.toFloat(),
+                colors = sliderColors(),
+                modifier = modifier.padding(bottom = 20.dp),
             )
         }
 
@@ -175,27 +184,6 @@ private fun LengthRangeHeader(
             color = colorResource(R.color.item_primary),
         )
     }
-}
-
-@Composable
-private fun LengthRangeSlider(
-    currentRange: ClosedRange<Kilometer>,
-    onRangeChange: (Double, Double) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val start = currentRange.start.value.toFloat()
-    val end = currentRange.endInclusive.value.toFloat()
-
-    RangeSlider(
-        value = start..end,
-        onValueChange = { range ->
-            onRangeChange(range.start.toDouble(), range.endInclusive.toDouble())
-        },
-        valueRange = 0f..21f,
-        steps = 0,
-        colors = sliderColors(),
-        modifier = modifier.padding(bottom = 20.dp),
-    )
 }
 
 @Composable

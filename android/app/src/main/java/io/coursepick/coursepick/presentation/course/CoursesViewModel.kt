@@ -425,7 +425,7 @@ class CoursesViewModel
                 }
 
                 is CourseFilterAction.UpdateLengthRange -> {
-                    updateLengthRange(action.start, action.end)
+                    updateLengthRange(action.start.toDouble(), action.end.toDouble())
                 }
 
                 is CourseFilterAction.ToggleDifficulty -> {
