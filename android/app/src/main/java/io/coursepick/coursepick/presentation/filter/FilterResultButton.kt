@@ -7,14 +7,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -25,7 +22,7 @@ import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 @Composable
 fun FilterResultButton(
     label: String,
-    isActive: Boolean,
+    isEnabled: Boolean,
     onActiveChanged: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -33,11 +30,11 @@ fun FilterResultButton(
         modifier =
             modifier
                 .clickable(
-                    enabled = isActive,
+                    enabled = isEnabled,
                     onClick = onActiveChanged,
                 ).clip(RoundedCornerShape(size = 8.dp))
                 .background(
-                    if (isActive) {
+                    if (isEnabled) {
                         colorResource(R.color.point_secondary)
                     } else {
                         colorResource(
@@ -60,11 +57,10 @@ fun FilterResultButton(
 @Composable
 private fun FilterResultButtonPreview() {
     CoursePickTheme {
-        var isActive by remember { mutableStateOf(true) }
         FilterResultButton(
-            label = "쉬움",
-            isActive = isActive,
-            onActiveChanged = { isActive = !isActive },
+            label = stringResource(R.string.filter_result_count, 0),
+            isEnabled = false,
+            onActiveChanged = { },
         )
     }
 }
