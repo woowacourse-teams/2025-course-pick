@@ -330,7 +330,16 @@ class CoursesViewModel
             }
         }
 
-        fun toggleDifficulty(difficulty: Difficulty) {
+        fun showFilterDialog() {
+            courseFilter = state.value?.courseFilter ?: CourseFilter.None
+            _state.value = state.value?.copy(showFilterDialog = true)
+        }
+
+        fun dismissFilterDialog() {
+            _state.value = state.value?.copy(showFilterDialog = false)
+        }
+
+        private fun toggleDifficulty(difficulty: Difficulty) {
             val updatedDifficulties =
                 state.value
                     ?.courseFilter
@@ -348,7 +357,7 @@ class CoursesViewModel
             _state.value = state.value?.copy(courseFilter = courseFilter)
         }
 
-        fun updateLengthRange(
+        private fun updateLengthRange(
             min: Double,
             max: Double,
         ) {
@@ -364,15 +373,6 @@ class CoursesViewModel
                 state.value?.courseFilter?.copy(lengthRange = updatedLengthRange)
                     ?: CourseFilter.None.copy(lengthRange = updatedLengthRange)
             _state.value = state.value?.copy(courseFilter = updatedCourseFilter)
-        }
-
-        fun showFilterDialog() {
-            courseFilter = state.value?.courseFilter ?: CourseFilter.None
-            _state.value = state.value?.copy(showFilterDialog = true)
-        }
-
-        fun dismissFilterDialog() {
-            _state.value = state.value?.copy(showFilterDialog = false)
         }
 
         fun fetchNotice(id: String) {
