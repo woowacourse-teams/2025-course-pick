@@ -17,7 +17,8 @@ interface CourseService {
         @Query("userLat") userLatitude: Double?,
         @Query("userLng") userLongitude: Double?,
         @Query("scope") scopeMeter: Int,
-    ): List<CourseDto>
+        @Query("page") page: Int,
+    ): CoursesPageDto
 
     @GET("/courses/{id}/route")
     suspend fun routeToCourse(
