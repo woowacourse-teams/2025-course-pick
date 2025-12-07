@@ -50,7 +50,7 @@ fun FilterResultButton(
             text = label,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
-            color = colorResource(R.color.item_primary),
+            color = colorResource(R.color.background_primary),
         )
     }
 }
