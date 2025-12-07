@@ -50,7 +50,9 @@ class CoursesViewModelTest {
             CoursesUiState(
                 originalCourses =
                     FAKE_COURSES.mapIndexed { index: Int, course: Course ->
-                        CourseItem(course, selected = index == 0, favorite = false)
+                        CourseListItem.Course(
+                            CourseItem(course, selected = index == 0, favorite = false),
+                        )
                     },
                 status = UiStatus.Success,
                 verifiedLocations = NOTICE_FIXTURE,
@@ -67,7 +69,9 @@ class CoursesViewModelTest {
         val expected =
             CoursesUiState(
                 FAKE_COURSES.map { course: Course ->
-                    CourseItem(course, selected = course == COURSE_FIXTURE_20, favorite = false)
+                    CourseListItem.Course(
+                        CourseItem(course, selected = course == COURSE_FIXTURE_20, favorite = false),
+                    )
                 },
                 status = UiStatus.Success,
                 verifiedLocations = NOTICE_FIXTURE,
@@ -88,7 +92,9 @@ class CoursesViewModelTest {
         val expected =
             CoursesUiState(
                 FAKE_COURSES.map { course: Course ->
-                    CourseItem(course, selected = course == COURSE_FIXTURE_20, favorite = false)
+                    CourseListItem.Course(
+                        CourseItem(course, selected = course == COURSE_FIXTURE_20, favorite = false),
+                    )
                 },
                 status = UiStatus.Success,
                 verifiedLocations = NOTICE_FIXTURE,
@@ -137,7 +143,9 @@ class CoursesViewModelTest {
         Assertions.assertThat(state.status).isEqualTo(UiStatus.Success)
         Assertions.assertThat(state.originalCourses.size).isEqualTo(FAKE_COURSES.size + 1)
 
-        val lastCourse = state.originalCourses.last()
+        val lastCourseListItem = state.originalCourses.last()
+        Assertions.assertThat(lastCourseListItem).isInstanceOf(CourseListItem.Course::class.java)
+        val lastCourse = (lastCourseListItem as CourseListItem.Course).item
         Assertions.assertThat(lastCourse.course).isEqualTo(COURSE_FIXTURE_20)
         Assertions.assertThat(lastCourse.selected).isFalse()
     }
