@@ -52,7 +52,7 @@ class ExploreCoursesFragment(
 
     private fun setUpStateObserver() {
         viewModel.state.observe(viewLifecycleOwner) { state: CoursesUiState ->
-            courseAdapter.submitList(state.courses.map { CourseListItem.Course(it) })
+            courseAdapter.submitList(state.courses)
         }
     }
 

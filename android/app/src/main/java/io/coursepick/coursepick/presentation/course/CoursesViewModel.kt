@@ -76,23 +76,32 @@ class CoursesViewModel
                 return
             }
 
-            val oldCourses: List<CourseItem> = state.value?.courses ?: return
+            val oldCourses: List<CourseListItem> = state.value?.courses ?: return
 
-            val selectedIndex = oldCourses.indexOf(course)
+            val selectedIndex = oldCourses.indexOf(CourseListItem.Course(course))
             if (selectedIndex == -1) return
 
-            val newCourses: List<CourseItem> = newCourses(oldCourses, course)
-            _state.value = state.value?.copy(originalCourses = newCourses)
+            val newCourseItems: List<CourseListItem> = newCourses(oldCourses, course)
+            _state.value = state.value?.copy(originalCourses = newCourseItems)
             _event.value = CoursesUiEvent.SelectCourseManually(course)
         }
 
         fun toggleFavorite(toggledCourse: CourseItem) {
             pendingFavoriteWrites[toggledCourse.id] = !toggledCourse.favorite
 
-            state.value?.courses?.let { courses: List<CourseItem> ->
+            state.value?.originalCourses?.let { courses: List<CourseListItem> ->
                 val newCourses =
-                    courses.map { course: CourseItem ->
-                        if (course.id == toggledCourse.id) course.copy(favorite = !course.favorite) else course
+                    courses.map { item: CourseListItem ->
+                        when (item) {
+                            is CourseListItem.Course ->
+                                if (item.item.id == toggledCourse.id) {
+                                    CourseListItem.Course(item.item.copy(favorite = !item.item.favorite))
+                                } else {
+                                    item
+                                }
+
+                            is CourseListItem.Loading -> item
+                        }
                     }
                 _state.value = state.value?.copy(originalCourses = newCourses)
             }
@@ -123,7 +132,11 @@ class CoursesViewModel
             userCoordinate: Coordinate?,
             scope: Scope = Scope.default(),
         ) {
-            _state.value = state.value?.copy(status = UiStatus.Loading)
+            _state.value =
+                state.value?.copy(
+                    originalCourses = listOf(CourseListItem.Loading),
+                    status = UiStatus.Loading,
+                )
 
             viewModelScope.launch {
                 runCatching {
@@ -158,7 +171,7 @@ class CoursesViewModel
 
                     _state.value =
                         state.value?.copy(
-                            originalCourses = courseItems,
+                            originalCourses = courseItems.map { CourseListItem.Course(it) },
                             status = UiStatus.Success,
                         )
                 }.onFailure { exception: Throwable ->
@@ -188,7 +201,12 @@ class CoursesViewModel
             val currentStatus: UiStatus? = state.value?.status
             if (currentStatus == UiStatus.Loading || !hasNext) return
 
-            _state.value = state.value?.copy(status = UiStatus.Loading)
+            val existingCourses = state.value?.originalCourses ?: emptyList()
+            _state.value =
+                state.value?.copy(
+                    originalCourses = existingCourses + CourseListItem.Loading,
+                    status = UiStatus.Loading,
+                )
 
             val mapCoordinate: Coordinate = lastMapCoordinate ?: return
             val userCoordinate: Coordinate? = lastUserCoordinate
@@ -208,13 +226,18 @@ class CoursesViewModel
 
                     val favoritedCourseIds: Set<String> = favoritesRepository.favoriteCourseIds()
 
-                    val existingCourses = state.value?.originalCourses ?: emptyList()
+                    val existingCoursesWithoutLoading =
+                        (state.value?.originalCourses ?: emptyList())
+                            .filterNot { it is CourseListItem.Loading }
+
                     val newCourses =
                         coursesPage.courses.map { course: Course ->
-                            CourseItem(
-                                course = course,
-                                selected = false,
-                                favorite = favoritedCourseIds.contains(course.id),
+                            CourseListItem.Course(
+                                CourseItem(
+                                    course = course,
+                                    selected = false,
+                                    favorite = favoritedCourseIds.contains(course.id),
+                                ),
                             )
                         }
 
@@ -223,7 +246,7 @@ class CoursesViewModel
 
                     _state.value =
                         state.value?.copy(
-                            originalCourses = existingCourses + newCourses,
+                            originalCourses = existingCoursesWithoutLoading + newCourses,
                             status = UiStatus.Success,
                         )
                 }.onFailure { exception: Throwable ->
@@ -231,7 +254,16 @@ class CoursesViewModel
                         Logger.Event.Failure("fetch_next_courses"),
                         "message" to exception.message.toString(),
                     )
-                    _state.value = state.value?.copy(status = UiStatus.Failure)
+
+                    val existingCoursesWithoutLoading =
+                        (state.value?.originalCourses ?: emptyList())
+                            .filterNot { it is CourseListItem.Loading }
+
+                    _state.value =
+                        state.value?.copy(
+                            originalCourses = existingCoursesWithoutLoading,
+                            status = UiStatus.Failure,
+                        )
                     _event.value = CoursesUiEvent.FetchNextCoursesFailure
                 }
             }
@@ -265,7 +297,7 @@ class CoursesViewModel
                     _state.value =
                         state.value
                             ?.copy(
-                                originalCourses = courseItems,
+                                originalCourses = courseItems.map { CourseListItem.Course(it) },
                                 status = UiStatus.Success,
                             )
                 }.onFailure { exception: Throwable ->
@@ -297,11 +329,11 @@ class CoursesViewModel
             course: CourseItem,
             origin: Coordinate,
         ) {
-            val oldCourses: List<CourseItem> = state.value?.courses ?: return
-            val newCourses: List<CourseItem> = newCourses(oldCourses, course)
+            val oldCourses: List<CourseListItem> = state.value?.courses ?: return
+            val newCourseItems: List<CourseListItem> = newCourses(oldCourses, course)
             _state.value =
                 state.value?.copy(
-                    originalCourses = newCourses,
+                    originalCourses = newCourseItems,
                     status = UiStatus.Loading,
                 )
 
@@ -449,14 +481,18 @@ class CoursesViewModel
         }
 
         private fun newCourses(
-            oldCourses: List<CourseItem>,
+            oldCourses: List<CourseListItem>,
             selectedCourse: CourseItem,
-        ): List<CourseItem> =
-            oldCourses.map { course: CourseItem ->
-                if (course == selectedCourse) {
-                    course.copy(selected = true)
+        ): List<CourseListItem> =
+            oldCourses.map { course: CourseListItem ->
+                if (course is CourseListItem.Course) {
+                    if (course.item == selectedCourse) {
+                        CourseListItem.Course(course.item.copy(selected = true))
+                    } else {
+                        CourseListItem.Course(course.item.copy(selected = false))
+                    }
                 } else {
-                    course.copy(selected = false)
+                    course
                 }
             }
 

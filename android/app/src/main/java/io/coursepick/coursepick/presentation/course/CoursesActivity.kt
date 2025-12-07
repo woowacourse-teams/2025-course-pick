@@ -664,12 +664,14 @@ class CoursesActivity :
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun setUpStateObserver() {
         viewModel.state.observe(this) { state: CoursesUiState ->
-            courseAdapter.submitList(state.courses.map { CourseListItem.Course(it) })
+            courseAdapter.submitList(state.courses)
             mapManager.removeAllLines()
-            mapManager.setOnCourseClickListener(state.courses) { course: CourseItem ->
+            val courses: List<CourseItem> =
+                state.courses.filterIsInstance<CourseListItem.Course>().map { it.item }
+            mapManager.setOnCourseClickListener(courses) { course: CourseItem ->
                 viewModel.select(course)
             }
-            mapManager.draw(state.courses)
+            mapManager.draw(courses)
         }
     }
 

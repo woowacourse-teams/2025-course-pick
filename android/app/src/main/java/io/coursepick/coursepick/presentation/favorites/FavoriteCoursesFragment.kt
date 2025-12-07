@@ -9,7 +9,6 @@ import androidx.fragment.app.activityViewModels
 import io.coursepick.coursepick.databinding.FragmentFavoriteCoursesBinding
 import io.coursepick.coursepick.presentation.course.CourseAdapter
 import io.coursepick.coursepick.presentation.course.CourseItemListener
-import io.coursepick.coursepick.presentation.course.CourseListItem
 import io.coursepick.coursepick.presentation.course.CoursesUiState
 import io.coursepick.coursepick.presentation.course.CoursesViewModel
 
@@ -53,7 +52,7 @@ class FavoriteCoursesFragment(
 
     private fun setUpStateObserver() {
         viewModel.state.observe(viewLifecycleOwner) { state: CoursesUiState ->
-            courseAdapter.submitList(state.courses.map { CourseListItem.Course(it) })
+            courseAdapter.submitList(state.courses)
         }
     }
 }
