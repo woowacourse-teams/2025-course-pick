@@ -52,7 +52,7 @@ class ExploreCoursesFragment(
 
     private fun setUpStateObserver() {
         viewModel.state.observe(viewLifecycleOwner) { state: CoursesUiState ->
-            courseAdapter.submitList(state.courses)
+            courseAdapter.submitList(state.courses.map { CourseListItem.Course(it) })
         }
     }
 
@@ -83,7 +83,9 @@ class ExploreCoursesFragment(
 
     fun scrollTo(courseItem: CourseItem) {
         val position =
-            courseAdapter.currentList.indexOfFirst { item: CourseItem -> item.id == courseItem.id }
+            courseAdapter.currentList.indexOfFirst { item: CourseListItem ->
+                item is CourseListItem.Course && item.item.id == courseItem.id
+            }
         if (position == -1) return
         val layoutManager = binding.mainCourses.layoutManager as? LinearLayoutManager ?: return
         val smoothScroller =

@@ -664,7 +664,7 @@ class CoursesActivity :
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun setUpStateObserver() {
         viewModel.state.observe(this) { state: CoursesUiState ->
-            courseAdapter.submitList(state.courses)
+            courseAdapter.submitList(state.courses.map { CourseListItem.Course(it) })
             mapManager.removeAllLines()
             mapManager.setOnCourseClickListener(state.courses) { course: CourseItem ->
                 viewModel.select(course)
