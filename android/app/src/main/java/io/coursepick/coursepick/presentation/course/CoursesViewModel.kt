@@ -407,8 +407,28 @@ class CoursesViewModel
             _state.value = state.value?.copy(query = query)
         }
 
-        fun resetFilterToDefault() {
-            _state.value = state.value?.copy(courseFilter = CourseFilter.None)
+        fun handleFilterAction(action: CourseFilterAction) {
+            when (action) {
+                is CourseFilterAction.Cancel -> {
+                    dismissFilterDialog()
+                }
+
+                is CourseFilterAction.Reset -> {
+                    _state.value = state.value?.copy(courseFilter = CourseFilter.None)
+                }
+
+                is CourseFilterAction.Apply -> {
+                    dismissFilterDialog()
+                }
+
+                is CourseFilterAction.UpdateLengthRange -> {
+                    updateLengthRange(action.start, action.end)
+                }
+
+                is CourseFilterAction.ToggleDifficulty -> {
+                    toggleDifficulty(action.difficulty)
+                }
+            }
         }
 
         fun toggleDifficulty(difficulty: Difficulty) {
@@ -451,7 +471,7 @@ class CoursesViewModel
             _state.value = state.value?.copy(showFilterDialog = true)
         }
 
-        fun restoreState() {
+        fun dismissFilterDialog() {
             _state.value = state.value?.copy(showFilterDialog = false)
         }
 
@@ -510,21 +530,6 @@ class CoursesViewModel
                     courseListItem
                 }
             }
-
-        fun handleFilterAction(action: CourseFilterAction) {
-            when (action) {
-                is CourseFilterAction.Cancel -> restoreState()
-                is CourseFilterAction.Reset -> resetFilterToDefault()
-                is CourseFilterAction.Apply -> restoreState()
-                is CourseFilterAction.UpdateLengthRange -> {
-                    updateLengthRange(action.start, action.end)
-                }
-
-                is CourseFilterAction.ToggleDifficulty -> {
-                    toggleDifficulty(action.difficulty)
-                }
-            }
-        }
 
         companion object {
             private const val DEBOUNCE_LIMIT_TIME = 500L
