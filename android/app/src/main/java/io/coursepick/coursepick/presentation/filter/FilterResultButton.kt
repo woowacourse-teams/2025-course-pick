@@ -2,7 +2,9 @@ package io.coursepick.coursepick.presentation.filter
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -23,7 +25,7 @@ import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 fun FilterResultButton(
     label: String,
     isEnabled: Boolean,
-    onActiveChanged: () -> Unit,
+    onEnableChanged: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -31,7 +33,7 @@ fun FilterResultButton(
             modifier
                 .clickable(
                     enabled = isEnabled,
-                    onClick = onActiveChanged,
+                    onClick = onEnableChanged,
                 ).clip(RoundedCornerShape(size = 8.dp))
                 .background(
                     if (isEnabled) {
@@ -48,7 +50,7 @@ fun FilterResultButton(
             text = label,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
-            color = colorResource(R.color.background_primary),
+            color = colorResource(R.color.item_primary),
         )
     }
 }
@@ -57,10 +59,21 @@ fun FilterResultButton(
 @Composable
 private fun FilterResultButtonPreview() {
     CoursePickTheme {
-        FilterResultButton(
-            label = stringResource(R.string.filter_result_count, 0),
-            isEnabled = false,
-            onActiveChanged = { },
-        )
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            FilterResultButton(
+                label = stringResource(R.string.filter_result_count, 10),
+                isEnabled = true,
+                onEnableChanged = { },
+            )
+
+            FilterResultButton(
+                label = stringResource(R.string.filter_result_count, 0),
+                isEnabled = false,
+                onEnableChanged = { },
+            )
+        }
     }
 }

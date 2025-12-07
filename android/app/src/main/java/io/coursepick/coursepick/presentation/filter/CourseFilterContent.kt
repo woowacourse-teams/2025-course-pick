@@ -109,7 +109,7 @@ fun CourseFilterContent(
             FilterResultButton(
                 label = stringResource(R.string.filter_result_count, coursesUiState.courses.size),
                 isEnabled = coursesUiState.courses.isNotEmpty(),
-                onActiveChanged = { onFilterAction(CourseFilterAction.Apply) },
+                onEnableChanged = { onFilterAction(CourseFilterAction.Apply) },
                 modifier = Modifier.weight(1f),
             )
         }
