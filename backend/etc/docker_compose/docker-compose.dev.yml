@@ -75,3 +75,14 @@ services:
     depends_on:
       - mysql
       - mongodb
+
+  promtail:
+    image: grafana/promtail:3.3.2
+    container_name: promtail
+    volumes:
+      - ./promtail.yml:/etc/promtail/promtail-config.yml
+      - /var/lib/coursepick/logs:/app/logs:ro
+    command: -config.file=/etc/promtail/promtail-config.yml
+    restart: unless-stopped
+    depends_on:
+      - backend
