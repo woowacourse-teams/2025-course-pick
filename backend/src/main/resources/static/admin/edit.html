@@ -2685,7 +2685,7 @@
             segment.coordinates.forEach((coord, coordIdx) => {
                 const coordId = `${segIdx}_${coordIdx}`;
                 if (selectedCoordinates.has(coordId)) {
-                    coordsToMatch.push([coord.latitude, coord.longitude, coord.elevation]);
+                    coordsToMatch.push({latitude: coord.latitude, longitude: coord.longitude, elevation: coord.elevation});
                     selectedCoordIds.push({segIdx, coordIdx});
                 }
             });
@@ -2756,8 +2756,8 @@
 
         const options = {
             center: new kakao.maps.LatLng(
-                matchedCoordinatesData.original[0][0],
-                matchedCoordinatesData.original[0][1]
+                matchedCoordinatesData.original[0].latitude,
+                matchedCoordinatesData.original[0].longitude
             ),
             level: 3
         };
@@ -2766,7 +2766,7 @@
 
         // 원본 좌표 (빨간색 선)
         const originalPath = matchedCoordinatesData.original.map(coord =>
-            new kakao.maps.LatLng(coord[0], coord[1])
+            new kakao.maps.LatLng(coord.latitude, coord.longitude)
         );
         const originalPolyline = new kakao.maps.Polyline({
             path: originalPath,
@@ -2779,7 +2779,7 @@
 
         // 보정된 좌표 (파란색 선)
         const matchedPath = matchedCoordinatesData.matched.map(coord =>
-            new kakao.maps.LatLng(coord[0], coord[1])
+            new kakao.maps.LatLng(coord.latitude, coord.longitude)
         );
         const matchedPolyline = new kakao.maps.Polyline({
             path: matchedPath,
@@ -2833,9 +2833,9 @@
             const matchedCoord = matched[i];
 
             const coord = course.segments[segIdx].coordinates[coordIdx];
-            coord.latitude = matchedCoord[0];
-            coord.longitude = matchedCoord[1];
-            coord.elevation = matchedCoord[2];
+            coord.latitude = matchedCoord.latitude;
+            coord.longitude = matchedCoord.longitude;
+            coord.elevation = matchedCoord.elevation;
 
             // 세그먼트 경계 좌표인 경우 인접 세그먼트도 업데이트
             const segment = course.segments[segIdx];
@@ -2845,16 +2845,16 @@
             if (isFirstCoord && segIdx > 0) {
                 const prevSegment = course.segments[segIdx - 1];
                 const prevLastIndex = prevSegment.coordinates.length - 1;
-                prevSegment.coordinates[prevLastIndex].latitude = matchedCoord[0];
-                prevSegment.coordinates[prevLastIndex].longitude = matchedCoord[1];
-                prevSegment.coordinates[prevLastIndex].elevation = matchedCoord[2];
+                prevSegment.coordinates[prevLastIndex].latitude = matchedCoord.latitude;
+                prevSegment.coordinates[prevLastIndex].longitude = matchedCoord.longitude;
+                prevSegment.coordinates[prevLastIndex].elevation = matchedCoord.elevation;
             }
 
             if (isLastCoord && segIdx < course.segments.length - 1) {
                 const nextSegment = course.segments[segIdx + 1];
-                nextSegment.coordinates[0].latitude = matchedCoord[0];
-                nextSegment.coordinates[0].longitude = matchedCoord[1];
-                nextSegment.coordinates[0].elevation = matchedCoord[2];
+                nextSegment.coordinates[0].latitude = matchedCoord.latitude;
+                nextSegment.coordinates[0].longitude = matchedCoord.longitude;
+                nextSegment.coordinates[0].elevation = matchedCoord.elevation;
             }
         }
 
