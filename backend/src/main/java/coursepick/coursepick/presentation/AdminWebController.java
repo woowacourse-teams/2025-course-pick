@@ -10,6 +10,8 @@ import coursepick.coursepick.domain.course.CourseRepository;
 import coursepick.coursepick.presentation.api.AdminWebApi;
 import coursepick.coursepick.presentation.dto.AdminCourseWebResponse;
 import coursepick.coursepick.presentation.dto.AdminLoginWebRequest;
+import coursepick.coursepick.presentation.dto.CoordinatesMatchWebRequest;
+import coursepick.coursepick.presentation.dto.CoordinatesMatchWebResponse;
 import coursepick.coursepick.presentation.dto.CourseReplaceWebRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +38,7 @@ public class AdminWebController implements AdminWebApi {
     private static final String KAKAO_API_KEY_PLACEHOLDER = "KAKAO_API_KEY_PLACEHOLDER";
     private final CourseRepository courseRepository;
     private final CourseParserFacade courseParserFacade;
+    private final CoordinatesMatchService coordinatesMatchService;
     @Value("${admin.token}")
     private String adminToken;
     @Value("${admin.kakao-map-api-key}")
@@ -144,5 +147,12 @@ public class AdminWebController implements AdminWebApi {
 
         // TODO : 분산 트랜잭션 고민
         courseRepository.delete(course);
+    }
+
+    @PostMapping("/admin/api/coordinates/match")
+    public CoordinatesMatchWebResponse matchCoordinates(@RequestBody @Valid CoordinatesMatchWebRequest request) {
+        List<Coordinate> matched = coordinatesMatchService.snapCoordinates(request.coordinates());
+
+        return CoordinatesMatchWebResponse.from(matched);
     }
 }

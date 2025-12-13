@@ -2,6 +2,8 @@ package coursepick.coursepick.presentation.api;
 
 import coursepick.coursepick.presentation.dto.AdminCourseWebResponse;
 import coursepick.coursepick.presentation.dto.AdminLoginWebRequest;
+import coursepick.coursepick.presentation.dto.CoordinatesMatchWebRequest;
+import coursepick.coursepick.presentation.dto.CoordinatesMatchWebResponse;
 import coursepick.coursepick.presentation.dto.CourseReplaceWebRequest;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.http.ResponseEntity;
@@ -24,4 +26,6 @@ public interface AdminWebApi {
     void modifyCourse(String courseId, CourseReplaceWebRequest request);
 
     void deleteCourse(String id);
+
+    CoordinatesMatchWebResponse matchCoordinates(CoordinatesMatchWebRequest request);
 }
