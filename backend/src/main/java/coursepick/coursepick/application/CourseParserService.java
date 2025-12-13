@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.List;
 
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_FILE_EXTENSION;
