@@ -1,5 +1,6 @@
 package coursepick.coursepick.application.exception;
 
+import java.util.NoSuchElementException;
 import java.util.function.Function;
 
 public enum ErrorType {
@@ -26,7 +27,7 @@ public enum ErrorType {
     ),
     NOT_EXIST_COURSE(
             "코스가 존재하지 않습니다. 코스id=%s",
-            NotFoundException::new
+            NoSuchElementException::new
     ),
     INVALID_FILE_EXTENSION(
             "파싱할 수 없는 파일 확장자입니다.",
@@ -50,7 +51,7 @@ public enum ErrorType {
     ),
     NOT_FOUND_NOTICE(
             "존재하지 않는 공지 사항입니다. 공지 사항id=%s",
-            NotFoundException::new
+            NoSuchElementException::new
     ),
     ;
 
