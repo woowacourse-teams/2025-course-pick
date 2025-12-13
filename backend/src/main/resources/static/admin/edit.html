@@ -643,6 +643,132 @@
         .clear-selection-button.visible {
             display: block;
         }
+
+        /* 좌표 보정 미리보기 모달 */
+        .match-preview-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .match-preview-modal.active {
+            display: flex;
+        }
+
+        .match-preview-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 90%;
+            max-height: 90%;
+            width: 1000px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        .match-preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .match-preview-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2d3748;
+            margin: 0;
+        }
+
+        .match-preview-map {
+            width: 100%;
+            height: 500px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .match-preview-info {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .match-preview-info p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #2d3748;
+        }
+
+        .match-preview-legend {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-line {
+            width: 40px;
+            height: 4px;
+            border-radius: 2px;
+        }
+
+        .legend-line.original {
+            background: #FF0000;
+        }
+
+        .legend-line.matched {
+            background: #0000FF;
+        }
+
+        .match-preview-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .match-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .match-button.primary {
+            background: #2d3748;
+            color: white;
+        }
+
+        .match-button.primary:hover {
+            background: #1a202c;
+        }
+
+        .match-button.secondary {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+
+        .match-button.secondary:hover {
+            background: #cbd5e0;
+        }
     </style>
 </head>
 <body>
@@ -702,6 +828,35 @@
     </div>
 </div>
 
+<!-- 좌표 보정 미리보기 모달 -->
+<div class="match-preview-modal" id="match-preview-modal">
+    <div class="match-preview-content">
+        <div class="match-preview-header">
+            <h2>좌표 보정 미리보기</h2>
+            <button class="match-button secondary" onclick="closeMatchPreview()">닫기</button>
+        </div>
+        <div class="match-preview-info">
+            <div class="match-preview-legend">
+                <div class="legend-item">
+                    <div class="legend-line original"></div>
+                    <span>원본 경로</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-line matched"></div>
+                    <span>보정된 경로</span>
+                </div>
+            </div>
+            <p><strong>원본:</strong> <span id="original-count">0</span>개 좌표</p>
+            <p><strong>보정 후:</strong> <span id="matched-count">0</span>개 좌표</p>
+        </div>
+        <div id="match-preview-map" class="match-preview-map"></div>
+        <div class="match-preview-buttons">
+            <button class="match-button secondary" onclick="closeMatchPreview()">취소</button>
+            <button class="match-button primary" onclick="applyMatchedCoordinates()">적용</button>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=KAKAO_API_KEY_PLACEHOLDER" type="text/javascript"></script>
 <script>
@@ -737,6 +892,10 @@
     // 마커 이미지 설정
     let normalMarkerImage; // 일반 마커 (점 형태)
     let selectedMarkerImage; // 선택된 마커 (점 형태)
+
+    // 좌표 보정 관련 변수
+    let matchedCoordinatesData = null; // 보정된 좌표 데이터
+    let matchPreviewMap = null; // 미리보기 지도 객체
     let normalMarkerImagePin; // 일반 마커 핀 형태
     let selectedMarkerImagePin; // 선택된 마커 핀 형태
 
@@ -1099,6 +1258,9 @@
                                     </button>
                                     <button class="bulk-button secondary" onclick="showSelectedOnMap()" id="show-on-map-btn" disabled>
                                         지도에서 보기
+                                    </button>
+                                    <button class="bulk-button primary" onclick="matchSelectedCoordinates()" id="match-button" disabled>
+                                        좌표 보정 (OSRM Match)
                                     </button>
                                     <button class="bulk-button primary" onclick="bulkEditCoordinates()" id="bulk-edit-btn" disabled>
                                         일괄 수정
@@ -1851,14 +2013,19 @@
     // 일괄 수정 버튼 상태 업데이트
     function updateBulkActionButtons() {
         const showOnMapBtn = document.getElementById('show-on-map-btn');
+        const matchButton = document.getElementById('match-button');
         const bulkEditBtn = document.getElementById('bulk-edit-btn');
         const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
         const clearSelectionBtn = document.getElementById('clear-selection-btn');
 
         const hasSelection = selectedCoordinates.size > 0;
+        const hasTwoOrMore = selectedCoordinates.size >= 2;
 
         if (showOnMapBtn) {
             showOnMapBtn.disabled = !hasSelection;
+        }
+        if (matchButton) {
+            matchButton.disabled = !hasTwoOrMore;
         }
         if (bulkEditBtn) {
             bulkEditBtn.disabled = !hasSelection;
@@ -2496,6 +2663,218 @@
         if (e.key === 'Enter' && this.classList.contains('active')) {
             e.preventDefault();
             saveCoordinateFromModal();
+        }
+    });
+
+    // ============================================================
+    // 좌표 보정 (OSRM Match) 관련 함수들
+    // ============================================================
+
+    // 선택된 좌표들을 OSRM Match로 보정
+    async function matchSelectedCoordinates() {
+        if (selectedCoordinates.size === 0) {
+            showMessage('보정할 좌표를 먼저 선택해주세요.', 'error');
+            return;
+        }
+
+        // 선택된 좌표들을 순서대로 수집
+        const coordsToMatch = [];
+        const selectedCoordIds = [];
+
+        course.segments.forEach((segment, segIdx) => {
+            segment.coordinates.forEach((coord, coordIdx) => {
+                const coordId = `${segIdx}_${coordIdx}`;
+                if (selectedCoordinates.has(coordId)) {
+                    coordsToMatch.push([coord.latitude, coord.longitude, coord.elevation]);
+                    selectedCoordIds.push({segIdx, coordIdx});
+                }
+            });
+        });
+
+        if (coordsToMatch.length < 2) {
+            showMessage('최소 2개 이상의 좌표를 선택해주세요.', 'error');
+            return;
+        }
+
+        const matchButton = document.getElementById('match-button');
+        const originalText = matchButton.textContent;
+        matchButton.disabled = true;
+        matchButton.textContent = '보정 중...';
+
+        try {
+            const response = await axios.post('/admin/api/coordinates/match', {
+                coordinates: coordsToMatch
+            }, {
+                headers: { 'Content-Type': 'application/json' },
+                withCredentials: true
+            });
+
+            matchedCoordinatesData = {
+                original: coordsToMatch,
+                matched: response.data.matchedCoordinates,
+                selectedCoordIds: selectedCoordIds
+            };
+
+            // 미리보기 모달 표시
+            showMatchPreview();
+
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                alert('로그인 세션이 만료되었습니다.');
+                window.location.href = '/admin/login';
+            } else {
+                const errorMessage = error.response?.data?.message || error.message || '알 수 없는 오류';
+                showMessage('좌표 보정에 실패했습니다: ' + errorMessage, 'error');
+            }
+        } finally {
+            matchButton.disabled = false;
+            matchButton.textContent = originalText;
+        }
+    }
+
+    // 보정 미리보기 모달 표시
+    function showMatchPreview() {
+        const modal = document.getElementById('match-preview-modal');
+        modal.classList.add('active');
+
+        // 카운트 업데이트
+        document.getElementById('original-count').textContent = matchedCoordinatesData.original.length;
+        document.getElementById('matched-count').textContent = matchedCoordinatesData.matched.length;
+
+        // 미리보기 지도 초기화 (약간의 지연 후)
+        setTimeout(() => {
+            initMatchPreviewMap();
+        }, 100);
+    }
+
+    // 미리보기 지도 초기화
+    function initMatchPreviewMap() {
+        const container = document.getElementById('match-preview-map');
+
+        // 기존 지도 초기화
+        container.innerHTML = '';
+
+        const options = {
+            center: new kakao.maps.LatLng(
+                matchedCoordinatesData.original[0][0],
+                matchedCoordinatesData.original[0][1]
+            ),
+            level: 3
+        };
+
+        matchPreviewMap = new kakao.maps.Map(container, options);
+
+        // 원본 좌표 (빨간색 선)
+        const originalPath = matchedCoordinatesData.original.map(coord =>
+            new kakao.maps.LatLng(coord[0], coord[1])
+        );
+        const originalPolyline = new kakao.maps.Polyline({
+            path: originalPath,
+            strokeWeight: 5,
+            strokeColor: '#FF0000',
+            strokeOpacity: 0.7,
+            strokeStyle: 'solid'
+        });
+        originalPolyline.setMap(matchPreviewMap);
+
+        // 보정된 좌표 (파란색 선)
+        const matchedPath = matchedCoordinatesData.matched.map(coord =>
+            new kakao.maps.LatLng(coord[0], coord[1])
+        );
+        const matchedPolyline = new kakao.maps.Polyline({
+            path: matchedPath,
+            strokeWeight: 5,
+            strokeColor: '#0000FF',
+            strokeOpacity: 0.7,
+            strokeStyle: 'solid'
+        });
+        matchedPolyline.setMap(matchPreviewMap);
+
+        // 시작점 마커 (원본)
+        const startMarker = new kakao.maps.Marker({
+            position: originalPath[0],
+            map: matchPreviewMap
+        });
+
+        // 종료점 마커 (원본)
+        const endMarker = new kakao.maps.Marker({
+            position: originalPath[originalPath.length - 1],
+            map: matchPreviewMap
+        });
+
+        // 지도 범위 조정
+        const bounds = new kakao.maps.LatLngBounds();
+        [...originalPath, ...matchedPath].forEach(point => bounds.extend(point));
+        matchPreviewMap.setBounds(bounds);
+    }
+
+    // 보정 미리보기 모달 닫기
+    function closeMatchPreview() {
+        const modal = document.getElementById('match-preview-modal');
+        modal.classList.remove('active');
+        matchedCoordinatesData = null;
+        matchPreviewMap = null;
+    }
+
+    // 보정된 좌표 적용
+    function applyMatchedCoordinates() {
+        if (!matchedCoordinatesData) {
+            showMessage('적용할 보정 데이터가 없습니다.', 'error');
+            return;
+        }
+
+        // 보정된 좌표로 교체
+        const selectedCoordIds = matchedCoordinatesData.selectedCoordIds;
+        const matched = matchedCoordinatesData.matched;
+
+        // 각 선택된 좌표를 보정된 좌표로 교체
+        for (let i = 0; i < Math.min(selectedCoordIds.length, matched.length); i++) {
+            const {segIdx, coordIdx} = selectedCoordIds[i];
+            const matchedCoord = matched[i];
+
+            const coord = course.segments[segIdx].coordinates[coordIdx];
+            coord.latitude = matchedCoord[0];
+            coord.longitude = matchedCoord[1];
+            coord.elevation = matchedCoord[2];
+
+            // 세그먼트 경계 좌표인 경우 인접 세그먼트도 업데이트
+            const segment = course.segments[segIdx];
+            const isFirstCoord = coordIdx === 0;
+            const isLastCoord = coordIdx === segment.coordinates.length - 1;
+
+            if (isFirstCoord && segIdx > 0) {
+                const prevSegment = course.segments[segIdx - 1];
+                const prevLastIndex = prevSegment.coordinates.length - 1;
+                prevSegment.coordinates[prevLastIndex].latitude = matchedCoord[0];
+                prevSegment.coordinates[prevLastIndex].longitude = matchedCoord[1];
+                prevSegment.coordinates[prevLastIndex].elevation = matchedCoord[2];
+            }
+
+            if (isLastCoord && segIdx < course.segments.length - 1) {
+                const nextSegment = course.segments[segIdx + 1];
+                nextSegment.coordinates[0].latitude = matchedCoord[0];
+                nextSegment.coordinates[0].longitude = matchedCoord[1];
+                nextSegment.coordinates[0].elevation = matchedCoord[2];
+            }
+        }
+
+        // 지도 다시 그리기
+        drawCourseOnMap();
+        displayCoordinatesList();
+        updateSaveButton();
+
+        showMessage(`${Math.min(selectedCoordIds.length, matched.length)}개의 좌표가 보정되었습니다.`, 'success');
+        closeMatchPreview();
+
+        // 선택 해제
+        selectedCoordinates.clear();
+        updateBulkActionButtons();
+    }
+
+    // 모달 외부 클릭 시 닫기
+    document.getElementById('match-preview-modal').addEventListener('click', function (e) {
+        if (e.target === this) {
+            closeMatchPreview();
         }
     });
 </script>
