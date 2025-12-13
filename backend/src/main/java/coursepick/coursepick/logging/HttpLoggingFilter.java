@@ -25,7 +25,9 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
         filterChain.doFilter(requestWrapper, responseWrapper);
         long duration = System.currentTimeMillis() - startTime;
 
-        log.info("[HTTP]", LogContent.http(requestWrapper, responseWrapper, duration));
+        if (!request.getRequestURI().startsWith("/actuator")) {
+            log.info("[HTTP]", LogContent.http(requestWrapper, responseWrapper, duration));
+        }
 
         responseWrapper.copyBodyToResponse();
     }
