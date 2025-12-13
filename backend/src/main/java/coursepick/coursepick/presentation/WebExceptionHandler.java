@@ -17,7 +17,7 @@ public class WebExceptionHandler {
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<ErrorResponse> handleEntityNotFoundException(NoSuchElementException e) {
-        log.warn("[EXCEPTION] NotFoundException 예외 응답 반환", LogContent.exception(e));
+        log.warn("[EXCEPTION] NoSuchElementException 예외 응답 반환", LogContent.exception(e));
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.from(e));
     }
 
