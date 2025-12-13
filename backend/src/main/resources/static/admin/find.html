@@ -535,7 +535,7 @@
                     withCredentials: true
                 });
 
-                courses = response.data;
+                courses = response.data.courses || [];
                 currentPage = page;
 
                 try {
