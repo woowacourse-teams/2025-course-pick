@@ -1,4 +1,4 @@
-package coursepick.coursepick.presentation.v0;
+package coursepick.coursepick.presentation;
 
 import coursepick.coursepick.application.CourseParserService;
 import coursepick.coursepick.application.dto.CourseFile;
