@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class CourseWebController implements CourseWebApi {
+public class CourseV0WebController implements CourseV0WebApi {
 
     private final CourseApplicationService courseApplicationService;
 

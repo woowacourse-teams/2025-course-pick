@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class NoticeWebController implements NoticeWebApi {
+public class NoticeV0WebController implements NoticeV0WebApi {
 
     private final String noticeBaseUrl;
 
-    public NoticeWebController(@Value("${notice.base-url}") String noticeBaseUrl) {
+    public NoticeV0WebController(@Value("${notice.base-url}") String noticeBaseUrl) {
         this.noticeBaseUrl = noticeBaseUrl;
     }
 

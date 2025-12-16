@@ -9,8 +9,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "노티스 (Notice)")
-public interface NoticeWebApi {
+@Tag(name = "노티스 (Notice) v0")
+public interface NoticeV0WebApi {
 
     @Operation(summary = "공지사항 조회", description = "사용자에게 필요한 공지사항을 조회하는 API입니다.")
     @ApiResponses({

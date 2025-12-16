@@ -14,7 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 
 @Tag(name = "러닝 코스 (Course) v0")
-public interface CourseWebApi {
+public interface CourseV0WebApi {
 
     @Operation(summary = "근처 코스 조회")
     @ApiResponses({
