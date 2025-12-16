@@ -28,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
 
+@Hidden
 @RestController
 @RequiredArgsConstructor
 public class AdminWebController {
