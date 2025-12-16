@@ -3,6 +3,7 @@ package coursepick.coursepick.infrastructure;
 import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.dto.CourseFileExtension;
 import coursepick.coursepick.domain.Coordinate;
+import coursepick.coursepick.infrastructure.course_parser.GpxCourseParser;
 import org.junit.jupiter.api.Test;
 
 import static coursepick.coursepick.test_util.GpxTestUtil.createGpxInputStreamOf;

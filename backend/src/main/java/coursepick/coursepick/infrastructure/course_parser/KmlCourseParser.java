@@ -1,4 +1,4 @@
-package coursepick.coursepick.infrastructure;
+package coursepick.coursepick.infrastructure.course_parser;
 
 import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.dto.CourseFileExtension;
