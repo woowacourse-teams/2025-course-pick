@@ -1,4 +1,4 @@
-package coursepick.coursepick.infrastructure;
+package coursepick.coursepick.infrastructure.walking_route_service;
 
 import coursepick.coursepick.application.WalkingRouteService;
 import coursepick.coursepick.domain.Coordinate;
