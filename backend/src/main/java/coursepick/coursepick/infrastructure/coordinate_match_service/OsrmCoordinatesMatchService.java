@@ -1,4 +1,4 @@
-package coursepick.coursepick.infrastructure;
+package coursepick.coursepick.infrastructure.coordinate_match_service;
 
 import coursepick.coursepick.application.CoordinatesMatchService;
 import coursepick.coursepick.domain.Coordinate;
@@ -10,12 +10,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import org.springframework.web.client.RestClient;
 
 @Slf4j
 @Component
