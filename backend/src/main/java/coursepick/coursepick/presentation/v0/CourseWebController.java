@@ -1,9 +1,8 @@
-package coursepick.coursepick.presentation;
+package coursepick.coursepick.presentation.v0;
 
 import coursepick.coursepick.application.CourseApplicationService;
 import coursepick.coursepick.application.dto.CoursesResponse;
 import coursepick.coursepick.domain.Coordinate;
-import coursepick.coursepick.presentation.api.CourseWebApi;
 import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
 import coursepick.coursepick.presentation.dto.CourseWebResponse;
 import lombok.RequiredArgsConstructor;

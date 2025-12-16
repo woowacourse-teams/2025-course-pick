@@ -1,4 +1,4 @@
-package coursepick.coursepick.presentation.api;
+package coursepick.coursepick.presentation.v0;
 
 import coursepick.coursepick.presentation.dto.NoticeWebResponse;
 import io.swagger.v3.oas.annotations.Operation;
