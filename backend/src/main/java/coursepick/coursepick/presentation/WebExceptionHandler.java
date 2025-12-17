@@ -1,6 +1,5 @@
 package coursepick.coursepick.presentation;
 
-import coursepick.coursepick.application.exception.NotFoundException;
 import coursepick.coursepick.logging.LogContent;
 import coursepick.coursepick.presentation.dto.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -10,13 +9,15 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.NoSuchElementException;
+
 @RestControllerAdvice
 @Slf4j
 public class WebExceptionHandler {
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(NotFoundException e) {
-        log.warn("[EXCEPTION] NotFoundException 예외 응답 반환", LogContent.exception(e));
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(NoSuchElementException e) {
+        log.warn("[EXCEPTION] NoSuchElementException 예외 응답 반환", LogContent.exception(e));
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.from(e));
     }
 
