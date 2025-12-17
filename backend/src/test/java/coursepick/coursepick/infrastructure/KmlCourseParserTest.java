@@ -2,7 +2,7 @@ package coursepick.coursepick.infrastructure;
 
 import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.dto.CourseFileExtension;
-import coursepick.coursepick.infrastructure.course_parser.KmlCourseParser;
+import coursepick.coursepick.infrastructure.parser.KmlCourseParser;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;

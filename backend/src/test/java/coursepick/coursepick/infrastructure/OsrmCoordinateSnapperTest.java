@@ -1,7 +1,7 @@
 package coursepick.coursepick.infrastructure;
 
 import coursepick.coursepick.domain.Coordinate;
-import coursepick.coursepick.infrastructure.coordinate_match_service.OsrmCoordinateSnapper;
+import coursepick.coursepick.infrastructure.snapper.OsrmCoordinateSnapper;
 import coursepick.coursepick.test_util.AbstractMockServerTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

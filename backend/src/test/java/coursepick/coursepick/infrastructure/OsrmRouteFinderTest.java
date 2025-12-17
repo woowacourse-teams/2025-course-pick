@@ -1,7 +1,7 @@
 package coursepick.coursepick.infrastructure;
 
 import coursepick.coursepick.domain.Coordinate;
-import coursepick.coursepick.infrastructure.walking_route_service.OsrmRouteFinder;
+import coursepick.coursepick.infrastructure.finder.OsrmRouteFinder;
 import coursepick.coursepick.test_util.AbstractMockServerTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

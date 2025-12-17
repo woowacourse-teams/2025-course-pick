@@ -1,4 +1,4 @@
-package coursepick.coursepick.infrastructure.coordinate_match_service;
+package coursepick.coursepick.infrastructure.snapper;
 
 import coursepick.coursepick.domain.Coordinate;
 import coursepick.coursepick.domain.CoordinateSnapper;
