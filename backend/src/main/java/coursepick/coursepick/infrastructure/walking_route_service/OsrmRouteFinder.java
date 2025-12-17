@@ -1,7 +1,7 @@
 package coursepick.coursepick.infrastructure.walking_route_service;
 
-import coursepick.coursepick.application.WalkingRouteService;
 import coursepick.coursepick.domain.Coordinate;
+import coursepick.coursepick.domain.RouteFinder;
 import coursepick.coursepick.logging.LogContent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,12 +18,12 @@ import java.util.stream.Collectors;
 @Component
 @Profile({"dev", "prod"})
 @RequiredArgsConstructor
-public class OsrmWalkingRouteService implements WalkingRouteService {
+public class OsrmRouteFinder implements RouteFinder {
 
     private final RestClient osrmRestClient;
 
     @Override
-    public List<Coordinate> route(Coordinate origin, Coordinate destination) {
+    public List<Coordinate> find(Coordinate origin, Coordinate destination) {
         try {
             Map<String, Object> response = osrmRestClient.get()
                     .uri(uriBuilder -> uriBuilder
