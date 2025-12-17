@@ -1,7 +1,7 @@
-package coursepick.coursepick.infrastructure;
+package coursepick.coursepick.infrastructure.snapper;
 
-import coursepick.coursepick.application.CoordinatesMatchService;
 import coursepick.coursepick.domain.Coordinate;
+import coursepick.coursepick.domain.CoordinateSnapper;
 import coursepick.coursepick.domain.GeoLine;
 import coursepick.coursepick.domain.Meter;
 import coursepick.coursepick.logging.LogContent;
@@ -10,23 +10,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.springframework.web.client.RestClient;
-
 @Slf4j
 @Component
 @Profile({"dev", "prod"})
 @RequiredArgsConstructor
-public class OsrmCoordinatesMatchService implements CoordinatesMatchService {
+public class OsrmCoordinateSnapper implements CoordinateSnapper {
 
     private final RestClient osrmRestClient;
 
     @Override
-    public List<Coordinate> snapCoordinates(List<Coordinate> coordinates) {
+    public List<Coordinate> snap(List<Coordinate> coordinates) {
         if (coordinates.size() < 2) {
             return coordinates;
         }

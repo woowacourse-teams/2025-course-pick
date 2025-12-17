@@ -1,30 +1,29 @@
-package coursepick.coursepick.infrastructure;
+package coursepick.coursepick.infrastructure.finder;
 
-import coursepick.coursepick.application.WalkingRouteService;
 import coursepick.coursepick.domain.Coordinate;
+import coursepick.coursepick.domain.RouteFinder;
 import coursepick.coursepick.logging.LogContent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.springframework.web.client.RestClient;
-
 @Slf4j
 @Component
 @Profile({"dev", "prod"})
 @RequiredArgsConstructor
-public class OsrmWalkingRouteService implements WalkingRouteService {
+public class OsrmRouteFinder implements RouteFinder {
 
     private final RestClient osrmRestClient;
 
     @Override
-    public List<Coordinate> route(Coordinate origin, Coordinate destination) {
+    public List<Coordinate> find(Coordinate origin, Coordinate destination) {
         try {
             Map<String, Object> response = osrmRestClient.get()
                     .uri(uriBuilder -> uriBuilder
