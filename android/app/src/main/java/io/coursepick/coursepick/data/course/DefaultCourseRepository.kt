@@ -3,6 +3,7 @@ package io.coursepick.coursepick.data.course
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseRepository
+import io.coursepick.coursepick.domain.course.CoursesPage
 import io.coursepick.coursepick.domain.course.Scope
 import javax.inject.Inject
 
@@ -16,17 +17,19 @@ class DefaultCourseRepository
 
         override suspend fun courses(
             scope: Scope,
+            page: Int,
             mapCoordinate: Coordinate,
             userCoordinate: Coordinate?,
-        ): List<Course> =
+        ): CoursesPage =
             service
                 .courses(
-                    mapCoordinate.latitude.value,
-                    mapCoordinate.longitude.value,
-                    userCoordinate?.latitude?.value,
-                    userCoordinate?.longitude?.value,
-                    scope.meter.value.toInt(),
-                ).mapNotNull(CourseDto::toCourseOrNull)
+                    mapLatitude = mapCoordinate.latitude.value,
+                    mapLongitude = mapCoordinate.longitude.value,
+                    userLatitude = userCoordinate?.latitude?.value,
+                    userLongitude = userCoordinate?.longitude?.value,
+                    scopeMeter = scope.meter.value.toInt(),
+                    page = page,
+                ).toCoursesPage()
 
         override suspend fun routeToCourse(
             course: Course,
