@@ -5,8 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CoursesPageDto(
-    val hasNext: Boolean,
     val courses: List<CourseDto>,
+    val hasNext: Boolean,
 ) {
     fun toCoursesPage(): CoursesPage =
         CoursesPage(
