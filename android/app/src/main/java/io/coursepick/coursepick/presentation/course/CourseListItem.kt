@@ -1,9 +1,9 @@
 package io.coursepick.coursepick.presentation.course
 
-sealed class CourseListItem {
+sealed interface CourseListItem {
     data class Course(
         val item: CourseItem,
-    ) : CourseListItem()
+    ) : CourseListItem
 
-    data object Loading : CourseListItem()
+    data object Loading : CourseListItem
 }
