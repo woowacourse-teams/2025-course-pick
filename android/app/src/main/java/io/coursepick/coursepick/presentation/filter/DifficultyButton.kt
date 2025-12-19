@@ -1,17 +1,13 @@
 package io.coursepick.coursepick.presentation.filter
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -24,35 +20,26 @@ import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 fun DifficultyButton(
     difficulty: Difficulty,
     label: String,
-    selectedDifficulties: Set<Difficulty>,
     onDifficultyToggle: (Difficulty) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier =
-            modifier
-                .toggleable(
-                    value = selectedDifficulties.contains(difficulty),
-                    role = Role.Switch,
-                    onValueChange = { onDifficultyToggle(difficulty) },
-                ).clip(RoundedCornerShape(size = 8.dp))
-                .background(
-                    if (selectedDifficulties.contains(difficulty)) {
-                        colorResource(R.color.point_secondary)
-                    } else {
-                        colorResource(
-                            R.color.gray2,
-                        )
-                    },
-                ).padding(vertical = 20.dp)
-                .padding(horizontal = 4.dp),
-        contentAlignment = Alignment.Center,
+    TextButton(
+        onClick = { onDifficultyToggle(difficulty) },
+        shape = RoundedCornerShape(8.dp),
+        modifier = modifier,
+        colors =
+            ButtonDefaults.textButtonColors(
+                containerColor = colorResource(R.color.point_secondary),
+                contentColor = colorResource(R.color.background_primary),
+                disabledContainerColor = colorResource(R.color.gray2),
+                disabledContentColor = colorResource(R.color.background_primary),
+            ),
+        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 20.dp),
     ) {
         Text(
             text = label,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
-            color = colorResource(R.color.background_primary),
         )
     }
 }
@@ -64,7 +51,6 @@ private fun DifficultyButtonPreview() {
         DifficultyButton(
             label = "쉬움",
             difficulty = Difficulty.EASY,
-            selectedDifficulties = setOf(),
             onDifficultyToggle = {},
         )
     }
