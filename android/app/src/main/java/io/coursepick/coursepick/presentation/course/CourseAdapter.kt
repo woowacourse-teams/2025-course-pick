@@ -55,16 +55,7 @@ class CourseAdapter(
                 override fun areContentsTheSame(
                     oldItem: CourseListItem,
                     newItem: CourseListItem,
-                ): Boolean =
-                    when {
-                        oldItem is CourseListItem.Course && newItem is CourseListItem.Course ->
-                            oldItem.item == newItem.item
-
-                        oldItem is CourseListItem.Loading && newItem is CourseListItem.Loading ->
-                            true
-
-                        else -> false
-                    }
+                ): Boolean = oldItem == newItem
             }
     }
 }
