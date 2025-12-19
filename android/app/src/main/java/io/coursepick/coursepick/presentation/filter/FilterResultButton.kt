@@ -1,17 +1,15 @@
 package io.coursepick.coursepick.presentation.filter
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -28,29 +26,24 @@ fun FilterResultButton(
     onEnableChanged: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier =
-            modifier
-                .clickable(
-                    enabled = isEnabled,
-                    onClick = onEnableChanged,
-                ).clip(RoundedCornerShape(size = 8.dp))
-                .background(
-                    if (isEnabled) {
-                        colorResource(R.color.point_secondary)
-                    } else {
-                        colorResource(
-                            R.color.gray2,
-                        )
-                    },
-                ).padding(vertical = 20.dp, horizontal = 4.dp),
-        contentAlignment = Alignment.Center,
+    TextButton(
+        onClick = onEnableChanged,
+        enabled = isEnabled,
+        shape = RoundedCornerShape(8.dp),
+        modifier = modifier,
+        colors =
+            ButtonDefaults.textButtonColors(
+                containerColor = colorResource(R.color.point_secondary),
+                contentColor = colorResource(R.color.background_primary),
+                disabledContainerColor = colorResource(R.color.gray2),
+                disabledContentColor = colorResource(R.color.background_primary),
+            ),
+        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 20.dp)
     ) {
         Text(
             text = label,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
-            color = colorResource(R.color.background_primary),
         )
     }
 }
