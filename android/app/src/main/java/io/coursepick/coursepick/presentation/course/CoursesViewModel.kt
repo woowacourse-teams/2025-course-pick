@@ -221,7 +221,7 @@ constructor(
                     userCoordinate = userCoordinate,
                 )
             }.onSuccess { coursesPage: CoursesPage ->
-                Logger.log(Logger.Event.Success("fetch_next_courses"))
+                Logger.log(Logger.Event.Success("fetch_courses_next"))
 
                 val favoritedCourseIds: Set<String> = favoritesRepository.favoriteCourseIds()
 
@@ -250,7 +250,7 @@ constructor(
                     )
             }.onFailure { exception: Throwable ->
                 Logger.log(
-                    Logger.Event.Failure("fetch_next_courses"),
+                    Logger.Event.Failure("fetch_courses_next"),
                     "message" to exception.message.toString(),
                 )
 
