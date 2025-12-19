@@ -198,8 +198,7 @@ constructor(
     }
 
     fun fetchNextCourses() {
-        val currentStatus: UiStatus? = state.value?.status
-        if (currentStatus == UiStatus.Loading || !hasNext) return
+        if (state.value?.status == UiStatus.Loading || !hasNext) return
 
         val existingCourses: List<CourseListItem> = state.value?.originalCourses ?: emptyList()
         _state.value =
