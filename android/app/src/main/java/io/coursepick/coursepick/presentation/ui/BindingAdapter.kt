@@ -128,25 +128,9 @@ fun TextView.setLengthRangeText(filter: CourseFilter) {
     }
 }
 
-@BindingAdapter("isActive")
-fun TextView.setActive(isActive: Boolean) {
-    this.isActivated = isActive
-}
-
 @BindingAdapter("visibleWhenNoInternet")
 fun View.visibleWhenNoInternet(status: UiStatus?) {
     visibility = if (status == UiStatus.NoInternet) View.VISIBLE else View.GONE
-}
-
-@BindingAdapter("visibleWhenLoading")
-fun View.visibleWhenLoading(status: UiStatus?) {
-    visibility = if (status == UiStatus.Loading) View.VISIBLE else View.GONE
-}
-
-@BindingAdapter("visibleWhenSuccess")
-fun View.visibleWhenSuccess(status: UiStatus?) {
-    visibility =
-        if (status == UiStatus.Success) View.VISIBLE else View.GONE
 }
 
 @BindingAdapter("visibleWhenEmpty")
