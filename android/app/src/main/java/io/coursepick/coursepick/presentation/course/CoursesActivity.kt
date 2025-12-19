@@ -667,7 +667,8 @@ class CoursesActivity :
             courseAdapter.submitList(state.courses)
             mapManager.removeAllLines()
             val courses: List<CourseItem> =
-                state.courses.filterIsInstance<CourseListItem.Course>().map { it.item }
+                state.courses.filterIsInstance<CourseListItem.Course>()
+                    .map(CourseListItem.Course::item)
             mapManager.setOnCourseClickListener(courses) { course: CourseItem ->
                 viewModel.select(course)
             }

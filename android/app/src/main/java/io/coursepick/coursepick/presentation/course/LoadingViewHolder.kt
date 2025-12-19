@@ -10,8 +10,9 @@ class LoadingViewHolder private constructor(
 ) : RecyclerView.ViewHolder(binding.root) {
     companion object {
         operator fun invoke(root: ViewGroup): LoadingViewHolder {
-            val layoutInflater = LayoutInflater.from(root.context)
-            val binding = ItemLoadingBinding.inflate(layoutInflater, root, false)
+            val layoutInflater: LayoutInflater = LayoutInflater.from(root.context)
+            val binding: ItemLoadingBinding =
+                ItemLoadingBinding.inflate(layoutInflater, root, false)
             return LoadingViewHolder(binding)
         }
     }

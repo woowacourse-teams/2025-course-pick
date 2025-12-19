@@ -25,7 +25,7 @@ class FakeCourseRepository : CourseRepository {
             throw RuntimeException("Fetch courses failed")
         }
 
-        customCoursesPage?.let { return it }
+        customCoursesPage?.let { coursesPage: CoursesPage -> return coursesPage }
 
         return when (page) {
             0 -> CoursesPage(courses = FAKE_COURSES, hasNext = true)
