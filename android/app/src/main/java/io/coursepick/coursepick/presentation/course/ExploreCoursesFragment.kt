@@ -73,7 +73,7 @@ class ExploreCoursesFragment(
 
                     val lastVisibleItem: Int = layoutManager.findLastVisibleItemPosition()
 
-                    if (lastVisibleItem >= totalItemCount - 3) {
+                    if (lastVisibleItem >= totalItemCount - LEFT_ITEM_COUNT) {
                         viewModel.fetchNextCourses()
                     }
                 }
@@ -94,5 +94,9 @@ class ExploreCoursesFragment(
             }
         smoothScroller.targetPosition = position
         layoutManager.startSmoothScroll(smoothScroller)
+    }
+
+    companion object {
+        private const val LEFT_ITEM_COUNT: Int = 3
     }
 }
