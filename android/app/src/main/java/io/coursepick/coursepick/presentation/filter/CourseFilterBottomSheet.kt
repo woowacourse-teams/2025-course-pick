@@ -132,7 +132,7 @@ fun CourseFilterBottomSheet(
 
                 FilterResultButton(
                     label = stringResource(R.string.filter_result_count, coursesUiState.courses.size),
-                    isEnabled = coursesUiState.courses.isNotEmpty(),
+                    enabled = coursesUiState.courses.isNotEmpty(),
                     onEnableChanged = { onFilterAction(CourseFilterAction.Apply) },
                     modifier = Modifier.weight(1f),
                 )
