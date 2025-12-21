@@ -22,21 +22,19 @@ import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 @Composable
 fun FilterResultButton(
     label: String,
-    isEnabled: Boolean,
+    enabled: Boolean,
     onEnableChanged: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     TextButton(
         onClick = onEnableChanged,
-        enabled = isEnabled,
+        enabled = enabled,
         shape = RoundedCornerShape(8.dp),
         modifier = modifier,
         colors =
             ButtonDefaults.textButtonColors(
-                containerColor = colorResource(R.color.point_secondary),
+                containerColor = if (enabled) colorResource(R.color.point_secondary) else colorResource(R.color.gray2),
                 contentColor = colorResource(R.color.background_primary),
-                disabledContainerColor = colorResource(R.color.gray2),
-                disabledContentColor = colorResource(R.color.background_primary),
             ),
         contentPadding = PaddingValues(horizontal = 4.dp, vertical = 20.dp),
     ) {
@@ -58,13 +56,13 @@ private fun FilterResultButtonPreview() {
         ) {
             FilterResultButton(
                 label = stringResource(R.string.filter_result_count, 10),
-                isEnabled = true,
+                enabled = true,
                 onEnableChanged = { },
             )
 
             FilterResultButton(
                 label = stringResource(R.string.filter_result_count, 0),
-                isEnabled = false,
+                enabled = false,
                 onEnableChanged = { },
             )
         }
