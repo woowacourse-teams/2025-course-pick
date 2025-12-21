@@ -21,20 +21,22 @@ fun DifficultyButton(
     difficulty: Difficulty,
     label: String,
     onDifficultyToggle: (Difficulty) -> Unit,
-    enabled: Boolean,
+    selected: Boolean,
     modifier: Modifier = Modifier,
 ) {
     TextButton(
         onClick = { onDifficultyToggle(difficulty) },
-        enabled = enabled,
         shape = RoundedCornerShape(8.dp),
         modifier = modifier,
         colors =
             ButtonDefaults.textButtonColors(
-                containerColor = colorResource(R.color.point_secondary),
+                containerColor =
+                    if (selected) {
+                        colorResource(R.color.point_secondary)
+                    } else {
+                        colorResource(R.color.gray2)
+                    },
                 contentColor = colorResource(R.color.background_primary),
-                disabledContainerColor = colorResource(R.color.gray2),
-                disabledContentColor = colorResource(R.color.background_primary),
             ),
         contentPadding = PaddingValues(horizontal = 4.dp, vertical = 20.dp),
     ) {
@@ -54,7 +56,7 @@ private fun DifficultyButtonPreview() {
             label = "쉬움",
             difficulty = Difficulty.EASY,
             onDifficultyToggle = {},
-            enabled = true,
+            selected = true,
         )
     }
 }

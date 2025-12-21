@@ -139,21 +139,21 @@ private fun DifficultyButtons(
             difficulty = Difficulty.EASY,
             label = stringResource(R.string.filter_dialog_difficulty_easy),
             onDifficultyToggle = onDifficultyToggle,
-            enabled = selectedDifficulties.contains(Difficulty.EASY),
+            selected = selectedDifficulties.contains(Difficulty.EASY),
             modifier = Modifier.weight(1f),
         )
         DifficultyButton(
             difficulty = Difficulty.NORMAL,
             label = stringResource(R.string.filter_dialog_difficulty_normal),
             onDifficultyToggle = onDifficultyToggle,
-            enabled = selectedDifficulties.contains(Difficulty.NORMAL),
+            selected = selectedDifficulties.contains(Difficulty.NORMAL),
             modifier = Modifier.weight(1f),
         )
         DifficultyButton(
             difficulty = Difficulty.HARD,
             label = stringResource(R.string.filter_dialog_difficulty_hard),
             onDifficultyToggle = onDifficultyToggle,
-            enabled = selectedDifficulties.contains(Difficulty.HARD),
+            selected = selectedDifficulties.contains(Difficulty.HARD),
             modifier = Modifier.weight(1f),
         )
     }
