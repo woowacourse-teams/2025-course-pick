@@ -21,10 +21,12 @@ fun DifficultyButton(
     difficulty: Difficulty,
     label: String,
     onDifficultyToggle: (Difficulty) -> Unit,
+    enabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
     TextButton(
         onClick = { onDifficultyToggle(difficulty) },
+        enabled = enabled,
         shape = RoundedCornerShape(8.dp),
         modifier = modifier,
         colors =
@@ -52,6 +54,7 @@ private fun DifficultyButtonPreview() {
             label = "쉬움",
             difficulty = Difficulty.EASY,
             onDifficultyToggle = {},
+            enabled = true,
         )
     }
 }
