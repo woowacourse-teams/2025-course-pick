@@ -52,7 +52,7 @@ class CoursesViewModel
         private var writeFavoriteJob: Job? = null
         private val pendingFavoriteWrites: MutableMap<String, Boolean> = mutableMapOf()
 
-        private var courseFilter: CourseFilter = CourseFilter.None
+        private var originalCourseFilter: CourseFilter = CourseFilter.None
 
         init {
             checkNetwork()
@@ -308,7 +308,7 @@ class CoursesViewModel
         fun handleFilterAction(action: CourseFilterAction) {
             when (action) {
                 is CourseFilterAction.Cancel -> {
-                    _state.value = state.value?.copy(courseFilter = courseFilter)
+                    _state.value = state.value?.copy(courseFilter = originalCourseFilter)
                     dismissFilterDialog()
                 }
 
@@ -331,7 +331,7 @@ class CoursesViewModel
         }
 
         fun showFilterDialog() {
-            courseFilter = state.value?.courseFilter ?: CourseFilter.None
+            originalCourseFilter = state.value?.courseFilter ?: CourseFilter.None
             _state.value = state.value?.copy(showFilterDialog = true)
         }
 
