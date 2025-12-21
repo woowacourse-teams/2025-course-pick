@@ -9,6 +9,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -33,7 +37,14 @@ fun FilterResultButton(
         modifier = modifier,
         colors =
             ButtonDefaults.textButtonColors(
-                containerColor = if (enabled) colorResource(R.color.point_secondary) else colorResource(R.color.gray2),
+                containerColor =
+                    if (enabled) {
+                        colorResource(R.color.point_secondary)
+                    } else {
+                        colorResource(
+                            R.color.gray2,
+                        )
+                    },
                 contentColor = colorResource(R.color.background_primary),
             ),
         contentPadding = PaddingValues(horizontal = 4.dp, vertical = 20.dp),
@@ -50,21 +61,11 @@ fun FilterResultButton(
 @Composable
 private fun FilterResultButtonPreview() {
     CoursePickTheme {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            FilterResultButton(
-                label = stringResource(R.string.filter_result_count, 10),
-                enabled = true,
-                onEnableChanged = { },
-            )
-
-            FilterResultButton(
-                label = stringResource(R.string.filter_result_count, 0),
-                enabled = false,
-                onEnableChanged = { },
-            )
-        }
+        var enabled by remember { mutableStateOf(true) }
+        FilterResultButton(
+            label = stringResource(R.string.filter_result_count, 10),
+            enabled = enabled,
+            onEnableChanged = { enabled != enabled },
+        )
     }
 }
