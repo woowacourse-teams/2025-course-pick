@@ -38,7 +38,7 @@ fun FilterResultButton(
                 disabledContainerColor = colorResource(R.color.gray2),
                 disabledContentColor = colorResource(R.color.background_primary),
             ),
-        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 20.dp)
+        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 20.dp),
     ) {
         Text(
             text = label,
