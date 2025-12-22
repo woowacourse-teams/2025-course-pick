@@ -17,6 +17,7 @@ import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.domain.notice.NoticeRepository
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.filter.CourseFilter
+import io.coursepick.coursepick.presentation.filter.CourseFilterAction
 import io.coursepick.coursepick.presentation.model.Difficulty
 import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
@@ -50,6 +51,8 @@ class CoursesViewModel
 
         private var writeFavoriteJob: Job? = null
         private val pendingFavoriteWrites: MutableMap<String, Boolean> = mutableMapOf()
+
+        private var originalCourseFilter: CourseFilter = CourseFilter.None
 
         init {
             checkNetwork()
@@ -302,11 +305,41 @@ class CoursesViewModel
             _state.value = state.value?.copy(query = query)
         }
 
-        fun resetFilterToDefault() {
-            _state.value = state.value?.copy(courseFilter = CourseFilter.None)
+        fun handleFilterAction(action: CourseFilterAction) {
+            when (action) {
+                is CourseFilterAction.Cancel -> {
+                    _state.value = state.value?.copy(courseFilter = originalCourseFilter)
+                    dismissFilterDialog()
+                }
+
+                is CourseFilterAction.Reset -> {
+                    _state.value = state.value?.copy(courseFilter = CourseFilter.None)
+                }
+
+                is CourseFilterAction.Apply -> {
+                    dismissFilterDialog()
+                }
+
+                is CourseFilterAction.UpdateLengthRange -> {
+                    updateLengthRange(action.start, action.end)
+                }
+
+                is CourseFilterAction.ToggleDifficulty -> {
+                    toggleDifficulty(action.difficulty)
+                }
+            }
         }
 
-        fun toggleDifficulty(difficulty: Difficulty) {
+        fun showFilterDialog() {
+            originalCourseFilter = state.value?.courseFilter ?: CourseFilter.None
+            _state.value = state.value?.copy(showFilterDialog = true)
+        }
+
+        fun dismissFilterDialog() {
+            _state.value = state.value?.copy(showFilterDialog = false)
+        }
+
+        private fun toggleDifficulty(difficulty: Difficulty) {
             val updatedDifficulties =
                 state.value
                     ?.courseFilter
@@ -324,7 +357,7 @@ class CoursesViewModel
             _state.value = state.value?.copy(courseFilter = courseFilter)
         }
 
-        fun updateLengthRange(
+        private fun updateLengthRange(
             min: Double,
             max: Double,
         ) {
@@ -340,10 +373,6 @@ class CoursesViewModel
                 state.value?.courseFilter?.copy(lengthRange = updatedLengthRange)
                     ?: CourseFilter.None.copy(lengthRange = updatedLengthRange)
             _state.value = state.value?.copy(courseFilter = updatedCourseFilter)
-        }
-
-        fun restore(coursesUiState: CoursesUiState) {
-            _state.value = coursesUiState
         }
 
         fun fetchNotice(id: String) {
