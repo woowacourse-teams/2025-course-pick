@@ -10,6 +10,7 @@ on:
 
 jobs:
   build:
+    name: 프로젝트 빌드
     runs-on: ubuntu-latest
 
     steps:
