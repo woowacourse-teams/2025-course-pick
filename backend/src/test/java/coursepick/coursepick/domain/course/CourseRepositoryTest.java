@@ -1,9 +1,5 @@
-package coursepick.coursepick.domain;
+package coursepick.coursepick.domain.course;
 
-import coursepick.coursepick.domain.course.Coordinate;
-import coursepick.coursepick.domain.course.Course;
-import coursepick.coursepick.domain.course.CourseRepository;
-import coursepick.coursepick.domain.course.Meter;
 import coursepick.coursepick.test_util.AbstractIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

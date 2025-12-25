@@ -1,7 +1,5 @@
-package coursepick.coursepick.domain;
+package coursepick.coursepick.domain.course;
 
-import coursepick.coursepick.domain.course.Coordinate;
-import coursepick.coursepick.domain.course.GeoLine;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

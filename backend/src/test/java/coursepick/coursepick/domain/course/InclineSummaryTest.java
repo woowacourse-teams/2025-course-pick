@@ -1,9 +1,5 @@
-package coursepick.coursepick.domain;
+package coursepick.coursepick.domain.course;
 
-import coursepick.coursepick.domain.course.Coordinate;
-import coursepick.coursepick.domain.course.GeoLine;
-import coursepick.coursepick.domain.course.InclineSummary;
-import coursepick.coursepick.domain.course.Segment;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;

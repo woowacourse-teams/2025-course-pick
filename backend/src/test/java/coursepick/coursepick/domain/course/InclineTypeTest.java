@@ -1,7 +1,5 @@
-package coursepick.coursepick.domain;
+package coursepick.coursepick.domain.course;
 
-import coursepick.coursepick.domain.course.Coordinate;
-import coursepick.coursepick.domain.course.InclineType;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
