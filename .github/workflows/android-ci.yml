@@ -2,12 +2,13 @@ name: Android CI
 
 on:
   pull_request:
-    branches: [ android ]
+    branches: [ main ]
     paths:
-      - 'android/**'
+      - 'main/**'
 
 jobs:
   build:
+    if: contains(github.event.pull_request.labels.*.name, 'android')
     runs-on: ubuntu-latest
 
     steps:
