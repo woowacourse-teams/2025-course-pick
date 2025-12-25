@@ -5,6 +5,7 @@ on:
     branches: [ main ]
     paths:
       - 'android/**'
+  workflow_call:
   workflow_dispatch:
 
 jobs:

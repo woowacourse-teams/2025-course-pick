@@ -5,16 +5,21 @@ on:
   workflow_dispatch:
     inputs:
       updateType:
-          description: '배포할 업데이트의 종류를 선택하세요.'
-          required: true
-          default: '일반 업데이트 (앱 내 제안 X)'
-          type: choice
-          options:
-            - '일반 업데이트 (앱 내 제안 X)'
-            - '유연한 업데이트 (앱 내 제안 O, 강제 X)'
-            - '즉시 업데이트 (앱 내 제안 O, 강제 O)'
+        description: '배포할 업데이트의 종류를 선택하세요.'
+        required: true
+        default: '일반 업데이트 (앱 내 제안 X)'
+        type: choice
+        options:
+          - '일반 업데이트 (앱 내 제안 X)'
+          - '유연한 업데이트 (앱 내 제안 O, 강제 X)'
+          - '즉시 업데이트 (앱 내 제안 O, 강제 O)'
 
 jobs:
+  ci:
+    name: CI 실행
+    uses: ./.github/workflows/android-ci.yml
+    secrets: inherit
+
   deploy:
     runs-on: ubuntu-latest
 
