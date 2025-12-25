@@ -1,11 +1,6 @@
 name: Backend Prod Server CD
 
 on:
-  push:
-    branches: [ main ]
-    paths:
-      - 'backend/**'
-      - '.github/workflows/backend-prod-cd.yml'
   workflow_dispatch:
 
 jobs:
