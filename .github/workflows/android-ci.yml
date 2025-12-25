@@ -4,11 +4,10 @@ on:
   pull_request:
     branches: [ main ]
     paths:
-      - 'main/**'
+      - 'android/**'
 
 jobs:
   build:
-    if: contains(github.event.pull_request.labels.*.name, 'android')
     runs-on: ubuntu-latest
 
     steps:
