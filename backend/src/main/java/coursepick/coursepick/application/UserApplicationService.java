@@ -1,18 +1,27 @@
 package coursepick.coursepick.application;
 
 import coursepick.coursepick.domain.user.*;
-import lombok.RequiredArgsConstructor;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class UserApplicationService {
 
     private final UserRepository userRepository;
-    private final OauthProvider oauthProvider;
+    private final OAuthProvider oauthProvider;
+    private final SecretKey secretKey;
+
+    public UserApplicationService(UserRepository userRepository, OAuthProvider oauthProvider, @Value("${jwt.secret-key}") String secretKeyString) {
+        this.userRepository = userRepository;
+        this.oauthProvider = oauthProvider;
+        this.secretKey = Keys.hmacShaKeyFor(secretKeyString.getBytes(StandardCharsets.UTF_8));
+    }
 
     @Transactional
     public Authentication registerOrLoginAndGetAuthentication(String oauthAccessToken) {
@@ -24,11 +33,11 @@ public class UserApplicationService {
         Optional<User> user = userRepository.findByProviderAndProviderId(userProvider, providerId);
 
         if (user.isPresent()) {
-            return Authentication.auth(user.get());
+            return Authentication.auth(secretKey, user.get());
         }
 
         User registeredUser = register(userProvider, providerId);
-        return Authentication.auth(registeredUser);
+        return Authentication.auth(secretKey, registeredUser);
     }
 
     private User register(UserProvider userProvider, String providerId) {

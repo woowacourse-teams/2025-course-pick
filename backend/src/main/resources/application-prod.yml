@@ -23,3 +23,4 @@ admin:
   token: ${ADMIN_TOKEN}
   kakao-map-api-key: ${ADMIN_KAKAO_MAP_API_KEY}
 notice.base-url: ${BASE_URL}
+jwt.secret-key: ${JWT_SECRET_KEY}

@@ -1,5 +1,5 @@
 package coursepick.coursepick.domain.user;
 
-public interface OauthProvider {
+public interface OAuthProvider {
     String getProviderId(String oauthAccessToken);
 }
