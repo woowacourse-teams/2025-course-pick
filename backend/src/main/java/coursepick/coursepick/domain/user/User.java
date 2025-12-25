@@ -21,9 +21,9 @@ public class User {
     private final UserProvider provider;
     private final String providerId;
 
-    public User(String providerId) {
+    public User(UserProvider provider, String providerId) {
         this.id = null;
-        this.provider = UserProvider.KAKAO;
+        this.provider = provider;
         this.providerId = providerId;
     }
 }
