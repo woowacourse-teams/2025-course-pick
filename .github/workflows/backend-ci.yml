@@ -3,12 +3,13 @@ name: Backend CI
 on:
   pull_request:
     branches: [ main ]
+    paths:
+      - 'backend/**'
   workflow_call:
   workflow_dispatch:
 
 jobs:
   test:
-    if: contains(github.event.pull_request.labels.*.name, 'backend')
     name: 프로젝트 빌드
     runs-on: ubuntu-latest
     defaults:

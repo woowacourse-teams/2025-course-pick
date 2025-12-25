@@ -5,13 +5,11 @@ on:
 
 jobs:
   ci:
-    if: contains(github.event.pull_request.labels.*.name, 'backend')
     name: CI 실행
     uses: ./.github/workflows/backend-ci.yml
     secrets: inherit
 
   build:
-    if: contains(github.event.pull_request.labels.*.name, 'backend')
     name: 도커 이미지 빌드 & 푸시
     needs: ci
     runs-on: ubuntu-latest
@@ -51,7 +49,6 @@ jobs:
             .
 
   deploy:
-    if: contains(github.event.pull_request.labels.*.name, 'backend')
     name: 운영서버 배포
     needs: build
     runs-on: ubuntu-latest
