@@ -52,6 +52,10 @@ public enum ErrorType {
             "존재하지 않는 공지 사항입니다. 공지 사항id=%s",
             NotFoundException::new
     ),
+    AUTHENTICATION_FAIL(
+            "인증에 실패하였습니다.",
+            UnAuthorizedException::new
+    ),
     ;
 
     private final String message;

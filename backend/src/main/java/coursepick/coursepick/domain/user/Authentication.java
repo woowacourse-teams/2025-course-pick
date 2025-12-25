@@ -1,11 +1,15 @@
 package coursepick.coursepick.domain.user;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 
 import javax.crypto.SecretKey;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
+
+import static coursepick.coursepick.application.exception.ErrorType.AUTHENTICATION_FAIL;
 
 public record Authentication(
         String accessToken
@@ -27,5 +31,18 @@ public record Authentication(
                 .expiration(Date.from(expiration))
                 .signWith(key)
                 .compact();
+    }
+
+    public String validateAndGetUserId(SecretKey key) {
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(accessToken)
+                    .getPayload();
+            return claims.getSubject();
+        } catch (JwtException e) {
+            throw AUTHENTICATION_FAIL.create();
+        }
     }
 }
