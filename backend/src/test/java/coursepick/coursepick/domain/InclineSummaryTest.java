@@ -1,12 +1,17 @@
 package coursepick.coursepick.domain;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.List;
-import java.util.stream.Stream;
+import coursepick.coursepick.domain.course.Coordinate;
+import coursepick.coursepick.domain.course.GeoLine;
+import coursepick.coursepick.domain.course.InclineSummary;
+import coursepick.coursepick.domain.course.Segment;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.List;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class InclineSummaryTest {
 

@@ -1,6 +1,6 @@
 package coursepick.coursepick.test_util;
 
-import coursepick.coursepick.domain.Coordinate;
+import coursepick.coursepick.domain.course.Coordinate;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -48,11 +48,6 @@ public class GpxTestUtil {
         return new ByteArrayInputStream(gpx.getBytes(StandardCharsets.UTF_8));
     }
 
-    public static InputStream createGpxInputStreamOf(String id, Coordinate... coordinates) {
-        String gpx = createGpxOf(id, coordinates);
-        return new ByteArrayInputStream(gpx.getBytes(StandardCharsets.UTF_8));
-    }
-
     public static String createGpxOf(Coordinate... coordinates) {
         StringBuilder trackPoints = new StringBuilder();
         for (Coordinate coordinate : coordinates) {
@@ -62,6 +57,15 @@ public class GpxTestUtil {
         return GPX_FORMAT.formatted(trackPoints);
     }
 
+    private static String createTrackPointOf(Coordinate coordinate) {
+        return TRACK_POINT_FORMAT.formatted(coordinate.latitude(), coordinate.longitude(), coordinate.elevation());
+    }
+
+    public static InputStream createGpxInputStreamOf(String id, Coordinate... coordinates) {
+        String gpx = createGpxOf(id, coordinates);
+        return new ByteArrayInputStream(gpx.getBytes(StandardCharsets.UTF_8));
+    }
+
     public static String createGpxOf(String id, Coordinate... coordinates) {
         StringBuilder trackPoints = new StringBuilder();
         for (Coordinate coordinate : coordinates) {
@@ -69,9 +73,5 @@ public class GpxTestUtil {
             trackPoints.append(trackPoint).append("\n");
         }
         return GPX_WITH_ID_FORMAT.formatted(id, trackPoints);
-    }
-
-    private static String createTrackPointOf(Coordinate coordinate) {
-        return TRACK_POINT_FORMAT.formatted(coordinate.latitude(), coordinate.longitude(), coordinate.elevation());
     }
 }

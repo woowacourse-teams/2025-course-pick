@@ -1,7 +1,7 @@
 package coursepick.coursepick.presentation.dto;
 
 import coursepick.coursepick.application.dto.SegmentResponse;
-import coursepick.coursepick.domain.InclineType;
+import coursepick.coursepick.domain.course.InclineType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;

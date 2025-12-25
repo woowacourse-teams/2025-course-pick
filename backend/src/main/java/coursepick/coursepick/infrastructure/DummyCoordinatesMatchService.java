@@ -1,12 +1,11 @@
 package coursepick.coursepick.infrastructure;
 
 import coursepick.coursepick.application.CoordinatesMatchService;
-import coursepick.coursepick.domain.Coordinate;
-
-import java.util.List;
-
+import coursepick.coursepick.domain.course.Coordinate;
 import org.springframework.context.annotation.Fallback;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @Fallback

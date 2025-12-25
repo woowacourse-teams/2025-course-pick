@@ -1,4 +1,4 @@
-package coursepick.coursepick.domain;
+package coursepick.coursepick.domain.course;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -63,12 +63,23 @@ public class Course {
                 .build();
     }
 
+    private static Meter calculateLength(List<Segment> segments) {
+        return segments.stream()
+                .map(Segment::length)
+                .reduce(Meter.zero(), Meter::add);
+    }
+
     public Course(String id, String name, List<Coordinate> coordinates) {
         this(id, name, RoadType.알수없음, coordinates);
     }
 
     public Course(String name, List<Coordinate> coordinates) {
         this(null, name, RoadType.알수없음, coordinates);
+    }
+
+    public Meter distanceFrom(Coordinate target) {
+        Coordinate minDistanceCoordinate = closestCoordinateFrom(target);
+        return GeoLine.between(minDistanceCoordinate, target).length();
     }
 
     public Coordinate closestCoordinateFrom(Coordinate target) {
@@ -86,17 +97,6 @@ public class Course {
         }
 
         return minDistanceCoordinate;
-    }
-
-    public Meter distanceFrom(Coordinate target) {
-        Coordinate minDistanceCoordinate = closestCoordinateFrom(target);
-        return GeoLine.between(minDistanceCoordinate, target).length();
-    }
-
-    private static Meter calculateLength(List<Segment> segments) {
-        return segments.stream()
-                .map(Segment::length)
-                .reduce(Meter.zero(), Meter::add);
     }
 
     public void changeCoordinates(List<Coordinate> coordinates) {

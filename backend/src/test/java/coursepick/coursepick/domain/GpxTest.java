@@ -2,6 +2,9 @@ package coursepick.coursepick.domain;
 
 import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.dto.CourseFileExtension;
+import coursepick.coursepick.domain.course.Coordinate;
+import coursepick.coursepick.domain.course.Course;
+import coursepick.coursepick.domain.course.Gpx;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

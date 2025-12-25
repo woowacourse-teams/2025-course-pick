@@ -2,10 +2,10 @@ package coursepick.coursepick.application;
 
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
-import coursepick.coursepick.domain.Coordinate;
-import coursepick.coursepick.domain.Course;
-import coursepick.coursepick.domain.CourseRepository;
-import coursepick.coursepick.domain.Meter;
+import coursepick.coursepick.domain.course.Coordinate;
+import coursepick.coursepick.domain.course.Course;
+import coursepick.coursepick.domain.course.CourseRepository;
+import coursepick.coursepick.domain.course.Meter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;

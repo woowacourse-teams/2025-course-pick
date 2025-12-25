@@ -1,6 +1,6 @@
 package coursepick.coursepick.infrastructure;
 
-import coursepick.coursepick.domain.Coordinate;
+import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.test_util.AbstractMockServerTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,15 +39,6 @@ class OsrmWalkingRouteServiceTest extends AbstractMockServerTest {
         );
 
         assertThat(result.size()).isEqualTo(12);
-    }
-
-    @Test
-    void 응답이_오래걸리면_타임아웃이_발생한다() {
-        mock(osrmResponse(), 6000);
-        var sut = new OsrmWalkingRouteService(osrmRestClient);
-
-        assertThatThrownBy(() -> sut.route(new Coordinate(0, 0), new Coordinate(0, 0)))
-                .hasRootCauseExactlyInstanceOf(SocketTimeoutException.class);
     }
 
     private static String osrmResponse() {
@@ -138,5 +129,14 @@ class OsrmWalkingRouteServiceTest extends AbstractMockServerTest {
                   ]
                 }
                 """;
+    }
+
+    @Test
+    void 응답이_오래걸리면_타임아웃이_발생한다() {
+        mock(osrmResponse(), 6000);
+        var sut = new OsrmWalkingRouteService(osrmRestClient);
+
+        assertThatThrownBy(() -> sut.route(new Coordinate(0, 0), new Coordinate(0, 0)))
+                .hasRootCauseExactlyInstanceOf(SocketTimeoutException.class);
     }
 }
