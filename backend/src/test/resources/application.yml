@@ -14,3 +14,5 @@ admin:
 
 notice:
   base-url: http://localhost:8080/images
+
+jwt.secret-key: secret+secret+secret+secret+secret+secret+secret+secret+secret

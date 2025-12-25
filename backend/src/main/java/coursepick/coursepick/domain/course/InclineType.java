@@ -1,4 +1,4 @@
-package coursepick.coursepick.domain;
+package coursepick.coursepick.domain.course;
 
 public enum InclineType {
     UPHILL,

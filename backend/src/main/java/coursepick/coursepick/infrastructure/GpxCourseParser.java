@@ -2,9 +2,9 @@ package coursepick.coursepick.infrastructure;
 
 import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.dto.CourseFileExtension;
-import coursepick.coursepick.domain.Course;
-import coursepick.coursepick.domain.CourseParser;
-import coursepick.coursepick.domain.Gpx;
+import coursepick.coursepick.domain.course.Course;
+import coursepick.coursepick.domain.course.CourseParser;
+import coursepick.coursepick.domain.course.Gpx;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

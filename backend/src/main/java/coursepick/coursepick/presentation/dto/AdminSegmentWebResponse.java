@@ -1,7 +1,7 @@
 package coursepick.coursepick.presentation.dto;
 
-import coursepick.coursepick.domain.InclineType;
-import coursepick.coursepick.domain.Segment;
+import coursepick.coursepick.domain.course.InclineType;
+import coursepick.coursepick.domain.course.Segment;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package coursepick.coursepick.infrastructure;
 
 import coursepick.coursepick.application.WalkingRouteService;
-import coursepick.coursepick.domain.Coordinate;
+import coursepick.coursepick.domain.course.Coordinate;
 import org.springframework.context.annotation.Fallback;
 import org.springframework.stereotype.Component;
 

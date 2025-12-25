@@ -1,4 +1,4 @@
-package coursepick.coursepick.domain;
+package coursepick.coursepick.domain.course;
 
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_NAME_LENGTH;
 

@@ -1,6 +1,6 @@
 package coursepick.coursepick.presentation.dto;
 
-import coursepick.coursepick.domain.Notice;
+import coursepick.coursepick.domain.notice.Notice;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record NoticeWebResponse(

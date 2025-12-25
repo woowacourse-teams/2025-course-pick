@@ -1,10 +1,9 @@
-package coursepick.coursepick.domain;
+package coursepick.coursepick.domain.notice;
 
 import coursepick.coursepick.application.exception.ErrorType;
+import lombok.Getter;
 
 import java.util.Arrays;
-
-import lombok.Getter;
 
 @Getter
 public enum Notice {

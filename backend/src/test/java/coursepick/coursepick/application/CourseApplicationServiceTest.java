@@ -2,9 +2,9 @@ package coursepick.coursepick.application;
 
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.exception.NotFoundException;
-import coursepick.coursepick.domain.Coordinate;
-import coursepick.coursepick.domain.Course;
-import coursepick.coursepick.domain.RoadType;
+import coursepick.coursepick.domain.course.Coordinate;
+import coursepick.coursepick.domain.course.Course;
+import coursepick.coursepick.domain.course.RoadType;
 import coursepick.coursepick.test_util.AbstractIntegrationTest;
 import coursepick.coursepick.test_util.CoordinateTestUtil;
 import org.assertj.core.api.Assertions;

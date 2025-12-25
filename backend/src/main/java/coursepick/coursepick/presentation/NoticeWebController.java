@@ -1,6 +1,6 @@
 package coursepick.coursepick.presentation;
 
-import coursepick.coursepick.domain.Notice;
+import coursepick.coursepick.domain.notice.Notice;
 import coursepick.coursepick.presentation.api.NoticeWebApi;
 import coursepick.coursepick.presentation.dto.NoticeWebResponse;
 import org.springframework.beans.factory.annotation.Value;

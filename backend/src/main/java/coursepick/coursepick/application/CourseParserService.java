@@ -1,13 +1,12 @@
 package coursepick.coursepick.application;
 
 import coursepick.coursepick.application.dto.CourseFile;
-import coursepick.coursepick.domain.Course;
-import coursepick.coursepick.domain.CourseParser;
+import coursepick.coursepick.domain.course.Course;
+import coursepick.coursepick.domain.course.CourseParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.List;
 
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_FILE_EXTENSION;

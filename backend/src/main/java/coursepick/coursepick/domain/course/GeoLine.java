@@ -1,4 +1,4 @@
-package coursepick.coursepick.domain;
+package coursepick.coursepick.domain.course;
 
 import org.locationtech.spatial4j.context.SpatialContext;
 import org.locationtech.spatial4j.distance.DistanceCalculator;
@@ -14,12 +14,12 @@ public record GeoLine(
 ) {
     private static final double EARTH_RADIUS_METERS = 6371000.0;
 
-    public static GeoLine between(Coordinate start, Coordinate end) {
-        return new GeoLine(start, end);
-    }
-
     public Segment toSegment() {
         return new Segment(List.of(GeoLine.between(start, end)));
+    }
+
+    public static GeoLine between(Coordinate start, Coordinate end) {
+        return new GeoLine(start, end);
     }
 
     public Meter length() {
@@ -33,6 +33,10 @@ public record GeoLine(
         return new Meter(distanceInMeters);
     }
 
+    private static double convertDegreeToMeter(double distanceInDegrees) {
+        return distanceInDegrees * EARTH_RADIUS_METERS * Math.PI / 180.0;
+    }
+
     public Coordinate closestCoordinateFrom(Coordinate target) {
         double projectionRatio = target.projectionRatioBetween(start, end);
         if (projectionRatio < 0) {
@@ -42,10 +46,6 @@ public record GeoLine(
             return end;
         }
         return start.moveTo(end, projectionRatio);
-    }
-
-    private static double convertDegreeToMeter(double distanceInDegrees) {
-        return distanceInDegrees * EARTH_RADIUS_METERS * Math.PI / 180.0;
     }
 
     @Override

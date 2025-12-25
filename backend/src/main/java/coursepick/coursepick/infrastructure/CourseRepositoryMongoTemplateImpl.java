@@ -1,6 +1,6 @@
 package coursepick.coursepick.infrastructure;
 
-import coursepick.coursepick.domain.*;
+import coursepick.coursepick.domain.course.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

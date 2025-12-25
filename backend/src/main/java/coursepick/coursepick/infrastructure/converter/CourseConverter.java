@@ -1,6 +1,6 @@
 package coursepick.coursepick.infrastructure.converter;
 
-import coursepick.coursepick.domain.*;
+import coursepick.coursepick.domain.course.*;
 import coursepick.coursepick.logging.LogContent;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;

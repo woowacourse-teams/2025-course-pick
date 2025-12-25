@@ -1,9 +1,9 @@
 package coursepick.coursepick.presentation.dto;
 
 import coursepick.coursepick.application.dto.CourseResponse;
-import coursepick.coursepick.domain.InclineSummary;
-import coursepick.coursepick.domain.Meter;
-import coursepick.coursepick.domain.RoadType;
+import coursepick.coursepick.domain.course.InclineSummary;
+import coursepick.coursepick.domain.course.Meter;
+import coursepick.coursepick.domain.course.RoadType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package coursepick.coursepick.domain;
+package coursepick.coursepick.domain.course;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +8,14 @@ public record Segment(
 ) {
     public InclineType inclineType() {
         return InclineType.of(startCoordinate(), endCoordinate());
+    }
+
+    public Coordinate startCoordinate() {
+        return lines.getFirst().start();
+    }
+
+    private Coordinate endCoordinate() {
+        return lines.getLast().end();
     }
 
     public Meter length() {
@@ -53,18 +61,10 @@ public record Segment(
         return Math.signum(elevationDiff) == Math.signum(otherElevationDiff);
     }
 
-    public Coordinate startCoordinate() {
-        return lines.getFirst().start();
-    }
-
     public Segment merge(Segment other) {
         List<GeoLine> mergedCoordinates = new ArrayList<>();
         mergedCoordinates.addAll(this.lines);
         mergedCoordinates.addAll(other.lines);
         return new Segment(mergedCoordinates);
-    }
-
-    private Coordinate endCoordinate() {
-        return lines.getLast().end();
     }
 }

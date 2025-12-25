@@ -2,7 +2,7 @@ package coursepick.coursepick.presentation;
 
 import coursepick.coursepick.application.CourseApplicationService;
 import coursepick.coursepick.application.dto.CoursesResponse;
-import coursepick.coursepick.domain.Coordinate;
+import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.presentation.api.CourseWebApi;
 import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
 import coursepick.coursepick.presentation.dto.CourseWebResponse;

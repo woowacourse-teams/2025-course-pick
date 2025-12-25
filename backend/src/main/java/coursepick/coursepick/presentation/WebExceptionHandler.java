@@ -1,6 +1,7 @@
 package coursepick.coursepick.presentation;
 
 import coursepick.coursepick.application.exception.NotFoundException;
+import coursepick.coursepick.application.exception.UnAuthorizedException;
 import coursepick.coursepick.logging.LogContent;
 import coursepick.coursepick.presentation.dto.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,12 @@ public class WebExceptionHandler {
     @ExceptionHandler(SecurityException.class)
     public ResponseEntity<ErrorResponse> handleSecurityException(SecurityException e) {
         log.warn("[EXCEPTION] SecurityException 예외 응답 반환", LogContent.exception(e));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorResponse.from(e));
+    }
+
+    @ExceptionHandler(UnAuthorizedException.class)
+    public ResponseEntity<ErrorResponse> handleUnAuthorizedException(UnAuthorizedException e) {
+        log.warn("[EXCEPTION] UnAuthorizedException 예외 응답 반환", LogContent.exception(e));
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorResponse.from(e));
     }
 

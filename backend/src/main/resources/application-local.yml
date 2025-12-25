@@ -20,3 +20,4 @@ admin:
   token: secret
   kakao-map-api-key: dummy-api-key
 notice.base-url: http://localhost:8080/images
+jwt.secret-key: secret+secret+secret+secret+secret+secret+secret+secret+secret
