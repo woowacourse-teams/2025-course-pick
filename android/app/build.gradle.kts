@@ -35,6 +35,11 @@ android {
         versionName = "1.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        manifestPlaceholders +=
+            mapOf(
+                "KAKAO_NATIVE_APP_KEY" to localProperties.getProperty("kakao.native.app.key"),
+            )
     }
 
     signingConfigs {
@@ -156,6 +161,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.kakao.maps)
+    implementation(libs.kakao.user)
     implementation(libs.play.services.location)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)

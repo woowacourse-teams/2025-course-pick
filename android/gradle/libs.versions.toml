@@ -27,6 +27,7 @@ kotlinx-coroutines-android = "1.8.0"
 lifecycle-viewmodel-ktx = "2.7.0"
 retrofit2-kotlinx-serialization-converter = "1.0.0"
 kakao-maps = "2.12.8"
+kakao-user = "2.23.0"
 play-services-location = "21.3.0"
 assertj-core = "3.27.3"
 timber = "5.0.1"
@@ -74,6 +75,7 @@ androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-view
 retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2-kotlinx-serialization-converter" }
 assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj-core" }
 kakao-maps = { module = "com.kakao.maps.open:android", version.ref = "kakao-maps" }
+kakao-user = { module = "com.kakao.sdk:v2-user", version.ref = "kakao-user" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "play-services-location" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 amplitude-android = { module = "com.amplitude:analytics-android", version.ref = "amplitude-android" }

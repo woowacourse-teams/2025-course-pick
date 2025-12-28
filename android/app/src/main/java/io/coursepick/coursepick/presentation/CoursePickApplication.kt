@@ -3,6 +3,7 @@ package io.coursepick.coursepick.presentation
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
+import com.kakao.sdk.common.KakaoSdk
 import com.kakao.vectormap.KakaoMapSdk
 import dagger.hilt.android.HiltAndroidApp
 import io.coursepick.coursepick.BuildConfig
@@ -34,6 +35,7 @@ class CoursePickApplication : Application() {
         }
         Logger.log(Logger.Event.Enter(javaClass.simpleName))
         KakaoMapSdk.init(this, BuildConfig.KAKAO_NATIVE_APP_KEY)
+        KakaoSdk.init(this, BuildConfig.KAKAO_NATIVE_APP_KEY)
         CoursePickPreferences.init(this)
         setUpCallbacks()
     }
