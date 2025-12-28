@@ -4,5 +4,8 @@ interface SocialAuthenticator {
     /**
      * @return social accessToken을 반환한다.
      * */
-    fun authenticate(): String
+    fun authenticate(
+        onSuccess: (String) -> Unit,
+        onFailure: (Throwable) -> Unit,
+    )
 }
