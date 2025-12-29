@@ -271,20 +271,6 @@ class CoursesActivity :
 
     override fun showFilters() {
         viewModel.showFilterDialog()
-
-        binding.mainDialog.setContent {
-            CoursePickTheme {
-                val state: CoursesUiState? by viewModel.state.observeAsState()
-
-                if (state?.showFilterDialog == true) {
-                    CourseFilterBottomSheet(
-                        coursesUiState = state ?: return@CoursePickTheme,
-                        onDismissRequest = { viewModel.dismissFilterDialog() },
-                        onFilterAction = { action -> viewModel.handleFilterAction(action) },
-                    )
-                }
-            }
-        }
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -782,6 +768,14 @@ class CoursesActivity :
                             notice = notice,
                             onDismissRequest = viewModel::dismissNotice,
                             onDoNotShowAgain = CoursePickPreferences::setDoNotShowNotice,
+                        )
+                    }
+
+                    if (state?.showFilterDialog == true) {
+                        CourseFilterBottomSheet(
+                            coursesUiState = state ?: return@CoursePickTheme,
+                            onDismissRequest = { viewModel.dismissFilterDialog() },
+                            onFilterAction = { action -> viewModel.handleFilterAction(action) },
                         )
                     }
                 }
