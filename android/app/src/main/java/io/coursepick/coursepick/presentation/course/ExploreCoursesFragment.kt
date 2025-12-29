@@ -73,7 +73,7 @@ class ExploreCoursesFragment(
 
                     val lastVisibleItem: Int = layoutManager.findLastVisibleItemPosition()
 
-                    if (lastVisibleItem >= totalItemCount - LEFT_ITEM_COUNT) {
+                    if (lastVisibleItem >= totalItemCount - LOAD_MORE_THRESHOLD) {
                         viewModel.fetchNextCourses()
                     }
                 }
@@ -97,6 +97,6 @@ class ExploreCoursesFragment(
     }
 
     companion object {
-        private const val LEFT_ITEM_COUNT: Int = 3
+        private const val LOAD_MORE_THRESHOLD: Int = 3
     }
 }
