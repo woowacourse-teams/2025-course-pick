@@ -22,7 +22,7 @@ import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 
 @Composable
 fun FilterResultButton(
-    label: String,
+    text: String,
     enabled: Boolean,
     onEnableChanged: () -> Unit,
     modifier: Modifier = Modifier,
@@ -47,7 +47,7 @@ fun FilterResultButton(
         contentPadding = PaddingValues(horizontal = 4.dp, vertical = 20.dp),
     ) {
         Text(
-            text = label,
+            text = text,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
         )
@@ -60,7 +60,7 @@ private fun FilterResultButtonPreview() {
     CoursePickTheme {
         var enabled by remember { mutableStateOf(true) }
         FilterResultButton(
-            label = stringResource(R.string.filter_result_count, 10),
+            text = stringResource(R.string.filter_result_count, 10),
             enabled = enabled,
             onEnableChanged = { enabled != enabled },
         )

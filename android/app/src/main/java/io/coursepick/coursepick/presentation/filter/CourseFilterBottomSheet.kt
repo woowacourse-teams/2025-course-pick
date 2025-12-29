@@ -129,7 +129,7 @@ fun CourseFilterBottomSheet(
                 }
 
                 FilterResultButton(
-                    label =
+                    text =
                         stringResource(
                             R.string.filter_result_count,
                             coursesUiState.courses.size,
@@ -155,21 +155,21 @@ private fun DifficultyButtons(
     ) {
         DifficultyButton(
             difficulty = Difficulty.EASY,
-            label = stringResource(R.string.filter_dialog_difficulty_easy),
+            text = stringResource(R.string.filter_dialog_difficulty_easy),
             onToggleDifficulty = onDifficultyToggle,
             selected = selectedDifficulties.contains(Difficulty.EASY),
             modifier = Modifier.weight(1f),
         )
         DifficultyButton(
             difficulty = Difficulty.NORMAL,
-            label = stringResource(R.string.filter_dialog_difficulty_normal),
+            text = stringResource(R.string.filter_dialog_difficulty_normal),
             onToggleDifficulty = onDifficultyToggle,
             selected = selectedDifficulties.contains(Difficulty.NORMAL),
             modifier = Modifier.weight(1f),
         )
         DifficultyButton(
             difficulty = Difficulty.HARD,
-            label = stringResource(R.string.filter_dialog_difficulty_hard),
+            text = stringResource(R.string.filter_dialog_difficulty_hard),
             onToggleDifficulty = onDifficultyToggle,
             selected = selectedDifficulties.contains(Difficulty.HARD),
             modifier = Modifier.weight(1f),

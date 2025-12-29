@@ -23,7 +23,7 @@ import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 @Composable
 fun DifficultyButton(
     difficulty: Difficulty,
-    label: String,
+    text: String,
     onToggleDifficulty: (Difficulty) -> Unit,
     selected: Boolean,
     modifier: Modifier = Modifier,
@@ -45,7 +45,7 @@ fun DifficultyButton(
         contentPadding = PaddingValues(horizontal = 4.dp, vertical = 20.dp),
     ) {
         Text(
-            text = label,
+            text = text,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
         )
@@ -59,7 +59,7 @@ private fun DifficultyButtonPreview() {
         var selected by remember { mutableStateOf(true) }
 
         DifficultyButton(
-            label = "쉬움",
+            text = "쉬움",
             difficulty = Difficulty.EASY,
             onToggleDifficulty = { selected != selected },
             selected = selected,
