@@ -1,9 +1,12 @@
 package io.coursepick.coursepick.presentation.filter
 
+import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.Kilometer
 import io.coursepick.coursepick.domain.course.Meter
 import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.course.CourseListItem
 import io.coursepick.coursepick.presentation.model.Difficulty
+import kotlin.collections.filter
 
 data class CourseFilter(
     val lengthRange: ClosedRange<Kilometer>,
@@ -17,6 +20,17 @@ data class CourseFilter(
             Meter.MAX_VALUE
         } else {
             lengthRange.endInclusive.toMeter()
+        }
+
+    fun filteredCourses(courses: List<CourseListItem>): List<CourseListItem> =
+        courses.filter { courseListItem: CourseListItem ->
+            courseListItem is CourseListItem.Loading ||
+                (
+                    courseListItem is CourseListItem.Course &&
+                        this.matches(
+                            courseListItem.item,
+                        )
+                )
         }
 
     fun matches(courseItem: CourseItem): Boolean =

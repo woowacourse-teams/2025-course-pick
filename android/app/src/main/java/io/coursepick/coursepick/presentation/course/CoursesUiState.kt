@@ -14,14 +14,5 @@ data class CoursesUiState(
 ) {
     val isQueryBlank: Boolean = query.isBlank()
     val isFilterDefault: Boolean = courseFilter == CourseFilter.None
-    val courses: List<CourseListItem> =
-        originalCourses.filter { courseListItem: CourseListItem ->
-            courseListItem is CourseListItem.Loading ||
-                (
-                    courseListItem is CourseListItem.Course &&
-                        courseFilter.matches(
-                            courseListItem.item,
-                        )
-                )
-        }
+    val courses: List<CourseListItem> = courseFilter.filteredCourses(originalCourses)
 }
