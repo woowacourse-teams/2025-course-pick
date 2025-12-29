@@ -50,7 +50,7 @@ fun CourseFilterBottomSheet(
         modifier = modifier,
     ) {
         Column(
-            modifier = modifier.padding(start = 20.dp, end = 20.dp, bottom = 10.dp),
+            modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 10.dp),
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -89,7 +89,7 @@ fun CourseFilterBottomSheet(
                 )
             }
 
-            Column(modifier = modifier) {
+            Column(modifier = Modifier) {
                 LengthRangeHeader(filter = coursesUiState.courseFilter)
 
                 RangeSlider(
@@ -106,17 +106,17 @@ fun CourseFilterBottomSheet(
                     valueRange =
                         CourseFilter.MINIMUM_LENGTH_RANGE.toFloat()..CourseFilter.MAXIMUM_LENGTH_RANGE.toFloat(),
                     colors = sliderColors(),
-                    modifier = modifier.padding(bottom = 20.dp),
+                    modifier = Modifier.padding(bottom = 20.dp),
                 )
             }
 
             Row(
-                modifier = modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 TextButton(
                     onClick = { onFilterAction(CourseFilterAction.Cancel) },
-                    modifier = modifier.weight(1f),
+                    modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(8.dp),
                     contentPadding = PaddingValues(horizontal = 4.dp, vertical = 20.dp),
                 ) {
