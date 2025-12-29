@@ -1,9 +1,20 @@
 package io.coursepick.coursepick.presentation.course
 
-sealed interface CourseListItem {
+import android.R.attr.data
+
+sealed class CourseListItem(
+    itemViewType: ItemViewType,
+) {
+    val viewType: Int = itemViewType.ordinal
+
     data class Course(
         val item: CourseItem,
-    ) : CourseListItem
+    ) : CourseListItem(ItemViewType.COURSE)
 
-    data object Loading : CourseListItem
+    data object Loading : CourseListItem(ItemViewType.LOADING)
+
+    enum class ItemViewType {
+        COURSE,
+        LOADING,
+    }
 }

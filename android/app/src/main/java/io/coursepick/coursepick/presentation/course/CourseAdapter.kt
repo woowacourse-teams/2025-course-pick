@@ -5,24 +5,20 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import io.coursepick.coursepick.R
+import io.coursepick.coursepick.presentation.course.CourseListItem.Loading.viewType
 
 class CourseAdapter(
     private val courseItemListener: CourseItemListener,
 ) : ListAdapter<CourseListItem, RecyclerView.ViewHolder>(diffUtil) {
-    override fun getItemViewType(position: Int): Int =
-        when (getItem(position)) {
-            is CourseListItem.Course -> R.layout.item_course
-            is CourseListItem.Loading -> R.layout.item_loading
-        }
+    override fun getItemViewType(position: Int): Int = getItem(position).viewType
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
     ): RecyclerView.ViewHolder =
-        when (viewType) {
-            R.layout.item_course -> CourseViewHolder(parent, courseItemListener)
-            R.layout.item_loading -> LoadingViewHolder(parent)
-            else -> throw IllegalArgumentException("Unknown viewType: $viewType")
+        when (CourseListItem.ItemViewType.entries[viewType]) {
+            CourseListItem.ItemViewType.COURSE -> CourseViewHolder(parent, courseItemListener)
+            CourseListItem.ItemViewType.LOADING -> LoadingViewHolder(parent)
         }
 
     override fun onBindViewHolder(
@@ -43,13 +39,17 @@ class CourseAdapter(
                     newItem: CourseListItem,
                 ): Boolean =
                     when {
-                        oldItem is CourseListItem.Course && newItem is CourseListItem.Course ->
+                        oldItem is CourseListItem.Course && newItem is CourseListItem.Course -> {
                             oldItem.item.id == newItem.item.id
+                        }
 
-                        oldItem is CourseListItem.Loading && newItem is CourseListItem.Loading ->
+                        oldItem is CourseListItem.Loading && newItem is CourseListItem.Loading -> {
                             true
+                        }
 
-                        else -> false
+                        else -> {
+                            false
+                        }
                     }
 
                 override fun areContentsTheSame(
