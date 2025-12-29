@@ -70,7 +70,11 @@ class CoursesViewModelTest {
             CoursesUiState(
                 FAKE_COURSES.map { course: Course ->
                     CourseListItem.Course(
-                        CourseItem(course, selected = course == COURSE_FIXTURE_20, favorite = false),
+                        CourseItem(
+                            course,
+                            selected = course == COURSE_FIXTURE_20,
+                            favorite = false,
+                        ),
                     )
                 },
                 status = UiStatus.Success,
@@ -93,7 +97,11 @@ class CoursesViewModelTest {
             CoursesUiState(
                 FAKE_COURSES.map { course: Course ->
                     CourseListItem.Course(
-                        CourseItem(course, selected = course == COURSE_FIXTURE_20, favorite = false),
+                        CourseItem(
+                            course,
+                            selected = course == COURSE_FIXTURE_20,
+                            favorite = false,
+                        ),
                     )
                 },
                 status = UiStatus.Success,
@@ -144,7 +152,6 @@ class CoursesViewModelTest {
         Assertions.assertThat(state.originalCourses.size).isEqualTo(FAKE_COURSES.size + 1)
 
         val lastCourseListItem = state.originalCourses.last()
-        Assertions.assertThat(lastCourseListItem).isInstanceOf(CourseListItem.Course::class.java)
         val lastCourse = (lastCourseListItem as CourseListItem.Course).item
         Assertions.assertThat(lastCourse.course).isEqualTo(COURSE_FIXTURE_20)
         Assertions.assertThat(lastCourse.selected).isFalse()
