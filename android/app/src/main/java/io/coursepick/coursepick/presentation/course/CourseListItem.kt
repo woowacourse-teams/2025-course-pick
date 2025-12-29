@@ -1,7 +1,5 @@
 package io.coursepick.coursepick.presentation.course
 
-import android.R.attr.data
-
 sealed class CourseListItem(
     itemViewType: ItemViewType,
 ) {
