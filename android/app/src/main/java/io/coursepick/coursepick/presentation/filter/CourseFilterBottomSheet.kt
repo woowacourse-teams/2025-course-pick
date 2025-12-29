@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RangeSlider
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -41,10 +42,7 @@ fun CourseFilterBottomSheet(
     onFilterAction: (CourseFilterAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val sheetState =
-        rememberModalBottomSheetState(
-            skipPartiallyExpanded = true,
-        )
+    val sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
@@ -131,7 +129,11 @@ fun CourseFilterBottomSheet(
                 }
 
                 FilterResultButton(
-                    label = stringResource(R.string.filter_result_count, coursesUiState.courses.size),
+                    label =
+                        stringResource(
+                            R.string.filter_result_count,
+                            coursesUiState.courses.size,
+                        ),
                     enabled = coursesUiState.courses.isNotEmpty(),
                     onEnableChanged = { onFilterAction(CourseFilterAction.Apply) },
                     modifier = Modifier.weight(1f),
