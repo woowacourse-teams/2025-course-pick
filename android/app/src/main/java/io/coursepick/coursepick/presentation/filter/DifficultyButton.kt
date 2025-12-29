@@ -24,12 +24,12 @@ import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 fun DifficultyButton(
     difficulty: Difficulty,
     label: String,
-    onDifficultyToggle: (Difficulty) -> Unit,
+    onToggleDifficulty: (Difficulty) -> Unit,
     selected: Boolean,
     modifier: Modifier = Modifier,
 ) {
     TextButton(
-        onClick = { onDifficultyToggle(difficulty) },
+        onClick = { onToggleDifficulty(difficulty) },
         shape = RoundedCornerShape(8.dp),
         modifier = modifier,
         colors =
@@ -61,7 +61,7 @@ private fun DifficultyButtonPreview() {
         DifficultyButton(
             label = "쉬움",
             difficulty = Difficulty.EASY,
-            onDifficultyToggle = { selected != selected },
+            onToggleDifficulty = { selected != selected },
             selected = selected,
         )
     }
