@@ -1,9 +1,11 @@
 name: Backend CI
 
 on:
-  workflow_call:
   pull_request:
-    branches: [ backend ]
+    branches: [ main ]
+    paths:
+      - 'backend/**'
+  workflow_call:
   workflow_dispatch:
 
 jobs:
