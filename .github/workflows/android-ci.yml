@@ -61,7 +61,7 @@ jobs:
 
       # 단위 테스트 실행
       - name: Run unit tests
-        run: ./gradlew testDebugUnitTest --stacktrace
+        run: ./gradlew testReleaseUnitTest --stacktrace
         working-directory: android
 
       # Release AAB 빌드
