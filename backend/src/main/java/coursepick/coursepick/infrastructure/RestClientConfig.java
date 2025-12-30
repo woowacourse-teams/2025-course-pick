@@ -13,7 +13,7 @@ import java.time.Duration;
 @Profile({"dev", "prod"})
 public class RestClientConfig {
 
-    @Bean(name = "kakaoRestClient")
+    @Bean
     public RestClient kakaoRestClient(
             @Value("${kakao.connect-timeout:1}") int connectTimeoutSeconds,
             @Value("${kakao.read-timeout:5}") int readTimeoutSeconds
@@ -28,7 +28,7 @@ public class RestClientConfig {
                 .build();
     }
 
-    @Bean(name = "osrmRestClient")
+    @Bean
     public RestClient osrmRestClient(
             @Value("${osrm.url}") String osrmUrl,
             @Value("${osrm.connect-timeout:1}") int connectTimeoutSeconds,
