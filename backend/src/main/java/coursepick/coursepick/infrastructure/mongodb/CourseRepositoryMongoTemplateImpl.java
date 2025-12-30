@@ -1,4 +1,4 @@
-package coursepick.coursepick.infrastructure;
+package coursepick.coursepick.infrastructure.mongodb;
 
 import coursepick.coursepick.domain.course.*;
 import lombok.RequiredArgsConstructor;

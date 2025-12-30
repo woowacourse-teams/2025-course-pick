@@ -1,4 +1,4 @@
-package coursepick.coursepick.infrastructure.converter;
+package coursepick.coursepick.infrastructure.mongodb;
 
 import coursepick.coursepick.domain.course.*;
 import coursepick.coursepick.logging.LogContent;
