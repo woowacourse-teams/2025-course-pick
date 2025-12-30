@@ -25,7 +25,13 @@ jobs:
 
       - name: Decode google-services.json
         run: |
-          echo "${{ secrets.DEV_GOOGLE_SERVICES_JSON }}" | base64 -d > android/app/google-services.json
+          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > android/app/google-services.json
+
+      - name: Decode Keystore
+        run: echo "${{ secrets.SIGNING_KEYSTORE_BASE64 }}" | base64 -d > android/app/keystore.jks
+
+      - name: Create local.properties
+        run: echo "${{ secrets.ANDROID_LOCAL_PROPERTIES_BASE64 }}" | base64 --decode > android/local.properties
 
       - name: Cache Gradle
         uses: actions/cache@v4
@@ -49,6 +55,10 @@ jobs:
         run: ./gradlew testDebugUnitTest --stacktrace
         working-directory: android
 
-      - name: Build Debug APK only
-        run: ./gradlew assembleDebug --stacktrace
+      - name: Build Release AAB
+        run: ./gradlew bundleRelease --stacktrace
         working-directory: android
+        env:
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
