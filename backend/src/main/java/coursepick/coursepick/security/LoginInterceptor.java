@@ -18,6 +18,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @Component
 public class LoginInterceptor implements HandlerInterceptor {
 
+    public static final String AUTH_USER_ID = "AUTH_USER_ID";
     private final SecretKey secretKey;
 
     public LoginInterceptor(@Value("${jwt.secret-key}") String secretKeyString) {
@@ -41,10 +42,10 @@ public class LoginInterceptor implements HandlerInterceptor {
         }
 
         String token = authorizationHeader.substring("Bearer ".length());
-        
+
         Authentication authentication = new Authentication(token);
         String userId = authentication.validateAndGetUserId(secretKey);
-        request.setAttribute("AUTH_USER_ID", userId);
+        request.setAttribute(AUTH_USER_ID, userId);
         return true;
     }
 }
