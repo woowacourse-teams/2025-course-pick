@@ -60,7 +60,6 @@ class CoursesViewModel
         private var lastUserCoordinate: Coordinate? = null
         private var lastScope: Scope? = null
 
-        private var courseFilter: CourseFilter = CourseFilter.None
         private var originalCourseFilter: CourseFilter = CourseFilter.None
 
         init {
