@@ -34,13 +34,9 @@ fun FilterResultButton(
         modifier = modifier,
         colors =
             ButtonDefaults.textButtonColors(
-                containerColor =
-                    if (enabled) {
-                        colorResource(R.color.point_secondary)
-                    } else {
-                        colorResource(R.color.gray2)
-                    },
+                containerColor = colorResource(R.color.point_secondary),
                 contentColor = colorResource(R.color.background_primary),
+                disabledContainerColor = colorResource(R.color.gray2),
             ),
         contentPadding = PaddingValues(horizontal = 4.dp, vertical = 20.dp),
     ) {
