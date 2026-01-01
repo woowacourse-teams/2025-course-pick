@@ -119,8 +119,7 @@ fun CourseFilterBottomSheet(
                 Spacer(modifier = modifier.height(20.dp))
 
                 RangeSlider(
-                    value =
-                        coursesUiState.courseFilter.lengthRangeAsFloat.start..coursesUiState.courseFilter.lengthRangeAsFloat.endInclusive,
+                    value = coursesUiState.courseFilter.lengthRangeAsFloat,
                     onValueChange = { range: ClosedFloatingPointRange<Float> ->
                         onFilterAction(
                             CourseFilterAction.UpdateLengthRange(
