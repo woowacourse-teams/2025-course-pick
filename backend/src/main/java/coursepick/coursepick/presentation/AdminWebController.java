@@ -3,6 +3,7 @@ package coursepick.coursepick.presentation;
 import coursepick.coursepick.application.CourseParserFacade;
 import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.exception.ErrorType;
+import coursepick.coursepick.domain.CoordinateSnapper;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.Course;
 import coursepick.coursepick.domain.course.CourseName;
@@ -38,7 +39,7 @@ public class AdminWebController implements AdminWebApi {
     private static final String KAKAO_API_KEY_PLACEHOLDER = "KAKAO_API_KEY_PLACEHOLDER";
     private final CourseRepository courseRepository;
     private final CourseParserFacade courseParserFacade;
-    private final CoordinatesMatchService coordinatesMatchService;
+    private final CoordinateSnapper coordinateSnapper;
     @Value("${admin.token}")
     private String adminToken;
     @Value("${admin.kakao-map-api-key}")
@@ -151,7 +152,7 @@ public class AdminWebController implements AdminWebApi {
 
     @PostMapping("/admin/api/coordinates/match")
     public CoordinatesMatchWebResponse matchCoordinates(@RequestBody @Valid CoordinatesMatchWebRequest request) {
-        List<Coordinate> matched = coordinatesMatchService.snapCoordinates(request.coordinates());
+        List<Coordinate> matched = coordinateSnapper.snap(request.coordinates());
 
         return CoordinatesMatchWebResponse.from(matched);
     }
