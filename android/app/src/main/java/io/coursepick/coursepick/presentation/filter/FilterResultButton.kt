@@ -38,9 +38,7 @@ fun FilterResultButton(
                     if (enabled) {
                         colorResource(R.color.point_secondary)
                     } else {
-                        colorResource(
-                            R.color.gray2,
-                        )
+                        colorResource(R.color.gray2)
                     },
                 contentColor = colorResource(R.color.background_primary),
             ),
