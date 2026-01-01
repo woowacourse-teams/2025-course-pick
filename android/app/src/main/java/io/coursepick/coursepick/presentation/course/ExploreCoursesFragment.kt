@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
+import androidx.recyclerview.widget.RecyclerView
 import io.coursepick.coursepick.databinding.FragmentExploreCoursesBinding
 
 class ExploreCoursesFragment(
@@ -35,6 +36,7 @@ class ExploreCoursesFragment(
         super.onViewCreated(view, savedInstanceState)
         setUpBindingVariables()
         setUpStateObserver()
+        setUpScrollListener()
     }
 
     override fun onDestroyView() {
@@ -54,9 +56,36 @@ class ExploreCoursesFragment(
         }
     }
 
+    private fun setUpScrollListener() {
+        binding.mainCourses.addOnScrollListener(
+            object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(
+                    recyclerView: RecyclerView,
+                    dx: Int,
+                    dy: Int,
+                ) {
+                    super.onScrolled(recyclerView, dx, dy)
+
+                    val layoutManager: LinearLayoutManager =
+                        recyclerView.layoutManager as? LinearLayoutManager ?: return
+
+                    val totalItemCount: Int = layoutManager.itemCount
+
+                    val lastVisibleItem: Int = layoutManager.findLastVisibleItemPosition()
+
+                    if (lastVisibleItem >= totalItemCount - LOAD_MORE_THRESHOLD) {
+                        viewModel.fetchNextCourses()
+                    }
+                }
+            },
+        )
+    }
+
     fun scrollTo(courseItem: CourseItem) {
         val position =
-            courseAdapter.currentList.indexOfFirst { item: CourseItem -> item.id == courseItem.id }
+            courseAdapter.currentList.indexOfFirst { item: CourseListItem ->
+                item is CourseListItem.Course && item.item.id == courseItem.id
+            }
         if (position == -1) return
         val layoutManager = binding.mainCourses.layoutManager as? LinearLayoutManager ?: return
         val smoothScroller =
@@ -65,5 +94,9 @@ class ExploreCoursesFragment(
             }
         smoothScroller.targetPosition = position
         layoutManager.startSmoothScroll(smoothScroller)
+    }
+
+    companion object {
+        private const val LOAD_MORE_THRESHOLD: Int = 3
     }
 }

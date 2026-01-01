@@ -5,9 +5,10 @@ interface CourseRepository {
 
     suspend fun courses(
         scope: Scope,
+        page: Int,
         mapCoordinate: Coordinate,
         userCoordinate: Coordinate? = null,
-    ): List<Course>
+    ): CoursesPage
 
     suspend fun routeToCourse(
         course: Course,

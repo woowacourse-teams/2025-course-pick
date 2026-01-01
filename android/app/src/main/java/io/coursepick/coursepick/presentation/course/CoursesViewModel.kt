@@ -10,6 +10,7 @@ import io.coursepick.coursepick.data.interceptor.NoNetworkException
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseRepository
+import io.coursepick.coursepick.domain.course.CoursesPage
 import io.coursepick.coursepick.domain.course.Kilometer
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.domain.favorites.FavoritesRepository
@@ -51,6 +52,13 @@ class CoursesViewModel
         private var writeFavoriteJob: Job? = null
         private val pendingFavoriteWrites: MutableMap<String, Boolean> = mutableMapOf()
 
+        private var page: Int = 0
+        private var hasNext: Boolean = false
+
+        private var lastMapCoordinate: Coordinate? = null
+        private var lastUserCoordinate: Coordinate? = null
+        private var lastScope: Scope? = null
+
         init {
             checkNetwork()
             fetchVerifiedLocations()
@@ -68,23 +76,32 @@ class CoursesViewModel
                 return
             }
 
-            val oldCourses: List<CourseItem> = state.value?.courses ?: return
+            val oldCourses: List<CourseListItem> = state.value?.courses ?: return
 
-            val selectedIndex = oldCourses.indexOf(course)
+            val selectedIndex = oldCourses.indexOf(CourseListItem.Course(course))
             if (selectedIndex == -1) return
 
-            val newCourses: List<CourseItem> = newCourses(oldCourses, course)
-            _state.value = state.value?.copy(originalCourses = newCourses)
+            val newCourseItems: List<CourseListItem> = newCoursesListItem(oldCourses, course)
+            _state.value = state.value?.copy(originalCourses = newCourseItems)
             _event.value = CoursesUiEvent.SelectCourseManually(course)
         }
 
         fun toggleFavorite(toggledCourse: CourseItem) {
             pendingFavoriteWrites[toggledCourse.id] = !toggledCourse.favorite
 
-            state.value?.courses?.let { courses: List<CourseItem> ->
+            state.value?.originalCourses?.let { courses: List<CourseListItem> ->
                 val newCourses =
-                    courses.map { course: CourseItem ->
-                        if (course.id == toggledCourse.id) course.copy(favorite = !course.favorite) else course
+                    courses.map { item: CourseListItem ->
+                        when (item) {
+                            is CourseListItem.Course ->
+                                if (item.item.id == toggledCourse.id) {
+                                    CourseListItem.Course(item.item.copy(favorite = !item.item.favorite))
+                                } else {
+                                    item
+                                }
+
+                            is CourseListItem.Loading -> item
+                        }
                     }
                 _state.value = state.value?.copy(originalCourses = newCourses)
             }
@@ -115,37 +132,51 @@ class CoursesViewModel
             userCoordinate: Coordinate?,
             scope: Scope = Scope.default(),
         ) {
-            _state.value = state.value?.copy(status = UiStatus.Loading)
-
-            val favoritedCourseIds: Set<String> = favoritesRepository.favoriteCourseIds()
+            _state.value =
+                state.value?.copy(
+                    originalCourses = listOf(CourseListItem.Loading),
+                    status = UiStatus.Loading,
+                )
 
             viewModelScope.launch {
                 runCatching {
-                    val courses =
-                        courseRepository.courses(
-                            scope = scope,
-                            mapCoordinate = mapCoordinate,
-                            userCoordinate = userCoordinate,
-                        )
-                    courses
-                        .sortedBy(Course::distance)
-                        .mapIndexed { index: Int, course: Course ->
-                            CourseItem(
-                                course = course,
-                                selected = index == 0,
-                                favorite = favoritedCourseIds.contains(course.id),
-                            )
-                        }
-                }.onSuccess { courses: List<CourseItem> ->
-                    Logger.log(Logger.Event.Success("fetch_courses"))
+                    courseRepository.courses(
+                        scope = scope,
+                        page = 0,
+                        mapCoordinate = mapCoordinate,
+                        userCoordinate = userCoordinate,
+                    )
+                }.onSuccess { coursesPage: CoursesPage ->
+                    Logger.log(Logger.Event.Success("fetch_courses_new"))
+
+                    val favoritedCourseIds: Set<String> = favoritesRepository.favoriteCourseIds()
+
+                    val courseItems: List<CourseItem> =
+                        coursesPage.courses
+                            .sortedBy(Course::distance)
+                            .mapIndexed { index, course ->
+                                CourseItem(
+                                    course = course,
+                                    selected = index == 0,
+                                    favorite = favoritedCourseIds.contains(course.id),
+                                )
+                            }
+
+                    lastMapCoordinate = mapCoordinate
+                    lastUserCoordinate = userCoordinate
+                    lastScope = scope
+
+                    page = 0
+                    hasNext = coursesPage.hasNext
+
                     _state.value =
                         state.value?.copy(
-                            originalCourses = courses,
+                            originalCourses = courseItems.map(CourseListItem::Course),
                             status = UiStatus.Success,
                         )
                 }.onFailure { exception: Throwable ->
                     Logger.log(
-                        Logger.Event.Failure("fetch_courses"),
+                        Logger.Event.Failure("fetch_courses_new"),
                         "message" to exception.message.toString(),
                     )
                     if (exception is NoNetworkException) {
@@ -157,12 +188,82 @@ class CoursesViewModel
                         return@onFailure
                     }
                     _state.value =
-                        state.value
-                            ?.copy(
-                                originalCourses = emptyList(),
-                                status = UiStatus.Failure,
-                            )
+                        state.value?.copy(
+                            originalCourses = emptyList(),
+                            status = UiStatus.Failure,
+                        )
                     _event.value = CoursesUiEvent.FetchCourseFailure
+                }
+            }
+        }
+
+        fun fetchNextCourses() {
+            if (state.value?.status == UiStatus.Loading || !hasNext) return
+
+            val existingCourses: List<CourseListItem> = state.value?.originalCourses ?: emptyList()
+            _state.value =
+                state.value?.copy(
+                    originalCourses = existingCourses + CourseListItem.Loading,
+                    status = UiStatus.Loading,
+                )
+
+            val mapCoordinate: Coordinate = lastMapCoordinate ?: return
+            val userCoordinate: Coordinate? = lastUserCoordinate
+            val scope: Scope = lastScope ?: return
+
+            viewModelScope.launch {
+                runCatching {
+                    val nextPage: Int = page + 1
+                    courseRepository.courses(
+                        scope = scope,
+                        page = nextPage,
+                        mapCoordinate = mapCoordinate,
+                        userCoordinate = userCoordinate,
+                    )
+                }.onSuccess { coursesPage: CoursesPage ->
+                    Logger.log(Logger.Event.Success("fetch_courses_next"))
+
+                    val favoritedCourseIds: Set<String> = favoritesRepository.favoriteCourseIds()
+
+                    val existingCoursesWithoutLoading =
+                        (state.value?.originalCourses ?: emptyList())
+                            .filterNot { courseListItem: CourseListItem -> courseListItem is CourseListItem.Loading }
+
+                    val newCourses =
+                        coursesPage.courses.map { course: Course ->
+                            CourseListItem.Course(
+                                CourseItem(
+                                    course = course,
+                                    selected = false,
+                                    favorite = favoritedCourseIds.contains(course.id),
+                                ),
+                            )
+                        }
+
+                    page += 1
+                    hasNext = coursesPage.hasNext
+
+                    _state.value =
+                        state.value?.copy(
+                            originalCourses = existingCoursesWithoutLoading + newCourses,
+                            status = UiStatus.Success,
+                        )
+                }.onFailure { exception: Throwable ->
+                    Logger.log(
+                        Logger.Event.Failure("fetch_courses_next"),
+                        "message" to exception.message.toString(),
+                    )
+
+                    val existingCoursesWithoutLoading =
+                        (state.value?.originalCourses ?: emptyList())
+                            .filterNot { courseListItem: CourseListItem -> courseListItem is CourseListItem.Loading }
+
+                    _state.value =
+                        state.value?.copy(
+                            originalCourses = existingCoursesWithoutLoading,
+                            status = UiStatus.Failure,
+                        )
+                    _event.value = CoursesUiEvent.FetchNextCoursesFailure
                 }
             }
         }
@@ -195,7 +296,7 @@ class CoursesViewModel
                     _state.value =
                         state.value
                             ?.copy(
-                                originalCourses = courseItems,
+                                originalCourses = courseItems.map(CourseListItem::Course),
                                 status = UiStatus.Success,
                             )
                 }.onFailure { exception: Throwable ->
@@ -227,11 +328,11 @@ class CoursesViewModel
             course: CourseItem,
             origin: Coordinate,
         ) {
-            val oldCourses: List<CourseItem> = state.value?.courses ?: return
-            val newCourses: List<CourseItem> = newCourses(oldCourses, course)
+            val oldCourses: List<CourseListItem> = state.value?.courses ?: return
+            val newCourseItems: List<CourseListItem> = newCoursesListItem(oldCourses, course)
             _state.value =
                 state.value?.copy(
-                    originalCourses = newCourses,
+                    originalCourses = newCourseItems,
                     status = UiStatus.Loading,
                 )
 
@@ -378,15 +479,19 @@ class CoursesViewModel
             }
         }
 
-        private fun newCourses(
-            oldCourses: List<CourseItem>,
+        private fun newCoursesListItem(
+            oldCourses: List<CourseListItem>,
             selectedCourse: CourseItem,
-        ): List<CourseItem> =
-            oldCourses.map { course: CourseItem ->
-                if (course == selectedCourse) {
-                    course.copy(selected = true)
+        ): List<CourseListItem> =
+            oldCourses.map { courseListItem: CourseListItem ->
+                if (courseListItem is CourseListItem.Course) {
+                    if (courseListItem.item == selectedCourse) {
+                        CourseListItem.Course(courseListItem.item.copy(selected = true))
+                    } else {
+                        CourseListItem.Course(courseListItem.item.copy(selected = false))
+                    }
                 } else {
-                    course.copy(selected = false)
+                    courseListItem
                 }
             }
 
