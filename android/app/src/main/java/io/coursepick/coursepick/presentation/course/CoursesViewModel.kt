@@ -412,8 +412,11 @@ class CoursesViewModel
         fun handleFilterAction(action: CourseFilterAction) {
             when (action) {
                 is CourseFilterAction.Cancel -> {
-                    _state.value = state.value?.copy(courseFilter = originalCourseFilter)
-                    dismissFilterDialog()
+                    _state.value =
+                        state.value?.copy(
+                            courseFilter = originalCourseFilter,
+                            showFilterDialog = false,
+                        )
                 }
 
                 is CourseFilterAction.Reset -> {
@@ -421,7 +424,7 @@ class CoursesViewModel
                 }
 
                 is CourseFilterAction.Apply -> {
-                    dismissFilterDialog()
+                    _state.value = state.value?.copy(showFilterDialog = false)
                 }
 
                 is CourseFilterAction.UpdateLengthRange -> {
