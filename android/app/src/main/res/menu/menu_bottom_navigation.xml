@@ -8,4 +8,8 @@
         android:id="@+id/favoritesMenu"
         android:icon="@drawable/icon_favorite_menu"
         android:title="즐겨찾기" />
+    <item
+        android:id="@+id/settingsMenu"
+        android:icon="@drawable/icon_settings_menu"
+        android:title="설정" />
 </menu>
