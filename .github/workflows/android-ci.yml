@@ -14,19 +14,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 저장소 코드 체크아웃
       - name: Checkout project
         uses: actions/checkout@v4
 
+      # JDK 21 설정
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '21'
 
+      # google-services.json 파일 디코딩
       - name: Decode google-services.json
         run: |
-          echo "${{ secrets.DEV_GOOGLE_SERVICES_JSON }}" | base64 -d > android/app/google-services.json
+          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > android/app/google-services.json
 
+      # Keystore 파일 디코딩
+      - name: Decode Keystore
+        run: echo "${{ secrets.SIGNING_KEYSTORE_BASE64 }}" | base64 -d > android/app/keystore.jks
+
+      # local.properties 파일 생성
+      - name: Create local.properties
+        run: echo "${{ secrets.ANDROID_LOCAL_PROPERTIES_BASE64 }}" | base64 --decode > android/local.properties
+
+      # Gradle 캐시 설정
       - name: Cache Gradle
         uses: actions/cache@v4
         with:
@@ -37,18 +49,26 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      # gradlew 실행 권한 부여
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
         working-directory: android
 
+      # ktlint 체크
       - name: Run ktlint check
         run: ./gradlew ktlintCheck
         working-directory: android
 
+      # 단위 테스트 실행
       - name: Run unit tests
-        run: ./gradlew testDebugUnitTest --stacktrace
+        run: ./gradlew testReleaseUnitTest --stacktrace
         working-directory: android
 
-      - name: Build Debug APK only
-        run: ./gradlew assembleDebug --stacktrace
+      # Release AAB 빌드
+      - name: Build Release AAB
+        run: ./gradlew bundleRelease --stacktrace
         working-directory: android
+        env:
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
