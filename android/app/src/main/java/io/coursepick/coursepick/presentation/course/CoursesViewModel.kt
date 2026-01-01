@@ -440,7 +440,11 @@ class CoursesViewModel
         }
 
         fun dismissFilterDialog() {
-            _state.value = state.value?.copy(showFilterDialog = false)
+            _state.value =
+                state.value?.copy(
+                    showFilterDialog = false,
+                    courseFilter = originalCourseFilter,
+                )
         }
 
         private fun toggleDifficulty(difficulty: Difficulty) {
