@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -72,14 +74,17 @@ fun CourseFilterBottomSheet(
                 )
             }
 
+            Spacer(modifier = modifier.height(20.dp))
+
             Column {
                 Text(
                     text = stringResource(R.string.filter_dialog_difficulty_label),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 20.dp),
                     color = colorResource(R.color.item_primary),
                 )
+
+                Spacer(modifier = modifier.height(20.dp))
 
                 DifficultyButtons(
                     selectedDifficulties = coursesUiState.courseFilter.difficulties,
@@ -89,8 +94,11 @@ fun CourseFilterBottomSheet(
                 )
             }
 
+            Spacer(modifier = modifier.height(20.dp))
+
             Column(modifier = Modifier) {
                 LengthRangeHeader(filter = coursesUiState.courseFilter)
+                Spacer(modifier = modifier.height(20.dp))
 
                 RangeSlider(
                     value =
@@ -106,9 +114,10 @@ fun CourseFilterBottomSheet(
                     valueRange =
                         CourseFilter.MINIMUM_LENGTH_RANGE.toFloat()..CourseFilter.MAXIMUM_LENGTH_RANGE.toFloat(),
                     colors = sliderColors(),
-                    modifier = Modifier.padding(bottom = 20.dp),
                 )
             }
+
+            Spacer(modifier = modifier.height(20.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
