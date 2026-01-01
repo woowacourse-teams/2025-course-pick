@@ -24,11 +24,11 @@ import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 fun FilterResultButton(
     text: String,
     enabled: Boolean,
-    onEnableChanged: () -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     TextButton(
-        onClick = onEnableChanged,
+        onClick = onClick,
         enabled = enabled,
         shape = RoundedCornerShape(8.dp),
         modifier = modifier,
@@ -62,7 +62,7 @@ private fun FilterResultButtonPreview() {
         FilterResultButton(
             text = stringResource(R.string.filter_result_count, 10),
             enabled = enabled,
-            onEnableChanged = { enabled != enabled },
+            onClick = { enabled != enabled },
         )
     }
 }

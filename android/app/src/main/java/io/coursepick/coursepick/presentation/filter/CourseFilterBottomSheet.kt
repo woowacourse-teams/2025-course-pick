@@ -135,7 +135,7 @@ fun CourseFilterBottomSheet(
                             coursesUiState.courses.size,
                         ),
                     enabled = coursesUiState.courses.isNotEmpty(),
-                    onEnableChanged = { onFilterAction(CourseFilterAction.Apply) },
+                    onClick = { onFilterAction(CourseFilterAction.Apply) },
                     modifier = Modifier.weight(1f),
                 )
             }
