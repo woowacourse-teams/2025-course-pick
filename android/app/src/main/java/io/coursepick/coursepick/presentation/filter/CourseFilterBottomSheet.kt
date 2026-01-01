@@ -97,7 +97,25 @@ fun CourseFilterBottomSheet(
             Spacer(modifier = modifier.height(20.dp))
 
             Column(modifier = Modifier) {
-                LengthRangeHeader(filter = coursesUiState.courseFilter)
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = modifier.fillMaxWidth(),
+                ) {
+                    Text(
+                        text = stringResource(R.string.filter_dialog_length_label),
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = colorResource(R.color.item_primary),
+                    )
+                    Text(
+                        text = lengthRangeText(coursesUiState.courseFilter),
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = colorResource(R.color.item_primary),
+                    )
+                }
+
                 Spacer(modifier = modifier.height(20.dp))
 
                 RangeSlider(
@@ -182,33 +200,6 @@ private fun DifficultyButtons(
             onToggleDifficulty = onDifficultyToggle,
             selected = selectedDifficulties.contains(Difficulty.HARD),
             modifier = Modifier.weight(1f),
-        )
-    }
-}
-
-@Composable
-private fun LengthRangeHeader(
-    filter: CourseFilter,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.fillMaxWidth(),
-    ) {
-        Text(
-            text = stringResource(R.string.filter_dialog_length_label),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(vertical = 20.dp),
-            color = colorResource(R.color.item_primary),
-        )
-        Text(
-            text = lengthRangeText(filter),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(vertical = 20.dp),
-            color = colorResource(R.color.item_primary),
         )
     }
 }
