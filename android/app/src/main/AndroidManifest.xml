@@ -23,8 +23,8 @@
             android:name=".presentation.search.SearchActivity"
             android:exported="false"
             android:label="@string/title_activity_new_search"
-            android:theme="@style/Theme.CoursePick"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.CoursePick" />
         <activity
             android:name=".presentation.preference.PreferencesActivity"
             android:exported="false"
@@ -44,11 +44,12 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <!-- 리다이렉트 URI: "kakao${NATIVE_APP_KEY}://oauth" -->
-                <data android:host="oauth"
+                <data
+                    android:host="oauth"
                     android:scheme="kakao${KAKAO_NATIVE_APP_KEY}" />
             </intent-filter>
         </activity>
