@@ -54,7 +54,7 @@ public enum ErrorType {
     ),
     AUTHENTICATION_FAIL(
             "인증에 실패하였습니다.",
-            UnAuthorizedException::new
+            UnauthorizedException::new
     ),
     ;
 
