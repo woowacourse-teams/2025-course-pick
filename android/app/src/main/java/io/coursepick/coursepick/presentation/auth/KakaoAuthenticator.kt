@@ -40,12 +40,12 @@ class KakaoAuthenticator(
         { token: OAuthToken?, error: Throwable? ->
             when {
                 error is ClientError && error.reason == ClientErrorCause.Cancelled -> {
-                    Timber.Forest.e("카카오톡 로그인 취소")
+                    Timber.e("카카오톡 로그인 취소")
                     onFailure(error)
                 }
 
                 error != null -> {
-                    Timber.Forest.e("카카오톡 로그인 실패 $error")
+                    Timber.e("카카오톡 로그인 실패 $error")
                     client.loginWithKakaoAccount(
                         context = context,
                         callback = kakaoAccountLoginCallback(onSuccess, onFailure),
@@ -53,7 +53,7 @@ class KakaoAuthenticator(
                 }
 
                 token != null -> {
-                    Timber.Forest.d("카카오톡 로그인 성공 ${token.accessToken}")
+                    Timber.d("카카오톡 로그인 성공 ${token.accessToken}")
                     onSuccess(token.accessToken)
                 }
             }
@@ -66,12 +66,12 @@ class KakaoAuthenticator(
         { token: OAuthToken?, error: Throwable? ->
             when {
                 error != null -> {
-                    Timber.Forest.e("카카오계정으로 로그인 실패 $error")
+                    Timber.e("카카오계정으로 로그인 실패 $error")
                     onFailure(error)
                 }
 
                 token != null -> {
-                    Timber.Forest.d("카카오계정으로 로그인 성공 ${token.accessToken}")
+                    Timber.d("카카오계정으로 로그인 성공 ${token.accessToken}")
                     onSuccess(token.accessToken)
                 }
             }
