@@ -38,7 +38,7 @@ android {
 
         manifestPlaceholders +=
             mapOf(
-                "KAKAO_NATIVE_APP_KEY" to localProperties.getProperty("kakao.native.app.key"),
+                "KAKAO_NATIVE_APP_KEY" to localProperties["kakao.native.app.key"].toString(),
             )
     }
 
