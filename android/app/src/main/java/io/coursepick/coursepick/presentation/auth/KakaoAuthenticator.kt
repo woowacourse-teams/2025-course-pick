@@ -11,7 +11,7 @@ import timber.log.Timber
 class KakaoAuthenticator(
     private val context: Context,
 ) : SocialAuthenticator {
-    private val client = UserApiClient.Companion.instance
+    private val client = UserApiClient.instance
 
     override fun authenticate(
         onSuccess: (String) -> Unit,
