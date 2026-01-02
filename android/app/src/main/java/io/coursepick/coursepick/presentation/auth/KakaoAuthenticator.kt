@@ -53,7 +53,7 @@ class KakaoAuthenticator(
                 }
 
                 token != null -> {
-                    Timber.d("카카오톡 로그인 성공 ${token.accessToken}")
+                    Timber.d("카카오톡 로그인 성공")
                     onSuccess(token.accessToken)
                 }
             }
@@ -71,7 +71,7 @@ class KakaoAuthenticator(
                 }
 
                 token != null -> {
-                    Timber.d("카카오계정으로 로그인 성공 ${token.accessToken}")
+                    Timber.d("카카오계정으로 로그인 성공")
                     onSuccess(token.accessToken)
                 }
             }
