@@ -4,7 +4,9 @@ import io.coursepick.coursepick.data.course.CoordinateDto
 import io.coursepick.coursepick.domain.customcourse.Difficulty
 import io.coursepick.coursepick.domain.customcourse.DraftCourse
 import io.coursepick.coursepick.domain.customcourse.RoadType
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class DraftCourseDto(
     val name: String,
     val roadType: String,
