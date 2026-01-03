@@ -1,20 +1,36 @@
 package io.coursepick.coursepick.presentation.auth
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.auth.SocialAuthenticator
+import io.coursepick.coursepick.domain.auth.SocialToken
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
+import kotlinx.coroutines.launch
 
 class AuthViewModel(
     private val socialAuthenticator: SocialAuthenticator,
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
     private val _event: MutableSingleLiveData<AuthUiEvent> = MutableSingleLiveData()
     val event: SingleLiveData<AuthUiEvent> get() = _event
 
-    fun authenticate() {
+    fun authenticate(socialType: String) {
         socialAuthenticator.authenticate(
-            onSuccess = { socialToken: String ->
-                // TODO: 서버 api 호출
+            onSuccess = { socialAccessToken: String ->
+                viewModelScope.launch {
+                    runCatching {
+                        authRepository.sign(
+                            socialType,
+                            SocialToken(socialAccessToken),
+                        )
+                    }.onSuccess { token: String ->
+                        _event.value = AuthUiEvent.AuthenticateSuccess
+                    }.onFailure {
+                        _event.value = AuthUiEvent.AuthenticateFailure
+                    }
+                }
             },
             onFailure = { error: Throwable ->
                 _event.value = AuthUiEvent.AuthenticateFailure
