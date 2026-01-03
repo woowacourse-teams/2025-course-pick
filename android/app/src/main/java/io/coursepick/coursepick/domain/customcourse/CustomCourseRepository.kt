@@ -9,5 +9,5 @@ interface CustomCourseRepository {
         destination: Coordinate,
     ): DraftSegment
 
-    suspend fun course(draftCourse: DraftCourse): Course
+    suspend fun course(draftCourse: DraftCourse): Course?
 }
