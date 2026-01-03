@@ -1,6 +1,8 @@
 package io.coursepick.coursepick.presentation.auth
 
+import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.auth.SocialAuthenticator
+import io.coursepick.coursepick.domain.auth.SocialToken
 import io.coursepick.coursepick.presentation.extension.InstantTaskExecutorExtension
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -22,10 +24,17 @@ class AuthViewModelTest {
                             onFailure(Throwable("소셜 로그인 실패"))
                         }
                     },
+                authRepository =
+                    object : AuthRepository {
+                        override suspend fun sign(
+                            socialType: String,
+                            socialToken: SocialToken,
+                        ): String = "token 123456"
+                    },
             )
 
         // when
-        viewModel.authenticate()
+        viewModel.authenticate("kakao")
 
         // then
         assertThat(viewModel.event.value).isEqualTo(AuthUiEvent.AuthenticateFailure)

@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.coursepick.coursepick.data.auth.SignService
 import io.coursepick.coursepick.data.course.CourseService
 import io.coursepick.coursepick.data.notice.NoticeService
 import io.coursepick.coursepick.data.search.SearchService
@@ -26,4 +27,9 @@ object ServiceModule {
     fun provideNoticeService(
         @CoursePickRetrofit retrofit: Retrofit,
     ): NoticeService = retrofit.create(NoticeService::class.java)
+
+    @Provides
+    fun provideSignService(
+        @CoursePickRetrofit retrofit: Retrofit,
+    ): SignService = retrofit.create(SignService::class.java)
 }
