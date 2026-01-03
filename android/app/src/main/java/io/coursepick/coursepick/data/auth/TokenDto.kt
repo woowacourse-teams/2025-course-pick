@@ -4,5 +4,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 class TokenDto(
-    private val accessToken: String,
+    val accessToken: String,
 )
