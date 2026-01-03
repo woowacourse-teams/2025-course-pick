@@ -14,6 +14,9 @@ data class CourseFilter(
 ) {
     val difficulties: Set<Difficulty> get() = _difficulties.toSet()
 
+    val lengthRangeAsFloat: ClosedFloatingPointRange<Float> =
+        lengthRange.start.value.toFloat()..lengthRange.endInclusive.value.toFloat()
+
     private val minimumLength: Meter = lengthRange.start.toMeter()
     private val maximumLength: Meter =
         if (lengthRange.endInclusive == Kilometer(MAXIMUM_LENGTH_RANGE)) {

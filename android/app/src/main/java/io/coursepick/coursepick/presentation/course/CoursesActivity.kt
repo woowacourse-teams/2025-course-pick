@@ -53,7 +53,7 @@ import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
-import io.coursepick.coursepick.presentation.filter.FilterBottomSheet
+import io.coursepick.coursepick.presentation.filter.CourseFilterBottomSheet
 import io.coursepick.coursepick.presentation.map.kakao.KakaoMapManager
 import io.coursepick.coursepick.presentation.map.kakao.toCoordinate
 import io.coursepick.coursepick.presentation.notice.NoticeDialog
@@ -270,8 +270,7 @@ class CoursesActivity :
     }
 
     override fun showFilters() {
-        val dialog = FilterBottomSheet()
-        dialog.show(supportFragmentManager, null)
+        viewModel.showFilterDialog()
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -769,6 +768,14 @@ class CoursesActivity :
                             notice = notice,
                             onDismissRequest = viewModel::dismissNotice,
                             onDoNotShowAgain = CoursePickPreferences::setDoNotShowNotice,
+                        )
+                    }
+
+                    if (state?.showFilterDialog == true) {
+                        CourseFilterBottomSheet(
+                            coursesUiState = state ?: return@CoursePickTheme,
+                            onDismissRequest = viewModel::dismissFilterDialog,
+                            onFilterAction = viewModel::handleFilterAction,
                         )
                     }
                 }
