@@ -27,6 +27,7 @@ data class DraftCourseDto(
                         Difficulty.EASY -> "쉬움"
                         Difficulty.NORMAL -> "보통"
                         Difficulty.HARD -> "어려움"
+                        Difficulty.UNKNOWN -> "알수없음"
                     },
                 coordinates = draftCourse.coordinates.map(CoordinateDto::invoke),
             )
