@@ -1,6 +1,6 @@
 package coursepick.coursepick.infrastructure.finder;
 
-import coursepick.coursepick.domain.RouteFinder;
+import coursepick.coursepick.domain.course.RouteFinder;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.logging.LogContent;
 import lombok.RequiredArgsConstructor;

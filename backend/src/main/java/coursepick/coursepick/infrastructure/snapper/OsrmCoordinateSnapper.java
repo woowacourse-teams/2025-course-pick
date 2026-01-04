@@ -1,6 +1,6 @@
 package coursepick.coursepick.infrastructure.snapper;
 
-import coursepick.coursepick.domain.CoordinateSnapper;
+import coursepick.coursepick.domain.course.CoordinateSnapper;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.GeoLine;
 import coursepick.coursepick.domain.course.Meter;

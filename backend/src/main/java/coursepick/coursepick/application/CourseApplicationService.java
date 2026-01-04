@@ -6,7 +6,7 @@ import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.Course;
 import coursepick.coursepick.domain.course.CourseRepository;
 import coursepick.coursepick.domain.course.Meter;
-import coursepick.coursepick.domain.RouteFinder;
+import coursepick.coursepick.domain.course.RouteFinder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;

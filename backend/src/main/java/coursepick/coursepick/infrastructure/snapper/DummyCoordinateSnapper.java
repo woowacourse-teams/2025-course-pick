@@ -1,7 +1,7 @@
 package coursepick.coursepick.infrastructure.snapper;
 
-import coursepick.coursepick.domain.Coordinate;
-import coursepick.coursepick.domain.CoordinateSnapper;
+import coursepick.coursepick.domain.course.Coordinate;
+import coursepick.coursepick.domain.course.CoordinateSnapper;
 import org.springframework.context.annotation.Fallback;
 import org.springframework.stereotype.Component;
 

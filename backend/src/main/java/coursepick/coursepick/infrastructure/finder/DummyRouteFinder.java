@@ -1,7 +1,7 @@
 package coursepick.coursepick.infrastructure.finder;
 
 import coursepick.coursepick.domain.course.Coordinate;
-import coursepick.coursepick.domain.RouteFinder;
+import coursepick.coursepick.domain.course.RouteFinder;
 import org.springframework.context.annotation.Fallback;
 import org.springframework.stereotype.Component;
 
