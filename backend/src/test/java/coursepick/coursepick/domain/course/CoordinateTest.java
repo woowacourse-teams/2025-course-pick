@@ -1,4 +1,4 @@
-package coursepick.coursepick.domain;
+package coursepick.coursepick.domain.course;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -8,6 +8,23 @@ import org.junit.jupiter.params.provider.CsvSource;
 import static org.assertj.core.api.Assertions.*;
 
 class CoordinateTest {
+
+    @ParameterizedTest
+    @CsvSource({
+            "0.5, 5, 5, 5",
+            "1, 10, 10, 10",
+            "1.5, 15, 15, 15",
+    })
+    void 두_점에_대하여_선형보간한다(double lerpRatio, double expectedLatitude, double expectedLongitude, double expectedElevation) {
+        var start = new Coordinate(0, 0, 0);
+        var end = new Coordinate(10, 10, 10);
+
+        var result = Coordinate.lerp(start, end, lerpRatio);
+
+        assertThat(result.latitude()).isEqualTo(expectedLatitude);
+        assertThat(result.longitude()).isEqualTo(expectedLongitude);
+        assertThat(result.elevation()).isEqualTo(expectedElevation);
+    }
 
     @Nested
     class 생성_테스트 {
@@ -172,22 +189,5 @@ class CoordinateTest {
             assertThat(result.latitude()).isEqualTo(expectedLat);
             assertThat(result.longitude()).isEqualTo(expectedLng);
         }
-    }
-
-    @ParameterizedTest
-    @CsvSource({
-            "0.5, 5, 5, 5",
-            "1, 10, 10, 10",
-            "1.5, 15, 15, 15",
-    })
-    void 두_점에_대하여_선형보간한다(double lerpRatio, double expectedLatitude, double expectedLongitude, double expectedElevation) {
-        var start = new Coordinate(0, 0, 0);
-        var end = new Coordinate(10, 10, 10);
-
-        var result = Coordinate.lerp(start, end, lerpRatio);
-
-        assertThat(result.latitude()).isEqualTo(expectedLatitude);
-        assertThat(result.longitude()).isEqualTo(expectedLongitude);
-        assertThat(result.elevation()).isEqualTo(expectedElevation);
     }
 }

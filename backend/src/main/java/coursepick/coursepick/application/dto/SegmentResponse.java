@@ -1,8 +1,8 @@
 package coursepick.coursepick.application.dto;
 
-import coursepick.coursepick.domain.Coordinate;
-import coursepick.coursepick.domain.InclineType;
-import coursepick.coursepick.domain.Segment;
+import coursepick.coursepick.domain.course.Coordinate;
+import coursepick.coursepick.domain.course.InclineType;
+import coursepick.coursepick.domain.course.Segment;
 
 import java.util.List;
 

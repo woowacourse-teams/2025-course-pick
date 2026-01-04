@@ -1,4 +1,4 @@
-package coursepick.coursepick.domain;
+package coursepick.coursepick.domain.course;
 
 import coursepick.coursepick.test_util.AbstractIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,10 +14,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class CourseRepositoryTest extends AbstractIntegrationTest {
 
+    final Coordinate target = new Coordinate(37.514647, 127.086592);
     @Autowired
     CourseRepository sut;
-
-    final Coordinate target = new Coordinate(37.514647, 127.086592);
 
     @BeforeEach
     void setUp() {

@@ -1,6 +1,6 @@
 package coursepick.coursepick.presentation.dto;
 
-import coursepick.coursepick.domain.RoadType;
+import coursepick.coursepick.domain.course.RoadType;
 
 import java.util.List;
 

@@ -1,8 +1,8 @@
 package coursepick.coursepick.presentation.dto;
 
-import coursepick.coursepick.domain.Course;
-import coursepick.coursepick.domain.InclineSummary;
-import coursepick.coursepick.domain.RoadType;
+import coursepick.coursepick.domain.course.Course;
+import coursepick.coursepick.domain.course.InclineSummary;
+import coursepick.coursepick.domain.course.RoadType;
 
 import java.util.List;
 

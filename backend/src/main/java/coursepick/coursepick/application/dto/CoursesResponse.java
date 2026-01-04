@@ -1,7 +1,7 @@
 package coursepick.coursepick.application.dto;
 
-import coursepick.coursepick.domain.Coordinate;
-import coursepick.coursepick.domain.Course;
+import coursepick.coursepick.domain.course.Coordinate;
+import coursepick.coursepick.domain.course.Course;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Slice;
 

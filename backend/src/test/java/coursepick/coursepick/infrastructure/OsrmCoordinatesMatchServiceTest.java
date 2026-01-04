@@ -1,6 +1,6 @@
 package coursepick.coursepick.infrastructure;
 
-import coursepick.coursepick.domain.Coordinate;
+import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.test_util.AbstractMockServerTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,6 +42,30 @@ class OsrmCoordinatesMatchServiceTest extends AbstractMockServerTest {
 
         assertThat(result).isNotEmpty();
         assertThat(result.size()).isEqualTo(5); // Mock 응답에 5개 좌표
+    }
+
+    // Mock OSRM Match API 응답
+    private static String osrmMatchResponse() {
+        return """
+                {
+                  "code": "Ok",
+                  "matchings": [
+                    {
+                      "geometry": {
+                        "coordinates": [
+                          [127.04901, 37.504526],
+                          [127.048307, 37.505993],
+                          [127.047943, 37.506427],
+                          [127.045223, 37.508171],
+                          [127.039294, 37.511302]
+                        ],
+                        "type": "LineString"
+                      },
+                      "confidence": 0.85
+                    }
+                  ]
+                }
+                """;
     }
 
     @Test
@@ -110,6 +134,15 @@ class OsrmCoordinatesMatchServiceTest extends AbstractMockServerTest {
         assertThat(result).isEqualTo(originals);
     }
 
+    private static String osrmNoMatchResponse() {
+        return """
+                {
+                  "code": "NoMatch",
+                  "message": "Could not match route"
+                }
+                """;
+    }
+
     @Test
     void TooBig_응답이면_원본_좌표를_반환한다() {
         mock(osrmTooBigResponse());
@@ -124,45 +157,12 @@ class OsrmCoordinatesMatchServiceTest extends AbstractMockServerTest {
         assertThat(result).isEqualTo(originals);
     }
 
-    // Mock OSRM Match API 응답
-    private static String osrmMatchResponse() {
-        return """
-                  {
-                    "code": "Ok",
-                    "matchings": [
-                      {
-                        "geometry": {
-                          "coordinates": [
-                            [127.04901, 37.504526],
-                            [127.048307, 37.505993],
-                            [127.047943, 37.506427],
-                            [127.045223, 37.508171],
-                            [127.039294, 37.511302]
-                          ],
-                          "type": "LineString"
-                        },
-                        "confidence": 0.85
-                      }
-                    ]
-                  }
-                  """;
-    }
-
-    private static String osrmNoMatchResponse() {
-        return """
-                  {
-                    "code": "NoMatch",
-                    "message": "Could not match route"
-                  }
-                  """;
-    }
-
     private static String osrmTooBigResponse() {
         return """
-                  {
-                    "message": "Too many trace coordinates",
-                    "code": "TooBig"
-                  }
-                  """;
+                {
+                  "message": "Too many trace coordinates",
+                  "code": "TooBig"
+                }
+                """;
     }
 }

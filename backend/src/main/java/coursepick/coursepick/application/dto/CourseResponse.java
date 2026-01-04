@@ -1,6 +1,6 @@
 package coursepick.coursepick.application.dto;
 
-import coursepick.coursepick.domain.*;
+import coursepick.coursepick.domain.course.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;

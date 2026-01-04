@@ -1,4 +1,4 @@
-package coursepick.coursepick.domain;
+package coursepick.coursepick.domain.course;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -11,6 +11,10 @@ public record Coordinate(
         double longitude,
         double elevation
 ) {
+    public Coordinate(double latitude, double longitude) {
+        this(latitude, longitude, 0);
+    }
+
     public Coordinate(double latitude, double longitude, double elevation) {
         double roundedLatitude = truncated(latitude);
         double roundedLongitude = truncated(longitude);
@@ -21,8 +25,20 @@ public record Coordinate(
         this.elevation = elevation;
     }
 
-    public Coordinate(double latitude, double longitude) {
-        this(latitude, longitude, 0);
+    private static double truncated(double value) {
+        return BigDecimal.valueOf(value).setScale(7, RoundingMode.DOWN).doubleValue();
+    }
+
+    private static void validateLatitudeRange(double roundedLatitude) {
+        if (roundedLatitude < -90 || roundedLatitude > 90) {
+            throw INVALID_LATITUDE_RANGE.create(roundedLatitude);
+        }
+    }
+
+    private static void validateLongitudeRange(double roundedLongitude) {
+        if (roundedLongitude < -180 || roundedLongitude >= 180) {
+            throw INVALID_LONGITUDE_RANGE.create(roundedLongitude);
+        }
     }
 
     /**
@@ -58,22 +74,6 @@ public record Coordinate(
         double longitudeDelta = (other.longitude - this.longitude) * projectionRatio;
 
         return new Coordinate(this.latitude + latitudeDelta, this.longitude + longitudeDelta, this.elevation);
-    }
-
-    private static double truncated(double value) {
-        return BigDecimal.valueOf(value).setScale(7, RoundingMode.DOWN).doubleValue();
-    }
-
-    private static void validateLatitudeRange(double roundedLatitude) {
-        if (roundedLatitude < -90 || roundedLatitude > 90) {
-            throw INVALID_LATITUDE_RANGE.create(roundedLatitude);
-        }
-    }
-
-    private static void validateLongitudeRange(double roundedLongitude) {
-        if (roundedLongitude < -180 || roundedLongitude >= 180) {
-            throw INVALID_LONGITUDE_RANGE.create(roundedLongitude);
-        }
     }
 
     @Override
