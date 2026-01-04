@@ -2,6 +2,8 @@ package coursepick.coursepick.presentation.api;
 
 import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
 import coursepick.coursepick.presentation.dto.CourseWebResponse;
+import coursepick.coursepick.presentation.dto.SnapWebRequest;
+import coursepick.coursepick.presentation.dto.SnapWebResponse;
 import coursepick.coursepick.presentation.dto.CoursesWebResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -103,4 +105,6 @@ public interface CourseWebApi {
             )
             List<String> coursesId
     );
+
+    SnapWebResponse snapCoordinates(SnapWebRequest snapWebRequest);
 }
