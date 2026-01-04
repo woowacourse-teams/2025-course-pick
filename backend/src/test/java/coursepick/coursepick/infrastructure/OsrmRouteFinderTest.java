@@ -1,6 +1,7 @@
 package coursepick.coursepick.infrastructure;
 
 import coursepick.coursepick.domain.course.Coordinate;
+import coursepick.coursepick.infrastructure.finder.OsrmRouteFinder;
 import coursepick.coursepick.test_util.AbstractMockServerTest;
 import org.junit.jupiter.api.Test;
 
@@ -9,13 +10,13 @@ import java.net.SocketTimeoutException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class OsrmWalkingRouteServiceTest extends AbstractMockServerTest {
+class OsrmRouteFinderTest extends AbstractMockServerTest {
 
     @Test
     void 두_좌표_사이의_걷기_경로를_조회할_수_있다() {
         mock(osrmResponse());
-        var sut = new OsrmWalkingRouteService(anyRestClient());
-        var result = sut.route(
+        var sut = new OsrmRouteFinder(anyRestClient());
+        var result = sut.find(
                 new Coordinate(37.5045224, 127.048996),
                 new Coordinate(37.5113001, 127.0392855)
         );
@@ -116,9 +117,9 @@ class OsrmWalkingRouteServiceTest extends AbstractMockServerTest {
     @Test
     void 응답이_오래걸리면_타임아웃이_발생한다() {
         mock(osrmResponse(), 6000);
-        var sut = new OsrmWalkingRouteService(anyRestClient());
+        var sut = new OsrmRouteFinder(anyRestClient());
 
-        assertThatThrownBy(() -> sut.route(new Coordinate(0, 0), new Coordinate(0, 0)))
+        assertThatThrownBy(() -> sut.find(new Coordinate(0, 0), new Coordinate(0, 0)))
                 .hasRootCauseExactlyInstanceOf(SocketTimeoutException.class);
     }
 }

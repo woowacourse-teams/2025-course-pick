@@ -2,6 +2,7 @@ package coursepick.coursepick.infrastructure;
 
 import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.dto.CourseFileExtension;
+import coursepick.coursepick.infrastructure.parser.GpxCourseParser;
 import coursepick.coursepick.domain.course.Coordinate;
 import org.junit.jupiter.api.Test;
 

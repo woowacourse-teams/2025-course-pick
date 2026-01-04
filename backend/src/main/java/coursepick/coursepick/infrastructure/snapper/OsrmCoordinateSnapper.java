@@ -1,6 +1,6 @@
-package coursepick.coursepick.infrastructure;
+package coursepick.coursepick.infrastructure.snapper;
 
-import coursepick.coursepick.application.CoordinatesMatchService;
+import coursepick.coursepick.domain.course.CoordinateSnapper;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.GeoLine;
 import coursepick.coursepick.domain.course.Meter;
@@ -20,12 +20,12 @@ import java.util.stream.Collectors;
 @Component
 @Profile({"dev", "prod"})
 @RequiredArgsConstructor
-public class OsrmCoordinatesMatchService implements CoordinatesMatchService {
+public class OsrmCoordinateSnapper implements CoordinateSnapper {
 
     private final RestClient osrmRestClient;
 
     @Override
-    public List<Coordinate> snapCoordinates(List<Coordinate> coordinates) {
+    public List<Coordinate> snap(List<Coordinate> coordinates) {
         if (coordinates.size() < 2) {
             return coordinates;
         }

@@ -1,6 +1,6 @@
 package coursepick.coursepick.presentation;
 
-import coursepick.coursepick.application.CourseParserService;
+import coursepick.coursepick.application.CourseParserFacade;
 import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.course.Coordinate;
@@ -35,7 +35,7 @@ public class AdminWebController implements AdminWebApi {
     private static final String TOKEN_COOKIE_KEY = "admin-token";
     private static final String KAKAO_API_KEY_PLACEHOLDER = "KAKAO_API_KEY_PLACEHOLDER";
     private final CourseRepository courseRepository;
-    private final CourseParserService courseParserService;
+    private final CourseParserFacade courseParserFacade;
     @Value("${admin.token}")
     private String adminToken;
     @Value("${admin.kakao-map-api-key}")
@@ -109,7 +109,7 @@ public class AdminWebController implements AdminWebApi {
     public void importFiles(@RequestParam("files") List<MultipartFile> files) throws IOException {
         for (MultipartFile file : files) {
             try (CourseFile courseFile = CourseFile.from(file)) {
-                List<Course> courses = courseParserService.parse(courseFile);
+                List<Course> courses = courseParserFacade.parse(courseFile);
                 courseRepository.saveAll(courses);
             }
         }

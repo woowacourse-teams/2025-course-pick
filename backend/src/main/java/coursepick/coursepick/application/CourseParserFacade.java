@@ -14,7 +14,7 @@ import static coursepick.coursepick.application.exception.ErrorType.INVALID_FILE
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CourseParserService {
+public class CourseParserFacade {
 
     private final List<CourseParser> parsers;
 

@@ -1,4 +1,4 @@
-package coursepick.coursepick.infrastructure.converter;
+package coursepick.coursepick.infrastructure.mongodb;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

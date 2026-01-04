@@ -6,6 +6,7 @@ import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.Course;
 import coursepick.coursepick.domain.course.CourseRepository;
 import coursepick.coursepick.domain.course.Meter;
+import coursepick.coursepick.domain.course.RouteFinder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
@@ -25,7 +26,7 @@ import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_CO
 public class CourseApplicationService {
 
     private final CourseRepository courseRepository;
-    private final WalkingRouteService walkingRouteService;
+    private final RouteFinder routeFinder;
 
     @Transactional(readOnly = true)
     public CoursesResponse findNearbyCourses(double mapLatitude, double mapLongitude, @Nullable Double userLatitude, @Nullable Double userLongitude, int scope, @Nullable Integer pageNumber) {
@@ -54,7 +55,7 @@ public class CourseApplicationService {
     @Transactional(readOnly = true)
     public List<Coordinate> routesToCourse(String id, double originLatitude, double originLongitude) {
         Coordinate destination = findClosestCoordinate(id, originLatitude, originLongitude);
-        return walkingRouteService.route(new Coordinate(originLatitude, originLongitude), destination);
+        return routeFinder.find(new Coordinate(originLatitude, originLongitude), destination);
     }
 
     @Transactional(readOnly = true)
