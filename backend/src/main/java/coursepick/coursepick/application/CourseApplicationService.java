@@ -2,11 +2,8 @@ package coursepick.coursepick.application;
 
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
-import coursepick.coursepick.domain.course.Coordinate;
-import coursepick.coursepick.domain.course.Course;
-import coursepick.coursepick.domain.course.CourseRepository;
-import coursepick.coursepick.domain.course.Meter;
-import coursepick.coursepick.domain.course.RouteFinder;
+import coursepick.coursepick.application.dto.SnapResponse;
+import coursepick.coursepick.domain.course.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
@@ -27,6 +24,7 @@ public class CourseApplicationService {
 
     private final CourseRepository courseRepository;
     private final RouteFinder routeFinder;
+    private final CoordinateSnapper coordinateSnapper;
 
     @Transactional(readOnly = true)
     public CoursesResponse findNearbyCourses(double mapLatitude, double mapLongitude, @Nullable Double userLatitude, @Nullable Double userLongitude, int scope, @Nullable Integer pageNumber) {
@@ -82,5 +80,11 @@ public class CourseApplicationService {
                 log.warn("존재하지 않는 코스에 대한 조회: {}", course.id());
             }
         }
+    }
+
+    @Transactional(readOnly = true)
+    public SnapResponse snapCoordinate(List<Coordinate> coordinates) {
+        SnapResult snapResult = coordinateSnapper.snap(coordinates);
+        return new SnapResponse(snapResult.coordinates(), snapResult.length());
     }
 }
