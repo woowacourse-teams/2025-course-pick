@@ -9,7 +9,6 @@ public record CoordinatesSnapWebResponse(
 ) {
     public static CoordinatesSnapWebResponse from(List<Coordinate> coordinates) {
         List<AdminCoordinateWebResponse> matchedCoordinates = coordinates.stream()
-                .map(coordinate -> new Coordinate(coordinate.latitude(), coordinate.longitude(), coordinate.elevation()))
                 .map(AdminCoordinateWebResponse::from)
                 .toList();
 
