@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
 @CompoundIndex(name = "idx_provider_providerId", def = "{'provider': 1, 'providerId': 1}", unique = true)
-@AllArgsConstructor(access = AccessLevel.PROTECTED, onConstructor_ = @PersistenceCreator)
+@AllArgsConstructor(access = AccessLevel.PUBLIC, onConstructor_ = @PersistenceCreator)
 @Getter
 @Accessors(fluent = true)
 public class User {
