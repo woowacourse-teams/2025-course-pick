@@ -12,10 +12,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static coursepick.coursepick.application.exception.ErrorType.*;
+import static coursepick.coursepick.application.exception.ErrorType.values;
 
 @Profile("!prod")
 @OpenAPIDefinition(info = @Info(title = "코스픽 API", version = "1.0.0"))
@@ -51,33 +52,17 @@ public class OpenApiConfig {
 
             Components components = openApi.getComponents();
 
-            Example example = new Example()
-                    .value(Map.of(
-                            "message", INVALID_LATITUDE_RANGE.message("95"),
-                            "timestamp", TIMESTAMP
-                    ));
-            components.addExamples(INVALID_LATITUDE_RANGE.name(), example);
+            Arrays.stream(values()).forEach(
+                    errorType -> {
+                        Example example = new Example()
+                                .value(Map.of(
+                                        "message", errorType.message("{}", "{}", "{}"),
+                                        "timestamp", TIMESTAMP
+                                ));
+                        components.addExamples(errorType.name(), example);
 
-            example = new Example()
-                    .value(Map.of(
-                            "message", INVALID_LONGITUDE_RANGE.message("185"),
-                            "timestamp", TIMESTAMP
-                    ));
-            components.addExamples(INVALID_LONGITUDE_RANGE.name(), example);
-
-            example = new Example()
-                    .value(Map.of(
-                            "message", NOT_EXIST_COURSE.message("689c3143182cecc6353cca2b"),
-                            "timestamp", TIMESTAMP
-                    ));
-            components.addExamples(NOT_EXIST_COURSE.name(), example);
-
-            example = new Example()
-                    .value(Map.of(
-                            "message", NOT_FOUND_NOTICE.message("notice-2022"),
-                            "timestamp", TIMESTAMP
-                    ));
-            components.addExamples(NOT_FOUND_NOTICE.name(), example);
+                    }
+            );
         };
     }
 }
