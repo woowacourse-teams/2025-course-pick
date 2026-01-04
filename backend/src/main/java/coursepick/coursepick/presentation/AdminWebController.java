@@ -3,7 +3,7 @@ package coursepick.coursepick.presentation;
 import coursepick.coursepick.application.CourseParserFacade;
 import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.exception.ErrorType;
-import coursepick.coursepick.domain.CoordinateSnapper;
+import coursepick.coursepick.domain.course.CoordinateSnapper;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.Course;
 import coursepick.coursepick.domain.course.CourseName;

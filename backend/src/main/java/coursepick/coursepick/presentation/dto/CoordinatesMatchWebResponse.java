@@ -1,6 +1,6 @@
 package coursepick.coursepick.presentation.dto;
 
-import coursepick.coursepick.domain.Coordinate;
+import coursepick.coursepick.domain.course.Coordinate;
 
 import java.util.List;
 
