@@ -3,17 +3,9 @@ package coursepick.coursepick.presentation;
 import coursepick.coursepick.application.CourseParserFacade;
 import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.exception.ErrorType;
-import coursepick.coursepick.domain.course.CoordinateSnapper;
-import coursepick.coursepick.domain.course.Coordinate;
-import coursepick.coursepick.domain.course.Course;
-import coursepick.coursepick.domain.course.CourseName;
-import coursepick.coursepick.domain.course.CourseRepository;
-import coursepick.coursepick.presentation.api.AdminWebApi;
-import coursepick.coursepick.presentation.dto.AdminCourseWebResponse;
-import coursepick.coursepick.presentation.dto.AdminLoginWebRequest;
-import coursepick.coursepick.presentation.dto.CoordinatesMatchWebRequest;
-import coursepick.coursepick.presentation.dto.CoordinatesMatchWebResponse;
-import coursepick.coursepick.presentation.dto.CourseReplaceWebRequest;
+import coursepick.coursepick.domain.course.*;
+import coursepick.coursepick.presentation.dto.*;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,7 +25,8 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class AdminWebController implements AdminWebApi {
+@Hidden
+public class AdminWebController {
 
     private static final String TOKEN_COOKIE_KEY = "admin-token";
     private static final String KAKAO_API_KEY_PLACEHOLDER = "KAKAO_API_KEY_PLACEHOLDER";
