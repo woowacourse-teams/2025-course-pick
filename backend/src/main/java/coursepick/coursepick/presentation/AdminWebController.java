@@ -143,10 +143,9 @@ public class AdminWebController {
         courseRepository.delete(course);
     }
 
-    @PostMapping("/admin/api/coordinates/match")
-    public CoordinatesMatchWebResponse matchCoordinates(@RequestBody @Valid CoordinatesMatchWebRequest request) {
-        List<Coordinate> matched = coordinateSnapper.snap(request.coordinates());
-
-        return CoordinatesMatchWebResponse.from(matched);
+    @PostMapping("/admin/api/coordinates/snap")
+    public CoordinatesSnapWebResponse snapCoordinates(@RequestBody @Valid CoordinatesSnapWebRequest request) {
+        List<Coordinate> snapped = coordinateSnapper.snap(request.coordinates());
+        return CoordinatesSnapWebResponse.from(snapped);
     }
 }
