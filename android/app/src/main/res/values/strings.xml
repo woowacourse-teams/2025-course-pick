@@ -10,9 +10,9 @@
     <string name="main_search_this_area">이 지역 검색</string>
     <string name="item_course_summary_format">%1$s • %2$s</string>
     <string name="incline_summary_flat">평지 위주</string>
-    <string name="incline_summary_repeating_hills">오르막 가끔</string>
-    <string name="incline_summary_sometimes_uphill">내리막 가끔</string>
-    <string name="incline_summary_sometimes_downhill">언덕 반복</string>
+    <string name="incline_summary_repeating_hills">언덕 반복</string>
+    <string name="incline_summary_sometimes_uphill">오르막 가끔</string>
+    <string name="incline_summary_sometimes_downhill">내리막 가끔</string>
     <string name="incline_summary_continuous_uphill">오르막 지속</string>
     <string name="incline_summary_continuous_downhill">내리막 지속</string>
     <string name="incline_summary_continuous_unknown">알 수 없음</string>
@@ -20,7 +20,7 @@
     <string name="item_course_navigate">길찾기</string>
     <string name="main_client_id">사용자 ID: %s</string>
     <string name="feedback_url">https://docs.google.com/forms/d/e/1FAIpQLSdsJcNUsOcDiKW0FI-M360IUS64IZQmnWtMTbZqJSrx7HQbtg/viewform?usp=pp_url&amp;entry.1079171803=%s</string>
-    <string name="privacy_policy_url">https://github.com/woowacourse-teams/2025-course-pick/wiki/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4%EC%B2%98%EB%A6%AC%EB%B0%A9%EC%B9%A8</string>
+    <string name="privacy_policy_url">https://wary-gopher-277.notion.site/2bcccd64a1cc80c08927cb2dccbc917f?source=copy_link</string>
     <string name="search_query_hint">장소를 검색하세요</string>
     <string name="search_no_result">검색 결과가 없어요 🥲</string>
     <string name="selected_route_finder_application_key">selected_route_finder_application</string>
@@ -69,4 +69,9 @@
     <string name="filter_dialog_length_label">길이</string>
     <string name="filter_dialog_cancel">취소</string>
     <string name="main_course_filter">필터</string>
+    <string name="notice_dialog_do_not_show_again">다시 보지 않음</string>
+    <string name="notice_dialog_close">닫기</string>
+    <string name="verified_locations_dialog_close">닫기</string>
+    <string name="can_not_fetch_verified_locations">코스가 검증된 지역 정보를 불러올 수 없습니다.</string>
+    <string name="courses_fail_fetch_next_page">다음 코스를 불러오지 못했습니다.</string>
 </resources>

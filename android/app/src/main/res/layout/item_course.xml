@@ -22,7 +22,8 @@
         android:layout_height="wrap_content"
         android:background="@drawable/background_course_item_selector"
         android:onClick="@{() -> courseItemListener.select(course)}"
-        android:padding="16dp">
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="10dp">
 
         <TextView
             android:id="@+id/courseName"
@@ -82,7 +83,7 @@
             android:id="@+id/courseTypeIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
+            android:layout_marginStart="18dp"
             android:src="@drawable/icon_road_type"
             android:visibility="@{course.roadType != null ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@id/courseLength"

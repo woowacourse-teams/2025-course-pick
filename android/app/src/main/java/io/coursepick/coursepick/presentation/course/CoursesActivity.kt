@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
@@ -23,17 +24,20 @@ import androidx.annotation.IdRes
 import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.Insets
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.commit
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.kakao.vectormap.LatLng
+import dagger.hilt.android.AndroidEntryPoint
 import io.coursepick.coursepick.BuildConfig
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.databinding.ActivityCoursesBinding
@@ -41,6 +45,7 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.domain.course.Scope
+import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.CoursePickUpdateManager
 import io.coursepick.coursepick.presentation.DataKeys
@@ -48,15 +53,21 @@ import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
+import io.coursepick.coursepick.presentation.filter.CourseFilterBottomSheet
 import io.coursepick.coursepick.presentation.map.kakao.KakaoMapManager
 import io.coursepick.coursepick.presentation.map.kakao.toCoordinate
+import io.coursepick.coursepick.presentation.notice.NoticeDialog
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 import io.coursepick.coursepick.presentation.preference.PreferencesActivity
 import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 import io.coursepick.coursepick.presentation.routefinder.RouteFinderChoiceDialogFragment
 import io.coursepick.coursepick.presentation.search.SearchActivity
+import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
+import io.coursepick.coursepick.presentation.setting.SettingsScreen
 import io.coursepick.coursepick.presentation.ui.DoublePressDetector
+import io.coursepick.coursepick.presentation.verifiedlocations.VerifiedLocationsDialog
 
+@AndroidEntryPoint
 class CoursesActivity :
     AppCompatActivity(),
     CoursesAction,
@@ -64,11 +75,10 @@ class CoursesActivity :
     private val coursePickApplication by lazy { application as CoursePickApplication }
     private var searchLauncher: ActivityResultLauncher<Intent>? = null
     private val binding by lazy { ActivityCoursesBinding.inflate(layoutInflater) }
-    private val viewModel: CoursesViewModel by viewModels { CoursesViewModel.Factory }
+    private val viewModel: CoursesViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(courseItemListener) }
     private val doublePressDetector = DoublePressDetector()
     private val mapManager by lazy { KakaoMapManager(binding.mainMap) }
-    private var systemBars: Insets? = null
     private lateinit var updateManager: CoursePickUpdateManager
 
     private val locationPermissionLauncher: ActivityResultLauncher<Array<String>> =
@@ -138,18 +148,15 @@ class CoursesActivity :
         setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view: View, insets: WindowInsetsCompat ->
             val systemBars: Insets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            this.systemBars = systemBars
-            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            setUpNavigation(systemBars)
-            setUpBottomSheet(systemBars)
+            setUpToolbar(systemBars)
             insets
         }
-
-        ViewCompat.setOnApplyWindowInsetsListener(binding.mainBottomNavigation, null)
+        setUpBottomSheet()
+        setUpSettings()
 
         mapManager.start {
             setUpObservers()
-            systemBars?.let(::setUpMapPadding)
+            setUpMapPadding()
             mapManager.setOnCameraMoveListener {
                 binding.mainSearchThisAreaButton.visibility = View.VISIBLE
                 binding.mainCurrentLocationButton.setColorFilter(
@@ -159,38 +166,26 @@ class CoursesActivity :
                     ),
                 )
             }
-            mapManager.fetchCurrentLocation(
-                onSuccess = { latitude: Latitude, longitude: Longitude ->
-                    viewModel.fetchCourses(
-                        mapCoordinate = Coordinate(latitude, longitude),
-                        userCoordinate = Coordinate(latitude, longitude),
-                    )
-                },
-                onFailure = {
-                    val mapCoordinate: Coordinate =
-                        mapManager.cameraPosition?.toCoordinate()
-                            ?: return@fetchCurrentLocation
-                    viewModel.fetchCourses(
-                        mapCoordinate = mapCoordinate,
-                        userCoordinate = null,
-                    )
-                },
-            )
-
-            setUpBottomNavigation()
+            fetchCourses()
             if (savedInstanceState == null) {
-                binding.mainBottomNavigation.selectedItemId = R.id.coursesMenu
+                selectMenuWithoutListener(R.id.coursesMenu)
             }
         }
 
+        setUpBottomNavigation()
         setUpBindingVariables()
         setUpDoubleBackPress()
         requestLocationPermissions()
+        setUpDialogs()
 
         searchLauncher = searchActivityResultLauncher()
 
         updateManager = CoursePickUpdateManager(this)
         updateManager.checkForUpdate()
+
+        if (savedInstanceState == null) {
+            showNoticeIfNeeded()
+        }
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -220,13 +215,7 @@ class CoursesActivity :
     override fun searchThisArea() {
         selectMenuWithoutListener(R.id.coursesMenu)
 
-        val mapPosition: LatLng =
-            mapManager.cameraPosition ?: run {
-                Toast.makeText(this, "지도 위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
-                return
-            }
-
-        val coordinate = mapPosition.toCoordinate()
+        val coordinate = mapCoordinateOrNull() ?: return
         Logger.log(
             Logger.Event.Click("search_this_area"),
             "latitude" to coordinate.latitude.value,
@@ -234,38 +223,22 @@ class CoursesActivity :
         )
         binding.mainSearchThisAreaButton.visibility = View.GONE
         mapManager.showSearchPosition(coordinate)
-        val scope =
-            try {
-                mapManager.scope(coordinate)
-            } catch (e: IllegalStateException) {
-                Toast
-                    .makeText(
-                        this,
-                        e.message ?: "지도를 불러올 수 없어 코스를 탐색할 수 없습니다.",
-                        Toast.LENGTH_SHORT,
-                    ).show()
-                return
-            }
 
-        fetchCourses(coordinate, scope)
+        fetchCourses()
     }
 
-    override fun openMenu() {
-        Logger.log(Logger.Event.Click("drawer_menu"))
-        binding.mainDrawer.open()
-    }
-
-    override fun navigate(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.item_preferences -> navigateToPreferences()
-            R.id.item_user_feedback -> navigateToFeedback()
-            R.id.item_privacy_policy -> navigateToPrivacyPolicy()
-            R.id.item_open_source_notice -> navigateToOpenSourceNotice()
+    private fun showVerifiedLocations() {
+        if (viewModel.state.value?.verifiedLocations == null) {
+            Toast
+                .makeText(
+                    this,
+                    getString(R.string.can_not_fetch_verified_locations),
+                    Toast.LENGTH_SHORT,
+                ).show()
+            return
         }
 
-        binding.mainDrawer.close()
-
-        return true
+        viewModel.showVerifiedLocations()
     }
 
     override fun search() {
@@ -296,22 +269,29 @@ class CoursesActivity :
         viewModel.setQuery("")
     }
 
+    override fun showFilters() {
+        viewModel.showFilterDialog()
+    }
+
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun onReconnect() {
-        val coordinate = mapManager.cameraPosition?.toCoordinate()
-        if (coordinate != null) {
-            fetchCourses(coordinate, Scope.default())
-        } else {
-            mapManager.fetchCurrentLocation(
-                onSuccess = { lat, lng ->
-                    fetchCourses(Coordinate(lat, lng), Scope.default())
-                },
-                onFailure = {
-                    Toast
-                        .makeText(this, "위치 정보를 가져올 수 없어 데이터를 갱신할 수 없습니다.", Toast.LENGTH_SHORT)
-                        .show()
-                },
-            )
+        fetchCourses()
+    }
+
+    private fun scopeOrNull(): Scope? {
+        val mapPosition: Coordinate = mapCoordinateOrNull() ?: return null
+        val scope: Scope =
+            mapManager.scopeOrNull(mapPosition) ?: run {
+                Toast.makeText(this, "탐색 범위를 계산하지 못했습니다.", Toast.LENGTH_SHORT).show()
+                return null
+            }
+        return scope
+    }
+
+    private fun mapCoordinateOrNull(): Coordinate? {
+        return mapManager.cameraPosition?.toCoordinate() ?: run {
+            Toast.makeText(this, "지도 위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
+            return null
         }
     }
 
@@ -352,7 +332,7 @@ class CoursesActivity :
         mapManager.resetZoomLevel()
         mapManager.showSearchPosition(coordinate)
         mapManager.moveTo(latitude, longitude)
-        fetchCourses(coordinate, Scope.default())
+        fetchCourses()
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -363,6 +343,8 @@ class CoursesActivity :
                 CoursesContent.EXPLORE -> getString(R.string.main_empty_courses_description)
                 CoursesContent.FAVORITES -> getString(R.string.main_empty_favorites_description)
             }
+        binding.mainCourseFilter.visibility =
+            if (content == CoursesContent.EXPLORE) View.VISIBLE else View.GONE
 
         supportFragmentManager.commit {
             setReorderingAllowed(true)
@@ -411,19 +393,21 @@ class CoursesActivity :
         binding.mainBottomNavigation.setOnItemSelectedListener { item: MenuItem ->
             when (item.itemId) {
                 R.id.coursesMenu -> {
+                    viewModel.showCourses()
                     switchContent(CoursesContent.EXPLORE)
-                    mapManager.cameraPosition?.toCoordinate()?.let { mapCoordinate: Coordinate ->
-                        viewModel.fetchCourses(
-                            mapCoordinate = mapCoordinate,
-                            userCoordinate = null,
-                        )
-                    }
+                    searchThisArea()
                     true
                 }
 
                 R.id.favoritesMenu -> {
+                    viewModel.showCourses()
                     switchContent(CoursesContent.FAVORITES)
                     viewModel.fetchFavorites()
+                    true
+                }
+
+                R.id.settingsMenu -> {
+                    viewModel.showSettings()
                     true
                 }
 
@@ -566,28 +550,22 @@ class CoursesActivity :
             }
     }
 
-    private fun setUpNavigation(systemBars: Insets) {
-        binding.mainNavigation.setPadding(0, 0, 0, systemBars.bottom)
+    private fun setUpToolbar(systemBars: Insets) {
+        binding.mainToolBarWrapper.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+            topMargin = systemBars.top
+        }
     }
 
-    private fun setUpMapPadding(systemBars: Insets) {
+    private fun setUpMapPadding() {
         val bottomSheet = binding.mainBottomSheet
-        val screenHeight = Resources.getSystem().displayMetrics.heightPixels
-        mapManager.setBottomPadding(screenHeight - systemBars.bottom - bottomSheet.height)
+        mapManager.setBottomPadding(binding.mainContent.height - bottomSheet.y.toInt())
     }
 
-    private fun setUpBottomSheet(systemBars: Insets) {
+    private fun setUpBottomSheet() {
         val bottomSheet = binding.mainBottomSheet
         val screenHeight = Resources.getSystem().displayMetrics.heightPixels
 
-        bottomSheet.layoutParams.height = screenHeight / 2
-        bottomSheet.setPadding(
-            systemBars.left,
-            0,
-            systemBars.right,
-            systemBars.bottom + binding.mainBottomNavigation.height,
-        )
-
+        bottomSheet.layoutParams.height = (screenHeight * 0.4).toInt()
         val behavior = BottomSheetBehavior.from(bottomSheet)
         behavior.state = BottomSheetBehavior.STATE_EXPANDED
         behavior.addBottomSheetCallback(
@@ -601,12 +579,28 @@ class CoursesActivity :
                     bottomSheet: View,
                     slideOffset: Float,
                 ) {
-                    mapManager.setBottomPadding(
-                        screenHeight - systemBars.bottom - bottomSheet.y.toInt(),
-                    )
+                    mapManager.setBottomPadding(binding.mainContent.height - bottomSheet.y.toInt())
                 }
             },
         )
+    }
+
+    private fun setUpSettings() {
+        binding.mainSettings.apply {
+            setContent {
+                CoursePickTheme {
+                    SettingsScreen(
+                        onNavigateToPreferences = { navigateToPreferences() },
+                        onNavigateToFeedback = { navigateToFeedback() },
+                        onNavigateToPrivacyPolicy = { navigateToPrivacyPolicy() },
+                        onNavigateToOpenSourceNotice = { navigateToOpenSourceNotice() },
+                        onShowVerifiedLocations = { showVerifiedLocations() },
+                        installationId = coursePickApplication.installationId.value,
+                        onCopyInstallationId = { copyClientId() },
+                    )
+                }
+            }
+        }
     }
 
     private fun setUpBindingVariables() {
@@ -618,17 +612,17 @@ class CoursesActivity :
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    private fun fetchCourses(
-        mapCenter: Coordinate,
-        scope: Scope,
-    ) {
+    private fun fetchCourses() {
+        val mapPosition: Coordinate = mapCoordinateOrNull() ?: return
+        val scope: Scope = scopeOrNull() ?: return
+
         mapManager.fetchCurrentLocation(
             onSuccess = { userLatitude: Latitude, userLongitude: Longitude ->
                 val userCoordinate = Coordinate(userLatitude, userLongitude)
-                viewModel.fetchCourses(mapCenter, userCoordinate, scope)
+                viewModel.fetchCourses(mapPosition, userCoordinate, scope)
             },
             onFailure = {
-                viewModel.fetchCourses(mapCenter, null, scope)
+                viewModel.fetchCourses(mapPosition, null, scope)
             },
         )
     }
@@ -637,11 +631,6 @@ class CoursesActivity :
         val callback =
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    if (binding.mainDrawer.isOpen) {
-                        binding.mainDrawer.close()
-                        return
-                    }
-
                     if (doublePressDetector.doublePressed()) {
                         finish()
                     } else {
@@ -668,10 +657,14 @@ class CoursesActivity :
         viewModel.state.observe(this) { state: CoursesUiState ->
             courseAdapter.submitList(state.courses)
             mapManager.removeAllLines()
-            mapManager.setOnCourseClickListener(state.courses) { course: CourseItem ->
+            val courses: List<CourseItem> =
+                state.courses
+                    .filterIsInstance<CourseListItem.Course>()
+                    .map(CourseListItem.Course::item)
+            mapManager.setOnCourseClickListener(courses) { course: CourseItem ->
                 viewModel.select(course)
             }
-            mapManager.draw(state.courses)
+            mapManager.draw(courses)
         }
     }
 
@@ -718,6 +711,14 @@ class CoursesActivity :
                     Toast
                         .makeText(this, "코스까지 가는 길을 찾지 못했습니다.", Toast.LENGTH_SHORT)
                         .show()
+
+                CoursesUiEvent.FetchNextCoursesFailure ->
+                    Toast
+                        .makeText(
+                            this,
+                            getString(R.string.courses_fail_fetch_next_page),
+                            Toast.LENGTH_SHORT,
+                        ).show()
             }
         }
     }
@@ -731,7 +732,59 @@ class CoursesActivity :
         )
     }
 
+    private fun showNoticeIfNeeded() {
+        if (coursePickApplication.hasShownNoticeThisSession) {
+            return
+        }
+
+        val noticeId: String = NOTICE_ID_VERIFIED_LOCATION
+        if (!CoursePickPreferences.shouldShowNotice(noticeId)) {
+            return
+        }
+
+        coursePickApplication.markNoticeAsShown()
+        viewModel.fetchNotice(noticeId)
+    }
+
+    private fun setUpDialogs() {
+        binding.mainDialog.apply {
+            setContent {
+                CoursePickTheme {
+                    val state: CoursesUiState? by viewModel.state.observeAsState()
+
+                    if (state?.showVerifiedLocations == true) {
+                        state?.verifiedLocations?.let { verifiedLocations: Notice ->
+                            VerifiedLocationsDialog(
+                                imageUrl = verifiedLocations.imageUrl,
+                                title = verifiedLocations.title,
+                                description = verifiedLocations.description,
+                                onDismissRequest = viewModel::dismissVerifiedLocations,
+                            )
+                        }
+                    }
+
+                    state?.notice?.let { notice: Notice ->
+                        NoticeDialog(
+                            notice = notice,
+                            onDismissRequest = viewModel::dismissNotice,
+                            onDoNotShowAgain = CoursePickPreferences::setDoNotShowNotice,
+                        )
+                    }
+
+                    if (state?.showFilterDialog == true) {
+                        CourseFilterBottomSheet(
+                            coursesUiState = state ?: return@CoursePickTheme,
+                            onDismissRequest = viewModel::dismissFilterDialog,
+                            onFilterAction = viewModel::handleFilterAction,
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     private companion object {
         const val COURSE_COLOR_DIALOG_TAG = "CourseColorDescriptionDialog"
+        const val NOTICE_ID_VERIFIED_LOCATION = "verified_location"
     }
 }

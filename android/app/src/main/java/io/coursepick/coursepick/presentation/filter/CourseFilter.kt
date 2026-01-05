@@ -1,15 +1,22 @@
 package io.coursepick.coursepick.presentation.filter
 
+import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.Kilometer
 import io.coursepick.coursepick.domain.course.Meter
 import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.course.CourseListItem
 import io.coursepick.coursepick.presentation.model.Difficulty
+import kotlin.collections.filter
 
 data class CourseFilter(
-    val lengthRange: ClosedRange<Kilometer> =
-        Kilometer(MINIMUM_LENGTH_RANGE)..Kilometer(MAXIMUM_LENGTH_RANGE),
-    val difficulties: Set<Difficulty> = setOf(Difficulty.EASY, Difficulty.NORMAL, Difficulty.HARD),
+    val lengthRange: ClosedRange<Kilometer>,
+    private val _difficulties: Set<Difficulty>,
 ) {
+    val difficulties: Set<Difficulty> get() = _difficulties.toSet()
+
+    val lengthRangeAsFloat: ClosedFloatingPointRange<Float> =
+        lengthRange.start.value.toFloat()..lengthRange.endInclusive.value.toFloat()
+
     private val minimumLength: Meter = lengthRange.start.toMeter()
     private val maximumLength: Meter =
         if (lengthRange.endInclusive == Kilometer(MAXIMUM_LENGTH_RANGE)) {
@@ -18,11 +25,27 @@ data class CourseFilter(
             lengthRange.endInclusive.toMeter()
         }
 
+    fun filteredCourses(courses: List<CourseListItem>): List<CourseListItem> =
+        courses.filter { courseListItem: CourseListItem ->
+            courseListItem is CourseListItem.Loading ||
+                (
+                    courseListItem is CourseListItem.Course &&
+                        this.matches(
+                            courseListItem.item,
+                        )
+                )
+        }
+
     fun matches(courseItem: CourseItem): Boolean =
         courseItem.difficulty in difficulties && Meter(courseItem.length) in minimumLength..maximumLength
 
     companion object {
         const val MINIMUM_LENGTH_RANGE = 0.0
         const val MAXIMUM_LENGTH_RANGE = 21.0
+        val None =
+            CourseFilter(
+                lengthRange = Kilometer(MINIMUM_LENGTH_RANGE)..Kilometer(MAXIMUM_LENGTH_RANGE),
+                _difficulties = setOf(Difficulty.EASY, Difficulty.NORMAL, Difficulty.HARD),
+            )
     }
 }
