@@ -15,4 +15,12 @@ data class CoordinateDto(
             latitude = Latitude(latitude),
             longitude = Longitude(longitude),
         )
+
+    companion object {
+        operator fun invoke(coordinate: Coordinate): CoordinateDto =
+            CoordinateDto(
+                latitude = coordinate.latitude.value,
+                longitude = coordinate.longitude.value,
+            )
+    }
 }
