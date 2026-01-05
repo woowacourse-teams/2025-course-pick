@@ -33,7 +33,7 @@ public class CourseWebController implements CourseWebApi {
             @RequestParam(value = "difficulties", required = false) List<String> difficulties,
             @RequestParam(value = "page", required = false) Integer page
     ) {
-        CoursesResponse response = courseApplicationService.findNearbyCourses(mapLatitude, mapLongitude, scope, userLatitude, userLongitude, page);
+        CoursesResponse response = courseApplicationService.findNearbyCourses(mapLatitude, mapLongitude, scope, userLatitude, userLongitude, minLength, maxLength, difficulties, page);
         return CourseWebResponse.from(response.courses());
     }
 

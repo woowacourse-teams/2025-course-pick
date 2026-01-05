@@ -6,8 +6,6 @@ import coursepick.coursepick.domain.course.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,19 +23,12 @@ public class CourseApplicationService {
     private final RouteFinder routeFinder;
 
     @Transactional(readOnly = true)
-    public CoursesResponse findNearbyCourses(double mapLatitude, double mapLongitude, int scope, @Nullable Double userLatitude, @Nullable Double userLongitude, @Nullable Integer pageNumber) {
-        final Coordinate mapPosition = new Coordinate(mapLatitude, mapLongitude);
-        final Meter meter = new Meter(scope).clamp(1000, 3000);
-        final Pageable pageable = createPageable(pageNumber);
+    public CoursesResponse findNearbyCourses(double mapLatitude, double mapLongitude, int scope, @Nullable Double userLatitude, @Nullable Double userLongitude, @Nullable Integer minLength, @Nullable Integer maxLength, @Nullable List<String> difficulties, @Nullable Integer pageNumber) {
+        CourseFindCondition condition = new CourseFindCondition(mapLatitude, mapLongitude, scope, minLength, maxLength, difficulties, pageNumber);
 
-        final Slice<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(mapPosition, meter, pageable);
+        final Slice<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(condition);
 
         return CoursesResponse.from(coursesWithinScope, createUserPositionOrNull(userLatitude, userLongitude));
-    }
-
-    private static Pageable createPageable(@Nullable Integer pageNumber) {
-        if (pageNumber == null || pageNumber < 0) return PageRequest.of(0, 10);
-        else return PageRequest.of(pageNumber, 10);
     }
 
     private static Coordinate createUserPositionOrNull(@Nullable Double userLatitude, @Nullable Double userLongitude) {
