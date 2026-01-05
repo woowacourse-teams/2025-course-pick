@@ -72,10 +72,10 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
     private static void addLengthCriteria(CourseFindCondition condition, Query query) {
         Criteria lengthCriteria = Criteria.where("length");
         if (condition.minLength() != null) {
-            lengthCriteria.gte(condition.minLength());
+            lengthCriteria.gte(condition.minLength().value());
         }
         if (condition.maxLength() != null) {
-            lengthCriteria.lte(condition.maxLength());
+            lengthCriteria.lte(condition.maxLength().value());
         }
 
         query.addCriteria(lengthCriteria);
@@ -84,7 +84,7 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
     private static void addDifficultyCriteria(CourseFindCondition condition, Query query) {
         Criteria difficultyCriteria = Criteria.where("difficulty")
                 .in(condition.difficulties());
-        
+
         query.addCriteria(difficultyCriteria);
     }
 
