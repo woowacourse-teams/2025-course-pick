@@ -1,9 +1,10 @@
 package coursepick.coursepick.infrastructure.mongodb;
 
-import coursepick.coursepick.domain.course.*;
+import coursepick.coursepick.domain.course.Course;
+import coursepick.coursepick.domain.course.CourseFindCondition;
+import coursepick.coursepick.domain.course.CourseName;
+import coursepick.coursepick.domain.course.CourseRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -43,28 +44,20 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
     }
 
     @Override
-    public Slice<Course> findAllHasDistanceWithin(Coordinate target, Meter distance, Pageable pageable) {
-        if (target == null || distance == null) return Page.empty(pageable);
-
+    public Slice<Course> findAllHasDistanceWithin(CourseFindCondition condition) {
         Criteria criteria = Criteria.where("segments")
-                .near(new GeoJsonPoint(target.longitude(), target.latitude()))
-                .maxDistance(distance.value());
-
-        if (pageable == null) {
-            Query query = Query.query(criteria);
-
-            return new SliceImpl<>(mongoTemplate.find(query, Course.class));
-        }
+                .near(new GeoJsonPoint(condition.mapPosition().longitude(), condition.mapPosition().latitude()))
+                .maxDistance(condition.scope().value());
 
         Query query = Query.query(criteria)
-                .with(pageable)
-                .limit(pageable.getPageSize() + 1);
+                .with(condition.pageable())
+                .limit(condition.pageSize() + 1);
 
         List<Course> result = mongoTemplate.find(query, Course.class);
 
-        boolean hasNext = result.size() > pageable.getPageSize();
+        boolean hasNext = result.size() > condition.pageSize();
         if (hasNext) result.removeLast();
-        return new SliceImpl<>(result, pageable, hasNext);
+        return new SliceImpl<>(result, condition.pageable(), hasNext);
     }
 
     @Override

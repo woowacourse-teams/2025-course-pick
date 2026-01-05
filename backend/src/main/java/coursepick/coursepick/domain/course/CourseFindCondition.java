@@ -1,16 +1,12 @@
 package coursepick.coursepick.domain.course;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.Accessors;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
-@Getter
-@Accessors(fluent = true)
 @RequiredArgsConstructor
 public class CourseFindCondition {
 
@@ -32,6 +28,10 @@ public class CourseFindCondition {
 
     public Pageable pageable() {
         if (pageNumber == null || pageNumber < 0) return PageRequest.of(0, 10);
-        else return PageRequest.of(pageNumber, 10);
+        else return PageRequest.of(pageNumber, pageSize());
+    }
+
+    public int pageSize() {
+        return 10;
     }
 }
