@@ -25,9 +25,12 @@ public class CourseWebController implements CourseWebApi {
     public List<CourseWebResponse> findNearbyCourses(
             @RequestParam("mapLat") double mapLatitude,
             @RequestParam("mapLng") double mapLongitude,
+            @RequestParam("scope") int scope,
             @RequestParam(value = "userLat", required = false) Double userLatitude,
             @RequestParam(value = "userLng", required = false) Double userLongitude,
-            @RequestParam("scope") int scope,
+            @RequestParam(value = "minLength", required = false) Integer minLength,
+            @RequestParam(value = "maxLength", required = false) Integer maxLength,
+            @RequestParam(value = "difficulties", required = false) List<String> difficulties,
             @RequestParam(value = "page", required = false) Integer page
     ) {
         CoursesResponse response = courseApplicationService.findNearbyCourses(mapLatitude, mapLongitude, userLatitude, userLongitude, scope, page);
