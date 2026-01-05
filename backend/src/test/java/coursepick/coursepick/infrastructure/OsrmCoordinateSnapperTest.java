@@ -13,7 +13,7 @@ class OsrmCoordinateSnapperTest extends AbstractMockServerTest {
 
     @Test
     void 좌표_리스트를_도로에_매칭할_수_있다() {
-        mock(osrmMatchResponse());
+        mock(osrmSnapResponse());
         var sut = new OsrmCoordinateSnapper(anyRestClient());
 
         List<Coordinate> originals = List.of(
@@ -28,7 +28,7 @@ class OsrmCoordinateSnapperTest extends AbstractMockServerTest {
     }
 
     // Mock OSRM Match API 응답
-    private static String osrmMatchResponse() {
+    private static String osrmSnapResponse() {
         return """
                 {
                   "code": "Ok",
@@ -53,7 +53,7 @@ class OsrmCoordinateSnapperTest extends AbstractMockServerTest {
 
     @Test
     void 매칭된_좌표에_원본_elevation이_보간된다() {
-        mock(osrmMatchResponse());
+        mock(osrmSnapResponse());
         var sut = new OsrmCoordinateSnapper(anyRestClient());
 
         List<Coordinate> originals = List.of(
@@ -91,7 +91,7 @@ class OsrmCoordinateSnapperTest extends AbstractMockServerTest {
 
     @Test
     void 응답이_오래걸리면_원본_좌표를_반환한다() {
-        mock(osrmMatchResponse(), 6000);
+        mock(osrmSnapResponse(), 6000);
         var sut = new OsrmCoordinateSnapper(anyRestClient());
 
         List<Coordinate> originals = List.of(

@@ -3,14 +3,9 @@ package coursepick.coursepick.presentation;
 import coursepick.coursepick.application.CourseParserFacade;
 import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.exception.ErrorType;
-import coursepick.coursepick.domain.course.Coordinate;
-import coursepick.coursepick.domain.course.Course;
-import coursepick.coursepick.domain.course.CourseName;
-import coursepick.coursepick.domain.course.CourseRepository;
-import coursepick.coursepick.presentation.api.AdminWebApi;
-import coursepick.coursepick.presentation.dto.AdminCourseWebResponse;
-import coursepick.coursepick.presentation.dto.AdminLoginWebRequest;
-import coursepick.coursepick.presentation.dto.CourseReplaceWebRequest;
+import coursepick.coursepick.domain.course.*;
+import coursepick.coursepick.presentation.dto.*;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,12 +25,14 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class AdminWebController implements AdminWebApi {
+@Hidden
+public class AdminWebController {
 
     private static final String TOKEN_COOKIE_KEY = "admin-token";
     private static final String KAKAO_API_KEY_PLACEHOLDER = "KAKAO_API_KEY_PLACEHOLDER";
     private final CourseRepository courseRepository;
     private final CourseParserFacade courseParserFacade;
+    private final CoordinateSnapper coordinateSnapper;
     @Value("${admin.token}")
     private String adminToken;
     @Value("${admin.kakao-map-api-key}")
@@ -144,5 +141,11 @@ public class AdminWebController implements AdminWebApi {
 
         // TODO : 분산 트랜잭션 고민
         courseRepository.delete(course);
+    }
+
+    @PostMapping("/admin/api/coordinates/snap")
+    public CoordinatesSnapWebResponse snapCoordinates(@RequestBody @Valid CoordinatesSnapWebRequest request) {
+        List<Coordinate> snapped = coordinateSnapper.snap(request.coordinates());
+        return CoordinatesSnapWebResponse.from(snapped);
     }
 }
