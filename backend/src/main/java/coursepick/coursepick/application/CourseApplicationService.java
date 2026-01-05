@@ -2,11 +2,7 @@ package coursepick.coursepick.application;
 
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
-import coursepick.coursepick.domain.course.Coordinate;
-import coursepick.coursepick.domain.course.Course;
-import coursepick.coursepick.domain.course.CourseRepository;
-import coursepick.coursepick.domain.course.Meter;
-import coursepick.coursepick.domain.course.RouteFinder;
+import coursepick.coursepick.domain.course.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
@@ -29,7 +25,7 @@ public class CourseApplicationService {
     private final RouteFinder routeFinder;
 
     @Transactional(readOnly = true)
-    public CoursesResponse findNearbyCourses(double mapLatitude, double mapLongitude, @Nullable Double userLatitude, @Nullable Double userLongitude, int scope, @Nullable Integer pageNumber) {
+    public CoursesResponse findNearbyCourses(double mapLatitude, double mapLongitude, int scope, @Nullable Double userLatitude, @Nullable Double userLongitude, @Nullable Integer pageNumber) {
         final Coordinate mapPosition = new Coordinate(mapLatitude, mapLongitude);
         final Meter meter = new Meter(scope).clamp(1000, 3000);
         final Pageable pageable = createPageable(pageNumber);
