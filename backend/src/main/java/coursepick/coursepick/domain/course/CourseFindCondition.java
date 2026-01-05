@@ -26,6 +26,26 @@ public class CourseFindCondition {
         return new Meter(scope).clamp(1000, 3000);
     }
 
+    public @Nullable Meter minLength() {
+        if (minLength == null) return null;
+
+        return new Meter(minLength);
+    }
+
+    public @Nullable Meter maxLength() {
+        if (maxLength == null) return null;
+
+        return new Meter(maxLength);
+    }
+
+    public @Nullable List<Difficulty> difficulties() {
+        if (difficulties == null) return null;
+
+        return difficulties.stream()
+                .map(Difficulty::fromEngName)
+                .toList();
+    }
+
     public Pageable pageable() {
         if (pageNumber == null || pageNumber < 0) return PageRequest.of(0, 10);
         else return PageRequest.of(pageNumber, pageSize());

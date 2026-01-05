@@ -45,12 +45,13 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
 
     @Override
     public Slice<Course> findAllHasDistanceWithin(CourseFindCondition condition) {
-        Criteria criteria = Criteria.where("segments")
-                .near(new GeoJsonPoint(condition.mapPosition().longitude(), condition.mapPosition().latitude()))
-                .maxDistance(condition.scope().value());
+        Query query = new Query();
 
-        Query query = Query.query(criteria)
-                .with(condition.pageable())
+        addPositionAndScopeCriteria(condition, query);
+        if (condition.minLength() != null || condition.maxLength() != null) addLengthCriteria(condition, query);
+        if (condition.difficulties() != null && !condition.difficulties().isEmpty()) addDifficultyCriteria(condition, query);
+
+        query.with(condition.pageable())
                 .limit(condition.pageSize() + 1);
 
         List<Course> result = mongoTemplate.find(query, Course.class);
@@ -58,6 +59,33 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
         boolean hasNext = result.size() > condition.pageSize();
         if (hasNext) result.removeLast();
         return new SliceImpl<>(result, condition.pageable(), hasNext);
+    }
+
+    private static void addPositionAndScopeCriteria(CourseFindCondition condition, Query query) {
+        Criteria positionCriteria = Criteria.where("segments")
+                .near(new GeoJsonPoint(condition.mapPosition().longitude(), condition.mapPosition().latitude()))
+                .maxDistance(condition.scope().value());
+
+        query.addCriteria(positionCriteria);
+    }
+
+    private static void addLengthCriteria(CourseFindCondition condition, Query query) {
+        Criteria lengthCriteria = Criteria.where("length");
+        if (condition.minLength() != null) {
+            lengthCriteria.gte(condition.minLength());
+        }
+        if (condition.maxLength() != null) {
+            lengthCriteria.lte(condition.maxLength());
+        }
+
+        query.addCriteria(lengthCriteria);
+    }
+
+    private static void addDifficultyCriteria(CourseFindCondition condition, Query query) {
+        Criteria difficultyCriteria = Criteria.where("difficulty")
+                .in(condition.difficulties());
+        
+        query.addCriteria(difficultyCriteria);
     }
 
     @Override
