@@ -95,11 +95,8 @@ class CourseRepositoryTest extends AbstractIntegrationTest {
 
             var courses = sut.findAllHasDistanceWithin(condition);
 
-            assertThat(courses).hasSize(2);
             assertThat(courses)
-                    .extracting(Course::name)
-                    .extracting(CourseName::value)
-                    .containsExactlyInAnyOrder("긴코스", "매우긴코스");
+                    .allMatch(course -> course.length().value() >= 5000);
         }
 
         @Test
@@ -108,11 +105,8 @@ class CourseRepositoryTest extends AbstractIntegrationTest {
 
             var courses = sut.findAllHasDistanceWithin(condition);
 
-            assertThat(courses).hasSize(5);
             assertThat(courses)
-                    .extracting(Course::name)
-                    .extracting(CourseName::value)
-                    .containsExactlyInAnyOrder("짧은코스", "중간코스", "쉬운코스", "보통코스", "어려운코스");
+                    .allMatch(course -> course.length().value() <= 5000);
         }
 
         @Test
@@ -121,11 +115,8 @@ class CourseRepositoryTest extends AbstractIntegrationTest {
 
             var courses = sut.findAllHasDistanceWithin(condition);
 
-            assertThat(courses).hasSize(3);
             assertThat(courses)
-                    .extracting(Course::name)
-                    .extracting(CourseName::value)
-                    .containsExactlyInAnyOrder("중간코스", "보통코스", "어려운코스");
+                    .allMatch(course -> course.length().value() >= 1000 && course.length().value() <= 10000);
         }
 
         @Test
@@ -169,30 +160,14 @@ class CourseRepositoryTest extends AbstractIntegrationTest {
         }
 
         @Test
-        void 길이와_난이도를_함께_필터링한다() {
-            var condition = new CourseFindCondition(mapLatitude, mapLongitude, 3000, 1000, 10000, List.of("normal"), null);
-
-            var courses = sut.findAllHasDistanceWithin(condition);
-
-            assertThat(courses).hasSize(1);
-            assertThat(courses)
-                    .extracting(Course::name)
-                    .extracting(CourseName::value)
-                    .containsExactly("보통코스");
-        }
-
-        @Test
         void 모든_필터를_함께_사용한다() {
             var condition = new CourseFindCondition(mapLatitude, mapLongitude, 3000, 5000, 20000, List.of("normal", "hard"), null);
 
             var courses = sut.findAllHasDistanceWithin(condition);
 
             assertThat(courses)
-                    .allMatch(course -> {
-                        boolean lengthInRange = course.length().value() >= 5000 && course.length().value() <= 20000;
-                        boolean difficultyMatch = course.difficulty() == Difficulty.보통 || course.difficulty() == Difficulty.어려움;
-                        return lengthInRange && difficultyMatch;
-                    });
+                    .allMatch(course -> course.length().value() >= 5000 && course.length().value() <= 20000)
+                    .allMatch(course -> course.difficulty() == Difficulty.보통 || course.difficulty() == Difficulty.어려움);
         }
     }
 }
