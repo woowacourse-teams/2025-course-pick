@@ -8,7 +8,6 @@ import java.util.List;
 
 public record CoordinatesSnapWebRequest(
         @NotNull
-        @Size(min = 2)
         List<Coordinate> coordinates
 ) {
 }
