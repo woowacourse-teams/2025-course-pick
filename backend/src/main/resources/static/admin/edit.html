@@ -2702,7 +2702,7 @@
         matchButton.textContent = '보정 중...';
 
         try {
-            const response = await axios.post('/admin/api/coordinates/match', {
+            const response = await axios.post('/admin/api/coordinates/snap', {
                 coordinates: coordsToMatch
             }, {
                 headers: { 'Content-Type': 'application/json' },
