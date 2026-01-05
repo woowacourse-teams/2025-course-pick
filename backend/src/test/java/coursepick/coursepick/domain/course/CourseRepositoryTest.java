@@ -45,9 +45,6 @@ class CourseRepositoryTest extends AbstractIntegrationTest {
         var condition = new CourseFindCondition(mapLatitude, mapLongitude, scope, null, null, null, null);
 
         var courses = sut.findAllHasDistanceWithin(condition);
-        for (Course course : courses) {
-            System.out.println(course.name());
-        }
 
         assertThat(courses).hasSize(expectedSize);
     }
