@@ -66,8 +66,6 @@ services:
       - 'OSRM_URL=${OSRM_URL}'
       - 'DEV_SERVER_URL=${DEV_SERVER_URL}'
       - 'PROD_SERVER_URL=${PROD_SERVER_URL}'
-      - 'GCP_DRIVE_FOLDER_ID=${GCP_DRIVE_FOLDER_ID}'
-      - 'GCP_CREDENTIALS_PATH=${GCP_CREDENTIALS_PATH}'
       - 'BASE_URL=${BASE_URL}'
       - 'JWT_SECRET_KEY=${JWT_SECRET}'
     volumes:
