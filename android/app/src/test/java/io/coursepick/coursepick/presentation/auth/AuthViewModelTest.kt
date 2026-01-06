@@ -15,15 +15,6 @@ class AuthViewModelTest {
         // given
         val viewModel =
             AuthViewModel(
-                socialAuthenticator =
-                    object : SocialAuthenticator {
-                        override fun authenticate(
-                            onSuccess: (String) -> Unit,
-                            onFailure: (Throwable) -> Unit,
-                        ) {
-                            onFailure(Throwable("소셜 로그인 실패"))
-                        }
-                    },
                 authRepository =
                     object : AuthRepository {
                         override suspend fun sign(
@@ -34,7 +25,17 @@ class AuthViewModelTest {
             )
 
         // when
-        viewModel.authenticate("kakao")
+        viewModel.authenticate(
+            "kakao",
+            object : SocialAuthenticator {
+                override fun authenticate(
+                    onSuccess: (String) -> Unit,
+                    onFailure: (Throwable) -> Unit,
+                ) {
+                    onFailure(Throwable("소셜 로그인 실패"))
+                }
+            },
+        )
 
         // then
         assertThat(viewModel.event.value).isEqualTo(AuthUiEvent.AuthenticateFailure)
