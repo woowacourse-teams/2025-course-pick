@@ -4,6 +4,7 @@ services:
   mongodb:
     image: mongo:8.0.12
     container_name: mongodb
+    restart: unless-stopped
     ports:
       - "27017:27017"
     environment:
@@ -12,11 +13,11 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
     volumes:
       - /var/lib/coursepick/mongodb:/data/db
-    restart: unless-stopped
 
   mongo-express:
     image: mongo-express
     container_name: mongo-express
+    restart: unless-stopped
     ports:
       - "8081:8081"
     environment:
@@ -29,4 +30,3 @@ services:
       - ME_CONFIG_BASICAUTH_PASSWORD=${MONGO_ROOT_PASSWORD}
     depends_on:
       - mongodb
-    restart: unless-stopped

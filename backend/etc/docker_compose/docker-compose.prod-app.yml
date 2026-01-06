@@ -4,6 +4,7 @@ services:
   backend:
     image: coursepicks/coursepick-backend:prod
     container_name: coursepick-backend
+    restart: unless-stopped
     ports:
       - "80:8080"
     environment:
@@ -21,15 +22,14 @@ services:
     volumes:
       - /var/lib/coursepick/logs:/var/lib/coursepick/logs
       - /var/lib/coursepick/gcp-credentials.json:/var/lib/coursepick/gcp-credentials.json
-    restart: unless-stopped
 
   promtail:
     image: grafana/promtail:3.3.2
     container_name: promtail
+    restart: unless-stopped
     volumes:
       - ./promtail.yml:/etc/promtail/promtail-config.yml
       - /var/lib/coursepick/logs:/app/logs:ro
     command: -config.file=/etc/promtail/promtail-config.yml
-    restart: unless-stopped
     depends_on:
       - backend

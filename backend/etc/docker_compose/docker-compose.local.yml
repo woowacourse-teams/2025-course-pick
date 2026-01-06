@@ -4,7 +4,7 @@ services:
   mongodb:
     image: mongo:8.0.12
     container_name: mongodb
-    restart: always
+    restart: unless-stopped
     ports:
       - "27017:27017"
     volumes:
@@ -16,7 +16,7 @@ services:
   mongo-express:
     image: mongo-express
     container_name: mongo-express
-    restart: always
+    restart: unless-stopped
     ports:
       - "8081:8081"
     depends_on:
