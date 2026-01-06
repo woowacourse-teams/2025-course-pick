@@ -5,7 +5,7 @@ import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
-import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.qualifiers.ActivityContext
 import io.coursepick.coursepick.domain.auth.SocialAuthenticator
 import timber.log.Timber
 import javax.inject.Inject
@@ -13,7 +13,7 @@ import javax.inject.Inject
 class KakaoAuthenticator
     @Inject
     constructor(
-        @ApplicationContext private val context: Context,
+        @ActivityContext private val context: Context,
     ) : SocialAuthenticator {
         private val client = UserApiClient.instance
 
