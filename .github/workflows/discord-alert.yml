@@ -45,10 +45,10 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
           args: |
-            ―――――――――――――――――――――――――
             🙇‍♂️ **리뷰 요청**
             🎯 {{ EVENT_PAYLOAD.sender.login }} → ${{ env.MENTION_TARGET }}
             🔗 [{{ EVENT_PAYLOAD.pull_request.title }}](<{{ EVENT_PAYLOAD.pull_request.html_url }}>)
+            ―――――――――――――――――――――――――
 
       - name: 리뷰 완료 알림
         if: env.SHOULD_NOTIFY == 'true' && github.event_name == 'pull_request_review'
@@ -57,7 +57,7 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
           args: |
-            ―――――――――――――――――――――――――
             ✅ **리뷰 등록**
             🎯 {{ EVENT_PAYLOAD.sender.login }} → ${{ env.MENTION_TARGET }}
             🔗 [{{ EVENT_PAYLOAD.pull_request.title }}](<{{ EVENT_PAYLOAD.review.html_url }}>)
+            ―――――――――――――――――――――――――
