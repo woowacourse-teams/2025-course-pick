@@ -5,22 +5,22 @@ services:
     image: coursepicks/coursepick-backend:prod
     container_name: coursepick-backend
     ports:
-      - '80:8080'
+      - "80:8080"
     environment:
-      - 'SPRING_PROFILES_ACTIVE=${PROFILE}'
-      - 'DB_URL=${DB_URL}'
-      - 'DB_USERNAME=${DB_USERNAME}'
-      - 'DB_PASSWORD=${DB_PASSWORD}'
-      - 'MONGO_HOST=${MONGO_HOST}'
-      - 'MONGO_PORT=${MONGO_PORT}'
-      - 'MONGO_DATABASE=${MONGO_DATABASE}'
-      - 'MONGO_USERNAME=${MONGO_USERNAME}'
-      - 'MONGO_PASSWORD=${MONGO_PASSWORD}'
-      - 'MONGO_AUTH_DATABASE=${MONGO_AUTH_DATABASE}'
-      - 'ADMIN_TOKEN=${ADMIN_TOKEN}'
-      - 'OSRM_URL=${OSRM_URL}'
-      - 'BASE_URL=${BASE_URL}'
-      - 'JWT_SECRET_KEY=${JWT_SECRET}'
+      - SPRING_PROFILES_ACTIVE=${PROFILE}
+      - DB_URL=${DB_URL}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - MONGO_HOST=${MONGO_HOST}
+      - MONGO_PORT=${MONGO_PORT}
+      - MONGO_DATABASE=${MONGO_DATABASE}
+      - MONGO_USERNAME=${MONGO_USERNAME}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_AUTH_DATABASE=${MONGO_AUTH_DATABASE}
+      - ADMIN_TOKEN=${ADMIN_TOKEN}
+      - OSRM_URL=${OSRM_URL}
+      - BASE_URL=${BASE_URL}
+      - JWT_SECRET_KEY=${JWT_SECRET}
     volumes:
       - /var/lib/coursepick/logs:/var/lib/coursepick/logs
       - /var/lib/coursepick/gcp-credentials.json:/var/lib/coursepick/gcp-credentials.json
