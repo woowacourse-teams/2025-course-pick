@@ -1,9 +1,8 @@
 package io.coursepick.coursepick.presentation.customcourse
 
-import androidx.compose.runtime.Composable
 import io.coursepick.coursepick.domain.course.Course
 
-data class CustomCourseItem(
+data class CustomCourseUiModel(
     val course: Course,
     val selected: Boolean,
 )
