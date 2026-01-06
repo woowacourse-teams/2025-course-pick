@@ -38,9 +38,6 @@ services:
       - "80:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=${PROFILE}
-      - DB_URL=${DB_URL}
-      - DB_USERNAME=${DB_USERNAME}
-      - DB_PASSWORD=${DB_PASSWORD}
       - MONGO_HOST=${MONGO_HOST}
       - MONGO_PORT=${MONGO_PORT}
       - MONGO_DATABASE=${MONGO_DATABASE}
