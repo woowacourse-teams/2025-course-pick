@@ -15,14 +15,16 @@ import javax.inject.Inject
 class AuthViewModel
     @Inject
     constructor(
-        private val socialAuthenticator: SocialAuthenticator,
         private val authRepository: AuthRepository,
     ) : ViewModel() {
         private val _event: MutableSingleLiveData<AuthUiEvent> = MutableSingleLiveData()
         val event: SingleLiveData<AuthUiEvent> get() = _event
 
-        fun authenticate(socialType: String) {
-            socialAuthenticator.authenticate(
+        fun authenticate(
+            socialType: String,
+            authenticator: SocialAuthenticator,
+        ) {
+            authenticator.authenticate(
                 onSuccess = { socialAccessToken: String ->
                     viewModelScope.launch {
                         runCatching {
