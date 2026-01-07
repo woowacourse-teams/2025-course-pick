@@ -93,11 +93,11 @@ public class CourseApplicationService {
     }
 
     @Transactional
-    public CourseResponse create(String userId, List<Coordinate> coordinates, String name, RoadType roadType, Difficulty difficulty) {
+    public CourseResponse create(String userId, List<Coordinate> coordinates, String name, String roadType, String difficulty) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> NOT_EXIST_USER.create(userId));
 
-        Course course = Course.createFromUser(coordinates, name, roadType, difficulty);
+        Course course = Course.createFromUser(coordinates, name, RoadType.valueOf(roadType), Difficulty.valueOf(difficulty));
         Course savedCourse = courseRepository.save(course);
 
         UserCreatedCourse userCreatedCourse = new UserCreatedCourse(user.id(), savedCourse.id(), false);

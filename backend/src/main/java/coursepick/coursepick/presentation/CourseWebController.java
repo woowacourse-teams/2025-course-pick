@@ -81,9 +81,13 @@ public class CourseWebController implements CourseWebApi {
     @Login
     @PostMapping("/courses/create")
     public CourseWebResponse create(@UserId String userId, @RequestBody CourseCreateWebRequest courseCreateWebRequest) {
+        List<Coordinate> coordinates = courseCreateWebRequest.coordinates().stream()
+                .map(dto -> new Coordinate(dto.latitude(), dto.longitude()))
+                .toList();
+
         CourseResponse courseResponse = courseApplicationService.create(
                 userId,
-                courseCreateWebRequest.coordinates(),
+                coordinates,
                 courseCreateWebRequest.name(),
                 courseCreateWebRequest.roadType(),
                 courseCreateWebRequest.difficulty()
