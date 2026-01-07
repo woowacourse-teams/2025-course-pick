@@ -14,9 +14,9 @@ public class UserCreatedCourse {
     private final String id;
     private final String userId;
     private final String courseId;
-    private boolean visibility;
+    private boolean isPublic;
 
-    public UserCreatedCourse(String userId, String courseId, boolean visibility) {
-        this(null, userId, courseId, visibility);
+    public UserCreatedCourse(String userId, String courseId, boolean isPublic) {
+        this(null, userId, courseId, isPublic);
     }
 }
