@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -102,7 +103,142 @@ public interface CourseWebApi {
             List<String> coursesId
     );
 
-    SnapWebResponse snapCoordinates(SnapWebRequest snapWebRequest);
+    @Operation(
+            summary = "좌표를 도로에 스냅",
+            description = "사용자가 입력한 좌표들을 가장 가까운 도로에 정렬하고, 총 거리를 계산하여 반환합니다. OSRM Match API를 사용하여 실제 도로 경로에 맞춰 좌표를 보정합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "좌표 스냅 성공",
+                    content = @Content(schema = @Schema(implementation = SnapWebResponse.class))
+            ),
+            @ApiResponse(responseCode = "400", content = @Content(examples = {
+                    @ExampleObject(
+                            name = "위도가 범위 외인 경우",
+                            ref = "#/components/examples/INVALID_LATITUDE_RANGE"
+                    ),
+                    @ExampleObject(
+                            name = "경도가 범위 외인 경우",
+                            ref = "#/components/examples/INVALID_LONGITUDE_RANGE"
+                    )
+            })),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "인증 실패",
+                    content = @Content(examples = {
+                            @ExampleObject(ref = "#/components/examples/AUTHENTICATION_FAIL")
+                    })
+            )
+    })
+    SnapWebResponse snapCoordinates(
+            @RequestBody(
+                    description = "도로에 스냅할 좌표 목록",
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(implementation = SnapWebRequest.class),
+                            examples = @ExampleObject(
+                                    name = "좌표 스냅 요청 예시",
+                                    value = """
+                                            {
+                                              "coordinates": [
+                                                {
+                                                  "latitude": 37.5180,
+                                                  "longitude": 127.0280
+                                                },
+                                                {
+                                                  "latitude": 37.6180,
+                                                  "longitude": 127.1280
+                                                }
+                                              ]
+                                            }
+                                            """
+                            )
+                    )
+            )
+            SnapWebRequest snapWebRequest
+    );
 
-    CourseWebResponse create(String userId, CourseCreateWebRequest courseCreateWebRequest);
+    @Operation(
+            summary = "사용자 코스 추가",
+            description = "사용자가 직접 새로운 러닝 코스를 생성합니다. 좌표 목록, 코스명, 도로 타입, 난이도를 입력받아 코스를 저장하고, 사용자와의 소유 관계를 생성합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "코스 생성 성공",
+                    content = @Content(schema = @Schema(implementation = CourseWebResponse.class))
+            ),
+            @ApiResponse(responseCode = "400", content = @Content(examples = {
+                    @ExampleObject(
+                            name = "위도가 범위 외인 경우",
+                            ref = "#/components/examples/INVALID_LATITUDE_RANGE"
+                    ),
+                    @ExampleObject(
+                            name = "경도가 범위 외인 경우",
+                            ref = "#/components/examples/INVALID_LONGITUDE_RANGE"
+                    ),
+                    @ExampleObject(
+                            name = "허용되지 않은 도로 타입",
+                            ref = "#/components/examples/INVALID_ROAD_TYPE"
+                    ),
+                    @ExampleObject(
+                            name = "허용되지 않은 난이도",
+                            ref = "#/components/examples/INVALID_DIFFICULTY"
+                    )
+            })),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "인증 실패",
+                    content = @Content(examples = {
+                            @ExampleObject(ref = "#/components/examples/AUTHENTICATION_FAIL")
+                    })
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "사용자를 찾을 수 없음",
+                    content = @Content(examples = {
+                            @ExampleObject(ref = "#/components/examples/NOT_EXIST_USER")
+                    })
+            )
+    })
+    CourseWebResponse create(
+            @Parameter(hidden = true) String userId,
+            @RequestBody(
+                    description = "생성할 코스 정보",
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(implementation = CourseCreateWebRequest.class),
+                            examples = @ExampleObject(
+                                    name = "코스 생성 요청 예시",
+                                    value = """
+                                            {
+                                              "name": "한강 러닝 코스",
+                                              "roadType": "트레일",
+                                              "difficulty": "보통",
+                                              "coordinates": [
+                                                {
+                                                  "latitude": 37.5180,
+                                                  "longitude": 127.0280
+                                                },
+                                                {
+                                                  "latitude": 37.5175,
+                                                  "longitude": 127.0270
+                                                },
+                                                {
+                                                  "latitude": 37.5170,
+                                                  "longitude": 127.0265
+                                                },
+                                                {
+                                                  "latitude": 37.5180,
+                                                  "longitude": 127.0280
+                                                }
+                                              ]
+                                            }
+                                            """
+                            )
+                    )
+            )
+            CourseCreateWebRequest courseCreateWebRequest
+    );
 }
