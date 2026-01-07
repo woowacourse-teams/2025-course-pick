@@ -67,7 +67,7 @@ public class CourseWebController implements CourseWebApi {
 
     @Override
     @Login
-    @PostMapping("/courses/snaps")
+    @PostMapping("/courses/snap")
     public SnapWebResponse snapCoordinates(@RequestBody SnapWebRequest snapWebRequest) {
         List<Coordinate> coordinates = snapWebRequest.coordinates().stream()
                 .map(dto -> new Coordinate(dto.latitude(), dto.longitude()))
