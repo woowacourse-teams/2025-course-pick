@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -24,10 +23,6 @@
         <variable
             name="clientId"
             type="String" />
-
-        <variable
-            name="listener"
-            type="io.coursepick.coursepick.presentation.compat.OnReconnectListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -152,55 +147,9 @@
                     android:layout_height="4dp"
                     android:layout_marginTop="15dp"
                     android:background="@drawable/background_courses_handle"
-                    app:layout_constraintBottom_toTopOf="@id/mainCoursesHeader"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/mainCoursesHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="10dp"
-                    android:textColor="@color/item_primary"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHandle" />
-
-                <TextView
-                    android:id="@+id/mainCourseFilter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="6dp"
-                    android:activated="@{!viewModel.state.isFilterDefault}"
-                    android:background="@drawable/background_filter_selector"
-                    android:onClick="@{() -> action.showFilters()}"
-                    android:paddingHorizontal="10dp"
-                    android:paddingVertical="6dp"
-                    android:text="@string/main_course_filter"
-                    android:textSize="16sp"
-                    app:layout_constraintBottom_toBottomOf="@id/mainCoursesHeader"
-                    app:layout_constraintStart_toEndOf="@id/mainCoursesHeader"
-                    app:layout_constraintTop_toTopOf="@id/mainCoursesHeader" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    android:drawablePadding="4dp"
-                    android:onClick="@{() -> action.showCourseColorDescription()}"
-                    android:padding="10dp"
-                    android:text="@string/main_course_color_description"
-                    android:textColor="@color/item_secondary"
-                    android:textSize="14sp"
-                    app:drawableStartCompat="@drawable/icon_course_color_information"
-                    app:drawableTint="@color/item_secondary"
-                    app:layout_constraintBottom_toBottomOf="@id/mainCoursesHeader"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/mainCoursesHeader" />
 
                 <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/mainFragmentContainer"
@@ -210,32 +159,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader" />
-
-                <TextView
-                    android:id="@+id/mainEmptyCourses"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginTop="10dp"
-                    android:gravity="center"
-                    android:textSize="20sp"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
-                    app:visibleWhenEmpty="@{viewModel.state}"
-                    tools:listitem="@layout/item_course"
-                    tools:text="@string/main_empty_courses_description" />
-
-                <include
-                    android:id="@+id/noInternet"
-                    layout="@layout/layout_no_internet"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
-                    app:listener="@{listener}"
-                    app:visibleWhenNoInternet="@{viewModel.state.status}" />
-
+                    app:layout_constraintTop_toBottomOf="@id/mainCoursesHandle" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
