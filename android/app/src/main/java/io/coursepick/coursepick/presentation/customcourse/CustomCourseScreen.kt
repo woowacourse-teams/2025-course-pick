@@ -2,6 +2,7 @@ package io.coursepick.coursepick.presentation.customcourse
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -9,7 +10,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -29,14 +29,14 @@ import io.coursepick.coursepick.domain.course.Segment
 @Composable
 fun CustomCourseScreen(uiState: CustomCourseUiState) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Text(
             text = "나의 코스",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = colorResource(R.color.item_primary),
-            modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
+            modifier = Modifier.padding(horizontal = 20.dp),
         )
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(items = uiState.courses) { course: CustomCourseUiModel ->

@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.fragment.app.Fragment
 import io.coursepick.coursepick.databinding.FragmentCustomCoursesBinding
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
@@ -18,15 +17,13 @@ class CustomCourseFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         _binding = FragmentCustomCoursesBinding.inflate(inflater, container, false)
         binding.customCourse.setContent {
             CoursePickTheme {
-                LazyColumn {
-
-                }
+                CustomCourseScreen(CustomCourseUiState(listOf()))
             }
         }
-        return super.onCreateView(inflater, container, savedInstanceState)
+        return binding.root
     }
 }
