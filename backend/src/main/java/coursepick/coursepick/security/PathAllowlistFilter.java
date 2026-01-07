@@ -40,7 +40,8 @@ public class PathAllowlistFilter extends OncePerRequestFilter {
             Pattern.compile("^/admin/api/courses$"),
             Pattern.compile("^/admin/api/courses/[^/]+$"),
             Pattern.compile("^/admin/api/coordinates/snap$"),
-            Pattern.compile("^/courses/snaps$")
+            Pattern.compile("^/courses/snaps$"),
+            Pattern.compile("^/courses/create$")
     );
 
     @Override
