@@ -6,11 +6,6 @@ public record CourseCreateWebRequest(
         String name,
         String roadType,
         String difficulty,
-        List<CoordinateDto> coordinates
+        List<CoordinateWebRequest> coordinates
 ) {
-    public record CoordinateDto(
-            double latitude,
-            double longitude
-    ) {
-    }
 }

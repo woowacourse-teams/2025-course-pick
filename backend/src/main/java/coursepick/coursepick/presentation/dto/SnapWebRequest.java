@@ -3,11 +3,6 @@ package coursepick.coursepick.presentation.dto;
 import java.util.List;
 
 public record SnapWebRequest(
-        List<CoordinateDto> coordinates
+        List<CoordinateWebRequest> coordinates
 ) {
-    public record CoordinateDto(
-            double latitude,
-            double longitude
-    ) {
-    }
 }
