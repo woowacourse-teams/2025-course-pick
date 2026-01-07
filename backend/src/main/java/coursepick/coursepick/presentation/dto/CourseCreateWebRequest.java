@@ -1,11 +1,13 @@
 package coursepick.coursepick.presentation.dto;
 
+import jakarta.validation.constraints.NotNull;
+
 import java.util.List;
 
 public record CourseCreateWebRequest(
         String name,
         String roadType,
         String difficulty,
-        List<CoordinateWebRequest> coordinates
+        @NotNull List<CoordinateWebRequest> coordinates
 ) {
 }
