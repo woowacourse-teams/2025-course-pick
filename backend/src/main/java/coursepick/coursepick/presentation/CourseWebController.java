@@ -3,10 +3,11 @@ package coursepick.coursepick.presentation;
 import coursepick.coursepick.application.CourseApplicationService;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
-import coursepick.coursepick.application.dto.SnapResponse;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.presentation.api.CourseWebApi;
-import coursepick.coursepick.presentation.dto.*;
+import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
+import coursepick.coursepick.presentation.dto.CourseCreateWebRequest;
+import coursepick.coursepick.presentation.dto.CourseWebResponse;
 import coursepick.coursepick.security.Login;
 import coursepick.coursepick.security.UserId;
 import coursepick.coursepick.presentation.dto.CoursesWebResponse;
@@ -63,18 +64,6 @@ public class CourseWebController implements CourseWebApi {
         return courseApplicationService.findFavoriteCourses(ids).stream()
                 .map(CourseWebResponse::from)
                 .toList();
-    }
-
-    @Override
-    @Login
-    @PostMapping("/courses/snap")
-    public SnapWebResponse snapCoordinates(@RequestBody SnapWebRequest snapWebRequest) {
-        List<Coordinate> coordinates = snapWebRequest.coordinates().stream()
-                .map(dto -> new Coordinate(dto.latitude(), dto.longitude()))
-                .toList();
-
-        SnapResponse snapResponse = courseApplicationService.snapCoordinates(coordinates);
-        return SnapWebResponse.from(snapResponse);
     }
 
     @Override
