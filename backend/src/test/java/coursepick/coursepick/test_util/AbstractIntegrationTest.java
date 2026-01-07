@@ -14,6 +14,8 @@ public abstract class AbstractIntegrationTest extends AbstractMockServerTest {
 
     @AfterEach
     void tearDown() {
+        dbUtil.deleteUserCreatedCourses();
         dbUtil.deleteCourses();
+        dbUtil.deleteUsers();
     }
 }

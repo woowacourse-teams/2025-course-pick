@@ -8,9 +8,7 @@ import coursepick.coursepick.domain.course.RoadType;
 import coursepick.coursepick.domain.course.UserCreatedCourse;
 import coursepick.coursepick.domain.user.User;
 import coursepick.coursepick.domain.user.UserProvider;
-import coursepick.coursepick.domain.user.UserRepository;
 import coursepick.coursepick.test_util.AbstractIntegrationTest;
-import coursepick.coursepick.test_util.AbstractMockServerTest;
 import coursepick.coursepick.test_util.CoordinateTestUtil;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.data.Percentage;
@@ -22,16 +20,13 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import org.springframework.core.PriorityOrdered;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
     @Autowired
     CourseApplicationService sut;
-    @Autowired
-    UserRepository userRepository;
 
     @Test
     void 코스는_최소_1KM부터_탐색할_수_있다() {
@@ -275,7 +270,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
     @Test
     void 유저는_코스를_추가할_수_있다() {
         User user = new User(UserProvider.KAKAO, "testProviderId123");
-        User savedUser = userRepository.save(user);
+        User savedUser = dbUtil.saveUser(user);
 
         List<Coordinate> coordinates = List.of(
                 new Coordinate(37.5180, 127.0280),
@@ -304,5 +299,44 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         // Then: UserCreatedCourse 관계가 생성되었는지 확인
         UserCreatedCourse userCreatedCourse = dbUtil.findUserCourse(savedUser.id(), savedCourse.id());
         assertThat(userCreatedCourse).isNotNull();
+    }
+
+    @Test
+    void 존재하지_않는_사용자는_코스를_추가할_수_없다() {
+        List<Coordinate> coordinates = List.of(
+                new Coordinate(37.5180, 127.0280),
+                new Coordinate(37.5175, 127.0270),
+                new Coordinate(37.5170, 127.0265),
+                new Coordinate(37.5180, 127.0280)
+        );
+
+        assertThatThrownBy(() -> sut.create(
+                "nonexistent-user-id",
+                coordinates,
+                "코스",
+                "TRAIL",
+                "EASY"
+        )).isInstanceOf(NoSuchElementException.class);
+    }
+
+    @Test
+    void 잘못된_도로_타입으로_코스를_생성하면_예외가_발생한다() {
+        User user = new User(UserProvider.KAKAO, "testProviderId123");
+        User savedUser = dbUtil.saveUser(user);
+
+        List<Coordinate> coordinates = List.of(
+                new Coordinate(37.5180, 127.0280),
+                new Coordinate(37.5175, 127.0270),
+                new Coordinate(37.5170, 127.0265),
+                new Coordinate(37.5180, 127.0280)
+        );
+
+        assertThatThrownBy(() -> sut.create(
+                savedUser.id(),
+                coordinates,
+                "코스",
+                "INVALID_TYPE",
+                "EASY"
+        )).isInstanceOf(IllegalArgumentException.class);
     }
 }
