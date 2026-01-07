@@ -20,7 +20,6 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.annotation.IdRes
 import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -168,7 +167,7 @@ class CoursesActivity :
             }
             fetchCourses()
             if (savedInstanceState == null) {
-                selectMenuWithoutListener(R.id.coursesMenu)
+                binding.mainBottomNavigation.selectedItemId = R.id.coursesMenu
             }
         }
 
@@ -213,8 +212,6 @@ class CoursesActivity :
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun searchThisArea() {
-        selectMenuWithoutListener(R.id.coursesMenu)
-
         val coordinate = mapCoordinateOrNull() ?: return
         Logger.log(
             Logger.Event.Click("search_this_area"),
@@ -305,8 +302,6 @@ class CoursesActivity :
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun handleLocationResult(intent: Intent?) {
-        selectMenuWithoutListener(R.id.coursesMenu)
-
         if (intent == null) {
             Toast.makeText(this@CoursesActivity, "검색 정보가 전달되지 않았습니다.", Toast.LENGTH_SHORT).show()
             return
@@ -368,27 +363,6 @@ class CoursesActivity :
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    private fun selectMenuWithoutListener(
-        @IdRes menuId: Int,
-    ) {
-        binding.mainBottomNavigation.setOnItemSelectedListener(null)
-        when (menuId) {
-            R.id.coursesMenu -> {
-                switchContent(CoursesContent.EXPLORE)
-                binding.mainBottomNavigation.selectedItemId = menuId
-            }
-
-            R.id.favoritesMenu -> {
-                switchContent(CoursesContent.FAVORITES)
-                binding.mainBottomNavigation.selectedItemId = menuId
-            }
-
-            else -> Unit
-        }
-        setUpBottomNavigation()
-    }
-
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun setUpBottomNavigation() {
         binding.mainBottomNavigation.setOnItemSelectedListener { item: MenuItem ->
             when (item.itemId) {
@@ -411,7 +385,9 @@ class CoursesActivity :
                     true
                 }
 
-                else -> false
+                else -> {
+                    false
+                }
             }
         }
     }
@@ -707,18 +683,20 @@ class CoursesActivity :
                     )
                 }
 
-                CoursesUiEvent.FetchNearestCoordinateFailure ->
+                CoursesUiEvent.FetchNearestCoordinateFailure -> {
                     Toast
                         .makeText(this, "코스까지 가는 길을 찾지 못했습니다.", Toast.LENGTH_SHORT)
                         .show()
+                }
 
-                CoursesUiEvent.FetchNextCoursesFailure ->
+                CoursesUiEvent.FetchNextCoursesFailure -> {
                     Toast
                         .makeText(
                             this,
                             getString(R.string.courses_fail_fetch_next_page),
                             Toast.LENGTH_SHORT,
                         ).show()
+                }
             }
         }
     }
