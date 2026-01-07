@@ -266,10 +266,6 @@ class CoursesActivity :
         viewModel.setQuery("")
     }
 
-    override fun showFilters() {
-        viewModel.showFilterDialog()
-    }
-
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun onReconnect() {
         fetchCourses()

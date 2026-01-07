@@ -56,7 +56,7 @@
                 android:layout_marginStart="20dp"
                 android:activated="@{!viewModel.state.isFilterDefault}"
                 android:background="@drawable/background_filter_selector"
-                android:onClick="@{() -> action.showFilters()}"
+                android:onClick="@{() -> viewModel.showFilterDialog()}"
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="6dp"
                 android:text="@string/main_course_filter"
