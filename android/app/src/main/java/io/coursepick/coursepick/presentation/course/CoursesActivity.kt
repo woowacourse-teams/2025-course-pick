@@ -499,11 +499,11 @@ class CoursesActivity :
                 ): Fragment =
                     when (className) {
                         ExploreCoursesFragment::class.java.name -> {
-                            ExploreCoursesFragment(courseItemListener)
+                            ExploreCoursesFragment(courseItemListener, this@CoursesActivity)
                         }
 
                         FavoriteCoursesFragment::class.java.name -> {
-                            FavoriteCoursesFragment(courseItemListener)
+                            FavoriteCoursesFragment(courseItemListener, this@CoursesActivity)
                         }
 
                         else -> {

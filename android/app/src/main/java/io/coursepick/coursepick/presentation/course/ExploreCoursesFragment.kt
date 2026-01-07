@@ -10,15 +10,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import io.coursepick.coursepick.databinding.FragmentExploreCoursesBinding
+import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 
 class ExploreCoursesFragment(
-    listener: CourseItemListener,
+    onCourseItemListener: CourseItemListener,
+    private val onReconnectListener: OnReconnectListener,
 ) : Fragment() {
     @Suppress("ktlint:standard:backing-property-naming")
     private var _binding: FragmentExploreCoursesBinding? = null
     private val binding get() = _binding!!
     private val viewModel: CoursesViewModel by activityViewModels()
-    private val courseAdapter by lazy { CourseAdapter(listener) }
+    private val courseAdapter by lazy { CourseAdapter(onCourseItemListener) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,6 +50,7 @@ class ExploreCoursesFragment(
         binding.lifecycleOwner = viewLifecycleOwner
         binding.adapter = courseAdapter
         binding.viewModel = viewModel
+        binding.listener = onReconnectListener
     }
 
     private fun setUpStateObserver() {

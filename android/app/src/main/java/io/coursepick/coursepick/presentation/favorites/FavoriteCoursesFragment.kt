@@ -7,19 +7,21 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import io.coursepick.coursepick.databinding.FragmentFavoriteCoursesBinding
+import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.course.CourseAdapter
 import io.coursepick.coursepick.presentation.course.CourseItemListener
 import io.coursepick.coursepick.presentation.course.CoursesUiState
 import io.coursepick.coursepick.presentation.course.CoursesViewModel
 
 class FavoriteCoursesFragment(
-    listener: CourseItemListener,
+    courseItemListener: CourseItemListener,
+    private val onReconnectListener: OnReconnectListener,
 ) : Fragment() {
     @Suppress("ktlint:standard:backing-property-naming")
     private var _binding: FragmentFavoriteCoursesBinding? = null
     private val binding get() = _binding!!
     private val viewModel: CoursesViewModel by activityViewModels()
-    private val courseAdapter by lazy { CourseAdapter(listener) }
+    private val courseAdapter by lazy { CourseAdapter(courseItemListener) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,6 +50,7 @@ class FavoriteCoursesFragment(
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
         binding.adapter = courseAdapter
+        binding.listener = onReconnectListener
     }
 
     private fun setUpStateObserver() {
