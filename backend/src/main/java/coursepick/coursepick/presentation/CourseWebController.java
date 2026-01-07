@@ -73,7 +73,7 @@ public class CourseWebController implements CourseWebApi {
                 .map(dto -> new Coordinate(dto.latitude(), dto.longitude()))
                 .toList();
 
-        SnapResponse snapResponse = courseApplicationService.snapCoordinate(coordinates);
+        SnapResponse snapResponse = courseApplicationService.snapCoordinates(coordinates);
         return SnapWebResponse.from(snapResponse);
     }
 

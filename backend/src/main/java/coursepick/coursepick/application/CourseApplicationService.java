@@ -87,7 +87,7 @@ public class CourseApplicationService {
     }
 
     @Transactional(readOnly = true)
-    public SnapResponse snapCoordinate(List<Coordinate> coordinates) {
+    public SnapResponse snapCoordinates(List<Coordinate> coordinates) {
         SnapResult snapResult = coordinateSnapper.snap(coordinates);
         return new SnapResponse(snapResult.coordinates(), snapResult.length());
     }
