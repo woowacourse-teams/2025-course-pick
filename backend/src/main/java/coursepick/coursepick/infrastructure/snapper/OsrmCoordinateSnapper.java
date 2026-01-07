@@ -51,10 +51,10 @@ public class OsrmCoordinateSnapper implements CoordinateSnapper {
                     .body(new ParameterizedTypeReference<>() {
                     });
 
-            log.info("[OSRM 매칭 결과] {}", response);
+            log.info("[OSRM Snap 결과] {}", response);
             return parseMatchResponse(response, coordinates);
         } catch (Exception e) {
-            log.warn("[EXCEPTION] OSRM 좌표 매칭 실패", LogContent.exception(e));
+            log.warn("[EXCEPTION] OSRM 좌표 Snap 실패", LogContent.exception(e));
             return new SnapResult(coordinates, 0);
         }
     }
@@ -75,7 +75,7 @@ public class OsrmCoordinateSnapper implements CoordinateSnapper {
 
             return new SnapResult(snappedCoordinates, length);
         } catch (Exception e) {
-            log.warn("[EXCEPTION] OSRM Match 응답 파싱 실패", LogContent.exception(e));
+            log.warn("[EXCEPTION] OSRM Snap 응답 파싱 실패", LogContent.exception(e));
             return new SnapResult(originals, 0);
         }
     }
