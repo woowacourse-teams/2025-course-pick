@@ -1,9 +1,11 @@
 package coursepick.coursepick.test_util;
 
 import coursepick.coursepick.domain.course.Course;
+import coursepick.coursepick.domain.course.UserCreatedCourse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
 import java.util.Collection;
@@ -32,5 +34,13 @@ public class DatabaseTestUtil {
 
     public Course findCourseById(String id) {
         return mongoTemplate.findById(id, Course.class);
+    }
+
+    public UserCreatedCourse findUserCourse(String userId, String courseId) {
+        return mongoTemplate.findOne(
+                Query.query(Criteria.where("userId").is(userId)
+                        .and("courseId").is(courseId)),
+                UserCreatedCourse.class
+        );
     }
 }

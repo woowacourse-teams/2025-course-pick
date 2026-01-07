@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Import;
 
 @Import({GpxTestUtil.class, DatabaseTestUtil.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-public abstract class AbstractIntegrationTest {
+public abstract class AbstractIntegrationTest extends AbstractMockServerTest {
 
     @Autowired
     protected DatabaseTestUtil dbUtil;

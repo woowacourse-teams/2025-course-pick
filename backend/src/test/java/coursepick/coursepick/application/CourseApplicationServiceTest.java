@@ -1,10 +1,16 @@
 package coursepick.coursepick.application;
 
 import coursepick.coursepick.application.dto.CourseResponse;
+import coursepick.coursepick.application.dto.SnapResponse;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.Course;
 import coursepick.coursepick.domain.course.RoadType;
+import coursepick.coursepick.domain.course.UserCreatedCourse;
+import coursepick.coursepick.domain.user.User;
+import coursepick.coursepick.domain.user.UserProvider;
+import coursepick.coursepick.domain.user.UserRepository;
 import coursepick.coursepick.test_util.AbstractIntegrationTest;
+import coursepick.coursepick.test_util.AbstractMockServerTest;
 import coursepick.coursepick.test_util.CoordinateTestUtil;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.data.Percentage;
@@ -16,12 +22,16 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import org.springframework.core.PriorityOrdered;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
     @Autowired
     CourseApplicationService sut;
+    @Autowired
+    UserRepository userRepository;
 
     @Test
     void 코스는_최소_1KM부터_탐색할_수_있다() {
@@ -225,5 +235,74 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
     void 코스가_존재하지_않을_경우_예외가_발생한다() {
         Assertions.assertThatThrownBy(() -> sut.findClosestCoordinate("notId", 0, 0))
                 .isInstanceOf(NoSuchElementException.class);
+    }
+
+    @Test
+    void 두개의_좌표에_대해서_도로에_스냅할_수_있다() {
+        mock(osrmSnapResponse());
+        var coordinates = List.of(
+                new Coordinate(37.5180, 127.0280),
+                new Coordinate(37.6180, 127.1280)
+        );
+
+        SnapResponse snapResponse = sut.snapCoordinates(coordinates);
+
+        assertThat(snapResponse.coordinates()).hasSize(2);
+        assertThat(snapResponse.length()).isEqualTo(100);
+    }
+
+    private static String osrmSnapResponse() {
+        return """
+                {
+                  "code": "Ok",
+                  "matchings": [
+                    {
+                      "geometry": {
+                        "coordinates": [
+                          [127.028, 37.518],
+                          [127.128, 37.618]
+                        ],
+                        "type": "LineString"
+                      },
+                      "distance": 100,
+                      "confidence": 0.85
+                    }
+                  ]
+                }
+                """;
+    }
+
+    @Test
+    void 유저는_코스를_추가할_수_있다() {
+        User user = new User(UserProvider.KAKAO, "testProviderId123");
+        User savedUser = userRepository.save(user);
+
+        List<Coordinate> coordinates = List.of(
+                new Coordinate(37.5180, 127.0280),
+                new Coordinate(37.5175, 127.0270),
+                new Coordinate(37.5170, 127.0265),
+                new Coordinate(37.5180, 127.0280)
+        );
+
+        CourseResponse result = sut.create(
+                savedUser.id(),
+                coordinates,
+                "유저코스테스트",
+                "트레일",
+                "쉬움"
+        );
+
+        assertThat(result).isNotNull();
+        assertThat(result.name()).isEqualTo("유저코스테스트");
+        assertThat(result.roadType().name()).isEqualTo("트레일");
+        assertThat(result.difficulty().name()).isEqualTo("쉬움");
+
+        Course savedCourse = dbUtil.findCourseById(result.id());
+        assertThat(savedCourse).isNotNull();
+        assertThat(savedCourse.name().value()).isEqualTo("유저코스테스트");
+
+        // Then: UserCreatedCourse 관계가 생성되었는지 확인
+        UserCreatedCourse userCreatedCourse = dbUtil.findUserCourse(savedUser.id(), savedCourse.id());
+        assertThat(userCreatedCourse).isNotNull();
     }
 }
