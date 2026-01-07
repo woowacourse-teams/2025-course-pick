@@ -6,6 +6,7 @@ import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.presentation.api.CourseWebApi;
 import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
 import coursepick.coursepick.presentation.dto.CourseWebResponse;
+import coursepick.coursepick.presentation.dto.CoursesWebResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,7 @@ public class CourseV1WebController implements CourseWebApi {
 
     @Override
     @GetMapping("/courses")
-    public List<CourseWebResponse> findNearbyCourses(
+    public CoursesWebResponse findNearbyCourses(
             @RequestParam("mapLat") double mapLatitude,
             @RequestParam("mapLng") double mapLongitude,
             @RequestParam("scope") int scope,
@@ -29,7 +30,7 @@ public class CourseV1WebController implements CourseWebApi {
             @RequestParam(value = "page", required = false) Integer page
     ) {
         CoursesResponse response = courseApplicationService.findNearbyCourses(mapLatitude, mapLongitude, userLatitude, userLongitude, scope, page);
-        return CourseWebResponse.from(response.courses());
+        return CoursesWebResponse.from(response);
     }
 
     @Override
