@@ -10,6 +10,7 @@ import coursepick.coursepick.domain.user.User;
 import coursepick.coursepick.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -97,12 +98,28 @@ public class CourseApplicationService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> NOT_EXIST_USER.create(userId));
 
-        Course course = Course.createFromUser(coordinates, name, RoadType.valueOf(roadType), Difficulty.valueOf(difficulty));
+        Course course = Course.createFromUser(coordinates, name, getRoadType(roadType), getDifficulty(difficulty));
         Course savedCourse = courseRepository.save(course);
 
         UserCreatedCourse userCreatedCourse = new UserCreatedCourse(user.id(), savedCourse.id(), false);
         userCreatedCourseRepository.save(userCreatedCourse);
 
         return CourseResponse.from(savedCourse);
+    }
+
+    private RoadType getRoadType(String roadType) {
+        try {
+            return RoadType.valueOf(roadType);
+        } catch (IllegalArgumentException e) {
+            throw INVALID_ROAD_TYPE.create(roadType);
+        }
+    }
+
+    private Difficulty getDifficulty(String difficulty) {
+        try {
+            return Difficulty.valueOf(difficulty);
+        } catch (IllegalArgumentException e) {
+            throw INVALID_DIFFICULTY.create(difficulty);
+        }
     }
 }

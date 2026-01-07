@@ -25,6 +25,14 @@ public enum ErrorType {
             "시작과 끝 좌표만 존재할 때 둘은 중복될 수 없습니다.",
             IllegalArgumentException::new
     ),
+    INVALID_ROAD_TYPE(
+            "허용된 길 타입이 아닙니다. [트랙, 트레일, 보도, 알수없음] 입력값=%s",
+            IllegalArgumentException::new
+    ),
+    INVALID_DIFFICULTY(
+            "허용된 난이도가 아닙니다. [쉬움, 보통, 어려움] 입력값=%s",
+            IllegalArgumentException::new
+    ),
     NOT_EXIST_COURSE(
             "코스가 존재하지 않습니다. 코스id=%s",
             NoSuchElementException::new
