@@ -1,5 +1,6 @@
 package io.coursepick.coursepick.presentation.customcourse
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,7 +30,10 @@ import io.coursepick.coursepick.domain.course.Segment
 @Composable
 fun CustomCourseScreen(uiState: CustomCourseUiState) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(color = colorResource(R.color.background_primary)),
     ) {
         Text(
             text = "나의 코스",
