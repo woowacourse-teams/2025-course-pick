@@ -20,6 +20,10 @@
         <variable
             name="listener"
             type="io.coursepick.coursepick.presentation.compat.OnReconnectListener" />
+
+        <variable
+            name="onDescribeCourseColorListener"
+            type="io.coursepick.coursepick.presentation.compat.OnDescribeCourseColorListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -54,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
                 android:drawablePadding="4dp"
-                android:onClick="@{() -> action.showCourseColorDescription()}"
+                android:onClick="@{() -> onDescribeCourseColorListener.onDescribeCourseColor()}"
                 android:padding="10dp"
                 android:text="@string/main_course_color_description"
                 android:textColor="@color/item_secondary"

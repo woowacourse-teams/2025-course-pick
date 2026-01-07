@@ -49,6 +49,7 @@ import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.CoursePickUpdateManager
 import io.coursepick.coursepick.presentation.DataKeys
 import io.coursepick.coursepick.presentation.Logger
+import io.coursepick.coursepick.presentation.compat.OnDescribeCourseColorListener
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
@@ -70,7 +71,8 @@ import io.coursepick.coursepick.presentation.verifiedlocations.VerifiedLocations
 class CoursesActivity :
     AppCompatActivity(),
     CoursesAction,
-    OnReconnectListener {
+    OnReconnectListener,
+    OnDescribeCourseColorListener {
     private val coursePickApplication by lazy { application as CoursePickApplication }
     private var searchLauncher: ActivityResultLauncher<Intent>? = null
     private val binding by lazy { ActivityCoursesBinding.inflate(layoutInflater) }
@@ -257,7 +259,7 @@ class CoursesActivity :
         Toast.makeText(this, "사용자 ID가 복사됐습니다.", Toast.LENGTH_SHORT).show()
     }
 
-    override fun showCourseColorDescription() {
+    override fun onDescribeCourseColor() {
         supportFragmentManager.findFragmentByTag(COURSE_COLOR_DIALOG_TAG)
             ?: CourseColorDescriptionDialog().show(supportFragmentManager, COURSE_COLOR_DIALOG_TAG)
     }
@@ -499,11 +501,19 @@ class CoursesActivity :
                 ): Fragment =
                     when (className) {
                         ExploreCoursesFragment::class.java.name -> {
-                            ExploreCoursesFragment(courseItemListener, this@CoursesActivity)
+                            ExploreCoursesFragment(
+                                courseItemListener,
+                                this@CoursesActivity,
+                                this@CoursesActivity,
+                            )
                         }
 
                         FavoriteCoursesFragment::class.java.name -> {
-                            FavoriteCoursesFragment(courseItemListener, this@CoursesActivity)
+                            FavoriteCoursesFragment(
+                                courseItemListener,
+                                this@CoursesActivity,
+                                this@CoursesActivity,
+                            )
                         }
 
                         else -> {

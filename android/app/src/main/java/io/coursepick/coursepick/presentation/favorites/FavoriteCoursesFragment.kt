@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import io.coursepick.coursepick.databinding.FragmentFavoriteCoursesBinding
+import io.coursepick.coursepick.presentation.compat.OnDescribeCourseColorListener
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.course.CourseAdapter
 import io.coursepick.coursepick.presentation.course.CourseItemListener
@@ -16,6 +17,7 @@ import io.coursepick.coursepick.presentation.course.CoursesViewModel
 class FavoriteCoursesFragment(
     courseItemListener: CourseItemListener,
     private val onReconnectListener: OnReconnectListener,
+    private val onDescribeCourseColorListener: OnDescribeCourseColorListener,
 ) : Fragment() {
     @Suppress("ktlint:standard:backing-property-naming")
     private var _binding: FragmentFavoriteCoursesBinding? = null
@@ -51,6 +53,7 @@ class FavoriteCoursesFragment(
         binding.lifecycleOwner = viewLifecycleOwner
         binding.adapter = courseAdapter
         binding.listener = onReconnectListener
+        binding.onDescribeCourseColorListener = onDescribeCourseColorListener
     }
 
     private fun setUpStateObserver() {
