@@ -29,7 +29,7 @@ import java.util.UUID;
 })
 @EnableWebMvc
 @AutoConfigureMockMvc
-public class AbstractSecurityTest {
+public abstract class AbstractSecurityTest {
 
     @Autowired
     protected MockMvc mockMvc;
