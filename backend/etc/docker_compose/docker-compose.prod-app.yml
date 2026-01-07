@@ -4,35 +4,32 @@ services:
   backend:
     image: coursepicks/coursepick-backend:prod
     container_name: coursepick-backend
+    restart: unless-stopped
     ports:
-      - '80:8080'
+      - "80:8080"
     environment:
-      - 'SPRING_PROFILES_ACTIVE=${PROFILE}'
-      - 'DB_URL=${DB_URL}'
-      - 'DB_USERNAME=${DB_USERNAME}'
-      - 'DB_PASSWORD=${DB_PASSWORD}'
-      - 'MONGO_HOST=${MONGO_HOST}'
-      - 'MONGO_PORT=${MONGO_PORT}'
-      - 'MONGO_DATABASE=${MONGO_DATABASE}'
-      - 'MONGO_USERNAME=${MONGO_USERNAME}'
-      - 'MONGO_PASSWORD=${MONGO_PASSWORD}'
-      - 'MONGO_AUTH_DATABASE=${MONGO_AUTH_DATABASE}'
-      - 'ADMIN_TOKEN=${ADMIN_TOKEN}'
-      - 'OSRM_URL=${OSRM_URL}'
-      - 'GCP_DRIVE_FOLDER_ID=${GCP_DRIVE_FOLDER_ID}'
-      - 'GCP_CREDENTIALS_PATH=${GCP_CREDENTIALS_PATH}'
+      - SPRING_PROFILES_ACTIVE=${PROFILE}
+      - MONGO_HOST=${MONGO_HOST}
+      - MONGO_PORT=${MONGO_PORT}
+      - MONGO_DATABASE=${MONGO_DATABASE}
+      - MONGO_USERNAME=${MONGO_USERNAME}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_AUTH_DATABASE=${MONGO_AUTH_DATABASE}
+      - ADMIN_TOKEN=${ADMIN_TOKEN}
+      - OSRM_URL=${OSRM_URL}
+      - BASE_URL=${BASE_URL}
+      - JWT_SECRET_KEY=${JWT_SECRET}
     volumes:
       - /var/lib/coursepick/logs:/var/lib/coursepick/logs
       - /var/lib/coursepick/gcp-credentials.json:/var/lib/coursepick/gcp-credentials.json
-    restart: unless-stopped
 
   promtail:
     image: grafana/promtail:3.3.2
     container_name: promtail
+    restart: unless-stopped
     volumes:
       - ./promtail.yml:/etc/promtail/promtail-config.yml
       - /var/lib/coursepick/logs:/app/logs:ro
     command: -config.file=/etc/promtail/promtail-config.yml
-    restart: unless-stopped
     depends_on:
       - backend
