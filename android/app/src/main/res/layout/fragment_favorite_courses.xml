@@ -12,11 +12,57 @@
         <variable
             name="viewModel"
             type="io.coursepick.coursepick.presentation.course.CoursesViewModel" />
+
+        <variable
+            name="action"
+            type="io.coursepick.coursepick.presentation.course.CoursesAction" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/favoriteCoursesHeader"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            app:layout_constraintBottom_toTopOf="@id/favoritesCourses"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/favoriteCoursesTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:text="@string/favorites_header"
+                android:textColor="@color/item_primary"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:drawablePadding="4dp"
+                android:onClick="@{() -> action.showCourseColorDescription()}"
+                android:padding="10dp"
+                android:text="@string/main_course_color_description"
+                android:textColor="@color/item_secondary"
+                android:textSize="14sp"
+                app:drawableStartCompat="@drawable/icon_course_color_information"
+                app:drawableTint="@color/item_secondary"
+                app:layout_constraintBottom_toBottomOf="@id/favoriteCoursesHeader"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/favoriteCoursesHeader" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/favoritesCourses"
@@ -29,7 +75,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/favoriteCoursesHeader"
             tools:listitem="@layout/item_course" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
