@@ -1,15 +1,14 @@
 package coursepick.coursepick.presentation;
 
 import coursepick.coursepick.application.CourseApplicationService;
+import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
 import coursepick.coursepick.application.dto.SnapResponse;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.presentation.api.CourseWebApi;
-import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
-import coursepick.coursepick.presentation.dto.CourseWebResponse;
-import coursepick.coursepick.presentation.dto.SnapWebRequest;
-import coursepick.coursepick.presentation.dto.SnapWebResponse;
+import coursepick.coursepick.presentation.dto.*;
 import coursepick.coursepick.security.Login;
+import coursepick.coursepick.security.UserId;
 import coursepick.coursepick.presentation.dto.CoursesWebResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -76,5 +75,20 @@ public class CourseWebController implements CourseWebApi {
 
         SnapResponse snapResponse = courseApplicationService.snapCoordinate(coordinates);
         return SnapWebResponse.from(snapResponse);
+    }
+
+    @Override
+    @Login
+    @PostMapping("/courses/create")
+    public CourseWebResponse create(@UserId String userId, @RequestBody CourseCreateWebRequest courseCreateWebRequest) {
+        CourseResponse courseResponse = courseApplicationService.create(
+                userId,
+                courseCreateWebRequest.coordinates(),
+                courseCreateWebRequest.name(),
+                courseCreateWebRequest.roadType(),
+                courseCreateWebRequest.difficulty()
+        );
+
+        return CourseWebResponse.from(courseResponse);
     }
 }
