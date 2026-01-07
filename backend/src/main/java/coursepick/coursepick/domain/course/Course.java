@@ -50,6 +50,13 @@ public class Course {
         this.difficulty = Difficulty.fromLengthAndRoadType(length(), roadType);
     }
 
+    public static Course createFromUser(List<Coordinate> coordinates, String name, RoadType roadType, Difficulty difficulty) {
+        Course course = new Course(name, roadType, coordinates);
+        course.difficulty = difficulty;
+
+        return course;
+    }
+
     private List<Segment> refineCoordinates(List<Coordinate> rawCoordinates) {
         List<Coordinate> coordinates = CoordinateBuilder.fromRawCoordinates(rawCoordinates)
                 .removeSimilar()
