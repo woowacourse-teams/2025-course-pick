@@ -52,14 +52,14 @@ public class OsrmCoordinateSnapper implements CoordinateSnapper {
                     });
 
             log.info("[OSRM Snap 결과] {}", response);
-            return parseMatchResponse(response, coordinates);
+            return parseSnapResponse(response, coordinates);
         } catch (Exception e) {
             log.warn("[EXCEPTION] OSRM 좌표 Snap 실패", LogContent.exception(e));
             return new SnapResult(coordinates, 0);
         }
     }
 
-    private SnapResult parseMatchResponse(Map<String, Object> response, List<Coordinate> originals) {
+    private SnapResult parseSnapResponse(Map<String, Object> response, List<Coordinate> originals) {
         try {
             List<Map<String, Object>> matchings = (List<Map<String, Object>>) response.get("matchings");
             Map<String, Object> geometry = (Map<String, Object>) matchings.get(0).get("geometry");
