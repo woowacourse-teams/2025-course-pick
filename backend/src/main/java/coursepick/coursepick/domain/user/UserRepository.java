@@ -8,4 +8,6 @@ public interface UserRepository extends Repository<User, String> {
     User save(User user);
 
     Optional<User> findByProviderAndProviderId(UserProvider provider, String providerId);
+
+    Optional<User> findById(String id);
 }

@@ -1,9 +1,13 @@
 package coursepick.coursepick.application;
 
+import static coursepick.coursepick.application.exception.ErrorType.*;
+
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
 import coursepick.coursepick.application.dto.SnapResponse;
 import coursepick.coursepick.domain.course.*;
+import coursepick.coursepick.domain.user.User;
+import coursepick.coursepick.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
@@ -15,8 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_COURSE;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -25,6 +27,8 @@ public class CourseApplicationService {
     private final CourseRepository courseRepository;
     private final RouteFinder routeFinder;
     private final CoordinateSnapper coordinateSnapper;
+    private final UserRepository userRepository;
+    private final UserCreatedCourseRepository userCreatedCourseRepository;
 
     @Transactional(readOnly = true)
     public CoursesResponse findNearbyCourses(double mapLatitude, double mapLongitude, @Nullable Double userLatitude, @Nullable Double userLongitude, int scope, @Nullable Integer pageNumber) {
@@ -86,5 +90,19 @@ public class CourseApplicationService {
     public SnapResponse snapCoordinate(List<Coordinate> coordinates) {
         SnapResult snapResult = coordinateSnapper.snap(coordinates);
         return new SnapResponse(snapResult.coordinates(), snapResult.length());
+    }
+
+    @Transactional
+    public CourseResponse create(String userId, List<Coordinate> coordinates, String name, RoadType roadType, Difficulty difficulty) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> NOT_EXIST_USER.create(userId));
+
+        Course course = Course.createFromUser(coordinates, name, roadType, difficulty);
+        Course savedCourse = courseRepository.save(course);
+
+        UserCreatedCourse userCreatedCourse = new UserCreatedCourse(user.id(), savedCourse.id(), false);
+        userCreatedCourseRepository.save(userCreatedCourse);
+
+        return CourseResponse.from(savedCourse);
     }
 }

@@ -53,6 +53,10 @@ public enum ErrorType {
             "존재하지 않는 공지 사항입니다. 공지 사항id=%s",
             NoSuchElementException::new
     ),
+    NOT_EXIST_USER(
+            "존재하지 않는 사용자입니다. 유저id=%s",
+            NoSuchElementException::new
+    ),
     AUTHENTICATION_FAIL(
             "인증에 실패하였습니다.",
             UnauthorizedException::new
