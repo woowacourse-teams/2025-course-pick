@@ -159,7 +159,9 @@ class CoursesActivity :
             setUpObservers()
             setUpMapPadding()
             mapManager.setOnCameraMoveListener {
-                binding.mainSearchThisAreaButton.visibility = View.VISIBLE
+                if (viewModel.content.value == CoursesContent.EXPLORE) {
+                    binding.mainSearchThisAreaButton.visibility = View.VISIBLE
+                }
                 binding.mainCurrentLocationButton.setColorFilter(
                     ContextCompat.getColor(
                         this,
@@ -330,6 +332,8 @@ class CoursesActivity :
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun switchContent(content: CoursesContent) {
+        viewModel.switchContent(content)
+
         supportFragmentManager.commit {
             setReorderingAllowed(true)
             supportFragmentManager.fragments.forEach { fragment: Fragment ->

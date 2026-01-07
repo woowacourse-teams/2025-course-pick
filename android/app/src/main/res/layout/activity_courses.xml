@@ -8,6 +8,8 @@
 
         <import type="io.coursepick.coursepick.presentation.filter.CourseFilter" />
 
+        <import type="io.coursepick.coursepick.presentation.course.CoursesContent" />
+
         <variable
             name="viewModel"
             type="io.coursepick.coursepick.presentation.course.CoursesViewModel" />
@@ -48,6 +50,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
+                android:visibility="@{viewModel.content == CoursesContent.EXPLORE ? View.VISIBLE : View.GONE}"
                 app:cardCornerRadius="25dp"
                 app:cardElevation="10dp">
 
@@ -90,7 +93,7 @@
                 android:orientation="horizontal"
                 android:padding="10dp"
                 android:translationY="50dp"
-                android:visibility="gone"
+                android:visibility="@{viewModel.content == CoursesContent.EXPLORE ? View.VISIBLE : View.GONE}"
                 app:layout_anchor="@id/mainToolBar"
                 app:layout_anchorGravity="bottom|center_horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
