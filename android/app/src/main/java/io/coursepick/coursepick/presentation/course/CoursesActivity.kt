@@ -320,8 +320,6 @@ class CoursesActivity :
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun switchContent(content: CoursesContent) {
-        viewModel.switchContent(content)
-
         supportFragmentManager.commit {
             setReorderingAllowed(true)
             supportFragmentManager.fragments.forEach { fragment: Fragment ->
@@ -349,14 +347,14 @@ class CoursesActivity :
             when (item.itemId) {
                 R.id.coursesMenu -> {
                     viewModel.showCourses()
-                    switchContent(CoursesContent.EXPLORE)
+                    viewModel.switchContent(CoursesContent.EXPLORE)
                     searchThisArea()
                     true
                 }
 
                 R.id.favoritesMenu -> {
                     viewModel.showCourses()
-                    switchContent(CoursesContent.FAVORITES)
+                    viewModel.switchContent(CoursesContent.FAVORITES)
                     viewModel.fetchFavorites()
                     true
                 }
@@ -648,6 +646,10 @@ class CoursesActivity :
                 viewModel.select(course)
             }
             mapManager.draw(courses)
+        }
+
+        viewModel.content.observe(this) { content: CoursesContent ->
+            switchContent(content)
         }
     }
 
