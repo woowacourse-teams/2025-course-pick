@@ -70,9 +70,7 @@ import io.coursepick.coursepick.presentation.verifiedlocations.VerifiedLocations
 @AndroidEntryPoint
 class CoursesActivity :
     AppCompatActivity(),
-    CoursesAction,
-    OnReconnectListener,
-    OnDescribeCourseColorListener {
+    CoursesAction {
     private val coursePickApplication by lazy { application as CoursePickApplication }
     private var searchLauncher: ActivityResultLauncher<Intent>? = null
     private val binding by lazy { ActivityCoursesBinding.inflate(layoutInflater) }
@@ -261,18 +259,8 @@ class CoursesActivity :
         Toast.makeText(this, "사용자 ID가 복사됐습니다.", Toast.LENGTH_SHORT).show()
     }
 
-    override fun onDescribeCourseColor() {
-        supportFragmentManager.findFragmentByTag(COURSE_COLOR_DIALOG_TAG)
-            ?: CourseColorDescriptionDialog().show(supportFragmentManager, COURSE_COLOR_DIALOG_TAG)
-    }
-
     override fun clearQuery() {
         viewModel.setQuery("")
-    }
-
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    override fun onReconnect() {
-        fetchCourses()
     }
 
     private fun scopeOrNull(): Scope? {
@@ -497,6 +485,25 @@ class CoursesActivity :
     }
 
     private fun setUpFragmentFactory() {
+        val onReconnectListener =
+            object : OnReconnectListener {
+                @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+                override fun onReconnect() {
+                    fetchCourses()
+                }
+            }
+
+        val onDescribeCourseColorListener =
+            object : OnDescribeCourseColorListener {
+                override fun onDescribeCourseColor() {
+                    supportFragmentManager.findFragmentByTag(COURSE_COLOR_DIALOG_TAG)
+                        ?: CourseColorDescriptionDialog().show(
+                            supportFragmentManager,
+                            COURSE_COLOR_DIALOG_TAG,
+                        )
+                }
+            }
+
         supportFragmentManager.fragmentFactory =
             object : FragmentFactory() {
                 override fun instantiate(
@@ -507,16 +514,16 @@ class CoursesActivity :
                         ExploreCoursesFragment::class.java.name -> {
                             ExploreCoursesFragment(
                                 courseItemListener,
-                                this@CoursesActivity,
-                                this@CoursesActivity,
+                                onReconnectListener,
+                                onDescribeCourseColorListener,
                             )
                         }
 
                         FavoriteCoursesFragment::class.java.name -> {
                             FavoriteCoursesFragment(
                                 courseItemListener,
-                                this@CoursesActivity,
-                                this@CoursesActivity,
+                                onReconnectListener,
+                                onDescribeCourseColorListener,
                             )
                         }
 
