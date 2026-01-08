@@ -52,7 +52,7 @@ class FavoriteCoursesFragment(
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
         binding.adapter = courseAdapter
-        binding.listener = onReconnectListener
+        binding.onReconnectListener = onReconnectListener
         binding.onDescribeCourseColorListener = onDescribeCourseColorListener
     }
 

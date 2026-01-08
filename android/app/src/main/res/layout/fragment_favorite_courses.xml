@@ -18,7 +18,7 @@
             type="io.coursepick.coursepick.presentation.course.CoursesAction" />
 
         <variable
-            name="listener"
+            name="onReconnectListener"
             type="io.coursepick.coursepick.presentation.compat.OnReconnectListener" />
 
         <variable
@@ -107,7 +107,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/favoriteCoursesHeader"
-            app:listener="@{listener}"
+            app:listener="@{onReconnectListener}"
             app:visibleWhenNoInternet="@{viewModel.state.status}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

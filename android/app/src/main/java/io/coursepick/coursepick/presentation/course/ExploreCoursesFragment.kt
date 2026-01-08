@@ -52,7 +52,7 @@ class ExploreCoursesFragment(
         binding.lifecycleOwner = viewLifecycleOwner
         binding.adapter = courseAdapter
         binding.viewModel = viewModel
-        binding.listener = onReconnectListener
+        binding.onReconnectListener = onReconnectListener
         binding.onDescribeCourseColorListener = onDescribeCourseColorListener
     }
 
