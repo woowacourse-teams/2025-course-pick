@@ -63,7 +63,7 @@ class ExploreCoursesFragment(
     }
 
     private fun setUpScrollListener() {
-        binding.mainCourses.addOnScrollListener(
+        binding.exploreCourses.addOnScrollListener(
             object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(
                     recyclerView: RecyclerView,
@@ -93,7 +93,7 @@ class ExploreCoursesFragment(
                 item is CourseListItem.Course && item.item.id == courseItem.id
             }
         if (position == -1) return
-        val layoutManager = binding.mainCourses.layoutManager as? LinearLayoutManager ?: return
+        val layoutManager = binding.exploreCourses.layoutManager as? LinearLayoutManager ?: return
         val smoothScroller =
             object : LinearSmoothScroller(requireContext()) {
                 override fun getVerticalSnapPreference(): Int = SNAP_TO_START

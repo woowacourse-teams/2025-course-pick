@@ -56,7 +56,7 @@
                 android:drawablePadding="4dp"
                 android:onClick="@{() -> onDescribeCourseColorListener.onDescribeCourseColor()}"
                 android:padding="10dp"
-                android:text="@string/main_course_color_description"
+                android:text="@string/course_color_description"
                 android:textColor="@color/item_secondary"
                 android:textSize="14sp"
                 app:drawableStartCompat="@drawable/icon_course_color_information"
@@ -83,7 +83,7 @@
             tools:listitem="@layout/item_course" />
 
         <TextView
-            android:id="@+id/mainEmptyCourses"
+            android:id="@+id/favoriteEmptyCourses"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="10dp"
@@ -93,7 +93,7 @@
             app:layout_constraintTop_toBottomOf="@id/favoriteCoursesHeader"
             app:visibleWhenEmpty="@{viewModel.state}"
             tools:listitem="@layout/item_course"
-            tools:text="@string/main_empty_courses_description" />
+            tools:text="@string/favorite_empty_courses_description" />
 
         <include
             android:id="@+id/noInternet"

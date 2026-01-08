@@ -27,17 +27,17 @@
         android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/mainCoursesHeader"
+            android:id="@+id/exploreCoursesHeader"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginVertical="10dp"
-            app:layout_constraintBottom_toTopOf="@id/mainCourses"
+            app:layout_constraintBottom_toTopOf="@id/exploreCourses"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/mainCoursesTitle"
+                android:id="@+id/exploreCoursesTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -50,7 +50,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/mainCourseFilter"
+                android:id="@+id/exploreCourseFilter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -59,11 +59,11 @@
                 android:onClick="@{() -> viewModel.showFilterDialog()}"
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="6dp"
-                android:text="@string/main_course_filter"
+                android:text="@string/explore_course_filter"
                 android:textSize="16sp"
-                app:layout_constraintBottom_toBottomOf="@id/mainCoursesHeader"
-                app:layout_constraintStart_toEndOf="@id/mainCoursesTitle"
-                app:layout_constraintTop_toTopOf="@id/mainCoursesHeader" />
+                app:layout_constraintBottom_toBottomOf="@id/exploreCoursesHeader"
+                app:layout_constraintStart_toEndOf="@id/exploreCoursesTitle"
+                app:layout_constraintTop_toTopOf="@id/exploreCoursesHeader" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -72,19 +72,19 @@
                 android:drawablePadding="4dp"
                 android:onClick="@{() -> onDescribeCourseColorListener.onDescribeCourseColor()}"
                 android:padding="10dp"
-                android:text="@string/main_course_color_description"
+                android:text="@string/course_color_description"
                 android:textColor="@color/item_secondary"
                 android:textSize="14sp"
                 app:drawableStartCompat="@drawable/icon_course_color_information"
                 app:drawableTint="@color/item_secondary"
-                app:layout_constraintBottom_toBottomOf="@id/mainCoursesHeader"
+                app:layout_constraintBottom_toBottomOf="@id/exploreCoursesHeader"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/mainCoursesHeader" />
+                app:layout_constraintTop_toTopOf="@id/exploreCoursesHeader" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/mainCourses"
+            android:id="@+id/exploreCourses"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:adapter="@{adapter}"
@@ -94,21 +94,21 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
+            app:layout_constraintTop_toBottomOf="@id/exploreCoursesHeader"
             tools:listitem="@layout/item_course" />
 
         <TextView
-            android:id="@+id/mainEmptyCourses"
+            android:id="@+id/favoriteEmptyCourses"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:textSize="20sp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
+            app:layout_constraintTop_toBottomOf="@id/exploreCoursesHeader"
             app:visibleWhenEmpty="@{viewModel.state}"
             tools:listitem="@layout/item_course"
-            tools:text="@string/main_empty_courses_description" />
+            tools:text="@string/explore_empty_courses_description" />
 
         <include
             android:id="@+id/noInternet"
@@ -117,7 +117,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/mainCoursesHeader"
+            app:layout_constraintTop_toBottomOf="@id/exploreCoursesHeader"
             app:listener="@{onReconnectListener}"
             app:visibleWhenNoInternet="@{viewModel.state.status}" />
 
