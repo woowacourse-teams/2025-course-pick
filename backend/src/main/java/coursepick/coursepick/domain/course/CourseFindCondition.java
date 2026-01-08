@@ -10,6 +10,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CourseFindCondition {
 
+    private static final int PAGE_SIZE = 10;
+    
     private final double mapLatitude;
     private final double mapLongitude;
     private final int scope;
@@ -47,11 +49,11 @@ public class CourseFindCondition {
     }
 
     public Pageable pageable() {
-        if (pageNumber == null || pageNumber < 0) return PageRequest.of(0, 10);
-        else return PageRequest.of(pageNumber, pageSize());
+        if (pageNumber == null || pageNumber < 0) return PageRequest.of(0, PAGE_SIZE);
+        else return PageRequest.of(pageNumber, PAGE_SIZE);
     }
 
     public int pageSize() {
-        return 10;
+        return PAGE_SIZE;
     }
 }
