@@ -23,11 +23,8 @@ public class CourseApplicationService {
     private final RouteFinder routeFinder;
 
     @Transactional(readOnly = true)
-    public CoursesResponse findNearbyCourses(double mapLatitude, double mapLongitude, int scope, @Nullable Double userLatitude, @Nullable Double userLongitude, @Nullable Integer minLength, @Nullable Integer maxLength, @Nullable List<String> difficulties, @Nullable Integer pageNumber) {
-        CourseFindCondition condition = new CourseFindCondition(mapLatitude, mapLongitude, scope, minLength, maxLength, difficulties, pageNumber);
-
-        final Slice<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(condition);
-
+    public CoursesResponse findNearbyCourses(CourseFindCondition condition, @Nullable Double userLatitude, @Nullable Double userLongitude) {
+        Slice<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(condition);
         return CoursesResponse.from(coursesWithinScope, createUserPositionOrNull(userLatitude, userLongitude));
     }
 

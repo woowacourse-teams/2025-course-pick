@@ -3,6 +3,7 @@ package coursepick.coursepick.application;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.Course;
+import coursepick.coursepick.domain.course.CourseFindCondition;
 import coursepick.coursepick.domain.course.RoadType;
 import coursepick.coursepick.test_util.AbstractIntegrationTest;
 import coursepick.coursepick.test_util.CoordinateTestUtil;
@@ -49,8 +50,9 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         var latitude = 37.5122;
         var longitude = 127.0276;
+        var condition = new CourseFindCondition(latitude, longitude, 300, null, null, null, null);
 
-        var nearbyCourses = sut.findNearbyCourses(latitude, longitude, 300, null, null, null, null, null, null);
+        var nearbyCourses = sut.findNearbyCourses(condition, null, null);
 
         assertThat(nearbyCourses.courses()).hasSize(2)
                 .extracting(CourseResponse::name)
@@ -79,8 +81,9 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         var latitude = 37.5122;
         var longitude = 127.0276;
+        var condition = new CourseFindCondition(latitude, longitude, 15000, null, null, null, null);
 
-        var nearbyCourses = sut.findNearbyCourses(latitude, longitude, 15000, null, null, null, null, null, null);
+        var nearbyCourses = sut.findNearbyCourses(condition, null, null);
 
         assertThat(nearbyCourses.courses()).hasSize(1)
                 .extracting(CourseResponse::name)
@@ -112,10 +115,12 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         dbUtil.saveCourse(course1);
         dbUtil.saveCourse(course2);
         dbUtil.saveCourse(course3);
+
         var latitude = 37.5172;
         var longitude = 127.0276;
+        var condition = new CourseFindCondition(latitude, longitude, 1000, null, null, null, null);
 
-        var courses = sut.findNearbyCourses(latitude, longitude, 1000, null, null, null, null, null, null);
+        var courses = sut.findNearbyCourses(condition, null, null);
 
         assertThat(courses.courses()).hasSize(2)
                 .extracting(CourseResponse::name)
@@ -152,8 +157,9 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         var mapLongitude = 127.0276;
         var userLatitude = 37.5153291;
         var userLongitude = 127.1031347;
+        var condition = new CourseFindCondition(mapLatitude, mapLongitude, 1000, null, null, null, null);
 
-        var courses = sut.findNearbyCourses(mapLatitude, mapLongitude, 1000, userLatitude, userLongitude, null, null, null, null);
+        var courses = sut.findNearbyCourses(condition, userLatitude, userLongitude);
 
         assertThat(course1.distanceFrom(new Coordinate(mapLatitude, mapLongitude)).value()).isLessThan(1000.0);
         assertThat(course2.distanceFrom(new Coordinate(mapLatitude, mapLongitude)).value()).isLessThan(1000.0);
@@ -174,8 +180,9 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         List<Course> courses = new ArrayList<>();
         for (int i = 0; i < 5; i++) courses.add(new Course("코스" + i, coordinates));
         dbUtil.saveAllCourses(courses);
+        var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, null, 0);
 
-        var result = sut.findNearbyCourses(37.5175, 127.0270, 3000, null, null, null, null, null, 0);
+        var result = sut.findNearbyCourses(condition, null, null);
 
         assertThat(result.hasNext()).isFalse();
     }
@@ -186,8 +193,9 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         List<Course> courses = new ArrayList<>();
         for (int i = 0; i < 15; i++) courses.add(new Course("코스" + i, coordinates));
         dbUtil.saveAllCourses(courses);
+        var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, null, 0);
 
-        var result = sut.findNearbyCourses(37.5175, 127.0270, 3000, null, null, null, null, null, 0);
+        var result = sut.findNearbyCourses(condition, null, null);
 
         assertThat(result.hasNext()).isTrue();
     }
@@ -198,8 +206,9 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         List<Course> courses = new ArrayList<>();
         for (int i = 0; i < 15; i++) courses.add(new Course("코스" + i, coordinates));
         dbUtil.saveAllCourses(courses);
+        var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, null, 1);
 
-        var result = sut.findNearbyCourses(37.5175, 127.0270, 3000, null, null, null, null, null, 1);
+        var result = sut.findNearbyCourses(condition, null, null);
 
         assertThat(result.hasNext()).isFalse();
         assertThat(result.courses().size()).isEqualTo(5);
