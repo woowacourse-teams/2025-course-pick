@@ -14,10 +14,6 @@
             type="io.coursepick.coursepick.presentation.course.CoursesViewModel" />
 
         <variable
-            name="action"
-            type="io.coursepick.coursepick.presentation.course.CoursesAction" />
-
-        <variable
             name="onReconnectListener"
             type="io.coursepick.coursepick.presentation.compat.OnReconnectListener" />
 
