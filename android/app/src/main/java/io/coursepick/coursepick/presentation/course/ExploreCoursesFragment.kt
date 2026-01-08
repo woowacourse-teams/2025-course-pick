@@ -14,7 +14,7 @@ import io.coursepick.coursepick.presentation.compat.OnDescribeCourseColorListene
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 
 class ExploreCoursesFragment(
-    onCourseItemListener: CourseItemListener,
+    courseItemListener: CourseItemListener,
     private val onReconnectListener: OnReconnectListener,
     private val onDescribeCourseColorListener: OnDescribeCourseColorListener,
 ) : Fragment() {
@@ -22,7 +22,7 @@ class ExploreCoursesFragment(
     private var _binding: FragmentExploreCoursesBinding? = null
     private val binding get() = _binding!!
     private val viewModel: CoursesViewModel by activityViewModels()
-    private val courseAdapter by lazy { CourseAdapter(onCourseItemListener) }
+    private val courseAdapter by lazy { CourseAdapter(courseItemListener) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
