@@ -61,9 +61,9 @@
                 android:textSize="14sp"
                 app:drawableStartCompat="@drawable/icon_course_color_information"
                 app:drawableTint="@color/item_secondary"
-                app:layout_constraintBottom_toBottomOf="@id/favoriteCoursesHeader"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/favoriteCoursesHeader" />
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
