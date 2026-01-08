@@ -1,6 +1,5 @@
 name: Discord Alert
 
-# 리뷰 요청, 리뷰 시 발동
 on:
   pull_request:
     types: [ review_requested ]
@@ -18,33 +17,47 @@ jobs:
         env:
           ID_MAP: ${{ secrets.DISCORD_ID_MAP }}
         run: |
+          # 1. 이벤트에 따른 알림 대상자 결정
           if [[ "${{ github.event.action }}" == "review_requested" ]]; then
             TARGET_GITHUB_ID="${{ github.event.requested_reviewer.login }}"
           else
             TARGET_GITHUB_ID="${{ github.event.pull_request.user.login }}"
           fi
+          
+          # 2. 액션을 수행한 사람(발신자) 확인
+          SENDER_GITHUB_ID="${{ github.event.sender.login }}"
+          
+          # 3. 본인이 본인에게 알림을 보내는 상황인지 체크
+          if [[ "$TARGET_GITHUB_ID" == "$SENDER_GITHUB_ID" ]]; then
+            echo "SHOULD_NOTIFY=false" >> $GITHUB_ENV
+          else
+            echo "SHOULD_NOTIFY=true" >> $GITHUB_ENV
+          fi
+          
+          # 4. Discord ID 매핑
           DISCORD_ID=$(echo "$ID_MAP" | jq -r --arg key "$TARGET_GITHUB_ID" '.[$key] // $key')
           echo "MENTION_TARGET=$DISCORD_ID" >> $GITHUB_ENV
+
       - name: 리뷰 요청 알림
-        if: github.event.action == 'review_requested'
+        if: env.SHOULD_NOTIFY == 'true' && github.event.action == 'review_requested'
         uses: Ilshidur/action-discord@0.4.0
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
           args: |
-            ―――――――――――――――――――――――――
             🙇‍♂️ **리뷰 요청**
             🎯 {{ EVENT_PAYLOAD.sender.login }} → ${{ env.MENTION_TARGET }}
             🔗 [{{ EVENT_PAYLOAD.pull_request.title }}](<{{ EVENT_PAYLOAD.pull_request.html_url }}>)
+            ―――――――――――――――――――――――――
 
       - name: 리뷰 완료 알림
-        if: github.event_name == 'pull_request_review'
+        if: env.SHOULD_NOTIFY == 'true' && github.event_name == 'pull_request_review'
         uses: Ilshidur/action-discord@0.4.0
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
           args: |
-            ―――――――――――――――――――――――――
             ✅ **리뷰 등록**
             🎯 {{ EVENT_PAYLOAD.sender.login }} → ${{ env.MENTION_TARGET }}
             🔗 [{{ EVENT_PAYLOAD.pull_request.title }}](<{{ EVENT_PAYLOAD.review.html_url }}>)
+            ―――――――――――――――――――――――――

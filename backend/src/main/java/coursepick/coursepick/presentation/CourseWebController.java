@@ -7,6 +7,7 @@ import coursepick.coursepick.domain.course.CourseFindCondition;
 import coursepick.coursepick.presentation.api.CourseWebApi;
 import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
 import coursepick.coursepick.presentation.dto.CourseWebResponse;
+import coursepick.coursepick.presentation.dto.CoursesWebResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +24,7 @@ public class CourseWebController implements CourseWebApi {
 
     @Override
     @GetMapping("/courses")
-    public List<CourseWebResponse> findNearbyCourses(
+    public CoursesWebResponse findNearbyCourses(
             @RequestParam("mapLat") double mapLatitude,
             @RequestParam("mapLng") double mapLongitude,
             @RequestParam("scope") int scope,
@@ -36,7 +37,7 @@ public class CourseWebController implements CourseWebApi {
     ) {
         CourseFindCondition condition = new CourseFindCondition(mapLatitude, mapLongitude, scope, minLength, maxLength, difficulties, page);
         CoursesResponse response = courseApplicationService.findNearbyCourses(condition, userLatitude, userLongitude);
-        return CourseWebResponse.from(response.courses());
+        return CoursesWebResponse.from(response);
     }
 
     @Override

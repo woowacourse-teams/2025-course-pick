@@ -2,10 +2,6 @@ spring:
   config:
     activate.on-profile: dev
     import: classpath:monitoring-config.yml
-  datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
   data.mongodb:
     host: ${MONGO_HOST}
     port: ${MONGO_PORT}

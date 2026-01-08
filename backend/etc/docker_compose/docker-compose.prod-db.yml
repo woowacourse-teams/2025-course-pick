@@ -4,43 +4,29 @@ services:
   mongodb:
     image: mongo:8.0.12
     container_name: mongodb
+    restart: unless-stopped
     ports:
-      - '27017:27017'
+      - "27017:27017"
     environment:
-      - 'MONGO_INITDB_DATABASE=${MONGO_DATABASE}'
-      - 'MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME}'
-      - 'MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}'
+      - MONGO_INITDB_DATABASE=${MONGO_DATABASE}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
     volumes:
       - /var/lib/coursepick/mongodb:/data/db
-    restart: unless-stopped
 
   mongo-express:
     image: mongo-express
     container_name: mongo-express
+    restart: unless-stopped
     ports:
-      - '8081:8081'
+      - "8081:8081"
     environment:
-      - 'ME_CONFIG_MONGODB_SERVER=mongodb'
-      - 'ME_CONFIG_MONGODB_PORT=27017'
-      - 'ME_CONFIG_MONGODB_ENABLE_ADMIN=true'
-      - 'ME_CONFIG_MONGODB_AUTH_USERNAME=${MONGO_ROOT_USERNAME}'
-      - 'ME_CONFIG_MONGODB_AUTH_PASSWORD=${MONGO_ROOT_PASSWORD}'
-      - 'ME_CONFIG_BASICAUTH_USERNAME=${MONGO_ROOT_USERNAME}'
-      - 'ME_CONFIG_BASICAUTH_PASSWORD=${MONGO_ROOT_PASSWORD}'
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+      - ME_CONFIG_MONGODB_AUTH_USERNAME=${MONGO_ROOT_USERNAME}
+      - ME_CONFIG_MONGODB_AUTH_PASSWORD=${MONGO_ROOT_PASSWORD}
+      - ME_CONFIG_BASICAUTH_USERNAME=${MONGO_ROOT_USERNAME}
+      - ME_CONFIG_BASICAUTH_PASSWORD=${MONGO_ROOT_PASSWORD}
     depends_on:
       - mongodb
-    restart: unless-stopped
-
-  mysql:
-    image: mysql:8.4.5
-    container_name: mysql
-    ports:
-      - '3306:3306'
-    environment:
-      - 'MYSQL_DATABASE=${DB_DATABASE}'
-      - 'MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}'
-      - 'MYSQL_USER=${DB_USERNAME}'
-      - 'MYSQL_PASSWORD=${DB_PASSWORD}'
-    volumes:
-      - /var/lib/coursepick/mysql:/var/lib/mysql
-    restart: unless-stopped
