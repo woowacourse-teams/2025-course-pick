@@ -89,7 +89,6 @@
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:textSize="20sp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintTop_toBottomOf="@id/favoriteCoursesHeader"
             app:visibleWhenEmpty="@{viewModel.state}"
             tools:text="@string/favorite_empty_courses_description" />
