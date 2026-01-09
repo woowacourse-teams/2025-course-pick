@@ -2,9 +2,16 @@ package io.coursepick.coursepick.presentation.customcourse
 
 import androidx.annotation.StringRes
 import io.coursepick.coursepick.R
+import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
+import io.coursepick.coursepick.domain.course.CourseName
 import io.coursepick.coursepick.domain.course.Distance
 import io.coursepick.coursepick.domain.course.InclineSummary
+import io.coursepick.coursepick.domain.course.InclineType
+import io.coursepick.coursepick.domain.course.Latitude
+import io.coursepick.coursepick.domain.course.Length
+import io.coursepick.coursepick.domain.course.Longitude
+import io.coursepick.coursepick.domain.course.Segment
 
 data class CustomCourseUiModel(
     val course: Course,
@@ -37,4 +44,32 @@ data class CustomCourseUiModel(
                 InclineSummary.CONTINUOUS_DOWNHILL -> R.string.incline_summary_continuous_downhill
                 InclineSummary.UNKNOWN -> R.string.incline_summary_continuous_unknown
             }
+
+    companion object {
+        val CUSTOM_COURSE_FIXTURE =
+            CustomCourseUiModel(
+                course =
+                    Course(
+                        id = "0",
+                        name = CourseName("Preview Course"),
+                        distance = Distance(123),
+                        length = Length(456),
+                        roadType = "보도",
+                        difficulty = "쉬움",
+                        inclineSummary = InclineSummary.MOSTLY_FLAT,
+                        segments =
+                            listOf(
+                                Segment(
+                                    inclineType = InclineType.UNKNOWN,
+                                    coordinates =
+                                        listOf(
+                                            Coordinate(Latitude(0.0), Longitude(0.0)),
+                                            Coordinate(Latitude(0.0), Longitude(0.0)),
+                                        ),
+                                ),
+                            ),
+                    ),
+                selected = false,
+            )
+    }
 }
