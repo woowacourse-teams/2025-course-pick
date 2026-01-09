@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.res.TypedArrayUtils.getString
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
@@ -163,7 +164,7 @@ fun CustomCourseItem(
                 )
 
                 Text(
-                    text = "길찾기",
+                    text = stringResource(R.string.item_course_navigate),
                     fontSize = 12.sp,
                     color = colorResource(R.color.item_primary),
                 )
