@@ -23,4 +23,9 @@ class CustomCourseFragment : Fragment() {
         }
         return binding.root
     }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
+    }
 }
