@@ -89,7 +89,7 @@ fun CustomCourseScreen(
             Icon(
                 imageVector = Icons.Default.Add,
                 contentDescription = null,
-                modifier = Modifier.size(40.dp),
+                modifier = Modifier.size(30.dp),
             )
         }
     }
