@@ -58,7 +58,7 @@ fun CustomCourseScreen(
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = colorResource(R.color.item_primary),
-                modifier = Modifier.padding(horizontal = 20.dp),
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
             )
             LazyColumn(
                 contentPadding = PaddingValues(bottom = 60.dp),
