@@ -50,6 +50,20 @@ public class Course {
         this.difficulty = Difficulty.fromLengthAndRoadType(length(), roadType);
     }
 
+    private Course(String name, RoadType roadType, Difficulty difficulty, List<Coordinate> coordinates) {
+        this.id = null;
+        this.name = new CourseName(name);
+        this.roadType = roadType;
+        this.segments = refineCoordinates(coordinates);
+        this.length = calculateLength(segments);
+        this.inclineSummary = InclineSummary.of(segments);
+        this.difficulty = difficulty;
+    }
+
+    public static Course createFromUser(List<Coordinate> coordinates, String name, RoadType roadType, Difficulty difficulty) {
+        return new Course(name, roadType, difficulty, coordinates);
+    }
+
     private List<Segment> refineCoordinates(List<Coordinate> rawCoordinates) {
         List<Coordinate> coordinates = CoordinateBuilder.fromRawCoordinates(rawCoordinates)
                 .removeSimilar()

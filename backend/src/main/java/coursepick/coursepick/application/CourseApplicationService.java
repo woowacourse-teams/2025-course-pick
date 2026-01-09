@@ -1,14 +1,16 @@
 package coursepick.coursepick.application;
 
+import static coursepick.coursepick.application.exception.ErrorType.*;
+
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
-import coursepick.coursepick.domain.course.Coordinate;
-import coursepick.coursepick.domain.course.Course;
-import coursepick.coursepick.domain.course.CourseRepository;
-import coursepick.coursepick.domain.course.Meter;
-import coursepick.coursepick.domain.course.RouteFinder;
+import coursepick.coursepick.application.dto.SnapResponse;
+import coursepick.coursepick.domain.course.*;
+import coursepick.coursepick.domain.user.User;
+import coursepick.coursepick.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,8 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_COURSE;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -27,6 +27,9 @@ public class CourseApplicationService {
 
     private final CourseRepository courseRepository;
     private final RouteFinder routeFinder;
+    private final CoordinateSnapper coordinateSnapper;
+    private final UserRepository userRepository;
+    private final UserCreatedCourseRepository userCreatedCourseRepository;
 
     @Transactional(readOnly = true)
     public CoursesResponse findNearbyCourses(double mapLatitude, double mapLongitude, @Nullable Double userLatitude, @Nullable Double userLongitude, int scope, @Nullable Integer pageNumber) {
@@ -81,6 +84,42 @@ public class CourseApplicationService {
             if (!ids.contains(course.id())) {
                 log.warn("존재하지 않는 코스에 대한 조회: {}", course.id());
             }
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public SnapResponse snapCoordinates(List<Coordinate> coordinates) {
+        SnapResult snapResult = coordinateSnapper.snap(coordinates);
+        return new SnapResponse(snapResult.coordinates(), snapResult.length());
+    }
+
+    @Transactional
+    public CourseResponse create(String userId, List<Coordinate> coordinates, String name, String roadType, String difficulty) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> NOT_EXIST_USER.create(userId));
+
+        Course course = Course.createFromUser(coordinates, name, getRoadType(roadType), getDifficulty(difficulty));
+        Course savedCourse = courseRepository.save(course);
+
+        UserCreatedCourse userCreatedCourse = new UserCreatedCourse(user.id(), savedCourse.id(), false);
+        userCreatedCourseRepository.save(userCreatedCourse);
+
+        return CourseResponse.from(savedCourse);
+    }
+
+    private RoadType getRoadType(String roadType) {
+        try {
+            return RoadType.valueOf(roadType);
+        } catch (IllegalArgumentException e) {
+            throw INVALID_ROAD_TYPE.create(roadType);
+        }
+    }
+
+    private Difficulty getDifficulty(String difficulty) {
+        try {
+            return Difficulty.valueOf(difficulty);
+        } catch (IllegalArgumentException e) {
+            throw INVALID_DIFFICULTY.create(difficulty);
         }
     }
 }

@@ -1,9 +1,6 @@
 package coursepick.coursepick.infrastructure.snapper;
 
-import coursepick.coursepick.domain.course.CoordinateSnapper;
-import coursepick.coursepick.domain.course.Coordinate;
-import coursepick.coursepick.domain.course.GeoLine;
-import coursepick.coursepick.domain.course.Meter;
+import coursepick.coursepick.domain.course.*;
 import coursepick.coursepick.logging.LogContent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,9 +25,9 @@ public class OsrmCoordinateSnapper implements CoordinateSnapper {
     private final RestClient osrmRestClient;
 
     @Override
-    public List<Coordinate> snap(List<Coordinate> coordinates) {
+    public SnapResult snap(List<Coordinate> coordinates) {
         if (coordinates.size() < 2) {
-            return coordinates;
+            return new SnapResult(coordinates, 0);
         }
 
         String coordinatesParam = coordinates.stream()
@@ -54,29 +51,32 @@ public class OsrmCoordinateSnapper implements CoordinateSnapper {
                     .body(new ParameterizedTypeReference<>() {
                     });
 
-            log.info("OSRM Match 결과: {}", response);
-            return parseMatchResponse(response, coordinates);
+            log.info("[OSRM Snap 결과] {}", response);
+            return parseSnapResponse(response, coordinates);
         } catch (Exception e) {
-            log.warn("[EXCEPTION] OSRM 좌표 매칭 실패", LogContent.exception(e));
-            return coordinates;
+            log.warn("[EXCEPTION] OSRM 좌표 Snap 실패", LogContent.exception(e));
+            return new SnapResult(coordinates, 0);
         }
     }
 
-    private List<Coordinate> parseMatchResponse(Map<String, Object> response, List<Coordinate> originals) {
+    private SnapResult parseSnapResponse(Map<String, Object> response, List<Coordinate> originals) {
         try {
             List<Map<String, Object>> matchings = (List<Map<String, Object>>) response.get("matchings");
             Map<String, Object> geometry = (Map<String, Object>) matchings.get(0).get("geometry");
             List<List<Double>> coordinates = (List<List<Double>>) geometry.get("coordinates");
+            Double length = (Double) matchings.get(0).get("distance");
 
-            return coordinates.stream()
+            List<Coordinate> snappedCoordinates = coordinates.stream()
                     .map(coord -> createCoordinateWithElevation(
                             new Coordinate(coord.get(1), coord.get(0)),
                             originals)
                     )
                     .toList();
+
+            return new SnapResult(snappedCoordinates, length);
         } catch (Exception e) {
-            log.warn("[EXCEPTION] OSRM Match 응답 파싱 실패", LogContent.exception(e));
-            return originals;
+            log.warn("[EXCEPTION] OSRM Snap 응답 파싱 실패", LogContent.exception(e));
+            return new SnapResult(originals, 0);
         }
     }
 

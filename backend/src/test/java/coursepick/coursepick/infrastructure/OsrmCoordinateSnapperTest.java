@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class OsrmCoordinateSnapperTest extends AbstractMockServerTest {
 
     @Test
-    void 좌표_리스트를_도로에_매칭할_수_있다() {
+    void 좌표_리스트를_도로에_스냅할_수_있다() {
         mock(osrmSnapResponse());
         var sut = new OsrmCoordinateSnapper(anyRestClient());
 
@@ -23,8 +23,8 @@ class OsrmCoordinateSnapperTest extends AbstractMockServerTest {
         );
         var result = sut.snap(originals);
 
-        assertThat(result).isNotEmpty();
-        assertThat(result.size()).isEqualTo(5); // Mock 응답에 5개 좌표
+        assertThat(result.coordinates()).isNotEmpty();
+        assertThat(result.coordinates().size()).isEqualTo(5); // Mock 응답에 5개 좌표
     }
 
     // Mock OSRM Match API 응답
@@ -44,6 +44,7 @@ class OsrmCoordinateSnapperTest extends AbstractMockServerTest {
                         ],
                         "type": "LineString"
                       },
+                      "distance": 850.5,
                       "confidence": 0.85
                     }
                   ]
@@ -52,7 +53,7 @@ class OsrmCoordinateSnapperTest extends AbstractMockServerTest {
     }
 
     @Test
-    void 매칭된_좌표에_원본_elevation이_보간된다() {
+    void 스냅된_좌표에_원본_elevation이_보간된다() {
         mock(osrmSnapResponse());
         var sut = new OsrmCoordinateSnapper(anyRestClient());
 
@@ -63,9 +64,9 @@ class OsrmCoordinateSnapperTest extends AbstractMockServerTest {
         );
         var result = sut.snap(originals);
 
-        assertThat(result).allMatch(coord -> coord.elevation() != 0.0);
-        assertThat(result.get(0).elevation()).isBetween(9.0, 11.0);
-        assertThat(result.get(result.size() - 1).elevation()).isBetween(15.0, 21.0);
+        assertThat(result.coordinates()).allMatch(coord -> coord.elevation() != 0.0);
+        assertThat(result.coordinates().get(0).elevation()).isBetween(9.0, 11.0);
+        assertThat(result.coordinates().get(result.coordinates().size() - 1).elevation()).isBetween(15.0, 21.0);
     }
 
     @Test
@@ -77,7 +78,7 @@ class OsrmCoordinateSnapperTest extends AbstractMockServerTest {
         );
         var result = sut.snap(single);
 
-        assertThat(result).isEqualTo(single);
+        assertThat(result.coordinates()).isEqualTo(single);
     }
 
     @Test
@@ -86,7 +87,7 @@ class OsrmCoordinateSnapperTest extends AbstractMockServerTest {
 
         var result = sut.snap(List.of());
 
-        assertThat(result).isEmpty();
+        assertThat(result.coordinates()).isEmpty();
     }
 
     @Test
@@ -100,7 +101,7 @@ class OsrmCoordinateSnapperTest extends AbstractMockServerTest {
         );
 
         var result = sut.snap(originals);
-        assertThat(result).isEqualTo(originals);
+        assertThat(result.coordinates()).isEqualTo(originals);
     }
 
     @Test
@@ -114,7 +115,7 @@ class OsrmCoordinateSnapperTest extends AbstractMockServerTest {
         );
         var result = sut.snap(originals);
 
-        assertThat(result).isEqualTo(originals);
+        assertThat(result.coordinates()).isEqualTo(originals);
     }
 
     private static String osrmNoMatchResponse() {
@@ -137,7 +138,7 @@ class OsrmCoordinateSnapperTest extends AbstractMockServerTest {
         );
         var result = sut.snap(originals);
 
-        assertThat(result).isEqualTo(originals);
+        assertThat(result.coordinates()).isEqualTo(originals);
     }
 
     private static String osrmTooBigResponse() {

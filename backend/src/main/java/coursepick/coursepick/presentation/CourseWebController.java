@@ -1,17 +1,18 @@
 package coursepick.coursepick.presentation;
 
 import coursepick.coursepick.application.CourseApplicationService;
+import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.presentation.api.CourseWebApi;
 import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
+import coursepick.coursepick.presentation.dto.CourseCreateWebRequest;
 import coursepick.coursepick.presentation.dto.CourseWebResponse;
+import coursepick.coursepick.security.Login;
+import coursepick.coursepick.security.UserId;
 import coursepick.coursepick.presentation.dto.CoursesWebResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -63,5 +64,24 @@ public class CourseWebController implements CourseWebApi {
         return courseApplicationService.findFavoriteCourses(ids).stream()
                 .map(CourseWebResponse::from)
                 .toList();
+    }
+
+    @Override
+    @Login
+    @PostMapping("/courses/create")
+    public CourseWebResponse create(@UserId String userId, @RequestBody CourseCreateWebRequest courseCreateWebRequest) {
+        List<Coordinate> coordinates = courseCreateWebRequest.coordinates().stream()
+                .map(dto -> new Coordinate(dto.latitude(), dto.longitude()))
+                .toList();
+
+        CourseResponse courseResponse = courseApplicationService.create(
+                userId,
+                coordinates,
+                courseCreateWebRequest.name(),
+                courseCreateWebRequest.roadType(),
+                courseCreateWebRequest.difficulty()
+        );
+
+        return CourseWebResponse.from(courseResponse);
     }
 }

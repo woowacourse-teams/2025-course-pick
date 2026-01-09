@@ -1,7 +1,9 @@
 package coursepick.coursepick.presentation.api;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.examples.Example;
 import io.swagger.v3.oas.models.servers.Server;
@@ -20,6 +22,13 @@ import static coursepick.coursepick.application.exception.ErrorType.values;
 
 @Profile("!prod")
 @OpenAPIDefinition(info = @Info(title = "코스픽 API", version = "1.0.0"))
+@SecurityScheme(
+        name = "BearerAuth",
+        type = SecuritySchemeType.HTTP,
+        scheme = "bearer",
+        bearerFormat = "JWT",
+        description = "JWT 토큰을 입력하세요. 'Bearer ' 접두사는 자동으로 추가됩니다."
+)
 @Configuration
 public class OpenApiConfig {
 
