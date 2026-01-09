@@ -19,11 +19,7 @@ class CustomCourseFragment : Fragment() {
     ): View {
         _binding = FragmentCustomCoursesBinding.inflate(inflater, container, false)
         binding.customCourse.setContent {
-            CustomCourseScreen(
-                CustomCourseUiState(
-                    courses = List(10) { CustomCourseUiModel.CUSTOM_COURSE_FIXTURE },
-                ),
-            )
+            CustomCourseScreen(CustomCourseUiState(emptyList()))
         }
         return binding.root
     }
