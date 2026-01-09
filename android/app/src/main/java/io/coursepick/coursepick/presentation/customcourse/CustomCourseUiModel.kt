@@ -10,17 +10,12 @@ data class CustomCourseUiModel(
     val selected: Boolean,
 ) {
     val distance: String? =
-        course.distance?.let { distance: Distance ->
-            if (distance.meter < 1000) {
-                "${distance.meter.value.toInt()}m"
-            } else {
-                String.format(
-                    locale = null,
-                    format = "%.2f",
-                    distance.meter.toKilometer().value,
-                ) + "km"
-            }
-        }
+        course.distance?.let { distance: Distance -> distance.meter.toUiModel().value }
+
+    val length: String =
+        course.length.meter
+            .toUiModel()
+            .value
 
     @StringRes
     val inclineSummaryStringResourceId: Int = course.inclineSummary.toUiModel().id
