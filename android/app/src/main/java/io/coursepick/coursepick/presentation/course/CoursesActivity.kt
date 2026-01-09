@@ -319,7 +319,9 @@ class CoursesActivity :
         supportFragmentManager.commit {
             setReorderingAllowed(true)
             supportFragmentManager.fragments.forEach { fragment: Fragment ->
-                hide(fragment)
+                if (fragment.javaClass in CoursesContent.fragments) {
+                    hide(fragment)
+                }
             }
             supportFragmentManager
                 .findFragmentByTag(content.fragmentClass.name)
