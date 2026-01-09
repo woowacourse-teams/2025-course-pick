@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -53,7 +54,7 @@ fun CustomCourseScreen(
                     .background(color = colorResource(R.color.background_primary)),
         ) {
             Text(
-                text = "나의 코스",
+                text = stringResource(R.string.custom_courses_header),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = colorResource(R.color.item_primary),

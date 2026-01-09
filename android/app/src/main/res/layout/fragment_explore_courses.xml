@@ -41,7 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:text="@string/main_courses_header"
+                android:text="@string/custom_courses_header"
                 android:textColor="@color/item_primary"
                 android:textSize="24sp"
                 android:textStyle="bold"
