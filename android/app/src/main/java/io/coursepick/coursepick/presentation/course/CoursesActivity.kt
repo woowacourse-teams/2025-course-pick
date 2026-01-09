@@ -168,9 +168,6 @@ class CoursesActivity :
                 )
             }
             fetchCourses()
-            if (savedInstanceState == null) {
-                binding.mainBottomNavigation.selectedItemId = R.id.coursesMenu
-            }
         }
 
         setUpBottomNavigation()
