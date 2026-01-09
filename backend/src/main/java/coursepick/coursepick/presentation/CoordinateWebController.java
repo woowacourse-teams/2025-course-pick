@@ -22,7 +22,7 @@ public class CoordinateWebController implements CoordinateWebApi {
 
     @Override
     @Login
-    @PostMapping("/coordinate/snap")
+    @PostMapping("/coordinates/snap")
     public SnapWebResponse snapCoordinates(@RequestBody SnapWebRequest snapWebRequest) {
         List<Coordinate> coordinates = snapWebRequest.coordinates().stream()
                 .map(dto -> new Coordinate(dto.latitude(), dto.longitude()))
