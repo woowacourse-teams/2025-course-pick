@@ -19,6 +19,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -47,7 +49,12 @@ fun CustomCourseScreen(
                 color = colorResource(R.color.item_primary),
                 modifier = Modifier.padding(horizontal = 20.dp),
             )
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .nestedScroll(rememberNestedScrollInteropConnection()),
+            ) {
                 items(items = uiState.courses) { course: CustomCourseUiModel ->
                     CustomCourseItem(course)
                 }
