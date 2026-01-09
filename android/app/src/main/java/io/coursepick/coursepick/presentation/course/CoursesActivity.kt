@@ -354,7 +354,8 @@ class CoursesActivity :
                 }
 
                 R.id.customCourseMenu -> {
-                    switchContent(CoursesContent2.FragmentWithoutTitle.CustomCourse)
+                    viewModel.showCourses()
+                    viewModel.switchContent(CoursesContent.CUSTOM_COURSE)
                     true
                 }
 
