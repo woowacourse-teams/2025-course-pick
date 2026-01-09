@@ -10,4 +10,9 @@ enum class CoursesContent(
     EXPLORE(ExploreCoursesFragment::class.java),
     FAVORITES(FavoriteCoursesFragment::class.java),
     CUSTOM_COURSE(CustomCourseFragment::class.java),
+    ;
+
+    companion object {
+        val fragments: Set<Class<out Fragment>> = entries.map(CoursesContent::fragmentClass).toSet()
+    }
 }
