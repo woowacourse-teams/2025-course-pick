@@ -56,33 +56,7 @@ fun CustomCourseScreenPreview() {
     CustomCourseScreen(
         uiState =
             CustomCourseUiState(
-                courses =
-                    List(10) {
-                        CustomCourseUiModel(
-                            course =
-                                Course(
-                                    id = "0",
-                                    name = CourseName("Preview Course"),
-                                    distance = Distance(123),
-                                    length = Length(456),
-                                    roadType = "보도",
-                                    difficulty = "쉬움",
-                                    inclineSummary = InclineSummary.MOSTLY_FLAT,
-                                    segments =
-                                        listOf(
-                                            Segment(
-                                                inclineType = InclineType.UNKNOWN,
-                                                coordinates =
-                                                    listOf(
-                                                        Coordinate(Latitude(0.0), Longitude(0.0)),
-                                                        Coordinate(Latitude(0.0), Longitude(0.0)),
-                                                    ),
-                                            ),
-                                        ),
-                                ),
-                            selected = false,
-                        )
-                    },
+                courses = List(10) { CustomCourseUiModel.CUSTOM_COURSE_FIXTURE },
             ),
     )
 }
