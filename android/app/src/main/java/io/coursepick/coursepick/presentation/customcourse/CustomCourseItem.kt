@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -143,11 +143,11 @@ fun CustomCourseItem(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier =
                     Modifier
-                        .clip(RoundedCornerShape(9999.dp))
+                        .clip(CircleShape)
                         .border(
                             width = 1.dp,
                             color = colorResource(R.color.background_border),
-                            shape = RoundedCornerShape(9999.dp),
+                            shape = CircleShape,
                         ).background(
                             color = colorResource(R.color.background_tertiary),
                         ).padding(
