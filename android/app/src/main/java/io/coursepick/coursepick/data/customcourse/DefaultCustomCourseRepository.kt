@@ -19,7 +19,7 @@ class DefaultCustomCourseRepository
         ): DraftSegment =
             service
                 .draftSegment(
-                    DraftSegmentRequest(
+                    EndpointsDto(
                         origin = CoordinateDto(origin),
                         destination = CoordinateDto(destination),
                     ),

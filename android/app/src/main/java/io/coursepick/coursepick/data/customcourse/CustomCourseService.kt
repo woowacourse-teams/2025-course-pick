@@ -5,7 +5,7 @@ import retrofit2.http.Body
 
 interface CustomCourseService {
     suspend fun draftSegment(
-        @Body request: DraftSegmentRequest,
+        @Body request: EndpointsDto,
     ): DraftSegmentDto
 
     suspend fun course(
