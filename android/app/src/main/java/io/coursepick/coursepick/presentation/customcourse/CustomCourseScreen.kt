@@ -3,7 +3,7 @@ package io.coursepick.coursepick.presentation.customcourse
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -61,6 +61,7 @@ fun CustomCourseScreen(
                 modifier = Modifier.padding(horizontal = 20.dp),
             )
             LazyColumn(
+                contentPadding = PaddingValues(bottom = 60.dp),
                 modifier =
                     Modifier
                         .fillMaxSize()
@@ -68,10 +69,6 @@ fun CustomCourseScreen(
             ) {
                 items(items = uiState.courses) { course: CustomCourseUiModel ->
                     CustomCourseItem(course)
-                }
-
-                item {
-                    Spacer(modifier = Modifier.size(60.dp))
                 }
             }
         }
