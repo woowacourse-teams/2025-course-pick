@@ -13,7 +13,7 @@ enum class InclineSummaryUiModel(
     SOMETIMES_DOWNHILL(R.string.incline_summary_sometimes_downhill),
     CONTINUOUS_UPHILL(R.string.incline_summary_continuous_uphill),
     CONTINUOUS_DOWNHILL(R.string.incline_summary_continuous_downhill),
-    UNKNOWN(R.string.incline_summary_continuous_unknown),
+    UNKNOWN(R.string.incline_summary_unknown),
 }
 
 fun InclineSummary.toUiModel(): InclineSummaryUiModel =
