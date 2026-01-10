@@ -1,6 +1,7 @@
 [versions]
 android-junit5 = "1.12.0.0"
 agp = "8.10.0"
+datastore = "1.2.0"
 firebaseBom = "34.0.0"
 fragmentKtx = "1.6.1"
 hiltAndroid = "2.57.1"
@@ -47,6 +48,8 @@ coil = "3.0.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
 androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preferenceKtx" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
