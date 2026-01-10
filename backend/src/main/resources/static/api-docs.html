@@ -2,23 +2,59 @@
 <html lang="ko">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
     <title>코스픽 API 문서</title>
-    <meta name="description" content="코스픽 API 문서">
+    <link href="https://unpkg.com/@stoplight/elements@8/styles.min.css" rel="stylesheet">
+    <style>
+        /* 버전 선택 바 스타일링 */
+        .version-selector {
+            padding: 10px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-    <!-- Stoplight Elements CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/@stoplight/elements@8/styles.min.css">
+        select {
+            padding: 5px;
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body>
 
+<div class="version-selector">
+    <label for="api-version">API Version:</label>
+    <select id="api-version" onchange="changeVersion(this.value)">
+        <option value="/v3/api-docs/v1">v1</option>
+    </select>
+</div>
+
+<div id="docs-container">
     <elements-api
-        apiDescriptionUrl="/v3/api-docs"
-        router="hash"
-        layout="sidebar"
+            apiDescriptionUrl="/v3/api-docs/v1"
+            id="stoplight"
+            layout="sidebar"
+            router="hash"
     />
+</div>
 
-    <!-- Stoplight Elements JS -->
-    <script src="https://unpkg.com/@stoplight/elements@8/web-components.min.js"></script>
+<script src="https://unpkg.com/@stoplight/elements@8/web-components.min.js"></script>
 
+<script>
+    function changeVersion(url) {
+        const container = document.getElementById('docs-container');
+        // 기존 요소를 삭제하고 새로 생성해야 UI가 완전히 갱신됩니다.
+        container.innerHTML = `
+                <elements-api
+                    id="stoplight"
+                    apiDescriptionUrl="${url}"
+                    layout="sidebar"
+                    router="hash"
+                />
+            `;
+    }
+</script>
 </body>
 </html>

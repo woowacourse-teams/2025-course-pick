@@ -9,16 +9,14 @@ import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
 import coursepick.coursepick.presentation.dto.CourseWebResponse;
 import coursepick.coursepick.presentation.dto.CoursesWebResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/v1")
 @RequiredArgsConstructor
-public class CourseWebController implements CourseWebApi {
+public class CourseV1WebController implements CourseWebApi {
 
     private final CourseApplicationService courseApplicationService;
 
