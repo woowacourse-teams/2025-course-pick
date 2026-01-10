@@ -1,7 +1,7 @@
 package coursepick.coursepick.infrastructure.snapper;
 
-import coursepick.coursepick.domain.course.CoordinateSnapper;
 import coursepick.coursepick.domain.course.Coordinate;
+import coursepick.coursepick.domain.course.CoordinateSnapper;
 import coursepick.coursepick.domain.course.GeoLine;
 import coursepick.coursepick.domain.course.Meter;
 import coursepick.coursepick.logging.LogContent;
@@ -114,7 +114,7 @@ public class OsrmCoordinateSnapper implements CoordinateSnapper {
     private String generateTimestamps(int size) {
         long epochSecond = Instant.now().getEpochSecond();
         return IntStream.range(0, size)
-                .mapToObj(i -> String.valueOf(epochSecond + (i * 5)))
+                .mapToObj(i -> String.valueOf(epochSecond + (i * 5L)))
                 .collect(Collectors.joining(";"));
     }
 }

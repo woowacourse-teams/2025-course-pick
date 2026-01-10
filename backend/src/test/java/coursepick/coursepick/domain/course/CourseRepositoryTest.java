@@ -2,11 +2,13 @@ package coursepick.coursepick.domain.course;
 
 import coursepick.coursepick.test_util.AbstractIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
+
+import java.util.List;
 
 import static coursepick.coursepick.test_util.CoordinateTestUtil.square;
 import static coursepick.coursepick.test_util.CoordinateTestUtil.upright;
@@ -14,16 +16,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class CourseRepositoryTest extends AbstractIntegrationTest {
 
-    final Coordinate target = new Coordinate(37.514647, 127.086592);
+    final double mapLatitude = 37.514647;
+    final double mapLongitude = 127.086592;
     @Autowired
     CourseRepository sut;
 
     @BeforeEach
     void setUp() {
-        var course1 = new Course("코스1", square(upright(target, 300), 1000, 1000));
-        var course2 = new Course("코스2", square(upright(target, 500), 1000, 1000));
-        var course3 = new Course("코스3", square(upright(target, 700), 1000, 1000));
-        var course4 = new Course("코스4", square(upright(target, 900), 1000, 1000));
+        var target = new Coordinate(mapLatitude, mapLongitude);
+        var course1 = new Course("코스1", square(upright(target, 1200), 10, 10));
+        var course2 = new Course("코스2", square(upright(target, 1500), 10, 10));
+        var course3 = new Course("코스3", square(upright(target, 1700), 10, 10));
+        var course4 = new Course("코스4", square(upright(target, 2000), 10, 10));
         dbUtil.saveCourse(course1);
         dbUtil.saveCourse(course2);
         dbUtil.saveCourse(course3);
@@ -32,36 +36,135 @@ class CourseRepositoryTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @CsvSource({
-            "1300, 4",
-            "1100, 3",
-            "900, 2",
-            "700, 1"
+            "3000, 4",
+            "2500, 3",
+            "2300, 2",
+            "2000, 1",
     })
-    void 거리를_줄여가면서_검색되는_코스_수가_줄어든다(int distance, int expectedSize) {
-        var courses = sut.findAllHasDistanceWithin(target, new Meter(distance), PageRequest.of(0, 100));
+    void 거리를_줄여가면서_검색되는_코스_수가_줄어든다(int scope, int expectedSize) {
+        var condition = new CourseFindCondition(mapLatitude, mapLongitude, scope, null, null, null, null);
+
+        var courses = sut.findAllHasDistanceWithin(condition);
 
         assertThat(courses).hasSize(expectedSize);
     }
 
     @ParameterizedTest
     @CsvSource({
-            "0, 2, 2, true",
-            "1, 2, 2, false",
-            "0, 4, 4, false",
-            "0, 5, 4, false"
+            "0, 4, false",
+            "1, 0, false",
     })
-    void 검색하는_코스를_페이징한다(int pageNumber, int pageSize, int expectedResultSize, boolean expectedHasNext) {
-        var courses = sut.findAllHasDistanceWithin(target, new Meter(1500), PageRequest.of(pageNumber, pageSize));
+    void 검색하는_코스를_페이징한다(int pageNumber, int expectedResultSize, boolean expectedHasNext) {
+        var condition = new CourseFindCondition(mapLatitude, mapLongitude, 3000, null, null, null, pageNumber);
+
+        var courses = sut.findAllHasDistanceWithin(condition);
 
         assertThat(courses).hasSize(expectedResultSize);
         assertThat(courses.hasNext()).isEqualTo(expectedHasNext);
     }
 
-    @Test
-    void PageRequest가_널이면_페이징하지_않는다() {
-        var courses = sut.findAllHasDistanceWithin(target, new Meter(1500), null);
+    @Nested
+    class 필터링_테스트 {
 
-        assertThat(courses).hasSize(4);
-        assertThat(courses.hasNext()).isFalse();
+        @BeforeEach
+        void setUp() {
+            var target = new Coordinate(mapLatitude, mapLongitude);
+            var shortCourse = new Course("짧은코스", RoadType.보도, square(target, 50, 50));      // 약 200m
+            var mediumCourse = new Course("중간코스", RoadType.보도, square(target, 500, 500));    // 약 2000m
+            var longCourse = new Course("긴코스", RoadType.보도, square(target, 2500, 2500));      // 약 10000m
+            var veryLongCourse = new Course("매우긴코스", RoadType.보도, square(target, 7500, 7500)); // 약 30000m
+            var easyCourse = new Course("쉬운코스", RoadType.보도, square(target, 100, 100));       // 약 400m, 쉬움
+            var normalCourse = new Course("보통코스", RoadType.트레일, square(target, 2000, 2000)); // 약 8000m, 보통
+            var hardCourse = new Course("어려운코스", RoadType.트레일, square(target, 4000, 4000));  // 약 16000m, 어려움
+
+            dbUtil.saveCourse(shortCourse);
+            dbUtil.saveCourse(mediumCourse);
+            dbUtil.saveCourse(longCourse);
+            dbUtil.saveCourse(veryLongCourse);
+            dbUtil.saveCourse(easyCourse);
+            dbUtil.saveCourse(normalCourse);
+            dbUtil.saveCourse(hardCourse);
+        }
+
+        @Test
+        void 최소_길이로_필터링한다() {
+            var condition = new CourseFindCondition(mapLatitude, mapLongitude, 3000, 5000, null, null, null);
+
+            var courses = sut.findAllHasDistanceWithin(condition);
+
+            assertThat(courses)
+                    .allMatch(course -> course.length().value() >= 5000);
+        }
+
+        @Test
+        void 최대_길이로_필터링한다() {
+            var condition = new CourseFindCondition(mapLatitude, mapLongitude, 3000, null, 5000, null, null);
+
+            var courses = sut.findAllHasDistanceWithin(condition);
+
+            assertThat(courses)
+                    .allMatch(course -> course.length().value() <= 5000);
+        }
+
+        @Test
+        void 최소_최대_길이로_범위_필터링한다() {
+            var condition = new CourseFindCondition(mapLatitude, mapLongitude, 3000, 1000, 10000, null, null);
+
+            var courses = sut.findAllHasDistanceWithin(condition);
+
+            assertThat(courses)
+                    .allMatch(course -> course.length().value() >= 1000 && course.length().value() <= 10000);
+        }
+
+        @Test
+        void 쉬움_난이도로_필터링한다() {
+            var condition = new CourseFindCondition(mapLatitude, mapLongitude, 3000, null, null, List.of("easy"), null);
+
+            var courses = sut.findAllHasDistanceWithin(condition);
+
+            assertThat(courses)
+                    .allMatch(course -> course.difficulty() == Difficulty.쉬움);
+        }
+
+        @Test
+        void 보통_난이도로_필터링한다() {
+            var condition = new CourseFindCondition(mapLatitude, mapLongitude, 3000, null, null, List.of("normal"), null);
+
+            var courses = sut.findAllHasDistanceWithin(condition);
+
+            assertThat(courses)
+                    .allMatch(course -> course.difficulty() == Difficulty.보통);
+        }
+
+        @Test
+        void 어려움_난이도로_필터링한다() {
+            var condition = new CourseFindCondition(mapLatitude, mapLongitude, 3000, null, null, List.of("hard"), null);
+
+            var courses = sut.findAllHasDistanceWithin(condition);
+
+            assertThat(courses)
+                    .allMatch(course -> course.difficulty() == Difficulty.어려움);
+        }
+
+        @Test
+        void 여러_난이도로_필터링한다() {
+            var condition = new CourseFindCondition(mapLatitude, mapLongitude, 3000, null, null, List.of("easy", "normal"), null);
+
+            var courses = sut.findAllHasDistanceWithin(condition);
+
+            assertThat(courses)
+                    .allMatch(course -> course.difficulty() == Difficulty.쉬움 || course.difficulty() == Difficulty.보통);
+        }
+
+        @Test
+        void 모든_필터를_함께_사용한다() {
+            var condition = new CourseFindCondition(mapLatitude, mapLongitude, 3000, 5000, 20000, List.of("normal", "hard"), null);
+
+            var courses = sut.findAllHasDistanceWithin(condition);
+
+            assertThat(courses)
+                    .allMatch(course -> course.length().value() >= 5000 && course.length().value() <= 20000)
+                    .allMatch(course -> course.difficulty() == Difficulty.보통 || course.difficulty() == Difficulty.어려움);
+        }
     }
 }
