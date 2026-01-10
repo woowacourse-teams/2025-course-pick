@@ -47,6 +47,9 @@ class CoursesViewModel
             )
         val state: LiveData<CoursesUiState> get() = _state
 
+        private val _content: MutableLiveData<CoursesContent> = MutableLiveData(CoursesContent.EXPLORE)
+        val content: LiveData<CoursesContent> get() = _content
+
         private val _event: MutableSingleLiveData<CoursesUiEvent> = MutableSingleLiveData()
         val event: SingleLiveData<CoursesUiEvent> get() = _event
 
@@ -71,6 +74,10 @@ class CoursesViewModel
             if (!networkMonitor.isConnected()) {
                 _state.value = state.value?.copy(status = UiStatus.NoInternet)
             }
+        }
+
+        fun switchContent(content: CoursesContent) {
+            _content.value = content
         }
 
         fun select(course: CourseItem) {

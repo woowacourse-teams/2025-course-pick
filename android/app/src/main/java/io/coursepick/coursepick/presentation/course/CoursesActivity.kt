@@ -20,7 +20,6 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.annotation.IdRes
 import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -50,6 +49,7 @@ import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.CoursePickUpdateManager
 import io.coursepick.coursepick.presentation.DataKeys
 import io.coursepick.coursepick.presentation.Logger
+import io.coursepick.coursepick.presentation.compat.OnDescribeCourseColorListener
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
@@ -70,8 +70,7 @@ import io.coursepick.coursepick.presentation.verifiedlocations.VerifiedLocations
 @AndroidEntryPoint
 class CoursesActivity :
     AppCompatActivity(),
-    CoursesAction,
-    OnReconnectListener {
+    CoursesAction {
     private val coursePickApplication by lazy { application as CoursePickApplication }
     private var searchLauncher: ActivityResultLauncher<Intent>? = null
     private val binding by lazy { ActivityCoursesBinding.inflate(layoutInflater) }
@@ -158,7 +157,9 @@ class CoursesActivity :
             setUpObservers()
             setUpMapPadding()
             mapManager.setOnCameraMoveListener {
-                binding.mainSearchThisAreaButton.visibility = View.VISIBLE
+                if (viewModel.content.value == CoursesContent.EXPLORE) {
+                    binding.mainSearchThisAreaButton.visibility = View.VISIBLE
+                }
                 binding.mainCurrentLocationButton.setColorFilter(
                     ContextCompat.getColor(
                         this,
@@ -167,9 +168,6 @@ class CoursesActivity :
                 )
             }
             fetchCourses()
-            if (savedInstanceState == null) {
-                selectMenuWithoutListener(R.id.coursesMenu)
-            }
         }
 
         setUpBottomNavigation()
@@ -213,8 +211,6 @@ class CoursesActivity :
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun searchThisArea() {
-        selectMenuWithoutListener(R.id.coursesMenu)
-
         val coordinate = mapCoordinateOrNull() ?: return
         Logger.log(
             Logger.Event.Click("search_this_area"),
@@ -260,22 +256,8 @@ class CoursesActivity :
         Toast.makeText(this, "사용자 ID가 복사됐습니다.", Toast.LENGTH_SHORT).show()
     }
 
-    override fun showCourseColorDescription() {
-        supportFragmentManager.findFragmentByTag(COURSE_COLOR_DIALOG_TAG)
-            ?: CourseColorDescriptionDialog().show(supportFragmentManager, COURSE_COLOR_DIALOG_TAG)
-    }
-
     override fun clearQuery() {
         viewModel.setQuery("")
-    }
-
-    override fun showFilters() {
-        viewModel.showFilterDialog()
-    }
-
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    override fun onReconnect() {
-        fetchCourses()
     }
 
     private fun scopeOrNull(): Scope? {
@@ -305,8 +287,6 @@ class CoursesActivity :
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun handleLocationResult(intent: Intent?) {
-        selectMenuWithoutListener(R.id.coursesMenu)
-
         if (intent == null) {
             Toast.makeText(this@CoursesActivity, "검색 정보가 전달되지 않았습니다.", Toast.LENGTH_SHORT).show()
             return
@@ -337,15 +317,6 @@ class CoursesActivity :
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun switchContent(content: CoursesContent) {
-        binding.mainCoursesHeader.text = getString(content.headerId)
-        binding.mainEmptyCourses.text =
-            when (content) {
-                CoursesContent.EXPLORE -> getString(R.string.main_empty_courses_description)
-                CoursesContent.FAVORITES -> getString(R.string.main_empty_favorites_description)
-            }
-        binding.mainCourseFilter.visibility =
-            if (content == CoursesContent.EXPLORE) View.VISIBLE else View.GONE
-
         supportFragmentManager.commit {
             setReorderingAllowed(true)
             supportFragmentManager.fragments.forEach { fragment: Fragment ->
@@ -368,40 +339,19 @@ class CoursesActivity :
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    private fun selectMenuWithoutListener(
-        @IdRes menuId: Int,
-    ) {
-        binding.mainBottomNavigation.setOnItemSelectedListener(null)
-        when (menuId) {
-            R.id.coursesMenu -> {
-                switchContent(CoursesContent.EXPLORE)
-                binding.mainBottomNavigation.selectedItemId = menuId
-            }
-
-            R.id.favoritesMenu -> {
-                switchContent(CoursesContent.FAVORITES)
-                binding.mainBottomNavigation.selectedItemId = menuId
-            }
-
-            else -> Unit
-        }
-        setUpBottomNavigation()
-    }
-
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun setUpBottomNavigation() {
         binding.mainBottomNavigation.setOnItemSelectedListener { item: MenuItem ->
             when (item.itemId) {
                 R.id.coursesMenu -> {
                     viewModel.showCourses()
-                    switchContent(CoursesContent.EXPLORE)
+                    viewModel.switchContent(CoursesContent.EXPLORE)
                     searchThisArea()
                     true
                 }
 
                 R.id.favoritesMenu -> {
                     viewModel.showCourses()
-                    switchContent(CoursesContent.FAVORITES)
+                    viewModel.switchContent(CoursesContent.FAVORITES)
                     viewModel.fetchFavorites()
                     true
                 }
@@ -411,7 +361,9 @@ class CoursesActivity :
                     true
                 }
 
-                else -> false
+                else -> {
+                    false
+                }
             }
         }
     }
@@ -528,6 +480,25 @@ class CoursesActivity :
     }
 
     private fun setUpFragmentFactory() {
+        val onReconnectListener =
+            object : OnReconnectListener {
+                @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+                override fun onReconnect() {
+                    fetchCourses()
+                }
+            }
+
+        val onDescribeCourseColorListener =
+            object : OnDescribeCourseColorListener {
+                override fun onDescribeCourseColor() {
+                    supportFragmentManager.findFragmentByTag(COURSE_COLOR_DIALOG_TAG)
+                        ?: CourseColorDescriptionDialog().show(
+                            supportFragmentManager,
+                            COURSE_COLOR_DIALOG_TAG,
+                        )
+                }
+            }
+
         supportFragmentManager.fragmentFactory =
             object : FragmentFactory() {
                 override fun instantiate(
@@ -536,11 +507,19 @@ class CoursesActivity :
                 ): Fragment =
                     when (className) {
                         ExploreCoursesFragment::class.java.name -> {
-                            ExploreCoursesFragment(courseItemListener)
+                            ExploreCoursesFragment(
+                                courseItemListener,
+                                onReconnectListener,
+                                onDescribeCourseColorListener,
+                            )
                         }
 
                         FavoriteCoursesFragment::class.java.name -> {
-                            FavoriteCoursesFragment(courseItemListener)
+                            FavoriteCoursesFragment(
+                                courseItemListener,
+                                onReconnectListener,
+                                onDescribeCourseColorListener,
+                            )
                         }
 
                         else -> {
@@ -608,7 +587,6 @@ class CoursesActivity :
         binding.lifecycleOwner = this
         binding.action = this
         binding.clientId = coursePickApplication.installationId.value
-        binding.listener = this
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -666,6 +644,10 @@ class CoursesActivity :
             }
             mapManager.draw(courses)
         }
+
+        viewModel.content.observe(this) { content: CoursesContent ->
+            switchContent(content)
+        }
     }
 
     private fun setUpEventObserver() {
@@ -707,18 +689,20 @@ class CoursesActivity :
                     )
                 }
 
-                CoursesUiEvent.FetchNearestCoordinateFailure ->
+                CoursesUiEvent.FetchNearestCoordinateFailure -> {
                     Toast
                         .makeText(this, "코스까지 가는 길을 찾지 못했습니다.", Toast.LENGTH_SHORT)
                         .show()
+                }
 
-                CoursesUiEvent.FetchNextCoursesFailure ->
+                CoursesUiEvent.FetchNextCoursesFailure -> {
                     Toast
                         .makeText(
                             this,
                             getString(R.string.courses_fail_fetch_next_page),
                             Toast.LENGTH_SHORT,
                         ).show()
+                }
             }
         }
     }
