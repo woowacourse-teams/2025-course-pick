@@ -3,6 +3,7 @@ package coursepick.coursepick.presentation;
 import coursepick.coursepick.application.CourseApplicationService;
 import coursepick.coursepick.application.dto.CoursesResponse;
 import coursepick.coursepick.domain.course.Coordinate;
+import coursepick.coursepick.domain.course.CourseFindCondition;
 import coursepick.coursepick.presentation.api.CourseWebApi;
 import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
 import coursepick.coursepick.presentation.dto.CourseWebResponse;
@@ -27,9 +28,13 @@ public class CourseV1WebController implements CourseWebApi {
             @RequestParam("scope") int scope,
             @RequestParam(value = "userLat", required = false) Double userLatitude,
             @RequestParam(value = "userLng", required = false) Double userLongitude,
+            @RequestParam(value = "minLength", required = false) Integer minLength,
+            @RequestParam(value = "maxLength", required = false) Integer maxLength,
+            @RequestParam(value = "difficulties", required = false) List<String> difficulties,
             @RequestParam(value = "page", required = false) Integer page
     ) {
-        CoursesResponse response = courseApplicationService.findNearbyCourses(mapLatitude, mapLongitude, userLatitude, userLongitude, scope, page);
+        CourseFindCondition condition = new CourseFindCondition(mapLatitude, mapLongitude, scope, minLength, maxLength, difficulties, page);
+        CoursesResponse response = courseApplicationService.findNearbyCourses(condition, userLatitude, userLongitude);
         return CoursesWebResponse.from(response);
     }
 

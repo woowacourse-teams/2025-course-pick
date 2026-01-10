@@ -29,6 +29,10 @@ public enum ErrorType {
             "코스가 존재하지 않습니다. 코스id=%s",
             NoSuchElementException::new
     ),
+    NOT_EXIST_DIFFICULTY(
+            "존재하지 않는 난이도입니다.",
+            NoSuchElementException::new
+    ),
     INVALID_FILE_EXTENSION(
             "파싱할 수 없는 파일 확장자입니다.",
             IllegalArgumentException::new

@@ -2,16 +2,10 @@ package coursepick.coursepick.application;
 
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
-import coursepick.coursepick.domain.course.Coordinate;
-import coursepick.coursepick.domain.course.Course;
-import coursepick.coursepick.domain.course.CourseRepository;
-import coursepick.coursepick.domain.course.Meter;
-import coursepick.coursepick.domain.course.RouteFinder;
+import coursepick.coursepick.domain.course.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,19 +23,9 @@ public class CourseApplicationService {
     private final RouteFinder routeFinder;
 
     @Transactional(readOnly = true)
-    public CoursesResponse findNearbyCourses(double mapLatitude, double mapLongitude, @Nullable Double userLatitude, @Nullable Double userLongitude, int scope, @Nullable Integer pageNumber) {
-        final Coordinate mapPosition = new Coordinate(mapLatitude, mapLongitude);
-        final Meter meter = new Meter(scope).clamp(1000, 3000);
-        final Pageable pageable = createPageable(pageNumber);
-
-        final Slice<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(mapPosition, meter, pageable);
-
+    public CoursesResponse findNearbyCourses(CourseFindCondition condition, @Nullable Double userLatitude, @Nullable Double userLongitude) {
+        Slice<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(condition);
         return CoursesResponse.from(coursesWithinScope, createUserPositionOrNull(userLatitude, userLongitude));
-    }
-
-    private static Pageable createPageable(@Nullable Integer pageNumber) {
-        if (pageNumber == null || pageNumber < 0) return PageRequest.of(0, 10);
-        else return PageRequest.of(pageNumber, 10);
     }
 
     private static Coordinate createUserPositionOrNull(@Nullable Double userLatitude, @Nullable Double userLongitude) {

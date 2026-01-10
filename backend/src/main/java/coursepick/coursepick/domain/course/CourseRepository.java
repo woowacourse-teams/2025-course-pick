@@ -1,6 +1,5 @@
 package coursepick.coursepick.domain.course;
 
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
 import java.util.List;
@@ -12,7 +11,7 @@ public interface CourseRepository {
 
     void saveAll(Iterable<? extends Course> courses);
 
-    Slice<Course> findAllHasDistanceWithin(Coordinate target, Meter distance, Pageable pageable);
+    Slice<Course> findAllHasDistanceWithin(CourseFindCondition condition);
 
     List<Course> findByIdIn(List<String> ids);
 

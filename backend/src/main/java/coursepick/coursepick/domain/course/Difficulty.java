@@ -1,17 +1,23 @@
 package coursepick.coursepick.domain.course;
 
+import coursepick.coursepick.application.exception.ErrorType;
+
+import java.util.Arrays;
+
 public enum Difficulty {
-    쉬움(1, 4),
-    보통(4, 7),
-    어려움(7, 10),
+    쉬움(1, 4, "easy"),
+    보통(4, 7, "normal"),
+    어려움(7, 10, "hard"),
     ;
 
     private final int minScore;
     private final int maxScore;
+    private final String engName;
 
-    Difficulty(int minScore, int maxScore) {
+    Difficulty(int minScore, int maxScore, String engName) {
         this.minScore = minScore;
         this.maxScore = maxScore;
+        this.engName = engName;
     }
 
     public static Difficulty fromLengthAndRoadType(Meter length, RoadType roadType) {
@@ -23,6 +29,13 @@ public enum Difficulty {
         } else {
             return 어려움;
         }
+    }
+
+    public static Difficulty fromEngName(String engName) {
+        return Arrays.stream(values())
+                .filter(value -> value.engName.equalsIgnoreCase(engName))
+                .findAny()
+                .orElseThrow(ErrorType.NOT_EXIST_DIFFICULTY::create);
     }
 
     private static double difficultyScore(Meter length, RoadType roadType) {
