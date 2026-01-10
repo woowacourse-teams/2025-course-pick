@@ -17,7 +17,7 @@ class TokenLocalDataSource
         private val aead: Aead,
     ) {
         suspend fun saveAccessToken(token: String) {
-            val ciphertext = aead.encrypt(token.toByteArray(), ASSOCIATED_DATA.toByteArray())
+            val ciphertext = aead.encrypt(token.toByteArray(), TOKEN_SECURITY.toByteArray())
             val encryptedToken = Base64.encodeToString(ciphertext, Base64.DEFAULT)
             dataStore.edit { preferences: MutablePreferences ->
                 preferences[ACCESS_TOKEN] = encryptedToken
@@ -27,7 +27,7 @@ class TokenLocalDataSource
         suspend fun accessToken(): String? {
             val encryptedToken = dataStore.data.first()[ACCESS_TOKEN] ?: return null
             val decoded = Base64.decode(encryptedToken, Base64.DEFAULT)
-            return String(aead.decrypt(decoded, ASSOCIATED_DATA.toByteArray()))
+            return String(aead.decrypt(decoded, TOKEN_SECURITY.toByteArray()))
         }
 
         suspend fun clearAccessToken() {
@@ -38,6 +38,6 @@ class TokenLocalDataSource
 
         companion object {
             private val ACCESS_TOKEN: Preferences.Key<String> = stringPreferencesKey("access_token")
-            private const val ASSOCIATED_DATA: String = "auth_token_security"
+            private const val TOKEN_SECURITY: String = "token_security"
         }
     }
