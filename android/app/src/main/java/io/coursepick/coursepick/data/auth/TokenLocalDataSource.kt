@@ -5,6 +5,8 @@ import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.google.crypto.tink.Aead
+import com.google.crypto.tink.subtle.Base64
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
@@ -12,14 +14,21 @@ class TokenLocalDataSource
     @Inject
     constructor(
         private val dataStore: DataStore<Preferences>,
+        private val aead: Aead,
     ) {
         suspend fun saveAccessToken(token: String) {
+            val ciphertext = aead.encrypt(token.toByteArray(), ASSOCIATED_DATA.toByteArray())
+            val encryptedToken = Base64.encodeToString(ciphertext, Base64.DEFAULT)
             dataStore.edit { preferences: MutablePreferences ->
-                preferences[ACCESS_TOKEN] = token
+                preferences[ACCESS_TOKEN] = encryptedToken
             }
         }
 
-        suspend fun accessToken(): String? = dataStore.data.first()[ACCESS_TOKEN]
+        suspend fun accessToken(): String? {
+            val encryptedToken = dataStore.data.first()[ACCESS_TOKEN] ?: return null
+            val decoded = Base64.decode(encryptedToken, Base64.DEFAULT)
+            return String(aead.decrypt(decoded, ASSOCIATED_DATA.toByteArray()))
+        }
 
         suspend fun clearAccessToken() {
             dataStore.edit { preferences: MutablePreferences ->
@@ -29,5 +38,6 @@ class TokenLocalDataSource
 
         companion object {
             private val ACCESS_TOKEN: Preferences.Key<String> = stringPreferencesKey("access_token")
+            private const val ASSOCIATED_DATA: String = "auth_token_security"
         }
     }
