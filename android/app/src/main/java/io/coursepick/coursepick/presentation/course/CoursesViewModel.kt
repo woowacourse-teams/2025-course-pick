@@ -530,7 +530,11 @@ class CoursesViewModel
         }
 
         fun showCourses() {
-            _state.value = state.value?.copy(showSettings = false)
+            _state.value = state.value?.copy(showSettings = false, showCreateCustomCourse = false)
+        }
+
+        fun showCreateCustomCourse() {
+            _state.value = state.value?.copy(showCreateCustomCourse = true)
         }
 
         private fun newCoursesListItem(
