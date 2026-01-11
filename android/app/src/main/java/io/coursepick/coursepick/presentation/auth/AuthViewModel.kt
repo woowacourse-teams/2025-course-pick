@@ -33,6 +33,7 @@ class AuthViewModel
                                 SocialToken(socialAccessToken),
                             )
                         }.onSuccess { token: String ->
+                            authRepository.saveAccessToken(token)
                             _event.value = AuthUiEvent.AuthenticateSuccess
                         }.onFailure {
                             _event.value = AuthUiEvent.AuthenticateFailure
