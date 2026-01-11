@@ -61,34 +61,41 @@ fun CreateCustomCourseScreen(modifier: Modifier = Modifier) {
                 ),
         )
         Row(
-            modifier = Modifier.align(alignment = Alignment.BottomCenter).fillMaxWidth()
+            modifier = Modifier.align(alignment = Alignment.BottomCenter).fillMaxWidth(),
         ) {
             Column{
+            Column {
                 IconButton(
                     onClick = {},
                     modifier =
                         Modifier
                             .clip(shape = CircleShape)
-                            .background(colorResource(R.color.background_primary)),
+                            .background(colorResource(R.color.background_primary))
+                            .size(50.dp),
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.icon_undo),
                         contentDescription = null,
                         tint = colorResource(R.color.item_primary),
+                        modifier = Modifier.size(30.dp),
                     )
                 }
+
                 Spacer(modifier = Modifier.size(10.dp))
+
                 IconButton(
                     onClick = {},
                     modifier =
                         Modifier
                             .clip(shape = CircleShape)
-                            .background(colorResource(R.color.background_primary)),
+                            .background(colorResource(R.color.background_primary))
+                            .size(50.dp),
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = null,
                         tint = colorResource(R.color.item_primary),
+                        modifier = Modifier.size(30.dp),
                     )
                 }
             }
