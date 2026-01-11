@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -73,6 +74,7 @@ fun CreateCustomCourseScreen(
                     titleContentColor = colorResource(R.color.item_primary),
                     actionIconContentColor = colorResource(R.color.item_primary),
                 ),
+            modifier = Modifier.shadow(elevation = 10.dp),
         )
 
         Icon(
@@ -99,6 +101,7 @@ fun CreateCustomCourseScreen(
                 color = colorResource(R.color.item_primary),
                 modifier =
                     Modifier
+                        .shadow(elevation = 8.dp, shape = CircleShape)
                         .clip(shape = CircleShape)
                         .background(color = colorResource(R.color.background_primary))
                         .padding(20.dp)
@@ -110,6 +113,7 @@ fun CreateCustomCourseScreen(
                     onClick = {},
                     modifier =
                         Modifier
+                            .shadow(elevation = 8.dp, shape = CircleShape)
                             .clip(shape = CircleShape)
                             .background(colorResource(R.color.background_primary))
                             .size(70.dp),
@@ -128,6 +132,7 @@ fun CreateCustomCourseScreen(
                     onClick = {},
                     modifier =
                         Modifier
+                            .shadow(elevation = 8.dp, shape = CircleShape)
                             .clip(shape = CircleShape)
                             .background(colorResource(R.color.background_primary))
                             .size(70.dp),
