@@ -197,7 +197,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.compose.ui.platform.ComposeView
-            android:id="@+id/mainDialog"
+            android:id="@+id/coursesComposeView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:elevation="21dp" />
