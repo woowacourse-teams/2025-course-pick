@@ -1,6 +1,7 @@
 package io.coursepick.coursepick.presentation.customcourse
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,7 +36,10 @@ import io.coursepick.coursepick.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateCustomCourseScreen(modifier: Modifier = Modifier) {
+fun CreateCustomCourseScreen(
+    onClose: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Box(
         modifier =
             modifier
@@ -48,7 +52,10 @@ fun CreateCustomCourseScreen(modifier: Modifier = Modifier) {
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = null,
-                    modifier = Modifier.padding(start = 10.dp),
+                    modifier =
+                        Modifier
+                            .padding(start = 10.dp)
+                            .clickable(onClick = onClose),
                 )
             },
             actions = {
@@ -72,7 +79,10 @@ fun CreateCustomCourseScreen(modifier: Modifier = Modifier) {
             painter = painterResource(R.drawable.icon_add_waypoint),
             contentDescription = null,
             tint = colorResource(R.color.point_primary),
-            modifier = Modifier.align(Alignment.Center).size(40.dp),
+            modifier =
+                Modifier
+                    .align(Alignment.Center)
+                    .size(40.dp),
         )
 
         Row(
@@ -137,5 +147,7 @@ fun CreateCustomCourseScreen(modifier: Modifier = Modifier) {
 @PreviewLightDark
 @Composable
 fun CreateCustomCourseScreenPreview() {
-    CreateCustomCourseScreen()
+    CreateCustomCourseScreen(
+        onClose = {},
+    )
 }

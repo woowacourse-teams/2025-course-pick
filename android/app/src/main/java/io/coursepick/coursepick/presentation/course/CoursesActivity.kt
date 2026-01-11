@@ -182,7 +182,9 @@ class CoursesActivity :
                     CoursesDialogs()
                     val state: CoursesUiState? by viewModel.state.observeAsState()
                     if (state?.showCreateCustomCourse == true) {
-                        CreateCustomCourseScreen()
+                        CreateCustomCourseScreen(
+                            onClose = viewModel::showCourses,
+                        )
                     }
                 }
             }
