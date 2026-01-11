@@ -10,10 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -39,9 +36,11 @@ import io.coursepick.coursepick.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateCustomCourseScreen(modifier: Modifier = Modifier) {
-    Box(modifier = modifier
-        .fillMaxSize()
-        .navigationBarsPadding()
+    Box(
+        modifier =
+            modifier
+                .fillMaxSize()
+                .navigationBarsPadding(),
     ) {
         CenterAlignedTopAppBar(
             title = { Text(text = "코스 추가") },
@@ -67,6 +66,13 @@ fun CreateCustomCourseScreen(modifier: Modifier = Modifier) {
                     titleContentColor = colorResource(R.color.item_primary),
                     actionIconContentColor = colorResource(R.color.item_primary),
                 ),
+        )
+
+        Icon(
+            painter = painterResource(R.drawable.icon_add_waypoint),
+            contentDescription = null,
+            tint = colorResource(R.color.point_primary),
+            modifier = Modifier.align(Alignment.Center).size(40.dp),
         )
 
         Row(
