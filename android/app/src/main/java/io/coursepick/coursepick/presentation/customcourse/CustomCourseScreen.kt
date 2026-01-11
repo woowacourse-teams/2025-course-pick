@@ -42,6 +42,7 @@ import io.coursepick.coursepick.domain.course.Segment
 @Composable
 fun CustomCourseScreen(
     uiState: CustomCourseUiState,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -74,7 +75,7 @@ fun CustomCourseScreen(
         }
 
         FloatingActionButton(
-            onClick = {},
+            onClick = onClick,
             shape = CircleShape,
             containerColor = colorResource(R.color.point_primary),
             modifier =
@@ -126,5 +127,6 @@ fun CustomCourseScreenPreview() {
                         )
                     },
             ),
+        onClick = { },
     )
 }

@@ -53,6 +53,7 @@ import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.compat.OnDescribeCourseColorListener
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.compat.getParcelableCompat
+import io.coursepick.coursepick.presentation.customcourse.CreateCustomCourseScreen
 import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
 import io.coursepick.coursepick.presentation.filter.CourseFilterBottomSheet
 import io.coursepick.coursepick.presentation.map.kakao.KakaoMapManager
@@ -179,6 +180,10 @@ class CoursesActivity :
             setContent {
                 CoursePickTheme {
                     CoursesDialogs()
+                    val state: CoursesUiState? by viewModel.state.observeAsState()
+                    if (state?.showCreateCustomCourse == true) {
+                        CreateCustomCourseScreen()
+                    }
                 }
             }
         }
