@@ -57,6 +57,10 @@ public enum ErrorType {
             "잘못된 관리자 비밀번호입니다.",
             SecurityException::new
     ),
+    INVALID_SNAP_COORDINATE_SIZE(
+            "스냅을 위해선 최소 2개 이상의 좌표가 필요합니다.",
+            IllegalArgumentException::new
+    ),
     NOT_FOUND_NOTICE(
             "존재하지 않는 공지 사항입니다. 공지 사항id=%s",
             NoSuchElementException::new

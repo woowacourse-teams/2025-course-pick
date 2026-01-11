@@ -1,5 +1,8 @@
 package coursepick.coursepick.infrastructure.snapper;
 
+import static coursepick.coursepick.application.exception.ErrorType.*;
+
+import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.course.*;
 import coursepick.coursepick.logging.LogContent;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +30,7 @@ public class OsrmCoordinateSnapper implements CoordinateSnapper {
     @Override
     public SnapResult snap(List<Coordinate> coordinates) {
         if (coordinates.size() < 2) {
-            return new SnapResult(coordinates, 0);
+            throw INVALID_SNAP_COORDINATE_SIZE.create();
         }
 
         String coordinatesParam = coordinates.stream()
