@@ -20,7 +20,6 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
@@ -109,14 +108,15 @@ fun CreateCustomCourseScreen(
             )
 
             Column {
-                IconButton(
-                    onClick = {},
+                Box(
+                    contentAlignment = Alignment.Center,
                     modifier =
                         Modifier
                             .shadow(elevation = 8.dp, shape = CircleShape)
                             .clip(shape = CircleShape)
                             .background(colorResource(R.color.background_primary))
-                            .size(70.dp),
+                            .size(70.dp)
+                            .clickable {},
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.icon_undo),
@@ -128,14 +128,15 @@ fun CreateCustomCourseScreen(
 
                 Spacer(modifier = Modifier.size(10.dp))
 
-                IconButton(
-                    onClick = {},
+                Box(
+                    contentAlignment = Alignment.Center,
                     modifier =
                         Modifier
                             .shadow(elevation = 8.dp, shape = CircleShape)
                             .clip(shape = CircleShape)
                             .background(colorResource(R.color.background_primary))
-                            .size(70.dp),
+                            .size(70.dp)
+                            .clickable {},
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
