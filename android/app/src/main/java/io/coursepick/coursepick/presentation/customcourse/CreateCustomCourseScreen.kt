@@ -1,5 +1,7 @@
 package io.coursepick.coursepick.presentation.customcourse
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -19,31 +21,33 @@ import io.coursepick.coursepick.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateCustomCourseScreen(modifier: Modifier = Modifier) {
-    CenterAlignedTopAppBar(
-        title = { Text(text = "코스 추가") },
-        navigationIcon = {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = null,
-                modifier = Modifier.padding(start = 10.dp),
-            )
-        },
-        actions = {
-            Icon(
-                imageVector = Icons.Default.Done,
-                contentDescription = null,
-                modifier = Modifier.padding(end = 10.dp),
-            )
-        },
-        colors =
-            TopAppBarColors(
-                containerColor = colorResource(R.color.background_primary),
-                scrolledContainerColor = colorResource(R.color.background_primary),
-                navigationIconContentColor = colorResource(R.color.item_primary),
-                titleContentColor = colorResource(R.color.item_primary),
-                actionIconContentColor = colorResource(R.color.item_primary),
-            ),
-    )
+    Box(modifier = modifier.fillMaxSize()) {
+        CenterAlignedTopAppBar(
+            title = { Text(text = "코스 추가") },
+            navigationIcon = {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = null,
+                    modifier = Modifier.padding(start = 10.dp),
+                )
+            },
+            actions = {
+                Icon(
+                    imageVector = Icons.Default.Done,
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = 10.dp),
+                )
+            },
+            colors =
+                TopAppBarColors(
+                    containerColor = colorResource(R.color.background_primary),
+                    scrolledContainerColor = colorResource(R.color.background_primary),
+                    navigationIconContentColor = colorResource(R.color.item_primary),
+                    titleContentColor = colorResource(R.color.item_primary),
+                    actionIconContentColor = colorResource(R.color.item_primary),
+                ),
+        )
+    }
 }
 
 @PreviewLightDark
