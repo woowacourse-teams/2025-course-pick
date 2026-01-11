@@ -661,6 +661,12 @@ class CoursesActivity :
                 viewModel.select(course)
             }
             mapManager.draw(courses)
+
+            if (state.showCreateCustomCourse) {
+                mapManager.setBottomPadding(0)
+            } else {
+                mapManager.setBottomPadding(binding.mainContent.height - binding.mainBottomSheet.y.toInt())
+            }
         }
 
         viewModel.content.observe(this) { content: CoursesContent ->
