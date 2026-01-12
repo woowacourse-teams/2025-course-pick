@@ -7,8 +7,11 @@ import coursepick.coursepick.domain.course.CourseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.geo.Circle;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Metrics;
+import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
@@ -61,11 +64,14 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
     }
 
     private static void addPositionAndScopeCriteria(CourseFindCondition condition, Query query) {
-        Criteria positionCriteria = Criteria.where("segments")
-                .near(new GeoJsonPoint(condition.mapPosition().longitude(), condition.mapPosition().latitude()))
-                .maxDistance(condition.scope().value());
+        Point point = new Point(condition.mapPosition().longitude(), condition.mapPosition().latitude());
+        Distance distance = new Distance(condition.scope().value() / 1000.0, Metrics.KILOMETERS);
+        Circle circle = new Circle(point, distance);
 
-        query.addCriteria(positionCriteria);
+        Criteria v1Criteria = Criteria.where("segments").withinSphere(circle);
+        Criteria v2Criteria = Criteria.where("coordinates").withinSphere(circle);
+
+        query.addCriteria(new Criteria().orOperator(v1Criteria, v2Criteria));
     }
 
     private static void addLengthCriteria(CourseFindCondition condition, Query query) {
