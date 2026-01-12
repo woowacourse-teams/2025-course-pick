@@ -39,7 +39,7 @@ class GpxTest {
                 new Coordinate(0.00001, 0.00001),
                 new Coordinate(0, 0)
         );
-        var course = new Course("테스트코스", coordinates);
+        var course = new Course(null, "테스트코스", coordinates);
 
         var sut = Gpx.from(course);
 
@@ -60,7 +60,7 @@ class GpxTest {
                 new Coordinate(0.00001, 0.00001),
                 new Coordinate(0, 0)
         );
-        var course = new Course("테스트코스", coordinates);
+        var course = new Course(null, "테스트코스", coordinates);
         var sut = Gpx.from(course);
 
         var xml = sut.toXmlContent();
@@ -82,7 +82,7 @@ class GpxTest {
                 new Coordinate(0.00001, 0.00001),
                 new Coordinate(0, 0)
         );
-        var course = new Course("테스트코스", coordinates);
+        var course = new Course(null, "테스트코스", coordinates);
         var sut = Gpx.from(course);
 
         var courses = sut.toCourses();

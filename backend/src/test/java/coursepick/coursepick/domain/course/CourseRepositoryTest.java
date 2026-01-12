@@ -22,10 +22,10 @@ class CourseRepositoryTest extends AbstractIntegrationTest {
     @BeforeEach
     void setUp() {
         var target = new Coordinate(mapLatitude, mapLongitude);
-        var course1 = new Course("코스1", square(upright(target, 1200), 10, 10));
-        var course2 = new Course("코스2", square(upright(target, 1500), 10, 10));
-        var course3 = new Course("코스3", square(upright(target, 1700), 10, 10));
-        var course4 = new Course("코스4", square(upright(target, 2000), 10, 10));
+        var course1 = new Course(null, "코스1", square(upright(target, 1200), 10, 10));
+        var course2 = new Course(null, "코스2", square(upright(target, 1500), 10, 10));
+        var course3 = new Course(null, "코스3", square(upright(target, 1700), 10, 10));
+        var course4 = new Course(null, "코스4", square(upright(target, 2000), 10, 10));
         dbUtil.saveCourse(course1);
         dbUtil.saveCourse(course2);
         dbUtil.saveCourse(course3);
@@ -67,13 +67,13 @@ class CourseRepositoryTest extends AbstractIntegrationTest {
         @BeforeEach
         void setUp() {
             var target = new Coordinate(mapLatitude, mapLongitude);
-            var shortCourse = new Course("짧은코스", square(target, 50, 50));      // 약 200m
-            var mediumCourse = new Course("중간코스", square(target, 500, 500));    // 약 2000m
-            var longCourse = new Course("긴코스", square(target, 2500, 2500));      // 약 10000m
-            var veryLongCourse = new Course("매우긴코스", square(target, 7500, 7500)); // 약 30000m
-            var easyCourse = new Course("쉬운코스", square(target, 100, 100));       // 약 400m, 쉬움
-            var normalCourse = new Course("보통코스", square(target, 2000, 2000)); // 약 8000m, 보통
-            var hardCourse = new Course("어려운코스", square(target, 4000, 4000));  // 약 16000m, 어려움
+            var shortCourse = new Course(null, "짧은코스", square(target, 50, 50));      // 약 200m
+            var mediumCourse = new Course(null, "중간코스", square(target, 500, 500));    // 약 2000m
+            var longCourse = new Course(null, "긴코스", square(target, 2500, 2500));      // 약 10000m
+            var veryLongCourse = new Course(null, "매우긴코스", square(target, 7500, 7500)); // 약 30000m
+            var easyCourse = new Course(null, "쉬운코스", square(target, 100, 100));       // 약 400m, 쉬움
+            var normalCourse = new Course(null, "보통코스", square(target, 2000, 2000)); // 약 8000m, 보통
+            var hardCourse = new Course(null, "어려운코스", square(target, 4000, 4000));  // 약 16000m, 어려움
 
             dbUtil.saveCourse(shortCourse);
             dbUtil.saveCourse(mediumCourse);

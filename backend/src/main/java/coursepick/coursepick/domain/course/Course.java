@@ -37,10 +37,6 @@ public class Course {
         this.length = calculateLength(coordinates);
     }
 
-    public Course(String name, List<Coordinate> rawCoordinates) {
-        this(null, name, rawCoordinates);
-    }
-
     private List<Coordinate> refineCoordinates(List<Coordinate> rawCoordinates) {
         return CoordinateBuilder.fromRawCoordinates(rawCoordinates)
                 .removeSimilar()
