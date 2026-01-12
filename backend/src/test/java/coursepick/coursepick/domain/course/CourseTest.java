@@ -69,47 +69,6 @@ class CourseTest {
         assertThat(minDistanceCoordinate).isEqualTo(expected);
     }
 
-    private static Stream<Arguments> courseInfoAndExpectedDifficulty() {
-        Coordinate base = new Coordinate(0, 0);
-        return Stream.of(
-                Arguments.of(
-                        square(base, 4000, 4000),
-                        RoadType.트랙,
-                        Difficulty.쉬움
-                ),
-                Arguments.of(
-                        square(base, 4000, 4000),
-                        RoadType.보도,
-                        Difficulty.보통
-                ),
-                Arguments.of(
-                        square(base, 4000, 4000),
-                        RoadType.트레일,
-                        Difficulty.어려움
-                ),
-                Arguments.of(
-                        square(base, 6000, 6000),
-                        RoadType.트랙,
-                        Difficulty.보통
-                ),
-                Arguments.of(
-                        square(base, 12000, 12000),
-                        RoadType.트랙,
-                        Difficulty.어려움
-                )
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("courseInfoAndExpectedDifficulty")
-    void 코스의_난이도를_계산한다(List<Coordinate> coordinates, RoadType roadType, Difficulty expectedDifficulty) {
-        var course = new Course("코스", roadType, coordinates);
-
-        var difficulty = course.difficulty();
-
-        assertThat(difficulty).isEqualTo(expectedDifficulty);
-    }
-
     @Nested
     class 생성_테스트 {
 
@@ -155,90 +114,6 @@ class CourseTest {
         void 코스_생성시_첫_좌표_끝_좌표만_존재할때_둘은_중복될_수_없다() {
             assertThatThrownBy(() -> new Course("코스", List.of(new Coordinate(0, 0), new Coordinate(0, 0))))
                     .isInstanceOf(IllegalArgumentException.class);
-        }
-    }
-
-    @Nested
-    class 경사도_요약_테스트 {
-
-        @ParameterizedTest
-        @MethodSource(value = {
-                "flatCoordinates",
-                "repeatingHillsCoordinates"
-        })
-        void 코스의_경사도_요약을_계산한다(List<Coordinate> coordinates, InclineSummary expectedInclineSummary) {
-            Course course = new Course("코스이름1", coordinates);
-
-            InclineSummary inclineSummary = course.inclineSummary();
-
-            assertThat(inclineSummary).isEqualTo(expectedInclineSummary);
-        }
-
-        private static Stream<Arguments> flatCoordinates() {
-            List<Coordinate> coordinates = List.of(
-                    new Coordinate(0, 0, 0),
-                    new Coordinate(10, 10, 0)
-            );
-            return Stream.of(Arguments.of(coordinates, InclineSummary.MOSTLY_FLAT));
-        }
-
-        private static Stream<Arguments> repeatingHillsCoordinates() {
-            List<Coordinate> coordinates = List.of(
-                    new Coordinate(0, 0, 0),
-                    new Coordinate(0, 0.0009, 8.8),
-                    new Coordinate(0, 0, 0)
-            );
-            return Stream.of(Arguments.of(coordinates, InclineSummary.REPEATING_HILLS));
-        }
-
-    }
-
-    @Nested
-    class 세그먼트_분리_테스트 {
-
-        @Test
-        void 코스의_세그먼트를_생성한다() {
-            var coord1 = new Coordinate(0, 0, 0);
-            var coord2 = left_angled(coord1, 50, 6);
-            var coord3 = left(coord2, 50);
-            var coord4 = down_angled(coord3, 50, 6);
-            var coord5 = right(coord4, 50);
-            var coord6 = up_angled(coord5, 50, -6);
-            var course = new Course("코스", List.of(coord1, coord2, coord3, coord4, coord5, coord6));
-
-            var segments = course.segments();
-
-            assertThat(segments).hasSize(5);
-            assertThat(segments.get(0).inclineType()).isEqualTo(InclineType.UPHILL);
-            assertThat(segments.get(1).inclineType()).isEqualTo(InclineType.FLAT);
-            assertThat(segments.get(2).inclineType()).isEqualTo(InclineType.UPHILL);
-            assertThat(segments.get(3).inclineType()).isEqualTo(InclineType.FLAT);
-            assertThat(segments.get(4).inclineType()).isEqualTo(InclineType.DOWNHILL);
-            assertThat(segments.get(0).coordinates()).containsExactly(coord1, coord2);
-            assertThat(segments.get(1).coordinates()).containsExactly(coord2, coord3);
-            assertThat(segments.get(2).coordinates()).containsExactly(coord3, coord4);
-            assertThat(segments.get(3).coordinates()).containsExactly(coord4, coord5);
-            assertThat(segments.get(4).coordinates()).containsExactly(coord5, coord6);
-        }
-
-        @Test
-        void 동일한_경사타입과_방향의_세그먼트들이_올바르게_병합된다() {
-            var coord1 = new Coordinate(0, 0, 0);
-            var coord2 = left_angled(coord1, 50, 6);
-            var coord3 = left_angled(coord2, 50, 6);
-            var coord4 = down_angled(coord3, 50, 6);
-            var coord5 = down_angled(coord4, 50, 6);
-            var coord6 = up_angled(coord5, 50, -6);
-            var course = new Course("코스", List.of(coord1, coord2, coord3, coord4, coord5, coord6));
-
-            var segments = course.segments();
-
-            assertThat(segments).hasSize(2);
-            assertThat(segments.get(0).inclineType()).isEqualTo(InclineType.UPHILL);
-            assertThat(segments.get(1).inclineType()).isEqualTo(InclineType.DOWNHILL);
-            assertThat(segments.get(0).coordinates()).containsExactly(coord1, coord2, coord3, coord4, coord5);
-            assertThat(segments.get(1).coordinates()).containsExactly(coord5, coord6);
-
         }
     }
 }
