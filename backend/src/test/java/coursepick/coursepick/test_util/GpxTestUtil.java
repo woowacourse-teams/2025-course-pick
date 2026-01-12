@@ -10,7 +10,6 @@ public class GpxTestUtil {
 
     private static final String TRACK_POINT_FORMAT = """
             <trkpt lat="%s" lon="%s">
-              <ele>%s</ele>
             </trkpt>
             """;
 
@@ -58,7 +57,7 @@ public class GpxTestUtil {
     }
 
     private static String createTrackPointOf(Coordinate coordinate) {
-        return TRACK_POINT_FORMAT.formatted(coordinate.latitude(), coordinate.longitude(), coordinate.elevation());
+        return TRACK_POINT_FORMAT.formatted(coordinate.latitude(), coordinate.longitude());
     }
 
     public static InputStream createGpxInputStreamOf(String id, Coordinate... coordinates) {
