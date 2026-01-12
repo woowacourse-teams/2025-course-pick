@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.google.crypto.tink.Aead
 import com.google.crypto.tink.subtle.Base64
+import io.coursepick.coursepick.BuildConfig.TOKEN_SECURITY
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
@@ -16,28 +17,26 @@ class TokenLocalDataSource
         private val dataStore: DataStore<Preferences>,
         private val aead: Aead,
     ) {
+        private val tokenSecurity: String = TOKEN_SECURITY
+        private val accessToken: Preferences.Key<String> = stringPreferencesKey("access_token")
+
         suspend fun saveAccessToken(token: String) {
-            val ciphertext = aead.encrypt(token.toByteArray(), TOKEN_SECURITY.toByteArray())
+            val ciphertext = aead.encrypt(token.toByteArray(), tokenSecurity.toByteArray())
             val encryptedToken = Base64.encodeToString(ciphertext, Base64.NO_WRAP)
             dataStore.edit { preferences: MutablePreferences ->
-                preferences[ACCESS_TOKEN] = encryptedToken
+                preferences[accessToken] = encryptedToken
             }
         }
 
         suspend fun accessToken(): String? {
-            val encryptedToken = dataStore.data.first()[ACCESS_TOKEN] ?: return null
+            val encryptedToken = dataStore.data.first()[accessToken] ?: return null
             val decoded = Base64.decode(encryptedToken, Base64.NO_WRAP)
-            return String(aead.decrypt(decoded, TOKEN_SECURITY.toByteArray()))
+            return String(aead.decrypt(decoded, tokenSecurity.toByteArray()))
         }
 
         suspend fun clearAccessToken() {
             dataStore.edit { preferences: MutablePreferences ->
-                preferences.remove(ACCESS_TOKEN)
+                preferences.remove(accessToken)
             }
-        }
-
-        companion object {
-            private val ACCESS_TOKEN: Preferences.Key<String> = stringPreferencesKey("access_token")
-            private const val TOKEN_SECURITY: String = "token_security"
         }
     }
