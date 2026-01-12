@@ -13,6 +13,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -24,8 +25,8 @@ public class PathAllowlistFilter extends OncePerRequestFilter {
 
     private static final Set<Pattern> ALLOW_URI_PATTERNS = new HashSet<>();
 
-    public PathAllowlistFilter(RequestMappingHandlerMapping requestMappingHandlerMapping) {
-        ALLOW_URI_PATTERNS.addAll(parseRequestMappingHandlerMapping(requestMappingHandlerMapping));
+    public PathAllowlistFilter(Optional<RequestMappingHandlerMapping> requestMappingHandlerMapping) {
+        requestMappingHandlerMapping.ifPresent(mappingHandlerMapping -> ALLOW_URI_PATTERNS.addAll(parseRequestMappingHandlerMapping(mappingHandlerMapping)));
         ALLOW_URI_PATTERNS.addAll(Set.of(
                 Pattern.compile("^/images/verified_location.png$"),
                 Pattern.compile("^/actuator.*$"),
