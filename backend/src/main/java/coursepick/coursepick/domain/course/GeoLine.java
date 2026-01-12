@@ -6,17 +6,11 @@ import org.locationtech.spatial4j.distance.GeodesicSphereDistCalc;
 import org.locationtech.spatial4j.shape.Point;
 import org.locationtech.spatial4j.shape.ShapeFactory;
 
-import java.util.List;
-
 public record GeoLine(
         Coordinate start,
         Coordinate end
 ) {
     private static final double EARTH_RADIUS_METERS = 6371000.0;
-
-    public Segment toSegment() {
-        return new Segment(List.of(GeoLine.between(start, end)));
-    }
 
     public static GeoLine between(Coordinate start, Coordinate end) {
         return new GeoLine(start, end);

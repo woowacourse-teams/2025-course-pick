@@ -5,19 +5,16 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
-
 @RequiredArgsConstructor
 public class CourseFindCondition {
 
     private static final int PAGE_SIZE = 10;
-    
+
     private final double mapLatitude;
     private final double mapLongitude;
     private final int scope;
     private final @Nullable Integer minLength;
     private final @Nullable Integer maxLength;
-    private final @Nullable List<String> difficulties;
     private final @Nullable Integer pageNumber;
 
     public Coordinate mapPosition() {
@@ -38,14 +35,6 @@ public class CourseFindCondition {
         if (maxLength == null) return null;
 
         return new Meter(maxLength);
-    }
-
-    public @Nullable List<Difficulty> difficulties() {
-        if (difficulties == null) return null;
-
-        return difficulties.stream()
-                .map(Difficulty::fromEngName)
-                .toList();
     }
 
     public Pageable pageable() {
