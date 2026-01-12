@@ -49,7 +49,6 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
 
         addPositionAndScopeCriteria(condition, query);
         if (condition.minLength() != null || condition.maxLength() != null) addLengthCriteria(condition, query);
-        if (condition.difficulties() != null && !condition.difficulties().isEmpty()) addDifficultyCriteria(condition, query);
 
         query.with(condition.pageable())
                 .limit(condition.pageSize() + 1);
@@ -79,13 +78,6 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
         }
 
         query.addCriteria(lengthCriteria);
-    }
-
-    private static void addDifficultyCriteria(CourseFindCondition condition, Query query) {
-        Criteria difficultyCriteria = Criteria.where("difficulty")
-                .in(condition.difficulties());
-
-        query.addCriteria(difficultyCriteria);
     }
 
     @Override
