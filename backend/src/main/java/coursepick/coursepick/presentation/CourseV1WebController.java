@@ -30,10 +30,9 @@ public class CourseV1WebController implements CourseWebApi {
             @RequestParam(value = "userLng", required = false) Double userLongitude,
             @RequestParam(value = "minLength", required = false) Integer minLength,
             @RequestParam(value = "maxLength", required = false) Integer maxLength,
-            @RequestParam(value = "difficulties", required = false) List<String> difficulties,
             @RequestParam(value = "page", required = false) Integer page
     ) {
-        CourseFindCondition condition = new CourseFindCondition(mapLatitude, mapLongitude, scope, minLength, maxLength, difficulties, page);
+        CourseFindCondition condition = new CourseFindCondition(mapLatitude, mapLongitude, scope, minLength, maxLength, page);
         CoursesResponse response = courseApplicationService.findNearbyCourses(condition, userLatitude, userLongitude);
         return CoursesWebResponse.from(response);
     }
