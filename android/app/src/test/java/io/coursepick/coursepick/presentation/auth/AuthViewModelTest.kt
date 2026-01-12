@@ -1,8 +1,6 @@
 package io.coursepick.coursepick.presentation.auth
 
-import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.auth.SocialAuthenticator
-import io.coursepick.coursepick.domain.auth.SocialToken
 import io.coursepick.coursepick.presentation.extension.InstantTaskExecutorExtension
 import io.coursepick.coursepick.presentation.fixtures.FakeAuthRepository
 import org.assertj.core.api.Assertions.assertThat
