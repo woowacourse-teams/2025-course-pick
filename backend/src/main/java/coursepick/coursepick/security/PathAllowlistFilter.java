@@ -9,38 +9,43 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class PathAllowlistFilter extends OncePerRequestFilter {
 
-    private static final Set<Pattern> ALLOW_URI_PATTERNS = Set.of(
-            Pattern.compile("^/courses$"),
-            Pattern.compile("^/courses/favorites$"),
-            Pattern.compile("^/courses/[^/]+/closest-coordinate$"),
-            Pattern.compile("^/courses/[^/]+/route$"),
-            Pattern.compile("^/login/kakao$"),
-            Pattern.compile("^/notices/[^/]+$"),
-            Pattern.compile("^/images/verified_location.png$"),
-            Pattern.compile("^/actuator.*$"),
-            Pattern.compile("^/api-docs.html$"),
-            Pattern.compile("^/v3/api-docs.*$"),
-            Pattern.compile("^/admin$"),
-            Pattern.compile("^/admin/login$"),
-            Pattern.compile("^/admin/import$"),
-            Pattern.compile("^/admin/courses$"),
-            Pattern.compile("^/admin/courses/edit$"),
-            Pattern.compile("^/admin/api/login$"),
-            Pattern.compile("^/admin/api/import$"),
-            Pattern.compile("^/admin/api/courses$"),
-            Pattern.compile("^/admin/api/courses/[^/]+$"),
-            Pattern.compile("^/admin/api/coordinates/snap$")
-    );
+    private static final Set<Pattern> ALLOW_URI_PATTERNS = new HashSet<>();
+
+    public PathAllowlistFilter(RequestMappingHandlerMapping requestMappingHandlerMapping) {
+        ALLOW_URI_PATTERNS.addAll(parseRequestMappingHandlerMapping(requestMappingHandlerMapping));
+        ALLOW_URI_PATTERNS.addAll(Set.of(
+                Pattern.compile("^/images/verified_location.png$"),
+                Pattern.compile("^/actuator.*$"),
+                Pattern.compile("^/api-docs.html$"),
+                Pattern.compile("^/v3/api-docs.*$")
+        ));
+    }
+
+    private Set<Pattern> parseRequestMappingHandlerMapping(RequestMappingHandlerMapping requestMappingHandlerMapping) {
+        return requestMappingHandlerMapping.getHandlerMethods().keySet().stream()
+                .flatMap(info -> info.getDirectPaths().stream())
+                .map(this::pathToPattern)
+                .collect(Collectors.toSet());
+    }
+
+    private Pattern pathToPattern(String path) {
+        // Spring의 경로 변수 {id} 등을 정규표현식 [^/]+ 로 치환
+        String regex = path.replaceAll("\\{[^}]+}", "[^/]+");
+        return Pattern.compile("^" + regex + "$");
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
