@@ -10,15 +10,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import io.coursepick.coursepick.databinding.FragmentExploreCoursesBinding
+import io.coursepick.coursepick.presentation.compat.OnDescribeCourseColorListener
+import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 
 class ExploreCoursesFragment(
-    listener: CourseItemListener,
+    courseItemListener: CourseItemListener,
+    private val onReconnectListener: OnReconnectListener,
+    private val onDescribeCourseColorListener: OnDescribeCourseColorListener,
 ) : Fragment() {
     @Suppress("ktlint:standard:backing-property-naming")
     private var _binding: FragmentExploreCoursesBinding? = null
     private val binding get() = _binding!!
     private val viewModel: CoursesViewModel by activityViewModels()
-    private val courseAdapter by lazy { CourseAdapter(listener) }
+    private val courseAdapter by lazy { CourseAdapter(courseItemListener) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,6 +52,8 @@ class ExploreCoursesFragment(
         binding.lifecycleOwner = viewLifecycleOwner
         binding.adapter = courseAdapter
         binding.viewModel = viewModel
+        binding.onReconnectListener = onReconnectListener
+        binding.onDescribeCourseColorListener = onDescribeCourseColorListener
     }
 
     private fun setUpStateObserver() {
@@ -57,7 +63,7 @@ class ExploreCoursesFragment(
     }
 
     private fun setUpScrollListener() {
-        binding.mainCourses.addOnScrollListener(
+        binding.exploreCourses.addOnScrollListener(
             object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(
                     recyclerView: RecyclerView,
@@ -87,7 +93,7 @@ class ExploreCoursesFragment(
                 item is CourseListItem.Course && item.item.id == courseItem.id
             }
         if (position == -1) return
-        val layoutManager = binding.mainCourses.layoutManager as? LinearLayoutManager ?: return
+        val layoutManager = binding.exploreCourses.layoutManager as? LinearLayoutManager ?: return
         val smoothScroller =
             object : LinearSmoothScroller(requireContext()) {
                 override fun getVerticalSnapPreference(): Int = SNAP_TO_START
