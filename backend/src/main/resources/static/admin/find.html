@@ -494,14 +494,11 @@
                 document.getElementById('pagination').style.display = 'none';
 
                 // 검색된 코스 위치로 지도 이동
-                if (response.data.segments && response.data.segments.length > 0) {
-                    const firstSegment = response.data.segments[0];
-                    if (firstSegment.coordinates && firstSegment.coordinates.length > 0) {
-                        const firstCoord = firstSegment.coordinates[0];
-                        const moveLatLon = new kakao.maps.LatLng(firstCoord.latitude, firstCoord.longitude);
-                        map.setCenter(moveLatLon);
-                        map.setLevel(5); // 적절한 줌 레벨로 설정
-                    }
+                if (response.data.coordinates && response.data.coordinates.length > 0) {
+                    const firstCoord = response.data.coordinates[0];
+                    const moveLatLon = new kakao.maps.LatLng(firstCoord.latitude, firstCoord.longitude);
+                    map.setCenter(moveLatLon);
+                    map.setLevel(5); // 적절한 줌 레벨로 설정
                 }
             } catch (error) {
                 if (error.response && error.response.status === 401) {
@@ -527,7 +524,7 @@
             searchBtn.textContent = '검색 중...';
 
             try {
-                const response = await axios.get('/courses', {
+                const response = await axios.get('/v1/courses', {
                     params: {
                         ...lastSearchParams,
                         page: page
@@ -535,13 +532,14 @@
                     withCredentials: true
                 });
 
-                courses = response.data || [];
+                courses = response.data.courses || [];
+                const hasNextPage = response.data.hasNext || false;
                 currentPage = page;
 
                 try {
                     displayCourses(courses);
                     drawAllCoursesOnMap(courses);
-                    updatePagination();
+                    updatePagination(hasNextPage);
                 } catch (displayError) {
                     showError('코스를 표시하는 중 오류가 발생했습니다: ' + displayError.message);
                 }
@@ -559,7 +557,7 @@
         }
 
         // 페이지네이션 UI 업데이트
-        function updatePagination() {
+        function updatePagination(hasNext) {
             const pagination = document.getElementById('pagination');
             const prevBtn = document.getElementById('prev-page-btn');
             const nextBtn = document.getElementById('next-page-btn');
@@ -571,8 +569,8 @@
             // 이전 버튼 활성화/비활성화
             prevBtn.disabled = currentPage === 0;
 
-            // 다음 버튼 활성화/비활성화 (10개 미만이면 마지막 페이지)
-            nextBtn.disabled = courses.length < 10;
+            // 다음 버튼 활성화/비활성화 (hasNext 플래그 사용)
+            nextBtn.disabled = hasNext !== undefined ? !hasNext : courses.length < 10;
 
             // 페이지네이션 표시
             if (courses.length > 0) {
@@ -603,8 +601,6 @@
                                    <div class="course-item" data-index="${index}" data-course-id="${course.id}" data-course-name="${course.name}">
                                        <div class="course-name">${course.name}</div>
                                        <div class="course-detail"><strong>코스 길이:</strong> ${(course.length / 1000).toFixed(2)} km</div>
-                                       <div class="course-detail"><strong>도로 타입:</strong> ${course.roadType}</div>
-                                       <div class="course-detail"><strong>난이도:</strong> ${course.difficulty}</div>
                                        ${course.distance !== null ? `<div class="course-detail"><strong>거리:</strong> ${(course.distance / 1000).toFixed(2)} km</div>` : ''}
                                        <div class="course-actions">
                                            <button class="edit-button" onclick="event.stopPropagation(); window.location.href='/admin/courses/edit?id=${course.id}'">편집</button>
@@ -661,25 +657,10 @@
 
         // 코스의 시작 좌표 가져오기
         function getCourseStartCoordinate(course) {
-            if (course.segments && course.segments.length > 0 &&
-                    course.segments[0].coordinates && course.segments[0].coordinates.length > 0) {
-                return course.segments[0].coordinates[0];
+            if (course.coordinates && course.coordinates.length > 0) {
+                return course.coordinates[0];
             }
             return null;
-        }
-
-        // inclineType에 따른 색상 반환
-        function getColorByInclineType(inclineType) {
-            switch (inclineType) {
-                case 'UPHILL':
-                    return '#FF0000'; // 빨간색 (오르막)
-                case 'FLAT':
-                    return '#00FF00'; // 초록색 (평지)
-                case 'DOWNHILL':
-                    return '#0000FF'; // 파란색 (내리막)
-                default:
-                    return '#808080'; // 회색 (기타)
-            }
         }
 
         // 코스 선택
@@ -709,55 +690,48 @@
             selectedCourseIndex = null;
 
             courses.forEach((course, courseIndex) => {
-                if (!course.segments || course.segments.length === 0) {
+                if (!course.coordinates || course.coordinates.length === 0) {
                     return;
                 }
 
-                // 각 segment를 순회하며 폴리라인 그리기
-                course.segments.forEach(segment => {
-                    if (!segment.coordinates || segment.coordinates.length === 0) {
-                        return;
-                    }
+                // 좌표 배열을 카카오맵 LatLng 객체로 변환
+                const path = course.coordinates.map(coord =>
+                        new kakao.maps.LatLng(coord.latitude, coord.longitude)
+                );
 
-                    // 좌표 배열을 카카오맵 LatLng 객체로 변환
-                    const path = segment.coordinates.map(coord =>
-                            new kakao.maps.LatLng(coord.latitude, coord.longitude)
-                    );
+                // 초기 상태는 모두 회색
+                const strokeColor = '#888888';
 
-                    // 초기 상태는 모두 회색
-                    const strokeColor = '#888888';
-
-                    // 폴리라인 생성
-                    const polyline = new kakao.maps.Polyline({
-                        path: path,
-                        strokeWeight: 4,
-                        strokeColor: strokeColor,
-                        strokeOpacity: 0.7,
-                        strokeStyle: 'solid'
-                    });
-
-                    // 폴리라인 클릭 이벤트 추가
-                    kakao.maps.event.addListener(polyline, 'click', function () {
-                        selectCourse(courseIndex);
-                    });
-
-                    // 폴리라인 마우스오버 효과
-                    kakao.maps.event.addListener(polyline, 'mouseover', function () {
-                        polyline.setOptions({
-                            strokeOpacity: 1.0
-                        });
-                    });
-
-                    kakao.maps.event.addListener(polyline, 'mouseout', function () {
-                        polyline.setOptions({
-                            strokeOpacity: 0.7
-                        });
-                    });
-
-                    // 지도에 표시
-                    polyline.setMap(map);
-                    polylines.push(polyline);
+                // 폴리라인 생성
+                const polyline = new kakao.maps.Polyline({
+                    path: path,
+                    strokeWeight: 4,
+                    strokeColor: strokeColor,
+                    strokeOpacity: 0.7,
+                    strokeStyle: 'solid'
                 });
+
+                // 폴리라인 클릭 이벤트 추가
+                kakao.maps.event.addListener(polyline, 'click', function () {
+                    selectCourse(courseIndex);
+                });
+
+                // 폴리라인 마우스오버 효과
+                kakao.maps.event.addListener(polyline, 'mouseover', function () {
+                    polyline.setOptions({
+                        strokeOpacity: 1.0
+                    });
+                });
+
+                kakao.maps.event.addListener(polyline, 'mouseout', function () {
+                    polyline.setOptions({
+                        strokeOpacity: 0.7
+                    });
+                });
+
+                // 지도에 표시
+                polyline.setMap(map);
+                polylines.push(polyline);
 
                 // 코스 시작점에 이름 라벨 추가
                 const startCoord = getCourseStartCoordinate(course);
@@ -810,60 +784,51 @@
             showSearchCenterMarker();
 
             courses.forEach((course, courseIndex) => {
-                if (!course.segments || course.segments.length === 0) {
+                if (!course.coordinates || course.coordinates.length === 0) {
                     return;
                 }
 
                 const isSelected = courseIndex === selectedIndex;
 
-                // 각 segment를 순회하며 폴리라인 그리기
-                course.segments.forEach(segment => {
-                    if (!segment.coordinates || segment.coordinates.length === 0) {
-                        return;
-                    }
+                // 좌표 배열을 카카오맵 LatLng 객체로 변환
+                const path = course.coordinates.map(coord =>
+                        new kakao.maps.LatLng(coord.latitude, coord.longitude)
+                );
 
-                    // 좌표 배열을 카카오맵 LatLng 객체로 변환
-                    const path = segment.coordinates.map(coord =>
-                            new kakao.maps.LatLng(coord.latitude, coord.longitude)
-                    );
+                // 선택된 코스는 파란색, 선택되지 않은 코스는 회색
+                const strokeColor = isSelected ? '#2d3748' : '#888888';
 
-                    // 선택된 코스는 원래 색상, 선택되지 않은 코스는 회색
-                    const strokeColor = isSelected
-                            ? getColorByInclineType(segment.inclineType)
-                            : '#888888'; // 진한 회색
-
-                    // 폴리라인 생성
-                    const polyline = new kakao.maps.Polyline({
-                        path: path,
-                        strokeWeight: isSelected ? 6 : 4, // 선택된 코스는 더 두껍게
-                        strokeColor: strokeColor,
-                        strokeOpacity: isSelected ? 0.9 : 0.7, // 선택되지 않은 코스도 잘 보이도록
-                        strokeStyle: 'solid',
-                        zIndex: isSelected ? 100 : 1 // 선택된 코스는 맨 위에 표시
-                    });
-
-                    // 폴리라인 클릭 이벤트 추가
-                    kakao.maps.event.addListener(polyline, 'click', function () {
-                        selectCourse(courseIndex);
-                    });
-
-                    // 폴리라인 마우스오버 효과
-                    kakao.maps.event.addListener(polyline, 'mouseover', function () {
-                        polyline.setOptions({
-                            strokeOpacity: 1.0
-                        });
-                    });
-
-                    kakao.maps.event.addListener(polyline, 'mouseout', function () {
-                        polyline.setOptions({
-                            strokeOpacity: isSelected ? 0.9 : 0.7
-                        });
-                    });
-
-                    // 지도에 표시
-                    polyline.setMap(map);
-                    polylines.push(polyline);
+                // 폴리라인 생성
+                const polyline = new kakao.maps.Polyline({
+                    path: path,
+                    strokeWeight: isSelected ? 6 : 4, // 선택된 코스는 더 두껍게
+                    strokeColor: strokeColor,
+                    strokeOpacity: isSelected ? 0.9 : 0.7, // 선택되지 않은 코스도 잘 보이도록
+                    strokeStyle: 'solid',
+                    zIndex: isSelected ? 100 : 1 // 선택된 코스는 맨 위에 표시
                 });
+
+                // 폴리라인 클릭 이벤트 추가
+                kakao.maps.event.addListener(polyline, 'click', function () {
+                    selectCourse(courseIndex);
+                });
+
+                // 폴리라인 마우스오버 효과
+                kakao.maps.event.addListener(polyline, 'mouseover', function () {
+                    polyline.setOptions({
+                        strokeOpacity: 1.0
+                    });
+                });
+
+                kakao.maps.event.addListener(polyline, 'mouseout', function () {
+                    polyline.setOptions({
+                        strokeOpacity: isSelected ? 0.9 : 0.7
+                    });
+                });
+
+                // 지도에 표시
+                polyline.setMap(map);
+                polylines.push(polyline);
 
                 // 코스 시작점에 이름 라벨 추가
                 const startCoord = getCourseStartCoordinate(course);
