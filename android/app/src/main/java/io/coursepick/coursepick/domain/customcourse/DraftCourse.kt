@@ -5,6 +5,5 @@ import io.coursepick.coursepick.domain.course.CourseName
 
 data class DraftCourse(
     val name: CourseName,
-    val roadType: RoadType,
     val coordinates: List<Coordinate>,
 )
