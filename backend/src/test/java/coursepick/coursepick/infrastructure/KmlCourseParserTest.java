@@ -42,7 +42,7 @@ class KmlCourseParserTest {
         assertThat(courses).hasSize(1);
         var course = courses.getFirst();
         assertThat(course.name().value()).isEqualTo("테스트코스");
-        var firstCoordinate = course.segments().getFirst().startCoordinate();
+        var firstCoordinate = course.coordinates().getFirst();
         assertThat(firstCoordinate.latitude()).isEqualTo(37.5224898);
         assertThat(firstCoordinate.longitude()).isEqualTo(127.0990294);
     }

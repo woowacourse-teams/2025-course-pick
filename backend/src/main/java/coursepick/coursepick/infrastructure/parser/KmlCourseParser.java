@@ -96,7 +96,7 @@ public class KmlCourseParser implements CourseParser {
                 try {
                     double longitude = Double.parseDouble(values[0]);
                     double latitude = Double.parseDouble(values[1]);
-                    coordinates.add(new Coordinate(latitude, longitude, 0));
+                    coordinates.add(new Coordinate(latitude, longitude));
                 } catch (NumberFormatException ignored) {
                 }
             }

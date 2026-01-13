@@ -9,7 +9,6 @@ import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @SuppressWarnings("ClassCanBeRecord")
 @Slf4j
@@ -27,9 +26,7 @@ public class Gpx {
     }
 
     public static Gpx from(Course course) {
-        List<Coordinate> coordinates = course.segments().stream()
-                .flatMap(segment -> segment.coordinates().stream())
-                .toList();
+        List<Coordinate> coordinates = course.coordinates();
 
         return new Gpx(course.id(), course.name().value(), coordinates);
     }
@@ -39,7 +36,7 @@ public class Gpx {
             XMLInputFactory xif = XMLInputFactory.newInstance();
             XMLStreamReader xsr = xif.createXMLStreamReader(file.inputStream());
             String id = null;
-            Double lat = null, lon = null, ele = null;
+            Double lat = null, lon = null;
             boolean hasExtensions = false;
 
             List<Coordinate> coordinates = new ArrayList<>();
@@ -54,11 +51,6 @@ public class Gpx {
                     } else if ("trkpt".equals(localName)) {
                         lat = Double.parseDouble(xsr.getAttributeValue(null, "lat"));
                         lon = Double.parseDouble(xsr.getAttributeValue(null, "lon"));
-                    } else if ("ele".equals(localName)) {
-                        xsr.next();
-                        if (xsr.getEventType() == XMLStreamConstants.CHARACTERS) {
-                            ele = Double.parseDouble(xsr.getText());
-                        }
                     } else if ("id".equals(localName) && hasExtensions) {
                         xsr.next();
                         if (xsr.getEventType() == XMLStreamConstants.CHARACTERS) {
@@ -69,9 +61,8 @@ public class Gpx {
                     String localName = xsr.getLocalName();
                     if ("trkpt".equals(localName)) {
                         if (lat != null && lon != null) {
-                            coordinates.add(new Coordinate(lat, lon, Objects.requireNonNullElse(ele, 0.0)));
+                            coordinates.add(new Coordinate(lat, lon));
                         }
-                        lat = lon = ele = null;
                     } else if ("extensions".equals(localName)) {
                         hasExtensions = false;
                     }
@@ -128,9 +119,6 @@ public class Gpx {
                 xsw.writeStartElement("trkpt");
                 xsw.writeAttribute("lat", decimalFormat.format(p.latitude()));
                 xsw.writeAttribute("lon", decimalFormat.format(p.longitude()));
-                xsw.writeStartElement("ele");
-                xsw.writeCharacters(decimalFormat.format(p.elevation()));
-                xsw.writeEndElement();
                 xsw.writeEndElement();
             }
         }

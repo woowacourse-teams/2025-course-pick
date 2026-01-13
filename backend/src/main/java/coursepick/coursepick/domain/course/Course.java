@@ -25,70 +25,32 @@ public class Course {
     @Indexed(name = "idx_name", unique = true)
     private CourseName name;
 
-    private RoadType roadType;
-
-    private InclineSummary inclineSummary;
-
-    @GeoSpatialIndexed(name = "idx_geo_segments", type = GeoSpatialIndexType.GEO_2DSPHERE)
-    private List<Segment> segments;
+    @GeoSpatialIndexed(name = "idx_geo_coordinates", type = GeoSpatialIndexType.GEO_2DSPHERE)
+    private List<Coordinate> coordinates;
 
     private Meter length;
 
-    private Difficulty difficulty;
-
-    public Course(String name, RoadType roadType, List<Coordinate> rawCoordinates) {
-        this(null, name, roadType, rawCoordinates);
-    }
-
-    private Course(String id, String name, RoadType roadType, List<Coordinate> rawCoordinates) {
+    public Course(String id, String name, List<Coordinate> rawCoordinates) {
         this.id = id;
         this.name = new CourseName(name);
-        this.roadType = roadType;
-        this.segments = refineCoordinates(rawCoordinates);
-        this.length = calculateLength(segments);
-        this.inclineSummary = InclineSummary.of(segments);
-        this.difficulty = Difficulty.fromLengthAndRoadType(length(), roadType);
+        this.coordinates = refineCoordinates(rawCoordinates);
+        this.length = calculateLength(coordinates);
     }
 
-    private Course(String name, RoadType roadType, Difficulty difficulty, List<Coordinate> coordinates) {
-        this.id = null;
-        this.name = new CourseName(name);
-        this.roadType = roadType;
-        this.segments = refineCoordinates(coordinates);
-        this.length = calculateLength(segments);
-        this.inclineSummary = InclineSummary.of(segments);
-        this.difficulty = difficulty;
-    }
-
-    public static Course createFromUser(List<Coordinate> coordinates, String name, RoadType roadType, Difficulty difficulty) {
-        return new Course(name, roadType, difficulty, coordinates);
-    }
-
-    private List<Segment> refineCoordinates(List<Coordinate> rawCoordinates) {
-        List<Coordinate> coordinates = CoordinateBuilder.fromRawCoordinates(rawCoordinates)
+    private List<Coordinate> refineCoordinates(List<Coordinate> rawCoordinates) {
+        return CoordinateBuilder.fromRawCoordinates(rawCoordinates)
                 .removeSimilar()
                 .smooth()
                 .build();
-        List<GeoLine> geoLines = GeoLineBuilder.fromCoordinates(coordinates)
-                .build();
-        return SegmentBuilder.fromGeoLines(geoLines)
-                .mergeSameElevationDirection()
-                .mergeSameInclineType()
-                .build();
     }
 
-    private static Meter calculateLength(List<Segment> segments) {
-        return segments.stream()
-                .map(Segment::length)
-                .reduce(Meter.zero(), Meter::add);
-    }
-
-    public Course(String id, String name, List<Coordinate> coordinates) {
-        this(id, name, RoadType.알수없음, coordinates);
-    }
-
-    public Course(String name, List<Coordinate> coordinates) {
-        this(null, name, RoadType.알수없음, coordinates);
+    private static Meter calculateLength(List<Coordinate> coordinates) {
+        Meter totalLength = Meter.zero();
+        for (int i = 0; i < coordinates.size() - 1; i++) {
+            Meter length = GeoLine.between(coordinates.get(i), coordinates.get(i + 1)).length();
+            totalLength = totalLength.add(length);
+        }
+        return totalLength;
     }
 
     public Meter distanceFrom(Coordinate target) {
@@ -97,35 +59,28 @@ public class Course {
     }
 
     public Coordinate closestCoordinateFrom(Coordinate target) {
-        Coordinate minDistanceCoordinate = segments().getFirst().startCoordinate();
+        Coordinate closestCoordinate = coordinates.getFirst();
         Meter minDistance = Meter.max();
 
-        for (Segment segment : segments()) {
-            Coordinate currentCoordinate = segment.closestCoordinateFrom(target);
-            Meter currentDistance = GeoLine.between(target, currentCoordinate).length();
-
-            if (currentDistance.isWithin(minDistance)) {
-                minDistance = currentDistance;
-                minDistanceCoordinate = currentCoordinate;
+        for (int i = 0; i < coordinates.size() - 1; i++) {
+            GeoLine line = GeoLine.between(coordinates.get(i), coordinates.get(i + 1));
+            Coordinate closestCoordinateOnLine = line.closestCoordinateFrom(target);
+            Meter distanceOnLine = GeoLine.between(target, closestCoordinateOnLine).length();
+            if (distanceOnLine.isWithin(minDistance)) {
+                minDistance = distanceOnLine;
+                closestCoordinate = closestCoordinateOnLine;
             }
         }
 
-        return minDistanceCoordinate;
+        return closestCoordinate;
     }
 
     public void changeCoordinates(List<Coordinate> coordinates) {
-        this.segments = refineCoordinates(coordinates);
-        this.length = calculateLength(segments);
-        this.inclineSummary = InclineSummary.of(segments);
-        this.difficulty = Difficulty.fromLengthAndRoadType(length, roadType);
+        this.coordinates = refineCoordinates(coordinates);
+        this.length = calculateLength(this.coordinates);
     }
 
     public void changeName(String courseName) {
         this.name = new CourseName(courseName);
-    }
-
-    public void changeRoadType(RoadType roadType) {
-        this.roadType = roadType;
-        this.difficulty = Difficulty.fromLengthAndRoadType(this.length, this.roadType);
     }
 }

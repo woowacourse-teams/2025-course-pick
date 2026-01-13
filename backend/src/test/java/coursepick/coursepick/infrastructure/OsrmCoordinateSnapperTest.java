@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class OsrmCoordinateSnapperTest extends AbstractMockServerTest {
 
@@ -17,9 +18,9 @@ class OsrmCoordinateSnapperTest extends AbstractMockServerTest {
         var sut = new OsrmCoordinateSnapper(anyRestClient());
 
         List<Coordinate> originals = List.of(
-                new Coordinate(37.5045224, 127.048996, 10.0),
-                new Coordinate(37.5050000, 127.048500, 15.0),
-                new Coordinate(37.5113001, 127.0392855, 20.0)
+                new Coordinate(37.5045224, 127.048996),
+                new Coordinate(37.5050000, 127.048500),
+                new Coordinate(37.5113001, 127.0392855)
         );
         var result = sut.snap(originals);
 
@@ -53,41 +54,11 @@ class OsrmCoordinateSnapperTest extends AbstractMockServerTest {
     }
 
     @Test
-    void 스냅된_좌표에_원본_elevation이_보간된다() {
-        mock(osrmSnapResponse());
+    void 좌표가_2개_미만이면_예외가_발생한다() {
         var sut = new OsrmCoordinateSnapper(anyRestClient());
+        List<Coordinate> single = List.of(new Coordinate(37.5045224, 127.048996));
 
-        List<Coordinate> originals = List.of(
-                new Coordinate(37.5045224, 127.048996, 10.0),
-                new Coordinate(37.5050000, 127.048500, 15.0),
-                new Coordinate(37.5113001, 127.0392855, 20.0)
-        );
-        var result = sut.snap(originals);
-
-        assertThat(result.coordinates()).allMatch(coord -> coord.elevation() != 0.0);
-        assertThat(result.coordinates().get(0).elevation()).isBetween(9.0, 11.0);
-        assertThat(result.coordinates().get(result.coordinates().size() - 1).elevation()).isBetween(15.0, 21.0);
-    }
-
-    @Test
-    void 좌표가_2개_미만이면_원본을_반환한다() {
-        var sut = new OsrmCoordinateSnapper(anyRestClient());
-
-        List<Coordinate> single = List.of(
-                new Coordinate(37.5045224, 127.048996, 10.0)
-        );
-        var result = sut.snap(single);
-
-        assertThat(result.coordinates()).isEqualTo(single);
-    }
-
-    @Test
-    void 빈_리스트는_빈_리스트를_반환한다() {
-        var sut = new OsrmCoordinateSnapper(anyRestClient());
-
-        var result = sut.snap(List.of());
-
-        assertThat(result.coordinates()).isEmpty();
+        assertThatThrownBy(() -> sut.snap(single)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -96,8 +67,8 @@ class OsrmCoordinateSnapperTest extends AbstractMockServerTest {
         var sut = new OsrmCoordinateSnapper(anyRestClient());
 
         List<Coordinate> originals = List.of(
-                new Coordinate(37.5045224, 127.048996, 10.0),
-                new Coordinate(37.5113001, 127.0392855, 20.0)
+                new Coordinate(37.5045224, 127.048996),
+                new Coordinate(37.5113001, 127.0392855)
         );
 
         var result = sut.snap(originals);
@@ -110,8 +81,8 @@ class OsrmCoordinateSnapperTest extends AbstractMockServerTest {
         var sut = new OsrmCoordinateSnapper(anyRestClient());
 
         List<Coordinate> originals = List.of(
-                new Coordinate(37.5045224, 127.048996, 10.0),
-                new Coordinate(37.5113001, 127.0392855, 20.0)
+                new Coordinate(37.5045224, 127.048996),
+                new Coordinate(37.5113001, 127.0392855)
         );
         var result = sut.snap(originals);
 
@@ -133,8 +104,8 @@ class OsrmCoordinateSnapperTest extends AbstractMockServerTest {
         var sut = new OsrmCoordinateSnapper(anyRestClient());
 
         List<Coordinate> originals = List.of(
-                new Coordinate(37.5045224, 127.048996, 10.0),
-                new Coordinate(37.5113001, 127.0392855, 20.0)
+                new Coordinate(37.5045224, 127.048996),
+                new Coordinate(37.5113001, 127.0392855)
         );
         var result = sut.snap(originals);
 

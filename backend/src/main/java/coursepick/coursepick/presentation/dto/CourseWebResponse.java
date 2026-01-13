@@ -1,9 +1,7 @@
 package coursepick.coursepick.presentation.dto;
 
 import coursepick.coursepick.application.dto.CourseResponse;
-import coursepick.coursepick.domain.course.InclineSummary;
 import coursepick.coursepick.domain.course.Meter;
-import coursepick.coursepick.domain.course.RoadType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
@@ -17,29 +15,13 @@ public record CourseWebResponse(
         Double distance,
         @Schema(description = "코스 전체 길이 (미터)", example = "2146.123")
         double length,
-        @Schema(description = "도로 타입", example = "트랙")
-        RoadType roadType,
-        @Schema(description = "경사 요약 정보", example = "CONTINUOUS_UPHILL")
-        InclineSummary inclineSummary,
-        @Schema(description = "난이도", example = "쉬움")
-        String difficulty,
-        @Schema(description = "코스를 구성하는 세그먼트 목록")
-        List<SegmentWebResponse> segments
+        @Schema(description = "코스를 구성하는 좌표 목록")
+        List<CoordinateWebResponse> coordinates
 ) {
     public static List<CourseWebResponse> from(List<CourseResponse> courseResponses) {
         return courseResponses.stream()
-                .map(courseResponse -> new CourseWebResponse(
-                        courseResponse.id(),
-                        courseResponse.name(),
-                        courseResponse.distance()
-                                .map(Meter::value)
-                                .orElse(null),
-                        courseResponse.length().value(),
-                        courseResponse.roadType(),
-                        courseResponse.inclineSummary(),
-                        courseResponse.difficulty().name(),
-                        SegmentWebResponse.from(courseResponse.segments())
-                )).toList();
+                .map(CourseWebResponse::from)
+                .toList();
     }
 
     public static CourseWebResponse from(CourseResponse courseResponse) {
@@ -50,10 +32,7 @@ public record CourseWebResponse(
                         .map(Meter::value)
                         .orElse(null),
                 courseResponse.length().value(),
-                courseResponse.roadType(),
-                courseResponse.inclineSummary(),
-                courseResponse.difficulty().name(),
-                SegmentWebResponse.from(courseResponse.segments())
+                CoordinateWebResponse.from(courseResponse.coordinates())
         );
     }
 }

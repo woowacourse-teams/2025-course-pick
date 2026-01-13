@@ -1,13 +1,17 @@
 package coursepick.coursepick.infrastructure.mongodb;
 
-import coursepick.coursepick.domain.course.*;
+import coursepick.coursepick.domain.course.Course;
+import coursepick.coursepick.domain.course.CourseFindCondition;
+import coursepick.coursepick.domain.course.CourseName;
+import coursepick.coursepick.domain.course.CourseRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.geo.Circle;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Metrics;
+import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
@@ -43,28 +47,43 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
     }
 
     @Override
-    public Slice<Course> findAllHasDistanceWithin(Coordinate target, Meter distance, Pageable pageable) {
-        if (target == null || distance == null) return Page.empty(pageable);
+    public Slice<Course> findAllHasDistanceWithin(CourseFindCondition condition) {
+        Query query = new Query();
 
-        Criteria criteria = Criteria.where("segments")
-                .near(new GeoJsonPoint(target.longitude(), target.latitude()))
-                .maxDistance(distance.value());
+        addPositionAndScopeCriteria(condition, query);
+        if (condition.minLength() != null || condition.maxLength() != null) addLengthCriteria(condition, query);
 
-        if (pageable == null) {
-            Query query = Query.query(criteria);
-
-            return new SliceImpl<>(mongoTemplate.find(query, Course.class));
-        }
-
-        Query query = Query.query(criteria)
-                .with(pageable)
-                .limit(pageable.getPageSize() + 1);
+        query.with(condition.pageable())
+                .limit(condition.pageSize() + 1);
 
         List<Course> result = mongoTemplate.find(query, Course.class);
 
-        boolean hasNext = result.size() > pageable.getPageSize();
+        boolean hasNext = result.size() > condition.pageSize();
         if (hasNext) result.removeLast();
-        return new SliceImpl<>(result, pageable, hasNext);
+        return new SliceImpl<>(result, condition.pageable(), hasNext);
+    }
+
+    private static void addPositionAndScopeCriteria(CourseFindCondition condition, Query query) {
+        Point point = new Point(condition.mapPosition().longitude(), condition.mapPosition().latitude());
+        Distance distance = new Distance(condition.scope().value() / 1000.0, Metrics.KILOMETERS);
+        Circle circle = new Circle(point, distance);
+
+        Criteria v1Criteria = Criteria.where("segments").withinSphere(circle);
+        Criteria v2Criteria = Criteria.where("coordinates").withinSphere(circle);
+
+        query.addCriteria(new Criteria().orOperator(v1Criteria, v2Criteria));
+    }
+
+    private static void addLengthCriteria(CourseFindCondition condition, Query query) {
+        Criteria lengthCriteria = Criteria.where("length");
+        if (condition.minLength() != null) {
+            lengthCriteria.gte(condition.minLength().value());
+        }
+        if (condition.maxLength() != null) {
+            lengthCriteria.lte(condition.maxLength().value());
+        }
+
+        query.addCriteria(lengthCriteria);
     }
 
     @Override

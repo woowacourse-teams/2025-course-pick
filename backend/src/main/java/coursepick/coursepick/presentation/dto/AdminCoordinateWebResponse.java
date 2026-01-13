@@ -6,8 +6,7 @@ import java.util.List;
 
 public record AdminCoordinateWebResponse(
         double latitude,
-        double longitude,
-        double elevation
+        double longitude
 ) {
     public static List<AdminCoordinateWebResponse> from(List<Coordinate> coordinates) {
         return coordinates.stream()
@@ -16,6 +15,6 @@ public record AdminCoordinateWebResponse(
     }
 
     public static AdminCoordinateWebResponse from(Coordinate coordinate) {
-        return new AdminCoordinateWebResponse(coordinate.latitude(), coordinate.longitude(), coordinate.elevation());
+        return new AdminCoordinateWebResponse(coordinate.latitude(), coordinate.longitude());
     }
 }

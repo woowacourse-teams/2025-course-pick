@@ -1,7 +1,5 @@
 package coursepick.coursepick.application;
 
-import static coursepick.coursepick.application.exception.ErrorType.*;
-
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
 import coursepick.coursepick.application.dto.SnapResponse;
@@ -10,15 +8,15 @@ import coursepick.coursepick.domain.user.User;
 import coursepick.coursepick.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_COURSE;
+import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_USER;
 
 @Slf4j
 @Service
@@ -32,19 +30,9 @@ public class CourseApplicationService {
     private final UserCreatedCourseRepository userCreatedCourseRepository;
 
     @Transactional(readOnly = true)
-    public CoursesResponse findNearbyCourses(double mapLatitude, double mapLongitude, @Nullable Double userLatitude, @Nullable Double userLongitude, int scope, @Nullable Integer pageNumber) {
-        final Coordinate mapPosition = new Coordinate(mapLatitude, mapLongitude);
-        final Meter meter = new Meter(scope).clamp(1000, 3000);
-        final Pageable pageable = createPageable(pageNumber);
-
-        final Slice<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(mapPosition, meter, pageable);
-
+    public CoursesResponse findNearbyCourses(CourseFindCondition condition, @Nullable Double userLatitude, @Nullable Double userLongitude) {
+        Slice<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(condition);
         return CoursesResponse.from(coursesWithinScope, createUserPositionOrNull(userLatitude, userLongitude));
-    }
-
-    private static Pageable createPageable(@Nullable Integer pageNumber) {
-        if (pageNumber == null || pageNumber < 0) return PageRequest.of(0, 10);
-        else return PageRequest.of(pageNumber, 10);
     }
 
     private static Coordinate createUserPositionOrNull(@Nullable Double userLatitude, @Nullable Double userLongitude) {
@@ -94,32 +82,16 @@ public class CourseApplicationService {
     }
 
     @Transactional
-    public CourseResponse create(String userId, List<Coordinate> coordinates, String name, String roadType, String difficulty) {
+    public CourseResponse create(String userId, String name, List<Coordinate> coordinates) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> NOT_EXIST_USER.create(userId));
 
-        Course course = Course.createFromUser(coordinates, name, getRoadType(roadType), getDifficulty(difficulty));
+        Course course = new Course(null, name, coordinates);
         Course savedCourse = courseRepository.save(course);
 
         UserCreatedCourse userCreatedCourse = new UserCreatedCourse(user.id(), savedCourse.id(), false);
         userCreatedCourseRepository.save(userCreatedCourse);
 
         return CourseResponse.from(savedCourse);
-    }
-
-    private RoadType getRoadType(String roadType) {
-        try {
-            return RoadType.valueOf(roadType);
-        } catch (IllegalArgumentException e) {
-            throw INVALID_ROAD_TYPE.create(roadType);
-        }
-    }
-
-    private Difficulty getDifficulty(String difficulty) {
-        try {
-            return Difficulty.valueOf(difficulty);
-        } catch (IllegalArgumentException e) {
-            throw INVALID_DIFFICULTY.create(difficulty);
-        }
     }
 }

@@ -1,6 +1,8 @@
 package coursepick.coursepick.application.dto;
 
-import coursepick.coursepick.domain.course.*;
+import coursepick.coursepick.domain.course.Coordinate;
+import coursepick.coursepick.domain.course.Course;
+import coursepick.coursepick.domain.course.Meter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
@@ -16,12 +18,10 @@ public class CourseResponse {
 
     private final String id;
     private final String name;
+    @Nullable
     private final Meter distance;
     private final Meter length;
-    private final RoadType roadType;
-    private final InclineSummary inclineSummary;
-    private final Difficulty difficulty;
-    private final List<SegmentResponse> segments;
+    private final List<Coordinate> coordinates;
 
     public static CourseResponse from(Course course) {
         return from(course, null);
@@ -33,10 +33,7 @@ public class CourseResponse {
                 course.name().value(),
                 target != null ? course.distanceFrom(target) : null,
                 course.length(),
-                course.roadType(),
-                course.inclineSummary(),
-                course.difficulty(),
-                SegmentResponse.from(course.segments())
+                course.coordinates()
         );
     }
 

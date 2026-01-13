@@ -1,9 +1,8 @@
 package coursepick.coursepick.infrastructure.snapper;
 
-import static coursepick.coursepick.application.exception.ErrorType.*;
-
-import coursepick.coursepick.application.exception.ErrorType;
-import coursepick.coursepick.domain.course.*;
+import coursepick.coursepick.domain.course.Coordinate;
+import coursepick.coursepick.domain.course.CoordinateSnapper;
+import coursepick.coursepick.domain.course.SnapResult;
 import coursepick.coursepick.logging.LogContent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static coursepick.coursepick.application.exception.ErrorType.INVALID_SNAP_COORDINATE_SIZE;
 
 @Slf4j
 @Component
@@ -70,10 +71,7 @@ public class OsrmCoordinateSnapper implements CoordinateSnapper {
             Double length = (Double) matchings.get(0).get("distance");
 
             List<Coordinate> snappedCoordinates = coordinates.stream()
-                    .map(coord -> createCoordinateWithElevation(
-                            new Coordinate(coord.get(1), coord.get(0)),
-                            originals)
-                    )
+                    .map(coord -> new Coordinate(coord.get(1), coord.get(0)))
                     .toList();
 
             return new SnapResult(snappedCoordinates, length);
@@ -83,33 +81,6 @@ public class OsrmCoordinateSnapper implements CoordinateSnapper {
         }
     }
 
-    private Coordinate createCoordinateWithElevation(Coordinate matched,
-                                                     List<Coordinate> originals) {
-        Coordinate closestWithElevation = null;
-        Meter minDistance = new Meter(Double.MAX_VALUE);
-
-        for (int i = 0; i < originals.size() - 1; i++) {
-            Coordinate start = originals.get(i);
-            Coordinate end = originals.get(i + 1);
-            GeoLine line = new GeoLine(start, end);
-
-            Coordinate closest = line.closestCoordinateFrom(matched);
-
-            Meter distance = new GeoLine(closest, matched).length();
-
-            if (distance.isWithin(minDistance)) {
-                minDistance = distance;
-                closestWithElevation = closest;
-            }
-        }
-
-        return new Coordinate(
-                matched.latitude(),
-                matched.longitude(),
-                closestWithElevation != null ? closestWithElevation.elevation() : 0.0
-        );
-    }
-
     private String generateRadiuses(int size) {
         return String.join(";", Collections.nCopies(size, "100"));
     }
@@ -117,7 +88,7 @@ public class OsrmCoordinateSnapper implements CoordinateSnapper {
     private String generateTimestamps(int size) {
         long epochSecond = Instant.now().getEpochSecond();
         return IntStream.range(0, size)
-                .mapToObj(i -> String.valueOf(epochSecond + (i * 5)))
+                .mapToObj(i -> String.valueOf(epochSecond + (i * 5L)))
                 .collect(Collectors.joining(";"));
     }
 }

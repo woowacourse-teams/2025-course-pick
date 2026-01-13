@@ -4,13 +4,12 @@ import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.dto.SnapResponse;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.Course;
-import coursepick.coursepick.domain.course.RoadType;
+import coursepick.coursepick.domain.course.CourseFindCondition;
 import coursepick.coursepick.domain.course.UserCreatedCourse;
 import coursepick.coursepick.domain.user.User;
 import coursepick.coursepick.domain.user.UserProvider;
 import coursepick.coursepick.test_util.AbstractIntegrationTest;
 import coursepick.coursepick.test_util.CoordinateTestUtil;
-import org.assertj.core.api.Assertions;
 import org.assertj.core.data.Percentage;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,19 +29,19 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
     @Test
     void 코스는_최소_1KM부터_탐색할_수_있다() {
-        var course1 = new Course("한강 러닝 코스", RoadType.트랙, List.of(
+        var course1 = new Course(null, "한강 러닝 코스", List.of(
                 new Coordinate(37.5180, 127.0280),
                 new Coordinate(37.5175, 127.0270),
                 new Coordinate(37.5170, 127.0265),
                 new Coordinate(37.5180, 127.0280)
         ));
-        var course2 = new Course("양재천 산책길", RoadType.트랙, List.of(
+        var course2 = new Course(null, "양재천 산책길", List.of(
                 new Coordinate(37.5165, 127.0285),
                 new Coordinate(37.5160, 127.0278),
                 new Coordinate(37.5155, 127.0265),
                 new Coordinate(37.5165, 127.0285)
         ));
-        var course3 = new Course("북악산 둘레길", RoadType.트레일, List.of(
+        var course3 = new Course(null, "북악산 둘레길", List.of(
                 new Coordinate(37.602500, 126.967000),
                 new Coordinate(37.603000, 126.968000),
                 new Coordinate(37.603500, 126.969000),
@@ -54,8 +53,9 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         var latitude = 37.5122;
         var longitude = 127.0276;
+        var condition = new CourseFindCondition(latitude, longitude, 300, null, null, null);
 
-        var nearbyCourses = sut.findNearbyCourses(latitude, longitude, null, null, 300, null);
+        var nearbyCourses = sut.findNearbyCourses(condition, null, null);
 
         assertThat(nearbyCourses.courses()).hasSize(2)
                 .extracting(CourseResponse::name)
@@ -67,13 +67,13 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
     @Test
     void 코스는_최대_3KM까지_탐색할_수_있다() {
-        var course1 = new Course("한강 러닝 코스", RoadType.트랙, List.of(
+        var course1 = new Course(null, "한강 러닝 코스", List.of(
                 new Coordinate(37.5180, 127.0280),
                 new Coordinate(37.5175, 127.0270),
                 new Coordinate(37.5170, 127.0265),
                 new Coordinate(37.5180, 127.0280)
         ));
-        var course2 = new Course("북악산 둘레길", RoadType.트레일, List.of(
+        var course2 = new Course(null, "북악산 둘레길", List.of(
                 new Coordinate(38.602500, 126.967000),
                 new Coordinate(38.603000, 126.968000),
                 new Coordinate(38.603500, 126.969000),
@@ -84,8 +84,9 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         var latitude = 37.5122;
         var longitude = 127.0276;
+        var condition = new CourseFindCondition(latitude, longitude, 15000, null, null, null);
 
-        var nearbyCourses = sut.findNearbyCourses(latitude, longitude, null, null, 15000, null);
+        var nearbyCourses = sut.findNearbyCourses(condition, null, null);
 
         assertThat(nearbyCourses.courses()).hasSize(1)
                 .extracting(CourseResponse::name)
@@ -96,19 +97,19 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
     @Test
     void 가까운_코스들을_조회한다() {
-        var course1 = new Course("한강 러닝 코스", RoadType.트랙, List.of(
+        var course1 = new Course(null, "한강 러닝 코스", List.of(
                 new Coordinate(37.5180, 127.0280),
                 new Coordinate(37.5175, 127.0270),
                 new Coordinate(37.5170, 127.0265),
                 new Coordinate(37.5180, 127.0280)
         ));
-        var course2 = new Course("양재천 산책길", RoadType.트랙, List.of(
+        var course2 = new Course(null, "양재천 산책길", List.of(
                 new Coordinate(37.5165, 127.0285),
                 new Coordinate(37.5160, 127.0278),
                 new Coordinate(37.5155, 127.0265),
                 new Coordinate(37.5165, 127.0285)
         ));
-        var course3 = new Course("북악산 둘레길", RoadType.트레일, List.of(
+        var course3 = new Course(null, "북악산 둘레길", List.of(
                 new Coordinate(37.602500, 126.967000),
                 new Coordinate(37.603000, 126.968000),
                 new Coordinate(37.603500, 126.969000),
@@ -117,10 +118,12 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         dbUtil.saveCourse(course1);
         dbUtil.saveCourse(course2);
         dbUtil.saveCourse(course3);
+
         var latitude = 37.5172;
         var longitude = 127.0276;
+        var condition = new CourseFindCondition(latitude, longitude, 1000, null, null, null);
 
-        var courses = sut.findNearbyCourses(latitude, longitude, null, null, 1000, null);
+        var courses = sut.findNearbyCourses(condition, null, null);
 
         assertThat(courses.courses()).hasSize(2)
                 .extracting(CourseResponse::name)
@@ -132,19 +135,19 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
     @Test
     void 가까운_코스들을_조회하고_현위치에서_거리를_계산한다() {
-        var course1 = new Course("한강 러닝 코스", List.of(
+        var course1 = new Course(null, "한강 러닝 코스", List.of(
                 new Coordinate(37.5180, 127.0280),
                 new Coordinate(37.5175, 127.0270),
                 new Coordinate(37.5170, 127.0265),
                 new Coordinate(37.5180, 127.0280)
         ));
-        var course2 = new Course("양재천 산책길", List.of(
+        var course2 = new Course(null, "양재천 산책길", List.of(
                 new Coordinate(37.5165, 127.0285),
                 new Coordinate(37.5160, 127.0278),
                 new Coordinate(37.5155, 127.0265),
                 new Coordinate(37.5165, 127.0285)
         ));
-        var course3 = new Course("북악산 둘레길", List.of(
+        var course3 = new Course(null, "북악산 둘레길", List.of(
                 new Coordinate(37.602500, 126.967000),
                 new Coordinate(37.603000, 126.968000),
                 new Coordinate(37.603500, 126.969000),
@@ -157,8 +160,9 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         var mapLongitude = 127.0276;
         var userLatitude = 37.5153291;
         var userLongitude = 127.1031347;
+        var condition = new CourseFindCondition(mapLatitude, mapLongitude, 1000, null, null, null);
 
-        var courses = sut.findNearbyCourses(mapLatitude, mapLongitude, userLatitude, userLongitude, 1000, null);
+        var courses = sut.findNearbyCourses(condition, userLatitude, userLongitude);
 
         assertThat(course1.distanceFrom(new Coordinate(mapLatitude, mapLongitude)).value()).isLessThan(1000.0);
         assertThat(course2.distanceFrom(new Coordinate(mapLatitude, mapLongitude)).value()).isLessThan(1000.0);
@@ -177,10 +181,11 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
     void 더_보여줄_코스가_없다() {
         List<Coordinate> coordinates = CoordinateTestUtil.square(new Coordinate(37.5180, 127.0280), new Coordinate(37.5175, 127.0270));
         List<Course> courses = new ArrayList<>();
-        for (int i = 0; i < 5; i++) courses.add(new Course("코스" + i, coordinates));
+        for (int i = 0; i < 5; i++) courses.add(new Course(null, "코스" + i, coordinates));
         dbUtil.saveAllCourses(courses);
+        var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, 0);
 
-        var result = sut.findNearbyCourses(37.5175, 127.0270, null, null, 3000, 0);
+        var result = sut.findNearbyCourses(condition, null, null);
 
         assertThat(result.hasNext()).isFalse();
     }
@@ -189,10 +194,11 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
     void 더_보여줄_코스가_있다() {
         List<Coordinate> coordinates = CoordinateTestUtil.square(new Coordinate(37.5180, 127.0280), new Coordinate(37.5175, 127.0270));
         List<Course> courses = new ArrayList<>();
-        for (int i = 0; i < 15; i++) courses.add(new Course("코스" + i, coordinates));
+        for (int i = 0; i < 15; i++) courses.add(new Course(null, "코스" + i, coordinates));
         dbUtil.saveAllCourses(courses);
+        var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, 0);
 
-        var result = sut.findNearbyCourses(37.5175, 127.0270, null, null, 3000, 0);
+        var result = sut.findNearbyCourses(condition, null, null);
 
         assertThat(result.hasNext()).isTrue();
     }
@@ -201,10 +207,11 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
     void 다음_페이지의_코스를_찾는다() {
         List<Coordinate> coordinates = CoordinateTestUtil.square(new Coordinate(37.5180, 127.0280), new Coordinate(37.5175, 127.0270));
         List<Course> courses = new ArrayList<>();
-        for (int i = 0; i < 15; i++) courses.add(new Course("코스" + i, coordinates));
+        for (int i = 0; i < 15; i++) courses.add(new Course(null, "코스" + i, coordinates));
         dbUtil.saveAllCourses(courses);
+        var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, 1);
 
-        var result = sut.findNearbyCourses(37.5175, 127.0270, null, null, 3000, 1);
+        var result = sut.findNearbyCourses(condition, null, null);
 
         assertThat(result.hasNext()).isFalse();
         assertThat(result.courses().size()).isEqualTo(5);
@@ -212,7 +219,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
     @Test
     void 코스의_좌표_중에서_가장_가까운_좌표를_계산한다() {
-        var course = new Course("한강 러닝 코스", List.of(
+        var course = new Course(null, "한강 러닝 코스", List.of(
                 new Coordinate(0, 0),
                 new Coordinate(0, 0.0001),
                 new Coordinate(0.0001, 0.0001),
@@ -228,7 +235,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
     @Test
     void 코스가_존재하지_않을_경우_예외가_발생한다() {
-        Assertions.assertThatThrownBy(() -> sut.findClosestCoordinate("notId", 0, 0))
+        assertThatThrownBy(() -> sut.findClosestCoordinate("notId", 0, 0))
                 .isInstanceOf(NoSuchElementException.class);
     }
 
@@ -279,18 +286,10 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
                 new Coordinate(37.5180, 127.0280)
         );
 
-        CourseResponse result = sut.create(
-                savedUser.id(),
-                coordinates,
-                "유저코스테스트",
-                "트레일",
-                "쉬움"
-        );
+        CourseResponse result = sut.create(savedUser.id(), "유저코스테스트", coordinates);
 
         assertThat(result).isNotNull();
         assertThat(result.name()).isEqualTo("유저코스테스트");
-        assertThat(result.roadType().name()).isEqualTo("트레일");
-        assertThat(result.difficulty().name()).isEqualTo("쉬움");
 
         Course savedCourse = dbUtil.findCourseById(result.id());
         assertThat(savedCourse).isNotNull();
@@ -310,33 +309,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
                 new Coordinate(37.5180, 127.0280)
         );
 
-        assertThatThrownBy(() -> sut.create(
-                "nonexistent-user-id",
-                coordinates,
-                "코스",
-                "TRAIL",
-                "EASY"
-        )).isInstanceOf(NoSuchElementException.class);
-    }
-
-    @Test
-    void 잘못된_도로_타입으로_코스를_생성하면_예외가_발생한다() {
-        User user = new User(UserProvider.KAKAO, "testProviderId123");
-        User savedUser = dbUtil.saveUser(user);
-
-        List<Coordinate> coordinates = List.of(
-                new Coordinate(37.5180, 127.0280),
-                new Coordinate(37.5175, 127.0270),
-                new Coordinate(37.5170, 127.0265),
-                new Coordinate(37.5180, 127.0280)
-        );
-
-        assertThatThrownBy(() -> sut.create(
-                savedUser.id(),
-                coordinates,
-                "코스",
-                "INVALID_TYPE",
-                "EASY"
-        )).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> sut.create("nonexistent-user-id", "코스", coordinates))
+                .isInstanceOf(NoSuchElementException.class);
     }
 }

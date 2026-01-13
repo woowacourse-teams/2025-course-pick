@@ -784,8 +784,9 @@
     <div class="content">
         <div class="map-section">
             <div id="map"></div>
-            <div id="selection-box" class="selection-box"></div>
-            <button id="clear-selection-btn" class="clear-selection-button" onclick="clearAllSelections()">선택 해제 (ESC)</button>
+            <div class="selection-box" id="selection-box"></div>
+            <button class="clear-selection-button" id="clear-selection-btn" onclick="clearAllSelections()">선택 해제 (ESC)
+            </button>
         </div>
         <div class="info-section">
             <h2>코스 정보</h2>
@@ -849,7 +850,7 @@
             <p><strong>원본:</strong> <span id="original-count">0</span>개 좌표</p>
             <p><strong>보정 후:</strong> <span id="matched-count">0</span>개 좌표</p>
         </div>
-        <div id="match-preview-map" class="match-preview-map"></div>
+        <div class="match-preview-map" id="match-preview-map"></div>
         <div class="match-preview-buttons">
             <button class="match-button secondary" onclick="closeMatchPreview()">취소</button>
             <button class="match-button primary" onclick="applyMatchedCoordinates()">적용</button>
@@ -923,8 +924,8 @@
 
                 if (markerInfo && markerInfo.marker !== currentDraggingMarker) {
                     const newPos = new kakao.maps.LatLng(
-                        initialPosition.getLat() + totalLatDiff,
-                        initialPosition.getLng() + totalLngDiff
+                            initialPosition.getLat() + totalLatDiff,
+                            initialPosition.getLng() + totalLngDiff
                     );
                     markerInfo.marker.setPosition(newPos);
                 }
@@ -1063,7 +1064,7 @@
 
             // 선택 영역 내에 있는지 확인
             if (point.x >= selectionRect.left && point.x <= selectionRect.right &&
-                point.y >= selectionRect.top && point.y <= selectionRect.bottom) {
+                    point.y >= selectionRect.top && point.y <= selectionRect.bottom) {
 
                 const coordId = `${markerInfo.segmentIndex}_${markerInfo.coordIndex}`;
                 const checkbox = document.getElementById(`checkbox-${coordId}`);
@@ -1117,12 +1118,12 @@
 
         // 핀 형태 마커
         normalMarkerImagePin = new kakao.maps.MarkerImage(
-            'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png',
-            pinSize
+                'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png',
+                pinSize
         );
         selectedMarkerImagePin = new kakao.maps.MarkerImage(
-            'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',
-            pinSize
+                'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',
+                pinSize
         );
 
         // 코스 정보 로드
@@ -1458,14 +1459,14 @@
                             selectedCoordinates.forEach(selectedCoordId => {
                                 const [segIdx, coordIdx] = selectedCoordId.split('_').map(Number);
                                 const markerInfo = markers.find(m =>
-                                    m.segmentIndex === segIdx && m.coordIndex === coordIdx
+                                        m.segmentIndex === segIdx && m.coordIndex === coordIdx
                                 );
                                 if (markerInfo) {
                                     const pos = markerInfo.marker.getPosition();
                                     // 위치 복사 (참조가 아닌 새로운 객체 생성)
                                     selectedMarkersInitialPositions.set(
-                                        selectedCoordId,
-                                        new kakao.maps.LatLng(pos.getLat(), pos.getLng())
+                                            selectedCoordId,
+                                            new kakao.maps.LatLng(pos.getLat(), pos.getLng())
                                     );
 
                                     // 선택된 다른 마커들도 핀 형태로 변경
@@ -1556,7 +1557,7 @@
         selectedCoordinates.forEach(coordId => {
             const [segIdx, coordIdx] = coordId.split('_').map(Number);
             const markerInfo = markers.find(m =>
-                m.segmentIndex === segIdx && m.coordIndex === coordIdx
+                    m.segmentIndex === segIdx && m.coordIndex === coordIdx
             );
 
             if (markerInfo) {
@@ -1582,7 +1583,7 @@
                     const prevCoordId = `${segIdx - 1}_${prevLastIndex}`;
                     if (!selectedCoordinates.has(prevCoordId)) {
                         const prevMarkerInfo = markers.find(m =>
-                            m.segmentIndex === segIdx - 1 && m.coordIndex === prevLastIndex
+                                m.segmentIndex === segIdx - 1 && m.coordIndex === prevLastIndex
                         );
                         if (prevMarkerInfo) {
                             prevMarkerInfo.marker.setPosition(currentPos);
@@ -1600,7 +1601,7 @@
                     const nextCoordId = `${segIdx + 1}_0`;
                     if (!selectedCoordinates.has(nextCoordId)) {
                         const nextMarkerInfo = markers.find(m =>
-                            m.segmentIndex === segIdx + 1 && m.coordIndex === 0
+                                m.segmentIndex === segIdx + 1 && m.coordIndex === 0
                         );
                         if (nextMarkerInfo) {
                             nextMarkerInfo.marker.setPosition(currentPos);
@@ -1812,7 +1813,7 @@
 
             // 마커 찾기
             const markerInfo = markers.find(m =>
-                m.segmentIndex === segIdx && m.coordIndex === coordIdx
+                    m.segmentIndex === segIdx && m.coordIndex === coordIdx
             );
 
             // 마커 이미지를 기본 이미지로 변경
@@ -1928,7 +1929,7 @@
                 // 홀수번째 좌표 선택
                 if (coordNumber % 2 === 1) {
                     const markerInfo = markers.find(m =>
-                        m.segmentIndex === segIdx && m.coordIndex === coordIdx
+                            m.segmentIndex === segIdx && m.coordIndex === coordIdx
                     );
 
                     if (checkbox) {
@@ -1966,7 +1967,7 @@
                 // 짝수번째 좌표 선택
                 if (coordNumber % 2 === 0) {
                     const markerInfo = markers.find(m =>
-                        m.segmentIndex === segIdx && m.coordIndex === coordIdx
+                            m.segmentIndex === segIdx && m.coordIndex === coordIdx
                     );
 
                     if (checkbox) {
@@ -2287,7 +2288,7 @@
                     // 실제로 같은 좌표인지 확인 (lat, lng 비교)
                     const prevLastCoord = prevSegment.coordinates[prevLastIdx];
                     if (prevLastCoord.latitude === coordToDelete.latitude &&
-                        prevLastCoord.longitude === coordToDelete.longitude) {
+                            prevLastCoord.longitude === coordToDelete.longitude) {
                         prevSegment.coordinates.pop(); // 마지막 좌표 제거
                     }
                 }
@@ -2302,7 +2303,7 @@
                     // 실제로 같은 좌표인지 확인 (lat, lng 비교)
                     const nextFirstCoord = nextSegment.coordinates[0];
                     if (nextFirstCoord.latitude === coordToDelete.latitude &&
-                        nextFirstCoord.longitude === coordToDelete.longitude) {
+                            nextFirstCoord.longitude === coordToDelete.longitude) {
                         nextSegment.coordinates.shift(); // 첫 번째 좌표 제거
                     }
                 }
@@ -2685,7 +2686,11 @@
             segment.coordinates.forEach((coord, coordIdx) => {
                 const coordId = `${segIdx}_${coordIdx}`;
                 if (selectedCoordinates.has(coordId)) {
-                    coordsToMatch.push({latitude: coord.latitude, longitude: coord.longitude, elevation: coord.elevation});
+                    coordsToMatch.push({
+                        latitude: coord.latitude,
+                        longitude: coord.longitude,
+                        elevation: coord.elevation
+                    });
                     selectedCoordIds.push({segIdx, coordIdx});
                 }
             });
@@ -2705,7 +2710,7 @@
             const response = await axios.post('/admin/api/coordinates/snap', {
                 coordinates: coordsToMatch
             }, {
-                headers: { 'Content-Type': 'application/json' },
+                headers: {'Content-Type': 'application/json'},
                 withCredentials: true
             });
 
@@ -2756,8 +2761,8 @@
 
         const options = {
             center: new kakao.maps.LatLng(
-                matchedCoordinatesData.original[0].latitude,
-                matchedCoordinatesData.original[0].longitude
+                    matchedCoordinatesData.original[0].latitude,
+                    matchedCoordinatesData.original[0].longitude
             ),
             level: 3
         };
@@ -2766,7 +2771,7 @@
 
         // 원본 좌표 (빨간색 선)
         const originalPath = matchedCoordinatesData.original.map(coord =>
-            new kakao.maps.LatLng(coord.latitude, coord.longitude)
+                new kakao.maps.LatLng(coord.latitude, coord.longitude)
         );
         const originalPolyline = new kakao.maps.Polyline({
             path: originalPath,
@@ -2779,7 +2784,7 @@
 
         // 보정된 좌표 (파란색 선)
         const matchedPath = matchedCoordinatesData.matched.map(coord =>
-            new kakao.maps.LatLng(coord.latitude, coord.longitude)
+                new kakao.maps.LatLng(coord.latitude, coord.longitude)
         );
         const matchedPolyline = new kakao.maps.Polyline({
             path: matchedPath,

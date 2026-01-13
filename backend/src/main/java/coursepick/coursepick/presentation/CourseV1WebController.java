@@ -4,21 +4,23 @@ import coursepick.coursepick.application.CourseApplicationService;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
 import coursepick.coursepick.domain.course.Coordinate;
+import coursepick.coursepick.domain.course.CourseFindCondition;
 import coursepick.coursepick.presentation.api.CourseWebApi;
 import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
 import coursepick.coursepick.presentation.dto.CourseCreateWebRequest;
 import coursepick.coursepick.presentation.dto.CourseWebResponse;
+import coursepick.coursepick.presentation.dto.CoursesWebResponse;
 import coursepick.coursepick.security.Login;
 import coursepick.coursepick.security.UserId;
-import coursepick.coursepick.presentation.dto.CoursesWebResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/v1")
 @RequiredArgsConstructor
-public class CourseWebController implements CourseWebApi {
+public class CourseV1WebController implements CourseWebApi {
 
     private final CourseApplicationService courseApplicationService;
 
@@ -27,12 +29,15 @@ public class CourseWebController implements CourseWebApi {
     public CoursesWebResponse findNearbyCourses(
             @RequestParam("mapLat") double mapLatitude,
             @RequestParam("mapLng") double mapLongitude,
+            @RequestParam("scope") int scope,
             @RequestParam(value = "userLat", required = false) Double userLatitude,
             @RequestParam(value = "userLng", required = false) Double userLongitude,
-            @RequestParam("scope") int scope,
+            @RequestParam(value = "minLength", required = false) Integer minLength,
+            @RequestParam(value = "maxLength", required = false) Integer maxLength,
             @RequestParam(value = "page", required = false) Integer page
     ) {
-        CoursesResponse response = courseApplicationService.findNearbyCourses(mapLatitude, mapLongitude, userLatitude, userLongitude, scope, page);
+        CourseFindCondition condition = new CourseFindCondition(mapLatitude, mapLongitude, scope, minLength, maxLength, page);
+        CoursesResponse response = courseApplicationService.findNearbyCourses(condition, userLatitude, userLongitude);
         return CoursesWebResponse.from(response);
     }
 
@@ -74,13 +79,7 @@ public class CourseWebController implements CourseWebApi {
                 .map(dto -> new Coordinate(dto.latitude(), dto.longitude()))
                 .toList();
 
-        CourseResponse courseResponse = courseApplicationService.create(
-                userId,
-                coordinates,
-                courseCreateWebRequest.name(),
-                courseCreateWebRequest.roadType(),
-                courseCreateWebRequest.difficulty()
-        );
+        CourseResponse courseResponse = courseApplicationService.create(userId, courseCreateWebRequest.name(), coordinates);
 
         return CourseWebResponse.from(courseResponse);
     }

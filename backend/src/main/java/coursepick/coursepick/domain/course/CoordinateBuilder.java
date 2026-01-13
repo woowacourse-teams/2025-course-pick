@@ -21,15 +21,6 @@ public class CoordinateBuilder {
         return new CoordinateBuilder(coordinates);
     }
 
-    public static CoordinateBuilder fromSegments(List<Segment> segments) {
-        List<Coordinate> coordinates = new ArrayList<>();
-        for (Segment segment : segments) {
-            if (!coordinates.isEmpty()) coordinates.removeLast();
-            coordinates.addAll(segment.coordinates());
-        }
-        return new CoordinateBuilder(coordinates);
-    }
-
     /**
      * 비슷한 좌표들을 제거하여 좌표의 밀집도를 줄입니다.
      * <br>
@@ -75,20 +66,6 @@ public class CoordinateBuilder {
         }
 
         return new CoordinateBuilder(smoothCoordinates);
-    }
-
-    /**
-     * 원형 코스를 위한 기능이었으나, GPX 파일을 미리 보정하여 넣기로 합의되며 제거되었습니다. - @yeezy-com
-     */
-    @Deprecated
-    public CoordinateBuilder addFirstCoordinateIfNotConnected() {
-        List<Coordinate> connectedCoordinates = new ArrayList<>(coordinates);
-        Coordinate start = coordinates.getFirst();
-        Coordinate end = coordinates.getLast();
-        if (!start.equals(end)) {
-            connectedCoordinates.add(coordinates.getFirst());
-        }
-        return new CoordinateBuilder(connectedCoordinates);
     }
 
     public List<Coordinate> build() {
