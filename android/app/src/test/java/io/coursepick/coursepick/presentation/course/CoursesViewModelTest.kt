@@ -130,10 +130,8 @@ class CoursesViewModelTest {
         // when
         viewModel.fetchCourses(COORDINATE_FIXTURE, null, Scope.default())
 
-        println(">>> [1] ${viewModel.state.value.status}")
         // then
         val state: CoursesUiState = viewModel.state.getOrAwaitValue()
-        println(">>> [2] ${viewModel.state.value.status}")
         Assertions.assertThat(state.status).isEqualTo(UiStatus.Failure)
         Assertions.assertThat(state.originalCourses).isEmpty()
     }
