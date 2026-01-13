@@ -27,8 +27,8 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
     private final MongoTemplate mongoTemplate;
 
     @Override
-    public void save(Course course) {
-        mongoTemplate.save(course);
+    public Course save(Course course) {
+        return mongoTemplate.save(course);
     }
 
     @Override

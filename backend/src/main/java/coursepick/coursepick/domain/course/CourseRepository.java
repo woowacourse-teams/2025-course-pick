@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface CourseRepository {
 
-    void save(Course course);
+    Course save(Course course);
 
     void saveAll(Iterable<? extends Course> courses);
 

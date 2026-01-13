@@ -144,7 +144,7 @@ public class AdminWebController {
 
     @PostMapping("/admin/api/coordinates/snap")
     public CoordinatesSnapWebResponse snapCoordinates(@RequestBody @Valid CoordinatesSnapWebRequest request) {
-        List<Coordinate> snapped = coordinateSnapper.snap(request.coordinates());
-        return CoordinatesSnapWebResponse.from(snapped);
+        SnapResult snapResult = coordinateSnapper.snap(request.coordinates());
+        return CoordinatesSnapWebResponse.from(snapResult.coordinates());
     }
 }

@@ -25,6 +25,14 @@ public enum ErrorType {
             "시작과 끝 좌표만 존재할 때 둘은 중복될 수 없습니다.",
             IllegalArgumentException::new
     ),
+    INVALID_ROAD_TYPE(
+            "허용된 길 타입이 아닙니다. [트랙, 트레일, 보도, 알수없음] 입력값=%s",
+            IllegalArgumentException::new
+    ),
+    INVALID_DIFFICULTY(
+            "허용된 난이도가 아닙니다. [쉬움, 보통, 어려움] 입력값=%s",
+            IllegalArgumentException::new
+    ),
     NOT_EXIST_COURSE(
             "코스가 존재하지 않습니다. 코스id=%s",
             NoSuchElementException::new
@@ -49,8 +57,16 @@ public enum ErrorType {
             "잘못된 관리자 비밀번호입니다.",
             SecurityException::new
     ),
+    INVALID_SNAP_COORDINATE_SIZE(
+            "스냅을 위해선 최소 2개 이상의 좌표가 필요합니다.",
+            IllegalArgumentException::new
+    ),
     NOT_FOUND_NOTICE(
             "존재하지 않는 공지 사항입니다. 공지 사항id=%s",
+            NoSuchElementException::new
+    ),
+    NOT_EXIST_USER(
+            "존재하지 않는 사용자입니다. 유저id=%s",
             NoSuchElementException::new
     ),
     AUTHENTICATION_FAIL(

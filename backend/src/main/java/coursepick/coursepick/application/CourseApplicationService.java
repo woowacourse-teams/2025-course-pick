@@ -2,7 +2,10 @@ package coursepick.coursepick.application;
 
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
+import coursepick.coursepick.application.dto.SnapResponse;
 import coursepick.coursepick.domain.course.*;
+import coursepick.coursepick.domain.user.User;
+import coursepick.coursepick.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
@@ -13,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_COURSE;
+import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_USER;
 
 @Slf4j
 @Service
@@ -21,6 +25,9 @@ public class CourseApplicationService {
 
     private final CourseRepository courseRepository;
     private final RouteFinder routeFinder;
+    private final CoordinateSnapper coordinateSnapper;
+    private final UserRepository userRepository;
+    private final UserCreatedCourseRepository userCreatedCourseRepository;
 
     @Transactional(readOnly = true)
     public CoursesResponse findNearbyCourses(CourseFindCondition condition, @Nullable Double userLatitude, @Nullable Double userLongitude) {
@@ -66,5 +73,25 @@ public class CourseApplicationService {
                 log.warn("존재하지 않는 코스에 대한 조회: {}", course.id());
             }
         }
+    }
+
+    @Transactional(readOnly = true)
+    public SnapResponse snapCoordinates(List<Coordinate> coordinates) {
+        SnapResult snapResult = coordinateSnapper.snap(coordinates);
+        return new SnapResponse(snapResult.coordinates(), snapResult.length());
+    }
+
+    @Transactional
+    public CourseResponse create(String userId, String name, List<Coordinate> coordinates) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> NOT_EXIST_USER.create(userId));
+
+        Course course = new Course(null, name, coordinates);
+        Course savedCourse = courseRepository.save(course);
+
+        UserCreatedCourse userCreatedCourse = new UserCreatedCourse(user.id(), savedCourse.id(), false);
+        userCreatedCourseRepository.save(userCreatedCourse);
+
+        return CourseResponse.from(savedCourse);
     }
 }
