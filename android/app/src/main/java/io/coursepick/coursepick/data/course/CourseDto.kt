@@ -3,7 +3,6 @@ package io.coursepick.coursepick.data.course
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseName
 import io.coursepick.coursepick.domain.course.Distance
-import io.coursepick.coursepick.domain.course.InclineSummary
 import io.coursepick.coursepick.domain.course.Length
 import kotlinx.serialization.Serializable
 
@@ -13,10 +12,7 @@ data class CourseDto(
     private val name: String,
     private val distance: Double?,
     private val length: Double,
-    private val roadType: String,
-    private val difficulty: String,
-    private val inclineSummary: String?,
-    private val segments: List<SegmentDto>,
+    private val coordinates: List<CoordinateDto>,
 ) {
     fun toCourseOrNull(): Course? =
         runCatching {
@@ -25,10 +21,7 @@ data class CourseDto(
                 name = CourseName(name),
                 distance = distance?.let { distance: Double -> Distance(distance) },
                 length = Length(length),
-                roadType = roadType,
-                difficulty = difficulty,
-                inclineSummary = InclineSummary(inclineSummary),
-                segments = segments.map(SegmentDto::toSegment),
+                coordinates = coordinates.map(CoordinateDto::toCoordinate),
             )
         }.getOrNull()
 }
