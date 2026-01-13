@@ -188,7 +188,6 @@ class CoursesViewModel
                             status = UiStatus.Success,
                         )
                 }.onFailure { exception: Throwable ->
-                    Log.d("asdf", "$exception")
                     Logger.log(
                         Logger.Event.Failure("fetch_courses_new"),
                         "message" to exception.message.toString(),

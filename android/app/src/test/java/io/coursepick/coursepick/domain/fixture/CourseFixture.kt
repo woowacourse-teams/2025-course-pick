@@ -4,12 +4,9 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseName
 import io.coursepick.coursepick.domain.course.Distance
-import io.coursepick.coursepick.domain.course.InclineSummary
-import io.coursepick.coursepick.domain.course.InclineType
 import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Length
 import io.coursepick.coursepick.domain.course.Longitude
-import io.coursepick.coursepick.domain.course.Segment
 
 val COURSE_FIXTURE_1 = Course("1", "코스 1", 10, 100, 1.0, 1.0)
 val COURSE_FIXTURE_2 = Course("2", "코스 2", 20, 200, 2.0, 2.0)
@@ -63,25 +60,14 @@ private fun Course(
     length: Int,
     latitude: Double,
     longitude: Double,
-    type: String = "트랙",
-    difficulty: String = "쉬움",
 ): Course =
     Course(
         id = id,
         name = CourseName(name),
         distance = Distance(distance),
         length = Length(length),
-        roadType = type,
-        difficulty = difficulty,
-        inclineSummary = InclineSummary.UNKNOWN,
-        segments =
-            listOf(
-                Segment(
-                    InclineType.UNKNOWN,
-                    listOf(
-                        Coordinate(Latitude(latitude), Longitude(longitude)),
-                        Coordinate(Latitude(latitude + 0.0001), Longitude(longitude + 0.0001)),
-                    ),
-                ),
-            ),
+        listOf(
+            Coordinate(Latitude(latitude), Longitude(longitude)),
+            Coordinate(Latitude(latitude + 0.0001), Longitude(longitude + 0.0001)),
+        ),
     )
