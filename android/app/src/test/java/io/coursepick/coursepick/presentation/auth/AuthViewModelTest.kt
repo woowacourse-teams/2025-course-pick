@@ -25,7 +25,7 @@ class AuthViewModelTest {
             )
 
         // when
-        viewModel.authenticate(,
+        viewModel.authenticate(
             object : SocialAuthenticator {
                 override val socialType: String = "fake"
 
