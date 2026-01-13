@@ -5,12 +5,12 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface CourseService {
-    @GET("/courses/favorites")
+    @GET("courses/favorites")
     suspend fun coursesById(
         @Query("courseIds") courseIds: List<String>,
     ): List<CourseDto>
 
-    @GET("/courses")
+    @GET("courses")
     suspend fun courses(
         @Query("mapLat") mapLatitude: Double,
         @Query("mapLng") mapLongitude: Double,
@@ -20,14 +20,14 @@ interface CourseService {
         @Query("page") page: Int,
     ): CoursesPageDto
 
-    @GET("/courses/{id}/route")
+    @GET("courses/{id}/route")
     suspend fun routeToCourse(
         @Path("id") courseId: String,
         @Query("startLat") originLatitude: Double,
         @Query("startLng") originLongitude: Double,
     ): List<CoordinateDto>
 
-    @GET("/courses/{id}/closest-coordinate")
+    @GET("courses/{id}/closest-coordinate")
     suspend fun nearestCoordinate(
         @Path("id") courseId: String,
         @Query("lat") originLatitude: Double,
