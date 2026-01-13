@@ -55,10 +55,6 @@
     <string name="filter_result_count">검색 결과(%1$d개)</string>
     <string name="filter_dialog_title">필터</string>
     <string name="filter_dialog_reset">초기화</string>
-    <string name="filter_dialog_difficulty_label">난이도</string>
-    <string name="filter_dialog_difficulty_easy">쉬움</string>
-    <string name="filter_dialog_difficulty_normal">보통</string>
-    <string name="filter_dialog_difficulty_hard">어려움</string>
     <string name="filter_dialog_length_label">길이</string>
     <string name="filter_dialog_cancel">취소</string>
     <string name="explore_course_filter">필터</string>
