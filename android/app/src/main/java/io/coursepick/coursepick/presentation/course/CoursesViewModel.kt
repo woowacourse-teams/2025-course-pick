@@ -1,5 +1,6 @@
 package io.coursepick.coursepick.presentation.course
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -187,6 +188,7 @@ class CoursesViewModel
                             status = UiStatus.Success,
                         )
                 }.onFailure { exception: Throwable ->
+                    Log.d("asdf", "$exception")
                     Logger.log(
                         Logger.Event.Failure("fetch_courses_new"),
                         "message" to exception.message.toString(),
