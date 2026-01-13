@@ -8,7 +8,6 @@ import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.Poi
 import com.kakao.vectormap.camera.CameraPosition
 import io.coursepick.coursepick.domain.course.Coordinate
-import io.coursepick.coursepick.domain.course.Segment
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.course.CourseItem
 import kotlin.math.pow
@@ -84,7 +83,7 @@ class KakaoMapEventHandler {
         target: PointF,
     ): Boolean {
         val points: List<Point?> =
-            segments.flatMap(Segment::coordinates).map { coordinate: Coordinate ->
+            coordinates.map { coordinate: Coordinate ->
                 map.toScreenPoint(coordinate.toLatLng())
             }
         return (points.any { point: Point? -> point != null && point.isNear(target) })

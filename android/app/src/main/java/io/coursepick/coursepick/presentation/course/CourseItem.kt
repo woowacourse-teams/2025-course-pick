@@ -18,5 +18,5 @@ data class CourseItem(
     val length: Int =
         course.length.meter.value
             .toInt()
-    val coordinate: List<Coordinate> = course.coordinates
+    val coordinates: List<Coordinate> = course.coordinates
 }
