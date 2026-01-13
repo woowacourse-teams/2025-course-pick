@@ -25,9 +25,10 @@ class AuthViewModelTest {
             )
 
         // when
-        viewModel.authenticate(
-            "kakao",
+        viewModel.authenticate(,
             object : SocialAuthenticator {
+                override val socialType: String = "fake"
+
                 override fun authenticate(
                     onSuccess: (String) -> Unit,
                     onFailure: (Throwable) -> Unit,

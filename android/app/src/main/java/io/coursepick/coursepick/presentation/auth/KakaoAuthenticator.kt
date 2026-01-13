@@ -15,6 +15,7 @@ class KakaoAuthenticator
     constructor(
         @ActivityContext private val context: Context,
     ) : SocialAuthenticator {
+        override val socialType: String = SOCIAL_TYPE_KAKAO
         private val client = UserApiClient.instance
 
         override fun authenticate(
@@ -80,4 +81,8 @@ class KakaoAuthenticator
                     }
                 }
             }
+
+        companion object {
+            private const val SOCIAL_TYPE_KAKAO = "kakao"
+        }
     }

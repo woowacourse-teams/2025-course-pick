@@ -20,16 +20,13 @@ class AuthViewModel
         private val _event: MutableSingleLiveData<AuthUiEvent> = MutableSingleLiveData()
         val event: SingleLiveData<AuthUiEvent> get() = _event
 
-        fun authenticate(
-            socialType: String,
-            authenticator: SocialAuthenticator,
-        ) {
+        fun authenticate(authenticator: SocialAuthenticator) {
             authenticator.authenticate(
                 onSuccess = { socialAccessToken: String ->
                     viewModelScope.launch {
                         runCatching {
                             authRepository.sign(
-                                socialType,
+                                authenticator.socialType,
                                 SocialToken(socialAccessToken),
                             )
                         }.onSuccess { token: String ->
