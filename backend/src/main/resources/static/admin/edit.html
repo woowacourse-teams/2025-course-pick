@@ -816,10 +816,6 @@
                 <input class="modal-input" id="modal-longitude" placeholder="예: 126.978000" step="0.000001"
                        type="number">
             </div>
-            <div class="modal-form-group">
-                <label class="modal-label" for="modal-elevation">고도 (Elevation, m)</label>
-                <input class="modal-input" id="modal-elevation" placeholder="예: 15.5" step="0.1" type="number">
-            </div>
             <div class="modal-actions">
                 <button class="modal-button danger" onclick="deleteCoordinateFromModal()">삭제</button>
                 <button class="modal-button secondary" onclick="closeCoordinateModal()">취소</button>
@@ -1175,9 +1171,7 @@
         try {
             const infoContainer = document.getElementById('course-info');
 
-            const totalCoordinates = course.segments.reduce((sum, segment) =>
-                    sum + segment.coordinates.length, 0
-            );
+            const totalCoordinates = course.coordinates ? course.coordinates.length : 0;
 
             let html = `
                             <div class="course-info">
@@ -1196,44 +1190,11 @@
                                     <div class="info-value">${(course.length / 1000).toFixed(2)} km</div>
                                 </div>
                                 <div class="info-item">
-                                    <div class="info-label">도로 타입</div>
-                                    <div class="info-value editable">
-                                        <select id="road-type-select"
-                                                class="info-select"
-                                                onchange="updateRoadType(this.value)">
-                                            <option value="트랙" ${course.roadType === '트랙' ? 'selected' : ''}>트랙</option>
-                                            <option value="트레일" ${course.roadType === '트레일' ? 'selected' : ''}>트레일</option>
-                                            <option value="보도" ${course.roadType === '보도' ? 'selected' : ''}>보도</option>
-                                            <option value="알수없음" ${course.roadType === '알수없음' ? 'selected' : ''}>알수없음</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="info-item">
-                                    <div class="info-label">난이도</div>
-                                    <div class="info-value">${course.difficulty}</div>
-                                </div>
-                                <div class="info-item">
                                     <div class="info-label">총 좌표 수</div>
                                     <div class="info-value">${totalCoordinates}개</div>
                                 </div>
                             </div>
-                            <div class="segment-list">
-                                <h3 style="margin-bottom: 15px; color: #2d3748;">세그먼트 목록</h3>
                         `;
-
-            course.segments.forEach((segment, index) => {
-                html += `
-                                <div class="segment-item">
-                                    <div class="segment-header">
-                                        <span>세그먼트 ${index + 1}</span>
-                                        <span class="incline-badge ${segment.inclineType}">${segment.inclineType}</span>
-                                    </div>
-                                    <div class="coordinate-count">좌표 ${segment.coordinates.length}개</div>
-                                </div>
-                            `;
-            });
-
-            html += '</div>';
 
             infoContainer.innerHTML = html;
         } catch (error) {
@@ -1263,9 +1224,6 @@
                                     <button class="bulk-button primary" onclick="matchSelectedCoordinates()" id="match-button" disabled>
                                         좌표 보정 (OSRM Match)
                                     </button>
-                                    <button class="bulk-button primary" onclick="bulkEditCoordinates()" id="bulk-edit-btn" disabled>
-                                        일괄 수정
-                                    </button>
                                     <button class="bulk-button danger" onclick="bulkDeleteCoordinates()" id="bulk-delete-btn" disabled style="background: #e53e3e; color: white;">
                                         일괄 삭제
                                     </button>
@@ -1281,23 +1239,19 @@
                                             </label>
                                         </th>
                                         <th>번호</th>
-                                        <th>세그먼트</th>
                                         <th>위도</th>
                                         <th>경도</th>
-                                        <th>고도(m)</th>
                                         <th>편집</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                         `;
 
-            let coordNumber = 1;
-            course.segments.forEach((segment, segIdx) => {
-                segment.coordinates.forEach((coord, coordIdx) => {
-                    const coordId = `${segIdx}_${coordIdx}`;
+            if (course.coordinates && course.coordinates.length > 0) {
+                course.coordinates.forEach((coord, coordIdx) => {
+                    const coordId = `${coordIdx}`;
                     const lat = (coord.latitude != null && !isNaN(coord.latitude)) ? Number(coord.latitude).toFixed(6) : 'N/A';
                     const lng = (coord.longitude != null && !isNaN(coord.longitude)) ? Number(coord.longitude).toFixed(6) : 'N/A';
-                    const elev = (coord.elevation != null && !isNaN(coord.elevation)) ? Number(coord.elevation).toFixed(1) : 'N/A';
 
                     html += `
                                     <tr id="coord-row-${coordId}" class="${selectedCoordinates.has(coordId) ? 'selected' : ''}">
@@ -1305,23 +1259,20 @@
                                             <input type="checkbox" class="coord-checkbox"
                                                    id="checkbox-${coordId}"
                                                    ${selectedCoordinates.has(coordId) ? 'checked' : ''}
-                                                   onchange="toggleCoordinate(${segIdx}, ${coordIdx})">
+                                                   onchange="toggleCoordinate(${coordIdx})">
                                         </td>
-                                        <td class="coord-number">#${coordNumber}</td>
-                                        <td>세그먼트 ${segIdx + 1}</td>
+                                        <td class="coord-number">#${coordIdx + 1}</td>
                                         <td class="coord-value">${lat}</td>
                                         <td class="coord-value">${lng}</td>
-                                        <td class="coord-value">${elev}</td>
                                         <td>
-                                            <button class="coord-edit-btn" onclick="editSingleCoordinate(${segIdx}, ${coordIdx})">
+                                            <button class="coord-edit-btn" onclick="editSingleCoordinate(${coordIdx})">
                                                 수정
                                             </button>
                                         </td>
                                     </tr>
                                 `;
-                    coordNumber++;
                 });
-            });
+            }
 
             html += `
                                 </tbody>
@@ -1335,19 +1286,6 @@
         }
     }
 
-    // inclineType에 따른 색상 반환
-    function getColorByInclineType(inclineType) {
-        switch (inclineType) {
-            case 'UPHILL':
-                return '#FF0000';
-            case 'FLAT':
-                return '#00FF00';
-            case 'DOWNHILL':
-                return '#0000FF';
-            default:
-                return '#808080';
-        }
-    }
 
     // 지도에 코스 그리기
     function drawCourseOnMap() {
@@ -1355,192 +1293,175 @@
             // 기존 마커와 폴리라인 제거
             clearMap();
 
-            if (!course || !course.segments || course.segments.length === 0) {
+            if (!course || !course.coordinates || course.coordinates.length === 0) {
                 return;
             }
 
-            let allCoordinates = [];
+            // 좌표 배열을 카카오맵 LatLng 객체로 변환
+            const path = course.coordinates.map(coord => {
+                return new kakao.maps.LatLng(coord.latitude, coord.longitude);
+            });
 
-            // 각 세그먼트별로 폴리라인 그리기
-            course.segments.forEach((segment, segmentIndex) => {
+            // 폴리라인 생성
+            const polyline = new kakao.maps.Polyline({
+                path: path,
+                strokeWeight: 5,
+                strokeColor: '#2d3748',
+                strokeOpacity: 0.8,
+                strokeStyle: 'solid'
+            });
 
-                if (!segment.coordinates || segment.coordinates.length === 0) {
-                    return;
-                }
+            polyline.setMap(map);
+            polylines.push(polyline);
 
-                // 좌표 배열을 카카오맵 LatLng 객체로 변환
-                const path = segment.coordinates.map(coord => {
-                    return new kakao.maps.LatLng(coord.latitude, coord.longitude);
+            // 각 좌표에 드래그 가능한 마커 추가
+            course.coordinates.forEach((coord, coordIndex) => {
+                const position = new kakao.maps.LatLng(coord.latitude, coord.longitude);
+
+                const marker = new kakao.maps.Marker({
+                    position: position,
+                    draggable: true,
+                    map: map,
+                    image: normalMarkerImage // 점 형태로 시작
                 });
 
-                allCoordinates.push(...path);
+                // 마커 클릭 이벤트 (Shift + 클릭으로 다중 선택)
+                kakao.maps.event.addListener(marker, 'click', function () {
+                    const coordId = `${coordIndex}`;
+                    const checkbox = document.getElementById(`checkbox-${coordId}`);
 
-                // 폴리라인 생성
-                const polyline = new kakao.maps.Polyline({
-                    path: path,
-                    strokeWeight: 5,
-                    strokeColor: getColorByInclineType(segment.inclineType),
-                    strokeOpacity: 0.8,
-                    strokeStyle: 'solid'
-                });
-
-                polyline.setMap(map);
-                polylines.push(polyline);
-
-                // 각 좌표에 드래그 가능한 마커 추가
-                segment.coordinates.forEach((coord, coordIndex) => {
-                    const position = new kakao.maps.LatLng(coord.latitude, coord.longitude);
-
-                    const marker = new kakao.maps.Marker({
-                        position: position,
-                        draggable: true,
-                        map: map,
-                        image: normalMarkerImage // 점 형태로 시작
-                    });
-
-                    // 마커 클릭 이벤트 (Shift + 클릭으로 다중 선택)
-                    kakao.maps.event.addListener(marker, 'click', function () {
-                        const coordId = `${segmentIndex}_${coordIndex}`;
-                        const checkbox = document.getElementById(`checkbox-${coordId}`);
-
-                        if (isShiftPressed) {
-                            // Shift 누른 상태: 토글 (기존 선택 유지)
-                            if (checkbox) {
-                                checkbox.checked = !checkbox.checked;
-                                toggleCoordinate(segmentIndex, coordIndex);
-                            }
-                        } else {
-                            // Shift 안 누른 상태: 기존 선택 모두 해제 후 현재 마커만 선택
-                            clearAllSelections();
-                            if (checkbox) {
-                                checkbox.checked = true;
-                                toggleCoordinate(segmentIndex, coordIndex);
-                            }
+                    if (isShiftPressed) {
+                        // Shift 누른 상태: 토글 (기존 선택 유지)
+                        if (checkbox) {
+                            checkbox.checked = !checkbox.checked;
+                            toggleCoordinate(coordIndex);
                         }
-                    });
+                    } else {
+                        // Shift 안 누른 상태: 기존 선택 모두 해제 후 현재 마커만 선택
+                        clearAllSelections();
+                        if (checkbox) {
+                            checkbox.checked = true;
+                            toggleCoordinate(coordIndex);
+                        }
+                    }
+                });
 
-                    // 마커 마우스오버 이벤트 (점 → 핀)
-                    kakao.maps.event.addListener(marker, 'mouseover', function () {
-                        const coordId = `${segmentIndex}_${coordIndex}`;
-                        const isSelected = selectedCoordinates.has(coordId);
-                        const pinImage = isSelected ? selectedMarkerImagePin : normalMarkerImagePin;
-                        marker.setImage(pinImage);
-                        marker.setZIndex(2000); // 가장 위에 표시
-                    });
+                // 마커 마우스오버 이벤트 (점 → 핀)
+                kakao.maps.event.addListener(marker, 'mouseover', function () {
+                    const coordId = `${coordIndex}`;
+                    const isSelected = selectedCoordinates.has(coordId);
+                    const pinImage = isSelected ? selectedMarkerImagePin : normalMarkerImagePin;
+                    marker.setImage(pinImage);
+                    marker.setZIndex(2000); // 가장 위에 표시
+                });
 
-                    // 마커 마우스아웃 이벤트 (핀 → 점)
-                    kakao.maps.event.addListener(marker, 'mouseout', function () {
-                        const coordId = `${segmentIndex}_${coordIndex}`;
-                        const isSelected = selectedCoordinates.has(coordId);
-                        const dotImage = isSelected ? selectedMarkerImage : normalMarkerImage;
-                        marker.setImage(dotImage);
-                        marker.setZIndex(isSelected ? 1000 : 1);
-                    });
+                // 마커 마우스아웃 이벤트 (핀 → 점)
+                kakao.maps.event.addListener(marker, 'mouseout', function () {
+                    const coordId = `${coordIndex}`;
+                    const isSelected = selectedCoordinates.has(coordId);
+                    const dotImage = isSelected ? selectedMarkerImage : normalMarkerImage;
+                    marker.setImage(dotImage);
+                    marker.setZIndex(isSelected ? 1000 : 1);
+                });
 
-                    // 마커 드래그 시작 이벤트
-                    kakao.maps.event.addListener(marker, 'dragstart', function () {
-                        const coordId = `${segmentIndex}_${coordIndex}`;
-                        const isSelected = selectedCoordinates.has(coordId);
+                // 마커 드래그 시작 이벤트
+                kakao.maps.event.addListener(marker, 'dragstart', function () {
+                    const coordId = `${coordIndex}`;
+                    const isSelected = selectedCoordinates.has(coordId);
 
-                        // 드래그 시작 시 핀 형태로 변경
-                        const pinImage = isSelected ? selectedMarkerImagePin : normalMarkerImagePin;
-                        marker.setImage(pinImage);
+                    // 드래그 시작 시 핀 형태로 변경
+                    const pinImage = isSelected ? selectedMarkerImagePin : normalMarkerImagePin;
+                    marker.setImage(pinImage);
 
-                        if (selectedCoordinates.has(coordId) && selectedCoordinates.size > 1) {
-                            // 선택된 마커를 드래그하는 경우 다중 드래그 모드
-                            isDraggingMultiple = true;
-                            currentDraggingMarker = marker;
-                            const startPos = marker.getPosition();
-                            // 위치 복사 (참조가 아닌 새로운 객체 생성)
-                            dragStartPosition = new kakao.maps.LatLng(startPos.getLat(), startPos.getLng());
+                    if (selectedCoordinates.has(coordId) && selectedCoordinates.size > 1) {
+                        // 선택된 마커를 드래그하는 경우 다중 드래그 모드
+                        isDraggingMultiple = true;
+                        currentDraggingMarker = marker;
+                        const startPos = marker.getPosition();
+                        // 위치 복사 (참조가 아닌 새로운 객체 생성)
+                        dragStartPosition = new kakao.maps.LatLng(startPos.getLat(), startPos.getLng());
 
-                            // 모든 선택된 마커의 초기 위치 저장
-                            selectedMarkersInitialPositions.clear();
-                            selectedCoordinates.forEach(selectedCoordId => {
-                                const [segIdx, coordIdx] = selectedCoordId.split('_').map(Number);
-                                const markerInfo = markers.find(m =>
-                                        m.segmentIndex === segIdx && m.coordIndex === coordIdx
+                        // 모든 선택된 마커의 초기 위치 저장
+                        selectedMarkersInitialPositions.clear();
+                        selectedCoordinates.forEach(selectedCoordId => {
+                            const coordIdx = Number(selectedCoordId);
+                            const markerInfo = markers.find(m => m.coordIndex === coordIdx);
+                            if (markerInfo) {
+                                const pos = markerInfo.marker.getPosition();
+                                // 위치 복사 (참조가 아닌 새로운 객체 생성)
+                                selectedMarkersInitialPositions.set(
+                                        selectedCoordId,
+                                        new kakao.maps.LatLng(pos.getLat(), pos.getLng())
                                 );
-                                if (markerInfo) {
-                                    const pos = markerInfo.marker.getPosition();
-                                    // 위치 복사 (참조가 아닌 새로운 객체 생성)
-                                    selectedMarkersInitialPositions.set(
-                                            selectedCoordId,
-                                            new kakao.maps.LatLng(pos.getLat(), pos.getLng())
-                                    );
 
-                                    // 선택된 다른 마커들도 핀 형태로 변경
-                                    markerInfo.marker.setImage(selectedMarkerImagePin);
-                                }
-                            });
+                                // 선택된 다른 마커들도 핀 형태로 변경
+                                markerInfo.marker.setImage(selectedMarkerImagePin);
+                            }
+                        });
 
-                            // 드래그 업데이트 시작
-                            dragAnimationFrameId = requestAnimationFrame(updateMultipleDragPositions);
-                        } else {
-                            isDraggingMultiple = false;
-                            currentDraggingMarker = null;
-                            selectedMarkersInitialPositions.clear();
-                        }
-                    });
-
-
-                    // 마커 드래그 종료 이벤트
-                    kakao.maps.event.addListener(marker, 'dragend', function () {
-                        // 애니메이션 프레임 취소
-                        if (dragAnimationFrameId) {
-                            cancelAnimationFrame(dragAnimationFrameId);
-                            dragAnimationFrameId = null;
-                        }
-
-                        const newPosition = marker.getPosition();
-                        const coordId = `${segmentIndex}_${coordIndex}`;
-                        const isSelected = selectedCoordinates.has(coordId);
-
-                        if (isDraggingMultiple) {
-                            // 다중 드래그인 경우 모든 선택된 좌표 업데이트
-                            onMultipleMarkersDragEnd();
-
-                            // 모든 선택된 마커를 점 형태로 복원
-                            selectedCoordinates.forEach(selectedCoordId => {
-                                const markerInfo = markers.find(m => {
-                                    const mCoordId = `${m.segmentIndex}_${m.coordIndex}`;
-                                    return mCoordId === selectedCoordId;
-                                });
-                                if (markerInfo) {
-                                    markerInfo.marker.setImage(selectedMarkerImage);
-                                }
-                            });
-                        } else {
-                            // 단일 마커 드래그
-                            onMarkerDragEnd(segmentIndex, coordIndex, newPosition);
-                            // 점 형태로 복원
-                            const dotImage = isSelected ? selectedMarkerImage : normalMarkerImage;
-                            marker.setImage(dotImage);
-                        }
-                        // 상태 초기화
+                        // 드래그 업데이트 시작
+                        dragAnimationFrameId = requestAnimationFrame(updateMultipleDragPositions);
+                    } else {
                         isDraggingMultiple = false;
                         currentDraggingMarker = null;
-                        dragStartPosition = null;
                         selectedMarkersInitialPositions.clear();
-                    });
+                    }
+                });
 
-                    // 마커 오른쪽 클릭 이벤트
-                    kakao.maps.event.addListener(marker, 'rightclick', function () {
-                        openCoordinateModal(segmentIndex, coordIndex);
-                    });
 
-                    markers.push({
-                        marker: marker,
-                        segmentIndex: segmentIndex,
-                        coordIndex: coordIndex
-                    });
+                // 마커 드래그 종료 이벤트
+                kakao.maps.event.addListener(marker, 'dragend', function () {
+                    // 애니메이션 프레임 취소
+                    if (dragAnimationFrameId) {
+                        cancelAnimationFrame(dragAnimationFrameId);
+                        dragAnimationFrameId = null;
+                    }
+
+                    const newPosition = marker.getPosition();
+                    const coordId = `${coordIndex}`;
+                    const isSelected = selectedCoordinates.has(coordId);
+
+                    if (isDraggingMultiple) {
+                        // 다중 드래그인 경우 모든 선택된 좌표 업데이트
+                        onMultipleMarkersDragEnd();
+
+                        // 모든 선택된 마커를 점 형태로 복원
+                        selectedCoordinates.forEach(selectedCoordId => {
+                            const coordIdx = Number(selectedCoordId);
+                            const markerInfo = markers.find(m => m.coordIndex === coordIdx);
+                            if (markerInfo) {
+                                markerInfo.marker.setImage(selectedMarkerImage);
+                            }
+                        });
+                    } else {
+                        // 단일 마커 드래그
+                        onMarkerDragEnd(coordIndex, newPosition);
+                        // 점 형태로 복원
+                        const dotImage = isSelected ? selectedMarkerImage : normalMarkerImage;
+                        marker.setImage(dotImage);
+                    }
+                    // 상태 초기화
+                    isDraggingMultiple = false;
+                    currentDraggingMarker = null;
+                    dragStartPosition = null;
+                    selectedMarkersInitialPositions.clear();
+                });
+
+                // 마커 오른쪽 클릭 이벤트
+                kakao.maps.event.addListener(marker, 'rightclick', function () {
+                    openCoordinateModal(coordIndex);
+                });
+
+                markers.push({
+                    marker: marker,
+                    coordIndex: coordIndex
                 });
             });
 
             // 지도 중심을 코스에 맞추기 (초기 로드 시에만)
-            if (isInitialLoad && allCoordinates.length > 0) {
+            if (isInitialLoad && path.length > 0) {
                 const bounds = new kakao.maps.LatLngBounds();
-                allCoordinates.forEach(coord => bounds.extend(coord));
+                path.forEach(coord => bounds.extend(coord));
                 map.setBounds(bounds);
                 isInitialLoad = false;
             }
@@ -1551,68 +1472,22 @@
 
     // 다중 마커 드래그 종료 시 처리
     function onMultipleMarkersDragEnd() {
-        const affectedSegments = new Set();
-
         // 모든 선택된 마커의 현재 위치를 좌표 데이터에 반영
         selectedCoordinates.forEach(coordId => {
-            const [segIdx, coordIdx] = coordId.split('_').map(Number);
-            const markerInfo = markers.find(m =>
-                    m.segmentIndex === segIdx && m.coordIndex === coordIdx
-            );
+            const coordIdx = Number(coordId);
+            const markerInfo = markers.find(m => m.coordIndex === coordIdx);
 
             if (markerInfo) {
                 const currentPos = markerInfo.marker.getPosition();
-                const segment = course.segments[segIdx];
-                const isFirstCoord = coordIdx === 0;
-                const isLastCoord = coordIdx === segment.coordinates.length - 1;
 
                 // 좌표 데이터 업데이트
-                segment.coordinates[coordIdx].latitude = currentPos.getLat();
-                segment.coordinates[coordIdx].longitude = currentPos.getLng();
-                affectedSegments.add(segIdx);
-
-                // 세그먼트 경계 좌표인 경우 인접 세그먼트도 업데이트
-                if (isFirstCoord && segIdx > 0) {
-                    const prevSegment = course.segments[segIdx - 1];
-                    const prevLastIndex = prevSegment.coordinates.length - 1;
-                    prevSegment.coordinates[prevLastIndex].latitude = currentPos.getLat();
-                    prevSegment.coordinates[prevLastIndex].longitude = currentPos.getLng();
-                    affectedSegments.add(segIdx - 1);
-
-                    // 이전 세그먼트의 마지막 마커도 업데이트 (선택되지 않은 경우)
-                    const prevCoordId = `${segIdx - 1}_${prevLastIndex}`;
-                    if (!selectedCoordinates.has(prevCoordId)) {
-                        const prevMarkerInfo = markers.find(m =>
-                                m.segmentIndex === segIdx - 1 && m.coordIndex === prevLastIndex
-                        );
-                        if (prevMarkerInfo) {
-                            prevMarkerInfo.marker.setPosition(currentPos);
-                        }
-                    }
-                }
-
-                if (isLastCoord && segIdx < course.segments.length - 1) {
-                    const nextSegment = course.segments[segIdx + 1];
-                    nextSegment.coordinates[0].latitude = currentPos.getLat();
-                    nextSegment.coordinates[0].longitude = currentPos.getLng();
-                    affectedSegments.add(segIdx + 1);
-
-                    // 다음 세그먼트의 첫 번째 마커도 업데이트 (선택되지 않은 경우)
-                    const nextCoordId = `${segIdx + 1}_0`;
-                    if (!selectedCoordinates.has(nextCoordId)) {
-                        const nextMarkerInfo = markers.find(m =>
-                                m.segmentIndex === segIdx + 1 && m.coordIndex === 0
-                        );
-                        if (nextMarkerInfo) {
-                            nextMarkerInfo.marker.setPosition(currentPos);
-                        }
-                    }
-                }
+                course.coordinates[coordIdx].latitude = currentPos.getLat();
+                course.coordinates[coordIdx].longitude = currentPos.getLng();
             }
         });
 
-        // 영향받은 세그먼트의 폴리라인 업데이트
-        updateSegmentPolylines(Array.from(affectedSegments));
+        // 폴리라인 업데이트
+        updatePolylines();
 
         // 좌표 목록 UI 업데이트
         displayCoordinatesList();
@@ -1622,100 +1497,21 @@
     }
 
     // 마커 드래그 종료 시 처리
-    function onMarkerDragEnd(segmentIndex, coordIndex, newPosition) {
-        const segment = course.segments[segmentIndex];
-        const isFirstCoord = coordIndex === 0;
-        const isLastCoord = coordIndex === segment.coordinates.length - 1;
+    function onMarkerDragEnd(coordIndex, newPosition) {
+        // 좌표 업데이트
+        course.coordinates[coordIndex].latitude = newPosition.getLat();
+        course.coordinates[coordIndex].longitude = newPosition.getLng();
 
-        // 현재 좌표 업데이트
-        segment.coordinates[coordIndex].latitude = newPosition.getLat();
-        segment.coordinates[coordIndex].longitude = newPosition.getLng();
-
-        // 업데이트할 세그먼트 인덱스 수집
-        const segmentsToUpdate = [segmentIndex];
-        const markersToUpdate = [];
-
-        // 세그먼트 경계 좌표인 경우 인접 세그먼트와 마커도 업데이트
-        if (isFirstCoord && segmentIndex > 0) {
-            // 첫 번째 좌표이고 이전 세그먼트가 있는 경우
-            const prevSegment = course.segments[segmentIndex - 1];
-            const prevLastIndex = prevSegment.coordinates.length - 1;
-            prevSegment.coordinates[prevLastIndex].latitude = newPosition.getLat();
-            prevSegment.coordinates[prevLastIndex].longitude = newPosition.getLng();
-            segmentsToUpdate.push(segmentIndex - 1);
-
-            // 이전 세그먼트의 마지막 마커 찾아서 위치 업데이트
-            const prevMarkerInfo = markers.find(m =>
-                    m.segmentIndex === segmentIndex - 1 &&
-                    m.coordIndex === prevLastIndex
-            );
-            if (prevMarkerInfo) {
-                prevMarkerInfo.marker.setPosition(newPosition);
-            }
-        }
-
-        if (isLastCoord && segmentIndex < course.segments.length - 1) {
-            // 마지막 좌표이고 다음 세그먼트가 있는 경우
-            const nextSegment = course.segments[segmentIndex + 1];
-            nextSegment.coordinates[0].latitude = newPosition.getLat();
-            nextSegment.coordinates[0].longitude = newPosition.getLng();
-            segmentsToUpdate.push(segmentIndex + 1);
-
-            // 다음 세그먼트의 첫 번째 마커 찾아서 위치 업데이트
-            const nextMarkerInfo = markers.find(m =>
-                    m.segmentIndex === segmentIndex + 1 &&
-                    m.coordIndex === 0
-            );
-            if (nextMarkerInfo) {
-                nextMarkerInfo.marker.setPosition(newPosition);
-            }
-        }
-
-        // 영향받은 세그먼트의 폴리라인만 업데이트
-        updateSegmentPolylines(segmentsToUpdate);
+        // 폴리라인 업데이트
+        updatePolylines();
 
         updateSaveButton();
-        // 변경 알림
-        let message = '좌표가 변경되었습니다.';
-        if (isFirstCoord && segmentIndex > 0) {
-            message += ' (이전 세그먼트와 연결됨)';
-        } else if (isLastCoord && segmentIndex < course.segments.length - 1) {
-            message += ' (다음 세그먼트와 연결됨)';
-        }
-        message += ' (자동 저장 기능은 추후 구현 예정)';
-        showMessage(message, 'success');
+        showMessage('좌표가 변경되었습니다.', 'success');
     }
 
-    // 특정 세그먼트들의 폴리라인만 업데이트
+    // 특정 세그먼트들의 폴리라인만 업데이트 (더 이상 세그먼트 개념이 없으므로 전체 업데이트)
     function updateSegmentPolylines(segmentIndices) {
-        segmentIndices.forEach(segmentIndex => {
-            const segment = course.segments[segmentIndex];
-            if (!segment || !segment.coordinates || segment.coordinates.length === 0) {
-                return;
-            }
-
-            // 기존 폴리라인 제거 (해당 세그먼트만)
-            const oldPolyline = polylines[segmentIndex];
-            if (oldPolyline) {
-                oldPolyline.setMap(null);
-            }
-
-            // 새 경로로 폴리라인 생성
-            const path = segment.coordinates.map(coord =>
-                    new kakao.maps.LatLng(coord.latitude, coord.longitude)
-            );
-
-            const newPolyline = new kakao.maps.Polyline({
-                path: path,
-                strokeWeight: 5,
-                strokeColor: getColorByInclineType(segment.inclineType),
-                strokeOpacity: 0.8,
-                strokeStyle: 'solid'
-            });
-
-            newPolyline.setMap(map);
-            polylines[segmentIndex] = newPolyline;
-        });
+        updatePolylines();
     }
 
     // 모든 폴리라인 업데이트
@@ -1724,27 +1520,25 @@
         polylines.forEach(polyline => polyline.setMap(null));
         polylines = [];
 
-        // 폴리라인 다시 그리기
-        course.segments.forEach(segment => {
-            if (!segment.coordinates || segment.coordinates.length === 0) {
-                return;
-            }
+        if (!course.coordinates || course.coordinates.length === 0) {
+            return;
+        }
 
-            const path = segment.coordinates.map(coord =>
-                    new kakao.maps.LatLng(coord.latitude, coord.longitude)
-            );
+        // 전체 코스를 하나의 폴리라인으로 그리기
+        const path = course.coordinates.map(coord =>
+                new kakao.maps.LatLng(coord.latitude, coord.longitude)
+        );
 
-            const polyline = new kakao.maps.Polyline({
-                path: path,
-                strokeWeight: 5,
-                strokeColor: getColorByInclineType(segment.inclineType),
-                strokeOpacity: 0.8,
-                strokeStyle: 'solid'
-            });
-
-            polyline.setMap(map);
-            polylines.push(polyline);
+        const polyline = new kakao.maps.Polyline({
+            path: path,
+            strokeWeight: 5,
+            strokeColor: '#2d3748',
+            strokeOpacity: 0.8,
+            strokeStyle: 'solid'
         });
+
+        polyline.setMap(map);
+        polylines.push(polyline);
     }
 
     // 지도 초기화
@@ -1800,7 +1594,7 @@
         const selectedArray = Array.from(selectedCoordinates);
 
         selectedArray.forEach(coordId => {
-            const [segIdx, coordIdx] = coordId.split('_').map(Number);
+            const coordIdx = Number(coordId);
             const row = document.getElementById(`coord-row-${coordId}`);
             const checkbox = document.getElementById(`checkbox-${coordId}`);
 
@@ -1812,9 +1606,7 @@
             }
 
             // 마커 찾기
-            const markerInfo = markers.find(m =>
-                    m.segmentIndex === segIdx && m.coordIndex === coordIdx
-            );
+            const markerInfo = markers.find(m => m.coordIndex === coordIdx);
 
             // 마커 이미지를 기본 이미지로 변경
             if (markerInfo && normalMarkerImage) {
@@ -1830,15 +1622,13 @@
     }
 
     // 좌표 선택/해제
-    function toggleCoordinate(segIdx, coordIdx) {
-        const coordId = `${segIdx}_${coordIdx}`;
+    function toggleCoordinate(coordIdx) {
+        const coordId = `${coordIdx}`;
         const row = document.getElementById(`coord-row-${coordId}`);
         const checkbox = document.getElementById(`checkbox-${coordId}`);
 
         // 마커 찾기
-        const markerInfo = markers.find(m =>
-                m.segmentIndex === segIdx && m.coordIndex === coordIdx
-        );
+        const markerInfo = markers.find(m => m.coordIndex === coordIdx);
 
         if (checkbox.checked) {
             selectedCoordinates.add(coordId);
@@ -1872,43 +1662,39 @@
         const selectAllCheckbox = document.getElementById('select-all-checkbox');
         const isChecked = selectAllCheckbox.checked;
 
-        course.segments.forEach((segment, segIdx) => {
-            segment.coordinates.forEach((coord, coordIdx) => {
-                const coordId = `${segIdx}_${coordIdx}`;
-                const row = document.getElementById(`coord-row-${coordId}`);
-                const checkbox = document.getElementById(`checkbox-${coordId}`);
+        course.coordinates.forEach((coord, coordIdx) => {
+            const coordId = `${coordIdx}`;
+            const row = document.getElementById(`coord-row-${coordId}`);
+            const checkbox = document.getElementById(`checkbox-${coordId}`);
 
-                // 마커 찾기
-                const markerInfo = markers.find(m =>
-                        m.segmentIndex === segIdx && m.coordIndex === coordIdx
-                );
+            // 마커 찾기
+            const markerInfo = markers.find(m => m.coordIndex === coordIdx);
 
-                if (checkbox) {
-                    checkbox.checked = isChecked;
-                    if (isChecked) {
-                        selectedCoordinates.add(coordId);
-                        row.classList.add('selected');
-                        // 마커 이미지를 선택 이미지로 변경
-                        if (markerInfo && selectedMarkerImage) {
-                            markerInfo.marker.setImage(selectedMarkerImage);
-                            markerInfo.marker.setZIndex(1000);
+            if (checkbox) {
+                checkbox.checked = isChecked;
+                if (isChecked) {
+                    selectedCoordinates.add(coordId);
+                    row.classList.add('selected');
+                    // 마커 이미지를 선택 이미지로 변경
+                    if (markerInfo && selectedMarkerImage) {
+                        markerInfo.marker.setImage(selectedMarkerImage);
+                        markerInfo.marker.setZIndex(1000);
+                    }
+                } else {
+                    selectedCoordinates.delete(coordId);
+                    row.classList.remove('selected');
+                    // 마커 이미지를 기본 이미지로 변경
+                    if (markerInfo) {
+                        if (normalMarkerImage) {
+                            markerInfo.marker.setImage(normalMarkerImage);
+                        } else {
+                            // normalMarkerImage가 null이면 기본 마커로 복원
+                            markerInfo.marker.setImage(null);
                         }
-                    } else {
-                        selectedCoordinates.delete(coordId);
-                        row.classList.remove('selected');
-                        // 마커 이미지를 기본 이미지로 변경
-                        if (markerInfo) {
-                            if (normalMarkerImage) {
-                                markerInfo.marker.setImage(normalMarkerImage);
-                            } else {
-                                // normalMarkerImage가 null이면 기본 마커로 복원
-                                markerInfo.marker.setImage(null);
-                            }
-                            markerInfo.marker.setZIndex(1);
-                        }
+                        markerInfo.marker.setZIndex(1);
                     }
                 }
-            });
+            }
         });
 
         updateBulkActionButtons();
@@ -1920,31 +1706,27 @@
         clearAllSelections();
 
         let coordNumber = 1;
-        course.segments.forEach((segment, segIdx) => {
-            segment.coordinates.forEach((coord, coordIdx) => {
-                const coordId = `${segIdx}_${coordIdx}`;
-                const row = document.getElementById(`coord-row-${coordId}`);
-                const checkbox = document.getElementById(`checkbox-${coordId}`);
+        course.coordinates.forEach((coord, coordIdx) => {
+            const coordId = `${coordIdx}`;
+            const row = document.getElementById(`coord-row-${coordId}`);
+            const checkbox = document.getElementById(`checkbox-${coordId}`);
 
-                // 홀수번째 좌표 선택
-                if (coordNumber % 2 === 1) {
-                    const markerInfo = markers.find(m =>
-                            m.segmentIndex === segIdx && m.coordIndex === coordIdx
-                    );
+            // 홀수번째 좌표 선택
+            if (coordNumber % 2 === 1) {
+                const markerInfo = markers.find(m => m.coordIndex === coordIdx);
 
-                    if (checkbox) {
-                        checkbox.checked = true;
-                        selectedCoordinates.add(coordId);
-                        row.classList.add('selected');
-                        // 마커 이미지를 선택 이미지로 변경
-                        if (markerInfo && selectedMarkerImage) {
-                            markerInfo.marker.setImage(selectedMarkerImage);
-                            markerInfo.marker.setZIndex(1000);
-                        }
+                if (checkbox) {
+                    checkbox.checked = true;
+                    selectedCoordinates.add(coordId);
+                    row.classList.add('selected');
+                    // 마커 이미지를 선택 이미지로 변경
+                    if (markerInfo && selectedMarkerImage) {
+                        markerInfo.marker.setImage(selectedMarkerImage);
+                        markerInfo.marker.setZIndex(1000);
                     }
                 }
-                coordNumber++;
-            });
+            }
+            coordNumber++;
         });
 
         updateBulkActionButtons();
@@ -1958,31 +1740,27 @@
         clearAllSelections();
 
         let coordNumber = 1;
-        course.segments.forEach((segment, segIdx) => {
-            segment.coordinates.forEach((coord, coordIdx) => {
-                const coordId = `${segIdx}_${coordIdx}`;
-                const row = document.getElementById(`coord-row-${coordId}`);
-                const checkbox = document.getElementById(`checkbox-${coordId}`);
+        course.coordinates.forEach((coord, coordIdx) => {
+            const coordId = `${coordIdx}`;
+            const row = document.getElementById(`coord-row-${coordId}`);
+            const checkbox = document.getElementById(`checkbox-${coordId}`);
 
-                // 짝수번째 좌표 선택
-                if (coordNumber % 2 === 0) {
-                    const markerInfo = markers.find(m =>
-                            m.segmentIndex === segIdx && m.coordIndex === coordIdx
-                    );
+            // 짝수번째 좌표 선택
+            if (coordNumber % 2 === 0) {
+                const markerInfo = markers.find(m => m.coordIndex === coordIdx);
 
-                    if (checkbox) {
-                        checkbox.checked = true;
-                        selectedCoordinates.add(coordId);
-                        row.classList.add('selected');
-                        // 마커 이미지를 선택 이미지로 변경
-                        if (markerInfo && selectedMarkerImage) {
-                            markerInfo.marker.setImage(selectedMarkerImage);
-                            markerInfo.marker.setZIndex(1000);
-                        }
+                if (checkbox) {
+                    checkbox.checked = true;
+                    selectedCoordinates.add(coordId);
+                    row.classList.add('selected');
+                    // 마커 이미지를 선택 이미지로 변경
+                    if (markerInfo && selectedMarkerImage) {
+                        markerInfo.marker.setImage(selectedMarkerImage);
+                        markerInfo.marker.setZIndex(1000);
                     }
                 }
-                coordNumber++;
-            });
+            }
+            coordNumber++;
         });
 
         updateBulkActionButtons();
@@ -1995,9 +1773,7 @@
         const selectAllCheckbox = document.getElementById('select-all-checkbox');
         if (!selectAllCheckbox) return;
 
-        const totalCoordinates = course.segments.reduce((sum, segment) =>
-                sum + segment.coordinates.length, 0
-        );
+        const totalCoordinates = course.coordinates ? course.coordinates.length : 0;
 
         if (selectedCoordinates.size === 0) {
             selectAllCheckbox.checked = false;
@@ -2015,7 +1791,6 @@
     function updateBulkActionButtons() {
         const showOnMapBtn = document.getElementById('show-on-map-btn');
         const matchButton = document.getElementById('match-button');
-        const bulkEditBtn = document.getElementById('bulk-edit-btn');
         const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
         const clearSelectionBtn = document.getElementById('clear-selection-btn');
 
@@ -2027,9 +1802,6 @@
         }
         if (matchButton) {
             matchButton.disabled = !hasTwoOrMore;
-        }
-        if (bulkEditBtn) {
-            bulkEditBtn.disabled = !hasSelection;
         }
         if (bulkDeleteBtn) {
             bulkDeleteBtn.disabled = !hasSelection;
@@ -2080,8 +1852,8 @@
     }
 
     // 단일 좌표 수정
-    function editSingleCoordinate(segIdx, coordIdx) {
-        const coord = course.segments[segIdx].coordinates[coordIdx];
+    function editSingleCoordinate(coordIdx) {
+        const coord = course.coordinates[coordIdx];
 
         const latitude = prompt('위도를 입력하세요:', coord.latitude.toFixed(6));
         if (latitude === null) return;
@@ -2089,7 +1861,7 @@
         const longitude = prompt('경도를 입력하세요:', coord.longitude.toFixed(6));
         if (longitude === null) return;
 
-        const elevation = prompt('고도(m)를 입력하세요:', coord.elevation.toFixed(1));
+        const elevation = prompt('고도(m)를 입력하세요:', coord.elevation ? coord.elevation.toFixed(1) : '0');
         if (elevation === null) return;
 
         const newLat = parseFloat(latitude);
@@ -2117,115 +1889,20 @@
         coord.longitude = newLng;
         coord.elevation = newElev;
 
-        // 세그먼트 경계 좌표인 경우 인접 세그먼트도 업데이트
-        const segment = course.segments[segIdx];
-        const isFirstCoord = coordIdx === 0;
-        const isLastCoord = coordIdx === segment.coordinates.length - 1;
-        const segmentsToUpdate = [segIdx];
-
-        if (isFirstCoord && segIdx > 0) {
-            const prevSegment = course.segments[segIdx - 1];
-            const prevLastIndex = prevSegment.coordinates.length - 1;
-            prevSegment.coordinates[prevLastIndex].latitude = newLat;
-            prevSegment.coordinates[prevLastIndex].longitude = newLng;
-            prevSegment.coordinates[prevLastIndex].elevation = newElev;
-            segmentsToUpdate.push(segIdx - 1);
-        }
-
-        if (isLastCoord && segIdx < course.segments.length - 1) {
-            const nextSegment = course.segments[segIdx + 1];
-            nextSegment.coordinates[0].latitude = newLat;
-            nextSegment.coordinates[0].longitude = newLng;
-            nextSegment.coordinates[0].elevation = newElev;
-            segmentsToUpdate.push(segIdx + 1);
-        }
-
         // 지도의 마커 위치 업데이트
         const newPosition = new kakao.maps.LatLng(newLat, newLng);
-        const markerInfo = markers.find(m =>
-                m.segmentIndex === segIdx && m.coordIndex === coordIdx
-        );
+        const markerInfo = markers.find(m => m.coordIndex === coordIdx);
         if (markerInfo) {
             markerInfo.marker.setPosition(newPosition);
         }
 
-        // 인접 마커들도 업데이트
-        if (isFirstCoord && segIdx > 0) {
-            const prevSegment = course.segments[segIdx - 1];
-            const prevLastIndex = prevSegment.coordinates.length - 1;
-            const prevMarkerInfo = markers.find(m =>
-                    m.segmentIndex === segIdx - 1 && m.coordIndex === prevLastIndex
-            );
-            if (prevMarkerInfo) {
-                prevMarkerInfo.marker.setPosition(newPosition);
-            }
-        }
-
-        if (isLastCoord && segIdx < course.segments.length - 1) {
-            const nextMarkerInfo = markers.find(m =>
-                    m.segmentIndex === segIdx + 1 && m.coordIndex === 0
-            );
-            if (nextMarkerInfo) {
-                nextMarkerInfo.marker.setPosition(newPosition);
-            }
-        }
-
         // 폴리라인 업데이트
-        updateSegmentPolylines(segmentsToUpdate);
+        updatePolylines();
 
         // UI 업데이트
         displayCoordinatesList();
         updateSaveButton();
         showMessage('좌표가 수정되었습니다.', 'success');
-    }
-
-    // 일괄 수정
-    function bulkEditCoordinates() {
-        if (selectedCoordinates.size === 0) {
-            showMessage('선택된 좌표가 없습니다.', 'error');
-            return;
-        }
-
-        const elevationOffset = prompt(`${selectedCoordinates.size}개의 선택된 좌표의 고도를 일괄 수정합니다.\n고도 변경값(m)을 입력하세요 (예: +10, -5):`, '+0');
-        if (elevationOffset === null) return;
-
-        const offset = parseFloat(elevationOffset);
-        if (isNaN(offset)) {
-            showMessage('잘못된 입력입니다. 숫자를 입력해주세요.', 'error');
-            return;
-        }
-
-        // 선택된 좌표들의 고도 일괄 수정
-        const updatedSegments = new Set();
-        selectedCoordinates.forEach(coordId => {
-            const [segIdx, coordIdx] = coordId.split('_').map(Number);
-            const coord = course.segments[segIdx].coordinates[coordIdx];
-            coord.elevation += offset;
-            updatedSegments.add(segIdx);
-
-            // 세그먼트 경계 좌표인 경우 인접 세그먼트도 체크
-            const segment = course.segments[segIdx];
-            const isFirstCoord = coordIdx === 0;
-            const isLastCoord = coordIdx === segment.coordinates.length - 1;
-
-            if (isFirstCoord && segIdx > 0) {
-                const prevSegment = course.segments[segIdx - 1];
-                const prevLastIndex = prevSegment.coordinates.length - 1;
-                prevSegment.coordinates[prevLastIndex].elevation = coord.elevation;
-                updatedSegments.add(segIdx - 1);
-            }
-
-            if (isLastCoord && segIdx < course.segments.length - 1) {
-                const nextSegment = course.segments[segIdx + 1];
-                nextSegment.coordinates[0].elevation = coord.elevation;
-                updatedSegments.add(segIdx + 1);
-            }
-        });
-
-        // UI 업데이트
-        displayCoordinatesList();
-        updateSaveButton();
-        showMessage(`${selectedCoordinates.size}개 좌표의 고도가 ${offset > 0 ? '+' : ''}${offset}m 변경되었습니다.`, 'success');
     }
 
     // 일괄 삭제
@@ -2235,12 +1912,10 @@
             return;
         }
 
-        // 전체 좌표 수 계산
-        const totalCoordinates = course.segments.reduce((sum, segment) =>
-                sum + segment.coordinates.length, 0
-        );
+        // Total coordinates in flat array
+        const totalCoordinates = course.coordinates.length;
 
-        // 삭제 후 남을 좌표 수 확인
+        // Check remaining after deletion
         const remainingCoordinates = totalCoordinates - selectedCoordinates.size;
         if (remainingCoordinates < 2) {
             showMessage(`코스는 최소 2개 이상의 좌표가 필요합니다. (현재: ${totalCoordinates}개, 선택: ${selectedCoordinates.size}개)`, 'error');
@@ -2251,85 +1926,27 @@
             return;
         }
 
-        // 삭제할 좌표를 세그먼트별로 그룹화 (역순으로 정렬하여 인덱스 변경 문제 방지)
-        const coordsToDelete = Array.from(selectedCoordinates).map(coordId => {
-            const [segIdx, coordIdx] = coordId.split('_').map(Number);
-            return {segIdx, coordIdx};
-        }).sort((a, b) => {
-            // 세그먼트 인덱스 역순, 같은 세그먼트 내에서는 좌표 인덱스 역순
-            if (a.segIdx !== b.segIdx) {
-                return b.segIdx - a.segIdx;
+        // Convert to indices and sort descending (delete from end to avoid index shifting)
+        const coordsToDelete = Array.from(selectedCoordinates)
+            .map(coordId => parseInt(coordId))
+            .sort((a, b) => b - a);
+
+        // Delete in reverse order
+        coordsToDelete.forEach(coordIdx => {
+            if (coordIdx >= 0 && coordIdx < course.coordinates.length) {
+                course.coordinates.splice(coordIdx, 1);
             }
-            return b.coordIdx - a.coordIdx;
         });
 
-        // 삭제할 좌표를 Set으로 변환 (빠른 검색을 위해)
-        const coordsToDeleteSet = new Set(selectedCoordinates);
-
-        // 역순으로 삭제 (인덱스 변경 문제 방지)
-        coordsToDelete.forEach(({segIdx, coordIdx}) => {
-            const segment = course.segments[segIdx];
-            if (!segment || !segment.coordinates[coordIdx]) {
-                return; // 이미 삭제된 경우 스킵
-            }
-
-            const coordToDelete = segment.coordinates[coordIdx];
-            const isFirstCoord = coordIdx === 0;
-            const isLastCoord = coordIdx === segment.coordinates.length - 1;
-
-            // 세그먼트 경계 좌표인 경우 인접 세그먼트에서도 삭제
-            if (isFirstCoord && segIdx > 0) {
-                const prevSegment = course.segments[segIdx - 1];
-                const prevLastIdx = prevSegment.coordinates.length - 1;
-                const prevCoordId = `${segIdx - 1}_${prevLastIdx}`;
-
-                // 대응하는 경계 좌표가 삭제 목록에 없을 때만 삭제
-                if (prevSegment && prevSegment.coordinates.length > 0 && !coordsToDeleteSet.has(prevCoordId)) {
-                    // 실제로 같은 좌표인지 확인 (lat, lng 비교)
-                    const prevLastCoord = prevSegment.coordinates[prevLastIdx];
-                    if (prevLastCoord.latitude === coordToDelete.latitude &&
-                            prevLastCoord.longitude === coordToDelete.longitude) {
-                        prevSegment.coordinates.pop(); // 마지막 좌표 제거
-                    }
-                }
-            }
-
-            if (isLastCoord && segIdx < course.segments.length - 1) {
-                const nextCoordId = `${segIdx + 1}_0`;
-
-                // 대응하는 경계 좌표가 삭제 목록에 없을 때만 삭제
-                const nextSegment = course.segments[segIdx + 1];
-                if (nextSegment && nextSegment.coordinates.length > 0 && !coordsToDeleteSet.has(nextCoordId)) {
-                    // 실제로 같은 좌표인지 확인 (lat, lng 비교)
-                    const nextFirstCoord = nextSegment.coordinates[0];
-                    if (nextFirstCoord.latitude === coordToDelete.latitude &&
-                            nextFirstCoord.longitude === coordToDelete.longitude) {
-                        nextSegment.coordinates.shift(); // 첫 번째 좌표 제거
-                    }
-                }
-            }
-
-            // 현재 세그먼트에서 좌표 삭제
-            segment.coordinates.splice(coordIdx, 1);
-        });
-
-        // 빈 세그먼트 제거 (역순으로)
-        for (let i = course.segments.length - 1; i >= 0; i--) {
-            if (course.segments[i].coordinates.length === 0) {
-                course.segments.splice(i, 1);
-            }
-        }
-
-        // 선택된 좌표 초기화
+        // Clear selection
         selectedCoordinates.clear();
 
-        // 지도 다시 그리기
+        // Redraw and update
         drawCourseOnMap();
-
-        // UI 업데이트
         displayCourseInfo();
         displayCoordinatesList();
         updateSaveButton();
+
         showMessage(`${coordsToDelete.length}개의 좌표가 삭제되었습니다.`, 'success');
     }
 
@@ -2401,17 +2018,12 @@
         }
 
         try {
-            // 모든 세그먼트의 좌표를 평탄화하여 [[lat, lng, elev], ...] 형식으로 변환
-            const coordinates = [];
-            course.segments.forEach(segment => {
-                segment.coordinates.forEach(coord => {
-                    coordinates.push([
-                        coord.latitude,
-                        coord.longitude,
-                        coord.elevation
-                    ]);
-                });
-            });
+            // Coordinates are already flat - just transform format
+            const coordinates = course.coordinates.map(coord => [
+                coord.latitude,
+                coord.longitude,
+                coord.elevation
+            ]);
 
             // API 요청 데이터 준비
             const requestData = {
@@ -2456,16 +2068,15 @@
     }
 
     // 좌표 수정 모달 열기
-    function openCoordinateModal(segIdx, coordIdx) {
-        const coord = course.segments[segIdx].coordinates[coordIdx];
+    function openCoordinateModal(coordIdx) {
+        const coord = course.coordinates[coordIdx];
 
         // 현재 수정 중인 좌표 정보 저장
-        currentEditingCoord = {segIdx, coordIdx};
+        currentEditingCoord = {coordIdx};
 
         // 모달 입력 필드에 현재 값 설정
         document.getElementById('modal-latitude').value = coord.latitude.toFixed(6);
         document.getElementById('modal-longitude').value = coord.longitude.toFixed(6);
-        document.getElementById('modal-elevation').value = coord.elevation.toFixed(1);
 
         // 모달 표시
         const modal = document.getElementById('coordinate-edit-modal');
@@ -2491,15 +2102,14 @@
             return;
         }
 
-        const {segIdx, coordIdx} = currentEditingCoord;
+        const {coordIdx} = currentEditingCoord;
 
-        // 입력값 가져오기
+        // Get input values (NO elevation)
         const newLat = parseFloat(document.getElementById('modal-latitude').value);
         const newLng = parseFloat(document.getElementById('modal-longitude').value);
-        const newElev = parseFloat(document.getElementById('modal-elevation').value);
 
-        // 유효성 검사
-        if (isNaN(newLat) || isNaN(newLng) || isNaN(newElev)) {
+        // Validation
+        if (isNaN(newLat) || isNaN(newLng)) {
             showMessage('잘못된 입력입니다. 숫자를 입력해주세요.', 'error');
             return;
         }
@@ -2514,74 +2124,25 @@
             return;
         }
 
-        // 좌표 업데이트
-        const coord = course.segments[segIdx].coordinates[coordIdx];
+        // Update coordinate (preserve elevation)
+        const coord = course.coordinates[coordIdx];
         coord.latitude = newLat;
         coord.longitude = newLng;
-        coord.elevation = newElev;
+        // elevation is NOT modified
 
-        // 세그먼트 경계 좌표인 경우 인접 세그먼트도 업데이트
-        const segment = course.segments[segIdx];
-        const isFirstCoord = coordIdx === 0;
-        const isLastCoord = coordIdx === segment.coordinates.length - 1;
-        const segmentsToUpdate = [segIdx];
-
-        if (isFirstCoord && segIdx > 0) {
-            const prevSegment = course.segments[segIdx - 1];
-            const prevLastIndex = prevSegment.coordinates.length - 1;
-            prevSegment.coordinates[prevLastIndex].latitude = newLat;
-            prevSegment.coordinates[prevLastIndex].longitude = newLng;
-            prevSegment.coordinates[prevLastIndex].elevation = newElev;
-            segmentsToUpdate.push(segIdx - 1);
-        }
-
-        if (isLastCoord && segIdx < course.segments.length - 1) {
-            const nextSegment = course.segments[segIdx + 1];
-            nextSegment.coordinates[0].latitude = newLat;
-            nextSegment.coordinates[0].longitude = newLng;
-            nextSegment.coordinates[0].elevation = newElev;
-            segmentsToUpdate.push(segIdx + 1);
-        }
-
-        // 지도의 마커 위치 업데이트
+        // Update marker on map
         const newPosition = new kakao.maps.LatLng(newLat, newLng);
-        const markerInfo = markers.find(m =>
-                m.segmentIndex === segIdx && m.coordIndex === coordIdx
-        );
+        const markerInfo = markers.find(m => m.coordIndex === coordIdx);
         if (markerInfo) {
             markerInfo.marker.setPosition(newPosition);
         }
 
-        // 인접 마커들도 업데이트
-        if (isFirstCoord && segIdx > 0) {
-            const prevSegment = course.segments[segIdx - 1];
-            const prevLastIndex = prevSegment.coordinates.length - 1;
-            const prevMarkerInfo = markers.find(m =>
-                    m.segmentIndex === segIdx - 1 && m.coordIndex === prevLastIndex
-            );
-            if (prevMarkerInfo) {
-                prevMarkerInfo.marker.setPosition(newPosition);
-            }
-        }
-
-        if (isLastCoord && segIdx < course.segments.length - 1) {
-            const nextMarkerInfo = markers.find(m =>
-                    m.segmentIndex === segIdx + 1 && m.coordIndex === 0
-            );
-            if (nextMarkerInfo) {
-                nextMarkerInfo.marker.setPosition(newPosition);
-            }
-        }
-
-        // 폴리라인 업데이트
-        updateSegmentPolylines(segmentsToUpdate);
-
-        // UI 업데이트
+        // Redraw everything
+        drawCourseOnMap();
         displayCoordinatesList();
         updateSaveButton();
         showMessage('좌표가 수정되었습니다.', 'success');
 
-        // 모달 닫기
         closeCoordinateModal();
     }
 
@@ -2592,61 +2153,33 @@
             return;
         }
 
-        const {segIdx, coordIdx} = currentEditingCoord;
+        const {coordIdx} = currentEditingCoord;
 
         if (!confirm('정말로 이 좌표를 삭제하시겠습니까?')) {
             return;
         }
 
-        // 전체 좌표 수 계산
-        const totalCoordinates = course.segments.reduce((sum, segment) =>
-                sum + segment.coordinates.length, 0
-        );
-
-        // 최소 좌표 수 검증 (최소 2개 필요)
+        // Check minimum (at least 2 required)
+        const totalCoordinates = course.coordinates.length;
         if (totalCoordinates <= 2) {
             showMessage('코스는 최소 2개 이상의 좌표가 필요합니다.', 'error');
             return;
         }
 
-        // 좌표 삭제
-        const segment = course.segments[segIdx];
-        const isFirstCoord = coordIdx === 0;
-        const isLastCoord = coordIdx === segment.coordinates.length - 1;
+        // Delete from flat array
+        course.coordinates.splice(coordIdx, 1);
 
-        // 세그먼트 경계 좌표인 경우 인접 세그먼트에서도 삭제
-        if (isFirstCoord && segIdx > 0) {
-            const prevSegment = course.segments[segIdx - 1];
-            prevSegment.coordinates.pop(); // 마지막 좌표 제거
-        }
-
-        if (isLastCoord && segIdx < course.segments.length - 1) {
-            const nextSegment = course.segments[segIdx + 1];
-            nextSegment.coordinates.shift(); // 첫 번째 좌표 제거
-        }
-
-        // 현재 세그먼트에서 좌표 삭제
-        segment.coordinates.splice(coordIdx, 1);
-
-        // 세그먼트가 비어있으면 세그먼트도 제거
-        if (segment.coordinates.length === 0) {
-            course.segments.splice(segIdx, 1);
-        }
-
-        // 선택된 좌표 Set에서 제거
-        const coordId = `${segIdx}_${coordIdx}`;
+        // Remove from selection
+        const coordId = `${coordIdx}`;
         selectedCoordinates.delete(coordId);
 
-        // 지도 다시 그리기
+        // Redraw and update
         drawCourseOnMap();
-
-        // UI 업데이트
         displayCourseInfo();
         displayCoordinatesList();
         updateSaveButton();
         showMessage('좌표가 삭제되었습니다.', 'success');
 
-        // 모달 닫기
         closeCoordinateModal();
     }
 
@@ -2682,18 +2215,16 @@
         const coordsToMatch = [];
         const selectedCoordIds = [];
 
-        course.segments.forEach((segment, segIdx) => {
-            segment.coordinates.forEach((coord, coordIdx) => {
-                const coordId = `${segIdx}_${coordIdx}`;
-                if (selectedCoordinates.has(coordId)) {
-                    coordsToMatch.push({
-                        latitude: coord.latitude,
-                        longitude: coord.longitude,
-                        elevation: coord.elevation
-                    });
-                    selectedCoordIds.push({segIdx, coordIdx});
-                }
-            });
+        course.coordinates.forEach((coord, coordIdx) => {
+            const coordId = `${coordIdx}`;
+            if (selectedCoordinates.has(coordId)) {
+                coordsToMatch.push({
+                    latitude: coord.latitude,
+                    longitude: coord.longitude,
+                    elevation: coord.elevation
+                });
+                selectedCoordIds.push(coordIdx);
+            }
         });
 
         if (coordsToMatch.length < 2) {
@@ -2836,49 +2367,15 @@
             return;
         }
 
-        // 첫 번째와 마지막 선택 좌표의 위치
-        const firstPos = selectedCoordIds[0];
-        const lastPos = selectedCoordIds[selectedCoordIds.length - 1];
+        // Get first and last selected index
+        const firstIdx = selectedCoordIds[0];
+        const lastIdx = selectedCoordIds[selectedCoordIds.length - 1];
 
-        // 같은 세그먼트인 경우
-        if (firstPos.segIdx === lastPos.segIdx) {
-            const segment = course.segments[firstPos.segIdx];
+        // Replace range with matched coordinates
+        const deleteCount = lastIdx - firstIdx + 1;
+        course.coordinates.splice(firstIdx, deleteCount, ...matched);
 
-            // 시작 인덱스부터 끝 인덱스까지 삭제
-            const deleteCount = lastPos.coordIdx - firstPos.coordIdx + 1;
-            segment.coordinates.splice(firstPos.coordIdx, deleteCount, ...matched);
-        } else {
-            // 여러 세그먼트에 걸쳐 있는 경우
-
-            // 1. 첫 번째 세그먼트: firstPos.coordIdx부터 끝까지 삭제
-            const firstSegment = course.segments[firstPos.segIdx];
-            const firstDeleteCount = firstSegment.coordinates.length - firstPos.coordIdx;
-
-            // 2. 마지막 세그먼트: 처음부터 lastPos.coordIdx까지 삭제
-            const lastSegment = course.segments[lastPos.segIdx];
-            const lastDeleteCount = lastPos.coordIdx + 1;
-
-            // 3. 중간 세그먼트들은 모두 삭제 표시
-            const segmentsToDelete = [];
-            for (let i = firstPos.segIdx + 1; i < lastPos.segIdx; i++) {
-                segmentsToDelete.push(i);
-            }
-
-            // 보정된 좌표를 첫 번째 세그먼트에 추가
-            firstSegment.coordinates.splice(firstPos.coordIdx, firstDeleteCount, ...matched);
-
-            // 마지막 세그먼트의 남은 좌표들을 첫 번째 세그먼트에 합침
-            const remainingCoords = lastSegment.coordinates.slice(lastDeleteCount);
-            firstSegment.coordinates.push(...remainingCoords);
-
-            // 중간 세그먼트들과 마지막 세그먼트 삭제 (역순으로 삭제)
-            course.segments.splice(lastPos.segIdx, 1);
-            for (let i = segmentsToDelete.length - 1; i >= 0; i--) {
-                course.segments.splice(segmentsToDelete[i], 1);
-            }
-        }
-
-        // 지도 다시 그리기
+        // Redraw
         drawCourseOnMap();
         displayCoordinatesList();
         updateSaveButton();
@@ -2886,7 +2383,7 @@
         showMessage(`${matched.length}개의 좌표로 보정되었습니다.`, 'success');
         closeMatchPreview();
 
-        // 선택 해제
+        // Clear selection
         selectedCoordinates.clear();
         updateBulkActionButtons();
     }
