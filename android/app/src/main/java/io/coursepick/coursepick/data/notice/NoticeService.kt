@@ -4,7 +4,7 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface NoticeService {
-    @GET("/notices/{id}")
+    @GET("notices/{id}")
     suspend fun notice(
         @Path("id") id: String,
     ): NoticeDto
