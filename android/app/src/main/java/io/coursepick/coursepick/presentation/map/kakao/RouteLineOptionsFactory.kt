@@ -11,8 +11,6 @@ import com.kakao.vectormap.route.RouteLineStyle
 import com.kakao.vectormap.route.RouteLineStyles
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Coordinate
-import io.coursepick.coursepick.domain.course.InclineType
-import io.coursepick.coursepick.domain.course.Segment
 import io.coursepick.coursepick.presentation.course.CourseItem
 
 class RouteLineOptionsFactory(
@@ -21,14 +19,8 @@ class RouteLineOptionsFactory(
     private val patternDistance: Float =
         context.resources.getDimension(R.dimen.course_pattern_between_distance)
 
-    private val uphillStyle =
-        RouteLineStyles(R.color.course_uphill, R.dimen.selected_course_width, true)
-    private val flatStyle =
-        RouteLineStyles(R.color.course_flat, R.dimen.selected_course_width, true)
-    private val downhillStyle =
-        RouteLineStyles(R.color.course_downhill, R.dimen.selected_course_width, true)
-    private val unknownStyle =
-        RouteLineStyles(R.color.course_unknown, R.dimen.selected_course_width, true)
+    private val selectedStyle =
+        RouteLineStyles(R.color.course_selected, R.dimen.selected_course_width, true)
     private val unselectedStyle =
         RouteLineStyles(R.color.course_unselected, R.dimen.unselected_course_width, false)
     private val routeStyle =
@@ -42,16 +34,13 @@ class RouteLineOptionsFactory(
             ),
         )
 
-    fun routeLineOptions(course: CourseItem): RouteLineOptions {
-        val segments: List<RouteLineSegment> =
-            course.segments.map { segment: Segment ->
-                routeLineSegmentWithStyle(
-                    segment,
-                    course.selected,
-                )
-            }
-        return RouteLineOptions.from(segments)
-    }
+    fun routeLineOptions(course: CourseItem): RouteLineOptions =
+        RouteLineOptions.from(
+            routeLineSegmentWithStyle(
+                course.coordinates,
+                course.selected,
+            ),
+        )
 
     private fun RouteLineStyles(
         @ColorRes colorRes: Int,
@@ -71,23 +60,13 @@ class RouteLineOptionsFactory(
     }
 
     private fun routeLineSegmentWithStyle(
-        segment: Segment,
+        coordinates: List<Coordinate>,
         selected: Boolean,
     ): RouteLineSegment {
         val points: List<LatLng> =
-            segment.coordinates.map { coordinate: Coordinate -> coordinate.toLatLng() }
-        val styles: RouteLineStyles =
-            if (selected) segment.inclineType.routeLineStyles else unselectedStyle
+            coordinates.map { coordinate: Coordinate -> coordinate.toLatLng() }
+        val styles: RouteLineStyles = if (selected) selectedStyle else unselectedStyle
 
         return RouteLineSegment.from(points, styles)
     }
-
-    private val InclineType.routeLineStyles
-        get() =
-            when (this) {
-                InclineType.UPHILL -> uphillStyle
-                InclineType.DOWNHILL -> downhillStyle
-                InclineType.FLAT -> flatStyle
-                InclineType.UNKNOWN -> unknownStyle
-            }
 }
