@@ -10,6 +10,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.util.pattern.PathPattern;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -37,7 +38,8 @@ public class PathAllowlistFilter extends OncePerRequestFilter {
 
     private Set<Pattern> parseRequestMappingHandlerMapping(RequestMappingHandlerMapping requestMappingHandlerMapping) {
         return requestMappingHandlerMapping.getHandlerMethods().keySet().stream()
-                .flatMap(info -> info.getDirectPaths().stream())
+                .flatMap(info -> info.getPathPatternsCondition().getPatterns().stream())
+                .map(PathPattern::getPatternString)
                 .map(this::pathToPattern)
                 .collect(Collectors.toSet());
     }
