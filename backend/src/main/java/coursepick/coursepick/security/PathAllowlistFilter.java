@@ -28,11 +28,17 @@ public class PathAllowlistFilter extends OncePerRequestFilter {
 
     public PathAllowlistFilter(Optional<RequestMappingHandlerMapping> requestMappingHandlerMapping) {
         requestMappingHandlerMapping.ifPresent(mappingHandlerMapping -> ALLOW_URI_PATTERNS.addAll(parseRequestMappingHandlerMapping(mappingHandlerMapping)));
+
         ALLOW_URI_PATTERNS.addAll(Set.of(
-                Pattern.compile("^/images/verified_location.png$"),
                 Pattern.compile("^/actuator.*$"),
                 Pattern.compile("^/api-docs.html$"),
                 Pattern.compile("^/v3/api-docs.*$")
+        ));
+
+        ALLOW_URI_PATTERNS.addAll(Set.of(
+                Pattern.compile("^.*\\.css$"),
+                Pattern.compile("^.*\\.js$"),
+                Pattern.compile("^.*\\.(png|jpg|jpeg|gif|svg|ico|webp)$")
         ));
     }
 
