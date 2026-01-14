@@ -12,11 +12,11 @@ import dagger.hilt.components.SingletonComponent
 import io.coursepick.coursepick.presentation.InstallationId
 import javax.inject.Singleton
 
+private val Context.tokenDataStore: DataStore<Preferences> by preferencesDataStore(name = "auth")
+
 @Module
 @InstallIn(SingletonComponent::class)
 object LocalDataModule {
-    private val Context.tokenDataStore: DataStore<Preferences> by preferencesDataStore(name = "auth")
-
     @Provides
     fun provideInstallationId(
         @ApplicationContext applicationContext: Context,
