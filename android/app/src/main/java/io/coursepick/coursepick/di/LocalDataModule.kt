@@ -15,7 +15,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object LocalDataModule {
-    val Context.tokenDataStore by preferencesDataStore(name = "token")
+    private val Context.tokenDataStore: DataStore<Preferences> by preferencesDataStore(name = "auth")
 
     @Provides
     fun provideInstallationId(
