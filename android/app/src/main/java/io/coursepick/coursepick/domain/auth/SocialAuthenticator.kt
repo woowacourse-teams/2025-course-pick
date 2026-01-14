@@ -1,6 +1,8 @@
 package io.coursepick.coursepick.domain.auth
 
 interface SocialAuthenticator {
+    val socialType: String
+
     /**
      * 외부 소셜 서비스(Google, Kakao 등)를 통해 인증을 수행합니다.
      *

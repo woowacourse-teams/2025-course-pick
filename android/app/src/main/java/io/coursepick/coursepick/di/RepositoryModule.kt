@@ -4,10 +4,12 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.coursepick.coursepick.data.auth.DefaultAuthRepository
 import io.coursepick.coursepick.data.course.DefaultCourseRepository
 import io.coursepick.coursepick.data.favorites.DefaultFavoritesRepository
 import io.coursepick.coursepick.data.notice.DefaultNoticeRepository
 import io.coursepick.coursepick.data.search.DefaultSearchRepository
+import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.course.CourseRepository
 import io.coursepick.coursepick.domain.favorites.FavoritesRepository
 import io.coursepick.coursepick.domain.notice.NoticeRepository
@@ -27,4 +29,7 @@ abstract class RepositoryModule {
 
     @Binds
     abstract fun bindNoticeRepository(implementation: DefaultNoticeRepository): NoticeRepository
+
+    @Binds
+    abstract fun bindAuthRepository(implementation: DefaultAuthRepository): AuthRepository
 }
