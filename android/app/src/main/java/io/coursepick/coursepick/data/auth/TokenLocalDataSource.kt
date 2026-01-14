@@ -7,7 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.google.crypto.tink.Aead
 import com.google.crypto.tink.subtle.Base64
-import io.coursepick.coursepick.BuildConfig.TOKEN_SECURITY
+import io.coursepick.coursepick.BuildConfig
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
@@ -17,7 +17,7 @@ class TokenLocalDataSource
         private val dataStore: DataStore<Preferences>,
         private val aead: Aead,
     ) {
-        private val tokenSecurity: String = TOKEN_SECURITY
+        private val tokenSecurity: String = BuildConfig.TOKEN_SECURITY
         private val accessToken: Preferences.Key<String> = stringPreferencesKey("access_token")
 
         suspend fun saveAccessToken(token: String) {
