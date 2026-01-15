@@ -123,12 +123,11 @@ public class AdminWebController {
 
         if (rawCoordinates != null && !rawCoordinates.isEmpty()) {
             List<Coordinate> coordinates = rawCoordinates.stream()
-                    .map(rawCoordinate -> new Coordinate(rawCoordinate.get(0), rawCoordinate.get(1), rawCoordinate.get(2)))
+                    .map(rawCoordinate -> new Coordinate(rawCoordinate.get(0), rawCoordinate.get(1)))
                     .toList();
             course.changeCoordinates(coordinates);
         }
         if (request.name() != null) course.changeName(request.name());
-        if (request.roadType() != null) course.changeRoadType(request.roadType());
 
         // TODO : 분산 트랜잭션 고민
         courseRepository.save(course);

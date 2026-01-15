@@ -21,7 +21,7 @@ public record AdminCourseWebResponse(
                 course.id(),
                 course.name().value(),
                 course.length().value(),
-                AdminCoordinateWebResponse.from(course)
+                AdminCoordinateWebResponse.from(course.coordinates())
         );
     }
 }

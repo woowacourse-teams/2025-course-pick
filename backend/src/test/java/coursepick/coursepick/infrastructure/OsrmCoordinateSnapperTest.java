@@ -17,9 +17,9 @@ class OsrmCoordinateSnapperTest extends AbstractMockServerTest {
         var sut = new OsrmCoordinateSnapper(anyRestClient());
 
         List<Coordinate> originals = List.of(
-                new Coordinate(37.5045224, 127.048996, 10.0),
-                new Coordinate(37.5050000, 127.048500, 15.0),
-                new Coordinate(37.5113001, 127.0392855, 20.0)
+                new Coordinate(37.5045224, 127.048996),
+                new Coordinate(37.5050000, 127.048500),
+                new Coordinate(37.5113001, 127.0392855)
         );
         var result = sut.snap(originals);
 
@@ -52,28 +52,11 @@ class OsrmCoordinateSnapperTest extends AbstractMockServerTest {
     }
 
     @Test
-    void 매칭된_좌표에_원본_elevation이_보간된다() {
-        mock(osrmSnapResponse());
-        var sut = new OsrmCoordinateSnapper(anyRestClient());
-
-        List<Coordinate> originals = List.of(
-                new Coordinate(37.5045224, 127.048996, 10.0),
-                new Coordinate(37.5050000, 127.048500, 15.0),
-                new Coordinate(37.5113001, 127.0392855, 20.0)
-        );
-        var result = sut.snap(originals);
-
-        assertThat(result).allMatch(coord -> coord.elevation() != 0.0);
-        assertThat(result.get(0).elevation()).isBetween(9.0, 11.0);
-        assertThat(result.get(result.size() - 1).elevation()).isBetween(15.0, 21.0);
-    }
-
-    @Test
     void 좌표가_2개_미만이면_원본을_반환한다() {
         var sut = new OsrmCoordinateSnapper(anyRestClient());
 
         List<Coordinate> single = List.of(
-                new Coordinate(37.5045224, 127.048996, 10.0)
+                new Coordinate(37.5045224, 127.048996)
         );
         var result = sut.snap(single);
 
@@ -95,8 +78,8 @@ class OsrmCoordinateSnapperTest extends AbstractMockServerTest {
         var sut = new OsrmCoordinateSnapper(anyRestClient());
 
         List<Coordinate> originals = List.of(
-                new Coordinate(37.5045224, 127.048996, 10.0),
-                new Coordinate(37.5113001, 127.0392855, 20.0)
+                new Coordinate(37.5045224, 127.048996),
+                new Coordinate(37.5113001, 127.0392855)
         );
 
         var result = sut.snap(originals);
@@ -109,8 +92,8 @@ class OsrmCoordinateSnapperTest extends AbstractMockServerTest {
         var sut = new OsrmCoordinateSnapper(anyRestClient());
 
         List<Coordinate> originals = List.of(
-                new Coordinate(37.5045224, 127.048996, 10.0),
-                new Coordinate(37.5113001, 127.0392855, 20.0)
+                new Coordinate(37.5045224, 127.048996),
+                new Coordinate(37.5113001, 127.0392855)
         );
         var result = sut.snap(originals);
 
@@ -132,8 +115,8 @@ class OsrmCoordinateSnapperTest extends AbstractMockServerTest {
         var sut = new OsrmCoordinateSnapper(anyRestClient());
 
         List<Coordinate> originals = List.of(
-                new Coordinate(37.5045224, 127.048996, 10.0),
-                new Coordinate(37.5113001, 127.0392855, 20.0)
+                new Coordinate(37.5045224, 127.048996),
+                new Coordinate(37.5113001, 127.0392855)
         );
         var result = sut.snap(originals);
 

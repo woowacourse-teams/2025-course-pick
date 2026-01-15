@@ -11,19 +11,18 @@ class CoordinateTest {
 
     @ParameterizedTest
     @CsvSource({
-            "0.5, 5, 5, 5",
-            "1, 10, 10, 10",
-            "1.5, 15, 15, 15",
+            "0.5, 5, 5",
+            "1, 10, 10",
+            "1.5, 15, 15",
     })
-    void 두_점에_대하여_선형보간한다(double lerpRatio, double expectedLatitude, double expectedLongitude, double expectedElevation) {
-        var start = new Coordinate(0, 0, 0);
-        var end = new Coordinate(10, 10, 10);
+    void 두_점에_대하여_선형보간한다(double lerpRatio, double expectedLatitude, double expectedLongitude) {
+        var start = new Coordinate(0, 0);
+        var end = new Coordinate(10, 10);
 
         var result = Coordinate.lerp(start, end, lerpRatio);
 
         assertThat(result.latitude()).isEqualTo(expectedLatitude);
         assertThat(result.longitude()).isEqualTo(expectedLongitude);
-        assertThat(result.elevation()).isEqualTo(expectedElevation);
     }
 
     @Nested
@@ -68,7 +67,7 @@ class CoordinateTest {
             var coordinate1 = new Coordinate(37.515348, 127.103015);
             var coordinate2 = new Coordinate(37.515348, 127.103015);
 
-            boolean result = coordinate1.hasSameLatitudeAndLongitude(coordinate2);
+            boolean result = coordinate1.equals(coordinate2);
 
             assertThat(result).isTrue();
         }
@@ -78,7 +77,7 @@ class CoordinateTest {
             var coordinate1 = new Coordinate(37.515348, 127.103015);
             var coordinate2 = new Coordinate(37.515348, 127.103016);
 
-            boolean result = coordinate1.hasSameLatitudeAndLongitude(coordinate2);
+            boolean result = coordinate1.equals(coordinate2);
 
             assertThat(result).isFalse();
         }
@@ -88,7 +87,7 @@ class CoordinateTest {
             var coordinate1 = new Coordinate(37.515348123456, 127.103015123456);
             var coordinate2 = new Coordinate(37.515348123999, 127.103015123999);
 
-            boolean result = coordinate1.hasSameLatitudeAndLongitude(coordinate2);
+            boolean result = coordinate1.equals(coordinate2);
 
             assertThat(result).isTrue();
         }

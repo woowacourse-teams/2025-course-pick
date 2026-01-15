@@ -8,21 +8,15 @@ import static coursepick.coursepick.application.exception.ErrorType.INVALID_LONG
 
 public record Coordinate(
         double latitude,
-        double longitude,
-        double elevation
+        double longitude
 ) {
     public Coordinate(double latitude, double longitude) {
-        this(latitude, longitude, 0);
-    }
-
-    public Coordinate(double latitude, double longitude, double elevation) {
         double roundedLatitude = truncated(latitude);
         double roundedLongitude = truncated(longitude);
         validateLatitudeRange(roundedLatitude);
         validateLongitudeRange(roundedLongitude);
         this.latitude = roundedLatitude;
         this.longitude = roundedLongitude;
-        this.elevation = elevation;
     }
 
     private static double truncated(double value) {
@@ -48,12 +42,7 @@ public record Coordinate(
     public static Coordinate lerp(Coordinate start, Coordinate end, double lerpRatio) {
         double latitude = start.latitude + (end.latitude - start.latitude) * lerpRatio;
         double longitude = start.longitude + (end.longitude - start.longitude) * lerpRatio;
-        double elevation = start.elevation + (end.elevation - start.elevation) * lerpRatio;
-        return new Coordinate(latitude, longitude, elevation);
-    }
-
-    public boolean hasSameLatitudeAndLongitude(Coordinate other) {
-        return this.latitude == other.latitude && this.longitude == other.longitude;
+        return new Coordinate(latitude, longitude);
     }
 
     public double projectionRatioBetween(Coordinate lineStart, Coordinate lineEnd) {
@@ -73,11 +62,11 @@ public record Coordinate(
         double latitudeDelta = (other.latitude - this.latitude) * projectionRatio;
         double longitudeDelta = (other.longitude - this.longitude) * projectionRatio;
 
-        return new Coordinate(this.latitude + latitudeDelta, this.longitude + longitudeDelta, this.elevation);
+        return new Coordinate(this.latitude + latitudeDelta, this.longitude + longitudeDelta);
     }
 
     @Override
     public String toString() {
-        return "(%+.07f, %+.07f, %+.07f)".formatted(latitude, longitude, elevation);
+        return "(%+.07f, %+.07f)".formatted(latitude, longitude);
     }
 }

@@ -2,8 +2,6 @@ package coursepick.coursepick.infrastructure.snapper;
 
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.CoordinateSnapper;
-import coursepick.coursepick.domain.course.GeoLine;
-import coursepick.coursepick.domain.course.Meter;
 import coursepick.coursepick.logging.LogContent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -69,42 +67,12 @@ public class OsrmCoordinateSnapper implements CoordinateSnapper {
             List<List<Double>> coordinates = (List<List<Double>>) geometry.get("coordinates");
 
             return coordinates.stream()
-                    .map(coord -> createCoordinateWithElevation(
-                            new Coordinate(coord.get(1), coord.get(0)),
-                            originals)
-                    )
+                    .map(coord -> new Coordinate(coord.get(1), coord.get(0)))
                     .toList();
         } catch (Exception e) {
             log.warn("[EXCEPTION] OSRM Match 응답 파싱 실패", LogContent.exception(e));
             return originals;
         }
-    }
-
-    private Coordinate createCoordinateWithElevation(Coordinate matched,
-                                                     List<Coordinate> originals) {
-        Coordinate closestWithElevation = null;
-        Meter minDistance = new Meter(Double.MAX_VALUE);
-
-        for (int i = 0; i < originals.size() - 1; i++) {
-            Coordinate start = originals.get(i);
-            Coordinate end = originals.get(i + 1);
-            GeoLine line = new GeoLine(start, end);
-
-            Coordinate closest = line.closestCoordinateFrom(matched);
-
-            Meter distance = new GeoLine(closest, matched).length();
-
-            if (distance.isWithin(minDistance)) {
-                minDistance = distance;
-                closestWithElevation = closest;
-            }
-        }
-
-        return new Coordinate(
-                matched.latitude(),
-                matched.longitude(),
-                closestWithElevation != null ? closestWithElevation.elevation() : 0.0
-        );
     }
 
     private String generateRadiuses(int size) {

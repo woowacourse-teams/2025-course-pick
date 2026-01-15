@@ -14,39 +14,21 @@ public class CoordinateTestUtil {
     public static final double STEP_METER = 100.0;
     public static final double EARTH_RADIUS_METER = 6371000;
 
-    public static Coordinate up_angled(Coordinate target, double meter, double angle) {
-        double dEle = tan(toRadians(angle)) * meter;
-        Coordinate movedCoordinate = up(target, meter);
-        return new Coordinate(movedCoordinate.latitude(), movedCoordinate.longitude(), movedCoordinate.elevation() + dEle);
-    }
-
     public static Coordinate up(Coordinate target, double meter) {
         double deltaLat = (meter / EARTH_RADIUS_METER) * (180 / PI);
 
-        return new Coordinate(target.latitude() + deltaLat, target.longitude(), target.elevation());
-    }
-
-    public static Coordinate down_angled(Coordinate target, double meter, double angle) {
-        double dEle = tan(toRadians(angle)) * meter;
-        Coordinate movedCoordinate = down(target, meter);
-        return new Coordinate(movedCoordinate.latitude(), movedCoordinate.longitude(), movedCoordinate.elevation() + dEle);
+        return new Coordinate(target.latitude() + deltaLat, target.longitude());
     }
 
     public static Coordinate down(Coordinate target, double meter) {
         double deltaLat = (meter / EARTH_RADIUS_METER) * (180 / PI);
 
-        return new Coordinate(target.latitude() - deltaLat, target.longitude(), target.elevation());
-    }
-
-    public static Coordinate right_angled(Coordinate target, double meter, double angle) {
-        double dEle = tan(toRadians(angle)) * meter;
-        Coordinate movedCoordinate = right(target, meter);
-        return new Coordinate(movedCoordinate.latitude(), movedCoordinate.longitude(), movedCoordinate.elevation() + dEle);
+        return new Coordinate(target.latitude() - deltaLat, target.longitude());
     }
 
     public static Coordinate right(Coordinate target, double meter) {
         double deltaLng = (meter / (EARTH_RADIUS_METER * cos(toRadians(target.latitude())))) * (180 / PI);
-        return new Coordinate(target.latitude(), target.longitude() + deltaLng, target.elevation());
+        return new Coordinate(target.latitude(), target.longitude() + deltaLng);
     }
 
     public static List<Coordinate> square(Coordinate start, double toUpMeter, double toRightMeter) {
@@ -103,15 +85,9 @@ public class CoordinateTestUtil {
         return result;
     }
 
-    public static Coordinate left_angled(Coordinate target, double meter, double angle) {
-        double dEle = tan(toRadians(angle)) * meter;
-        Coordinate movedCoordinate = left(target, meter);
-        return new Coordinate(movedCoordinate.latitude(), movedCoordinate.longitude(), movedCoordinate.elevation() + dEle);
-    }
-
     public static Coordinate left(Coordinate target, double meter) {
         double deltaLng = (meter / (EARTH_RADIUS_METER * cos(toRadians(target.latitude())))) * (180 / PI);
-        return new Coordinate(target.latitude(), target.longitude() - deltaLng, target.elevation());
+        return new Coordinate(target.latitude(), target.longitude() - deltaLng);
     }
 
     public static Coordinate upright(Coordinate target, double meter) {

@@ -1,11 +1,8 @@
 package coursepick.coursepick.presentation.dto;
 
-import coursepick.coursepick.application.dto.CourseResponse;
-import coursepick.coursepick.application.dto.SegmentResponse;
 import coursepick.coursepick.domain.course.Coordinate;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public record CoordinateWebResponse(
@@ -22,16 +19,5 @@ public record CoordinateWebResponse(
 
     public static CoordinateWebResponse from(Coordinate coordinate) {
         return new CoordinateWebResponse(coordinate.latitude(), coordinate.longitude());
-    }
-
-    public static List<CoordinateWebResponse> from(CourseResponse courseResponse) {
-        ArrayList<Coordinate> coordinates = new ArrayList<>();
-        for (SegmentResponse segment : courseResponse.segments()) {
-            if (!coordinates.isEmpty()) {
-                coordinates.removeLast();
-            }
-            coordinates.addAll(segment.coordinates());
-        }
-        return from(coordinates);
     }
 }

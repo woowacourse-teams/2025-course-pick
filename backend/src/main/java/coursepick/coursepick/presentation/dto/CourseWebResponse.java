@@ -32,7 +32,7 @@ public record CourseWebResponse(
                         .map(Meter::value)
                         .orElse(null),
                 courseResponse.length().value(),
-                CoordinateWebResponse.from(courseResponse)
+                CoordinateWebResponse.from(courseResponse.coordinates())
         );
     }
 }
