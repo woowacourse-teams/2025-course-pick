@@ -1,28 +1,27 @@
 package io.coursepick.coursepick.presentation.login
 
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -35,7 +34,7 @@ import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 @Composable
 fun LoginDialog(onDismissRequest: () -> Unit) {
     Dialog(onDismissRequest = onDismissRequest) {
-        Column(
+        Box(
             modifier =
                 Modifier
                     .fillMaxWidth()
@@ -43,52 +42,49 @@ fun LoginDialog(onDismissRequest: () -> Unit) {
                     .background(color = colorResource(R.color.background_primary))
                     .padding(20.dp),
         ) {
-            Text(
-                text = "로그인이 필요한 서비스입니다.",
-                fontSize = 16.sp,
-                color = colorResource(R.color.item_primary),
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = null,
+                modifier = Modifier.align(Alignment.TopEnd), // 오른쪽 위 고정
+                tint = colorResource(R.color.item_primary),
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Row(
+            Column(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .height(IntrinsicSize.Min),
+                        .padding(top = 30.dp),
+                // X 버튼 공간 확보
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                OutlinedButton(
-                    onClick = { onDismissRequest() },
-                    modifier = Modifier
-                        .weight(1f),
-                    shape = CircleShape,
-                    border = BorderStroke(1.dp, colorResource(R.color.item_tertiary)),
-                    contentPadding = PaddingValues(vertical = 12.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = colorResource(R.color.item_primary)
-                    )
-                ) {
-                    Text(text = stringResource(R.string.filter_dialog_cancel))
-                }
+                Image(
+                    painter = painterResource(id = R.drawable.image_coursepick_mascot),
+                    contentDescription = null,
+                    modifier =
+                        Modifier
+                            .size(48.dp)
+                            .clip(CircleShape),
+                )
 
-                Spacer(modifier = Modifier.width(10.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-                Button(
-                    onClick = { /* 로그인 로직 */ },
-                    modifier = Modifier
-                        .weight(1f),
-                    shape = CircleShape,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = colorResource(R.color.point_primary),
-                        contentColor = Color.White
-                    ),
-                    contentPadding = PaddingValues(vertical = 12.dp)
-                ) {
-                    Text(text = "로그인")
-                }
+                Text(
+                    text = "즐겨찾기는 로그인이\n필요한 서비스입니다.",
+                    fontSize = 16.sp,
+                    color = colorResource(R.color.item_primary),
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Image(
+                    painter = painterResource(id = R.drawable.image_kakao_login_large),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxWidth(),
+                    contentScale = ContentScale.FillWidth,
+                )
             }
         }
     }
