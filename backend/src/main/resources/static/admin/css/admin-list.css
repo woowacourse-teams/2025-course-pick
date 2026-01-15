@@ -1,0 +1,138 @@
+/* ==============================================
+   Find & Main 페이지 공통 스타일 (코스 목록)
+   ============================================== */
+
+/* Layout */
+.map-section {
+    flex: 2;
+}
+
+.control-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.map-controls input {
+    padding: 10px;
+    border: 2px solid #e2e8f0;
+    border-radius: 5px;
+    font-size: 14px;
+    flex: 1;
+}
+
+.map-controls input:focus {
+    outline: none;
+    border-color: #a0aec0;
+}
+
+.map-controls button {
+    white-space: nowrap;
+}
+
+/* Course List Section */
+.course-list-section {
+    flex: 1;
+    background: white;
+    overflow-y: auto;
+    border-left: 1px solid #e2e8f0;
+}
+
+.course-list-header {
+    padding: 20px;
+    border-bottom: 2px solid #e2e8f0;
+    background: #f7fafc;
+}
+
+.course-list-header h2 {
+    color: #2d3748;
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+.course-count {
+    color: #718096;
+    font-size: 14px;
+}
+
+.course-list {
+    padding: 10px;
+}
+
+/* Course Items */
+.course-item {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.course-item:hover {
+    border-color: #cbd5e0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.course-item.selected {
+    border-color: #2d3748;
+    background: #f7fafc;
+}
+
+.course-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 8px;
+}
+
+.course-detail {
+    font-size: 14px;
+    color: #718096;
+    margin-bottom: 4px;
+}
+
+.course-detail strong {
+    color: #4a5568;
+}
+
+.course-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+}
+
+.edit-button {
+    flex: 1;
+    padding: 8px 16px;
+    border: none;
+    background: #2d3748;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.edit-button:hover {
+    background: #1a202c;
+}
+
+.delete-button {
+    flex: 1;
+    padding: 8px 16px;
+    border: none;
+    background: #e53e3e;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.delete-button:hover {
+    background: #c53030;
+}

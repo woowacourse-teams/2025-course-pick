@@ -10,6 +10,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.util.pattern.PathPattern;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -27,17 +28,24 @@ public class PathAllowlistFilter extends OncePerRequestFilter {
 
     public PathAllowlistFilter(Optional<RequestMappingHandlerMapping> requestMappingHandlerMapping) {
         requestMappingHandlerMapping.ifPresent(mappingHandlerMapping -> ALLOW_URI_PATTERNS.addAll(parseRequestMappingHandlerMapping(mappingHandlerMapping)));
+
         ALLOW_URI_PATTERNS.addAll(Set.of(
-                Pattern.compile("^/images/verified_location.png$"),
                 Pattern.compile("^/actuator.*$"),
                 Pattern.compile("^/api-docs.html$"),
                 Pattern.compile("^/v3/api-docs.*$")
+        ));
+
+        ALLOW_URI_PATTERNS.addAll(Set.of(
+                Pattern.compile("^.*\\.css$"),
+                Pattern.compile("^.*\\.js$"),
+                Pattern.compile("^.*\\.(png|jpg|jpeg|gif|svg|ico|webp)$")
         ));
     }
 
     private Set<Pattern> parseRequestMappingHandlerMapping(RequestMappingHandlerMapping requestMappingHandlerMapping) {
         return requestMappingHandlerMapping.getHandlerMethods().keySet().stream()
-                .flatMap(info -> info.getDirectPaths().stream())
+                .flatMap(info -> info.getPathPatternsCondition().getPatterns().stream())
+                .map(PathPattern::getPatternString)
                 .map(this::pathToPattern)
                 .collect(Collectors.toSet());
     }
