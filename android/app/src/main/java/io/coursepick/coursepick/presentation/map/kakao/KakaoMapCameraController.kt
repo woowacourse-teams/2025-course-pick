@@ -9,7 +9,6 @@ import com.kakao.vectormap.camera.CameraUpdate
 import com.kakao.vectormap.camera.CameraUpdateFactory
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Coordinate
-import io.coursepick.coursepick.domain.course.Segment
 import io.coursepick.coursepick.presentation.course.CourseItem
 
 class KakaoMapCameraController(
@@ -43,9 +42,7 @@ class KakaoMapCameraController(
         course: CourseItem,
         map: KakaoMap,
     ) {
-        val coordinates: List<Coordinate> =
-            course.segments.flatMap { segment: Segment -> segment.coordinates }
-        fitTo(coordinates, map)
+        fitTo(course.coordinates, map)
     }
 
     fun resetZoomLevel(map: KakaoMap) {

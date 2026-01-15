@@ -10,13 +10,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import io.coursepick.coursepick.databinding.FragmentExploreCoursesBinding
-import io.coursepick.coursepick.presentation.compat.OnDescribeCourseColorListener
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 
 class ExploreCoursesFragment(
     courseItemListener: CourseItemListener,
     private val onReconnectListener: OnReconnectListener,
-    private val onDescribeCourseColorListener: OnDescribeCourseColorListener,
 ) : Fragment() {
     @Suppress("ktlint:standard:backing-property-naming")
     private var _binding: FragmentExploreCoursesBinding? = null
@@ -53,7 +51,6 @@ class ExploreCoursesFragment(
         binding.adapter = courseAdapter
         binding.viewModel = viewModel
         binding.onReconnectListener = onReconnectListener
-        binding.onDescribeCourseColorListener = onDescribeCourseColorListener
     }
 
     private fun setUpStateObserver() {

@@ -49,7 +49,6 @@ import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.CoursePickUpdateManager
 import io.coursepick.coursepick.presentation.DataKeys
 import io.coursepick.coursepick.presentation.Logger
-import io.coursepick.coursepick.presentation.compat.OnDescribeCourseColorListener
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
@@ -488,17 +487,6 @@ class CoursesActivity :
                 }
             }
 
-        val onDescribeCourseColorListener =
-            object : OnDescribeCourseColorListener {
-                override fun onDescribeCourseColor() {
-                    supportFragmentManager.findFragmentByTag(COURSE_COLOR_DIALOG_TAG)
-                        ?: CourseColorDescriptionDialog().show(
-                            supportFragmentManager,
-                            COURSE_COLOR_DIALOG_TAG,
-                        )
-                }
-            }
-
         supportFragmentManager.fragmentFactory =
             object : FragmentFactory() {
                 override fun instantiate(
@@ -510,7 +498,6 @@ class CoursesActivity :
                             ExploreCoursesFragment(
                                 courseItemListener,
                                 onReconnectListener,
-                                onDescribeCourseColorListener,
                             )
                         }
 
@@ -518,7 +505,6 @@ class CoursesActivity :
                             FavoriteCoursesFragment(
                                 courseItemListener,
                                 onReconnectListener,
-                                onDescribeCourseColorListener,
                             )
                         }
 

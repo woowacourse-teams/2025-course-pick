@@ -37,7 +37,7 @@ class FakeCourseRepository : CourseRepository {
     override suspend fun routeToCourse(
         course: Course,
         origin: Coordinate,
-    ): List<Coordinate> = COURSE_FIXTURE_1.segments.first().coordinates
+    ): List<Coordinate> = COURSE_FIXTURE_1.coordinates
 
     override suspend fun nearestCoordinate(
         selected: Course,

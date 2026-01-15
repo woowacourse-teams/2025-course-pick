@@ -22,10 +22,7 @@
     <color name="point_secondary">#FFA055</color>
     <color name="point_tertiary">#FFF1E6</color>
 
-    <color name="course_downhill">#5B8DEF</color>
-    <color name="course_flat">#6BBE92</color>
-    <color name="course_uphill">#E75B64</color>
-    <color name="course_unknown">#B4B4B4</color>
+    <color name="course_selected">#6BBE92</color>
     <color name="course_unselected">#B4B4B4</color>
     <color name="course_route">#B4B4B4</color>
 </resources>

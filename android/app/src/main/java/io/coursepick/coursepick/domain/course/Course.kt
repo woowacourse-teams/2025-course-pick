@@ -5,12 +5,13 @@ data class Course(
     val name: CourseName,
     val distance: Distance?,
     val length: Length,
-    val roadType: String,
-    val difficulty: String,
-    val inclineSummary: InclineSummary,
-    val segments: List<Segment>,
+    val coordinates: List<Coordinate>,
 ) {
     init {
-        require(segments.isNotEmpty())
+        require(coordinates.size >= MIN_COORDINATES_SIZE)
+    }
+
+    companion object {
+        private const val MIN_COORDINATES_SIZE = 2
     }
 }
