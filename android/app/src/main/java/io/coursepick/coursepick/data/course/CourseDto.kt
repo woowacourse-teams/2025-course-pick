@@ -12,10 +12,7 @@ data class CourseDto(
     private val name: String,
     private val distance: Double?,
     private val length: Double,
-    private val roadType: String,
-    private val difficulty: String,
-    private val inclineSummary: String?,
-    private val segments: List<SegmentDto>,
+    private val coordinates: List<CoordinateDto>,
 ) {
     fun toCourseOrNull(): Course? =
         runCatching {
@@ -24,10 +21,7 @@ data class CourseDto(
                 name = CourseName(name),
                 distance = distance?.let { distance: Double -> Distance(distance) },
                 length = Length(length),
-                coordinates =
-                    segments
-                        .flatMap(SegmentDto::coordinates)
-                        .map(CoordinateDto::toCoordinate),
+                coordinates = coordinates.map(CoordinateDto::toCoordinate),
             )
         }.getOrNull()
 }
