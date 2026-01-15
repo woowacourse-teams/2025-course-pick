@@ -17,7 +17,7 @@ import java.util.List;
 @Tag(name = "러닝 코스 (Course)")
 public interface CourseWebApi {
 
-    @Operation(summary = "좌표 근처 1km 내 코스 전체 조회")
+    @Operation(summary = "좌표 근처 코스 전체 조회")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", content = @Content(examples = {
