@@ -25,7 +25,7 @@ object SecurityModule {
         return AndroidKeysetManager
             .Builder()
             .withSharedPref(context, "keys_name", "tink")
-            .withKeyTemplate(KeyTemplates.get("CHACHA20_POLY1305"))
+            .withKeyTemplate(KeyTemplates.get("XCHACHA20_POLY1305"))
             .withMasterKeyUri("android-keystore://master_key")
             .build()
             .keysetHandle
