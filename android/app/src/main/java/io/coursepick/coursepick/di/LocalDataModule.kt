@@ -12,7 +12,7 @@ import dagger.hilt.components.SingletonComponent
 import io.coursepick.coursepick.presentation.InstallationId
 import javax.inject.Singleton
 
-private val Context.tokenDataStore: DataStore<Preferences> by preferencesDataStore(name = "auth")
+private val Context.authDataStore: DataStore<Preferences> by preferencesDataStore(name = "auth")
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -24,7 +24,7 @@ object LocalDataModule {
 
     @Provides
     @Singleton
-    fun provideTokenDataStore(
+    fun provideAuthDataStore(
         @ApplicationContext context: Context,
-    ): DataStore<Preferences> = context.tokenDataStore
+    ): DataStore<Preferences> = context.authDataStore
 }
