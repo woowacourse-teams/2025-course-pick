@@ -1,6 +1,7 @@
 [versions]
 android-junit5 = "1.12.0.0"
 agp = "8.10.0"
+datastore = "1.2.0"
 firebaseBom = "34.0.0"
 fragmentKtx = "1.6.1"
 hiltAndroid = "2.57.1"
@@ -44,9 +45,12 @@ composeBom = "2024.09.00"
 runtimeLivedata = "1.9.1"
 ksp = "2.0.21-1.0.27"
 coil = "3.0.4"
+tinkAndroid = "1.20.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
 androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preferenceKtx" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
@@ -96,6 +100,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
+tink-android = { module = "com.google.crypto.tink:tink-android", version.ref = "tinkAndroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
