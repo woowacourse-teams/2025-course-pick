@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.login
+package io.coursepick.coursepick.presentation.auth
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -32,7 +32,7 @@ import io.coursepick.coursepick.R
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 
 @Composable
-fun LoginDialog(onDismissRequest: () -> Unit) {
+fun AuthDialog(onDismissRequest: () -> Unit) {
     Dialog(onDismissRequest = onDismissRequest) {
         Box(
             modifier =
@@ -92,9 +92,9 @@ fun LoginDialog(onDismissRequest: () -> Unit) {
 
 @PreviewLightDark
 @Composable
-private fun LoginDialogPreview() {
+private fun AuthDialogPreview() {
     CoursePickTheme {
-        LoginDialog(
+        AuthDialog(
             onDismissRequest = { },
         )
     }
