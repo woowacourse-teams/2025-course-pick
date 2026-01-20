@@ -62,7 +62,7 @@ fun AuthContent(
         Spacer(modifier = Modifier.height(24.dp))
 
         Image(
-            painter = painterResource(id = R.drawable.image_kakao_login_large),
+            painter = painterResource(id = R.drawable.image_kakao_login),
             contentDescription = null,
             modifier =
                 Modifier
