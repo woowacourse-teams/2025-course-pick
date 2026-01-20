@@ -63,7 +63,7 @@ fun AuthContent(
 
         Image(
             painter = painterResource(id = R.drawable.image_kakao_login_large),
-            contentDescription = "카카오 로그인",
+            contentDescription = null,
             modifier =
                 Modifier
                     .fillMaxWidth()
