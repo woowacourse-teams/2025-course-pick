@@ -28,7 +28,7 @@ import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 
 @Composable
 fun AuthContent(
-    featureTitle: String,
+    featureName: String,
     onKakaoLoginClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -49,7 +49,7 @@ fun AuthContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = stringResource(R.string.auth_require, featureTitle),
+            text = stringResource(R.string.auth_require, featureName),
             fontSize = 18.sp,
             color = colorResource(R.color.item_primary),
             fontWeight = FontWeight.Bold,
@@ -76,7 +76,7 @@ fun AuthContent(
 private fun AuthContentPreview() {
     CoursePickTheme {
         AuthContent(
-            featureTitle = "즐겨찾기",
+            featureName = "즐겨찾기",
             onKakaoLoginClick = {},
         )
     }

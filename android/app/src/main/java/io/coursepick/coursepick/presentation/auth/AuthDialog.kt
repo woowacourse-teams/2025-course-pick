@@ -15,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -24,6 +23,7 @@ import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 
 @Composable
 fun AuthDialog(
+    featureName: String,
     onDismissRequest: () -> Unit,
     onKakaoLoginClick: () -> Unit,
 ) {
@@ -49,7 +49,7 @@ fun AuthDialog(
             )
 
             AuthContent(
-                featureTitle = stringResource(R.string.favorites_header),
+                featureName = featureName,
                 onKakaoLoginClick = onKakaoLoginClick,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -62,6 +62,7 @@ fun AuthDialog(
 private fun AuthDialogPreview() {
     CoursePickTheme {
         AuthDialog(
+            featureName = "즐겨찾기",
             onDismissRequest = { },
             onKakaoLoginClick = { },
         )
