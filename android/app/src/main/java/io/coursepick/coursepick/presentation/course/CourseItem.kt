@@ -4,8 +4,8 @@ import androidx.annotation.StringRes
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.InclineSummary
 import io.coursepick.coursepick.domain.course.Segment
+import io.coursepick.coursepick.presentation.extension.stringResource
 import io.coursepick.coursepick.presentation.model.Difficulty
-import io.coursepick.coursepick.presentation.model.toUiModel
 
 data class CourseItem(
     val course: Course,
@@ -27,7 +27,7 @@ data class CourseItem(
     val difficulty: Difficulty = Difficulty(course.difficulty)
 
     @StringRes
-    val inclineSummaryStringResourceId: Int = course.inclineSummary.toUiModel().id
+    val inclineSummaryStringResourceId: Int = course.inclineSummary.stringResource
 
     val isInclineSummaryUnknown: Boolean = course.inclineSummary == InclineSummary.UNKNOWN
 }
