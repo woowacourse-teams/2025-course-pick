@@ -33,7 +33,8 @@ fun AuthContent(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
+        modifier =
+            modifier
                 .background(color = colorResource(R.color.background_primary)),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
