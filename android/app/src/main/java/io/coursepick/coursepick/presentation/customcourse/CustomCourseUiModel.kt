@@ -3,8 +3,8 @@ package io.coursepick.coursepick.presentation.customcourse
 import androidx.annotation.StringRes
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.Distance
-import io.coursepick.coursepick.presentation.extension.formatted
-import io.coursepick.coursepick.presentation.extension.stringResource
+import io.coursepick.coursepick.presentation.model.formatted
+import io.coursepick.coursepick.presentation.model.stringResource
 
 data class CustomCourseUiModel(
     val course: Course,

@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.extension
+package io.coursepick.coursepick.presentation.model
 
 import androidx.annotation.StringRes
 import io.coursepick.coursepick.R
