@@ -5,7 +5,7 @@ import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.InclineSummary
 import io.coursepick.coursepick.domain.course.Segment
 import io.coursepick.coursepick.presentation.model.Difficulty
-import io.coursepick.coursepick.presentation.model.stringResource
+import io.coursepick.coursepick.presentation.model.stringResourceId
 
 data class CourseItem(
     val course: Course,
@@ -27,7 +27,7 @@ data class CourseItem(
     val difficulty: Difficulty = Difficulty(course.difficulty)
 
     @StringRes
-    val inclineSummaryStringResourceId: Int = course.inclineSummary.stringResource
+    val inclineSummaryStringResourceId: Int = course.inclineSummary.stringResourceId
 
     val isInclineSummaryUnknown: Boolean = course.inclineSummary == InclineSummary.UNKNOWN
 }

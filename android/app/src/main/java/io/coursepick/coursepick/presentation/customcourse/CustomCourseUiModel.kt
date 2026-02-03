@@ -4,7 +4,7 @@ import androidx.annotation.StringRes
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.Distance
 import io.coursepick.coursepick.presentation.model.formatted
-import io.coursepick.coursepick.presentation.model.stringResource
+import io.coursepick.coursepick.presentation.model.stringResourceId
 
 data class CustomCourseUiModel(
     val course: Course,
@@ -14,5 +14,5 @@ data class CustomCourseUiModel(
     val length: String = course.length.meter.formatted
 
     @StringRes
-    val inclineSummaryStringResourceId: Int = course.inclineSummary.stringResource
+    val inclineSummaryStringResourceId: Int = course.inclineSummary.stringResourceId
 }
