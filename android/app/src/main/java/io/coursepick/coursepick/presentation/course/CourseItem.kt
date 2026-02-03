@@ -4,8 +4,8 @@ import androidx.annotation.StringRes
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.InclineSummary
 import io.coursepick.coursepick.domain.course.Segment
-import io.coursepick.coursepick.presentation.extension.stringResource
 import io.coursepick.coursepick.presentation.model.Difficulty
+import io.coursepick.coursepick.presentation.model.stringResource
 
 data class CourseItem(
     val course: Course,
