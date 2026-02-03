@@ -23,6 +23,7 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.core.content.ContextCompat
@@ -52,6 +53,7 @@ import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.compat.OnDescribeCourseColorListener
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.compat.getParcelableCompat
+import io.coursepick.coursepick.presentation.customcourse.CreateCustomCourseScreen
 import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
 import io.coursepick.coursepick.presentation.filter.CourseFilterBottomSheet
 import io.coursepick.coursepick.presentation.map.kakao.KakaoMapManager
@@ -174,7 +176,19 @@ class CoursesActivity :
         setUpBindingVariables()
         setUpDoubleBackPress()
         requestLocationPermissions()
-        setUpDialogs()
+        binding.coursesComposeView.apply {
+            setContent {
+                CoursePickTheme {
+                    CoursesDialogs()
+                    val state: CoursesUiState? by viewModel.state.observeAsState()
+                    if (state?.showCreateCustomCourse == true) {
+                        CreateCustomCourseScreen(
+                            onClose = viewModel::showCourses,
+                        )
+                    }
+                }
+            }
+        }
 
         searchLauncher = searchActivityResultLauncher()
 
@@ -649,6 +663,12 @@ class CoursesActivity :
                 viewModel.select(course)
             }
             mapManager.draw(courses)
+
+            if (state.showCreateCustomCourse) {
+                mapManager.setBottomPadding(0)
+            } else {
+                mapManager.setBottomPadding(binding.mainContent.height - binding.mainBottomSheet.y.toInt())
+            }
         }
 
         viewModel.content.observe(this) { content: CoursesContent ->
@@ -736,40 +756,35 @@ class CoursesActivity :
         viewModel.fetchNotice(noticeId)
     }
 
-    private fun setUpDialogs() {
-        binding.mainDialog.apply {
-            setContent {
-                CoursePickTheme {
-                    val state: CoursesUiState? by viewModel.state.observeAsState()
+    @Composable
+    private fun CoursesDialogs() {
+        val state: CoursesUiState? by viewModel.state.observeAsState()
 
-                    if (state?.showVerifiedLocations == true) {
-                        state?.verifiedLocations?.let { verifiedLocations: Notice ->
-                            VerifiedLocationsDialog(
-                                imageUrl = verifiedLocations.imageUrl,
-                                title = verifiedLocations.title,
-                                description = verifiedLocations.description,
-                                onDismissRequest = viewModel::dismissVerifiedLocations,
-                            )
-                        }
-                    }
-
-                    state?.notice?.let { notice: Notice ->
-                        NoticeDialog(
-                            notice = notice,
-                            onDismissRequest = viewModel::dismissNotice,
-                            onDoNotShowAgain = CoursePickPreferences::setDoNotShowNotice,
-                        )
-                    }
-
-                    if (state?.showFilterDialog == true) {
-                        CourseFilterBottomSheet(
-                            coursesUiState = state ?: return@CoursePickTheme,
-                            onDismissRequest = viewModel::dismissFilterDialog,
-                            onFilterAction = viewModel::handleFilterAction,
-                        )
-                    }
-                }
+        if (state?.showVerifiedLocations == true) {
+            state?.verifiedLocations?.let { verifiedLocations: Notice ->
+                VerifiedLocationsDialog(
+                    imageUrl = verifiedLocations.imageUrl,
+                    title = verifiedLocations.title,
+                    description = verifiedLocations.description,
+                    onDismissRequest = viewModel::dismissVerifiedLocations,
+                )
             }
+        }
+
+        state?.notice?.let { notice: Notice ->
+            NoticeDialog(
+                notice = notice,
+                onDismissRequest = viewModel::dismissNotice,
+                onDoNotShowAgain = CoursePickPreferences::setDoNotShowNotice,
+            )
+        }
+
+        if (state?.showFilterDialog == true) {
+            CourseFilterBottomSheet(
+                coursesUiState = state ?: return,
+                onDismissRequest = viewModel::dismissFilterDialog,
+                onFilterAction = viewModel::handleFilterAction,
+            )
         }
     }
 
