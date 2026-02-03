@@ -320,7 +320,7 @@ class CoursesActivity :
         supportFragmentManager.commit {
             setReorderingAllowed(true)
             supportFragmentManager.fragments.forEach { fragment: Fragment ->
-                if (fragment is ExploreCoursesFragment || fragment is FavoriteCoursesFragment) {
+                if (fragment.javaClass in CoursesContent.fragments) {
                     hide(fragment)
                 }
             }
@@ -353,6 +353,12 @@ class CoursesActivity :
                     viewModel.showCourses()
                     viewModel.switchContent(CoursesContent.FAVORITES)
                     viewModel.fetchFavorites()
+                    true
+                }
+
+                R.id.customCourseMenu -> {
+                    viewModel.showCourses()
+                    viewModel.switchContent(CoursesContent.CUSTOM_COURSE)
                     true
                 }
 
