@@ -17,7 +17,7 @@ val Meter.formatted: String
             ) + "km"
         }
 
-val InclineSummary.stringResource: Int
+val InclineSummary.stringResourceId: Int
     @StringRes get() =
         when (this) {
             InclineSummary.MOSTLY_FLAT -> R.string.incline_summary_flat
