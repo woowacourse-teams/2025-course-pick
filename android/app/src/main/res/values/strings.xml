@@ -30,8 +30,8 @@
     <string name="filter_length_range_open_end_label">%1$d km ~</string>
 
     <!--  코스 화면: 즐겨찾기 메뉴  -->
-    <string name="courses_favorite_header">즐겨찾기</string>
-    <string name="courses_favorite_empty_courses_description">즐겨찾기된 코스가 없어요 🗿</string>
+    <string name="courses_favorites_header">즐겨찾기</string>
+    <string name="courses_favorites_empty_courses_description">즐겨찾기된 코스가 없어요 🗿</string>
 
     <!--  설정 화면  -->
     <string name="settings_feedback_url">https://docs.google.com/forms/d/e/1FAIpQLSdsJcNUsOcDiKW0FI-M360IUS64IZQmnWtMTbZqJSrx7HQbtg/viewform?usp=pp_url&amp;entry.1079171803=%s</string>
