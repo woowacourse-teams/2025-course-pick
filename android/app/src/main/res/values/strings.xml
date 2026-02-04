@@ -2,32 +2,32 @@
     <string name="app_name">런세권</string>
 
     <!--  코스 화면  -->
-    <string name="courses_back_press_exit">버튼을 한 번 더 누르면 종료됩니다.</string>
+    <string name="courses_press_back_to_exit_message">버튼을 한 번 더 누르면 종료됩니다.</string>
 
     <!--  코스 화면 - 코스 목록 아이템  -->
     <string name="course_item_unit_meter">%dm</string>
     <string name="course_item_unit_kilometer">%.2fkm</string>
-    <string name="course_item_distance_suffix">%s만큼 떨어짐</string>
+    <string name="course_item_distance_to_course">%s만큼 떨어짐</string>
     <string name="course_item_navigate_to_course_button">길찾기</string>
 
     <!--  코스 화면 - 코스 탐색 메뉴  -->
-    <string name="courses_explore_search_this_area">이 지역 검색</string>
+    <string name="courses_explore_search_this_area_button">이 지역 검색</string>
     <string name="courses_explore_header">러닝 코스</string>
     <string name="courses_explore_filter_button">필터</string>
     <string name="courses_explore_empty_courses_description">이 곳엔 코스가 없어요 🥲</string>
-    <string name="courses_explore_fail_fetch_next_page">다음 코스를 불러오지 못했습니다.</string>
+    <string name="courses_explore_failed_to_fetch_next_page_message">다음 코스를 불러오지 못했습니다.</string>
 
     <!--  코스 화면 - 코스 탐색 메뉴 - 필터  -->
     <string name="filter_dialog_title">필터</string>
-    <string name="filter_dialog_reset">초기화</string>
+    <string name="filter_dialog_reset_button">초기화</string>
     <string name="filter_dialog_length_label">길이</string>
-    <string name="filter_dialog_cancel">취소</string>
-    <string name="filter_result">검색 결과</string>
-    <string name="filter_result_count">검색 결과(%1$d개)</string>
-    <string name="filter_total_length_range">전체</string>
-    <string name="filter_length_range">%1$d km ~ %2$d km</string>
-    <string name="filter_length_range_open_start">~ %1$d km</string>
-    <string name="filter_length_range_open_end">%1$d km ~</string>
+    <string name="filter_dialog_cancel_button">취소</string>
+    <string name="filter_result_button">검색 결과</string>
+    <string name="filter_result_with_count_button">검색 결과(%1$d개)</string>
+    <string name="filter_length_range_total_label">전체</string>
+    <string name="filter_length_range_label">%1$d km ~ %2$d km</string>
+    <string name="filter_length_range_open_start_label">~ %1$d km</string>
+    <string name="filter_length_range_open_end_label">%1$d km ~</string>
 
     <!--  코스 화면: 즐겨찾기 메뉴  -->
     <string name="courses_favorite_header">즐겨찾기</string>
@@ -40,13 +40,13 @@
 
     <!--  검색 화면  -->
     <string name="search_query_hint">장소를 검색하세요</string>
-    <string name="search_no_result">검색 결과가 없어요 🥲</string>
+    <string name="search_no_result_description">검색 결과가 없어요 🥲</string>
 
     <!--  앱 업데이트 안내  -->
-    <string name="app_update_cancelled">업데이트가 취소되었습니다.</string>
-    <string name="app_update_downloaded">업데이트가 다운로드되었습니다. 설치하려면 눌러주세요.</string>
+    <string name="app_update_cancelled_message">업데이트가 취소되었습니다.</string>
+    <string name="app_update_must_be_completed_message">업데이트를 완료해야 앱을 사용할 수 있습니다.</string>
+    <string name="app_update_downloaded_message">업데이트가 다운로드되었습니다. 설치하려면 눌러주세요.</string>
     <string name="app_update_action_after_downloaded">설치</string>
-    <string name="app_update_must_be_completed">업데이트를 완료해야 앱을 사용할 수 있습니다.</string>
 
     <!--  길찾기 앱 선택  -->
     <string name="selected_route_finder_application_dialog_title">길찾기 앱 선택</string>
@@ -66,12 +66,12 @@
     <string name="fine_location_permission_rationale_dialog_positive_button">닫기</string>
 
     <!--  공지 다이얼로그  -->
-    <string name="notice_dialog_do_not_show_again">다시 보지 않음</string>
-    <string name="notice_dialog_close">닫기</string>
+    <string name="notice_dialog_do_not_show_again_button">다시 보지 않음</string>
+    <string name="notice_dialog_close_button">닫기</string>
 
     <!--  검증된 지역 다이얼로그  -->
-    <string name="verified_locations_dialog_close">닫기</string>
-    <string name="verified_locations_can_not_fetch_verified_locations">코스가 검증된 지역 정보를 불러올 수 없습니다.</string>
+    <string name="verified_locations_dialog_close_button">닫기</string>
+    <string name="verified_locations_failed_to_fetch_verified_locations_message">코스가 검증된 지역 정보를 불러올 수 없습니다.</string>
 
     <!--  로그인 UI  -->
     <string name="auth_restriction_message">%1$s 기능은\n로그인이 필요한 서비스입니다.</string>

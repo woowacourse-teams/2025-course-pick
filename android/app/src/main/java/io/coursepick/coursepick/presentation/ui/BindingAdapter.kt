@@ -33,7 +33,7 @@ fun TextView.setCourseLength(meter: Int) {
 fun TextView.setCourseDistance(meter: Int) {
     this.text =
         this.context.getString(
-            R.string.course_item_distance_suffix,
+            R.string.course_item_distance_to_course,
             formattedMeter(this.context, Meter(meter)),
         )
 }
@@ -119,28 +119,28 @@ fun TextView.setLengthRangeText(filter: CourseFilter) {
         when {
             start == min && end != max -> {
                 context.getString(
-                    R.string.filter_length_range_open_start,
+                    R.string.filter_length_range_open_start_label,
                     end,
                 )
             }
 
             start != min && end == max -> {
                 context.getString(
-                    R.string.filter_length_range_open_end,
+                    R.string.filter_length_range_open_end_label,
                     start,
                 )
             }
 
             start != min && end != max -> {
                 context.getString(
-                    R.string.filter_length_range,
+                    R.string.filter_length_range_label,
                     start,
                     end,
                 )
             }
 
             else -> {
-                context.getString(R.string.filter_total_length_range)
+                context.getString(R.string.filter_length_range_total_label)
             }
         }
 

@@ -79,7 +79,7 @@ fun VerifiedLocationsDialog(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
-                    text = stringResource(R.string.verified_locations_dialog_close),
+                    text = stringResource(R.string.verified_locations_dialog_close_button),
                     color = colorResource(R.color.item_primary),
                 )
             }

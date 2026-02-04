@@ -55,7 +55,7 @@ private fun FilterResultButtonPreview() {
     CoursePickTheme {
         var enabled by remember { mutableStateOf(true) }
         FilterResultButton(
-            text = stringResource(R.string.filter_result_count, 10),
+            text = stringResource(R.string.filter_result_with_count_button, 10),
             enabled = enabled,
             onClick = { enabled != enabled },
         )

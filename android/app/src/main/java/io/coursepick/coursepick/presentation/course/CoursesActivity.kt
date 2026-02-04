@@ -227,7 +227,7 @@ class CoursesActivity :
             Toast
                 .makeText(
                     this,
-                    getString(R.string.verified_locations_can_not_fetch_verified_locations),
+                    getString(R.string.verified_locations_failed_to_fetch_verified_locations_message),
                     Toast.LENGTH_SHORT,
                 ).show()
             return
@@ -602,7 +602,7 @@ class CoursesActivity :
                         Toast
                             .makeText(
                                 this@CoursesActivity,
-                                getString(R.string.courses_back_press_exit),
+                                getString(R.string.courses_press_back_to_exit_message),
                                 Toast.LENGTH_SHORT,
                             ).show()
                     }
@@ -686,7 +686,7 @@ class CoursesActivity :
                     Toast
                         .makeText(
                             this,
-                            getString(R.string.courses_explore_fail_fetch_next_page),
+                            getString(R.string.courses_explore_failed_to_fetch_next_page_message),
                             Toast.LENGTH_SHORT,
                         ).show()
                 }

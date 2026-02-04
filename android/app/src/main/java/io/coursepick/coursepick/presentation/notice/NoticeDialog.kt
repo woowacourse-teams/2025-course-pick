@@ -90,7 +90,7 @@ fun NoticeDialog(
                     modifier = Modifier.weight(1f),
                 ) {
                     Text(
-                        text = stringResource(R.string.notice_dialog_do_not_show_again),
+                        text = stringResource(R.string.notice_dialog_do_not_show_again_button),
                         color = colorResource(R.color.item_primary),
                     )
                 }
@@ -100,7 +100,7 @@ fun NoticeDialog(
                     modifier = Modifier.weight(1f),
                 ) {
                     Text(
-                        text = stringResource(R.string.notice_dialog_close),
+                        text = stringResource(R.string.notice_dialog_close_button),
                         color = colorResource(R.color.item_primary),
                     )
                 }
