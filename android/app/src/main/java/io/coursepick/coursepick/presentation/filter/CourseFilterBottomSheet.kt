@@ -177,17 +177,11 @@ private fun lengthRangeText(filter: CourseFilter): String {
 
     return when {
         start == min && end != max -> {
-            stringResource(
-                R.string.filter_length_range_open_start_label,
-                end,
-            )
+            stringResource(R.string.filter_length_range_open_start_label, end)
         }
 
         start != min && end == max -> {
-            stringResource(
-                R.string.filter_length_range_open_end_label,
-                start,
-            )
+            stringResource(R.string.filter_length_range_open_end_label, start)
         }
 
         start != min && end != max -> {
