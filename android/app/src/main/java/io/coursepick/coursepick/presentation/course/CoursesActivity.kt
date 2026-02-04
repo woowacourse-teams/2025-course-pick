@@ -686,7 +686,7 @@ class CoursesActivity :
                     Toast
                         .makeText(
                             this,
-                            getString(R.string.courses_explore_failed_to_fetch_next_page_message),
+                            getString(R.string.explore_failed_to_fetch_next_page_message),
                             Toast.LENGTH_SHORT,
                         ).show()
                 }
