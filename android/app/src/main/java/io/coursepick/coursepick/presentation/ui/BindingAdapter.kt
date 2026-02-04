@@ -118,25 +118,15 @@ fun TextView.setLengthRangeText(filter: CourseFilter) {
     val newText =
         when {
             start == min && end != max -> {
-                context.getString(
-                    R.string.filter_length_range_open_start_label,
-                    end,
-                )
+                context.getString(R.string.filter_length_range_open_start_label, end)
             }
 
             start != min && end == max -> {
-                context.getString(
-                    R.string.filter_length_range_open_end_label,
-                    start,
-                )
+                context.getString(R.string.filter_length_range_open_end_label, start)
             }
 
             start != min && end != max -> {
-                context.getString(
-                    R.string.filter_length_range_label,
-                    start,
-                    end,
-                )
+                context.getString(R.string.filter_length_range_label, start, end)
             }
 
             else -> {
