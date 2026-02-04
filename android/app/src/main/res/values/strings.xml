@@ -2,20 +2,20 @@
     <string name="app_name">런세권</string>
 
     <!--  코스 화면  -->
-    <string name="main_back_press_exit">버튼을 한 번 더 누르면 종료됩니다.</string>
+    <string name="courses_back_press_exit">버튼을 한 번 더 누르면 종료됩니다.</string>
 
     <!--  코스 화면 - 코스 목록 아이템  -->
-    <string name="main_course_unit_meter">%dm</string>
-    <string name="main_course_unit_kilometer">%.2fkm</string>
-    <string name="main_course_distance_suffix">%s만큼 떨어짐</string>
-    <string name="item_course_navigate">길찾기</string>
+    <string name="course_item_unit_meter">%dm</string>
+    <string name="course_item_unit_kilometer">%.2fkm</string>
+    <string name="course_item_distance_suffix">%s만큼 떨어짐</string>
+    <string name="course_item_navigate_to_course_button">길찾기</string>
 
     <!--  코스 화면 - 코스 탐색 메뉴  -->
-    <string name="main_search_this_area">이 지역 검색</string>
-    <string name="main_courses_header">러닝 코스</string>
-    <string name="explore_course_filter">필터</string>
-    <string name="explore_empty_courses_description">이 곳엔 코스가 없어요 🥲</string>
-    <string name="courses_fail_fetch_next_page">다음 코스를 불러오지 못했습니다.</string>
+    <string name="courses_explore_search_this_area">이 지역 검색</string>
+    <string name="courses_explore_header">러닝 코스</string>
+    <string name="courses_explore_filter_button">필터</string>
+    <string name="courses_explore_empty_courses_description">이 곳엔 코스가 없어요 🥲</string>
+    <string name="courses_explore_fail_fetch_next_page">다음 코스를 불러오지 못했습니다.</string>
 
     <!--  코스 화면 - 코스 탐색 메뉴 - 필터  -->
     <string name="filter_dialog_title">필터</string>
@@ -24,19 +24,19 @@
     <string name="filter_dialog_cancel">취소</string>
     <string name="filter_result">검색 결과</string>
     <string name="filter_result_count">검색 결과(%1$d개)</string>
-    <string name="total_length_range">전체</string>
-    <string name="length_range">%1$d km ~ %2$d km</string>
-    <string name="length_range_open_start">~ %1$d km</string>
-    <string name="length_range_open_end">%1$d km ~</string>
+    <string name="filter_total_length_range">전체</string>
+    <string name="filter_length_range">%1$d km ~ %2$d km</string>
+    <string name="filter_length_range_open_start">~ %1$d km</string>
+    <string name="filter_length_range_open_end">%1$d km ~</string>
 
     <!--  코스 화면: 즐겨찾기 메뉴  -->
-    <string name="favorites_header">즐겨찾기</string>
-    <string name="favorite_empty_courses_description">즐겨찾기된 코스가 없어요 🗿</string>
+    <string name="courses_favorite_header">즐겨찾기</string>
+    <string name="courses_favorite_empty_courses_description">즐겨찾기된 코스가 없어요 🗿</string>
 
     <!--  설정 화면  -->
-    <string name="feedback_url">https://docs.google.com/forms/d/e/1FAIpQLSdsJcNUsOcDiKW0FI-M360IUS64IZQmnWtMTbZqJSrx7HQbtg/viewform?usp=pp_url&amp;entry.1079171803=%s</string>
-    <string name="privacy_policy_url">https://wary-gopher-277.notion.site/2bcccd64a1cc80c08927cb2dccbc917f?source=copy_link</string>
-    <string name="main_client_id">사용자 ID: %s</string>
+    <string name="settings_feedback_url">https://docs.google.com/forms/d/e/1FAIpQLSdsJcNUsOcDiKW0FI-M360IUS64IZQmnWtMTbZqJSrx7HQbtg/viewform?usp=pp_url&amp;entry.1079171803=%s</string>
+    <string name="settings_privacy_policy_url">https://wary-gopher-277.notion.site/2bcccd64a1cc80c08927cb2dccbc917f?source=copy_link</string>
+    <string name="settings_client_id">사용자 ID: %s</string>
 
     <!--  검색 화면  -->
     <string name="search_query_hint">장소를 검색하세요</string>
@@ -71,7 +71,7 @@
 
     <!--  검증된 지역 다이얼로그  -->
     <string name="verified_locations_dialog_close">닫기</string>
-    <string name="can_not_fetch_verified_locations">코스가 검증된 지역 정보를 불러올 수 없습니다.</string>
+    <string name="verified_locations_can_not_fetch_verified_locations">코스가 검증된 지역 정보를 불러올 수 없습니다.</string>
 
     <!--  로그인 UI  -->
     <string name="auth_restriction_message">%1$s 기능은\n로그인이 필요한 서비스입니다.</string>

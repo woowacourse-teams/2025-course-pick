@@ -176,10 +176,10 @@ private fun lengthRangeText(filter: CourseFilter): String {
     val max = CourseFilter.MAXIMUM_LENGTH_RANGE.toInt()
 
     return when {
-        start == min && end != max -> stringResource(R.string.length_range_open_start, end)
-        start != min && end == max -> stringResource(R.string.length_range_open_end, start)
-        start != min && end != max -> stringResource(R.string.length_range, start, end)
-        else -> stringResource(R.string.total_length_range)
+        start == min && end != max -> stringResource(R.string.filter_length_range_open_start, end)
+        start != min && end == max -> stringResource(R.string.filter_length_range_open_end, start)
+        start != min && end != max -> stringResource(R.string.filter_length_range, start, end)
+        else -> stringResource(R.string.filter_total_length_range)
     }
 }
 

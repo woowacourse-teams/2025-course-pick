@@ -100,7 +100,7 @@
             android:paddingVertical="6dp"
             android:paddingStart="2dp"
             android:paddingEnd="8dp"
-            android:text="@string/item_course_navigate"
+            android:text="@string/course_item_navigate_to_course_button"
             android:textColor="@color/item_primary"
             android:textSize="12sp"
             app:drawableStartCompat="@drawable/icon_navigate"

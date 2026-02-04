@@ -33,7 +33,7 @@ fun TextView.setCourseLength(meter: Int) {
 fun TextView.setCourseDistance(meter: Int) {
     this.text =
         this.context.getString(
-            R.string.main_course_distance_suffix,
+            R.string.course_item_distance_suffix,
             formattedMeter(this.context, Meter(meter)),
         )
 }
@@ -78,9 +78,9 @@ private fun formattedMeter(
     meter: Meter,
 ): String =
     if (meter < Kilometer.METRIC_MULTIPLIER) {
-        context.getString(R.string.main_course_unit_meter, meter.value.toInt())
+        context.getString(R.string.course_item_unit_meter, meter.value.toInt())
     } else {
-        context.getString(R.string.main_course_unit_kilometer, meter.toKilometer().value)
+        context.getString(R.string.course_item_unit_kilometer, meter.toKilometer().value)
     }
 
 @BindingAdapter("onNavigationClick")
@@ -117,10 +117,31 @@ fun TextView.setLengthRangeText(filter: CourseFilter) {
 
     val newText =
         when {
-            start == min && end != max -> context.getString(R.string.length_range_open_start, end)
-            start != min && end == max -> context.getString(R.string.length_range_open_end, start)
-            start != min && end != max -> context.getString(R.string.length_range, start, end)
-            else -> context.getString(R.string.total_length_range)
+            start == min && end != max -> {
+                context.getString(
+                    R.string.filter_length_range_open_start,
+                    end,
+                )
+            }
+
+            start != min && end == max -> {
+                context.getString(
+                    R.string.filter_length_range_open_end,
+                    start,
+                )
+            }
+
+            start != min && end != max -> {
+                context.getString(
+                    R.string.filter_length_range,
+                    start,
+                    end,
+                )
+            }
+
+            else -> {
+                context.getString(R.string.filter_total_length_range)
+            }
         }
 
     if (text.toString() != newText) {

@@ -227,7 +227,7 @@ class CoursesActivity :
             Toast
                 .makeText(
                     this,
-                    getString(R.string.can_not_fetch_verified_locations),
+                    getString(R.string.verified_locations_can_not_fetch_verified_locations),
                     Toast.LENGTH_SHORT,
                 ).show()
             return
@@ -425,7 +425,7 @@ class CoursesActivity :
             Intent(
                 Intent.ACTION_VIEW,
                 getString(
-                    R.string.feedback_url,
+                    R.string.settings_feedback_url,
                     """
                     사용자 ID: ${coursePickApplication.installationId.value}%0A
                     앱 버전: ${BuildConfig.VERSION_NAME}%0A
@@ -440,7 +440,8 @@ class CoursesActivity :
 
     private fun navigateToPrivacyPolicy() {
         Logger.log(Logger.Event.Click("navigate_to_privacy_policy"))
-        val intent = Intent(Intent.ACTION_VIEW, getString(R.string.privacy_policy_url).toUri())
+        val intent =
+            Intent(Intent.ACTION_VIEW, getString(R.string.settings_privacy_policy_url).toUri())
 
         startActivity(intent)
     }
@@ -601,7 +602,7 @@ class CoursesActivity :
                         Toast
                             .makeText(
                                 this@CoursesActivity,
-                                getString(R.string.main_back_press_exit),
+                                getString(R.string.courses_back_press_exit),
                                 Toast.LENGTH_SHORT,
                             ).show()
                     }
@@ -685,7 +686,7 @@ class CoursesActivity :
                     Toast
                         .makeText(
                             this,
-                            getString(R.string.courses_fail_fetch_next_page),
+                            getString(R.string.courses_explore_fail_fetch_next_page),
                             Toast.LENGTH_SHORT,
                         ).show()
                 }
