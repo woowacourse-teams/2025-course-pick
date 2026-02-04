@@ -7,7 +7,7 @@
     <!--  코스 화면 - 코스 목록 아이템  -->
     <string name="course_item_unit_meter">%dm</string>
     <string name="course_item_unit_kilometer">%.2fkm</string>
-    <string name="course_item_distance_to_course">%s만큼 떨어짐</string>
+    <string name="course_item_distance_to_course_format">%s만큼 떨어짐</string>
     <string name="course_item_navigate_to_course_button">길찾기</string>
 
     <!--  코스 화면 - 코스 탐색 메뉴  -->
@@ -36,7 +36,7 @@
     <!--  설정 화면  -->
     <string name="settings_feedback_url">https://docs.google.com/forms/d/e/1FAIpQLSdsJcNUsOcDiKW0FI-M360IUS64IZQmnWtMTbZqJSrx7HQbtg/viewform?usp=pp_url&amp;entry.1079171803=%s</string>
     <string name="settings_privacy_policy_url">https://wary-gopher-277.notion.site/2bcccd64a1cc80c08927cb2dccbc917f?source=copy_link</string>
-    <string name="settings_client_id">사용자 ID: %s</string>
+    <string name="settings_client_id_format">사용자 ID: %s</string>
 
     <!--  검색 화면  -->
     <string name="search_query_hint">장소를 검색하세요</string>

@@ -33,7 +33,7 @@ fun TextView.setCourseLength(meter: Int) {
 fun TextView.setCourseDistance(meter: Int) {
     this.text =
         this.context.getString(
-            R.string.course_item_distance_to_course,
+            R.string.course_item_distance_to_course_format,
             formattedMeter(this.context, Meter(meter)),
         )
 }
