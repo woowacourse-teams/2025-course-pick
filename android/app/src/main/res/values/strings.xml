@@ -83,7 +83,4 @@
     <string name="selected_route_finder_application_value_kakao">kakao map</string>
     <string name="selected_route_finder_application_value_naver">naver map</string>
     <string name="selected_route_finder_application_value_none">none</string>
-
-    <!--  기타  -->
-    <string name="title_activity_new_search">NewSearchActivity</string>
 </resources>
