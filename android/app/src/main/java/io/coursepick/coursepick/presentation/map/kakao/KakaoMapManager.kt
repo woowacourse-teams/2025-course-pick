@@ -97,13 +97,9 @@ class KakaoMapManager(
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     fun showCurrentLocation(afterSuccess: () -> Unit = {}) {
         locationProvider.fetchCurrentLocation(
-            onSuccess = { location: Location, isAccurate: Boolean ->
+            onSuccess = { location: Location ->
                 kakaoMap?.let { kakaoMap: KakaoMap ->
-                    drawer.showUserPosition(
-                        map = kakaoMap,
-                        location = location,
-                        isAccurate = isAccurate,
-                    )
+                    drawer.showUserPosition(kakaoMap, location)
                     cameraController.moveTo(kakaoMap, location)
                 } ?: Timber.w("kakaoMap is null")
                 afterSuccess()
@@ -179,9 +175,9 @@ class KakaoMapManager(
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     fun startTrackingCurrentLocation() {
         locationProvider.startLocationUpdates(
-            onUpdate = { location: Location, isAccurate: Boolean ->
+            onUpdate = { location: Location ->
                 kakaoMap?.let { kakaoMap: KakaoMap ->
-                    drawer.showUserPosition(kakaoMap, location, isAccurate)
+                    drawer.showUserPosition(kakaoMap, location)
                 } ?: Timber.w("kakaoMap is null")
             },
             onError = {
@@ -202,7 +198,7 @@ class KakaoMapManager(
         onFailure: (Exception) -> Unit,
     ) {
         locationProvider.fetchCurrentLocation(
-            onSuccess = { location: Location, _ ->
+            onSuccess = { location: Location ->
                 onSuccess(Latitude(location.latitude), Longitude(location.longitude))
             },
             onFailure = onFailure,

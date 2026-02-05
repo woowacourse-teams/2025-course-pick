@@ -35,7 +35,7 @@ class LocationProvider(
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     fun fetchCurrentLocation(
-        onSuccess: (location: Location, isAccurate: Boolean) -> Unit,
+        onSuccess: (Location) -> Unit,
         onFailure: (Exception) -> Unit,
     ) {
         if (!locationManager.isLocationEnabled) {
@@ -52,7 +52,7 @@ class LocationProvider(
             .getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
             .addOnSuccessListener { location: Location ->
                 Logger.log(Logger.Event.Success("get_current_location"))
-                onSuccess(location, hasFineLocationPermission)
+                onSuccess(location)
             }.addOnFailureListener { exception: Exception ->
                 Logger.log(
                     Logger.Event.Failure("get_current_location"),
@@ -64,7 +64,7 @@ class LocationProvider(
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     fun startLocationUpdates(
-        onUpdate: (location: Location, isAccurate: Boolean) -> Unit,
+        onUpdate: (Location) -> Unit,
         onError: (Exception) -> Unit,
     ) {
         stopLocationUpdates()
@@ -91,16 +91,13 @@ class LocationProvider(
     }
 
     private fun LocationCallback(
-        onUpdate: (location: Location, isAccurate: Boolean) -> Unit,
+        onUpdate: (Location) -> Unit,
         onError: (Exception) -> Unit,
     ): LocationCallback =
         object : LocationCallback() {
             override fun onLocationResult(result: LocationResult) {
                 result.lastLocation?.let { location: Location ->
-                    onUpdate(
-                        location,
-                        hasFineLocationPermission,
-                    )
+                    onUpdate(location)
                 }
             }
 
