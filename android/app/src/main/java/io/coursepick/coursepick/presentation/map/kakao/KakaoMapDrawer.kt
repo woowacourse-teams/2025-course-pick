@@ -2,7 +2,6 @@ package io.coursepick.coursepick.presentation.map.kakao
 
 import android.content.Context
 import android.location.Location
-import androidx.core.graphics.toColorInt
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.label.Label
 import com.kakao.vectormap.label.LabelOptions
@@ -161,7 +160,7 @@ class KakaoMapDrawer(
         val options =
             PolygonOptions
                 .from(DotPoints.fromCircle(location.toLatLng(), location.accuracy))
-                .setStylesSet(PolygonStylesSet.from(PolygonStyles.from("#000000".toColorInt())))
+                .setStylesSet(PolygonStylesSet.from(PolygonStyles.from(context.getColor(R.color.coarse_location_area))))
                 .apply { polygonId = APPROXIMATE_USER_POSITION_ID }
 
         updatePolygon(map, options) { oldPolygon: Polygon ->

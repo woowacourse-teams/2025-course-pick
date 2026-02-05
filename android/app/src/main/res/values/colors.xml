@@ -25,4 +25,6 @@
     <color name="course_selected">#6BBE92</color>
     <color name="course_unselected">#B4B4B4</color>
     <color name="course_route">#B4B4B4</color>
+
+    <color name="coarse_location_area">#30FF4430</color>
 </resources>
