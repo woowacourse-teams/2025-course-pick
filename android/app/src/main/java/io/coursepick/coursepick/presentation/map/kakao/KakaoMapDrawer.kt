@@ -95,7 +95,7 @@ class KakaoMapDrawer(
             LabelOptions
                 .from(latLng)
                 .setStyles(LabelStyles.from(style))
-                .apply { labelId = labelId.toString() }
+                .apply { labelId = SEARCH_POSITION_MARK_ID }
 
         updateOrAddLabel(map, options) { oldLabel: Label ->
             oldLabel.moveTo(latLng)
@@ -187,6 +187,7 @@ class KakaoMapDrawer(
         private const val LABEL_MOVE_ANIMATION_DURATION = 500
         private const val SELECTED_COURSE_Z_ORDER = 1
         private const val UNSELECTED_COURSE_Z_ORDER = 0
+        private const val SEARCH_POSITION_MARK_ID = "search_location_mark_id"
         private const val ACCURATE_USER_POSITION_ID = "Accurate user position id"
         private const val APPROXIMATE_USER_POSITION_ID = "Approximate user position id"
     }
