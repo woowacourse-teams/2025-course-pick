@@ -81,11 +81,13 @@ class KakaoMapDrawer(
         map: KakaoMap,
         location: Location,
     ) {
-        val labelId: Int = R.drawable.image_current_location
         val latLng = location.toLatLng()
-        val styles = LabelStyles.from(LabelStyle.from(labelId).setAnchorPoint(0.5F, 0.5F))
+        val styles =
+            LabelStyles.from(
+                LabelStyle.from(R.drawable.image_current_location).setAnchorPoint(0.5F, 0.5F),
+            )
         val options: LabelOptions = LabelOptions.from(latLng).setStyles(styles)
-        options.labelId = labelId.toString()
+        options.labelId = ACCURATE_USER_POSITION_LABEL_ID
         updateLabel(map, options) { existingLabel: Label ->
             existingLabel.moveTo(latLng, LABEL_MOVE_ANIMATION_DURATION)
         }
@@ -100,7 +102,7 @@ class KakaoMapDrawer(
             PolygonOptions
                 .from(DotPoints.fromCircle(location.toLatLng(), location.accuracy))
                 .setStylesSet(stylesSet)
-        polygonOptions.polygonId = "temp"
+        polygonOptions.polygonId = APPROXIMATE_USER_POSITION_POLYGON_ID
         updatePolygon(map, polygonOptions) { oldPolygon: Polygon ->
             oldPolygon.remove()
         }
@@ -144,7 +146,7 @@ class KakaoMapDrawer(
         handleOldLabel: (Label) -> Unit,
     ) {
         val layer = map.labelManager?.layer ?: return
-        layer.getLabel(options.labelId)?.let { oldLabel: Label ->
+        layer.getLabel(ACCURATE_USER_POSITION_LABEL_ID)?.let { oldLabel: Label ->
             handleOldLabel(oldLabel)
             return
         }
@@ -157,7 +159,7 @@ class KakaoMapDrawer(
         handleOldPolygon: (Polygon) -> Unit,
     ) {
         val layer = map.shapeManager?.layer ?: return
-        layer.getPolygon(options.polygonId)?.let { oldPolygon: Polygon ->
+        layer.getPolygon(APPROXIMATE_USER_POSITION_POLYGON_ID)?.let { oldPolygon: Polygon ->
             handleOldPolygon(oldPolygon)
             return
         }
@@ -168,5 +170,8 @@ class KakaoMapDrawer(
         private const val LABEL_MOVE_ANIMATION_DURATION = 500
         private const val SELECTED_COURSE_Z_ORDER = 1
         private const val UNSELECTED_COURSE_Z_ORDER = 0
+        private const val ACCURATE_USER_POSITION_LABEL_ID = "accurate user position label id"
+        private const val APPROXIMATE_USER_POSITION_POLYGON_ID =
+            "approximate user position polygon id"
     }
 }
