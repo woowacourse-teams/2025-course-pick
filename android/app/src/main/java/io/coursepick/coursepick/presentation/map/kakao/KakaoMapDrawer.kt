@@ -114,7 +114,7 @@ class KakaoMapDrawer(
         handleOldLabel: (Label) -> Unit,
     ) {
         val layer = map.labelManager?.layer ?: return
-        layer.getLabel(ACCURATE_USER_POSITION_LABEL_ID)?.let { oldLabel: Label ->
+        layer.getLabel(options.labelId)?.let { oldLabel: Label ->
             handleOldLabel(oldLabel)
             return
         }
@@ -127,7 +127,7 @@ class KakaoMapDrawer(
         handleOldPolygon: (Polygon) -> Unit,
     ) {
         val layer = map.shapeManager?.layer ?: return
-        layer.getPolygon(APPROXIMATE_USER_POSITION_POLYGON_ID)?.let { oldPolygon: Polygon ->
+        layer.getPolygon(options.polygonId)?.let { oldPolygon: Polygon ->
             handleOldPolygon(oldPolygon)
             return
         }
