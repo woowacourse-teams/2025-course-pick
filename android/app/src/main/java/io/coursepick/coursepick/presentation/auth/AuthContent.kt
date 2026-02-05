@@ -50,7 +50,7 @@ fun AuthContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = stringResource(R.string.auth_dialog_restriction_message, featureName),
+            text = stringResource(R.string.auth_restriction_message, featureName),
             fontSize = 18.sp,
             color = colorResource(R.color.item_primary),
             fontWeight = FontWeight.Bold,
