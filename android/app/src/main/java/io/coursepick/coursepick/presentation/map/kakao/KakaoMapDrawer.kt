@@ -95,7 +95,7 @@ class KakaoMapDrawer(
             LabelOptions
                 .from(latLng)
                 .setStyles(LabelStyles.from(style))
-                .apply { labelId = SEARCH_POSITION_MARK_ID }
+                .apply { labelId = ID_SEARCH_POSITION_MARK }
 
         updateOrAddLabel(map, options) { oldLabel: Label ->
             oldLabel.moveTo(latLng)
@@ -119,7 +119,7 @@ class KakaoMapDrawer(
             LabelOptions
                 .from(latLng)
                 .setStyles(LabelStyles.from(style))
-                .apply { labelId = ACCURATE_USER_POSITION_ID }
+                .apply { labelId = ID_ACCURATE_USER_POSITION_MARK }
 
         updateOrAddLabel(map, options) { oldLabel: Label ->
             oldLabel.moveTo(latLng, LABEL_MOVE_ANIMATION_DURATION)
@@ -136,7 +136,7 @@ class KakaoMapDrawer(
             PolygonOptions
                 .from(DotPoints.fromCircle(location.toLatLng(), location.accuracy))
                 .setStylesSet(PolygonStylesSet.from(PolygonStyles.from(context.getColor(R.color.coarse_location_area))))
-                .apply { polygonId = APPROXIMATE_USER_POSITION_ID }
+                .apply { polygonId = ID_APPROXIMATE_USER_POSITION_MARK }
 
         updateOrAddPolygon(map, options) { oldPolygon: Polygon ->
             oldPolygon.setPosition(location.toLatLng())
@@ -146,14 +146,14 @@ class KakaoMapDrawer(
     private fun hideAccurateUserPosition(map: KakaoMap) {
         map.labelManager
             ?.layer
-            ?.getLabel(ACCURATE_USER_POSITION_ID)
+            ?.getLabel(ID_ACCURATE_USER_POSITION_MARK)
             ?.let(Label::remove)
     }
 
     private fun hideApproximateUserPosition(map: KakaoMap) {
         map.shapeManager
             ?.layer
-            ?.getPolygon(APPROXIMATE_USER_POSITION_ID)
+            ?.getPolygon(ID_APPROXIMATE_USER_POSITION_MARK)
             ?.let(Polygon::remove)
     }
 
@@ -187,8 +187,8 @@ class KakaoMapDrawer(
         private const val LABEL_MOVE_ANIMATION_DURATION = 500
         private const val SELECTED_COURSE_Z_ORDER = 1
         private const val UNSELECTED_COURSE_Z_ORDER = 0
-        private const val SEARCH_POSITION_MARK_ID = "search_location_mark_id"
-        private const val ACCURATE_USER_POSITION_ID = "Accurate user position id"
-        private const val APPROXIMATE_USER_POSITION_ID = "Approximate user position id"
+        private const val ID_SEARCH_POSITION_MARK = "id_search_position_mark"
+        private const val ID_ACCURATE_USER_POSITION_MARK = "id_accurate_user_position_mark"
+        private const val ID_APPROXIMATE_USER_POSITION_MARK = "id_approximate_user_position_mark"
     }
 }
