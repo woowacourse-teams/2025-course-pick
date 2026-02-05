@@ -2,6 +2,7 @@ package io.coursepick.coursepick.presentation.map.kakao
 
 import android.content.Context
 import android.location.Location
+import androidx.core.graphics.toColorInt
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.label.Label
 import com.kakao.vectormap.label.LabelLayer
@@ -12,6 +13,11 @@ import com.kakao.vectormap.label.LabelTransition
 import com.kakao.vectormap.label.Transition
 import com.kakao.vectormap.route.RouteLineLayer
 import com.kakao.vectormap.route.RouteLineOptions
+import com.kakao.vectormap.shape.DotPoints
+import com.kakao.vectormap.shape.Polygon
+import com.kakao.vectormap.shape.PolygonOptions
+import com.kakao.vectormap.shape.PolygonStyles
+import com.kakao.vectormap.shape.PolygonStylesSet
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.presentation.course.CourseItem
@@ -64,17 +70,23 @@ class KakaoMapDrawer(
         location: Location,
     ) {
         val labelId: Int = R.drawable.image_current_location
-        val styles =
-            LabelStyles.from(
-                LabelStyle
-                    .from(labelId)
-                    .setAnchorPoint(0.5F, 0.5F),
-            )
+        val styles = LabelStyles.from(LabelStyle.from(labelId).setAnchorPoint(0.5F, 0.5F))
         val latLng = location.toLatLng()
         val options: LabelOptions = LabelOptions.from(latLng).setStyles(styles)
         options.labelId = labelId.toString()
+
+        val polygonOptions =
+            PolygonOptions.from(DotPoints.fromCircle(latLng, location.accuracy)).setStylesSet(
+                PolygonStylesSet.from(PolygonStyles.from("#20FF4430".toColorInt())),
+            )
+        polygonOptions.polygonId = "temp"
+
         updateLabel(map, options) { label: Label ->
             label.moveTo(latLng, LABEL_MOVE_ANIMATION_DURATION)
+        }
+
+        updatePolygon(map, polygonOptions) { polygon: Polygon ->
+            polygon.setPosition(latLng)
         }
     }
 
@@ -121,6 +133,19 @@ class KakaoMapDrawer(
             return
         }
         layer.addLabel(options)
+    }
+
+    private fun updatePolygon(
+        map: KakaoMap,
+        options: PolygonOptions,
+        handleOldPolygon: (Polygon) -> Unit,
+    ) {
+        val layer = map.shapeManager?.layer ?: return
+        layer.getPolygon(options.polygonId)?.let { oldPolygon: Polygon ->
+            handleOldPolygon(oldPolygon)
+            return
+        }
+        layer.addPolygon(options)
     }
 
     companion object {
