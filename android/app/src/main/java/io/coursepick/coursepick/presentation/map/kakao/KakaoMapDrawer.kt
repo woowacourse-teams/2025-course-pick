@@ -165,7 +165,7 @@ class KakaoMapDrawer(
                 .apply { polygonId = APPROXIMATE_USER_POSITION_ID }
 
         updatePolygon(map, options) { oldPolygon: Polygon ->
-            oldPolygon.remove()
+            oldPolygon.setPosition(location.toLatLng())
         }
     }
 
@@ -185,8 +185,7 @@ class KakaoMapDrawer(
         private const val LABEL_MOVE_ANIMATION_DURATION = 500
         private const val SELECTED_COURSE_Z_ORDER = 1
         private const val UNSELECTED_COURSE_Z_ORDER = 0
-        private const val ACCURATE_USER_POSITION_ID = "accurate user position label id"
-        private const val APPROXIMATE_USER_POSITION_ID =
-            "approximate user position polygon id"
+        private const val ACCURATE_USER_POSITION_ID = "Accurate user position id"
+        private const val APPROXIMATE_USER_POSITION_ID = "Approximate user position id"
     }
 }
