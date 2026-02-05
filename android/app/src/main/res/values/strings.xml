@@ -59,6 +59,12 @@
     <string name="selected_route_finder_application_entry_naver_map">네이버 지도에서 보기</string>
     <string name="selected_route_finder_application_entry_none_map">선택 안 함</string>
 
+    <!--  정확한 위치 권한 요청 다이얼로그  -->
+    <string name="fine_location_permission_rationale_dialog_with_coarse_permission_message">길찾기 기능은 \'정확한 위치\' 권한으로만 사용 가능합니다.</string>
+    <string name="fine_location_permission_rationale_dialog_without_coarse_permission_message">길찾기 기능은 \'정확한 위치\' 권한이 필요합니다.</string>
+    <string name="fine_location_permission_rationale_dialog_negative_button">설정으로 이동</string>
+    <string name="fine_location_permission_rationale_dialog_positive_button">닫기</string>
+
     <!--  공지 다이얼로그  -->
     <string name="notice_dialog_do_not_show_again_button">다시 보지 않음</string>
     <string name="notice_dialog_close_button">닫기</string>

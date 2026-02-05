@@ -3,10 +3,13 @@ package io.coursepick.coursepick.presentation.course
 import android.Manifest
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +21,10 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresPermission
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.core.content.ContextCompat
@@ -101,6 +107,11 @@ class CoursesActivity :
                     "id" to course.id,
                     "name" to course.name,
                 )
+
+                if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+                    showFineLocationPermissionRationaleDialog()
+                    return
+                }
 
                 mapManager.fetchCurrentLocation(
                     onSuccess = { latitude: Latitude, longitude: Longitude ->
@@ -362,6 +373,36 @@ class CoursesActivity :
                 ContextCompat.getColor(this, R.color.gray3),
             )
         }
+    }
+
+
+    private fun showFineLocationPermissionRationaleDialog() {
+        val message: String =
+            getString(
+                if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    R.string.fine_location_permission_rationale_dialog_with_coarse_permission_message
+                } else {
+                    R.string.fine_location_permission_rationale_dialog_without_coarse_permission_message
+                },
+            )
+
+        AlertDialog
+            .Builder(this)
+            .setMessage(message)
+            .setPositiveButton(
+                getString(R.string.fine_location_permission_rationale_dialog_positive_button),
+            ) { dialog: DialogInterface, _ ->
+                dialog.dismiss()
+            }.setNegativeButton(
+                getString(R.string.fine_location_permission_rationale_dialog_negative_button),
+            ) { dialog: DialogInterface, _ ->
+                val intent =
+                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = "package:$packageName".toUri()
+                    }
+                startActivity(intent)
+                dialog.dismiss()
+            }.show()
     }
 
     private fun navigateToFeedback() {
