@@ -145,7 +145,7 @@ class KakaoMapDrawer(
             LabelOptions
                 .from(latLng)
                 .setStyles(LabelStyles.from(style))
-                .apply { labelId = ACCURATE_USER_POSITION_LABEL_ID }
+                .apply { labelId = ACCURATE_USER_POSITION_ID }
 
         updateLabel(map, options) { oldLabel: Label ->
             oldLabel.moveTo(latLng, LABEL_MOVE_ANIMATION_DURATION)
@@ -162,7 +162,7 @@ class KakaoMapDrawer(
             PolygonOptions
                 .from(DotPoints.fromCircle(location.toLatLng(), location.accuracy))
                 .setStylesSet(PolygonStylesSet.from(PolygonStyles.from("#000000".toColorInt())))
-                .apply { polygonId = APPROXIMATE_USER_POSITION_POLYGON_ID }
+                .apply { polygonId = APPROXIMATE_USER_POSITION_ID }
 
         updatePolygon(map, options) { oldPolygon: Polygon ->
             oldPolygon.remove()
@@ -170,26 +170,23 @@ class KakaoMapDrawer(
     }
 
     private fun hideAccurateUserPosition(map: KakaoMap) {
-        map.labelManager?.layer?.getLabel(ACCURATE_USER_POSITION_LABEL_ID)?.let { label: Label ->
+        map.labelManager?.layer?.getLabel(ACCURATE_USER_POSITION_ID)?.let { label: Label ->
             label.remove()
         }
     }
 
     private fun hideApproximateUserPosition(map: KakaoMap) {
-        map.shapeManager
-            ?.layer
-            ?.getPolygon(APPROXIMATE_USER_POSITION_POLYGON_ID)
-            ?.let { polygon: Polygon ->
-                polygon.remove()
-            }
+        map.shapeManager?.layer?.getPolygon(APPROXIMATE_USER_POSITION_ID)?.let { polygon: Polygon ->
+            polygon.remove()
+        }
     }
 
     companion object {
         private const val LABEL_MOVE_ANIMATION_DURATION = 500
         private const val SELECTED_COURSE_Z_ORDER = 1
         private const val UNSELECTED_COURSE_Z_ORDER = 0
-        private const val ACCURATE_USER_POSITION_LABEL_ID = "accurate user position label id"
-        private const val APPROXIMATE_USER_POSITION_POLYGON_ID =
+        private const val ACCURATE_USER_POSITION_ID = "accurate user position label id"
+        private const val APPROXIMATE_USER_POSITION_ID =
             "approximate user position polygon id"
     }
 }
