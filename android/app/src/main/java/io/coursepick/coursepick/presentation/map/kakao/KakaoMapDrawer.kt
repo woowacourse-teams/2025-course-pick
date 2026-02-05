@@ -85,21 +85,20 @@ class KakaoMapDrawer(
         map: KakaoMap,
         coordinate: Coordinate,
     ) {
-        val labelId: Int = R.drawable.image_search_location
-        val styles =
-            LabelStyles.from(
-                LabelStyle
-                    .from(labelId)
-                    .setAnchorPoint(0.5F, 0.5F)
-                    .setIconTransition(
-                        LabelTransition.from(Transition.None, Transition.None),
-                    ),
-            )
         val latLng = coordinate.toLatLng()
-        val options: LabelOptions = LabelOptions.from(latLng).setStyles(styles)
-        options.labelId = labelId.toString()
-        updateLabel(map, options) { label: Label ->
-            label.moveTo(latLng)
+        val style =
+            LabelStyle
+                .from(R.drawable.image_search_location)
+                .setAnchorPoint(0.5F, 0.5F)
+                .setIconTransition(LabelTransition.from(Transition.None, Transition.None))
+        val options: LabelOptions =
+            LabelOptions
+                .from(latLng)
+                .setStyles(LabelStyles.from(style))
+                .apply { labelId = labelId.toString() }
+
+        updateLabel(map, options) { oldLabel: Label ->
+            oldLabel.moveTo(latLng)
         }
     }
 
@@ -141,15 +140,15 @@ class KakaoMapDrawer(
         hideApproximateUserPosition(map)
 
         val latLng = location.toLatLng()
-        val styles =
-            LabelStyles.from(
-                LabelStyle.from(R.drawable.image_current_location).setAnchorPoint(0.5F, 0.5F),
-            )
-        val options: LabelOptions = LabelOptions.from(latLng).setStyles(styles)
-        options.labelId = ACCURATE_USER_POSITION_LABEL_ID
+        val style = LabelStyle.from(R.drawable.image_current_location).setAnchorPoint(0.5F, 0.5F)
+        val options: LabelOptions =
+            LabelOptions
+                .from(latLng)
+                .setStyles(LabelStyles.from(style))
+                .apply { labelId = ACCURATE_USER_POSITION_LABEL_ID }
 
-        updateLabel(map, options) { existingLabel: Label ->
-            existingLabel.moveTo(latLng, LABEL_MOVE_ANIMATION_DURATION)
+        updateLabel(map, options) { oldLabel: Label ->
+            oldLabel.moveTo(latLng, LABEL_MOVE_ANIMATION_DURATION)
         }
     }
 
@@ -159,14 +158,13 @@ class KakaoMapDrawer(
     ) {
         hideAccurateUserPosition(map)
 
-        val stylesSet = PolygonStylesSet.from(PolygonStyles.from("#000000".toColorInt()))
-        val polygonOptions =
+        val options =
             PolygonOptions
                 .from(DotPoints.fromCircle(location.toLatLng(), location.accuracy))
-                .setStylesSet(stylesSet)
-        polygonOptions.polygonId = APPROXIMATE_USER_POSITION_POLYGON_ID
+                .setStylesSet(PolygonStylesSet.from(PolygonStyles.from("#000000".toColorInt())))
+                .apply { polygonId = APPROXIMATE_USER_POSITION_POLYGON_ID }
 
-        updatePolygon(map, polygonOptions) { oldPolygon: Polygon ->
+        updatePolygon(map, options) { oldPolygon: Polygon ->
             oldPolygon.remove()
         }
     }
