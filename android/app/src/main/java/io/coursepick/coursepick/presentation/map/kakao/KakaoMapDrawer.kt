@@ -14,6 +14,7 @@ import com.kakao.vectormap.label.Transition
 import com.kakao.vectormap.route.RouteLineLayer
 import com.kakao.vectormap.route.RouteLineOptions
 import com.kakao.vectormap.shape.DotPoints
+import com.kakao.vectormap.shape.Polygon
 import com.kakao.vectormap.shape.PolygonOptions
 import com.kakao.vectormap.shape.PolygonStyles
 import com.kakao.vectormap.shape.PolygonStylesSet
@@ -69,25 +70,27 @@ class KakaoMapDrawer(
         location: Location,
         isAccurate: Boolean,
     ) {
-        val labelId: Int = R.drawable.image_current_location
-        val styles = LabelStyles.from(LabelStyle.from(labelId).setAnchorPoint(0.5F, 0.5F))
         val latLng = location.toLatLng()
-        val options: LabelOptions = LabelOptions.from(latLng).setStyles(styles)
-        options.labelId = labelId.toString()
 
-        val polygonOptions =
-            PolygonOptions.from(DotPoints.fromCircle(latLng, location.accuracy)).setStylesSet(
-                PolygonStylesSet.from(PolygonStyles.from("#000000".toColorInt())),
-            )
-        polygonOptions.polygonId = "temp"
-
-        val layer = map.labelManager?.layer ?: return
-        val layer2 = map.shapeManager?.layer ?: return
-        layer.getLabel(options.labelId)?.let { existingLabel ->
-            existingLabel.moveTo(latLng, LABEL_MOVE_ANIMATION_DURATION)
-            return
+        if (isAccurate) {
+            val labelId: Int = R.drawable.image_current_location
+            val styles = LabelStyles.from(LabelStyle.from(labelId).setAnchorPoint(0.5F, 0.5F))
+            val options: LabelOptions = LabelOptions.from(latLng).setStyles(styles)
+            options.labelId = labelId.toString()
+            updateLabel(map, options) { existingLabel: Label ->
+                existingLabel.moveTo(latLng, LABEL_MOVE_ANIMATION_DURATION)
+            }
+        } else {
+            val stylesSet = PolygonStylesSet.from(PolygonStyles.from("#000000".toColorInt()))
+            val polygonOptions =
+                PolygonOptions
+                    .from(DotPoints.fromCircle(latLng, location.accuracy))
+                    .setStylesSet(stylesSet)
+            polygonOptions.polygonId = "temp"
+            updatePolygon(map, polygonOptions) { oldPolygon: Polygon ->
+                oldPolygon.remove()
+            }
         }
-        layer.addLabel(options).addShareTransform(layer2.addPolygon(polygonOptions))
     }
 
     fun showSearchPosition(
@@ -128,11 +131,24 @@ class KakaoMapDrawer(
         handleOldLabel: (Label) -> Unit,
     ) {
         val layer = map.labelManager?.layer ?: return
-        layer.getLabel(options.labelId)?.let { existingLabel ->
-            handleOldLabel(existingLabel)
+        layer.getLabel(options.labelId)?.let { oldLabel: Label ->
+            handleOldLabel(oldLabel)
             return
         }
         layer.addLabel(options)
+    }
+
+    private fun updatePolygon(
+        map: KakaoMap,
+        options: PolygonOptions,
+        handleOldPolygon: (Polygon) -> Unit,
+    ) {
+        val layer = map.shapeManager?.layer ?: return
+        layer.getPolygon(options.polygonId)?.let { oldPolygon: Polygon ->
+            handleOldPolygon(oldPolygon)
+            return
+        }
+        layer.addPolygon(options)
     }
 
     companion object {
