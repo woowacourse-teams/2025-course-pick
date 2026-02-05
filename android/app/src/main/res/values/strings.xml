@@ -15,7 +15,7 @@
     <string name="incline_summary_sometimes_downhill">내리막 가끔</string>
     <string name="incline_summary_continuous_uphill">오르막 지속</string>
     <string name="incline_summary_continuous_downhill">내리막 지속</string>
-    <string name="incline_summary_unknown">알 수 없음</string>
+    <string name="incline_summary_continuous_unknown">알 수 없음</string>
     <string name="course_color_description">경사도 안내</string>
     <string name="item_course_navigate">길찾기</string>
     <string name="main_client_id">사용자 ID: %s</string>
@@ -74,5 +74,4 @@
     <string name="verified_locations_dialog_close">닫기</string>
     <string name="can_not_fetch_verified_locations">코스가 검증된 지역 정보를 불러올 수 없습니다.</string>
     <string name="courses_fail_fetch_next_page">다음 코스를 불러오지 못했습니다.</string>
-    <string name="custom_courses_header">나의 코스</string>
 </resources>

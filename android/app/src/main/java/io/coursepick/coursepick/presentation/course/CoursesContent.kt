@@ -1,7 +1,6 @@
 package io.coursepick.coursepick.presentation.course
 
 import androidx.fragment.app.Fragment
-import io.coursepick.coursepick.presentation.customcourse.CustomCourseFragment
 import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
 
 enum class CoursesContent(
@@ -9,10 +8,4 @@ enum class CoursesContent(
 ) {
     EXPLORE(ExploreCoursesFragment::class.java),
     FAVORITES(FavoriteCoursesFragment::class.java),
-    CUSTOM_COURSE(CustomCourseFragment::class.java),
-    ;
-
-    companion object {
-        val fragments: Set<Class<out Fragment>> = entries.map(CoursesContent::fragmentClass).toSet()
-    }
 }
