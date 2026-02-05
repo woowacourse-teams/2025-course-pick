@@ -70,26 +70,39 @@ class KakaoMapDrawer(
         location: Location,
         isAccurate: Boolean,
     ) {
-        val latLng = location.toLatLng()
-
         if (isAccurate) {
-            val labelId: Int = R.drawable.image_current_location
-            val styles = LabelStyles.from(LabelStyle.from(labelId).setAnchorPoint(0.5F, 0.5F))
-            val options: LabelOptions = LabelOptions.from(latLng).setStyles(styles)
-            options.labelId = labelId.toString()
-            updateLabel(map, options) { existingLabel: Label ->
-                existingLabel.moveTo(latLng, LABEL_MOVE_ANIMATION_DURATION)
-            }
+            showAccurateUserPosition(map, location)
         } else {
-            val stylesSet = PolygonStylesSet.from(PolygonStyles.from("#000000".toColorInt()))
-            val polygonOptions =
-                PolygonOptions
-                    .from(DotPoints.fromCircle(latLng, location.accuracy))
-                    .setStylesSet(stylesSet)
-            polygonOptions.polygonId = "temp"
-            updatePolygon(map, polygonOptions) { oldPolygon: Polygon ->
-                oldPolygon.remove()
-            }
+            showApproximateUserPosition(map, location)
+        }
+    }
+
+    private fun showAccurateUserPosition(
+        map: KakaoMap,
+        location: Location,
+    ) {
+        val labelId: Int = R.drawable.image_current_location
+        val latLng = location.toLatLng()
+        val styles = LabelStyles.from(LabelStyle.from(labelId).setAnchorPoint(0.5F, 0.5F))
+        val options: LabelOptions = LabelOptions.from(latLng).setStyles(styles)
+        options.labelId = labelId.toString()
+        updateLabel(map, options) { existingLabel: Label ->
+            existingLabel.moveTo(latLng, LABEL_MOVE_ANIMATION_DURATION)
+        }
+    }
+
+    private fun showApproximateUserPosition(
+        map: KakaoMap,
+        location: Location,
+    ) {
+        val stylesSet = PolygonStylesSet.from(PolygonStyles.from("#000000".toColorInt()))
+        val polygonOptions =
+            PolygonOptions
+                .from(DotPoints.fromCircle(location.toLatLng(), location.accuracy))
+                .setStylesSet(stylesSet)
+        polygonOptions.polygonId = "temp"
+        updatePolygon(map, polygonOptions) { oldPolygon: Polygon ->
+            oldPolygon.remove()
         }
     }
 
