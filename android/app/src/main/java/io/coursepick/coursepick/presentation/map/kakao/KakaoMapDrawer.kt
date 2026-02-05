@@ -97,7 +97,7 @@ class KakaoMapDrawer(
                 .setStyles(LabelStyles.from(style))
                 .apply { labelId = labelId.toString() }
 
-        updateLabel(map, options) { oldLabel: Label ->
+        updateOrAddLabel(map, options) { oldLabel: Label ->
             oldLabel.moveTo(latLng)
         }
     }
@@ -105,32 +105,6 @@ class KakaoMapDrawer(
     fun removeAllLines(map: KakaoMap) {
         val layer: RouteLineLayer = map.routeLineManager?.layer ?: return
         layer.removeAll()
-    }
-
-    private fun updateLabel(
-        map: KakaoMap,
-        options: LabelOptions,
-        handleOldLabel: (Label) -> Unit,
-    ) {
-        val layer = map.labelManager?.layer ?: return
-        layer.getLabel(options.labelId)?.let { oldLabel: Label ->
-            handleOldLabel(oldLabel)
-            return
-        }
-        layer.addLabel(options)
-    }
-
-    private fun updatePolygon(
-        map: KakaoMap,
-        options: PolygonOptions,
-        handleOldPolygon: (Polygon) -> Unit,
-    ) {
-        val layer = map.shapeManager?.layer ?: return
-        layer.getPolygon(options.polygonId)?.let { oldPolygon: Polygon ->
-            handleOldPolygon(oldPolygon)
-            return
-        }
-        layer.addPolygon(options)
     }
 
     private fun showAccurateUserPosition(
@@ -147,7 +121,7 @@ class KakaoMapDrawer(
                 .setStyles(LabelStyles.from(style))
                 .apply { labelId = ACCURATE_USER_POSITION_ID }
 
-        updateLabel(map, options) { oldLabel: Label ->
+        updateOrAddLabel(map, options) { oldLabel: Label ->
             oldLabel.moveTo(latLng, LABEL_MOVE_ANIMATION_DURATION)
         }
     }
@@ -164,7 +138,7 @@ class KakaoMapDrawer(
                 .setStylesSet(PolygonStylesSet.from(PolygonStyles.from(context.getColor(R.color.coarse_location_area))))
                 .apply { polygonId = APPROXIMATE_USER_POSITION_ID }
 
-        updatePolygon(map, options) { oldPolygon: Polygon ->
+        updateOrAddPolygon(map, options) { oldPolygon: Polygon ->
             oldPolygon.setPosition(location.toLatLng())
         }
     }
@@ -179,6 +153,32 @@ class KakaoMapDrawer(
         map.shapeManager?.layer?.getPolygon(APPROXIMATE_USER_POSITION_ID)?.let { polygon: Polygon ->
             polygon.remove()
         }
+    }
+
+    private fun updateOrAddLabel(
+        map: KakaoMap,
+        options: LabelOptions,
+        handleOldLabel: (Label) -> Unit,
+    ) {
+        val layer = map.labelManager?.layer ?: return
+        layer.getLabel(options.labelId)?.let { oldLabel: Label ->
+            handleOldLabel(oldLabel)
+            return
+        }
+        layer.addLabel(options)
+    }
+
+    private fun updateOrAddPolygon(
+        map: KakaoMap,
+        options: PolygonOptions,
+        handleOldPolygon: (Polygon) -> Unit,
+    ) {
+        val layer = map.shapeManager?.layer ?: return
+        layer.getPolygon(options.polygonId)?.let { oldPolygon: Polygon ->
+            handleOldPolygon(oldPolygon)
+            return
+        }
+        layer.addPolygon(options)
     }
 
     companion object {
