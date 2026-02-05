@@ -144,15 +144,17 @@ class KakaoMapDrawer(
     }
 
     private fun hideAccurateUserPosition(map: KakaoMap) {
-        map.labelManager?.layer?.getLabel(ACCURATE_USER_POSITION_ID)?.let { label: Label ->
-            label.remove()
-        }
+        map.labelManager
+            ?.layer
+            ?.getLabel(ACCURATE_USER_POSITION_ID)
+            ?.let(Label::remove)
     }
 
     private fun hideApproximateUserPosition(map: KakaoMap) {
-        map.shapeManager?.layer?.getPolygon(APPROXIMATE_USER_POSITION_ID)?.let { polygon: Polygon ->
-            polygon.remove()
-        }
+        map.shapeManager
+            ?.layer
+            ?.getPolygon(APPROXIMATE_USER_POSITION_ID)
+            ?.let(Polygon::remove)
     }
 
     private fun updateOrAddLabel(
