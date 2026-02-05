@@ -77,37 +77,6 @@ class KakaoMapDrawer(
         }
     }
 
-    private fun showAccurateUserPosition(
-        map: KakaoMap,
-        location: Location,
-    ) {
-        val latLng = location.toLatLng()
-        val styles =
-            LabelStyles.from(
-                LabelStyle.from(R.drawable.image_current_location).setAnchorPoint(0.5F, 0.5F),
-            )
-        val options: LabelOptions = LabelOptions.from(latLng).setStyles(styles)
-        options.labelId = ACCURATE_USER_POSITION_LABEL_ID
-        updateLabel(map, options) { existingLabel: Label ->
-            existingLabel.moveTo(latLng, LABEL_MOVE_ANIMATION_DURATION)
-        }
-    }
-
-    private fun showApproximateUserPosition(
-        map: KakaoMap,
-        location: Location,
-    ) {
-        val stylesSet = PolygonStylesSet.from(PolygonStyles.from("#000000".toColorInt()))
-        val polygonOptions =
-            PolygonOptions
-                .from(DotPoints.fromCircle(location.toLatLng(), location.accuracy))
-                .setStylesSet(stylesSet)
-        polygonOptions.polygonId = APPROXIMATE_USER_POSITION_POLYGON_ID
-        updatePolygon(map, polygonOptions) { oldPolygon: Polygon ->
-            oldPolygon.remove()
-        }
-    }
-
     fun showSearchPosition(
         map: KakaoMap,
         coordinate: Coordinate,
@@ -164,6 +133,58 @@ class KakaoMapDrawer(
             return
         }
         layer.addPolygon(options)
+    }
+
+    private fun showAccurateUserPosition(
+        map: KakaoMap,
+        location: Location,
+    ) {
+        hideApproximateUserPosition(map)
+
+        val latLng = location.toLatLng()
+        val styles =
+            LabelStyles.from(
+                LabelStyle.from(R.drawable.image_current_location).setAnchorPoint(0.5F, 0.5F),
+            )
+        val options: LabelOptions = LabelOptions.from(latLng).setStyles(styles)
+        options.labelId = ACCURATE_USER_POSITION_LABEL_ID
+
+        updateLabel(map, options) { existingLabel: Label ->
+            existingLabel.moveTo(latLng, LABEL_MOVE_ANIMATION_DURATION)
+        }
+    }
+
+    private fun showApproximateUserPosition(
+        map: KakaoMap,
+        location: Location,
+    ) {
+        hideAccurateUserPosition(map)
+
+        val stylesSet = PolygonStylesSet.from(PolygonStyles.from("#000000".toColorInt()))
+        val polygonOptions =
+            PolygonOptions
+                .from(DotPoints.fromCircle(location.toLatLng(), location.accuracy))
+                .setStylesSet(stylesSet)
+        polygonOptions.polygonId = APPROXIMATE_USER_POSITION_POLYGON_ID
+
+        updatePolygon(map, polygonOptions) { oldPolygon: Polygon ->
+            oldPolygon.remove()
+        }
+    }
+
+    private fun hideAccurateUserPosition(map: KakaoMap) {
+        map.labelManager?.layer?.getLabel(ACCURATE_USER_POSITION_LABEL_ID)?.let { label: Label ->
+            label.remove()
+        }
+    }
+
+    private fun hideApproximateUserPosition(map: KakaoMap) {
+        map.shapeManager
+            ?.layer
+            ?.getPolygon(APPROXIMATE_USER_POSITION_POLYGON_ID)
+            ?.let { polygon: Polygon ->
+                polygon.remove()
+            }
     }
 
     companion object {
