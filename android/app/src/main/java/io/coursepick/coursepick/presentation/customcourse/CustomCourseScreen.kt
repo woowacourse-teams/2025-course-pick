@@ -32,12 +32,9 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseName
 import io.coursepick.coursepick.domain.course.Distance
-import io.coursepick.coursepick.domain.course.InclineSummary
-import io.coursepick.coursepick.domain.course.InclineType
 import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Length
 import io.coursepick.coursepick.domain.course.Longitude
-import io.coursepick.coursepick.domain.course.Segment
 
 @Composable
 fun CustomCourseScreen(
@@ -107,19 +104,10 @@ fun CustomCourseScreenPreview() {
                                     name = CourseName("Preview Course $index"),
                                     distance = Distance(123),
                                     length = Length(456),
-                                    roadType = "보도",
-                                    difficulty = "쉬움",
-                                    inclineSummary = InclineSummary.MOSTLY_FLAT,
-                                    segments =
+                                    coordinates =
                                         listOf(
-                                            Segment(
-                                                inclineType = InclineType.UNKNOWN,
-                                                coordinates =
-                                                    listOf(
-                                                        Coordinate(Latitude(0.0), Longitude(0.0)),
-                                                        Coordinate(Latitude(0.0), Longitude(0.0)),
-                                                    ),
-                                            ),
+                                            Coordinate(Latitude(0.0), Longitude(0.0)),
+                                            Coordinate(Latitude(0.0), Longitude(0.0)),
                                         ),
                                 ),
                             selected = false,

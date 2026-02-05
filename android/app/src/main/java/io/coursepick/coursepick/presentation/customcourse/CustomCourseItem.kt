@@ -28,12 +28,9 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseName
 import io.coursepick.coursepick.domain.course.Distance
-import io.coursepick.coursepick.domain.course.InclineSummary
-import io.coursepick.coursepick.domain.course.InclineType
 import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Length
 import io.coursepick.coursepick.domain.course.Longitude
-import io.coursepick.coursepick.domain.course.Segment
 
 @Composable
 fun CustomCourseItem(
@@ -103,39 +100,6 @@ fun CustomCourseItem(
                         fontWeight = FontWeight.Bold,
                         color = colorResource(R.color.item_primary),
                     )
-
-                    Spacer(modifier = Modifier.size(18.dp))
-
-                    Image(
-                        painter = painterResource(R.drawable.icon_road_type),
-                        contentDescription = null,
-                    )
-
-                    Spacer(modifier = Modifier.size(6.dp))
-
-                    Text(
-                        text = course.course.roadType,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = colorResource(R.color.item_primary),
-                    )
-                }
-
-                Spacer(modifier = Modifier.size(10.dp))
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text =
-                            stringResource(
-                                id = R.string.item_course_summary_format,
-                                course.course.difficulty,
-                                stringResource(course.inclineSummaryStringResourceId),
-                            ),
-                        fontSize = 14.sp,
-                        color = colorResource(R.color.item_primary),
-                    )
                 }
             }
 
@@ -184,19 +148,10 @@ fun CustomCourseItemPreview() {
                         name = CourseName("Preview Course"),
                         distance = Distance(123),
                         length = Length(456),
-                        roadType = "보도",
-                        difficulty = "쉬움",
-                        inclineSummary = InclineSummary.MOSTLY_FLAT,
-                        segments =
+                        coordinates =
                             listOf(
-                                Segment(
-                                    inclineType = InclineType.UNKNOWN,
-                                    coordinates =
-                                        listOf(
-                                            Coordinate(Latitude(0.0), Longitude(0.0)),
-                                            Coordinate(Latitude(0.0), Longitude(0.0)),
-                                        ),
-                                ),
+                                Coordinate(Latitude(0.0), Longitude(0.0)),
+                                Coordinate(Latitude(0.0), Longitude(0.0)),
                             ),
                     ),
                 selected = false,
