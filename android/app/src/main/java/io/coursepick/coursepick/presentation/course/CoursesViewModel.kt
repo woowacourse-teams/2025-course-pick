@@ -19,7 +19,6 @@ import io.coursepick.coursepick.domain.notice.NoticeRepository
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.filter.CourseFilter
 import io.coursepick.coursepick.presentation.filter.CourseFilterAction
-import io.coursepick.coursepick.presentation.model.Difficulty
 import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
@@ -437,10 +436,6 @@ class CoursesViewModel
                 is CourseFilterAction.UpdateLengthRange -> {
                     updateLengthRange(action.start, action.end)
                 }
-
-                is CourseFilterAction.ToggleDifficulty -> {
-                    toggleDifficulty(action.difficulty)
-                }
             }
         }
 
@@ -455,24 +450,6 @@ class CoursesViewModel
                     showFilterDialog = false,
                     courseFilter = originalCourseFilter,
                 )
-        }
-
-        private fun toggleDifficulty(difficulty: Difficulty) {
-            val updatedDifficulties =
-                state.value
-                    ?.courseFilter
-                    ?.difficulties
-                    ?.toMutableSet()
-                    ?.apply {
-                        if (contains(difficulty)) remove(difficulty) else add(difficulty)
-                    }
-                    ?: mutableSetOf(difficulty)
-
-            val courseFilter =
-                state.value?.courseFilter?.copy(_difficulties = updatedDifficulties)
-                    ?: CourseFilter.None.copy(_difficulties = updatedDifficulties)
-
-            _state.value = state.value?.copy(courseFilter = courseFilter)
         }
 
         private fun updateLengthRange(

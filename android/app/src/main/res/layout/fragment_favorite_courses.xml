@@ -16,10 +16,6 @@
         <variable
             name="onReconnectListener"
             type="io.coursepick.coursepick.presentation.compat.OnReconnectListener" />
-
-        <variable
-            name="onDescribeCourseColorListener"
-            type="io.coursepick.coursepick.presentation.compat.OnDescribeCourseColorListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -47,22 +43,6 @@
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:drawablePadding="4dp"
-                android:onClick="@{() -> onDescribeCourseColorListener.onDescribeCourseColor()}"
-                android:padding="10dp"
-                android:text="@string/course_color_description"
-                android:textColor="@color/item_secondary"
-                android:textSize="14sp"
-                app:drawableStartCompat="@drawable/icon_course_color_information"
-                app:drawableTint="@color/item_secondary"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

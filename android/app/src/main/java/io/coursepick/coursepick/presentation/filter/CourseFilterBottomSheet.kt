@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.presentation.course.CoursesUiState
-import io.coursepick.coursepick.presentation.model.Difficulty
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,26 +70,6 @@ fun CourseFilterBottomSheet(
                     fontWeight = FontWeight.Bold,
                     color = colorResource(R.color.item_primary),
                     modifier = Modifier.clickable(onClick = { onFilterAction(CourseFilterAction.Reset) }),
-                )
-            }
-
-            Spacer(modifier = modifier.height(20.dp))
-
-            Column {
-                Text(
-                    text = stringResource(R.string.filter_dialog_difficulty_label),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = colorResource(R.color.item_primary),
-                )
-
-                Spacer(modifier = modifier.height(20.dp))
-
-                DifficultyButtons(
-                    selectedDifficulties = coursesUiState.courseFilter.difficulties,
-                    onDifficultyToggle = { difficulty: Difficulty ->
-                        onFilterAction(CourseFilterAction.ToggleDifficulty(difficulty))
-                    },
                 )
             }
 
@@ -166,40 +145,6 @@ fun CourseFilterBottomSheet(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun DifficultyButtons(
-    selectedDifficulties: Set<Difficulty>,
-    onDifficultyToggle: (Difficulty) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        DifficultyButton(
-            difficulty = Difficulty.EASY,
-            text = stringResource(R.string.filter_dialog_difficulty_easy),
-            onToggleDifficulty = onDifficultyToggle,
-            selected = selectedDifficulties.contains(Difficulty.EASY),
-            modifier = Modifier.weight(1f),
-        )
-        DifficultyButton(
-            difficulty = Difficulty.NORMAL,
-            text = stringResource(R.string.filter_dialog_difficulty_normal),
-            onToggleDifficulty = onDifficultyToggle,
-            selected = selectedDifficulties.contains(Difficulty.NORMAL),
-            modifier = Modifier.weight(1f),
-        )
-        DifficultyButton(
-            difficulty = Difficulty.HARD,
-            text = stringResource(R.string.filter_dialog_difficulty_hard),
-            onToggleDifficulty = onDifficultyToggle,
-            selected = selectedDifficulties.contains(Difficulty.HARD),
-            modifier = Modifier.weight(1f),
-        )
     }
 }
 
