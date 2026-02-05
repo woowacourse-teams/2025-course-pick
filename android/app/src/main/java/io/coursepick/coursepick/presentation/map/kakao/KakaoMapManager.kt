@@ -186,7 +186,7 @@ class KakaoMapManager(
             },
             onError = {
                 kakaoMap?.let { kakaoMap: KakaoMap ->
-                    drawer.removeAllLabels(kakaoMap)
+                    drawer.hideUserPosition(kakaoMap)
                 } ?: Timber.w("kakaoMap is null")
             },
         )

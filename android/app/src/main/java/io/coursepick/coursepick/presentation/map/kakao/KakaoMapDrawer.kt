@@ -5,7 +5,6 @@ import android.location.Location
 import androidx.core.graphics.toColorInt
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.label.Label
-import com.kakao.vectormap.label.LabelLayer
 import com.kakao.vectormap.label.LabelOptions
 import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
@@ -77,6 +76,11 @@ class KakaoMapDrawer(
         }
     }
 
+    fun hideUserPosition(map: KakaoMap) {
+        hideAccurateUserPosition(map)
+        hideApproximateUserPosition(map)
+    }
+
     fun showSearchPosition(
         map: KakaoMap,
         coordinate: Coordinate,
@@ -101,11 +105,6 @@ class KakaoMapDrawer(
 
     fun removeAllLines(map: KakaoMap) {
         val layer: RouteLineLayer = map.routeLineManager?.layer ?: return
-        layer.removeAll()
-    }
-
-    fun removeAllLabels(map: KakaoMap) {
-        val layer: LabelLayer = map.labelManager?.layer ?: return
         layer.removeAll()
     }
 
