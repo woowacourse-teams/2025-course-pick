@@ -65,7 +65,7 @@ fun CourseFilterBottomSheet(
                     color = colorResource(R.color.item_primary),
                 )
                 Text(
-                    text = stringResource(R.string.filter_dialog_reset),
+                    text = stringResource(R.string.filter_dialog_reset_button),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = colorResource(R.color.item_primary),
@@ -126,7 +126,7 @@ fun CourseFilterBottomSheet(
                     contentPadding = PaddingValues(horizontal = 4.dp, vertical = 20.dp),
                 ) {
                     Text(
-                        text = stringResource(R.string.filter_dialog_cancel),
+                        text = stringResource(R.string.filter_dialog_cancel_button),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = colorResource(R.color.item_primary),
@@ -136,7 +136,7 @@ fun CourseFilterBottomSheet(
                 FilterResultButton(
                     text =
                         stringResource(
-                            R.string.filter_result_count,
+                            R.string.filter_result_with_count_button,
                             coursesUiState.courses.size,
                         ),
                     enabled = coursesUiState.courses.isNotEmpty(),
@@ -176,10 +176,21 @@ private fun lengthRangeText(filter: CourseFilter): String {
     val max = CourseFilter.MAXIMUM_LENGTH_RANGE.toInt()
 
     return when {
-        start == min && end != max -> stringResource(R.string.length_range_open_start, end)
-        start != min && end == max -> stringResource(R.string.length_range_open_end, start)
-        start != min && end != max -> stringResource(R.string.length_range, start, end)
-        else -> stringResource(R.string.total_length_range)
+        start == min && end != max -> {
+            stringResource(R.string.filter_length_range_open_start_label, end)
+        }
+
+        start != min && end == max -> {
+            stringResource(R.string.filter_length_range_open_end_label, start)
+        }
+
+        start != min && end != max -> {
+            stringResource(R.string.filter_length_range_label, start, end)
+        }
+
+        else -> {
+            stringResource(R.string.filter_length_range_total_label)
+        }
     }
 }
 

@@ -90,7 +90,7 @@ fun SearchScreen(
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = stringResource(R.string.search_no_result),
+                        text = stringResource(R.string.search_no_result_description),
                         fontSize = 20.sp,
                     )
                 }

@@ -38,15 +38,18 @@ class CoursePickUpdateManager(
                 when (currentUpdateType) {
                     AppUpdateType.FLEXIBLE -> {
                         Toast
-                            .makeText(activity, R.string.app_update_cancelled, Toast.LENGTH_SHORT)
-                            .show()
+                            .makeText(
+                                activity,
+                                R.string.app_update_cancelled_message,
+                                Toast.LENGTH_SHORT,
+                            ).show()
                     }
 
                     AppUpdateType.IMMEDIATE -> {
                         Toast
                             .makeText(
                                 activity,
-                                R.string.app_update_must_be_completed,
+                                R.string.app_update_must_be_completed_message,
                                 Toast.LENGTH_LONG,
                             ).show()
 
@@ -83,7 +86,7 @@ class CoursePickUpdateManager(
         Snackbar
             .make(
                 activity.findViewById(android.R.id.content),
-                activity.getString(R.string.app_update_downloaded),
+                activity.getString(R.string.app_update_downloaded_message),
                 Snackbar.LENGTH_INDEFINITE,
             ).setAction(activity.getString(R.string.app_update_action_after_downloaded)) {
                 appUpdateManager.completeUpdate()
