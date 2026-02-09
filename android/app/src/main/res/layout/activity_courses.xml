@@ -43,13 +43,7 @@
             <com.kakao.vectormap.MapView
                 android:id="@+id/mainMap"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <androidx.compose.ui.platform.ComposeView
-                    android:id="@+id/mainDialog"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-            </com.kakao.vectormap.MapView>
+                android:layout_height="match_parent" />
 
             <LinearLayout
                 android:id="@+id/mainSearchBar"
@@ -205,5 +199,10 @@
                 app:menu="@menu/menu_bottom_navigation" />
         </androidx.cardview.widget.CardView>
 
+
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/mainDialog"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
