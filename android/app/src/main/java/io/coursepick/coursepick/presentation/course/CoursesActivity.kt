@@ -517,7 +517,7 @@ class CoursesActivity :
     }
 
     private fun setUpToolbar(systemBars: Insets) {
-        binding.mainToolBarWrapper.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+        binding.mainSearchBar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
             topMargin = systemBars.top
         }
     }
