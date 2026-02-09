@@ -31,7 +31,13 @@ public class PathAllowlistFilter extends OncePerRequestFilter {
                 Pattern.compile("^/images/verified_location.png$"),
                 Pattern.compile("^/actuator.*$"),
                 Pattern.compile("^/api-docs.html$"),
-                Pattern.compile("^/v3/api-docs.*$")
+                Pattern.compile("^/v3/api-docs.*$"),
+                Pattern.compile("^/v1/login/kakao$"),
+                Pattern.compile("^/v1/courses$"),
+                Pattern.compile("^/v1/courses/[^/]+/route$"),
+                Pattern.compile("^/v1/courses/[^/]+/closest-coordinate$"),
+                Pattern.compile("^/v1/courses/favorites$"),
+                Pattern.compile("^/v1/notices/verified_location$")
         ));
     }
 
