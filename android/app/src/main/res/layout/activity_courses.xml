@@ -68,7 +68,8 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginHorizontal="16dp"
                     android:layout_weight="1"
-                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:maxLines="1"
                     android:text="@{viewModel.state.isQueryBlank ? @string/search_query_hint : viewModel.state.query}"
                     android:textAppearance="@style/Toolbar.TitleText"
                     android:textColor="@{viewModel.state.isQueryBlank ? @color/gray3 : @color/item_primary }" />
