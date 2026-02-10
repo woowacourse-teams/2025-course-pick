@@ -728,7 +728,6 @@ class CoursesActivity :
     }
 
     private companion object {
-        const val COURSE_COLOR_DIALOG_TAG = "CourseColorDescriptionDialog"
         const val NOTICE_ID_VERIFIED_LOCATION = "verified_location"
     }
 }
