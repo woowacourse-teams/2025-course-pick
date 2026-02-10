@@ -75,10 +75,11 @@ fun SearchScreen(
             leadingIcon = {
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .clickable { onBackPressed() },
+                    modifier =
+                        Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .clickable { onBackPressed() },
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Default.ArrowBack,
