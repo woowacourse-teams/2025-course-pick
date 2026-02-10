@@ -55,7 +55,6 @@ class CoursesViewModelTest {
                         )
                     },
                 status = UiStatus.Success,
-                verifiedLocations = NOTICE_FIXTURE,
             )
         val actual: CoursesUiState = mainViewModel.state.getOrAwaitValue()
 
@@ -78,7 +77,6 @@ class CoursesViewModelTest {
                     )
                 },
                 status = UiStatus.Success,
-                verifiedLocations = NOTICE_FIXTURE,
             )
 
         // when
@@ -105,7 +103,6 @@ class CoursesViewModelTest {
                     )
                 },
                 status = UiStatus.Success,
-                verifiedLocations = NOTICE_FIXTURE,
             )
 
         // when
