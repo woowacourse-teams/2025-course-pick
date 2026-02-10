@@ -64,7 +64,6 @@ import io.coursepick.coursepick.presentation.search.SearchActivity
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 import io.coursepick.coursepick.presentation.setting.SettingsScreen
 import io.coursepick.coursepick.presentation.ui.DoublePressDetector
-import io.coursepick.coursepick.presentation.verifiedlocations.VerifiedLocationsDialog
 
 @AndroidEntryPoint
 class CoursesActivity :
@@ -707,17 +706,6 @@ class CoursesActivity :
             setContent {
                 CoursePickTheme {
                     val state: CoursesUiState? by viewModel.state.observeAsState()
-
-                    if (state?.showVerifiedLocations == true) {
-                        state?.verifiedLocations?.let { verifiedLocations: Notice ->
-                            VerifiedLocationsDialog(
-                                imageUrl = verifiedLocations.imageUrl,
-                                title = verifiedLocations.title,
-                                description = verifiedLocations.description,
-                                onDismissRequest = viewModel::dismissVerifiedLocations,
-                            )
-                        }
-                    }
 
                     state?.notice?.let { notice: Notice ->
                         NoticeDialog(

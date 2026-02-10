@@ -9,7 +9,6 @@ data class CoursesUiState(
     val status: UiStatus = UiStatus.Loading,
     val courseFilter: CourseFilter = CourseFilter.None,
     val verifiedLocations: Notice? = null,
-    val showVerifiedLocations: Boolean = false,
     val notice: Notice? = null,
     val showSettings: Boolean = false,
     val showFilterDialog: Boolean = false,
