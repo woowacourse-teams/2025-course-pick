@@ -41,6 +41,7 @@ class SearchActivity : ComponentActivity() {
                                 places = emptyList(),
                             ),
                         onQueryChange = viewModel::search,
+                        onBackPressed = ::finish,
                         onPlaceSelect = ::submit,
                         modifier = Modifier.padding(innerPadding),
                     )
