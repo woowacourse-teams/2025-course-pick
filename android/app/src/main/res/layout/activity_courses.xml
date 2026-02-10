@@ -48,17 +48,17 @@
             <LinearLayout
                 android:id="@+id/mainSearchBar"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="56dp"
                 android:layout_margin="10dp"
                 android:background="@drawable/background_courses_search_bar"
                 android:elevation="10dp"
                 android:onClick="@{() -> action.search()}"
-                android:paddingHorizontal="15dp"
+                android:paddingHorizontal="16dp"
                 android:visibility="@{viewModel.content == CoursesContent.EXPLORE ? View.VISIBLE : View.GONE}">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:layout_gravity="center_vertical"
                     android:src="@drawable/icon_search" />
 
@@ -66,7 +66,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginHorizontal="16dp"
                     android:layout_weight="1"
                     android:singleLine="true"
                     android:text="@{viewModel.state.isQueryBlank ? @string/search_query_hint : viewModel.state.query}"
@@ -74,8 +74,8 @@
                     android:textColor="@{viewModel.state.isQueryBlank ? @color/gray3 : @color/item_primary }" />
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:layout_gravity="center_vertical"
                     android:onClick="@{() -> action.clearQuery()}"
                     android:src="@drawable/icon_clear_query"
