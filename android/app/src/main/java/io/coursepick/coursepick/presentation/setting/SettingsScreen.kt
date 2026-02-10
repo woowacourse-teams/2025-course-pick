@@ -27,7 +27,6 @@ fun SettingsScreen(
     onNavigateToFeedback: () -> Unit,
     onNavigateToPrivacyPolicy: () -> Unit,
     onNavigateToOpenSourceNotice: () -> Unit,
-    onShowVerifiedLocations: () -> Unit,
     installationId: String,
     onCopyInstallationId: () -> Unit,
     modifier: Modifier = Modifier,
@@ -97,19 +96,6 @@ fun SettingsScreen(
                         .wrapContentHeight(Alignment.CenterVertically)
                         .padding(horizontal = 10.dp),
             )
-
-            Text(
-                text = "코스가 검증된 지역 보기",
-                fontSize = 16.sp,
-                color = colorResource(R.color.item_primary),
-                modifier =
-                    Modifier
-                        .clickable { onShowVerifiedLocations() }
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .wrapContentHeight(Alignment.CenterVertically)
-                        .padding(horizontal = 10.dp),
-            )
         }
 
         Text(
@@ -133,7 +119,6 @@ fun Preview() {
         onNavigateToFeedback = {},
         onNavigateToPrivacyPolicy = {},
         onNavigateToOpenSourceNotice = {},
-        onShowVerifiedLocations = {},
         installationId = "Installation ID preview",
         onCopyInstallationId = {},
     )

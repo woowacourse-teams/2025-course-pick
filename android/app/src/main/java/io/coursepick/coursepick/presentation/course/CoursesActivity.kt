@@ -222,20 +222,6 @@ class CoursesActivity :
         fetchCourses()
     }
 
-    private fun showVerifiedLocations() {
-        if (viewModel.state.value?.verifiedLocations == null) {
-            Toast
-                .makeText(
-                    this,
-                    getString(R.string.verified_locations_failed_to_fetch_verified_locations_message),
-                    Toast.LENGTH_SHORT,
-                ).show()
-            return
-        }
-
-        viewModel.showVerifiedLocations()
-    }
-
     override fun search() {
         val intent = SearchActivity.intent(this)
         val query: String? = viewModel.state.value?.query
@@ -560,7 +546,6 @@ class CoursesActivity :
                         onNavigateToFeedback = { navigateToFeedback() },
                         onNavigateToPrivacyPolicy = { navigateToPrivacyPolicy() },
                         onNavigateToOpenSourceNotice = { navigateToOpenSourceNotice() },
-                        onShowVerifiedLocations = { showVerifiedLocations() },
                         installationId = coursePickApplication.installationId.value,
                         onCopyInstallationId = { copyClientId() },
                     )

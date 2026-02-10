@@ -480,10 +480,6 @@ class CoursesViewModel
             }
         }
 
-        fun showVerifiedLocations() {
-            _state.value = state.value?.copy(showVerifiedLocations = true)
-        }
-
         fun dismissVerifiedLocations() {
             _state.value = state.value?.copy(showVerifiedLocations = false)
         }
