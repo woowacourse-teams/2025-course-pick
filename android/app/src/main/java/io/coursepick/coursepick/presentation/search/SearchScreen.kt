@@ -77,7 +77,7 @@ fun SearchScreen(
                     contentAlignment = Alignment.Center,
                     modifier =
                         Modifier
-                            .size(36.dp)
+                            .size(48.dp)
                             .clip(CircleShape)
                             .clickable { onBackPressed() },
                 ) {
