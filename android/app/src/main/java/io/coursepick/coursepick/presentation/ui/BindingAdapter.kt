@@ -9,15 +9,12 @@ import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.databinding.BindingAdapter
 import androidx.drawerlayout.widget.DrawerLayout
-import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.slider.RangeSlider
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Kilometer
 import io.coursepick.coursepick.domain.course.Meter
 import io.coursepick.coursepick.presentation.course.CoursesUiState
 import io.coursepick.coursepick.presentation.course.UiStatus
-import io.coursepick.coursepick.presentation.filter.CourseFilter
 
 @BindingAdapter("isSelected")
 fun View.selected(isSelected: Boolean) {
@@ -82,62 +79,6 @@ private fun formattedMeter(
     } else {
         context.getString(R.string.course_item_unit_kilometer, meter.toKilometer().value)
     }
-
-@BindingAdapter("onNavigationClick")
-fun MaterialToolbar.setOnNavigationClick(listener: View.OnClickListener) {
-    setNavigationOnClickListener(listener)
-}
-
-@BindingAdapter("onRangeChanged")
-fun RangeSlider.setRangeSliderListener(listener: RangeSliderListener) {
-    this.addOnChangeListener { _, _, _ ->
-        val values = this.values
-        listener.onRangeChanged(values[0], values[1])
-    }
-}
-
-fun interface RangeSliderListener {
-    fun onRangeChanged(
-        min: Float,
-        max: Float,
-    )
-}
-
-@BindingAdapter("lengthRangeText")
-fun TextView.setLengthRangeText(filter: CourseFilter) {
-    val start =
-        filter.lengthRange.start.value
-            .toInt()
-    val end =
-        filter.lengthRange.endInclusive.value
-            .toInt()
-
-    val min = CourseFilter.MINIMUM_LENGTH_RANGE.toInt()
-    val max = CourseFilter.MAXIMUM_LENGTH_RANGE.toInt()
-
-    val newText =
-        when {
-            start == min && end != max -> {
-                context.getString(R.string.filter_length_range_open_start_label, end)
-            }
-
-            start != min && end == max -> {
-                context.getString(R.string.filter_length_range_open_end_label, start)
-            }
-
-            start != min && end != max -> {
-                context.getString(R.string.filter_length_range_label, start, end)
-            }
-
-            else -> {
-                context.getString(R.string.filter_length_range_total_label)
-            }
-        }
-
-    if (text.toString() != newText) {
-        text = newText
-    }
-}
 
 @BindingAdapter("visibleWhenNoInternet")
 fun View.visibleWhenNoInternet(status: UiStatus?) {
