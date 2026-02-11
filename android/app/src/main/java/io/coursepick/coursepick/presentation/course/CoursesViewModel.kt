@@ -39,7 +39,7 @@ class CoursesViewModel
         private val _state: MutableLiveData<CoursesUiState> =
             MutableLiveData(
                 CoursesUiState(
-                    originalCourses = emptyList(),
+                    originalCourses = listOf(CourseListItem.Loading),
                     query = "",
                     status = UiStatus.Loading,
                 ),
