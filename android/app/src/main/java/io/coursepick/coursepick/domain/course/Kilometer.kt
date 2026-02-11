@@ -4,6 +4,8 @@ package io.coursepick.coursepick.domain.course
 value class Kilometer(
     val value: Double,
 ) : Comparable<Kilometer> {
+    constructor(value: Int) : this(value.toDouble())
+
     override fun compareTo(other: Kilometer): Int = this.value.compareTo(other.value)
 
     fun toMeter(): Meter = Meter(value * METRIC_MULTIPLIER / Meter.METRIC_MULTIPLIER)
