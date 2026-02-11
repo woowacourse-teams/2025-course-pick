@@ -70,7 +70,7 @@ fun CourseFilterBottomSheet(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = colorResource(R.color.item_primary),
-                    modifier = Modifier.clickable(onClick = { onFilterAction(CourseFilterAction.Reset) }),
+                    modifier = Modifier.clickable { onFilterAction(CourseFilterAction.Reset) },
                 )
             }
 
