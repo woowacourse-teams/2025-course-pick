@@ -110,6 +110,7 @@ fun CourseFilterBottomSheet(
                     },
                     valueRange =
                         CourseFilter.MINIMUM_LENGTH_RANGE.value.toFloat()..CourseFilter.MAXIMUM_LENGTH_RANGE.value.toFloat(),
+                    steps = (CourseFilter.MAXIMUM_LENGTH_RANGE.value - CourseFilter.MINIMUM_LENGTH_RANGE.value).toInt() - 1,
                     colors = sliderColors(),
                 )
             }
