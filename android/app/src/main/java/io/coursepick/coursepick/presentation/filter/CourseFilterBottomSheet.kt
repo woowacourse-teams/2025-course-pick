@@ -103,8 +103,8 @@ fun CourseFilterBottomSheet(
                     onValueChange = { range: ClosedFloatingPointRange<Float> ->
                         onFilterAction(
                             CourseFilterAction.UpdateLengthRange(
-                                Kilometer(range.start.toDouble()),
-                                Kilometer(range.endInclusive.toDouble()),
+                                Kilometer(range.start.toInt()),
+                                Kilometer(range.endInclusive.toInt()),
                             ),
                         )
                     },
