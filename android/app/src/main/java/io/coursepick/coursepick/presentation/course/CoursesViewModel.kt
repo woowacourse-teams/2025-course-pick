@@ -281,7 +281,11 @@ class CoursesViewModel
         }
 
         fun fetchFavorites() {
-            _state.value = state.value?.copy(status = UiStatus.Loading)
+            _state.value =
+                state.value?.copy(
+                    originalCourses = listOf(CourseListItem.Loading),
+                    status = UiStatus.Loading,
+                )
 
             val favoritedCourseIds: Set<String> = favoritesRepository.favoriteCourseIds()
             if (favoritedCourseIds.isEmpty()) {
