@@ -45,41 +45,43 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/mainToolBarWrapper"
+            <LinearLayout
+                android:id="@+id/mainSearchBar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="56dp"
                 android:layout_margin="10dp"
-                android:visibility="@{viewModel.content == CoursesContent.EXPLORE ? View.VISIBLE : View.GONE}"
-                app:cardCornerRadius="25dp"
-                app:cardElevation="10dp">
+                android:background="@drawable/background_courses_search_bar"
+                android:elevation="10dp"
+                android:onClick="@{() -> action.search()}"
+                android:paddingHorizontal="16dp"
+                android:visibility="@{viewModel.content == CoursesContent.EXPLORE ? View.VISIBLE : View.GONE}">
 
-                <com.google.android.material.appbar.MaterialToolbar
-                    android:id="@+id/mainToolBar"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:background="@drawable/background_toolbar"
-                    android:onClick="@{() -> action.search()}"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:navigationIcon="@drawable/icon_search"
-                    app:title="@{viewModel.state.isQueryBlank ? @string/search_query_hint : viewModel.state.query}"
-                    app:titleTextAppearance="@style/Toolbar.TitleText"
-                    app:titleTextColor="@{viewModel.state.isQueryBlank ? @color/gray3 : @color/item_primary }">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/icon_search" />
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="end|center_vertical"
-                        android:layout_marginEnd="15dp"
-                        android:onClick="@{() -> action.clearQuery()}"
-                        android:src="@drawable/icon_clear_query"
-                        android:visibility="@{viewModel.state.isQueryBlank ? View.GONE : View.VISIBLE }" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="@{viewModel.state.isQueryBlank ? @string/search_query_hint : viewModel.state.query}"
+                    android:textAppearance="@style/Toolbar.TitleText"
+                    android:textColor="@{viewModel.state.isQueryBlank ? @color/gray3 : @color/item_primary }" />
 
-                </com.google.android.material.appbar.MaterialToolbar>
-
-            </androidx.cardview.widget.CardView>
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:onClick="@{() -> action.clearQuery()}"
+                    android:src="@drawable/icon_clear_query"
+                    android:visibility="@{viewModel.state.isQueryBlank ? View.GONE : View.VISIBLE }" />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/mainSearchThisAreaButton"
@@ -94,12 +96,12 @@
                 android:padding="10dp"
                 android:translationY="50dp"
                 android:visibility="@{viewModel.content == CoursesContent.EXPLORE ? View.VISIBLE : View.GONE}"
-                app:layout_anchor="@id/mainToolBar"
+                app:layout_anchor="@id/mainSearchBar"
                 app:layout_anchorGravity="bottom|center_horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/mainToolBar">
+                app:layout_constraintTop_toBottomOf="@id/mainSearchBar">
 
                 <ImageView
                     android:layout_width="16dp"
