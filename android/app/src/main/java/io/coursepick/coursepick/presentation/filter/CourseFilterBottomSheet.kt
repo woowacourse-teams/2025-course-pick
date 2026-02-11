@@ -32,6 +32,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.coursepick.coursepick.R
+import io.coursepick.coursepick.domain.course.Kilometer
 import io.coursepick.coursepick.presentation.course.CoursesUiState
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 
@@ -102,13 +103,13 @@ fun CourseFilterBottomSheet(
                     onValueChange = { range: ClosedFloatingPointRange<Float> ->
                         onFilterAction(
                             CourseFilterAction.UpdateLengthRange(
-                                range.start.toDouble(),
-                                range.endInclusive.toDouble(),
+                                Kilometer(range.start.toDouble()),
+                                Kilometer(range.endInclusive.toDouble()),
                             ),
                         )
                     },
                     valueRange =
-                        CourseFilter.MINIMUM_LENGTH_RANGE.toFloat()..CourseFilter.MAXIMUM_LENGTH_RANGE.toFloat(),
+                        CourseFilter.MINIMUM_LENGTH_RANGE.value.toFloat()..CourseFilter.MAXIMUM_LENGTH_RANGE.value.toFloat(),
                     colors = sliderColors(),
                 )
             }
@@ -172,8 +173,8 @@ private fun lengthRangeText(filter: CourseFilter): String {
         filter.lengthRange.endInclusive.value
             .toInt()
 
-    val min = CourseFilter.MINIMUM_LENGTH_RANGE.toInt()
-    val max = CourseFilter.MAXIMUM_LENGTH_RANGE.toInt()
+    val min = CourseFilter.MINIMUM_LENGTH_RANGE.value.toInt()
+    val max = CourseFilter.MAXIMUM_LENGTH_RANGE.value.toInt()
 
     return when {
         start == min && end != max -> {

@@ -453,16 +453,13 @@ class CoursesViewModel
         }
 
         private fun updateLengthRange(
-            min: Double,
-            max: Double,
+            min: Kilometer,
+            max: Kilometer,
         ) {
-            val minKm = Kilometer(min)
-            val maxKm = Kilometer(max)
-
             val currentRange = state.value?.courseFilter?.lengthRange
-            if (currentRange?.start == minKm && currentRange.endInclusive == maxKm) return
+            if (currentRange?.start == min && currentRange.endInclusive == max) return
 
-            val updatedLengthRange = minKm..maxKm
+            val updatedLengthRange = min..max
 
             val updatedCourseFilter =
                 state.value?.courseFilter?.copy(lengthRange = updatedLengthRange)
