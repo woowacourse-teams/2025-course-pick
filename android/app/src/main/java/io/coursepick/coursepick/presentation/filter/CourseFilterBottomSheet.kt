@@ -14,7 +14,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.SheetState
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -35,6 +34,7 @@ import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Kilometer
 import io.coursepick.coursepick.presentation.course.CoursesUiState
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
+import io.coursepick.coursepick.presentation.search.ui.theme.sliderColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -149,21 +149,6 @@ fun CourseFilterBottomSheet(
         }
     }
 }
-
-@Composable
-private fun sliderColors() =
-    SliderDefaults.colors(
-        thumbColor = colorResource(R.color.point_secondary),
-        activeTrackColor = colorResource(R.color.point_secondary),
-        inactiveTrackColor = colorResource(R.color.item_tertiary),
-        activeTickColor = colorResource(R.color.point_primary),
-        inactiveTickColor = colorResource(R.color.item_secondary),
-        disabledThumbColor = colorResource(R.color.item_tertiary),
-        disabledActiveTrackColor = colorResource(R.color.item_tertiary),
-        disabledActiveTickColor = colorResource(R.color.item_tertiary),
-        disabledInactiveTrackColor = colorResource(R.color.item_tertiary),
-        disabledInactiveTickColor = colorResource(R.color.item_tertiary),
-    )
 
 @Composable
 private fun lengthRangeText(filter: CourseFilter): String {
