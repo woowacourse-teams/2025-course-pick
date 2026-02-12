@@ -469,7 +469,10 @@ class CoursesActivity :
             object : OnReconnectListener {
                 @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
                 override fun onReconnect() {
-                    fetchCourses()
+                    when (viewModel.content.value) {
+                        CoursesContent.EXPLORE -> fetchCourses()
+                        CoursesContent.FAVORITES -> viewModel.fetchFavorites()
+                    }
                 }
             }
 
