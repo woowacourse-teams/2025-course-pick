@@ -69,10 +69,6 @@
     <string name="notice_dialog_do_not_show_again_button">다시 보지 않음</string>
     <string name="notice_dialog_close_button">닫기</string>
 
-    <!--  검증된 지역 다이얼로그  -->
-    <string name="verified_locations_dialog_close_button">닫기</string>
-    <string name="verified_locations_failed_to_fetch_verified_locations_message">코스가 검증된 지역 정보를 불러올 수 없습니다.</string>
-
     <!--  로그인 UI  -->
     <string name="auth_restriction_message">%1$s 기능은\n로그인이 필요한 서비스입니다.</string>
 

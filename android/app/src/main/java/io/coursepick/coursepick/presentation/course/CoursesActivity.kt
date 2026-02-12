@@ -64,7 +64,6 @@ import io.coursepick.coursepick.presentation.search.SearchActivity
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 import io.coursepick.coursepick.presentation.setting.SettingsScreen
 import io.coursepick.coursepick.presentation.ui.DoublePressDetector
-import io.coursepick.coursepick.presentation.verifiedlocations.VerifiedLocationsDialog
 
 @AndroidEntryPoint
 class CoursesActivity :
@@ -220,20 +219,6 @@ class CoursesActivity :
         mapManager.showSearchPosition(coordinate)
 
         fetchCourses()
-    }
-
-    private fun showVerifiedLocations() {
-        if (viewModel.state.value?.verifiedLocations == null) {
-            Toast
-                .makeText(
-                    this,
-                    getString(R.string.verified_locations_failed_to_fetch_verified_locations_message),
-                    Toast.LENGTH_SHORT,
-                ).show()
-            return
-        }
-
-        viewModel.showVerifiedLocations()
     }
 
     override fun search() {
@@ -560,7 +545,6 @@ class CoursesActivity :
                         onNavigateToFeedback = { navigateToFeedback() },
                         onNavigateToPrivacyPolicy = { navigateToPrivacyPolicy() },
                         onNavigateToOpenSourceNotice = { navigateToOpenSourceNotice() },
-                        onShowVerifiedLocations = { showVerifiedLocations() },
                         installationId = coursePickApplication.installationId.value,
                         onCopyInstallationId = { copyClientId() },
                     )
@@ -723,17 +707,6 @@ class CoursesActivity :
                 CoursePickTheme {
                     val state: CoursesUiState? by viewModel.state.observeAsState()
 
-                    if (state?.showVerifiedLocations == true) {
-                        state?.verifiedLocations?.let { verifiedLocations: Notice ->
-                            VerifiedLocationsDialog(
-                                imageUrl = verifiedLocations.imageUrl,
-                                title = verifiedLocations.title,
-                                description = verifiedLocations.description,
-                                onDismissRequest = viewModel::dismissVerifiedLocations,
-                            )
-                        }
-                    }
-
                     state?.notice?.let { notice: Notice ->
                         NoticeDialog(
                             notice = notice,
@@ -755,7 +728,6 @@ class CoursesActivity :
     }
 
     private companion object {
-        const val COURSE_COLOR_DIALOG_TAG = "CourseColorDescriptionDialog"
         const val NOTICE_ID_VERIFIED_LOCATION = "verified_location"
     }
 }

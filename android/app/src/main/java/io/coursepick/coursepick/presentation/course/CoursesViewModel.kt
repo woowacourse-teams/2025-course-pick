@@ -66,7 +66,6 @@ class CoursesViewModel
 
         init {
             checkNetwork()
-            fetchVerifiedLocations()
         }
 
         private fun checkNetwork() {
@@ -480,26 +479,8 @@ class CoursesViewModel
             }
         }
 
-        fun showVerifiedLocations() {
-            _state.value = state.value?.copy(showVerifiedLocations = true)
-        }
-
-        fun dismissVerifiedLocations() {
-            _state.value = state.value?.copy(showVerifiedLocations = false)
-        }
-
         fun dismissNotice() {
             _state.value = state.value?.copy(notice = null)
-        }
-
-        private fun fetchVerifiedLocations() {
-            viewModelScope.launch {
-                runCatching {
-                    noticeRepository.verifiedLocations()
-                }.onSuccess { verifiedLocations: Notice ->
-                    _state.value = state.value?.copy(verifiedLocations = verifiedLocations)
-                }
-            }
         }
 
         fun showSettings() {
