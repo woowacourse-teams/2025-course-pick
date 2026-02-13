@@ -14,7 +14,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.SheetState
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -32,8 +31,10 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.coursepick.coursepick.R
+import io.coursepick.coursepick.domain.course.Kilometer
 import io.coursepick.coursepick.presentation.course.CoursesUiState
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
+import io.coursepick.coursepick.presentation.search.ui.theme.sliderColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,7 +70,7 @@ fun CourseFilterBottomSheet(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = colorResource(R.color.item_primary),
-                    modifier = Modifier.clickable(onClick = { onFilterAction(CourseFilterAction.Reset) }),
+                    modifier = Modifier.clickable { onFilterAction(CourseFilterAction.Reset) },
                 )
             }
 
@@ -102,13 +103,14 @@ fun CourseFilterBottomSheet(
                     onValueChange = { range: ClosedFloatingPointRange<Float> ->
                         onFilterAction(
                             CourseFilterAction.UpdateLengthRange(
-                                range.start.toDouble(),
-                                range.endInclusive.toDouble(),
+                                Kilometer(range.start.toInt()),
+                                Kilometer(range.endInclusive.toInt()),
                             ),
                         )
                     },
                     valueRange =
-                        CourseFilter.MINIMUM_LENGTH_RANGE.toFloat()..CourseFilter.MAXIMUM_LENGTH_RANGE.toFloat(),
+                        CourseFilter.MINIMUM_LENGTH_RANGE.value.toFloat()..CourseFilter.MAXIMUM_LENGTH_RANGE.value.toFloat(),
+                    steps = (CourseFilter.MAXIMUM_LENGTH_RANGE.value - CourseFilter.MINIMUM_LENGTH_RANGE.value).toInt() - 1,
                     colors = sliderColors(),
                 )
             }
@@ -149,21 +151,6 @@ fun CourseFilterBottomSheet(
 }
 
 @Composable
-private fun sliderColors() =
-    SliderDefaults.colors(
-        thumbColor = colorResource(R.color.point_secondary),
-        activeTrackColor = colorResource(R.color.point_secondary),
-        inactiveTrackColor = colorResource(R.color.item_tertiary),
-        activeTickColor = colorResource(R.color.point_secondary),
-        inactiveTickColor = colorResource(R.color.item_tertiary),
-        disabledThumbColor = colorResource(R.color.item_tertiary),
-        disabledActiveTrackColor = colorResource(R.color.item_tertiary),
-        disabledActiveTickColor = colorResource(R.color.item_tertiary),
-        disabledInactiveTrackColor = colorResource(R.color.item_tertiary),
-        disabledInactiveTickColor = colorResource(R.color.item_tertiary),
-    )
-
-@Composable
 private fun lengthRangeText(filter: CourseFilter): String {
     val start =
         filter.lengthRange.start.value
@@ -172,8 +159,8 @@ private fun lengthRangeText(filter: CourseFilter): String {
         filter.lengthRange.endInclusive.value
             .toInt()
 
-    val min = CourseFilter.MINIMUM_LENGTH_RANGE.toInt()
-    val max = CourseFilter.MAXIMUM_LENGTH_RANGE.toInt()
+    val min = CourseFilter.MINIMUM_LENGTH_RANGE.value.toInt()
+    val max = CourseFilter.MAXIMUM_LENGTH_RANGE.value.toInt()
 
     return when {
         start == min && end != max -> {

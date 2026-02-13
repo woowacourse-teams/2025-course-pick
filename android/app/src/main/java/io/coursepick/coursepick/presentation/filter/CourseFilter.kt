@@ -13,7 +13,7 @@ data class CourseFilter(
 
     private val minimumLength: Meter = lengthRange.start.toMeter()
     private val maximumLength: Meter =
-        if (lengthRange.endInclusive == Kilometer(MAXIMUM_LENGTH_RANGE)) {
+        if (lengthRange.endInclusive == MAXIMUM_LENGTH_RANGE) {
             Meter.MAX_VALUE
         } else {
             lengthRange.endInclusive.toMeter()
@@ -33,11 +33,11 @@ data class CourseFilter(
     fun matches(courseItem: CourseItem): Boolean = Meter(courseItem.length) in minimumLength..maximumLength
 
     companion object {
-        const val MINIMUM_LENGTH_RANGE = 0.0
-        const val MAXIMUM_LENGTH_RANGE = 21.0
+        val MINIMUM_LENGTH_RANGE = Kilometer(0.0)
+        val MAXIMUM_LENGTH_RANGE = Kilometer(21.0)
         val None =
             CourseFilter(
-                lengthRange = Kilometer(MINIMUM_LENGTH_RANGE)..Kilometer(MAXIMUM_LENGTH_RANGE),
+                lengthRange = MINIMUM_LENGTH_RANGE..MAXIMUM_LENGTH_RANGE,
             )
     }
 }
