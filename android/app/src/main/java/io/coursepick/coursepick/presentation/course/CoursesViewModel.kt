@@ -39,7 +39,7 @@ class CoursesViewModel
         private val _state: MutableLiveData<CoursesUiState> =
             MutableLiveData(
                 CoursesUiState(
-                    originalCourses = emptyList(),
+                    originalCourses = listOf(CourseListItem.Loading),
                     query = "",
                     status = UiStatus.Loading,
                 ),
@@ -280,7 +280,11 @@ class CoursesViewModel
         }
 
         fun fetchFavorites() {
-            _state.value = state.value?.copy(status = UiStatus.Loading)
+            _state.value =
+                state.value?.copy(
+                    originalCourses = listOf(CourseListItem.Loading),
+                    status = UiStatus.Loading,
+                )
 
             val favoritedCourseIds: Set<String> = favoritesRepository.favoriteCourseIds()
             if (favoritedCourseIds.isEmpty()) {
