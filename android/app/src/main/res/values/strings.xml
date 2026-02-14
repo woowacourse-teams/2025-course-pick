@@ -33,9 +33,15 @@
     <string name="favorites_header">즐겨찾기</string>
     <string name="favorites_empty_courses_description">즐겨찾기된 코스가 없어요 🗿</string>
 
-    <!--  코스 화면: 현 위치로 이동  -->
+    <!--  코스 화면: 현 위치로 이동 권한  -->
     <string name="move_to_current_location_no_location_permission_message">위치 권한이 없어 현 위치를 표시할 수 없습니다.</string>
     <string name="move_to_current_location_no_fine_location_permission_message">\'정확한 위치\' 권한이 없어 실제 위치와 오차가 발생할 수 있습니다.</string>
+
+    <!--  코스 화면: 길찾기 권한  -->
+    <string name="fine_location_permission_rationale_dialog_with_coarse_permission_message">길찾기 기능은 \'정확한 위치\' 권한으로만 사용 가능합니다.</string>
+    <string name="fine_location_permission_rationale_dialog_without_coarse_permission_message">길찾기 기능은 \'정확한 위치\' 권한이 필요합니다.</string>
+    <string name="fine_location_permission_rationale_dialog_negative_button">설정으로 이동</string>
+    <string name="fine_location_permission_rationale_dialog_positive_button">닫기</string>
 
     <!--  설정 화면  -->
     <string name="settings_feedback_url">https://docs.google.com/forms/d/e/1FAIpQLSdsJcNUsOcDiKW0FI-M360IUS64IZQmnWtMTbZqJSrx7HQbtg/viewform?usp=pp_url&amp;entry.1079171803=%s</string>
@@ -62,12 +68,6 @@
     <string name="selected_route_finder_application_entry_kakao_map">카카오맵에서 보기</string>
     <string name="selected_route_finder_application_entry_naver_map">네이버 지도에서 보기</string>
     <string name="selected_route_finder_application_entry_none_map">선택 안 함</string>
-
-    <!--  정확한 위치 권한 요청 다이얼로그  -->
-    <string name="fine_location_permission_rationale_dialog_with_coarse_permission_message">길찾기 기능은 \'정확한 위치\' 권한으로만 사용 가능합니다.</string>
-    <string name="fine_location_permission_rationale_dialog_without_coarse_permission_message">길찾기 기능은 \'정확한 위치\' 권한이 필요합니다.</string>
-    <string name="fine_location_permission_rationale_dialog_negative_button">설정으로 이동</string>
-    <string name="fine_location_permission_rationale_dialog_positive_button">닫기</string>
 
     <!--  공지 다이얼로그  -->
     <string name="notice_dialog_do_not_show_again_button">다시 보지 않음</string>
