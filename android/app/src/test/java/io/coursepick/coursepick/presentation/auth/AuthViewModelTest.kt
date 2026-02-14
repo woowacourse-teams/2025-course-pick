@@ -1,8 +1,9 @@
 package io.coursepick.coursepick.presentation.auth
 
+import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.auth.SocialAuthenticator
+import io.coursepick.coursepick.domain.auth.SocialToken
 import io.coursepick.coursepick.presentation.extension.InstantTaskExecutorExtension
-import io.coursepick.coursepick.presentation.fixtures.FakeAuthRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -14,7 +15,19 @@ class AuthViewModelTest {
         // given
         val viewModel =
             AuthViewModel(
-                authRepository = FakeAuthRepository(),
+                authRepository =
+                    object : AuthRepository {
+                        override suspend fun sign(
+                            socialType: String,
+                            socialToken: SocialToken,
+                        ): String = "token 123456"
+
+                        override suspend fun saveAccessToken(token: String) = Unit
+
+                        override suspend fun accessToken(): String? = null
+
+                        override suspend fun clearAccessToken() = Unit
+                    },
             )
 
         // when
