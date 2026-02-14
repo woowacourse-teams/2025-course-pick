@@ -21,6 +21,12 @@ class AuthViewModelTest {
                             socialType: String,
                             socialToken: SocialToken,
                         ): String = "token 123456"
+
+                        override suspend fun saveAccessToken(token: String) = Unit
+
+                        override suspend fun accessToken(): String? = null
+
+                        override suspend fun clearAccessToken() = Unit
                     },
             )
 

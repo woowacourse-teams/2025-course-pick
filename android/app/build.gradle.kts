@@ -83,6 +83,11 @@ android {
                 "MIXPANEL_PROJECT_TOKEN",
                 localProperties["mixpanel.project.token.dev"].toString(),
             )
+            buildConfigField(
+                "String",
+                "TOKEN_SECURITY",
+                localProperties["token.security"].toString(),
+            )
         }
 
         getByName("release") {
@@ -119,6 +124,11 @@ android {
                 "String",
                 "MIXPANEL_PROJECT_TOKEN",
                 localProperties["mixpanel.project.token.prod"].toString(),
+            )
+            buildConfigField(
+                "String",
+                "TOKEN_SECURITY",
+                localProperties["token.security"].toString(),
             )
         }
     }
@@ -191,4 +201,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    implementation(libs.androidx.datastore)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.tink.android)
 }

@@ -5,4 +5,10 @@ interface AuthRepository {
         socialType: String,
         socialToken: SocialToken,
     ): String
+
+    suspend fun saveAccessToken(token: String)
+
+    suspend fun accessToken(): String?
+
+    suspend fun clearAccessToken()
 }
