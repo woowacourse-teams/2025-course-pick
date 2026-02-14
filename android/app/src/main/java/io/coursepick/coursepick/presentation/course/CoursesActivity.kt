@@ -367,9 +367,7 @@ class CoursesActivity :
     override fun moveToCurrentLocation() {
         Logger.log(Logger.Event.Click("move_to_current_location"))
 
-        val hasCoarseLocationPermission: Boolean =
-            checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-        if (!hasCoarseLocationPermission) {
+        if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED) {
             Toast
                 .makeText(
                     this,
@@ -379,9 +377,7 @@ class CoursesActivity :
             return
         }
 
-        val hasFineLocationPermission: Boolean =
-            checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-        if (!hasFineLocationPermission) {
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
             Toast
                 .makeText(
                     this,
