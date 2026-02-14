@@ -8,6 +8,7 @@ import com.kakao.vectormap.label.LabelOptions
 import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
 import com.kakao.vectormap.label.LabelTransition
+import com.kakao.vectormap.label.TransformMethod
 import com.kakao.vectormap.label.Transition
 import com.kakao.vectormap.route.RouteLineLayer
 import com.kakao.vectormap.route.RouteLineOptions
@@ -118,6 +119,7 @@ class KakaoMapDrawer(
             LabelOptions
                 .from(latLng)
                 .setStyles(LabelStyles.from(style))
+                .setTransform(TransformMethod.Decal)
                 .apply { labelId = ID_ACCURATE_USER_POSITION_MARK }
 
         addOrUpdateLabel(map, options) { oldLabel: Label ->
