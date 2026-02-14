@@ -96,7 +96,7 @@ class KakaoMapDrawer(
                 .setStyles(LabelStyles.from(style))
                 .apply { labelId = ID_SEARCH_POSITION_MARK }
 
-        updateOrAddLabel(map, options) { oldLabel: Label ->
+        addOrUpdateLabel(map, options) { oldLabel: Label ->
             oldLabel.moveTo(latLng)
         }
     }
@@ -120,7 +120,7 @@ class KakaoMapDrawer(
                 .setStyles(LabelStyles.from(style))
                 .apply { labelId = ID_ACCURATE_USER_POSITION_MARK }
 
-        updateOrAddLabel(map, options) { oldLabel: Label ->
+        addOrUpdateLabel(map, options) { oldLabel: Label ->
             oldLabel.moveTo(latLng, LABEL_MOVE_ANIMATION_DURATION)
         }
     }
@@ -137,7 +137,7 @@ class KakaoMapDrawer(
                 .setStylesSet(PolygonStylesSet.from(PolygonStyles.from(context.getColor(R.color.coarse_location_area))))
                 .apply { polygonId = ID_APPROXIMATE_USER_POSITION_MARK }
 
-        updateOrAddPolygon(map, options) { oldPolygon: Polygon ->
+        addOrUpdatePolygon(map, options) { oldPolygon: Polygon ->
             oldPolygon.setPosition(location.toLatLng())
         }
     }
@@ -156,7 +156,7 @@ class KakaoMapDrawer(
             ?.let(Polygon::remove)
     }
 
-    private fun updateOrAddLabel(
+    private fun addOrUpdateLabel(
         map: KakaoMap,
         options: LabelOptions,
         handleOldLabel: (Label) -> Unit,
@@ -169,7 +169,7 @@ class KakaoMapDrawer(
         layer.addLabel(options)
     }
 
-    private fun updateOrAddPolygon(
+    private fun addOrUpdatePolygon(
         map: KakaoMap,
         options: PolygonOptions,
         handleOldPolygon: (Polygon) -> Unit,
