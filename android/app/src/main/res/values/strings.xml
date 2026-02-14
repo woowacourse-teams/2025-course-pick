@@ -38,8 +38,8 @@
     <string name="move_to_current_location_no_fine_location_permission_message">\'정확한 위치\' 권한이 없어 실제 위치와 오차가 발생할 수 있습니다.</string>
 
     <!--  코스 화면: 길찾기 권한  -->
-    <string name="fine_location_permission_rationale_dialog_with_coarse_permission_message">길찾기 기능은 \'정확한 위치\' 권한으로만 사용 가능합니다.</string>
-    <string name="fine_location_permission_rationale_dialog_without_coarse_permission_message">길찾기 기능은 \'정확한 위치\' 권한이 필요합니다.</string>
+    <string name="fine_location_permission_rationale_dialog_with_coarse_permission_message">보다 정확한 안내를 위해 \'정확한 위치\' 권한을 허용해주세요.</string>
+    <string name="fine_location_permission_rationale_dialog_without_coarse_permission_message">안내를 위해 \'정확한 위치\' 권한을 허용해주세요.</string>
     <string name="fine_location_permission_rationale_dialog_negative_button">설정으로 이동</string>
     <string name="fine_location_permission_rationale_dialog_positive_button">닫기</string>
 
