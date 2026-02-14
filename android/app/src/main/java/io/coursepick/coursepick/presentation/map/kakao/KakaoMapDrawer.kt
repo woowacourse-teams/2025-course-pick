@@ -1,8 +1,6 @@
 package io.coursepick.coursepick.presentation.map.kakao
 
-import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
 import android.location.Location
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.label.Label
@@ -68,8 +66,9 @@ class KakaoMapDrawer(
     fun showUserPosition(
         map: KakaoMap,
         location: Location,
+        isAccurate: Boolean,
     ) {
-        if (context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (isAccurate) {
             showAccurateUserPosition(map, location)
         } else {
             showApproximateUserPosition(map, location)
