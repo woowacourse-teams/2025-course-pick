@@ -366,6 +366,30 @@ class CoursesActivity :
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun moveToCurrentLocation() {
         Logger.log(Logger.Event.Click("move_to_current_location"))
+
+        val hasCoarseLocationPermission: Boolean =
+            checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        if (!hasCoarseLocationPermission) {
+            Toast
+                .makeText(
+                    this,
+                    getString(R.string.move_to_current_location_no_location_permission_message),
+                    Toast.LENGTH_SHORT,
+                ).show()
+            return
+        }
+
+        val hasFineLocationPermission: Boolean =
+            checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        if (!hasFineLocationPermission) {
+            Toast
+                .makeText(
+                    this,
+                    getString(R.string.move_to_current_location_no_fine_location_permission_message),
+                    Toast.LENGTH_SHORT,
+                ).show()
+        }
+
         mapManager.showCurrentLocation {
             binding.mainCurrentLocationButton.setColorFilter(
                 ContextCompat.getColor(this, R.color.gray3),
