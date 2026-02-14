@@ -98,13 +98,18 @@ class CoursesActivity :
                 viewModel.toggleFavorite(course)
             }
 
-            @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+            @RequiresPermission(Manifest.permission.ACCESS_FINE_LOCATION)
             override fun navigateToCourse(course: CourseItem) {
                 Logger.log(
                     Logger.Event.Click("navigate"),
                     "id" to course.id,
                     "name" to course.name,
                 )
+
+                if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+                    showFineLocationPermissionRationaleDialog()
+                    return
+                }
 
                 mapManager.fetchCurrentLocation(
                     onSuccess = { latitude: Latitude, longitude: Longitude ->
@@ -361,17 +366,30 @@ class CoursesActivity :
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun moveToCurrentLocation() {
         Logger.log(Logger.Event.Click("move_to_current_location"))
+
+        if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+            Toast
+                .makeText(
+                    this,
+                    getString(R.string.move_to_current_location_no_location_permission_message),
+                    Toast.LENGTH_SHORT,
+                ).show()
+            return
+        }
+
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
-            showFineLocationPermissionRationaleDialog()
-        } else {
-            mapManager.showCurrentLocation {
-                binding.mainCurrentLocationButton.setColorFilter(
-                    ContextCompat.getColor(
-                        this,
-                        R.color.gray3,
-                    ),
-                )
-            }
+            Toast
+                .makeText(
+                    this,
+                    getString(R.string.move_to_current_location_no_fine_location_permission_message),
+                    Toast.LENGTH_SHORT,
+                ).show()
+        }
+
+        mapManager.showCurrentLocation {
+            binding.mainCurrentLocationButton.setColorFilter(
+                ContextCompat.getColor(this, R.color.gray3),
+            )
         }
     }
 
