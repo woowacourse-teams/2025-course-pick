@@ -17,11 +17,11 @@ class TokenLocalDataSource
         private val dataStore: DataStore<Preferences>,
         private val aead: Aead,
     ) {
-        private val tokenSecurity: String = BuildConfig.TOKEN_SECURITY
+        private val tokenSecurity: ByteArray = BuildConfig.TOKEN_SECURITY.toByteArray()
         private val accessToken: Preferences.Key<String> = stringPreferencesKey("access_token")
 
         suspend fun saveAccessToken(token: String) {
-            val ciphertext: ByteArray = aead.encrypt(token.toByteArray(), tokenSecurity.toByteArray())
+            val ciphertext: ByteArray = aead.encrypt(token.toByteArray(), tokenSecurity)
             val encryptedToken: String = Base64.encodeToString(ciphertext, Base64.NO_WRAP)
             dataStore.edit { preferences: MutablePreferences ->
                 preferences[accessToken] = encryptedToken
@@ -31,7 +31,7 @@ class TokenLocalDataSource
         suspend fun accessToken(): String? {
             val encryptedToken: String = dataStore.data.first()[accessToken] ?: return null
             val decoded: ByteArray = Base64.decode(encryptedToken, Base64.NO_WRAP)
-            return String(aead.decrypt(decoded, tokenSecurity.toByteArray()))
+            return String(aead.decrypt(decoded, tokenSecurity))
         }
 
         suspend fun clearAccessToken() {
