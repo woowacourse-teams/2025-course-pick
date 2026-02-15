@@ -133,14 +133,15 @@ class KakaoMapDrawer(
     ) {
         hideAccurateUserPosition(map)
 
+        val latLng = location.toLatLng()
         val options =
             PolygonOptions
-                .from(DotPoints.fromCircle(location.toLatLng(), location.accuracy))
+                .from(DotPoints.fromCircle(latLng, location.accuracy))
                 .setStylesSet(PolygonStylesSet.from(PolygonStyles.from(context.getColor(R.color.coarse_location_area))))
                 .apply { polygonId = ID_APPROXIMATE_USER_POSITION_MARK }
 
         addOrUpdatePolygon(map, options) { oldPolygon: Polygon ->
-            oldPolygon.setPosition(location.toLatLng())
+            oldPolygon.setPosition(latLng)
         }
     }
 
