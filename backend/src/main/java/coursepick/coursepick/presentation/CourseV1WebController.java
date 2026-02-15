@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1")
 @RequiredArgsConstructor
 public class CourseV1WebController implements CourseWebApi {
 
