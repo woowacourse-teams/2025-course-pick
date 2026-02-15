@@ -143,7 +143,7 @@ class KakaoMapDrawer(
 
         addOrUpdatePolygon(map, options) { oldPolygon: Polygon ->
             oldPolygon.setPosition(latLng)
-            oldPolygon.changeDotPoints(listOf(DotPoints.fromCircle(null, location.accuracy)))
+            oldPolygon.changeDotPoints(listOf(DotPoints.fromCircle(latLng, location.accuracy)))
         }
     }
 
