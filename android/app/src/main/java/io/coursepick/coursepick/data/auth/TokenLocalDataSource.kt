@@ -1,0 +1,42 @@
+package io.coursepick.coursepick.data.auth
+
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.MutablePreferences
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import com.google.crypto.tink.Aead
+import com.google.crypto.tink.subtle.Base64
+import io.coursepick.coursepick.BuildConfig
+import kotlinx.coroutines.flow.first
+import javax.inject.Inject
+
+class TokenLocalDataSource
+    @Inject
+    constructor(
+        private val dataStore: DataStore<Preferences>,
+        private val aead: Aead,
+    ) {
+        private val tokenSecurity: ByteArray = BuildConfig.TOKEN_SECURITY.toByteArray()
+        private val accessToken: Preferences.Key<String> = stringPreferencesKey("access_token")
+
+        suspend fun saveAccessToken(token: String) {
+            val ciphertext: ByteArray = aead.encrypt(token.toByteArray(), tokenSecurity)
+            val encryptedToken: String = Base64.encodeToString(ciphertext, Base64.NO_WRAP)
+            dataStore.edit { preferences: MutablePreferences ->
+                preferences[accessToken] = encryptedToken
+            }
+        }
+
+        suspend fun accessToken(): String? {
+            val encryptedToken: String = dataStore.data.first()[accessToken] ?: return null
+            val decoded: ByteArray = Base64.decode(encryptedToken, Base64.NO_WRAP)
+            return String(aead.decrypt(decoded, tokenSecurity))
+        }
+
+        suspend fun clearAccessToken() {
+            dataStore.edit { preferences: MutablePreferences ->
+                preferences.remove(accessToken)
+            }
+        }
+    }
