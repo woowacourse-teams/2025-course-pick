@@ -470,16 +470,8 @@ class CoursesActivity :
                 @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
                 override fun onReconnect() {
                     when (viewModel.content.value) {
-                        CoursesContent.EXPLORE -> {
-                            val mapCoordinate: Coordinate? = mapCoordinateOrNull()
-                            if (mapCoordinate != null) {
-                                fetchCourses(mapCoordinate)
-                            }
-                        }
-
-                        CoursesContent.FAVORITES -> {
-                            viewModel.fetchFavorites()
-                        }
+                        CoursesContent.EXPLORE -> mapCoordinateOrNull()?.let(::fetchCourses)
+                        CoursesContent.FAVORITES -> viewModel.fetchFavorites()
                     }
                 }
             }
@@ -578,8 +570,7 @@ class CoursesActivity :
         mapManager.fetchCurrentLocation(
             onSuccess = { userLatitude: Latitude, userLongitude: Longitude ->
                 val userCoordinate = Coordinate(userLatitude, userLongitude)
-                val mapCoordinate: Coordinate = userCoordinate
-                viewModel.fetchCourses(mapCoordinate, userCoordinate, scope)
+                viewModel.fetchCourses(userCoordinate, userCoordinate, scope)
             },
             onFailure = {
                 val mapCoordinate: Coordinate = mapCoordinateOrNull() ?: return@fetchCurrentLocation
