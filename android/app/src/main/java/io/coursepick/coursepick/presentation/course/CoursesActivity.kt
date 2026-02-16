@@ -577,7 +577,8 @@ class CoursesActivity :
                 viewModel.fetchCourses(mapCoordinate, userCoordinate, scope)
             },
             onFailure = {
-                val mapCoordinate: Coordinate = target ?: return@fetchCurrentLocation
+                val mapCoordinate: Coordinate =
+                    target ?: mapCoordinateOrNull() ?: return@fetchCurrentLocation
                 viewModel.fetchCourses(mapCoordinate, null, scope)
             },
         )
