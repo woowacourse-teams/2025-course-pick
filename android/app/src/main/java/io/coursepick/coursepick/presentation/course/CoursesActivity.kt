@@ -691,7 +691,7 @@ class CoursesActivity :
     }
 
     private fun showNoticeIfNeeded(noticeId: String?) {
-        if (noticeId.isNullOrBlank()) return
+        if (noticeId == null) return
         if (coursePickApplication.hasShownNoticeThisSession) return
         if (!CoursePickPreferences.shouldShowNotice(noticeId)) return
 
