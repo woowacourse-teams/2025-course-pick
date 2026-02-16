@@ -31,7 +31,7 @@ public interface CourseWebApi {
                     )
             })),
     })
-    CoursesWebResponse findNearbyCourses(
+    List<CourseWebResponse> findNearbyCourses(
             @Parameter(description = "지도 중심의 위도(-90 ~ 90)", example = "37.5165004", required = true) double mapLatitude,
             @Parameter(description = "지도 중심의 경도(-180 ~ 180)", example = "127.1040109", required = true) double mapLongitude,
             @Parameter(description = "좌표 중심으로부터 탐색하고자 하는 범위", example = "1000", required = true) int scope,

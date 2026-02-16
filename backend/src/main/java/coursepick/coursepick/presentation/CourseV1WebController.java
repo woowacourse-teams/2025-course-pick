@@ -21,7 +21,7 @@ public class CourseV1WebController implements CourseWebApi {
 
     @Override
     @GetMapping("/courses")
-    public CoursesWebResponse findNearbyCourses(
+    public List<CourseWebResponse> findNearbyCourses(
             @RequestParam("mapLat") double mapLatitude,
             @RequestParam("mapLng") double mapLongitude,
             @RequestParam("scope") int scope,
@@ -33,7 +33,7 @@ public class CourseV1WebController implements CourseWebApi {
     ) {
         CourseFindCondition condition = new CourseFindCondition(mapLatitude, mapLongitude, scope, minLength, maxLength, page);
         CoursesResponse response = courseApplicationService.findNearbyCourses(condition, userLatitude, userLongitude);
-        return CoursesWebResponse.from(response);
+        return CourseWebResponse.from(response.courses());
     }
 
     @Override
