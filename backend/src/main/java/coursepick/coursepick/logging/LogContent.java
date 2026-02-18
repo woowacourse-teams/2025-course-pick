@@ -1,8 +1,8 @@
 package coursepick.coursepick.logging;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.bson.Document;
 import org.springframework.web.util.ContentCachingRequestWrapper;
-import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
@@ -18,7 +18,7 @@ public class LogContent {
             Pattern.compile("^/admin/login$")
     );
 
-    public static Object[] http(ContentCachingRequestWrapper request, ContentCachingResponseWrapper response, long duration) {
+    public static Object[] http(ContentCachingRequestWrapper request, HttpServletResponse response, long duration) {
         String method = request.getMethod();
         String uri = extractUriWithQueryString(request);
         String headers = extractHeaderString(request);
@@ -27,7 +27,6 @@ public class LogContent {
             requestBody = "[this is sensitive data]";
         }
         int status = response.getStatus();
-        String responseBody = new String(response.getContentAsByteArray(), StandardCharsets.UTF_8).strip();
 
         return new Object[]{
                 kv("method", method),
@@ -35,8 +34,7 @@ public class LogContent {
                 kv("status", status),
                 kv("duration_ms", duration),
                 kv("req_headers", headers),
-                kv("req_body", left(requestBody, 100)),
-                kv("res_body", left(responseBody, 100))
+                kv("req_body", left(requestBody, 100))
         };
     }
 

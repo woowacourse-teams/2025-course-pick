@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
-import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
 
@@ -19,16 +18,13 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
-        ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
 
         long startTime = System.currentTimeMillis();
-        filterChain.doFilter(requestWrapper, responseWrapper);
+        filterChain.doFilter(requestWrapper, response);
         long duration = System.currentTimeMillis() - startTime;
 
         if (!request.getRequestURI().startsWith("/actuator")) {
-            log.info("[HTTP]", LogContent.http(requestWrapper, responseWrapper, duration));
+            log.info("[HTTP]", LogContent.http(requestWrapper, response, duration));
         }
-
-        responseWrapper.copyBodyToResponse();
     }
 }
