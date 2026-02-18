@@ -147,11 +147,11 @@ class KakaoMapDrawer(
 
     private fun addOrUpdateLabel(
         options: LabelOptions,
-        handleOldLabel: (Label) -> Unit,
+        updateOldLabel: (Label) -> Unit,
     ) {
         val layer = map.labelManager?.layer ?: return
         layer.getLabel(options.labelId)?.let { oldLabel: Label ->
-            handleOldLabel(oldLabel)
+            updateOldLabel(oldLabel)
             return
         }
         layer.addLabel(options)
@@ -159,11 +159,11 @@ class KakaoMapDrawer(
 
     private fun addOrUpdatePolygon(
         options: PolygonOptions,
-        handleOldPolygon: (Polygon) -> Unit,
+        updateOldPolygon: (Polygon) -> Unit,
     ) {
         val layer = map.shapeManager?.layer ?: return
         layer.getPolygon(options.polygonId)?.let { oldPolygon: Polygon ->
-            handleOldPolygon(oldPolygon)
+            updateOldPolygon(oldPolygon)
             return
         }
         layer.addPolygon(options)
