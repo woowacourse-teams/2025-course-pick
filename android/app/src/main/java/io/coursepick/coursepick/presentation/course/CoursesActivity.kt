@@ -165,7 +165,7 @@ class CoursesActivity :
                     ),
                 )
             }
-            fetchCourses()
+            fetchInitialCourses()
         }
 
         setUpBottomNavigation()
@@ -218,7 +218,7 @@ class CoursesActivity :
         binding.mainSearchThisAreaButton.visibility = View.GONE
         mapManager.showSearchPosition(coordinate)
 
-        fetchCourses()
+        fetchCourses(coordinate)
     }
 
     override fun search() {
@@ -296,7 +296,7 @@ class CoursesActivity :
         mapManager.resetZoomLevel()
         mapManager.showSearchPosition(coordinate)
         mapManager.moveTo(latitude, longitude)
-        fetchCourses()
+        fetchCourses(coordinate)
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -470,7 +470,7 @@ class CoursesActivity :
                 @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
                 override fun onReconnect() {
                     when (viewModel.content.value) {
-                        CoursesContent.EXPLORE -> fetchCourses()
+                        CoursesContent.EXPLORE -> mapCoordinateOrNull()?.let(::fetchCourses)
                         CoursesContent.FAVORITES -> viewModel.fetchFavorites()
                     }
                 }
@@ -564,17 +564,32 @@ class CoursesActivity :
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    private fun fetchCourses() {
-        val mapPosition: Coordinate = mapCoordinateOrNull() ?: return
+    private fun fetchInitialCourses() {
+        val scope: Scope = Scope.default()
+
+        mapManager.fetchCurrentLocation(
+            onSuccess = { userLatitude: Latitude, userLongitude: Longitude ->
+                val userCoordinate = Coordinate(userLatitude, userLongitude)
+                viewModel.fetchCourses(userCoordinate, userCoordinate, scope)
+            },
+            onFailure = {
+                val mapCoordinate: Coordinate = mapCoordinateOrNull() ?: return@fetchCurrentLocation
+                viewModel.fetchCourses(mapCoordinate, null, scope)
+            },
+        )
+    }
+
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+    private fun fetchCourses(targetCoordinate: Coordinate) {
         val scope: Scope = scopeOrNull() ?: return
 
         mapManager.fetchCurrentLocation(
             onSuccess = { userLatitude: Latitude, userLongitude: Longitude ->
                 val userCoordinate = Coordinate(userLatitude, userLongitude)
-                viewModel.fetchCourses(mapPosition, userCoordinate, scope)
+                viewModel.fetchCourses(targetCoordinate, userCoordinate, scope)
             },
             onFailure = {
-                viewModel.fetchCourses(mapPosition, null, scope)
+                viewModel.fetchCourses(targetCoordinate, null, scope)
             },
         )
     }
