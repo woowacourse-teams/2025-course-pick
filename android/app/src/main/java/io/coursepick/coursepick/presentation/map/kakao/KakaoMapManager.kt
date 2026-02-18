@@ -28,11 +28,10 @@ class KakaoMapManager(
 ) {
     private val lifecycleHandler = KakaoMapLifecycleHandler(mapView)
     private val cameraController = KakaoMapCameraController(mapView.context)
-    private val drawer = KakaoMapDrawer(mapView.context)
     private val eventHandler = KakaoMapEventHandler()
 
-    @Suppress("ktlint:standard:backing-property-naming")
     private var kakaoMap: KakaoMap? = null
+    private var drawer: KakaoMapDrawer? = null
 
     val cameraPosition get(): LatLng? = kakaoMap?.cameraPosition?.position
 
@@ -42,6 +41,7 @@ class KakaoMapManager(
             mapView.context.resources.getDimension(R.dimen.map_logo_position_offset)
         lifecycleHandler.start { map: KakaoMap ->
             kakaoMap = map
+            drawer = KakaoMapDrawer(mapView.context, map)
             map.logo?.setPosition(
                 MapGravity.BOTTOM or MapGravity.LEFT,
                 offsetPx,
@@ -62,36 +62,26 @@ class KakaoMapManager(
     fun finish() = lifecycleHandler.finish()
 
     fun draw(course: CourseItem) {
-        kakaoMap?.let { kakaoMap: KakaoMap ->
-            drawer.drawCourse(kakaoMap, course)
-        } ?: Timber.w("kakaoMap is null")
+        drawer?.drawCourse(course) ?: Timber.w("KakaoMapDrawer is null")
     }
 
     fun draw(courses: List<CourseItem>) {
-        kakaoMap?.let { kakaoMap: KakaoMap ->
-            drawer.drawCourses(kakaoMap, courses)
-        } ?: Timber.w("kakaoMap is null")
+        drawer?.drawCourses(courses) ?: Timber.w("KakaoMapDrawer is null")
     }
 
     fun drawRouteToCourse(
         route: List<Coordinate>,
         course: CourseItem,
     ) {
-        kakaoMap?.let { kakaoMap: KakaoMap ->
-            drawer.drawRouteToCourse(kakaoMap, route, course)
-        } ?: Timber.w("kakaoMap is null")
+        drawer?.drawRouteToCourse(route, course) ?: Timber.w("KakaoMapDrawer is null")
     }
 
     fun removeAllLines() {
-        kakaoMap?.let { kakaoMap: KakaoMap ->
-            drawer.removeAllLines(kakaoMap)
-        } ?: Timber.w("kakaoMap is null")
+        drawer?.removeAllLines() ?: Timber.w("KakaoMapDrawer is null")
     }
 
     fun showSearchPosition(coordinate: Coordinate) {
-        kakaoMap?.let { kakaoMap: KakaoMap ->
-            drawer.showSearchPosition(kakaoMap, coordinate)
-        } ?: Timber.w("kakaoMap is null")
+        drawer?.showSearchPosition(coordinate)
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -99,9 +89,9 @@ class KakaoMapManager(
         locationProvider.fetchCurrentLocation(
             onSuccess = { location: Location, isAccurate: Boolean ->
                 kakaoMap?.let { kakaoMap: KakaoMap ->
-                    drawer.showUserPosition(kakaoMap, location, isAccurate)
                     cameraController.moveTo(kakaoMap, location)
                 } ?: Timber.w("kakaoMap is null")
+                drawer?.showUserPosition(location, isAccurate) ?: Timber.w("KakaoMapDrawer is null")
                 afterSuccess()
             },
             onFailure = {
@@ -176,15 +166,9 @@ class KakaoMapManager(
     fun startTrackingCurrentLocation() {
         locationProvider.startLocationUpdates(
             onUpdate = { location: Location, isAccurate: Boolean ->
-                kakaoMap?.let { kakaoMap: KakaoMap ->
-                    drawer.showUserPosition(kakaoMap, location, isAccurate)
-                } ?: Timber.w("kakaoMap is null")
+                drawer?.showUserPosition(location, isAccurate) ?: Timber.w("KakaoMapDrawer is null")
             },
-            onError = {
-                kakaoMap?.let { kakaoMap: KakaoMap ->
-                    drawer.hideUserPosition(kakaoMap)
-                } ?: Timber.w("kakaoMap is null")
-            },
+            onError = { drawer?.hideUserPosition() ?: Timber.w("KakaoMapDrawer is null") },
         )
     }
 

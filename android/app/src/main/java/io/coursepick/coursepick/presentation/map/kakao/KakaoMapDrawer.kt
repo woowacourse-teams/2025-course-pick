@@ -23,13 +23,11 @@ import io.coursepick.coursepick.presentation.course.CourseItem
 
 class KakaoMapDrawer(
     private val context: Context,
+    private val map: KakaoMap,
 ) {
     private val routeLineOptionsFactory = RouteLineOptionsFactory(context)
 
-    fun drawCourse(
-        map: KakaoMap,
-        course: CourseItem,
-    ) {
+    fun drawCourse(course: CourseItem) {
         val layer: RouteLineLayer = map.routeLineManager?.layer ?: return
         val options: RouteLineOptions =
             routeLineOptionsFactory.routeLineOptions(course).apply {
@@ -38,10 +36,7 @@ class KakaoMapDrawer(
         layer.addRouteLine(options)
     }
 
-    fun drawCourses(
-        map: KakaoMap,
-        courses: List<CourseItem>,
-    ) {
+    fun drawCourses(courses: List<CourseItem>) {
         val layer: RouteLineLayer = map.routeLineManager?.layer ?: return
         courses.forEach { course: CourseItem ->
             val options: RouteLineOptions =
@@ -54,7 +49,6 @@ class KakaoMapDrawer(
     }
 
     fun drawRouteToCourse(
-        map: KakaoMap,
         route: List<Coordinate>,
         course: CourseItem,
     ) {
@@ -65,26 +59,22 @@ class KakaoMapDrawer(
     }
 
     fun showUserPosition(
-        map: KakaoMap,
         location: Location,
         isAccurate: Boolean,
     ) {
         if (isAccurate) {
-            showAccurateUserPosition(map, location)
+            showAccurateUserPosition(location)
         } else {
-            showApproximateUserPosition(map, location)
+            showApproximateUserPosition(location)
         }
     }
 
-    fun hideUserPosition(map: KakaoMap) {
+    fun hideUserPosition() {
         hideAccurateUserPosition(map)
         hideApproximateUserPosition(map)
     }
 
-    fun showSearchPosition(
-        map: KakaoMap,
-        coordinate: Coordinate,
-    ) {
+    fun showSearchPosition(coordinate: Coordinate) {
         val latLng = coordinate.toLatLng()
         val style =
             LabelStyle
@@ -97,20 +87,17 @@ class KakaoMapDrawer(
                 .setStyles(LabelStyles.from(style))
                 .apply { labelId = ID_SEARCH_POSITION_MARK }
 
-        addOrUpdateLabel(map, options) { oldLabel: Label ->
+        addOrUpdateLabel(options) { oldLabel: Label ->
             oldLabel.moveTo(latLng)
         }
     }
 
-    fun removeAllLines(map: KakaoMap) {
+    fun removeAllLines() {
         val layer: RouteLineLayer = map.routeLineManager?.layer ?: return
         layer.removeAll()
     }
 
-    private fun showAccurateUserPosition(
-        map: KakaoMap,
-        location: Location,
-    ) {
+    private fun showAccurateUserPosition(location: Location) {
         hideApproximateUserPosition(map)
 
         val latLng = location.toLatLng()
@@ -122,15 +109,12 @@ class KakaoMapDrawer(
                 .setTransform(TransformMethod.Decal)
                 .apply { labelId = ID_ACCURATE_USER_POSITION_MARK }
 
-        addOrUpdateLabel(map, options) { oldLabel: Label ->
+        addOrUpdateLabel(options) { oldLabel: Label ->
             oldLabel.moveTo(latLng, LABEL_MOVE_ANIMATION_DURATION)
         }
     }
 
-    private fun showApproximateUserPosition(
-        map: KakaoMap,
-        location: Location,
-    ) {
+    private fun showApproximateUserPosition(location: Location) {
         hideAccurateUserPosition(map)
 
         val latLng = location.toLatLng()
@@ -141,7 +125,7 @@ class KakaoMapDrawer(
                 .setStylesSet(PolygonStylesSet.from(styles))
                 .apply { polygonId = ID_APPROXIMATE_USER_POSITION_MARK }
 
-        addOrUpdatePolygon(map, options) { oldPolygon: Polygon ->
+        addOrUpdatePolygon(options) { oldPolygon: Polygon ->
             oldPolygon.setPosition(latLng)
             oldPolygon.changeDotPoints(listOf(DotPoints.fromCircle(latLng, location.accuracy)))
         }
@@ -162,7 +146,6 @@ class KakaoMapDrawer(
     }
 
     private fun addOrUpdateLabel(
-        map: KakaoMap,
         options: LabelOptions,
         handleOldLabel: (Label) -> Unit,
     ) {
@@ -175,7 +158,6 @@ class KakaoMapDrawer(
     }
 
     private fun addOrUpdatePolygon(
-        map: KakaoMap,
         options: PolygonOptions,
         handleOldPolygon: (Polygon) -> Unit,
     ) {
