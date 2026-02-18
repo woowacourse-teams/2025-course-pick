@@ -420,24 +420,15 @@ class CoursesActivity :
     }
 
     private fun showFineLocationPermissionRationaleForNavigation() {
-        val message: String =
-            getString(
-                if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    R.string.navigate_fine_location_permission_rationale_dialog_with_coarse_permission_message
-                } else {
-                    R.string.navigate_fine_location_permission_rationale_dialog_without_coarse_permission_message
-                },
-            )
-
         AlertDialog
             .Builder(this)
-            .setMessage(message)
+            .setMessage(getString(R.string.navigate_fine_location_permission_rationale_message))
             .setPositiveButton(
-                getString(R.string.navigate_fine_location_permission_rationale_dialog_without_coarse_permission_positive_button),
+                getString(R.string.navigate_fine_location_permission_rationale_dialog_positive_button),
             ) { dialog: DialogInterface, _ ->
                 dialog.dismiss()
             }.setNegativeButton(
-                getString(R.string.navigate_fine_location_permission_rationale_dialog_without_coarse_permission_negative_button),
+                getString(R.string.navigate_fine_location_permission_rationale_negative_button),
             ) { dialog: DialogInterface, _ ->
                 val intent =
                     Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {

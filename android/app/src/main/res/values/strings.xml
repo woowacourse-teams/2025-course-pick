@@ -41,10 +41,9 @@
     <string name="current_location_no_fine_location_warning_settings_button">설정</string>
 
     <!--  코스 화면: 길찾기 권한  -->
-    <string name="navigate_fine_location_permission_rationale_dialog_without_coarse_permission_message">안내를 위해 \'정확한 위치\' 권한을 허용해주세요.</string>
-    <string name="navigate_fine_location_permission_rationale_dialog_without_coarse_permission_negative_button">설정으로 이동</string>
-    <string name="navigate_fine_location_permission_rationale_dialog_without_coarse_permission_positive_button">닫기</string>
-    <string name="navigate_fine_location_permission_rationale_dialog_with_coarse_permission_message">보다 정확한 안내를 위해 \'정확한 위치\' 권한을 허용해주세요.</string>
+    <string name="navigate_fine_location_permission_rationale_message">안내를 위해 \'정확한 위치\' 권한을 허용해주세요.</string>
+    <string name="navigate_fine_location_permission_rationale_negative_button">설정으로 이동</string>
+    <string name="navigate_fine_location_permission_rationale_dialog_positive_button">닫기</string>
 
     <!--  설정 화면  -->
     <string name="settings_feedback_url">https://docs.google.com/forms/d/e/1FAIpQLSdsJcNUsOcDiKW0FI-M360IUS64IZQmnWtMTbZqJSrx7HQbtg/viewform?usp=pp_url&amp;entry.1079171803=%s</string>
