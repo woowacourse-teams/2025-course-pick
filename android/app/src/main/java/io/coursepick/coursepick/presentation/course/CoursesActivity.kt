@@ -180,7 +180,7 @@ class CoursesActivity :
         updateManager.checkForUpdate()
 
         if (savedInstanceState == null) {
-            showNoticeIfNeeded()
+            showNoticeIfNeeded(null)
         }
     }
 
@@ -705,15 +705,10 @@ class CoursesActivity :
         )
     }
 
-    private fun showNoticeIfNeeded() {
-        if (coursePickApplication.hasShownNoticeThisSession) {
-            return
-        }
-
-        val noticeId: String = NOTICE_ID_VERIFIED_LOCATION
-        if (!CoursePickPreferences.shouldShowNotice(noticeId)) {
-            return
-        }
+    private fun showNoticeIfNeeded(noticeId: String?) {
+        if (noticeId == null) return
+        if (coursePickApplication.hasShownNoticeThisSession) return
+        if (!CoursePickPreferences.shouldShowNotice(noticeId)) return
 
         coursePickApplication.markNoticeAsShown()
         viewModel.fetchNotice(noticeId)
@@ -743,9 +738,5 @@ class CoursesActivity :
                 }
             }
         }
-    }
-
-    private companion object {
-        const val NOTICE_ID_VERIFIED_LOCATION = "verified_location"
     }
 }
