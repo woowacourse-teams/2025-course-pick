@@ -409,7 +409,7 @@ class CoursesActivity :
             .make(
                 findViewById(android.R.id.content),
                 getString(R.string.current_location_no_fine_location_warning_message),
-                Snackbar.LENGTH_SHORT,
+                Snackbar.LENGTH_LONG,
             ).setAction(getString(R.string.current_location_no_fine_location_warning_settings_button)) {
                 val intent =
                     Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
