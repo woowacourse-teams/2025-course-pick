@@ -50,7 +50,16 @@ class LocationProvider(
 
         locationClient
             .getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
-            .addOnSuccessListener { location: Location ->
+            .addOnSuccessListener { location: Location? ->
+                if (location == null) {
+                    val exception = IllegalStateException("위치 정보를 불러오지 못했습니다.")
+                    Logger.log(
+                        Logger.Event.Failure("get_current_location"),
+                        "message" to exception.message.toString(),
+                    )
+                    onFailure(exception)
+                    return@addOnSuccessListener
+                }
                 Logger.log(Logger.Event.Success("get_current_location"))
                 onSuccess(location)
             }.addOnFailureListener { exception: Exception ->
