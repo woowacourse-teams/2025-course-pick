@@ -612,6 +612,8 @@ class CoursesActivity :
                 viewModel.fetchCourses(mapCoordinate, null, scope)
             },
         )
+
+        binding.mainSearchThisAreaButton.visibility = View.GONE
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
