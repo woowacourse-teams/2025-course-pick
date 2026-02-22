@@ -82,7 +82,7 @@ jobs:
             
             echo "⛑️ 헬스 체크..."
             for i in $(seq 1 10); do
-              SERVER_STATUS=$(curl -o /dev/null -w "%{http_code}" http://localhost:80/actuator/health || echo "000")
+              SERVER_STATUS=$(curl -o /dev/null -w "%{http_code}" ${{ secrets.PROD_SERVER_URL }}/actuator/health || echo "000")
               if [ "$SERVER_STATUS" -eq 200 ]; then
                 echo "✅ 배포 성공! 서버 동작 중..."
                 exit 0
