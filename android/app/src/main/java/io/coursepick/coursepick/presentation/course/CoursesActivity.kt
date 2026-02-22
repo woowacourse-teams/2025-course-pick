@@ -7,6 +7,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
+import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -113,8 +114,9 @@ class CoursesActivity :
                 }
 
                 mapManager.fetchCurrentLocation(
-                    onSuccess = { latitude: Latitude, longitude: Longitude ->
-                        val origin = Coordinate(latitude, longitude)
+                    onSuccess = { location: Location, _ ->
+                        val origin =
+                            Coordinate(Latitude(location.latitude), Longitude(location.longitude))
                         val selectedApp: RouteFinderApplication? =
                             CoursePickPreferences.selectedRouteFinder
                         if (selectedApp == null) {
@@ -604,18 +606,18 @@ class CoursesActivity :
             CoursesContent.EXPLORE -> {
                 val scope: Scope = Scope.default()
 
-                mapManager.fetchCurrentLocation(
-                    onSuccess = { userLatitude: Latitude, userLongitude: Longitude ->
-                        val userCoordinate = Coordinate(userLatitude, userLongitude)
-                        viewModel.fetchCourses(userCoordinate, userCoordinate, scope)
-                    },
-                    onFailure = {
-                        val mapCoordinate: Coordinate =
-                            mapCoordinateOrNull() ?: return@fetchCurrentLocation
-                        viewModel.fetchCourses(mapCoordinate, null, scope)
-                    },
-                )
-            }
+        mapManager.fetchCurrentLocation(
+            onSuccess = { location: Location, _ ->
+                val userCoordinate =
+                    Coordinate(Latitude(location.latitude), Longitude(location.longitude))
+                viewModel.fetchCourses(userCoordinate, userCoordinate, scope)
+            },
+            onFailure = {
+                val mapCoordinate: Coordinate = mapCoordinateOrNull() ?: return@fetchCurrentLocation
+                viewModel.fetchCourses(mapCoordinate, null, scope)
+            },
+        )
+    }
 
             CoursesContent.FAVORITES -> {
                 viewModel.fetchFavorites()
@@ -628,8 +630,9 @@ class CoursesActivity :
         val scope: Scope = scopeOrNull() ?: return
 
         mapManager.fetchCurrentLocation(
-            onSuccess = { userLatitude: Latitude, userLongitude: Longitude ->
-                val userCoordinate = Coordinate(userLatitude, userLongitude)
+            onSuccess = { location: Location, _ ->
+                val userCoordinate =
+                    Coordinate(Latitude(location.latitude), Longitude(location.longitude))
                 viewModel.fetchCourses(targetCoordinate, userCoordinate, scope)
             },
             onFailure = {
