@@ -11,16 +11,6 @@ spring:
       password: ${MONGO_PASSWORD}
       authentication-database: ${MONGO_AUTH_DATABASE}
 
-      # Connection Pool 설정
-      max-pool-size: 30
-      min-pool-size: 10
-
-      # timeout 설정
-      max-wait-time: 2000
-      socket-timeout: 3000
-      connect-timeout: 1000
-      max-connection-idle-time: 30000
-
 springdoc:
   api-docs.enabled: false
   swagger-ui.enabled: false
