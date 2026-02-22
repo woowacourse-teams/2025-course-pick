@@ -167,10 +167,7 @@ class CoursesActivity :
                     binding.mainSearchThisAreaButton.visibility = View.VISIBLE
                 }
                 binding.mainCurrentLocationButton.setColorFilter(
-                    ContextCompat.getColor(
-                        this,
-                        R.color.item_primary,
-                    ),
+                    ContextCompat.getColor(this, R.color.item_primary),
                 )
             }
             fetchInitialCourses()
@@ -379,11 +376,17 @@ class CoursesActivity :
             showFineLocationPermissionRationaleForCurrentLocation()
         }
 
-        mapManager.showCurrentLocation {
-            binding.mainCurrentLocationButton.setColorFilter(
-                ContextCompat.getColor(this, R.color.gray3),
-            )
-        }
+        mapManager.fetchCurrentLocation(
+            onSuccess = { location: Location, isAccurate: Boolean ->
+                mapManager.showUserPosition(location, isAccurate)
+                binding.mainCurrentLocationButton.setColorFilter(
+                    ContextCompat.getColor(this, R.color.gray3),
+                )
+            },
+            onFailure = {
+                Toast.makeText(this, "현재 위치를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
+            },
+        )
     }
 
     private fun showLocationPermissionRationaleForCurrentLocation() {
@@ -607,9 +610,10 @@ class CoursesActivity :
                 val scope: Scope = Scope.default()
 
         mapManager.fetchCurrentLocation(
-            onSuccess = { location: Location, _ ->
+            onSuccess = { location: Location, isAccurate: Boolean ->
                 val userCoordinate =
                     Coordinate(Latitude(location.latitude), Longitude(location.longitude))
+                mapManager.showUserPosition(location, isAccurate)
                 viewModel.fetchCourses(userCoordinate, userCoordinate, scope)
             },
             onFailure = {

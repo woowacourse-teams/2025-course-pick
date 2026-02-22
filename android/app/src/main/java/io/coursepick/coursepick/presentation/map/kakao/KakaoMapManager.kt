@@ -2,7 +2,6 @@ package io.coursepick.coursepick.presentation.map.kakao
 
 import android.Manifest
 import android.location.Location
-import android.widget.Toast
 import androidx.annotation.RequiresPermission
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.LatLng
@@ -43,7 +42,6 @@ class KakaoMapManager(
                 offsetPx,
             )
             onMapReady()
-            showCurrentLocation()
         }
     }
 
@@ -83,27 +81,6 @@ class KakaoMapManager(
         kakaoMap?.let { kakaoMap: KakaoMap -> cameraController.moveTo(kakaoMap, location) }
             ?: Timber.w("kakaoMap is null")
         drawer?.showUserPosition(location, isAccurate) ?: Timber.w("KakaoMapDrawer is null")
-    }
-
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    fun showCurrentLocation(afterSuccess: () -> Unit = {}) {
-        locationProvider.fetchCurrentLocation(
-            onSuccess = { location: Location, isAccurate: Boolean ->
-                kakaoMap?.let { kakaoMap: KakaoMap ->
-                    cameraController.moveTo(kakaoMap, location)
-                } ?: Timber.w("kakaoMap is null")
-                drawer?.showUserPosition(location, isAccurate) ?: Timber.w("KakaoMapDrawer is null")
-                afterSuccess()
-            },
-            onFailure = {
-                Toast
-                    .makeText(
-                        mapView.context,
-                        "현재 위치를 불러오지 못했습니다.",
-                        Toast.LENGTH_SHORT,
-                    ).show()
-            },
-        )
     }
 
     fun fitTo(coordinates: List<Coordinate>) {
