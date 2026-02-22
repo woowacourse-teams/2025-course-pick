@@ -600,18 +600,27 @@ class CoursesActivity :
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun fetchInitialCourses() {
-        val scope: Scope = Scope.default()
+        when (viewModel.content.value) {
+            CoursesContent.EXPLORE -> {
+                val scope: Scope = Scope.default()
 
-        mapManager.fetchCurrentLocation(
-            onSuccess = { userLatitude: Latitude, userLongitude: Longitude ->
-                val userCoordinate = Coordinate(userLatitude, userLongitude)
-                viewModel.fetchCourses(userCoordinate, userCoordinate, scope)
-            },
-            onFailure = {
-                val mapCoordinate: Coordinate = mapCoordinateOrNull() ?: return@fetchCurrentLocation
-                viewModel.fetchCourses(mapCoordinate, null, scope)
-            },
-        )
+                mapManager.fetchCurrentLocation(
+                    onSuccess = { userLatitude: Latitude, userLongitude: Longitude ->
+                        val userCoordinate = Coordinate(userLatitude, userLongitude)
+                        viewModel.fetchCourses(userCoordinate, userCoordinate, scope)
+                    },
+                    onFailure = {
+                        val mapCoordinate: Coordinate =
+                            mapCoordinateOrNull() ?: return@fetchCurrentLocation
+                        viewModel.fetchCourses(mapCoordinate, null, scope)
+                    },
+                )
+            }
+
+            CoursesContent.FAVORITES -> {
+                viewModel.fetchFavorites()
+            }
+        }
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
