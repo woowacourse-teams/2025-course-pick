@@ -1,5 +1,6 @@
 package coursepick.coursepick.presentation;
 
+import coursepick.coursepick.application.exception.QueryTimeoutException;
 import coursepick.coursepick.application.exception.UnauthorizedException;
 import coursepick.coursepick.logging.LogContent;
 import coursepick.coursepick.presentation.dto.ErrorResponse;
@@ -32,6 +33,12 @@ public class WebExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
         log.warn("[EXCEPTION] MissingServletRequestParameterException 예외 응답 반환", LogContent.exception(e));
         return ResponseEntity.badRequest().body(ErrorResponse.from(e));
+    }
+
+    @ExceptionHandler(QueryTimeoutException.class)
+    public ResponseEntity<ErrorResponse> handleQueryTimeoutException(QueryTimeoutException e) {
+        log.warn("[EXCEPTION] QueryTimeoutException 예외 응답 반환", LogContent.exception(e));
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ErrorResponse.from(e));
     }
 
     @ExceptionHandler(SecurityException.class)
