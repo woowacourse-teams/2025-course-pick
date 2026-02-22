@@ -76,6 +76,15 @@ class KakaoMapManager(
         drawer?.showSearchPosition(coordinate)
     }
 
+    fun showUserPosition(
+        location: Location,
+        isAccurate: Boolean,
+    ) {
+        kakaoMap?.let { kakaoMap: KakaoMap -> cameraController.moveTo(kakaoMap, location) }
+            ?: Timber.w("kakaoMap is null")
+        drawer?.showUserPosition(location, isAccurate) ?: Timber.w("KakaoMapDrawer is null")
+    }
+
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     fun showCurrentLocation(afterSuccess: () -> Unit = {}) {
         locationProvider.fetchCurrentLocation(
