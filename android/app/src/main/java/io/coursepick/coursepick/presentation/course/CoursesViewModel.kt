@@ -70,7 +70,8 @@ class CoursesViewModel
 
         private fun checkNetwork() {
             if (!networkMonitor.isConnected()) {
-                _state.value = state.value?.copy(status = UiStatus.NoInternet)
+                _state.value =
+                    state.value?.copy(originalCourses = emptyList(), status = UiStatus.NoInternet)
             }
         }
 
@@ -367,6 +368,7 @@ class CoursesViewModel
                         is NoNetworkException -> {
                             _state.value =
                                 state.value?.copy(
+                                    originalCourses = emptyList(),
                                     status = UiStatus.NoInternet,
                                 )
                         }
