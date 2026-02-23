@@ -1,5 +1,7 @@
 package coursepick.coursepick.infrastructure.mongodb;
 
+import com.mongodb.MongoExecutionTimeoutException;
+import com.mongodb.MongoTimeoutException;
 import coursepick.coursepick.domain.course.Course;
 import coursepick.coursepick.domain.course.CourseFindCondition;
 import coursepick.coursepick.domain.course.CourseName;
@@ -19,6 +21,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
+
+import static coursepick.coursepick.application.exception.ErrorType.QUERY_TIMEOUT;
 
 @Repository
 @RequiredArgsConstructor
@@ -48,19 +52,23 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
 
     @Override
     public Slice<Course> findAllHasDistanceWithin(CourseFindCondition condition) {
-        Query query = new Query();
+        try {
+            Query query = new Query().maxTimeMsec(2000);
 
-        addPositionAndScopeCriteria(condition, query);
-        if (condition.minLength() != null || condition.maxLength() != null) addLengthCriteria(condition, query);
+            addPositionAndScopeCriteria(condition, query);
+            if (condition.minLength() != null || condition.maxLength() != null) addLengthCriteria(condition, query);
 
-        query.with(condition.pageable())
-                .limit(condition.pageSize() + 1);
+            query.with(condition.pageable())
+                    .limit(condition.pageSize() + 1);
 
-        List<Course> result = mongoTemplate.find(query, Course.class);
+            List<Course> result = mongoTemplate.find(query, Course.class);
 
-        boolean hasNext = result.size() > condition.pageSize();
-        if (hasNext) result.removeLast();
-        return new SliceImpl<>(result, condition.pageable(), hasNext);
+            boolean hasNext = result.size() > condition.pageSize();
+            if (hasNext) result.removeLast();
+            return new SliceImpl<>(result, condition.pageable(), hasNext);
+        } catch (MongoTimeoutException | MongoExecutionTimeoutException e) {
+            throw QUERY_TIMEOUT.create();
+        }
     }
 
     private static void addPositionAndScopeCriteria(CourseFindCondition condition, Query query) {

@@ -2,13 +2,14 @@ spring:
   config:
     activate.on-profile: prod
     import: classpath:monitoring-config.yml
-  data.mongodb:
-    host: ${MONGO_HOST}
-    port: ${MONGO_PORT}
-    database: ${MONGO_DATABASE}
-    username: ${MONGO_USERNAME}
-    password: ${MONGO_PASSWORD}
-    authentication-database: ${MONGO_AUTH_DATABASE}
+  data:
+    mongodb:
+      host: ${MONGO_HOST}
+      port: ${MONGO_PORT}
+      database: ${MONGO_DATABASE}
+      username: ${MONGO_USERNAME}
+      password: ${MONGO_PASSWORD}
+      authentication-database: ${MONGO_AUTH_DATABASE}
 
 springdoc:
   api-docs.enabled: false

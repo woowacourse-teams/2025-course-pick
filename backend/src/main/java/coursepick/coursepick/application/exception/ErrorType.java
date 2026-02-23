@@ -57,6 +57,10 @@ public enum ErrorType {
             "인증에 실패하였습니다.",
             UnauthorizedException::new
     ),
+    QUERY_TIMEOUT(
+            "쿼리 실행에 제한된 시간을 초과했습니다.",
+            QueryTimeoutException::new
+    ),
     ;
 
     private final String message;

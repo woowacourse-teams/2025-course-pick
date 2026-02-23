@@ -1,5 +1,8 @@
 package coursepick.coursepick.infrastructure.mongodb;
 
+import java.util.concurrent.TimeUnit;
+
+import org.springframework.boot.autoconfigure.mongo.MongoClientSettingsBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
@@ -15,5 +18,20 @@ public class MongoConfig {
                 new CourseConverter.Reader(),
                 new CourseConverter.Writer()
         ));
+    }
+
+    @Bean
+    public MongoClientSettingsBuilderCustomizer mongoClientSettingsBuilderCustomizer() {
+        return builder -> builder
+                .applyToConnectionPoolSettings(pool -> pool
+                        .maxSize(30)
+                        .minSize(10)
+                        .maxWaitTime(2, TimeUnit.SECONDS)
+                        .maxConnectionIdleTime(30, TimeUnit.SECONDS)
+                )
+                .applyToSocketSettings(socket -> socket
+                        .connectTimeout(1, TimeUnit.SECONDS)
+                        .readTimeout(3, TimeUnit.SECONDS)
+                );
     }
 }
