@@ -1,0 +1,15 @@
+name: PR 통계
+on:
+  workflow_dispatch:
+jobs:
+  pr-stats:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+      contents: read
+    steps:
+      - name: PR Stats
+        uses: "naver/pr-stats@42ae2e0da689a42e60e1a311361e6f2245580c63" # v1.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          output: "console"
