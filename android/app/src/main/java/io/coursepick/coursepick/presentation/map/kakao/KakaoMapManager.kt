@@ -70,17 +70,15 @@ class KakaoMapManager(
         drawer?.removeAllLines() ?: Timber.w("KakaoMapDrawer is null")
     }
 
-    fun showSearchPosition(coordinate: Coordinate) {
-        drawer?.showSearchPosition(coordinate)
+    fun drawSearchPosition(coordinate: Coordinate) {
+        drawer?.drawSearchPosition(coordinate)
     }
 
-    fun showUserPosition(
+    fun drawUserPosition(
         location: Location,
         isAccurate: Boolean,
     ) {
-        kakaoMap?.let { kakaoMap: KakaoMap -> cameraController.moveTo(kakaoMap, location) }
-            ?: Timber.w("kakaoMap is null")
-        drawer?.showUserPosition(location, isAccurate) ?: Timber.w("KakaoMapDrawer is null")
+        drawer?.drawUserPosition(location, isAccurate) ?: Timber.w("KakaoMapDrawer is null")
     }
 
     fun fitTo(coordinates: List<Coordinate>) {
@@ -144,7 +142,7 @@ class KakaoMapManager(
     fun startTrackingCurrentLocation() {
         locationProvider.startLocationUpdates(
             onUpdate = { location: Location, isAccurate: Boolean ->
-                drawer?.showUserPosition(location, isAccurate) ?: Timber.w("KakaoMapDrawer is null")
+                drawer?.drawUserPosition(location, isAccurate) ?: Timber.w("KakaoMapDrawer is null")
             },
             onError = { drawer?.hideUserPosition() ?: Timber.w("KakaoMapDrawer is null") },
         )

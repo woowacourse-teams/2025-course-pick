@@ -221,7 +221,7 @@ class CoursesActivity :
             "longitude" to coordinate.longitude.value,
         )
         binding.mainSearchThisAreaButton.visibility = View.GONE
-        mapManager.showSearchPosition(coordinate)
+        mapManager.drawSearchPosition(coordinate)
 
         fetchCourses(coordinate)
     }
@@ -299,7 +299,7 @@ class CoursesActivity :
         val coordinate = Coordinate(latitude, longitude)
 
         mapManager.resetZoomLevel()
-        mapManager.showSearchPosition(coordinate)
+        mapManager.drawSearchPosition(coordinate)
         mapManager.moveTo(latitude, longitude)
         fetchCourses(coordinate)
     }
@@ -378,7 +378,8 @@ class CoursesActivity :
 
         mapManager.fetchCurrentLocation(
             onSuccess = { location: Location, isAccurate: Boolean ->
-                mapManager.showUserPosition(location, isAccurate)
+                mapManager.moveTo(Latitude(location.latitude), Longitude(location.longitude))
+                mapManager.drawUserPosition(location, isAccurate)
                 binding.mainCurrentLocationButton.setColorFilter(
                     ContextCompat.getColor(this, R.color.gray3),
                 )
@@ -613,7 +614,8 @@ class CoursesActivity :
             onSuccess = { location: Location, isAccurate: Boolean ->
                 val userCoordinate =
                     Coordinate(Latitude(location.latitude), Longitude(location.longitude))
-                mapManager.showUserPosition(location, isAccurate)
+                mapManager.moveTo(userCoordinate.latitude, userCoordinate.longitude)
+                mapManager.drawUserPosition(location, isAccurate)
                 viewModel.fetchCourses(userCoordinate, userCoordinate, scope)
             },
             onFailure = {

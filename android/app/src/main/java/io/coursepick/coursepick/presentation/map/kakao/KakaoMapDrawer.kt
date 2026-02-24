@@ -58,14 +58,14 @@ class KakaoMapDrawer(
         layer.addRouteLine(courseOptions)
     }
 
-    fun showUserPosition(
+    fun drawUserPosition(
         location: Location,
         isAccurate: Boolean,
     ) {
         if (isAccurate) {
-            showAccurateUserPosition(location)
+            drawAccurateUserPosition(location)
         } else {
-            showApproximateUserPosition(location)
+            drawApproximateUserPosition(location)
         }
     }
 
@@ -74,7 +74,7 @@ class KakaoMapDrawer(
         hideApproximateUserPosition(map)
     }
 
-    fun showSearchPosition(coordinate: Coordinate) {
+    fun drawSearchPosition(coordinate: Coordinate) {
         val latLng = coordinate.toLatLng()
         val style =
             LabelStyle
@@ -97,7 +97,7 @@ class KakaoMapDrawer(
         layer.removeAll()
     }
 
-    private fun showAccurateUserPosition(location: Location) {
+    private fun drawAccurateUserPosition(location: Location) {
         hideApproximateUserPosition(map)
 
         val latLng = location.toLatLng()
@@ -114,7 +114,7 @@ class KakaoMapDrawer(
         }
     }
 
-    private fun showApproximateUserPosition(location: Location) {
+    private fun drawApproximateUserPosition(location: Location) {
         hideAccurateUserPosition(map)
 
         val latLng = location.toLatLng()
