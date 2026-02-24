@@ -187,7 +187,7 @@ class CoursesActivity :
         updateManager.checkForUpdate()
 
         if (savedInstanceState == null) {
-            showNoticeIfNeeded(null)
+            showNoticeIfNeeded()
         }
     }
 
@@ -808,13 +808,10 @@ class CoursesActivity :
         )
     }
 
-    private fun showNoticeIfNeeded(noticeId: String?) {
-        if (noticeId == null) return
+    private fun showNoticeIfNeeded() {
         if (coursePickApplication.hasShownNoticeThisSession) return
-        if (!CoursePickPreferences.shouldShowNotice(noticeId)) return
-
         coursePickApplication.markNoticeAsShown()
-        viewModel.fetchNotice(noticeId)
+        viewModel.fetchNotices()
     }
 
     private fun setUpDialogs() {
@@ -823,13 +820,17 @@ class CoursesActivity :
                 CoursePickTheme {
                     val state: CoursesUiState? by viewModel.state.observeAsState()
 
-                    state?.notice?.let { notice: Notice ->
-                        NoticeDialog(
-                            notice = notice,
-                            onDismissRequest = viewModel::dismissNotice,
-                            onDoNotShowAgain = CoursePickPreferences::setDoNotShowNotice,
-                        )
-                    }
+                    state
+                        ?.notices
+                        ?.firstOrNull { notice: Notice ->
+                            CoursePickPreferences.shouldShowNotice(notice.id)
+                        }?.let { notice: Notice ->
+                            NoticeDialog(
+                                notice = notice,
+                                onDismissRequest = viewModel::dismissNotice,
+                                onDoNotShowAgain = CoursePickPreferences::setDoNotShowNotice,
+                            )
+                        }
 
                     if (state?.showFilterDialog == true) {
                         CourseFilterBottomSheet(

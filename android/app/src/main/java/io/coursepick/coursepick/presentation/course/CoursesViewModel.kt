@@ -491,18 +491,25 @@ class CoursesViewModel
             _state.value = state.value?.copy(courseFilter = updatedCourseFilter)
         }
 
-        fun fetchNotice(id: String) {
+        fun fetchNotices() {
             viewModelScope.launch {
                 runCatching {
-                    noticeRepository.notice(id)
-                }.onSuccess { notice: Notice ->
-                    _state.value = state.value?.copy(notice = notice)
+                    noticeRepository.notices()
+                }.onSuccess { notices: List<Notice> ->
+                    _state.value = state.value?.copy(notices = notices)
                 }
             }
         }
 
-        fun dismissNotice() {
-            _state.value = state.value?.copy(notice = null)
+        fun dismissNotice(id: String) {
+            _state.value =
+                state.value?.copy(
+                    notices =
+                        state.value
+                            ?.notices
+                            ?.filterNot { notice: Notice -> notice.id == id }
+                            .orEmpty(),
+                )
         }
 
         fun showSettings() {

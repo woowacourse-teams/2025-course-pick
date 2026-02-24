@@ -8,7 +8,7 @@ data class CoursesUiState(
     val query: String = "",
     val status: UiStatus = UiStatus.Loading,
     val courseFilter: CourseFilter = CourseFilter.None,
-    val notice: Notice? = null,
+    val notices: List<Notice> = emptyList(),
     val showSettings: Boolean = false,
     val showFilterDialog: Boolean = false,
 ) {

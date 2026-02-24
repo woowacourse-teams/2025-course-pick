@@ -31,10 +31,10 @@ import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 @Composable
 fun NoticeDialog(
     notice: Notice,
-    onDismissRequest: () -> Unit,
+    onDismissRequest: (id: String) -> Unit,
     onDoNotShowAgain: (id: String) -> Unit,
 ) {
-    Dialog(onDismissRequest = onDismissRequest) {
+    Dialog(onDismissRequest = { onDismissRequest(notice.id) }) {
         Column(
             modifier =
                 Modifier
@@ -85,7 +85,7 @@ fun NoticeDialog(
                 TextButton(
                     onClick = {
                         onDoNotShowAgain(notice.id)
-                        onDismissRequest()
+                        onDismissRequest(notice.id)
                     },
                     modifier = Modifier.weight(1f),
                 ) {
@@ -96,7 +96,7 @@ fun NoticeDialog(
                 }
 
                 TextButton(
-                    onClick = onDismissRequest,
+                    onClick = { onDismissRequest(notice.id) },
                     modifier = Modifier.weight(1f),
                 ) {
                     Text(

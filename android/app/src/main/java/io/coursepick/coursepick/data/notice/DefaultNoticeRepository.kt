@@ -9,5 +9,15 @@ class DefaultNoticeRepository
     constructor(
         private val service: NoticeService,
     ) : NoticeRepository {
-        override suspend fun notice(id: String): Notice = service.notice(id).toNotice()
+        override suspend fun notices(): List<Notice> {
+            return List(3) { i: Int ->
+                Notice(
+                    id = "$i",
+                    imageUrl = "",
+                    title = "$i",
+                    description = "$i",
+                )
+            }
+//            return service.notices().map(NoticeDto::toNotice)
+        }
     }
