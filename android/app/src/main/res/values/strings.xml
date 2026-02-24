@@ -90,6 +90,7 @@
 
     <!--  Key/Value용 문자열  -->
     <string name="favorited_courses_key">favorited_courses_key</string>
+    <string name="do_not_show_notices_key">do_not_show_notice_key</string>
     <string name="selected_route_finder_application_key">selected_route_finder_application</string>
     <string name="selected_route_finder_application_value_in_app">in-app</string>
     <string name="selected_route_finder_application_value_kakao">kakao map</string>
