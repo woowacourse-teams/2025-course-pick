@@ -10,14 +10,36 @@ class DefaultNoticeRepository
         private val service: NoticeService,
     ) : NoticeRepository {
         override suspend fun notices(): List<Notice> {
-            return List(3) { i: Int ->
+            return listOf(
                 Notice(
-                    id = "$i",
-                    imageUrl = "",
-                    title = "$i",
-                    description = "$i",
-                )
-            }
+                    id = "1",
+                    imageUrl = "https://avatars.githubusercontent.com/u/161921046?v=4",
+                    title = "Notice 1 title",
+                    description = "Notice 1 description",
+                    noticeUrl = "https://github.com/woowacourse-teams/2025-course-pick",
+                ),
+                Notice(
+                    id = "2",
+                    imageUrl = "https://avatars.githubusercontent.com/u/192606356?v=4",
+                    title = "Notice 2 title",
+                    description = "Notice 2 description",
+                    noticeUrl = "https://github.com/woowacourse-teams/2025-course-pick",
+                ),
+                Notice(
+                    id = "3",
+                    imageUrl = "https://avatars.githubusercontent.com/u/108331578?v=4",
+                    title = "Notice 3 title",
+                    description = "Notice 3 description",
+                    noticeUrl = "https://github.com/woowacourse-teams/2025-course-pick",
+                ),
+                Notice(
+                    id = "4",
+                    imageUrl = "https://avatars.githubusercontent.com/u/176254419?v=4",
+                    title = "Notice 4 title",
+                    description = "Notice 4 description",
+                    noticeUrl = "https://github.com/woowacourse-teams/2025-course-pick",
+                ),
+            )
 //            return service.notices().map(NoticeDto::toNotice)
         }
     }

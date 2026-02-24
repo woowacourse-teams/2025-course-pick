@@ -827,6 +827,23 @@ class CoursesActivity :
                         }?.let { notice: Notice ->
                             NoticeDialog(
                                 notice = notice,
+                                onOpenUrl = { noticeUrl: String ->
+                                    runCatching {
+                                        context.startActivity(
+                                            Intent(
+                                                Intent.ACTION_VIEW,
+                                                noticeUrl.toUri(),
+                                            ),
+                                        )
+                                    }.onFailure {
+                                        Toast
+                                            .makeText(
+                                                this@CoursesActivity,
+                                                "링크를 열지 못했습니다.",
+                                                Toast.LENGTH_SHORT,
+                                            ).show()
+                                    }
+                                },
                                 onDismissRequest = viewModel::dismissNotice,
                                 onDoNotShowAgain = CoursePickPreferences::setDoNotShowNotice,
                             )
