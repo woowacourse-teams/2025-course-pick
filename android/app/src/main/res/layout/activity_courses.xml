@@ -95,7 +95,7 @@
                 android:orientation="horizontal"
                 android:padding="10dp"
                 android:translationY="50dp"
-                android:visibility="@{viewModel.content == CoursesContent.EXPLORE ? View.VISIBLE : View.GONE}"
+                android:visibility="gone"
                 app:layout_anchor="@id/mainSearchBar"
                 app:layout_anchorGravity="bottom|center_horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"

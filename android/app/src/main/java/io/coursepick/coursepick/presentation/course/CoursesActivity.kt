@@ -670,6 +670,9 @@ class CoursesActivity :
         }
 
         viewModel.content.observe(this) { content: CoursesContent ->
+            if (content != CoursesContent.EXPLORE) {
+                binding.mainSearchThisAreaButton.visibility = View.GONE
+            }
             switchContent(content)
         }
     }
