@@ -46,6 +46,8 @@ class CoursesViewModel
             )
         val state: LiveData<CoursesUiState> get() = _state
 
+        val a: MutableLiveData<String> = MutableLiveData()
+
         private val _content: MutableLiveData<CoursesContent> = MutableLiveData(CoursesContent.EXPLORE)
         val content: LiveData<CoursesContent> get() = _content
 
@@ -150,6 +152,19 @@ class CoursesViewModel
                     status = UiStatus.Loading,
                 )
 
+            val minLength =
+                state.value
+                    ?.courseFilter
+                    ?.lengthRange
+                    ?.start
+                    ?.toMeter()
+            val maxLength =
+                state.value
+                    ?.courseFilter
+                    ?.lengthRange
+                    ?.endInclusive
+                    ?.toMeter()
+
             viewModelScope.launch {
                 runCatching {
                     courseRepository.courses(
@@ -157,6 +172,8 @@ class CoursesViewModel
                         page = 0,
                         mapCoordinate = mapCoordinate,
                         userCoordinate = userCoordinate,
+                        minLength = minLength,
+                        maxLength = maxLength,
                     )
                 }.onSuccess { coursesPage: CoursesPage ->
                     Logger.log(Logger.Event.Success("fetch_courses_new"))
@@ -222,6 +239,18 @@ class CoursesViewModel
             val mapCoordinate: Coordinate = lastMapCoordinate ?: return
             val userCoordinate: Coordinate? = lastUserCoordinate
             val scope: Scope = lastScope ?: return
+            val minLength =
+                state.value
+                    ?.courseFilter
+                    ?.lengthRange
+                    ?.start
+                    ?.toMeter()
+            val maxLength =
+                state.value
+                    ?.courseFilter
+                    ?.lengthRange
+                    ?.endInclusive
+                    ?.toMeter()
 
             viewModelScope.launch {
                 runCatching {
@@ -231,6 +260,8 @@ class CoursesViewModel
                         page = nextPage,
                         mapCoordinate = mapCoordinate,
                         userCoordinate = userCoordinate,
+                        minLength = minLength,
+                        maxLength = maxLength,
                     )
                 }.onSuccess { coursesPage: CoursesPage ->
                     Logger.log(Logger.Event.Success("fetch_courses_next"))
