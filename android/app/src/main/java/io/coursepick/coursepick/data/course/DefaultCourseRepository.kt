@@ -7,6 +7,7 @@ import io.coursepick.coursepick.domain.course.CoursesPage
 import io.coursepick.coursepick.domain.course.Meter
 import io.coursepick.coursepick.domain.course.Scope
 import javax.inject.Inject
+import kotlin.math.ceil
 
 class DefaultCourseRepository
     @Inject
@@ -33,7 +34,7 @@ class DefaultCourseRepository
                     scopeMeter = scope.meter.value.toInt(),
                     page = page,
                     minLengthMeter = minLength?.value?.toInt(),
-                    maxLengthMeter = maxLength?.value?.toInt(),
+                    maxLengthMeter = maxLength?.value?.let { ceil(it) }?.toInt(),
                 ).toCoursesPage()
 
         override suspend fun routeToCourse(
