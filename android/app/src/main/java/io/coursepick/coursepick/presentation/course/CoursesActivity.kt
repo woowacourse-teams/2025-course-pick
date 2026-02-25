@@ -718,6 +718,12 @@ class CoursesActivity :
                         .show()
                 }
 
+                is CoursesUiEvent.FetchRouteToCourseNoNetwork -> {
+                    Toast
+                        .makeText(this, "네트워크에 연결되지 않아 길찾기에 실패했습니다.", Toast.LENGTH_SHORT)
+                        .show()
+                }
+
                 is CoursesUiEvent.FetchNearestCoordinateSuccess -> {
                     event.routeFinder.launch(
                         this@CoursesActivity,
