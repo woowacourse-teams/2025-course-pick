@@ -454,6 +454,9 @@ class CoursesViewModel
 
                 is CourseFilterAction.Apply -> {
                     _state.value = state.value?.copy(showFilterDialog = false)
+                    val mapCoordinate = lastMapCoordinate ?: return
+                    val scope = lastScope ?: return
+                    fetchCourses(mapCoordinate, lastUserCoordinate, scope)
                 }
 
                 is CourseFilterAction.UpdateLengthRange -> {
