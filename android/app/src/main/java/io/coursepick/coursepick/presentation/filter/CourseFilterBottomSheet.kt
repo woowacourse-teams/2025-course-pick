@@ -136,12 +136,8 @@ fun CourseFilterBottomSheet(
                 }
 
                 FilterResultButton(
-                    text =
-                        stringResource(
-                            R.string.filter_result_with_count_button,
-                            coursesUiState.courses.size,
-                        ),
-                    enabled = coursesUiState.courses.isNotEmpty(),
+                    text = stringResource(R.string.filter_result_button),
+                    enabled = true,
                     onClick = { onFilterAction(CourseFilterAction.Apply) },
                     modifier = Modifier.weight(1f),
                 )
