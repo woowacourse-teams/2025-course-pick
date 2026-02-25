@@ -189,7 +189,7 @@ private fun CourseFilterBottomSheetPreview() {
 
         if (showSheet) {
             CourseFilterBottomSheet(
-                coursesUiState = CoursesUiState(originalCourses = listOf()),
+                coursesUiState = CoursesUiState(courses = listOf()),
                 onDismissRequest = { showSheet = false },
                 onFilterAction = {},
             )

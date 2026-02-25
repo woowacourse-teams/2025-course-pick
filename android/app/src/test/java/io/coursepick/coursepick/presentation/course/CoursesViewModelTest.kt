@@ -47,7 +47,7 @@ class CoursesViewModelTest {
         // given
         val expected =
             CoursesUiState(
-                originalCourses =
+                courses =
                     FAKE_COURSES.mapIndexed { index: Int, course: Course ->
                         CourseListItem.Course(
                             CourseItem(course, selected = index == 0, favorite = false),
@@ -129,7 +129,7 @@ class CoursesViewModelTest {
         // then
         val state: CoursesUiState = viewModel.state.getOrAwaitValue()
         Assertions.assertThat(state.status).isEqualTo(UiStatus.Failure)
-        Assertions.assertThat(state.originalCourses).isEmpty()
+        Assertions.assertThat(state.courses).isEmpty()
     }
 
     @Test
@@ -145,9 +145,9 @@ class CoursesViewModelTest {
         // then
         val state: CoursesUiState = mainViewModel.state.getOrAwaitValue()
         Assertions.assertThat(state.status).isEqualTo(UiStatus.Success)
-        Assertions.assertThat(state.originalCourses.size).isEqualTo(FAKE_COURSES.size + 1)
+        Assertions.assertThat(state.courses.size).isEqualTo(FAKE_COURSES.size + 1)
 
-        val lastCourseListItem = state.originalCourses.last()
+        val lastCourseListItem = state.courses.last()
         val lastCourse = (lastCourseListItem as CourseListItem.Course).item
         Assertions.assertThat(lastCourse.course).isEqualTo(COURSE_FIXTURE_20)
         Assertions.assertThat(lastCourse.selected).isFalse()
@@ -169,7 +169,7 @@ class CoursesViewModelTest {
         viewModel.fetchCourses(COORDINATE_FIXTURE, null, Scope.default())
 
         val initialState: CoursesUiState = viewModel.state.getOrAwaitValue()
-        val initialCourseCount = initialState.originalCourses.size
+        val initialCourseCount = initialState.courses.size
 
         // when - fetchNextCourses를 두 번 연속 호출
         fakeCourseRepository.customCoursesPage =
@@ -180,7 +180,7 @@ class CoursesViewModelTest {
 
         // then - 한 번만 추가되었는지 확인
         val state: CoursesUiState = viewModel.state.getOrAwaitValue()
-        Assertions.assertThat(state.originalCourses.size).isEqualTo(initialCourseCount + 1)
+        Assertions.assertThat(state.courses.size).isEqualTo(initialCourseCount + 1)
     }
 
     @Test
@@ -199,7 +199,7 @@ class CoursesViewModelTest {
         viewModel.fetchCourses(COORDINATE_FIXTURE, null, Scope.default())
 
         val initialState: CoursesUiState = viewModel.state.getOrAwaitValue()
-        val initialCourseCount = initialState.originalCourses.size
+        val initialCourseCount = initialState.courses.size
 
         fakeCourseRepository.customCoursesPage =
             CoursesPage(courses = listOf(COURSE_FIXTURE_20), hasNext = false)
@@ -209,14 +209,14 @@ class CoursesViewModelTest {
 
         // then
         val state: CoursesUiState = viewModel.state.getOrAwaitValue()
-        Assertions.assertThat(state.originalCourses.size).isEqualTo(initialCourseCount)
+        Assertions.assertThat(state.courses.size).isEqualTo(initialCourseCount)
     }
 
     @Test
     fun `다음 페이지 로드 실패 시 기존 코스 목록은 유지된다`() {
         // given
         val initialState: CoursesUiState = mainViewModel.state.getOrAwaitValue()
-        val initialCourses = initialState.originalCourses
+        val initialCourses = initialState.courses
 
         fakeCourseRepository.shouldThrowError = true
 
@@ -226,6 +226,6 @@ class CoursesViewModelTest {
         // then
         val state: CoursesUiState = mainViewModel.state.getOrAwaitValue()
         Assertions.assertThat(state.status).isEqualTo(UiStatus.Failure)
-        Assertions.assertThat(state.originalCourses).isEqualTo(initialCourses)
+        Assertions.assertThat(state.courses).isEqualTo(initialCourses)
     }
 }
