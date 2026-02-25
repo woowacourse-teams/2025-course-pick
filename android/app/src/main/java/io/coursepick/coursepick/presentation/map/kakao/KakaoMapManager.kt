@@ -2,7 +2,6 @@ package io.coursepick.coursepick.presentation.map.kakao
 
 import android.Manifest
 import android.location.Location
-import android.widget.Toast
 import androidx.annotation.RequiresPermission
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.LatLng
@@ -15,12 +14,7 @@ import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.presentation.LocationProvider
 import io.coursepick.coursepick.presentation.course.CourseItem
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import timber.log.Timber
-import kotlin.time.Duration.Companion.milliseconds
 
 class KakaoMapManager(
     private val mapView: MapView,
@@ -48,10 +42,6 @@ class KakaoMapManager(
                 offsetPx,
             )
             onMapReady()
-            CoroutineScope(Dispatchers.Main).launch {
-                delay(500.milliseconds)
-                showCurrentLocation()
-            }
         }
     }
 
@@ -80,29 +70,15 @@ class KakaoMapManager(
         drawer?.removeAllLines() ?: Timber.w("KakaoMapDrawer is null")
     }
 
-    fun showSearchPosition(coordinate: Coordinate) {
-        drawer?.showSearchPosition(coordinate)
+    fun drawSearchPosition(coordinate: Coordinate) {
+        drawer?.drawSearchPosition(coordinate) ?: Timber.w("KakaoMapDrawer is null")
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    fun showCurrentLocation(afterSuccess: () -> Unit = {}) {
-        locationProvider.fetchCurrentLocation(
-            onSuccess = { location: Location, isAccurate: Boolean ->
-                kakaoMap?.let { kakaoMap: KakaoMap ->
-                    cameraController.moveTo(kakaoMap, location)
-                } ?: Timber.w("kakaoMap is null")
-                drawer?.showUserPosition(location, isAccurate) ?: Timber.w("KakaoMapDrawer is null")
-                afterSuccess()
-            },
-            onFailure = {
-                Toast
-                    .makeText(
-                        mapView.context,
-                        "현재 위치를 불러오지 못했습니다.",
-                        Toast.LENGTH_SHORT,
-                    ).show()
-            },
-        )
+    fun drawUserPosition(
+        location: Location,
+        isAccurate: Boolean,
+    ) {
+        drawer?.drawUserPosition(location, isAccurate) ?: Timber.w("KakaoMapDrawer is null")
     }
 
     fun fitTo(coordinates: List<Coordinate>) {
@@ -166,7 +142,7 @@ class KakaoMapManager(
     fun startTrackingCurrentLocation() {
         locationProvider.startLocationUpdates(
             onUpdate = { location: Location, isAccurate: Boolean ->
-                drawer?.showUserPosition(location, isAccurate) ?: Timber.w("KakaoMapDrawer is null")
+                drawer?.drawUserPosition(location, isAccurate) ?: Timber.w("KakaoMapDrawer is null")
             },
             onError = { drawer?.hideUserPosition() ?: Timber.w("KakaoMapDrawer is null") },
         )
@@ -178,12 +154,26 @@ class KakaoMapManager(
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     fun fetchCurrentLocation(
-        onSuccess: (Latitude, Longitude) -> Unit,
+        onSuccess: (location: Location, isAccurate: Boolean) -> Unit,
         onFailure: (Exception) -> Unit,
     ) {
         locationProvider.fetchCurrentLocation(
-            onSuccess = { location: Location, _ ->
-                onSuccess(Latitude(location.latitude), Longitude(location.longitude))
+            onSuccess = onSuccess,
+            onFailure = onFailure,
+        )
+    }
+
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+    fun moveToCurrentLocation(
+        onSuccess: (location: Location) -> Unit,
+        onFailure: (Exception) -> Unit,
+    ) {
+        locationProvider.fetchCurrentLocation(
+            onSuccess = { location: Location, isAccurate: Boolean ->
+                val coordinate = location.toCoordinate()
+                moveTo(coordinate.latitude, coordinate.longitude)
+                drawUserPosition(location, isAccurate)
+                onSuccess(location)
             },
             onFailure = onFailure,
         )

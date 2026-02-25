@@ -7,6 +7,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
+import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -113,8 +114,8 @@ class CoursesActivity :
                 }
 
                 mapManager.fetchCurrentLocation(
-                    onSuccess = { latitude: Latitude, longitude: Longitude ->
-                        val origin = Coordinate(latitude, longitude)
+                    onSuccess = { location: Location, _ ->
+                        val origin = location.toCoordinate()
                         val selectedApp: RouteFinderApplication? =
                             CoursePickPreferences.selectedRouteFinder
                         if (selectedApp == null) {
@@ -165,10 +166,7 @@ class CoursesActivity :
                     binding.mainSearchThisAreaButton.visibility = View.VISIBLE
                 }
                 binding.mainCurrentLocationButton.setColorFilter(
-                    ContextCompat.getColor(
-                        this,
-                        R.color.item_primary,
-                    ),
+                    ContextCompat.getColor(this, R.color.item_primary),
                 )
             }
             fetchInitialCourses()
@@ -222,7 +220,7 @@ class CoursesActivity :
             "longitude" to coordinate.longitude.value,
         )
         binding.mainSearchThisAreaButton.visibility = View.GONE
-        mapManager.showSearchPosition(coordinate)
+        mapManager.drawSearchPosition(coordinate)
 
         fetchCourses(coordinate)
     }
@@ -300,7 +298,7 @@ class CoursesActivity :
         val coordinate = Coordinate(latitude, longitude)
 
         mapManager.resetZoomLevel()
-        mapManager.showSearchPosition(coordinate)
+        mapManager.drawSearchPosition(coordinate)
         mapManager.moveTo(latitude, longitude)
         fetchCourses(coordinate)
     }
@@ -377,11 +375,16 @@ class CoursesActivity :
             showFineLocationPermissionRationaleForCurrentLocation()
         }
 
-        mapManager.showCurrentLocation {
-            binding.mainCurrentLocationButton.setColorFilter(
-                ContextCompat.getColor(this, R.color.gray3),
-            )
-        }
+        mapManager.moveToCurrentLocation(
+            onSuccess = {
+                binding.mainCurrentLocationButton.setColorFilter(
+                    ContextCompat.getColor(this, R.color.gray3),
+                )
+            },
+            onFailure = {
+                Toast.makeText(this, "현재 위치를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
+            },
+        )
     }
 
     private fun showLocationPermissionRationaleForCurrentLocation() {
@@ -604,14 +607,14 @@ class CoursesActivity :
             CoursesContent.EXPLORE -> {
                 val scope: Scope = Scope.default()
 
-                mapManager.fetchCurrentLocation(
-                    onSuccess = { userLatitude: Latitude, userLongitude: Longitude ->
-                        val userCoordinate = Coordinate(userLatitude, userLongitude)
+                mapManager.moveToCurrentLocation(
+                    onSuccess = { location: Location ->
+                        val userCoordinate = location.toCoordinate()
                         viewModel.fetchCourses(userCoordinate, userCoordinate, scope)
                     },
                     onFailure = {
                         val mapCoordinate: Coordinate =
-                            mapCoordinateOrNull() ?: return@fetchCurrentLocation
+                            mapCoordinateOrNull() ?: return@moveToCurrentLocation
                         viewModel.fetchCourses(mapCoordinate, null, scope)
                     },
                 )
@@ -628,9 +631,8 @@ class CoursesActivity :
         val scope: Scope = scopeOrNull() ?: return
 
         mapManager.fetchCurrentLocation(
-            onSuccess = { userLatitude: Latitude, userLongitude: Longitude ->
-                val userCoordinate = Coordinate(userLatitude, userLongitude)
-                viewModel.fetchCourses(targetCoordinate, userCoordinate, scope)
+            onSuccess = { location: Location, _ ->
+                viewModel.fetchCourses(targetCoordinate, location.toCoordinate(), scope)
             },
             onFailure = {
                 viewModel.fetchCourses(targetCoordinate, null, scope)
