@@ -607,18 +607,18 @@ class CoursesActivity :
             CoursesContent.EXPLORE -> {
                 val scope: Scope = Scope.default()
 
-        mapManager.moveToCurrentLocation(
-            onSuccess = { location: Location ->
-                val userCoordinate = location.toCoordinate()
-                viewModel.fetchCourses(userCoordinate, userCoordinate, scope)
-            },
-            onFailure = {
-                val mapCoordinate: Coordinate =
-                    mapCoordinateOrNull() ?: return@moveToCurrentLocation
-                viewModel.fetchCourses(mapCoordinate, null, scope)
-            },
-        )
-    }
+                mapManager.moveToCurrentLocation(
+                    onSuccess = { location: Location ->
+                        val userCoordinate = location.toCoordinate()
+                        viewModel.fetchCourses(userCoordinate, userCoordinate, scope)
+                    },
+                    onFailure = {
+                        val mapCoordinate: Coordinate =
+                            mapCoordinateOrNull() ?: return@moveToCurrentLocation
+                        viewModel.fetchCourses(mapCoordinate, null, scope)
+                    },
+                )
+            }
 
             CoursesContent.FAVORITES -> {
                 viewModel.fetchFavorites()
