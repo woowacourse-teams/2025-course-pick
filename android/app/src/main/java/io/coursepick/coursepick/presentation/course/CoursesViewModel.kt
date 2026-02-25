@@ -358,33 +358,20 @@ class CoursesViewModel
                     courseRepository.routeToCourse(selectedCourse.course, origin)
                 }.onSuccess { route: List<Coordinate> ->
                     Logger.log(Logger.Event.Success("fetch_route_to_course"))
-                    _state.value =
-                        state.value?.copy(
-                            status = UiStatus.Success,
-                        )
+                    _state.value = state.value?.copy(status = UiStatus.Success)
                     _event.value = CoursesUiEvent.FetchRouteToCourseSuccess(route, selectedCourse)
                 }.onFailure { error: Throwable ->
-                    when (error) {
-                        is NoNetworkException -> {
-                            _state.value =
-                                state.value?.copy(
-                                    originalCourses = emptyList(),
-                                    status = UiStatus.NoInternet,
-                                )
-                        }
-
-                        else -> {
-                            _state.value =
-                                state.value?.copy(
-                                    status = UiStatus.Failure,
-                                )
-                        }
-                    }
                     Logger.log(
                         Logger.Event.Failure("fetch_route_to_course"),
                         "message" to error.message.toString(),
                     )
-                    _event.value = CoursesUiEvent.FetchRouteToCourseFailure
+                    _state.value = state.value?.copy(status = UiStatus.Failure)
+                    _event.value =
+                        if (error is NoNetworkException) {
+                            CoursesUiEvent.FetchRouteToCourseNoNetwork
+                        } else {
+                            CoursesUiEvent.FetchRouteToCourseFailure
+                        }
                 }
             }
         }
