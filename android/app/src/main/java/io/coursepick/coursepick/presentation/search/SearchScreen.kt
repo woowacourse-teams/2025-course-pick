@@ -58,7 +58,12 @@ fun SearchScreen(
         focusRequester.requestFocus()
     }
 
-    Column(modifier = modifier.background(color = colorResource(R.color.background_primary))) {
+    Column(
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(color = colorResource(R.color.background_primary)),
+    ) {
         TextField(
             value = uiState.query,
             onValueChange = onQueryChange,
