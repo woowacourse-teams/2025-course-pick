@@ -11,3 +11,5 @@ fun LatLng.toCoordinate(): Coordinate = Coordinate(Latitude(latitude), Longitude
 fun Coordinate.toLatLng(): LatLng = LatLng.from(latitude.value, longitude.value)
 
 fun Location.toLatLng(): LatLng = LatLng.from(latitude, longitude)
+
+fun Location.toCoordinate(): Coordinate = Coordinate(Latitude(latitude), Longitude(longitude))

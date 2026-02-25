@@ -115,8 +115,7 @@ class CoursesActivity :
 
                 mapManager.fetchCurrentLocation(
                     onSuccess = { location: Location, _ ->
-                        val origin =
-                            Coordinate(Latitude(location.latitude), Longitude(location.longitude))
+                        val origin = location.toCoordinate()
                         val selectedApp: RouteFinderApplication? =
                             CoursePickPreferences.selectedRouteFinder
                         if (selectedApp == null) {
@@ -378,7 +377,8 @@ class CoursesActivity :
 
         mapManager.fetchCurrentLocation(
             onSuccess = { location: Location, isAccurate: Boolean ->
-                mapManager.moveTo(Latitude(location.latitude), Longitude(location.longitude))
+                val coordinate = location.toCoordinate()
+                mapManager.moveTo(coordinate.latitude, coordinate.longitude)
                 mapManager.drawUserPosition(location, isAccurate)
                 binding.mainCurrentLocationButton.setColorFilter(
                     ContextCompat.getColor(this, R.color.gray3),
@@ -612,8 +612,7 @@ class CoursesActivity :
 
         mapManager.fetchCurrentLocation(
             onSuccess = { location: Location, isAccurate: Boolean ->
-                val userCoordinate =
-                    Coordinate(Latitude(location.latitude), Longitude(location.longitude))
+                val userCoordinate = location.toCoordinate()
                 mapManager.moveTo(userCoordinate.latitude, userCoordinate.longitude)
                 mapManager.drawUserPosition(location, isAccurate)
                 viewModel.fetchCourses(userCoordinate, userCoordinate, scope)
@@ -637,9 +636,7 @@ class CoursesActivity :
 
         mapManager.fetchCurrentLocation(
             onSuccess = { location: Location, _ ->
-                val userCoordinate =
-                    Coordinate(Latitude(location.latitude), Longitude(location.longitude))
-                viewModel.fetchCourses(targetCoordinate, userCoordinate, scope)
+                viewModel.fetchCourses(targetCoordinate, location.toCoordinate(), scope)
             },
             onFailure = {
                 viewModel.fetchCourses(targetCoordinate, null, scope)
