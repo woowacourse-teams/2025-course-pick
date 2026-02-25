@@ -71,7 +71,7 @@ class KakaoMapManager(
     }
 
     fun drawSearchPosition(coordinate: Coordinate) {
-        drawer?.drawSearchPosition(coordinate)
+        drawer?.drawSearchPosition(coordinate) ?: Timber.w("KakaoMapDrawer is null")
     }
 
     fun drawUserPosition(
