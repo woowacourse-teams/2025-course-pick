@@ -8,6 +8,8 @@ interface CourseRepository {
         page: Int,
         mapCoordinate: Coordinate,
         userCoordinate: Coordinate? = null,
+        minLength: Meter? = null,
+        maxLength: Meter? = null,
     ): CoursesPage
 
     suspend fun routeToCourse(
