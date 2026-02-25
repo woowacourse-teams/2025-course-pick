@@ -375,11 +375,8 @@ class CoursesActivity :
             showFineLocationPermissionRationaleForCurrentLocation()
         }
 
-        mapManager.fetchCurrentLocation(
-            onSuccess = { location: Location, isAccurate: Boolean ->
-                val coordinate = location.toCoordinate()
-                mapManager.moveTo(coordinate.latitude, coordinate.longitude)
-                mapManager.drawUserPosition(location, isAccurate)
+        mapManager.moveToCurrentLocation(
+            onSuccess = {
                 binding.mainCurrentLocationButton.setColorFilter(
                     ContextCompat.getColor(this, R.color.gray3),
                 )
@@ -610,15 +607,14 @@ class CoursesActivity :
             CoursesContent.EXPLORE -> {
                 val scope: Scope = Scope.default()
 
-        mapManager.fetchCurrentLocation(
-            onSuccess = { location: Location, isAccurate: Boolean ->
+        mapManager.moveToCurrentLocation(
+            onSuccess = { location: Location ->
                 val userCoordinate = location.toCoordinate()
-                mapManager.moveTo(userCoordinate.latitude, userCoordinate.longitude)
-                mapManager.drawUserPosition(location, isAccurate)
                 viewModel.fetchCourses(userCoordinate, userCoordinate, scope)
             },
             onFailure = {
-                val mapCoordinate: Coordinate = mapCoordinateOrNull() ?: return@fetchCurrentLocation
+                val mapCoordinate: Coordinate =
+                    mapCoordinateOrNull() ?: return@moveToCurrentLocation
                 viewModel.fetchCourses(mapCoordinate, null, scope)
             },
         )

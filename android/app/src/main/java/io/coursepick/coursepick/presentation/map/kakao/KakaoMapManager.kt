@@ -163,6 +163,22 @@ class KakaoMapManager(
         )
     }
 
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+    fun moveToCurrentLocation(
+        onSuccess: (location: Location) -> Unit,
+        onFailure: (Exception) -> Unit,
+    ) {
+        locationProvider.fetchCurrentLocation(
+            onSuccess = { location: Location, isAccurate: Boolean ->
+                val coordinate = location.toCoordinate()
+                moveTo(coordinate.latitude, coordinate.longitude)
+                drawUserPosition(location, isAccurate)
+                onSuccess(location)
+            },
+            onFailure = onFailure,
+        )
+    }
+
     fun scopeOrNull(screenCenter: Coordinate): Scope? {
         val screenDiagonalTop: LatLng = kakaoMap?.fromScreenPoint(0, 0) ?: return null
         val distance: Int =
