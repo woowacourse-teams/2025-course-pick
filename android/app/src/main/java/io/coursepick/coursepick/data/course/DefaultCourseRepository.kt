@@ -4,6 +4,7 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseRepository
 import io.coursepick.coursepick.domain.course.CoursesPage
+import io.coursepick.coursepick.domain.course.Meter
 import io.coursepick.coursepick.domain.course.Scope
 import javax.inject.Inject
 
@@ -20,6 +21,8 @@ class DefaultCourseRepository
             page: Int,
             mapCoordinate: Coordinate,
             userCoordinate: Coordinate?,
+            minLength: Meter?,
+            maxLength: Meter?,
         ): CoursesPage =
             service
                 .courses(
@@ -29,6 +32,8 @@ class DefaultCourseRepository
                     userLongitude = userCoordinate?.longitude?.value,
                     scopeMeter = scope.meter.value.toInt(),
                     page = page,
+                    minLengthMeter = minLength?.value?.toInt(),
+                    maxLengthMeter = maxLength?.value?.toInt(),
                 ).toCoursesPage()
 
         override suspend fun routeToCourse(
