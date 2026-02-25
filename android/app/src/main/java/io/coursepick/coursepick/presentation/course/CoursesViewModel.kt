@@ -46,8 +46,6 @@ class CoursesViewModel
             )
         val state: LiveData<CoursesUiState> get() = _state
 
-        val a: MutableLiveData<String> = MutableLiveData()
-
         private val _content: MutableLiveData<CoursesContent> = MutableLiveData(CoursesContent.EXPLORE)
         val content: LiveData<CoursesContent> get() = _content
 
