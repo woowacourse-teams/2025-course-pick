@@ -34,7 +34,7 @@ class DefaultCourseRepository
                     scopeMeter = scope.meter.value.toInt(),
                     page = page,
                     minLengthMeter = minLength?.value?.toInt(),
-                    maxLengthMeter = maxLength?.value?.let { ceil(it) }?.toInt(),
+                    maxLengthMeter = maxLength?.value?.let(::ceil)?.toInt(),
                 ).toCoursesPage()
 
         override suspend fun routeToCourse(
