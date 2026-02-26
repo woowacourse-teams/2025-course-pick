@@ -101,7 +101,6 @@ fun SearchScreen(
                 TextFieldDefaults.colors(
                     focusedContainerColor = colorResource(R.color.background_primary),
                     unfocusedContainerColor = colorResource(R.color.background_primary),
-                    disabledContainerColor = colorResource(R.color.background_primary),
                 ),
         )
         when {
