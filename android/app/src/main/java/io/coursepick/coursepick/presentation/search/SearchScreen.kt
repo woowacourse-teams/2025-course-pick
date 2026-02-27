@@ -1,5 +1,6 @@
 package io.coursepick.coursepick.presentation.search
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -56,7 +58,12 @@ fun SearchScreen(
         focusRequester.requestFocus()
     }
 
-    Column(modifier = modifier) {
+    Column(
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(color = colorResource(R.color.background_primary)),
+    ) {
         TextField(
             value = uiState.query,
             onValueChange = onQueryChange,
@@ -90,10 +97,18 @@ fun SearchScreen(
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() }),
+            colors =
+                TextFieldDefaults.colors(
+                    focusedContainerColor = colorResource(R.color.background_primary),
+                    unfocusedContainerColor = colorResource(R.color.background_primary),
+                ),
         )
         when {
             uiState.isLoading -> {
-                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize(),
+                ) {
                     CircularProgressIndicator()
                 }
             }
