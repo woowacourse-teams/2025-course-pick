@@ -12,8 +12,7 @@ import java.util.List;
 
 public abstract class CourseConverter {
 
-    private static final CourseReaderV0 COURSE_READER_V0 = new CourseReaderV0();
-    private static final CourseReaderV1 COURSE_READER_V1 = new CourseReaderV1();
+    private static final CourseReader COURSE_READER = new CourseReader();
 
     @WritingConverter
     public static class Writer implements Converter<Course, Document> {
@@ -47,10 +46,7 @@ public abstract class CourseConverter {
     public static class Reader implements Converter<Document, Course> {
         @Override
         public Course convert(Document source) {
-            return switch (source.getInteger("schemaVersion")) {
-                case 1 -> COURSE_READER_V1.convert(source);
-                case null, default -> COURSE_READER_V0.convert(source);
-            };
+            return COURSE_READER.convert(source);
         }
     }
 }

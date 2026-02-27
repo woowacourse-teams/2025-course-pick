@@ -9,7 +9,7 @@ import org.springframework.core.convert.converter.Converter;
 
 import java.util.List;
 
-public class CourseReaderV1 implements Converter<Document, Course> {
+public class CourseReader implements Converter<Document, Course> {
 
     @Override
     public Course convert(Document source) {
