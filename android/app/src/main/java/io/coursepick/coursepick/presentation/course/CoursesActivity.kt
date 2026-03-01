@@ -196,10 +196,7 @@ class CoursesActivity :
         super.onResume()
 
         mapManager.resume()
-        viewModel.startTrackingLocation(
-            onUpdate = mapManager::drawUserPosition,
-            onFailure = { mapManager.hideUserPosition() },
-        )
+        viewModel.startTrackingLocation()
 
         updateManager.onResume()
     }
@@ -731,6 +728,10 @@ class CoursesActivity :
                 binding.mainSearchThisAreaButton.visibility = View.GONE
             }
             switchContent(content)
+        }
+
+        viewModel.currentLocation.observe(this) { location: Location? ->
+            location?.let(mapManager::drawUserPosition) ?: run(mapManager::hideUserPosition)
         }
     }
 

@@ -55,6 +55,9 @@ class CoursesViewModel
         private val _content: MutableLiveData<CoursesContent> = MutableLiveData(CoursesContent.EXPLORE)
         val content: LiveData<CoursesContent> get() = _content
 
+        private val _currentLocation: MutableLiveData<Location> = MutableLiveData(null)
+        val currentLocation: LiveData<Location> get() = _currentLocation
+
         private val _event: MutableSingleLiveData<CoursesUiEvent> = MutableSingleLiveData()
         val event: SingleLiveData<CoursesUiEvent> get() = _event
 
@@ -534,10 +537,11 @@ class CoursesViewModel
             onFailure: (exception: Exception) -> Unit,
         ) = locationRepository.fetchCurrentLocation(onSuccess, onFailure)
 
-        fun startTrackingLocation(
-            onUpdate: (location: Location) -> Unit,
-            onFailure: (exception: Exception) -> Unit,
-        ) = locationRepository.startTrackingLocation(onUpdate, onFailure)
+        fun startTrackingLocation() =
+            locationRepository.startTrackingLocation(
+                onUpdate = { location: Location -> _currentLocation.value = location },
+                onFailure = { _currentLocation.value = null },
+            )
 
         fun stopTrackingLocation() = locationRepository.stopTrackingLocation()
 
