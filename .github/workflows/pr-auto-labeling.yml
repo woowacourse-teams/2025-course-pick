@@ -21,7 +21,7 @@ jobs:
 
       - name: PR 생성 시 라벨 업데이트
         if: github.event_name == 'pull_request'
-        uses: {YOUR_GITHUB_USERNAME}/pr-deadline-labeler@v1
+        uses: kkiseug/pr-deadline-labeler@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           base-date: ${{ github.event.pull_request.created_at }}
@@ -29,14 +29,14 @@ jobs:
 
       - name: 매일 자정에 라벨 업데이트
         if: github.event_name == 'schedule'
-        uses: {YOUR_GITHUB_USERNAME}/pr-deadline-labeler@v1
+        uses: kkiseug/pr-deadline-labeler@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           base-date: ${{ github.event.pull_request.created_at }}
 
       - name: 리뷰 제출 시 마감일로 라벨 조정
         if: github.event_name == 'pull_request_review'
-        uses: {YOUR_GITHUB_USERNAME}/pr-deadline-labeler@v1
+        uses: kkiseug/pr-deadline-labeler@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           base-date: ${{ github.event.review.submitted_at }}
