@@ -1,7 +1,6 @@
 package io.coursepick.coursepick.presentation.map.kakao
 
 import android.Manifest
-import android.location.Location
 import androidx.annotation.RequiresPermission
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.LatLng
@@ -9,16 +8,13 @@ import com.kakao.vectormap.MapGravity
 import com.kakao.vectormap.MapView
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Coordinate
-import io.coursepick.coursepick.domain.course.Latitude
-import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.domain.course.Scope
-import io.coursepick.coursepick.presentation.LocationProvider
+import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.course.CourseItem
 import timber.log.Timber
 
 class KakaoMapManager(
     private val mapView: MapView,
-    private val locationProvider: LocationProvider = LocationProvider(mapView.context),
 ) {
     private val lifecycleHandler = KakaoMapLifecycleHandler(mapView)
     private val cameraController = KakaoMapCameraController(mapView.context)
@@ -74,11 +70,12 @@ class KakaoMapManager(
         drawer?.drawSearchPosition(coordinate) ?: Timber.w("KakaoMapDrawer is null")
     }
 
-    fun drawUserPosition(
-        location: Location,
-        isAccurate: Boolean,
-    ) {
-        drawer?.drawUserPosition(location, isAccurate) ?: Timber.w("KakaoMapDrawer is null")
+    fun drawUserPosition(location: Location) {
+        drawer?.drawUserPosition(location) ?: Timber.w("KakaoMapDrawer is null")
+    }
+
+    fun hideUserPosition() {
+        drawer?.hideUserPosition() ?: Timber.w("KakaoMapDrawer is null")
     }
 
     fun fitTo(coordinates: List<Coordinate>) {
@@ -112,17 +109,9 @@ class KakaoMapManager(
         } ?: Timber.w("kakaoMap is null")
     }
 
-    fun moveTo(
-        latitude: Latitude,
-        longitude: Longitude,
-    ) {
-        val location =
-            Location("search").apply {
-                this.latitude = latitude.value
-                this.longitude = longitude.value
-            }
+    fun moveTo(coordinate: Coordinate) {
         kakaoMap?.let { kakaoMap: KakaoMap ->
-            cameraController.moveTo(kakaoMap, location)
+            cameraController.moveTo(kakaoMap, coordinate)
         } ?: Timber.w("kakaoMap is null")
     }
 
@@ -136,36 +125,6 @@ class KakaoMapManager(
         kakaoMap?.let { kakaoMap: KakaoMap ->
             kakaoMap.setPadding(0, 0, 0, size)
         } ?: Timber.w("kakaoMap is null")
-    }
-
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    fun startTrackingCurrentLocation() {
-        locationProvider.startLocationUpdates(
-            onUpdate = { location: Location, isAccurate: Boolean ->
-                drawer?.drawUserPosition(location, isAccurate) ?: Timber.w("KakaoMapDrawer is null")
-            },
-            onError = { drawer?.hideUserPosition() ?: Timber.w("KakaoMapDrawer is null") },
-        )
-    }
-
-    fun stopTrackingCurrentLocation() {
-        locationProvider.stopLocationUpdates()
-    }
-
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    fun moveToCurrentLocation(
-        onSuccess: (location: Location) -> Unit,
-        onFailure: (Exception) -> Unit,
-    ) {
-        locationProvider.fetchCurrentLocation(
-            onSuccess = { location: Location, isAccurate: Boolean ->
-                val coordinate = location.toCoordinate()
-                moveTo(coordinate.latitude, coordinate.longitude)
-                drawUserPosition(location, isAccurate)
-                onSuccess(location)
-            },
-            onFailure = onFailure,
-        )
     }
 
     fun scopeOrNull(screenCenter: Coordinate): Scope? {

@@ -196,7 +196,10 @@ class CoursesActivity :
         super.onResume()
 
         mapManager.resume()
-        mapManager.startTrackingCurrentLocation()
+        viewModel.startTrackingLocation(
+            onUpdate = mapManager::drawUserPosition,
+            onFailure = { mapManager.hideUserPosition() },
+        )
 
         updateManager.onResume()
     }
@@ -205,7 +208,7 @@ class CoursesActivity :
         super.onPause()
 
         mapManager.pause()
-        mapManager.stopTrackingCurrentLocation()
+        viewModel.stopTrackingLocation()
     }
 
     override fun onStop() {
@@ -333,7 +336,7 @@ class CoursesActivity :
 
         mapManager.resetZoomLevel()
         mapManager.drawSearchPosition(coordinate)
-        mapManager.moveTo(latitude, longitude)
+        mapManager.moveTo(coordinate)
         fetchCourses(coordinate)
     }
 
@@ -409,8 +412,10 @@ class CoursesActivity :
             showFineLocationPermissionRationaleForCurrentLocation()
         }
 
-        mapManager.moveToCurrentLocation(
-            onSuccess = {
+        viewModel.fetchCurrentLocation(
+            onSuccess = { location: Location ->
+                mapManager.drawUserPosition(location)
+                mapManager.moveTo(location.coordinate)
                 binding.mainCurrentLocationButton.setColorFilter(
                     ContextCompat.getColor(this, R.color.gray3),
                 )
@@ -646,14 +651,16 @@ class CoursesActivity :
             CoursesContent.EXPLORE -> {
                 val scope: Scope = Scope.default()
 
-                mapManager.moveToCurrentLocation(
-                    onSuccess = { location: android.location.Location ->
-                        val userCoordinate = location.toCoordinate()
+                viewModel.fetchCurrentLocation(
+                    onSuccess = { location: Location ->
+                        val userCoordinate = location.coordinate
+                        mapManager.drawUserPosition(location)
+                        mapManager.moveTo(location.coordinate)
                         viewModel.fetchCourses(userCoordinate, userCoordinate, scope)
                     },
                     onFailure = {
                         val mapCoordinate: Coordinate =
-                            mapCoordinateOrNull() ?: return@moveToCurrentLocation
+                            mapCoordinateOrNull() ?: return@fetchCurrentLocation
                         viewModel.fetchCourses(mapCoordinate, null, scope)
                     },
                 )
