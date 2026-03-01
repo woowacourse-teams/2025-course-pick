@@ -137,7 +137,6 @@ fun CourseFilterBottomSheet(
 
                 FilterResultButton(
                     text = stringResource(R.string.filter_result_button),
-                    enabled = true,
                     onClick = { onFilterAction(CourseFilterAction.Apply) },
                     modifier = Modifier.weight(1f),
                 )
