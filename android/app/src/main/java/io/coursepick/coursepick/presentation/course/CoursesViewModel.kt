@@ -14,6 +14,7 @@ import io.coursepick.coursepick.domain.course.CoursesPage
 import io.coursepick.coursepick.domain.course.Kilometer
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.domain.favorites.FavoritesRepository
+import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.domain.location.LocationRepository
 import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.domain.notice.NoticeRepository
@@ -527,6 +528,18 @@ class CoursesViewModel
         fun showCourses() {
             _state.value = state.value?.copy(showSettings = false)
         }
+
+        fun fetchCurrentLocation(
+            onSuccess: (location: Location) -> Unit,
+            onFailure: (exception: Exception) -> Unit,
+        ) = locationRepository.fetchCurrentLocation(onSuccess, onFailure)
+
+        fun startTrackingLocation(
+            onUpdate: (location: Location) -> Unit,
+            onFailure: (exception: Exception) -> Unit,
+        ) = locationRepository.startTrackingLocation(onUpdate, onFailure)
+
+        fun stopTrackingLocation() = locationRepository.stopTrackingLocation()
 
         private fun newCoursesListItem(
             oldCourses: List<CourseListItem>,
