@@ -153,17 +153,6 @@ class KakaoMapManager(
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    fun fetchCurrentLocation(
-        onSuccess: (location: Location, isAccurate: Boolean) -> Unit,
-        onFailure: (Exception) -> Unit,
-    ) {
-        locationProvider.fetchCurrentLocation(
-            onSuccess = onSuccess,
-            onFailure = onFailure,
-        )
-    }
-
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     fun moveToCurrentLocation(
         onSuccess: (location: Location) -> Unit,
         onFailure: (Exception) -> Unit,

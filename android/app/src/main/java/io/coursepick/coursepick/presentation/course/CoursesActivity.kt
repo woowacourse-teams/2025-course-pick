@@ -7,7 +7,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
-import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -47,6 +46,7 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.domain.course.Scope
+import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.CoursePickUpdateManager
@@ -114,9 +114,8 @@ class CoursesActivity :
                     return
                 }
 
-                mapManager.fetchCurrentLocation(
-                    onSuccess = { location: Location, _ ->
-                        val origin = location.toCoordinate()
+                viewModel.fetchCurrentLocation(
+                    onSuccess = { location: Location ->
                         val selectedApp: RouteFinderApplication? =
                             CoursePickPreferences.selectedRouteFinder
                         if (selectedApp == null) {
@@ -128,12 +127,12 @@ class CoursesActivity :
                                 val selectedApp: RouteFinderApplication =
                                     bundle.getParcelableCompat<RouteFinderApplication>(DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_RESULT)
                                         ?: return@setFragmentResultListener
-                                handleNavigation(course, origin, selectedApp)
+                                handleNavigation(course, location.coordinate, selectedApp)
                             }
                             RouteFinderChoiceDialogFragment().show(supportFragmentManager, null)
                             return@fetchCurrentLocation
                         }
-                        handleNavigation(course, origin, selectedApp)
+                        handleNavigation(course, location.coordinate, selectedApp)
                     },
                     onFailure = {
                         Toast
@@ -648,7 +647,7 @@ class CoursesActivity :
                 val scope: Scope = Scope.default()
 
                 mapManager.moveToCurrentLocation(
-                    onSuccess = { location: Location ->
+                    onSuccess = { location: android.location.Location ->
                         val userCoordinate = location.toCoordinate()
                         viewModel.fetchCourses(userCoordinate, userCoordinate, scope)
                     },
@@ -670,9 +669,9 @@ class CoursesActivity :
     private fun fetchCourses(targetCoordinate: Coordinate) {
         val scope: Scope = scopeOrNull() ?: return
 
-        mapManager.fetchCurrentLocation(
-            onSuccess = { location: Location, _ ->
-                viewModel.fetchCourses(targetCoordinate, location.toCoordinate(), scope)
+        viewModel.fetchCurrentLocation(
+            onSuccess = { location: Location ->
+                viewModel.fetchCourses(targetCoordinate, location.coordinate, scope)
             },
             onFailure = {
                 viewModel.fetchCourses(targetCoordinate, null, scope)
