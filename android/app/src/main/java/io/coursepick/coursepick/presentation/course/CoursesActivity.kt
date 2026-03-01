@@ -211,6 +211,12 @@ class CoursesActivity :
         updateManager.onStop()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+        mapManager.finish()
+    }
+
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun searchThisArea() {
         val coordinate = mapCoordinateOrNull() ?: return

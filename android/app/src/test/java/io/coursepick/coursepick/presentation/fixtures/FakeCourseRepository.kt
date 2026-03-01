@@ -4,6 +4,7 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseRepository
 import io.coursepick.coursepick.domain.course.CoursesPage
+import io.coursepick.coursepick.domain.course.Meter
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.domain.fixture.COORDINATE_FIXTURE
 import io.coursepick.coursepick.domain.fixture.COURSE_FIXTURE_1
@@ -20,6 +21,8 @@ class FakeCourseRepository : CourseRepository {
         page: Int,
         mapCoordinate: Coordinate,
         userCoordinate: Coordinate?,
+        minLength: Meter?,
+        maxLength: Meter?,
     ): CoursesPage {
         if (shouldThrowError) {
             throw RuntimeException("Fetch courses failed")

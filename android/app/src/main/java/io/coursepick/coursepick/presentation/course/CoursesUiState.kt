@@ -4,7 +4,7 @@ import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.presentation.filter.CourseFilter
 
 data class CoursesUiState(
-    val originalCourses: List<CourseListItem>,
+    val courses: List<CourseListItem>,
     val query: String = "",
     val status: UiStatus = UiStatus.Loading,
     val courseFilter: CourseFilter = CourseFilter.None,
@@ -14,5 +14,4 @@ data class CoursesUiState(
 ) {
     val isQueryBlank: Boolean = query.isBlank()
     val isFilterDefault: Boolean = courseFilter == CourseFilter.None
-    val courses: List<CourseListItem> = courseFilter.filteredCourses(originalCourses)
 }

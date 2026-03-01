@@ -39,7 +39,7 @@ class CoursesViewModel
         private val _state: MutableLiveData<CoursesUiState> =
             MutableLiveData(
                 CoursesUiState(
-                    originalCourses = listOf(CourseListItem.Loading),
+                    courses = listOf(CourseListItem.Loading),
                     query = "",
                     status = UiStatus.Loading,
                 ),
@@ -71,7 +71,7 @@ class CoursesViewModel
         private fun checkNetwork() {
             if (!networkMonitor.isConnected()) {
                 _state.value =
-                    state.value?.copy(originalCourses = emptyList(), status = UiStatus.NoInternet)
+                    state.value?.copy(courses = emptyList(), status = UiStatus.NoInternet)
             }
         }
 
@@ -91,14 +91,14 @@ class CoursesViewModel
             if (selectedIndex == -1) return
 
             val newCourseItems: List<CourseListItem> = newCoursesListItem(oldCourses, course)
-            _state.value = state.value?.copy(originalCourses = newCourseItems)
+            _state.value = state.value?.copy(courses = newCourseItems)
             _event.value = CoursesUiEvent.SelectCourseManually(course)
         }
 
         fun toggleFavorite(toggledCourse: CourseItem) {
             pendingFavoriteWrites[toggledCourse.id] = !toggledCourse.favorite
 
-            state.value?.originalCourses?.let { courses: List<CourseListItem> ->
+            state.value?.courses?.let { courses: List<CourseListItem> ->
                 val newCourses =
                     courses.map { item: CourseListItem ->
                         when (item) {
@@ -115,7 +115,7 @@ class CoursesViewModel
                             }
                         }
                     }
-                _state.value = state.value?.copy(originalCourses = newCourses)
+                _state.value = state.value?.copy(courses = newCourses)
             }
 
             updateFavorites()
@@ -146,9 +146,22 @@ class CoursesViewModel
         ) {
             _state.value =
                 state.value?.copy(
-                    originalCourses = listOf(CourseListItem.Loading),
+                    courses = listOf(CourseListItem.Loading),
                     status = UiStatus.Loading,
                 )
+
+            val minLength =
+                state.value
+                    ?.courseFilter
+                    ?.lengthRange
+                    ?.start
+                    ?.toMeter()
+            val maxLength =
+                state.value
+                    ?.courseFilter
+                    ?.lengthRange
+                    ?.endInclusive
+                    ?.toMeter()
 
             viewModelScope.launch {
                 runCatching {
@@ -157,6 +170,8 @@ class CoursesViewModel
                         page = 0,
                         mapCoordinate = mapCoordinate,
                         userCoordinate = userCoordinate,
+                        minLength = minLength,
+                        maxLength = maxLength,
                     )
                 }.onSuccess { coursesPage: CoursesPage ->
                     Logger.log(Logger.Event.Success("fetch_courses_new"))
@@ -183,7 +198,7 @@ class CoursesViewModel
 
                     _state.value =
                         state.value?.copy(
-                            originalCourses = courseItems.map(CourseListItem::Course),
+                            courses = courseItems.map(CourseListItem::Course),
                             status = UiStatus.Success,
                         )
                 }.onFailure { exception: Throwable ->
@@ -194,14 +209,14 @@ class CoursesViewModel
                     if (exception is NoNetworkException) {
                         _state.value =
                             state.value?.copy(
-                                originalCourses = emptyList(),
+                                courses = emptyList(),
                                 status = UiStatus.NoInternet,
                             )
                         return@onFailure
                     }
                     _state.value =
                         state.value?.copy(
-                            originalCourses = emptyList(),
+                            courses = emptyList(),
                             status = UiStatus.Failure,
                         )
                     _event.value = CoursesUiEvent.FetchCourseFailure
@@ -212,16 +227,28 @@ class CoursesViewModel
         fun fetchNextCourses() {
             if (state.value?.status == UiStatus.Loading || !hasNext) return
 
-            val existingCourses: List<CourseListItem> = state.value?.originalCourses ?: emptyList()
+            val existingCourses: List<CourseListItem> = state.value?.courses ?: emptyList()
             _state.value =
                 state.value?.copy(
-                    originalCourses = existingCourses + CourseListItem.Loading,
+                    courses = existingCourses + CourseListItem.Loading,
                     status = UiStatus.Loading,
                 )
 
             val mapCoordinate: Coordinate = lastMapCoordinate ?: return
             val userCoordinate: Coordinate? = lastUserCoordinate
             val scope: Scope = lastScope ?: return
+            val minLength =
+                state.value
+                    ?.courseFilter
+                    ?.lengthRange
+                    ?.start
+                    ?.toMeter()
+            val maxLength =
+                state.value
+                    ?.courseFilter
+                    ?.lengthRange
+                    ?.endInclusive
+                    ?.toMeter()
 
             viewModelScope.launch {
                 runCatching {
@@ -231,6 +258,8 @@ class CoursesViewModel
                         page = nextPage,
                         mapCoordinate = mapCoordinate,
                         userCoordinate = userCoordinate,
+                        minLength = minLength,
+                        maxLength = maxLength,
                     )
                 }.onSuccess { coursesPage: CoursesPage ->
                     Logger.log(Logger.Event.Success("fetch_courses_next"))
@@ -238,7 +267,7 @@ class CoursesViewModel
                     val favoritedCourseIds: Set<String> = favoritesRepository.favoriteCourseIds()
 
                     val existingCoursesWithoutLoading =
-                        (state.value?.originalCourses ?: emptyList())
+                        (state.value?.courses ?: emptyList())
                             .filterNot { courseListItem: CourseListItem -> courseListItem is CourseListItem.Loading }
 
                     val newCourses =
@@ -257,7 +286,7 @@ class CoursesViewModel
 
                     _state.value =
                         state.value?.copy(
-                            originalCourses = existingCoursesWithoutLoading + newCourses,
+                            courses = existingCoursesWithoutLoading + newCourses,
                             status = UiStatus.Success,
                         )
                 }.onFailure { exception: Throwable ->
@@ -267,12 +296,12 @@ class CoursesViewModel
                     )
 
                     val existingCoursesWithoutLoading =
-                        (state.value?.originalCourses ?: emptyList())
+                        (state.value?.courses ?: emptyList())
                             .filterNot { courseListItem: CourseListItem -> courseListItem is CourseListItem.Loading }
 
                     _state.value =
                         state.value?.copy(
-                            originalCourses = existingCoursesWithoutLoading,
+                            courses = existingCoursesWithoutLoading,
                             status = UiStatus.Failure,
                         )
                     _event.value = CoursesUiEvent.FetchNextCoursesFailure
@@ -283,7 +312,7 @@ class CoursesViewModel
         fun fetchFavorites() {
             _state.value =
                 state.value?.copy(
-                    originalCourses = listOf(CourseListItem.Loading),
+                    courses = listOf(CourseListItem.Loading),
                     status = UiStatus.Loading,
                 )
 
@@ -291,7 +320,7 @@ class CoursesViewModel
             if (favoritedCourseIds.isEmpty()) {
                 _state.value =
                     state.value?.copy(
-                        originalCourses = emptyList(),
+                        courses = emptyList(),
                         status = UiStatus.Success,
                     )
                 return
@@ -312,7 +341,7 @@ class CoursesViewModel
                     _state.value =
                         state.value
                             ?.copy(
-                                originalCourses = courseItems.map(CourseListItem::Course),
+                                courses = courseItems.map(CourseListItem::Course),
                                 status = UiStatus.Success,
                             )
                 }.onFailure { exception: Throwable ->
@@ -324,7 +353,7 @@ class CoursesViewModel
                         _state.value =
                             state.value
                                 ?.copy(
-                                    originalCourses = emptyList(),
+                                    courses = emptyList(),
                                     status = UiStatus.NoInternet,
                                 )
                         return@onFailure
@@ -332,7 +361,7 @@ class CoursesViewModel
                     _state.value =
                         state.value
                             ?.copy(
-                                originalCourses = emptyList(),
+                                courses = emptyList(),
                                 status = UiStatus.Failure,
                             )
                     _event.value = CoursesUiEvent.FetchCourseFailure
@@ -348,7 +377,7 @@ class CoursesViewModel
             val newCourseItems: List<CourseListItem> = newCoursesListItem(oldCourses, course)
             _state.value =
                 state.value?.copy(
-                    originalCourses = newCourseItems,
+                    courses = newCourseItems,
                     status = UiStatus.Loading,
                 )
 
@@ -423,6 +452,9 @@ class CoursesViewModel
 
                 is CourseFilterAction.Apply -> {
                     _state.value = state.value?.copy(showFilterDialog = false)
+                    val mapCoordinate = lastMapCoordinate ?: return
+                    val scope = lastScope ?: return
+                    fetchCourses(mapCoordinate, lastUserCoordinate, scope)
                 }
 
                 is CourseFilterAction.UpdateLengthRange -> {

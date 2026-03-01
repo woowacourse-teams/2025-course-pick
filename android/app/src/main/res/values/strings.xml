@@ -23,7 +23,6 @@
     <string name="filter_dialog_length_label">길이</string>
     <string name="filter_dialog_cancel_button">취소</string>
     <string name="filter_result_button">검색 결과</string>
-    <string name="filter_result_with_count_button">검색 결과(%1$d개)</string>
     <string name="filter_length_range_total_label">전체</string>
     <string name="filter_length_range_label">%1$d km ~ %2$d km</string>
     <string name="filter_length_range_open_start_label">~ %1$d km</string>

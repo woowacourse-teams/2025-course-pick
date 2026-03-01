@@ -18,6 +18,8 @@ interface CourseService {
         @Query("userLng") userLongitude: Double?,
         @Query("scope") scopeMeter: Int,
         @Query("page") page: Int,
+        @Query("minLength") minLengthMeter: Int? = null,
+        @Query("maxLength") maxLengthMeter: Int? = null,
     ): CoursesPageDto
 
     @GET("courses/{id}/route")

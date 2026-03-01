@@ -136,12 +136,7 @@ fun CourseFilterBottomSheet(
                 }
 
                 FilterResultButton(
-                    text =
-                        stringResource(
-                            R.string.filter_result_with_count_button,
-                            coursesUiState.courses.size,
-                        ),
-                    enabled = coursesUiState.courses.isNotEmpty(),
+                    text = stringResource(R.string.filter_result_button),
                     onClick = { onFilterAction(CourseFilterAction.Apply) },
                     modifier = Modifier.weight(1f),
                 )
@@ -189,7 +184,7 @@ private fun CourseFilterBottomSheetPreview() {
 
         if (showSheet) {
             CourseFilterBottomSheet(
-                coursesUiState = CoursesUiState(originalCourses = listOf()),
+                coursesUiState = CoursesUiState(courses = listOf()),
                 onDismissRequest = { showSheet = false },
                 onFilterAction = {},
             )
