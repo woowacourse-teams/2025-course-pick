@@ -14,6 +14,7 @@ import io.coursepick.coursepick.domain.course.CoursesPage
 import io.coursepick.coursepick.domain.course.Kilometer
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.domain.favorites.FavoritesRepository
+import io.coursepick.coursepick.domain.location.LocationRepository
 import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.domain.notice.NoticeRepository
 import io.coursepick.coursepick.presentation.Logger
@@ -37,6 +38,7 @@ class CoursesViewModel
         private val courseRepository: CourseRepository,
         private val favoritesRepository: FavoritesRepository,
         private val noticeRepository: NoticeRepository,
+        private val locationRepository: LocationRepository,
         private val networkMonitor: NetworkMonitor,
     ) : ViewModel() {
         private val _state: MutableLiveData<CoursesUiState> =
