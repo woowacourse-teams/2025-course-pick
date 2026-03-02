@@ -36,9 +36,10 @@ jobs:
           ASSIGNEES: ${{ join(github.event.pull_request.assignees.*.login, ', ') }}
           REVIEWERS: ${{ join(github.event.pull_request.requested_reviewers.*.login, ', ') }}
         run: |
-          BODY=$(jq -n \
-            --arg desc "#${PR_NUMBER}가 등록되었습니다!\n담당자: ${ASSIGNEES}\n리뷰어: ${REVIEWERS}\n-> [당장 리뷰하러 가기](${PR_URL})" \
-            '{"embeds":[{"description":$desc,"color":5814783}]}')
+          DESC=$(printf "#%s가 등록되었습니다!\n담당자: %s\n리뷰어: %s\n-> [당장 리뷰하러 가기](%s)" \
+              "$PR_NUMBER" "$ASSIGNEE_MENTIONS" "$REVIEWER_MENTIONS" "$PR_URL")
+          
+          BODY=$(jq -n --arg desc "$DESC" '{"embeds":[{"description":$desc,"color":5814783}]}')
           
           curl -s -X POST "$DISCORD_WEBHOOK" \
             -H "Content-Type: application/json" \
@@ -74,9 +75,10 @@ jobs:
           
             DAYS="${LABEL#D-}"
           
-            BODY=$(jq -n \
-              --arg desc "#${PR_NUMBER}가 D-${DAYS}일 남았습니다!\n담당자: ${ASSIGNEES}\n리뷰어: ${REVIEWERS}\n-> [당장 리뷰하러 가기](${PR_URL})" \
-              '{"embeds":[{"description":$desc,"color":15548997}]}')
+            DESC=$(printf "#%s가 D-%s일 남았습니다!\n담당자: %s\n리뷰어: %s\n-> [당장 리뷰하러 가기](%s)" \
+              "$PR_NUMBER" "$DAYS" "$ASSIGNEE_MENTIONS" "$REVIEWER_MENTIONS" "$PR_URL")
+  
+            BODY=$(jq -n --arg desc "$DESC" '{"embeds":[{"description":$desc,"color":15548997}]}')
           
             curl -s -X POST "$DISCORD_WEBHOOK" \
               -H "Content-Type: application/json" \
