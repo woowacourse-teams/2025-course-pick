@@ -26,12 +26,12 @@ public class MongoConfig {
                 .applyToConnectionPoolSettings(pool -> pool
                         .maxSize(30)
                         .minSize(10)
-                        .maxWaitTime(2, TimeUnit.SECONDS)
+                        .maxWaitTime(5, TimeUnit.SECONDS)
                         .maxConnectionIdleTime(30, TimeUnit.SECONDS)
                 )
                 .applyToSocketSettings(socket -> socket
                         .connectTimeout(1, TimeUnit.SECONDS)
-                        .readTimeout(3, TimeUnit.SECONDS)
+                        .readTimeout(5, TimeUnit.SECONDS)
                 );
     }
 }
