@@ -89,22 +89,25 @@ object CoursePickPreferences {
         }
     }
 
-    fun shouldShowNotice(id: String): Boolean = preferences.getStringSet(doNotShowNoticesKey, null)?.contains(id) != true
+    fun shouldShowNotice(id: String): Boolean {
+        val doNotShowNoticeIds: Set<String?> =
+            preferences.getStringSet(doNotShowNoticesKey, null) ?: return true
+        return !doNotShowNoticeIds.contains(id)
+    }
 
     fun setDoNotShowNotice(id: String) {
         preferences.edit {
-            putStringSet(
-                doNotShowNoticesKey,
-                preferences.getStringSet(doNotShowNoticesKey, null).orEmpty() + id,
-            )
+            val doNotShowNoticeIds =
+                preferences.getStringSet(doNotShowNoticesKey, null) ?: emptySet()
+            putStringSet(doNotShowNoticesKey, doNotShowNoticeIds + id)
         }
     }
 
-    fun removeInvalidNoticeIds(ids: Set<String>) {
+    fun removeInvalidNoticeIds(currentNoticeIds: Set<String>) {
         preferences.edit {
-            val currentNoticeIds = preferences.getStringSet(doNotShowNoticesKey, null).orEmpty()
-            val newNoticeIds = currentNoticeIds.intersect(ids)
-            putStringSet(doNotShowNoticesKey, newNoticeIds)
+            val doNotShowNoticeIds =
+                preferences.getStringSet(doNotShowNoticesKey, null) ?: emptySet()
+            putStringSet(doNotShowNoticesKey, doNotShowNoticeIds.intersect(currentNoticeIds))
         }
     }
 
