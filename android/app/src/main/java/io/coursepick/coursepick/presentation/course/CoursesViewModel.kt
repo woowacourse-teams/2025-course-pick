@@ -19,6 +19,7 @@ import io.coursepick.coursepick.domain.notice.NoticeRepository
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.filter.CourseFilter
 import io.coursepick.coursepick.presentation.filter.CourseFilterAction
+import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
@@ -496,6 +497,7 @@ class CoursesViewModel
                 runCatching {
                     noticeRepository.notices()
                 }.onSuccess { notices: List<Notice> ->
+                    CoursePickPreferences.removeInvalidNoticeIds(notices.map(Notice::id).toSet())
                     _state.value = state.value?.copy(notices = notices)
                 }
             }

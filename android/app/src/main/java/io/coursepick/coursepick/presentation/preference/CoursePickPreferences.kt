@@ -100,6 +100,14 @@ object CoursePickPreferences {
         }
     }
 
+    fun removeInvalidNoticeIds(ids: Set<String>) {
+        preferences.edit {
+            val currentNoticeIds = preferences.getStringSet(doNotShowNoticesKey, null).orEmpty()
+            val newNoticeIds = currentNoticeIds.intersect(ids)
+            putStringSet(doNotShowNoticesKey, newNoticeIds)
+        }
+    }
+
     private val RouteFinderApplication?.serialized: String
         get() =
             when (this) {
