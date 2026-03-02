@@ -23,9 +23,11 @@ import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -497,7 +499,9 @@ class CoursesViewModel
                 runCatching {
                     noticeRepository.notices()
                 }.onSuccess { notices: List<Notice> ->
-                    CoursePickPreferences.removeInvalidNoticeIds(notices.map(Notice::id).toSet())
+                    withContext(Dispatchers.IO) {
+                        CoursePickPreferences.removeInvalidNoticeIds(notices.map(Notice::id).toSet())
+                    }
                     _state.value = state.value?.copy(notices = notices)
                 }
             }
