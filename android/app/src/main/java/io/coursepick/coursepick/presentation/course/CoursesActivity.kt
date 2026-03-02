@@ -136,8 +136,11 @@ class CoursesActivity :
                     },
                     onFailure = {
                         Toast
-                            .makeText(this@CoursesActivity, "현재 위치를 가져올 수 없어요.", Toast.LENGTH_SHORT)
-                            .show()
+                            .makeText(
+                                this@CoursesActivity,
+                                getString(R.string.courses_failed_to_get_current_location_message),
+                                Toast.LENGTH_SHORT,
+                            ).show()
                     },
                 )
             }
@@ -238,7 +241,7 @@ class CoursesActivity :
         searchLauncher?.launch(intent) ?: Toast
             .makeText(
                 this,
-                "현재 검색 기능을 사용할 수 없습니다.",
+                getString(R.string.courses_search_unavailable_message),
                 Toast.LENGTH_SHORT,
             ).show()
     }
@@ -247,7 +250,7 @@ class CoursesActivity :
         val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
         val clip: ClipData = ClipData.newPlainText(null, coursePickApplication.installationId.value)
         clipboard.setPrimaryClip(clip)
-        Toast.makeText(this, "사용자 ID가 복사됐습니다.", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.courses_client_id_copied_message), Toast.LENGTH_SHORT).show()
     }
 
     override fun clearQuery() {
@@ -258,7 +261,12 @@ class CoursesActivity :
         val mapPosition: Coordinate = mapCoordinateOrNull() ?: return null
         val scope: Scope =
             mapManager.scopeOrNull(mapPosition) ?: run {
-                Toast.makeText(this, "탐색 범위를 계산하지 못했습니다.", Toast.LENGTH_SHORT).show()
+                Toast
+                    .makeText(
+                        this,
+                        getString(R.string.courses_failed_to_calculate_length_range_message),
+                        Toast.LENGTH_SHORT,
+                    ).show()
                 return null
             }
         return scope
@@ -266,7 +274,12 @@ class CoursesActivity :
 
     private fun mapCoordinateOrNull(): Coordinate? {
         return mapManager.cameraPosition?.toCoordinate() ?: run {
-            Toast.makeText(this, "지도 위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
+            Toast
+                .makeText(
+                    this,
+                    getString(R.string.courses_failed_to_get_map_location_message),
+                    Toast.LENGTH_SHORT,
+                ).show()
             return null
         }
     }
@@ -282,7 +295,12 @@ class CoursesActivity :
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun handleLocationResult(intent: Intent?) {
         if (intent == null) {
-            Toast.makeText(this@CoursesActivity, "검색 정보가 전달되지 않았습니다.", Toast.LENGTH_SHORT).show()
+            Toast
+                .makeText(
+                    this@CoursesActivity,
+                    getString(R.string.courses_search_information_not_provided_message),
+                    Toast.LENGTH_SHORT,
+                ).show()
             return
         }
 
@@ -292,7 +310,12 @@ class CoursesActivity :
         }
 
         if (!intent.hasExtra(DataKeys.DATA_KEY_PLACE_LATITUDE) || !intent.hasExtra(DataKeys.DATA_KEY_PLACE_LONGITUDE)) {
-            Toast.makeText(this, "위치 정보가 전달되지 않았습니다.", Toast.LENGTH_SHORT).show()
+            Toast
+                .makeText(
+                    this,
+                    getString(R.string.courses_location_not_provided_message),
+                    Toast.LENGTH_SHORT,
+                ).show()
             return
         }
 
@@ -388,7 +411,12 @@ class CoursesActivity :
                 )
             },
             onFailure = {
-                Toast.makeText(this, "현재 위치를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
+                Toast
+                    .makeText(
+                        this,
+                        getString(R.string.courses_failed_to_get_current_location_message),
+                        Toast.LENGTH_SHORT,
+                    ).show()
             },
         )
     }
@@ -699,7 +727,12 @@ class CoursesActivity :
             when (event) {
                 CoursesUiEvent.FetchCourseFailure -> {
                     binding.mainSearchThisAreaButton.visibility = View.VISIBLE
-                    Toast.makeText(this, "코스 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
+                    Toast
+                        .makeText(
+                            this,
+                            getString(R.string.courses_failed_to_load_course_message),
+                            Toast.LENGTH_SHORT,
+                        ).show()
                 }
 
                 is CoursesUiEvent.SelectCourseManually -> {
@@ -720,14 +753,20 @@ class CoursesActivity :
 
                 is CoursesUiEvent.FetchRouteToCourseFailure -> {
                     Toast
-                        .makeText(this, "코스까지 가는 길을 찾지 못했습니다.", Toast.LENGTH_SHORT)
-                        .show()
+                        .makeText(
+                            this,
+                            getString(R.string.courses_failed_to_find_route_to_course_message),
+                            Toast.LENGTH_SHORT,
+                        ).show()
                 }
 
                 is CoursesUiEvent.FetchRouteToCourseNoNetwork -> {
                     Toast
-                        .makeText(this, "네트워크에 연결되지 않아 길찾기에 실패했습니다.", Toast.LENGTH_SHORT)
-                        .show()
+                        .makeText(
+                            this,
+                            getString(R.string.courses_no_network_connection_for_route_message),
+                            Toast.LENGTH_SHORT,
+                        ).show()
                 }
 
                 is CoursesUiEvent.FetchNearestCoordinateSuccess -> {
@@ -741,8 +780,11 @@ class CoursesActivity :
 
                 CoursesUiEvent.FetchNearestCoordinateFailure -> {
                     Toast
-                        .makeText(this, "코스까지 가는 길을 찾지 못했습니다.", Toast.LENGTH_SHORT)
-                        .show()
+                        .makeText(
+                            this,
+                            getString(R.string.courses_failed_to_find_route_to_course_message),
+                            Toast.LENGTH_SHORT,
+                        ).show()
                 }
 
                 CoursesUiEvent.FetchNextCoursesFailure -> {
