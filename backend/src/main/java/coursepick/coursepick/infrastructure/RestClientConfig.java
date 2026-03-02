@@ -31,7 +31,7 @@ public class RestClientConfig {
     @Bean
     public RestClient osrmRestClient(
             @Value("${osrm.url}") String osrmUrl,
-            @Value("${osrm.connect-timeout:1}") int connectTimeoutSeconds,
+            @Value("${osrm.connect-timeout:3}") int connectTimeoutSeconds,
             @Value("${osrm.read-timeout:5}") int readTimeoutSeconds
     ) {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
