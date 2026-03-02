@@ -31,15 +31,24 @@ jobs:
         if: github.event_name == 'pull_request'
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_PR_REMIND }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_URL: ${{ github.event.pull_request.html_url }}
-          ASSIGNEES: ${{ join(github.event.pull_request.assignees.*.login, ', ') }}
-          REVIEWERS: ${{ join(github.event.pull_request.requested_reviewers.*.login, ', ') }}
         run: |
+          PR_DATA=$(curl -s -H "Authorization: token $GH_TOKEN" \
+            "https://api.github.com/repos/$REPO/pulls/$PR_NUMBER")
+          
+          ASSIGNEES=$(echo "$PR_DATA" | jq -r '[.assignees[].login] | join(", ")')
+          REVIEWERS=$(echo "$PR_DATA" | jq -r '[.requested_reviewers[].login] | join(", ")')
+          
+          [ -z "$ASSIGNEES" ] && ASSIGNEES="없음"
+          [ -z "$REVIEWERS" ] && REVIEWERS="없음"
+          
           MSG=$(printf "#%s가 등록되었습니다!\n담당자: %s\n리뷰어: %s\n-> [당장 리뷰하러 가기](%s)" \
-            "$PR_NUMBER" "$ASSIGNEE_MENTIONS" "$REVIEWER_MENTIONS" "$PR_URL")
-
-          BODY=$(jq -n --arg content "$MSG" '{"content": $content}')
+            "$PR_NUMBER" "$ASSIGNEES" "$REVIEWERS" "$PR_URL")
+          
+          BODY=$(jq -n --arg content "$MSG" '{"content": $content, "flags": 4}')
           
           curl -s -X POST "$DISCORD_WEBHOOK" \
             -H "Content-Type: application/json" \
