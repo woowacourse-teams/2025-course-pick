@@ -138,7 +138,7 @@ class CoursesActivity :
                         Toast
                             .makeText(
                                 this@CoursesActivity,
-                                getString(R.string.toast_failed_to_get_current_location),
+                                getString(R.string.courses_failed_to_get_current_location_message),
                                 Toast.LENGTH_SHORT,
                             ).show()
                     },
@@ -235,7 +235,7 @@ class CoursesActivity :
         searchLauncher?.launch(intent) ?: Toast
             .makeText(
                 this,
-                getString(R.string.toast_search_unavailable),
+                getString(R.string.courses_search_unavailable_message),
                 Toast.LENGTH_SHORT,
             ).show()
     }
@@ -244,7 +244,7 @@ class CoursesActivity :
         val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
         val clip: ClipData = ClipData.newPlainText(null, coursePickApplication.installationId.value)
         clipboard.setPrimaryClip(clip)
-        Toast.makeText(this, getString(R.string.toast_client_id_copied), Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.courses_client_id_copied_message), Toast.LENGTH_SHORT).show()
     }
 
     override fun clearQuery() {
@@ -258,7 +258,7 @@ class CoursesActivity :
                 Toast
                     .makeText(
                         this,
-                        getString(R.string.toast_failed_to_calculate_length_range),
+                        getString(R.string.courses_failed_to_calculate_length_range_message),
                         Toast.LENGTH_SHORT,
                     ).show()
                 return null
@@ -271,7 +271,7 @@ class CoursesActivity :
             Toast
                 .makeText(
                     this,
-                    getString(R.string.toast_failed_to_get_map_location),
+                    getString(R.string.courses_failed_to_get_map_location_message),
                     Toast.LENGTH_SHORT,
                 ).show()
             return null
@@ -292,7 +292,7 @@ class CoursesActivity :
             Toast
                 .makeText(
                     this@CoursesActivity,
-                    getString(R.string.toast_search_information_not_provided),
+                    getString(R.string.courses_search_information_not_provided_message),
                     Toast.LENGTH_SHORT,
                 ).show()
             return
@@ -307,7 +307,7 @@ class CoursesActivity :
             Toast
                 .makeText(
                     this,
-                    getString(R.string.toast_location_not_provided),
+                    getString(R.string.courses_location_not_provided_message),
                     Toast.LENGTH_SHORT,
                 ).show()
             return
@@ -408,7 +408,7 @@ class CoursesActivity :
                 Toast
                     .makeText(
                         this,
-                        getString(R.string.toast_failed_to_get_current_location),
+                        getString(R.string.courses_failed_to_get_current_location_message),
                         Toast.LENGTH_SHORT,
                     ).show()
             },
@@ -724,7 +724,7 @@ class CoursesActivity :
                     Toast
                         .makeText(
                             this,
-                            getString(R.string.toast_failed_to_load_course),
+                            getString(R.string.courses_failed_to_load_course_message),
                             Toast.LENGTH_SHORT,
                         ).show()
                 }
@@ -749,7 +749,7 @@ class CoursesActivity :
                     Toast
                         .makeText(
                             this,
-                            getString(R.string.toast_failed_to_find_route_to_course),
+                            getString(R.string.courses_failed_to_find_route_to_course_message),
                             Toast.LENGTH_SHORT,
                         ).show()
                 }
@@ -758,7 +758,7 @@ class CoursesActivity :
                     Toast
                         .makeText(
                             this,
-                            getString(R.string.toast_no_network_connection_for_route),
+                            getString(R.string.courses_no_network_connection_for_route_message),
                             Toast.LENGTH_SHORT,
                         ).show()
                 }
@@ -776,7 +776,7 @@ class CoursesActivity :
                     Toast
                         .makeText(
                             this,
-                            getString(R.string.toast_failed_to_find_route_to_course),
+                            getString(R.string.courses_failed_to_find_route_to_course_message),
                             Toast.LENGTH_SHORT,
                         ).show()
                 }

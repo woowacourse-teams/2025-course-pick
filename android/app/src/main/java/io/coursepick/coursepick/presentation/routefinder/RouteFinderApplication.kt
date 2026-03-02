@@ -92,7 +92,7 @@ sealed interface RouteFinderApplication : Parcelable {
                 Toast
                     .makeText(
                         context,
-                        context.getString(R.string.toast_failed_to_launch_route_finder_app),
+                        context.getString(R.string.selected_route_finder_application_failed_to_launch_route_finder_app_message),
                         Toast.LENGTH_SHORT,
                     ).show()
             }
