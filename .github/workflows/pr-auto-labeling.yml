@@ -32,7 +32,6 @@ jobs:
         uses: kkiseug/pr-deadline-labeler@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          base-date: ${{ github.event.pull_request.created_at }}
 
       - name: 리뷰 제출 시 마감일로 라벨 조정
         if: github.event_name == 'pull_request_review'
