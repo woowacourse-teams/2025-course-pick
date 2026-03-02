@@ -37,7 +37,7 @@ public class PathAllowlistFilter extends OncePerRequestFilter {
                 Pattern.compile("^/v1/courses/[^/]+/route$"),
                 Pattern.compile("^/v1/courses/[^/]+/closest-coordinate$"),
                 Pattern.compile("^/v1/courses/favorites$"),
-                Pattern.compile("^/v1/notices/verified_location$")
+                Pattern.compile("^/v1/notices$")
         ));
     }
 
