@@ -45,7 +45,7 @@ fun NoticeDialog(
                     .background(color = colorResource(R.color.background_primary))
                     .padding(top = 20.dp, start = 20.dp, end = 20.dp),
         ) {
-            Column(modifier = Modifier.clickable { onOpenUrl(notice.noticeUrl) }) {
+            Column(modifier = Modifier.clickable { onOpenUrl(notice.targetUrl) }) {
                 AsyncImage(
                     model = notice.imageUrl,
                     contentDescription = null,
@@ -126,7 +126,7 @@ private fun NoticeDialogPreview() {
                         "강남·송파 코스는 저희가 검증했어요\n" +
                             "다른 지역은 아직 검증 중이에요 🏃",
                     description = "* 메뉴 탭에서 다시 확인할 수 있어요.",
-                    noticeUrl = "",
+                    targetUrl = "",
                 ),
             onOpenUrl = {},
             onDismissRequest = {},
