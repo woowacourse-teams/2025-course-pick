@@ -250,7 +250,12 @@ class CoursesActivity :
         val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
         val clip: ClipData = ClipData.newPlainText(null, coursePickApplication.installationId.value)
         clipboard.setPrimaryClip(clip)
-        Toast.makeText(this, getString(R.string.courses_client_id_copied_message), Toast.LENGTH_SHORT).show()
+        Toast
+            .makeText(
+                this,
+                getString(R.string.courses_client_id_copied_message),
+                Toast.LENGTH_SHORT,
+            ).show()
     }
 
     override fun clearQuery() {
@@ -741,7 +746,10 @@ class CoursesActivity :
                         supportFragmentManager.findFragmentByTag(
                             ExploreCoursesFragment::class.java.name,
                         ) as? ExploreCoursesFragment
-                    fragment?.scrollTo(event.course)
+
+                    if (viewModel.content.value == CoursesContent.EXPLORE) {
+                        fragment?.scrollTo(event.course)
+                    }
                 }
 
                 is CoursesUiEvent.FetchRouteToCourseSuccess -> {
