@@ -1,0 +1,42 @@
+name: PR 라벨링
+
+on:
+  pull_request:
+    types: [opened]
+  schedule:
+    - cron: '0 15 * * *'
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: PR 생성 시 라벨 업데이트
+        if: github.event_name == 'pull_request'
+        uses: kkiseug/pr-deadline-labeler@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          base-date: ${{ github.event.pull_request.created_at }}
+          pr-number: ${{ github.event.pull_request.number }}
+
+      - name: 매일 자정에 라벨 업데이트
+        if: github.event_name == 'schedule'
+        uses: kkiseug/pr-deadline-labeler@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 리뷰 제출 시 마감일로 라벨 조정
+        if: github.event_name == 'pull_request_review'
+        uses: kkiseug/pr-deadline-labeler@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          base-date: ${{ github.event.review.submitted_at }}
+          pr-number: ${{ github.event.pull_request.number }}
