@@ -50,7 +50,7 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
     @Override
     public Slice<Course> findAllHasDistanceWithin(CourseFindCondition condition) {
         try {
-            Query query = new Query().maxTimeMsec(2000);
+            Query query = new Query().maxTimeMsec(5000);
 
             addPositionAndScopeCriteria(condition, query);
             if (condition.minLength() != null || condition.maxLength() != null) addLengthCriteria(condition, query);
