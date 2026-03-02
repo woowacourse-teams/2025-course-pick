@@ -61,7 +61,7 @@ jobs:
           [ -z "$REVIEWERS" ] && REVIEWERS="없음"
           
           MSG=$(printf "**#%s PR이 등록되었습니다!**\n**제목**: %s\n**담당자**: %s\n**리뷰어**: %s\n-> [당장 리뷰하러 가기](%s)" \
-            "$PR_TITLE" "$PR_NUMBER" "$ASSIGNEES" "$REVIEWERS" "$PR_URL")
+            "$PR_NUMBER" "$PR_TITLE" "$ASSIGNEES" "$REVIEWERS" "$PR_URL")
           
           BODY=$(jq -n --arg content "$MSG" '{"content": $content, "flags": 4}')
           
