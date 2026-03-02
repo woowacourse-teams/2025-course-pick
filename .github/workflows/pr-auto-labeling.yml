@@ -45,7 +45,7 @@ jobs:
           [ -z "$ASSIGNEES" ] && ASSIGNEES="없음"
           [ -z "$REVIEWERS" ] && REVIEWERS="없음"
           
-          MSG=$(printf "**#%s가 등록되었습니다!**\n**담당자**: %s\n**리뷰어**: %s\n▶ [당장 리뷰하러 가기](%s)" \
+          MSG=$(printf "**#%s PR이 등록되었습니다!**\n**담당자**: %s\n**리뷰어**: %s\n▶ [당장 리뷰하러 가기](%s)" \
             "$PR_NUMBER" "$ASSIGNEES" "$REVIEWERS" "$PR_URL")
           
           BODY=$(jq -n --arg content "$MSG" '{"content": $content, "flags": 4}')
@@ -85,7 +85,7 @@ jobs:
             [ -z "$ASSIGNEES" ] && ASSIGNEES="없음"
             [ -z "$REVIEWERS" ] && REVIEWERS="없음"
           
-            MSG=$(printf "#%s가 D-%s일 남았습니다!\n담당자: %s\n리뷰어: %s\n-> [당장 리뷰하러 가기](%s)" \
+            MSG=$(printf "#%s PR이 D-%s일 남았습니다!\n담당자: %s\n리뷰어: %s\n-> [당장 리뷰하러 가기](%s)" \
               "$PR_NUMBER" "$DAYS" "$ASSIGNEES" "$REVIEWERS" "$PR_URL")
           
             BODY=$(jq -n --arg content "$MSG" '{"content": $content, "flags": 4}')
