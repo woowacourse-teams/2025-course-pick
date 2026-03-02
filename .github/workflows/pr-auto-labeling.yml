@@ -27,11 +27,61 @@ jobs:
           base-date: ${{ github.event.pull_request.created_at }}
           pr-number: ${{ github.event.pull_request.number }}
 
+      - name: PR 생성 시 디스코드 알림
+        if: github.event_name == 'pull_request'
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_PR_REMIND }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          ASSIGNEES: ${{ join(github.event.pull_request.assignees.*.login, ', ') }}
+          REVIEWERS: ${{ join(github.event.pull_request.requested_reviewers.*.login, ', ') }}
+        run: |
+          BODY=$(jq -n \
+            --arg desc "#${PR_NUMBER}가 등록되었습니다!\n담당자: ${ASSIGNEES}\n리뷰어: ${REVIEWERS}\n-> [당장 리뷰하러 가기](${PR_URL})" \
+            '{"embeds":[{"description":$desc,"color":5814783}]}')
+          
+          curl -s -X POST "$DISCORD_WEBHOOK" \
+            -H "Content-Type: application/json" \
+            -d "$BODY"
+
       - name: 매일 자정에 라벨 업데이트
         if: github.event_name == 'schedule'
         uses: kkiseug/pr-deadline-labeler@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 자정 업데이트 후 디스코드 알림
+        if: github.event_name == 'schedule'
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_PR_REMIND }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          # 열린 PR 목록 조회
+          PRS=$(curl -s -H "Authorization: token $GH_TOKEN" \
+            "https://api.github.com/repos/$REPO/pulls?state=open&per_page=100")
+          
+          echo "$PRS" | jq -c '.[]' | while read -r PR; do
+            PR_NUMBER=$(echo "$PR" | jq -r '.number')
+            PR_URL=$(echo "$PR"    | jq -r '.html_url')
+            ASSIGNEES=$(echo "$PR" | jq -r '[.assignees[].login] | join(", ")')
+            REVIEWERS=$(echo "$PR" | jq -r '[.requested_reviewers[].login] | join(", ")')
+          
+            # D-n 형식 라벨 추출 (pr-deadline-labeler가 붙여준 값)
+            LABEL=$(echo "$PR" | jq -r '.labels[].name' | grep -E '^D-[0-9]+$' | head -1)
+          
+            [ -z "$LABEL" ] && continue   # D-n 라벨 없으면 스킵
+          
+            DAYS="${LABEL#D-}"
+          
+            BODY=$(jq -n \
+              --arg desc "#${PR_NUMBER}가 D-${DAYS}일 남았습니다!\n담당자: ${ASSIGNEES}\n리뷰어: ${REVIEWERS}\n-> [당장 리뷰하러 가기](${PR_URL})" \
+              '{"embeds":[{"description":$desc,"color":15548997}]}')
+          
+            curl -s -X POST "$DISCORD_WEBHOOK" \
+              -H "Content-Type: application/json" \
+              -d "$BODY"
+          done
 
       - name: 리뷰 제출 시 마감일로 라벨 조정
         if: github.event_name == 'pull_request_review'
