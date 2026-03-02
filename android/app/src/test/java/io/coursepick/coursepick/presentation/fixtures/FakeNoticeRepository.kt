@@ -4,5 +4,5 @@ import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.domain.notice.NoticeRepository
 
 class FakeNoticeRepository : NoticeRepository {
-    override suspend fun notice(id: String): Notice = NOTICE_FIXTURE
+    override suspend fun notices(): List<Notice> = listOf(NOTICE_FIXTURE)
 }

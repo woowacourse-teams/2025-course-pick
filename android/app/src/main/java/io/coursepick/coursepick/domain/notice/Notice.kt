@@ -7,4 +7,5 @@ data class Notice(
     val imageUrl: String,
     val title: String,
     val description: String,
+    val targetUrl: String,
 ) : Serializable

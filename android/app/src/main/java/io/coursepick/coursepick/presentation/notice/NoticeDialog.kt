@@ -1,6 +1,7 @@
 package io.coursepick.coursepick.presentation.notice
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -31,10 +32,11 @@ import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 @Composable
 fun NoticeDialog(
     notice: Notice,
-    onDismissRequest: () -> Unit,
+    onOpenUrl: (url: String) -> Unit,
+    onDismissRequest: (id: String) -> Unit,
     onDoNotShowAgain: (id: String) -> Unit,
 ) {
-    Dialog(onDismissRequest = onDismissRequest) {
+    Dialog(onDismissRequest = { onDismissRequest(notice.id) }) {
         Column(
             modifier =
                 Modifier
@@ -43,36 +45,38 @@ fun NoticeDialog(
                     .background(color = colorResource(R.color.background_primary))
                     .padding(top = 20.dp, start = 20.dp, end = 20.dp),
         ) {
-            AsyncImage(
-                model = notice.imageUrl,
-                contentDescription = null,
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                contentScale = ContentScale.Crop,
-            )
+            Column(modifier = Modifier.clickable { onOpenUrl(notice.targetUrl) }) {
+                AsyncImage(
+                    model = notice.imageUrl,
+                    contentDescription = null,
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(200.dp),
+                    contentScale = ContentScale.Crop,
+                )
 
-            Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-            Text(
-                text = notice.title,
-                fontSize = 16.sp,
-                color = colorResource(R.color.item_primary),
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
-            )
+                Text(
+                    text = notice.title,
+                    fontSize = 16.sp,
+                    color = colorResource(R.color.item_primary),
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(),
+                )
 
-            Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-            Text(
-                text = notice.description,
-                fontSize = 14.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
-                color = colorResource(R.color.item_secondary),
-            )
+                Text(
+                    text = notice.description,
+                    fontSize = 14.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(),
+                    color = colorResource(R.color.item_secondary),
+                )
+            }
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -85,7 +89,7 @@ fun NoticeDialog(
                 TextButton(
                     onClick = {
                         onDoNotShowAgain(notice.id)
-                        onDismissRequest()
+                        onDismissRequest(notice.id)
                     },
                     modifier = Modifier.weight(1f),
                 ) {
@@ -96,7 +100,7 @@ fun NoticeDialog(
                 }
 
                 TextButton(
-                    onClick = onDismissRequest,
+                    onClick = { onDismissRequest(notice.id) },
                     modifier = Modifier.weight(1f),
                 ) {
                     Text(
@@ -122,7 +126,9 @@ private fun NoticeDialogPreview() {
                         "강남·송파 코스는 저희가 검증했어요\n" +
                             "다른 지역은 아직 검증 중이에요 🏃",
                     description = "* 메뉴 탭에서 다시 확인할 수 있어요.",
+                    targetUrl = "",
                 ),
+            onOpenUrl = {},
             onDismissRequest = {},
             onDoNotShowAgain = {},
         )

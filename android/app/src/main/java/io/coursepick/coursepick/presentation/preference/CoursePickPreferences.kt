@@ -10,10 +10,10 @@ import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 
 object CoursePickPreferences {
-    private const val DO_NOT_SHOW_NOTICE_PREFIX = "do_not_show_notice_"
     private lateinit var preferences: SharedPreferences
     private lateinit var selectedRouteFinderApplicationKey: String
     private lateinit var favoritedCoursesKey: String
+    private lateinit var doNotShowNoticesKey: String
     private lateinit var inApp: String
     private lateinit var kakaoMap: String
     private lateinit var naverMap: String
@@ -48,6 +48,7 @@ object CoursePickPreferences {
         selectedRouteFinderApplicationKey =
             context.getString(R.string.selected_route_finder_application_key)
         favoritedCoursesKey = context.getString(R.string.favorited_courses_key)
+        doNotShowNoticesKey = context.getString(R.string.do_not_show_notices_key)
 
         inApp = context.getString(R.string.selected_route_finder_application_value_in_app)
         kakaoMap = context.getString(R.string.selected_route_finder_application_value_kakao)
@@ -88,11 +89,25 @@ object CoursePickPreferences {
         }
     }
 
-    fun shouldShowNotice(id: String): Boolean = !preferences.getBoolean("$DO_NOT_SHOW_NOTICE_PREFIX$id", false)
+    fun shouldShowNotice(id: String): Boolean {
+        val doNotShowNoticeIds: Set<String?> =
+            preferences.getStringSet(doNotShowNoticesKey, null) ?: return true
+        return !doNotShowNoticeIds.contains(id)
+    }
 
     fun setDoNotShowNotice(id: String) {
         preferences.edit {
-            putBoolean("$DO_NOT_SHOW_NOTICE_PREFIX$id", true)
+            val doNotShowNoticeIds =
+                preferences.getStringSet(doNotShowNoticesKey, null) ?: emptySet()
+            putStringSet(doNotShowNoticesKey, doNotShowNoticeIds + id)
+        }
+    }
+
+    fun removeInvalidNoticeIds(currentNoticeIds: Set<String>) {
+        preferences.edit {
+            val doNotShowNoticeIds =
+                preferences.getStringSet(doNotShowNoticesKey, null) ?: emptySet()
+            putStringSet(doNotShowNoticesKey, doNotShowNoticeIds.intersect(currentNoticeIds))
         }
     }
 
