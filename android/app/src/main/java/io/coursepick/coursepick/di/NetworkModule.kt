@@ -13,7 +13,6 @@ import io.coursepick.coursepick.data.NetworkMonitor
 import io.coursepick.coursepick.data.interceptor.ClientIdInterceptor
 import io.coursepick.coursepick.data.interceptor.KakaoAuthInterceptor
 import io.coursepick.coursepick.data.interceptor.OffLineInterceptor
-import io.coursepick.coursepick.data.interceptor.PrettyPrintLogger
 import io.coursepick.coursepick.presentation.InstallationId
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -39,7 +38,7 @@ object NetworkModule {
             } else {
                 HttpLoggingInterceptor.Level.NONE
             }
-        return HttpLoggingInterceptor(PrettyPrintLogger()).setLevel(loggingLevel)
+        return HttpLoggingInterceptor().setLevel(loggingLevel)
     }
 
     @Provides
