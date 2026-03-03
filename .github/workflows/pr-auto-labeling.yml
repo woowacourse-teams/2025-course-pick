@@ -1,4 +1,4 @@
-name: PR 라벨링
+name: PR 라벨 자동 등록 및 디스코드 알림 전송
 
 on:
   pull_request:
@@ -79,29 +79,44 @@ jobs:
         if: github.event_name == 'schedule'
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_PR_REMIND }}
+          ID_MAP: ${{ secrets.DISCORD_ID_MAP }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
         run: |
+          to_mention() {
+            local github_id="$1"
+            local discord_id
+            discord_id=$(echo "$ID_MAP" | jq -r --arg key "$github_id" '.[$key] // empty')
+            if [ -n "$discord_id" ]; then
+              echo "${discord_id}"
+            else
+              echo "$github_id"
+            fi
+          }
+          
           PRS=$(curl -s -H "Authorization: token $GH_TOKEN" \
             "https://api.github.com/repos/$REPO/pulls?state=open&per_page=100")
           
           echo "$PRS" | jq -c '.[]' | while read -r PR; do
             PR_NUMBER=$(echo "$PR" | jq -r '.number')
             PR_URL=$(echo "$PR"    | jq -r '.html_url')
+            PR_TITLE=$(echo "$PR"  | jq -r '.title')
             LABEL=$(echo "$PR"    | jq -r '.labels[].name' | grep -E '^D-[0-9]+$' | head -1)
           
             [ -z "$LABEL" ] && continue
           
             DAYS="${LABEL#D-}"
           
-            ASSIGNEES=$(echo "$PR" | jq -r '[.assignees[].login] | join(", ")')
-            REVIEWERS=$(echo "$PR" | jq -r '[.requested_reviewers[].login] | join(", ")')
+            ASSIGNEES=$(echo "$PR" | jq -r '[.assignees[].login] | join(" ")' | \
+              xargs -n1 | while read -r id; do to_mention "$id"; done | paste -sd', ')
+            REVIEWERS=$(echo "$PR" | jq -r '[.requested_reviewers[].login] | join(" ")' | \
+              xargs -n1 | while read -r id; do to_mention "$id"; done | paste -sd', ')
           
             [ -z "$ASSIGNEES" ] && ASSIGNEES="없음"
             [ -z "$REVIEWERS" ] && REVIEWERS="없음"
           
-            MSG=$(printf "#%s PR이 D-%s일 남았습니다!\n담당자: %s\n리뷰어: %s\n-> [당장 리뷰하러 가기](%s)" \
-              "$PR_NUMBER" "$DAYS" "$ASSIGNEES" "$REVIEWERS" "$PR_URL")
+            MSG=$(printf "**#%s PR이 D-%s일 남았습니다!**\n**제목**: %s\n**담당자**: %s\n**리뷰어**: %s\n-> [당장 리뷰하러 가기](%s)" \
+              "$PR_NUMBER" "$DAYS" "$PR_TITLE" "$ASSIGNEES" "$REVIEWERS" "$PR_URL")
           
             BODY=$(jq -n --arg content "$MSG" '{"content": $content, "flags": 4}')
           
