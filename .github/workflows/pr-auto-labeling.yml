@@ -43,7 +43,7 @@ jobs:
             local discord_id
             discord_id=$(echo "$ID_MAP" | jq -r --arg key "$github_id" '.[$key] // empty')
             if [ -n "$discord_id" ]; then
-              echo "${discord_id}"
+              echo "@${discord_id}"
             else
               echo "$github_id"   # 매핑 없으면 GitHub ID 그대로
             fi
@@ -88,7 +88,7 @@ jobs:
             local discord_id
             discord_id=$(echo "$ID_MAP" | jq -r --arg key "$github_id" '.[$key] // empty')
             if [ -n "$discord_id" ]; then
-              echo "${discord_id}"
+              echo "@${discord_id}"
             else
               echo "$github_id"
             fi
