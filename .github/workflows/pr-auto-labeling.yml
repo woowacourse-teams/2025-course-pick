@@ -1,4 +1,4 @@
-name: PR 라벨링
+name: PR 라벨 자동 등록 및 디스코드 알림 전송
 
 on:
   pull_request:
@@ -27,11 +27,103 @@ jobs:
           base-date: ${{ github.event.pull_request.created_at }}
           pr-number: ${{ github.event.pull_request.number }}
 
+      - name: PR 생성 시 디스코드 알림
+        if: github.event_name == 'pull_request'
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_PR_REMIND }}
+          ID_MAP: ${{ secrets.DISCORD_ID_MAP }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          to_mention() {
+            local github_id="$1"
+            local discord_id
+            discord_id=$(echo "$ID_MAP" | jq -r --arg key "$github_id" '.[$key] // empty')
+            if [ -n "$discord_id" ]; then
+              echo "${discord_id}"
+            else
+              echo "$github_id"   # 매핑 없으면 GitHub ID 그대로
+            fi
+          }
+          
+          PR_DATA=$(curl -s -H "Authorization: token $GH_TOKEN" \
+            "https://api.github.com/repos/$REPO/pulls/$PR_NUMBER")
+          
+          ASSIGNEES=$(echo "$PR_DATA" | jq -r '[.assignees[].login] | join(" ")' | \
+            xargs -n1 | while read -r id; do to_mention "$id"; done | paste -sd', ')
+          REVIEWERS=$(echo "$PR_DATA" | jq -r '[.requested_reviewers[].login] | join(" ")' | \
+            xargs -n1 | while read -r id; do to_mention "$id"; done | paste -sd', ')
+          
+          [ -z "$ASSIGNEES" ] && ASSIGNEES="없음"
+          [ -z "$REVIEWERS" ] && REVIEWERS="없음"
+          
+          MSG=$(printf "**#%s PR이 등록되었습니다!**\n**제목**: %s\n**담당자**: %s\n**리뷰어**: %s\n▶ [당장 리뷰하러 가기](%s) ◀" \
+            "$PR_NUMBER" "$PR_TITLE" "$ASSIGNEES" "$REVIEWERS" "$PR_URL")
+          
+          BODY=$(jq -n --arg content "$MSG" '{"content": $content, "flags": 4}')
+          
+          curl -s -X POST "$DISCORD_WEBHOOK" \
+            -H "Content-Type: application/json" \
+            -d "$BODY"
+
       - name: 매일 자정에 라벨 업데이트
         if: github.event_name == 'schedule'
         uses: kkiseug/pr-deadline-labeler@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 자정 업데이트 후 디스코드 알림
+        if: github.event_name == 'schedule'
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_PR_REMIND }}
+          ID_MAP: ${{ secrets.DISCORD_ID_MAP }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          to_mention() {
+            local github_id="$1"
+            local discord_id
+            discord_id=$(echo "$ID_MAP" | jq -r --arg key "$github_id" '.[$key] // empty')
+            if [ -n "$discord_id" ]; then
+              echo "${discord_id}"
+            else
+              echo "$github_id"
+            fi
+          }
+          
+          PRS=$(curl -s -H "Authorization: token $GH_TOKEN" \
+            "https://api.github.com/repos/$REPO/pulls?state=open&per_page=100")
+          
+          echo "$PRS" | jq -c '.[]' | while read -r PR; do
+            PR_NUMBER=$(echo "$PR" | jq -r '.number')
+            PR_URL=$(echo "$PR"    | jq -r '.html_url')
+            PR_TITLE=$(echo "$PR"  | jq -r '.title')
+            LABEL=$(echo "$PR" | jq -r '.labels[].name' | grep -E '^(D-[0-9]+|D-Day)$' | head -1)
+          
+            [ -z "$LABEL" ] && continue
+          
+            DAYS="${LABEL#D-}"
+          
+            ASSIGNEES=$(echo "$PR" | jq -r '[.assignees[].login] | join(" ")' | \
+              xargs -n1 | while read -r id; do to_mention "$id"; done | paste -sd', ')
+            REVIEWERS=$(echo "$PR" | jq -r '[.requested_reviewers[].login] | join(" ")' | \
+              xargs -n1 | while read -r id; do to_mention "$id"; done | paste -sd', ')
+          
+            [ -z "$ASSIGNEES" ] && ASSIGNEES="없음"
+            [ -z "$REVIEWERS" ] && REVIEWERS="없음"
+          
+            MSG=$(printf "**#%s PR이 %s 상태입니다!**\n**제목**: %s\n**담당자**: %s\n**리뷰어**: %s\n▶ [당장 리뷰하러 가기](%s) ◀" \
+              "$PR_NUMBER" "$DAYS" "$PR_TITLE" "$ASSIGNEES" "$REVIEWERS" "$PR_URL")
+          
+            BODY=$(jq -n --arg content "$MSG" '{"content": $content, "flags": 4}')
+          
+            curl -s -X POST "$DISCORD_WEBHOOK" \
+              -H "Content-Type: application/json" \
+              -d "$BODY"
+          done
 
       - name: 리뷰 제출 시 마감일로 라벨 조정
         if: github.event_name == 'pull_request_review'
