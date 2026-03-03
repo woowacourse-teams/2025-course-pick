@@ -101,7 +101,7 @@ jobs:
             PR_NUMBER=$(echo "$PR" | jq -r '.number')
             PR_URL=$(echo "$PR"    | jq -r '.html_url')
             PR_TITLE=$(echo "$PR"  | jq -r '.title')
-            LABEL=$(echo "$PR"    | jq -r '.labels[].name' | grep -E '^D-[0-9]+$' | head -1)
+            LABEL=$(echo "$PR" | jq -r '.labels[].name' | grep -E '^(D-[0-9]+|D-Day)$' | head -1)
           
             [ -z "$LABEL" ] && continue
           
@@ -115,7 +115,7 @@ jobs:
             [ -z "$ASSIGNEES" ] && ASSIGNEES="없음"
             [ -z "$REVIEWERS" ] && REVIEWERS="없음"
           
-            MSG=$(printf "**#%s PR이 D-%s일 남았습니다!**\n**제목**: %s\n**담당자**: %s\n**리뷰어**: %s\n▶ [당장 리뷰하러 가기](%s) ◀" \
+            MSG=$(printf "**#%s PR이 %s 상태입니다!**\n**제목**: %s\n**담당자**: %s\n**리뷰어**: %s\n▶ [당장 리뷰하러 가기](%s) ◀" \
               "$PR_NUMBER" "$DAYS" "$PR_TITLE" "$ASSIGNEES" "$REVIEWERS" "$PR_URL")
           
             BODY=$(jq -n --arg content "$MSG" '{"content": $content, "flags": 4}')
