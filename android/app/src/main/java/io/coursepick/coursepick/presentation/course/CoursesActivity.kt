@@ -5,7 +5,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
@@ -109,7 +108,7 @@ class CoursesActivity :
                     "name" to course.name,
                 )
 
-                if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+                if (!viewModel.isFineLocationPermissionGranted()) {
                     showFineLocationPermissionRationaleForNavigation()
                     return
                 }
@@ -400,12 +399,12 @@ class CoursesActivity :
     override fun moveToCurrentLocation() {
         Logger.log(Logger.Event.Click("move_to_current_location"))
 
-        if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+        if (!viewModel.isCoarseLocationPermissionGranted()) {
             showLocationPermissionRationaleForCurrentLocation()
             return
         }
 
-        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+        if (!viewModel.isFineLocationPermissionGranted()) {
             showFineLocationPermissionRationaleForCurrentLocation()
         }
 

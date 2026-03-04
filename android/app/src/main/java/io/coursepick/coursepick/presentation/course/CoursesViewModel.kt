@@ -537,6 +537,10 @@ class CoursesViewModel
             onFailure: (exception: Exception) -> Unit,
         ) = locationRepository.fetchCurrentLocation(onSuccess, onFailure)
 
+        fun isCoarseLocationPermissionGranted(): Boolean = locationRepository.isCoarseLocationPermissionGranted
+
+        fun isFineLocationPermissionGranted(): Boolean = locationRepository.isFineLocationPermissionGranted
+
         fun startLocationUpdates() =
             locationRepository.startLocationUpdates(
                 onUpdate = { location: Location -> _currentLocation.value = location },
