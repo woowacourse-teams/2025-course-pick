@@ -132,6 +132,7 @@ class CoursesActivity :
                         handleNavigation(course, location.coordinate, selectedApp)
                     },
                     onFailure = {
+                        mapManager.hideUserPosition()
                         Toast
                             .makeText(
                                 this@CoursesActivity,
@@ -407,6 +408,7 @@ class CoursesActivity :
                 )
             },
             onFailure = {
+                mapManager.hideUserPosition()
                 Toast
                     .makeText(
                         this,
@@ -643,6 +645,7 @@ class CoursesActivity :
                         viewModel.fetchCourses(userCoordinate, userCoordinate, scope)
                     },
                     onFailure = {
+                        mapManager.hideUserPosition()
                         val mapCoordinate: Coordinate =
                             mapCoordinateOrNull() ?: return@fetchCurrentLocation
                         viewModel.fetchCourses(mapCoordinate, null, scope)
@@ -661,9 +664,11 @@ class CoursesActivity :
 
         viewModel.fetchCurrentLocation(
             onSuccess = { location: Location ->
+                mapManager.drawUserPosition(location)
                 viewModel.fetchCourses(targetCoordinate, location.coordinate, scope)
             },
             onFailure = {
+                mapManager.hideUserPosition()
                 viewModel.fetchCourses(targetCoordinate, null, scope)
             },
         )
