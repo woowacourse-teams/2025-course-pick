@@ -66,8 +66,8 @@ class KakaoMapDrawer(
     }
 
     fun hideUserPosition() {
-        hideAccurateUserPosition(map)
-        hideApproximateUserPosition(map)
+        hideAccurateUserPosition()
+        hideApproximateUserPosition()
     }
 
     fun drawSearchPosition(coordinate: Coordinate) {
@@ -94,7 +94,7 @@ class KakaoMapDrawer(
     }
 
     private fun drawAccurateUserPosition(location: Location.FineLocation) {
-        hideApproximateUserPosition(map)
+        hideApproximateUserPosition()
 
         val latLng = location.coordinate.toLatLng()
         val style = LabelStyle.from(R.drawable.image_current_location).setAnchorPoint(0.5F, 0.5F)
@@ -111,7 +111,7 @@ class KakaoMapDrawer(
     }
 
     private fun drawApproximateUserPosition(location: Location.CoarseLocation) {
-        hideAccurateUserPosition(map)
+        hideAccurateUserPosition()
 
         val latLng = location.coordinate.toLatLng()
         val styles = PolygonStyles.from(context.getColor(R.color.coarse_location_area))
@@ -130,14 +130,14 @@ class KakaoMapDrawer(
         }
     }
 
-    private fun hideAccurateUserPosition(map: KakaoMap) {
+    private fun hideAccurateUserPosition() {
         map.labelManager
             ?.layer
             ?.getLabel(ID_ACCURATE_USER_POSITION_MARK)
             ?.let(Label::remove)
     }
 
-    private fun hideApproximateUserPosition(map: KakaoMap) {
+    private fun hideApproximateUserPosition() {
         map.shapeManager
             ?.layer
             ?.getPolygon(ID_APPROXIMATE_USER_POSITION_MARK)
