@@ -19,7 +19,6 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.getValue
@@ -100,7 +99,6 @@ class CoursesActivity :
                 viewModel.toggleFavorite(course)
             }
 
-            @RequiresPermission(Manifest.permission.ACCESS_FINE_LOCATION)
             override fun navigateToCourse(course: CourseItem) {
                 Logger.log(
                     Logger.Event.Click("navigate"),
@@ -145,7 +143,6 @@ class CoursesActivity :
             }
         }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun onCreate(savedInstanceState: Bundle?) {
         setUpFragmentFactory()
 
@@ -190,7 +187,6 @@ class CoursesActivity :
         }
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun onResume() {
         super.onResume()
 
@@ -219,7 +215,6 @@ class CoursesActivity :
         mapManager.finish()
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun searchThisArea() {
         val coordinate = mapCoordinateOrNull() ?: return
         Logger.log(
@@ -288,7 +283,6 @@ class CoursesActivity :
         }
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun searchActivityResultLauncher(): ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == RESULT_OK) {
@@ -296,7 +290,6 @@ class CoursesActivity :
             }
         }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun handleLocationResult(intent: Intent?) {
         if (intent == null) {
             Toast
@@ -336,7 +329,6 @@ class CoursesActivity :
         fetchCourses(coordinate)
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun switchContent(content: CoursesContent) {
         supportFragmentManager.commit {
             setReorderingAllowed(true)
@@ -359,7 +351,6 @@ class CoursesActivity :
         }
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun setUpBottomNavigation() {
         binding.mainBottomNavigation.setOnItemSelectedListener { item: MenuItem ->
             when (item.itemId) {
@@ -395,7 +386,6 @@ class CoursesActivity :
         startActivity(intent)
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun moveToCurrentLocation() {
         Logger.log(Logger.Event.Click("move_to_current_location"))
 
@@ -545,7 +535,6 @@ class CoursesActivity :
     private fun setUpFragmentFactory() {
         val onReconnectListener =
             object : OnReconnectListener {
-                @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
                 override fun onReconnect() {
                     when (viewModel.content.value) {
                         CoursesContent.EXPLORE -> mapCoordinateOrNull()?.let(::fetchCourses)
@@ -641,7 +630,6 @@ class CoursesActivity :
         binding.clientId = coursePickApplication.installationId.value
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun fetchInitialCourses() {
         when (viewModel.content.value) {
             CoursesContent.EXPLORE -> {
@@ -668,7 +656,6 @@ class CoursesActivity :
         }
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun fetchCourses(targetCoordinate: Coordinate) {
         val scope: Scope = scopeOrNull() ?: return
 
@@ -701,13 +688,11 @@ class CoursesActivity :
         onBackPressedDispatcher.addCallback(this, callback)
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun setUpObservers() {
         setUpStateObserver()
         setUpEventObserver()
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun setUpStateObserver() {
         viewModel.state.observe(this) { state: CoursesUiState ->
             courseAdapter.submitList(state.courses)

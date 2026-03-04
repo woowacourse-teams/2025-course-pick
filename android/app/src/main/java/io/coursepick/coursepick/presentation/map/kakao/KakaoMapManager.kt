@@ -1,7 +1,5 @@
 package io.coursepick.coursepick.presentation.map.kakao
 
-import android.Manifest
-import androidx.annotation.RequiresPermission
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.MapGravity
@@ -25,7 +23,6 @@ class KakaoMapManager(
 
     val cameraPosition get(): LatLng? = kakaoMap?.cameraPosition?.position
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     fun start(onMapReady: () -> Unit) {
         val offsetPx: Float =
             mapView.context.resources.getDimension(R.dimen.map_logo_position_offset)
