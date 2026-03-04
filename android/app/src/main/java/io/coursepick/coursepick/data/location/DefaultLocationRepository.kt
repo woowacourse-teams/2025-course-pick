@@ -27,15 +27,15 @@ class DefaultLocationRepository(
 
     private var locationCallback: LocationCallback? = null
 
-    private val locationManager =
-        context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-
     private val locationRequest =
         LocationRequest
             .Builder(
                 Priority.PRIORITY_HIGH_ACCURACY,
                 LOCATION_REQUEST_INTERVAL_MS,
             ).build()
+
+    private val locationManager =
+        context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
     override val isCoarseLocationPermissionGranted: Boolean
         get() = context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
@@ -90,11 +90,11 @@ class DefaultLocationRepository(
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    override fun startTrackingLocation(
+    override fun startLocationUpdates(
         onUpdate: (location: Location) -> Unit,
         onFailure: (exception: Exception) -> Unit,
     ) {
-        stopTrackingLocation()
+        stopLocationUpdates()
 
         if (!isCoarseLocationPermissionGranted) {
             onFailure(IllegalStateException("현재 위치를 불러올 권한이 없습니다."))
@@ -111,7 +111,7 @@ class DefaultLocationRepository(
         )
     }
 
-    override fun stopTrackingLocation() {
+    override fun stopLocationUpdates() {
         locationCallback?.let { locationCallback: LocationCallback ->
             locationClient.removeLocationUpdates(locationCallback)
         }
@@ -120,7 +120,7 @@ class DefaultLocationRepository(
 
     private fun LocationCallback(
         onUpdate: (location: Location) -> Unit,
-        onError: (Exception) -> Unit,
+        onFailure: (Exception) -> Unit,
     ): LocationCallback =
         object : LocationCallback() {
             override fun onLocationResult(result: LocationResult) {
@@ -141,7 +141,7 @@ class DefaultLocationRepository(
 
             override fun onLocationAvailability(availability: LocationAvailability) {
                 if (!locationManager.isLocationEnabled) {
-                    onError(IllegalStateException("현재 위치를 사용할 수 없습니다."))
+                    onFailure(IllegalStateException("현재 위치를 사용할 수 없습니다."))
                 }
             }
         }

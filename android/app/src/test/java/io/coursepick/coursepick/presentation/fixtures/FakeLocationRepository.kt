@@ -16,12 +16,12 @@ class FakeLocationRepository : LocationRepository {
         onSuccess(Location.FineLocation(COORDINATE_FIXTURE))
     }
 
-    override fun startTrackingLocation(
+    override fun startLocationUpdates(
         onUpdate: (location: Location) -> Unit,
         onFailure: (exception: Exception) -> Unit,
     ) {
         onUpdate(Location.FineLocation(COORDINATE_FIXTURE))
     }
 
-    override fun stopTrackingLocation() {}
+    override fun stopLocationUpdates() {}
 }

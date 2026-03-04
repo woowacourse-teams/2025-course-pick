@@ -537,13 +537,13 @@ class CoursesViewModel
             onFailure: (exception: Exception) -> Unit,
         ) = locationRepository.fetchCurrentLocation(onSuccess, onFailure)
 
-        fun startTrackingLocation() =
-            locationRepository.startTrackingLocation(
+        fun startLocationUpdates() =
+            locationRepository.startLocationUpdates(
                 onUpdate = { location: Location -> _currentLocation.value = location },
                 onFailure = { _currentLocation.value = null },
             )
 
-        fun stopTrackingLocation() = locationRepository.stopTrackingLocation()
+        fun stopLocationUpdates() = locationRepository.stopLocationUpdates()
 
         private fun newCoursesListItem(
             oldCourses: List<CourseListItem>,

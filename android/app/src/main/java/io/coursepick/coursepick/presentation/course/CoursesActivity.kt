@@ -196,7 +196,7 @@ class CoursesActivity :
         super.onResume()
 
         mapManager.resume()
-        viewModel.startTrackingLocation()
+        viewModel.startLocationUpdates()
 
         updateManager.onResume()
     }
@@ -205,7 +205,7 @@ class CoursesActivity :
         super.onPause()
 
         mapManager.pause()
-        viewModel.stopTrackingLocation()
+        viewModel.stopLocationUpdates()
     }
 
     override fun onStop() {

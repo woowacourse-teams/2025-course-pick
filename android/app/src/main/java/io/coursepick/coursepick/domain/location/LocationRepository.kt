@@ -10,10 +10,10 @@ interface LocationRepository {
         onFailure: (exception: Exception) -> Unit,
     )
 
-    fun startTrackingLocation(
+    fun startLocationUpdates(
         onUpdate: (location: Location) -> Unit,
         onFailure: (exception: Exception) -> Unit,
     )
 
-    fun stopTrackingLocation()
+    fun stopLocationUpdates()
 }
