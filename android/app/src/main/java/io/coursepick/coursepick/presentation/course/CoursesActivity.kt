@@ -394,12 +394,12 @@ class CoursesActivity :
             return
         }
 
-        if (!viewModel.isFineLocationPermissionGranted()) {
-            showFineLocationPermissionRationaleForCurrentLocation()
-        }
-
         viewModel.fetchCurrentLocation(
             onSuccess = { location: Location ->
+                if (!viewModel.isFineLocationPermissionGranted()) {
+                    showFineLocationPermissionRationaleForCurrentLocation()
+                }
+
                 mapManager.drawUserPosition(location)
                 mapManager.moveTo(location.coordinate)
                 binding.mainCurrentLocationButton.setColorFilter(
