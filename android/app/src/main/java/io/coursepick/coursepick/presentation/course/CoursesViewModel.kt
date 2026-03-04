@@ -55,8 +55,8 @@ class CoursesViewModel
         private val _content: MutableLiveData<CoursesContent> = MutableLiveData(CoursesContent.EXPLORE)
         val content: LiveData<CoursesContent> get() = _content
 
-        private val _currentLocation: MutableLiveData<Location> = MutableLiveData(null)
-        val currentLocation: LiveData<Location> get() = _currentLocation
+        private val _currentLocation: MutableLiveData<Location?> = MutableLiveData(null)
+        val currentLocation: LiveData<Location?> get() = _currentLocation
 
         private val _event: MutableSingleLiveData<CoursesUiEvent> = MutableSingleLiveData()
         val event: SingleLiveData<CoursesUiEvent> get() = _event
