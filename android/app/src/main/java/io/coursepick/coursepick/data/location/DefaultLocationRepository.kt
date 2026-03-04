@@ -37,13 +37,10 @@ class DefaultLocationRepository(
                 LOCATION_REQUEST_INTERVAL_MS,
             ).build()
 
-    override val hasLocationPermission: Boolean
-        get() = hasCoarseLocationPermission || hasFineLocationPermission
-
-    override val hasCoarseLocationPermission: Boolean
+    override val isCoarseLocationPermissionGranted: Boolean
         get() = context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
-    override val hasFineLocationPermission: Boolean
+    override val isFineLocationPermissionGranted: Boolean
         get() = context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -56,7 +53,7 @@ class DefaultLocationRepository(
             return
         }
 
-        if (!hasLocationPermission) {
+        if (!isCoarseLocationPermissionGranted) {
             onFailure(IllegalStateException("현재 위치를 불러올 권한이 없습니다."))
             return
         }
@@ -77,7 +74,7 @@ class DefaultLocationRepository(
 
                 val coordinate = location.toCoordinate()
                 onSuccess(
-                    if (hasFineLocationPermission) {
+                    if (isFineLocationPermissionGranted) {
                         Location.FineLocation(coordinate)
                     } else {
                         Location.CoarseLocation(coordinate, Distance(location.accuracy.toDouble()))
@@ -99,7 +96,7 @@ class DefaultLocationRepository(
     ) {
         stopTrackingLocation()
 
-        if (!hasLocationPermission) {
+        if (!isCoarseLocationPermissionGranted) {
             onFailure(IllegalStateException("현재 위치를 불러올 권한이 없습니다."))
             return
         }
@@ -130,7 +127,7 @@ class DefaultLocationRepository(
                 result.lastLocation?.let { location: android.location.Location ->
                     val coordinate = location.toCoordinate()
                     onUpdate(
-                        if (hasFineLocationPermission) {
+                        if (isFineLocationPermissionGranted) {
                             Location.FineLocation(coordinate)
                         } else {
                             Location.CoarseLocation(

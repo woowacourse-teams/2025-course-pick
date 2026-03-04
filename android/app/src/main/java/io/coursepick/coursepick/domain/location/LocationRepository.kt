@@ -1,9 +1,9 @@
 package io.coursepick.coursepick.domain.location
 
 interface LocationRepository {
-    val hasLocationPermission: Boolean
-    val hasCoarseLocationPermission: Boolean
-    val hasFineLocationPermission: Boolean
+    val isCoarseLocationPermissionGranted: Boolean
+
+    val isFineLocationPermissionGranted: Boolean
 
     fun fetchCurrentLocation(
         onSuccess: (location: Location) -> Unit,
