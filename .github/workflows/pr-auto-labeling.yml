@@ -105,8 +105,6 @@ jobs:
           
             [ -z "$LABEL" ] && continue
           
-            DAYS="${LABEL#D-}"
-          
             ASSIGNEES=$(echo "$PR" | jq -r '[.assignees[].login] | join(" ")' | \
               xargs -n1 | while read -r id; do to_mention "$id"; done | paste -sd', ')
             REVIEWERS=$(echo "$PR" | jq -r '[.requested_reviewers[].login] | join(" ")' | \
@@ -116,7 +114,7 @@ jobs:
             [ -z "$REVIEWERS" ] && REVIEWERS="없음"
           
             MSG=$(printf "**#%s PR이 %s 상태입니다!**\n**제목**: %s\n**담당자**: %s\n**리뷰어**: %s\n▶ [당장 리뷰하러 가기](%s) ◀" \
-              "$PR_NUMBER" "$DAYS" "$PR_TITLE" "$ASSIGNEES" "$REVIEWERS" "$PR_URL")
+              "$PR_NUMBER" "$LABEL" "$PR_TITLE" "$ASSIGNEES" "$REVIEWERS" "$PR_URL")
           
             BODY=$(jq -n --arg content "$MSG" '{"content": $content, "flags": 4}')
           
