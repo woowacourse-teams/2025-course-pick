@@ -1,9 +1,8 @@
-package io.coursepick.coursepick.presentation
+package io.coursepick.coursepick.data.location
 
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.location.Location
 import android.location.LocationManager
 import android.os.Looper
 import androidx.annotation.RequiresPermission
@@ -14,10 +13,15 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import io.coursepick.coursepick.domain.course.Distance
+import io.coursepick.coursepick.domain.location.Location
+import io.coursepick.coursepick.domain.location.LocationRepository
+import io.coursepick.coursepick.presentation.Logger
+import io.coursepick.coursepick.presentation.map.kakao.toCoordinate
 
-class LocationProvider(
+class DefaultLocationRepository(
     private val context: Context,
-) {
+) : LocationRepository {
     private val locationClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(context)
 
@@ -27,30 +31,36 @@ class LocationProvider(
         LocationRequest
             .Builder(
                 Priority.PRIORITY_HIGH_ACCURACY,
-                LOCATION_REQUEST_INTERVAL,
+                LOCATION_REQUEST_INTERVAL_MS,
             ).build()
 
     private val locationManager =
         context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
+    override val isCoarseLocationPermissionGranted: Boolean
+        get() = context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+
+    override val isFineLocationPermissionGranted: Boolean
+        get() = context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    fun fetchCurrentLocation(
-        onSuccess: (location: Location, isAccurate: Boolean) -> Unit,
-        onFailure: (Exception) -> Unit,
+    override fun fetchCurrentLocation(
+        onSuccess: (location: Location) -> Unit,
+        onFailure: (exception: Exception) -> Unit,
     ) {
         if (!locationManager.isLocationEnabled) {
             onFailure(IllegalStateException("위치 설정이 꺼져있습니다."))
             return
         }
 
-        if (!hasLocationPermission) {
+        if (!isCoarseLocationPermissionGranted) {
             onFailure(IllegalStateException("현재 위치를 불러올 권한이 없습니다."))
             return
         }
 
         locationClient
             .getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
-            .addOnSuccessListener { location: Location? ->
+            .addOnSuccessListener { location: android.location.Location? ->
                 if (location == null) {
                     val exception = IllegalStateException("위치 정보를 불러오지 못했습니다.")
                     Logger.log(
@@ -61,7 +71,15 @@ class LocationProvider(
                     return@addOnSuccessListener
                 }
                 Logger.log(Logger.Event.Success("get_current_location"))
-                onSuccess(location, hasFineLocationPermission)
+
+                val coordinate = location.toCoordinate()
+                onSuccess(
+                    if (isFineLocationPermissionGranted) {
+                        Location.FineLocation(coordinate)
+                    } else {
+                        Location.CoarseLocation(coordinate, Distance(location.accuracy.toDouble()))
+                    },
+                )
             }.addOnFailureListener { exception: Exception ->
                 Logger.log(
                     Logger.Event.Failure("get_current_location"),
@@ -72,17 +90,18 @@ class LocationProvider(
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    fun startLocationUpdates(
-        onUpdate: (location: Location, isAccurate: Boolean) -> Unit,
-        onError: (Exception) -> Unit,
+    override fun startLocationUpdates(
+        onUpdate: (location: Location) -> Unit,
+        onFailure: (exception: Exception) -> Unit,
     ) {
         stopLocationUpdates()
-        if (!hasLocationPermission) {
-            onError(IllegalStateException("현재 위치를 불러올 권한이 없습니다."))
+
+        if (!isCoarseLocationPermissionGranted) {
+            onFailure(IllegalStateException("현재 위치를 불러올 권한이 없습니다."))
             return
         }
 
-        val locationCallback = LocationCallback(onUpdate, onError)
+        val locationCallback = LocationCallback(onUpdate, onFailure)
         this.locationCallback = locationCallback
 
         locationClient.requestLocationUpdates(
@@ -92,7 +111,7 @@ class LocationProvider(
         )
     }
 
-    fun stopLocationUpdates() {
+    override fun stopLocationUpdates() {
         locationCallback?.let { locationCallback: LocationCallback ->
             locationClient.removeLocationUpdates(locationCallback)
         }
@@ -100,36 +119,34 @@ class LocationProvider(
     }
 
     private fun LocationCallback(
-        onUpdate: (location: Location, isAccurate: Boolean) -> Unit,
-        onError: (Exception) -> Unit,
+        onUpdate: (location: Location) -> Unit,
+        onFailure: (Exception) -> Unit,
     ): LocationCallback =
         object : LocationCallback() {
             override fun onLocationResult(result: LocationResult) {
-                result.lastLocation?.let { location: Location ->
-                    onUpdate(location, hasFineLocationPermission)
+                result.lastLocation?.let { location: android.location.Location ->
+                    val coordinate = location.toCoordinate()
+                    onUpdate(
+                        if (isFineLocationPermissionGranted) {
+                            Location.FineLocation(coordinate)
+                        } else {
+                            Location.CoarseLocation(
+                                coordinate,
+                                Distance(location.accuracy.toDouble()),
+                            )
+                        },
+                    )
                 }
             }
 
             override fun onLocationAvailability(availability: LocationAvailability) {
                 if (!locationManager.isLocationEnabled) {
-                    onError(IllegalStateException("현재 위치를 사용할 수 없습니다."))
+                    onFailure(IllegalStateException("현재 위치를 사용할 수 없습니다."))
                 }
             }
         }
 
-    private val hasLocationPermission: Boolean
-        get() =
-            hasFineLocationPermission || hasCoarseLocationPermission
-
-    private val hasCoarseLocationPermission: Boolean
-        get() =
-            context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-
-    private val hasFineLocationPermission: Boolean
-        get() =
-            context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-
     companion object {
-        private const val LOCATION_REQUEST_INTERVAL = 1000L
+        private const val LOCATION_REQUEST_INTERVAL_MS = 1_000L
     }
 }
