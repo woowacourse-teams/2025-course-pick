@@ -10,6 +10,8 @@ value class Distance(
 
     constructor(meter: Int) : this(Meter(meter))
 
+    constructor(meter: Float) : this(Meter(meter))
+
     override fun compareTo(other: Distance): Int = this.meter.compareTo(other.meter)
 
     companion object {

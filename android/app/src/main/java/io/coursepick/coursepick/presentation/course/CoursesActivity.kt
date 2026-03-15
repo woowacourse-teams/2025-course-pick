@@ -5,9 +5,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.res.Resources
-import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -21,7 +19,6 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.getValue
@@ -47,6 +44,7 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.domain.course.Scope
+import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.CoursePickUpdateManager
@@ -101,7 +99,6 @@ class CoursesActivity :
                 viewModel.toggleFavorite(course)
             }
 
-            @RequiresPermission(Manifest.permission.ACCESS_FINE_LOCATION)
             override fun navigateToCourse(course: CourseItem) {
                 Logger.log(
                     Logger.Event.Click("navigate"),
@@ -109,14 +106,13 @@ class CoursesActivity :
                     "name" to course.name,
                 )
 
-                if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+                if (!viewModel.isFineLocationPermissionGranted()) {
                     showFineLocationPermissionRationaleForNavigation()
                     return
                 }
 
-                mapManager.fetchCurrentLocation(
-                    onSuccess = { location: Location, _ ->
-                        val origin = location.toCoordinate()
+                viewModel.fetchCurrentLocation(
+                    onSuccess = { location: Location ->
                         val selectedApp: RouteFinderApplication? =
                             CoursePickPreferences.selectedRouteFinder
                         if (selectedApp == null) {
@@ -128,14 +124,15 @@ class CoursesActivity :
                                 val selectedApp: RouteFinderApplication =
                                     bundle.getParcelableCompat<RouteFinderApplication>(DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_RESULT)
                                         ?: return@setFragmentResultListener
-                                handleNavigation(course, origin, selectedApp)
+                                handleNavigation(course, location.coordinate, selectedApp)
                             }
                             RouteFinderChoiceDialogFragment().show(supportFragmentManager, null)
                             return@fetchCurrentLocation
                         }
-                        handleNavigation(course, origin, selectedApp)
+                        handleNavigation(course, location.coordinate, selectedApp)
                     },
                     onFailure = {
+                        mapManager.hideUserPosition()
                         Toast
                             .makeText(
                                 this@CoursesActivity,
@@ -147,7 +144,6 @@ class CoursesActivity :
             }
         }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun onCreate(savedInstanceState: Bundle?) {
         setUpFragmentFactory()
 
@@ -192,12 +188,11 @@ class CoursesActivity :
         }
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun onResume() {
         super.onResume()
 
         mapManager.resume()
-        mapManager.startTrackingCurrentLocation()
+        viewModel.startLocationUpdates()
 
         updateManager.onResume()
     }
@@ -206,7 +201,7 @@ class CoursesActivity :
         super.onPause()
 
         mapManager.pause()
-        mapManager.stopTrackingCurrentLocation()
+        viewModel.stopLocationUpdates()
     }
 
     override fun onStop() {
@@ -221,7 +216,6 @@ class CoursesActivity :
         mapManager.finish()
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun searchThisArea() {
         val coordinate = mapCoordinateOrNull() ?: return
         Logger.log(
@@ -290,7 +284,6 @@ class CoursesActivity :
         }
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun searchActivityResultLauncher(): ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == RESULT_OK) {
@@ -298,7 +291,6 @@ class CoursesActivity :
             }
         }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun handleLocationResult(intent: Intent?) {
         if (intent == null) {
             Toast
@@ -334,11 +326,10 @@ class CoursesActivity :
 
         mapManager.resetZoomLevel()
         mapManager.drawSearchPosition(coordinate)
-        mapManager.moveTo(latitude, longitude)
+        mapManager.moveTo(coordinate)
         fetchCourses(coordinate)
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun switchContent(content: CoursesContent) {
         supportFragmentManager.commit {
             setReorderingAllowed(true)
@@ -361,7 +352,6 @@ class CoursesActivity :
         }
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun setUpBottomNavigation() {
         binding.mainBottomNavigation.setOnItemSelectedListener { item: MenuItem ->
             when (item.itemId) {
@@ -397,26 +387,28 @@ class CoursesActivity :
         startActivity(intent)
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun moveToCurrentLocation() {
         Logger.log(Logger.Event.Click("move_to_current_location"))
 
-        if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+        if (!viewModel.isCoarseLocationPermissionGranted()) {
             showLocationPermissionRationaleForCurrentLocation()
             return
         }
 
-        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
-            showFineLocationPermissionRationaleForCurrentLocation()
-        }
+        viewModel.fetchCurrentLocation(
+            onSuccess = { location: Location ->
+                if (!viewModel.isFineLocationPermissionGranted()) {
+                    showFineLocationPermissionRationaleForCurrentLocation()
+                }
 
-        mapManager.moveToCurrentLocation(
-            onSuccess = {
+                mapManager.drawUserPosition(location)
+                mapManager.moveTo(location.coordinate)
                 binding.mainCurrentLocationButton.setColorFilter(
                     ContextCompat.getColor(this, R.color.gray3),
                 )
             },
             onFailure = {
+                mapManager.hideUserPosition()
                 Toast
                     .makeText(
                         this,
@@ -545,7 +537,6 @@ class CoursesActivity :
     private fun setUpFragmentFactory() {
         val onReconnectListener =
             object : OnReconnectListener {
-                @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
                 override fun onReconnect() {
                     when (viewModel.content.value) {
                         CoursesContent.EXPLORE -> mapCoordinateOrNull()?.let(::fetchCourses)
@@ -641,20 +632,22 @@ class CoursesActivity :
         binding.clientId = coursePickApplication.installationId.value
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun fetchInitialCourses() {
         when (viewModel.content.value) {
             CoursesContent.EXPLORE -> {
                 val scope: Scope = Scope.default()
 
-                mapManager.moveToCurrentLocation(
+                viewModel.fetchCurrentLocation(
                     onSuccess = { location: Location ->
-                        val userCoordinate = location.toCoordinate()
+                        val userCoordinate = location.coordinate
+                        mapManager.drawUserPosition(location)
+                        mapManager.moveTo(location.coordinate)
                         viewModel.fetchCourses(userCoordinate, userCoordinate, scope)
                     },
                     onFailure = {
+                        mapManager.hideUserPosition()
                         val mapCoordinate: Coordinate =
-                            mapCoordinateOrNull() ?: return@moveToCurrentLocation
+                            mapCoordinateOrNull() ?: return@fetchCurrentLocation
                         viewModel.fetchCourses(mapCoordinate, null, scope)
                     },
                 )
@@ -666,15 +659,16 @@ class CoursesActivity :
         }
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun fetchCourses(targetCoordinate: Coordinate) {
         val scope: Scope = scopeOrNull() ?: return
 
-        mapManager.fetchCurrentLocation(
-            onSuccess = { location: Location, _ ->
-                viewModel.fetchCourses(targetCoordinate, location.toCoordinate(), scope)
+        viewModel.fetchCurrentLocation(
+            onSuccess = { location: Location ->
+                mapManager.drawUserPosition(location)
+                viewModel.fetchCourses(targetCoordinate, location.coordinate, scope)
             },
             onFailure = {
+                mapManager.hideUserPosition()
                 viewModel.fetchCourses(targetCoordinate, null, scope)
             },
         )
@@ -699,13 +693,11 @@ class CoursesActivity :
         onBackPressedDispatcher.addCallback(this, callback)
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun setUpObservers() {
         setUpStateObserver()
         setUpEventObserver()
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun setUpStateObserver() {
         viewModel.state.observe(this) { state: CoursesUiState ->
             courseAdapter.submitList(state.courses)
@@ -725,6 +717,10 @@ class CoursesActivity :
                 binding.mainSearchThisAreaButton.visibility = View.GONE
             }
             switchContent(content)
+        }
+
+        viewModel.currentLocation.observe(this) { location: Location? ->
+            location?.let(mapManager::drawUserPosition) ?: run(mapManager::hideUserPosition)
         }
     }
 
