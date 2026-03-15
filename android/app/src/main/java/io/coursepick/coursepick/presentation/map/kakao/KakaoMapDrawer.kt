@@ -60,8 +60,8 @@ class KakaoMapDrawer(
 
     fun drawUserPosition(location: Location) {
         when (location) {
-            is Location.FineLocation -> drawAccurateUserPosition(location)
-            is Location.CoarseLocation -> drawApproximateUserPosition(location)
+            is Location.Fine -> drawAccurateUserPosition(location)
+            is Location.Coarse -> drawApproximateUserPosition(location)
         }
     }
 
@@ -93,7 +93,7 @@ class KakaoMapDrawer(
         layer.removeAll()
     }
 
-    private fun drawAccurateUserPosition(location: Location.FineLocation) {
+    private fun drawAccurateUserPosition(location: Location.Fine) {
         hideApproximateUserPosition()
 
         val latLng = location.coordinate.toLatLng()
@@ -110,7 +110,7 @@ class KakaoMapDrawer(
         }
     }
 
-    private fun drawApproximateUserPosition(location: Location.CoarseLocation) {
+    private fun drawApproximateUserPosition(location: Location.Coarse) {
         hideAccurateUserPosition()
 
         val latLng = location.coordinate.toLatLng()

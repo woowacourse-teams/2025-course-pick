@@ -13,14 +13,14 @@ class FakeLocationRepository : LocationRepository {
         onSuccess: (location: Location) -> Unit,
         onFailure: (exception: Exception) -> Unit,
     ) {
-        onSuccess(Location.FineLocation(COORDINATE_FIXTURE))
+        onSuccess(Location.Fine(COORDINATE_FIXTURE))
     }
 
     override fun startLocationUpdates(
         onUpdate: (location: Location) -> Unit,
         onFailure: (exception: Exception) -> Unit,
     ) {
-        onUpdate(Location.FineLocation(COORDINATE_FIXTURE))
+        onUpdate(Location.Fine(COORDINATE_FIXTURE))
     }
 
     override fun stopLocationUpdates() {}

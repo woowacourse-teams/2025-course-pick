@@ -75,9 +75,9 @@ class DefaultLocationRepository(
                 val coordinate = location.toCoordinate()
                 onSuccess(
                     if (isFineLocationPermissionGranted) {
-                        Location.FineLocation(coordinate)
+                        Location.Fine(coordinate)
                     } else {
-                        Location.CoarseLocation(coordinate, Distance(location.accuracy.toDouble()))
+                        Location.Coarse(coordinate, Distance(location.accuracy.toDouble()))
                     },
                 )
             }.addOnFailureListener { exception: Exception ->
@@ -128,9 +128,9 @@ class DefaultLocationRepository(
                     val coordinate = location.toCoordinate()
                     onUpdate(
                         if (isFineLocationPermissionGranted) {
-                            Location.FineLocation(coordinate)
+                            Location.Fine(coordinate)
                         } else {
-                            Location.CoarseLocation(
+                            Location.Coarse(
                                 coordinate,
                                 Distance(location.accuracy.toDouble()),
                             )

@@ -6,11 +6,11 @@ import io.coursepick.coursepick.domain.course.Distance
 sealed interface Location {
     val coordinate: Coordinate
 
-    data class FineLocation(
+    data class Fine(
         override val coordinate: Coordinate,
     ) : Location
 
-    data class CoarseLocation(
+    data class Coarse(
         override val coordinate: Coordinate,
         val accuracy: Distance,
     ) : Location
