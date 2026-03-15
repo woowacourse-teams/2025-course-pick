@@ -77,7 +77,7 @@ class DefaultLocationRepository(
                     if (isFineLocationPermissionGranted) {
                         Location.Fine(coordinate)
                     } else {
-                        Location.Coarse(coordinate, Distance(location.accuracy.toDouble()))
+                        Location.Coarse(coordinate, Distance(location.accuracy))
                     },
                 )
             }.addOnFailureListener { exception: Exception ->
@@ -132,7 +132,7 @@ class DefaultLocationRepository(
                         } else {
                             Location.Coarse(
                                 coordinate,
-                                Distance(location.accuracy.toDouble()),
+                                Distance(location.accuracy),
                             )
                         },
                     )
