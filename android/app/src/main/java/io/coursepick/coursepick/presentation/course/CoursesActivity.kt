@@ -110,7 +110,7 @@ class CoursesActivity :
                     "name" to course.name,
                 )
 
-                if (!viewModel.isFineLocationPermissionGranted()) {
+                if (!viewModel.isFineLocationPermissionGranted) {
                     showFineLocationPermissionRationaleForNavigation()
                     return
                 }
@@ -196,8 +196,6 @@ class CoursesActivity :
         super.onResume()
 
         mapManager.resume()
-        viewModel.startLocationUpdates()
-
         updateManager.onResume()
     }
 
@@ -205,7 +203,6 @@ class CoursesActivity :
         super.onPause()
 
         mapManager.pause()
-        viewModel.stopLocationUpdates()
     }
 
     override fun onStop() {
@@ -393,14 +390,14 @@ class CoursesActivity :
     override fun moveToCurrentLocation() {
         Logger.log(Logger.Event.Click("move_to_current_location"))
 
-        if (!viewModel.isCoarseLocationPermissionGranted()) {
+        if (!viewModel.isCoarseLocationPermissionGranted) {
             showLocationPermissionRationaleForCurrentLocation()
             return
         }
 
         lifecycleScope.launch {
             viewModel.currentLocation()?.let { location: Location ->
-                if (!viewModel.isFineLocationPermissionGranted()) {
+                if (!viewModel.isFineLocationPermissionGranted) {
                     showFineLocationPermissionRationaleForCurrentLocation()
                 }
 
@@ -716,10 +713,6 @@ class CoursesActivity :
                 binding.mainSearchThisAreaButton.visibility = View.GONE
             }
             switchContent(content)
-        }
-
-        viewModel.currentLocation.observe(this) { location: Location? ->
-            location?.let(mapManager::drawUserPosition) ?: run(mapManager::hideUserPosition)
         }
     }
 

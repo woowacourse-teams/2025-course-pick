@@ -58,8 +58,8 @@ class CoursesViewModel
         private val _content: MutableLiveData<CoursesContent> = MutableLiveData(CoursesContent.EXPLORE)
         val content: LiveData<CoursesContent> get() = _content
 
-        private val _currentLocation: MutableLiveData<Location?> = MutableLiveData(null)
-        val currentLocation: LiveData<Location?> get() = _currentLocation
+        val isCoarseLocationPermissionGranted get() = locationRepository.isCoarseLocationPermissionGranted
+        val isFineLocationPermissionGranted get() = locationRepository.isFineLocationPermissionGranted
 
         val locationUpdates: StateFlow<Location?> =
             locationRepository.locationUpdates.stateIn(
@@ -543,23 +543,6 @@ class CoursesViewModel
         }
 
         suspend fun currentLocation(): Location? = locationRepository.currentLocation()
-
-        fun fetchCurrentLocation(
-            onSuccess: (location: Location) -> Unit,
-            onFailure: (exception: Exception) -> Unit,
-        ) = locationRepository.fetchCurrentLocation(onSuccess, onFailure)
-
-        fun isCoarseLocationPermissionGranted(): Boolean = locationRepository.isCoarseLocationPermissionGranted
-
-        fun isFineLocationPermissionGranted(): Boolean = locationRepository.isFineLocationPermissionGranted
-
-        fun startLocationUpdates() =
-            locationRepository.startLocationUpdates(
-                onUpdate = { location: Location -> _currentLocation.value = location },
-                onFailure = { _currentLocation.value = null },
-            )
-
-        fun stopLocationUpdates() = locationRepository.stopLocationUpdates()
 
         private fun newCoursesListItem(
             oldCourses: List<CourseListItem>,
