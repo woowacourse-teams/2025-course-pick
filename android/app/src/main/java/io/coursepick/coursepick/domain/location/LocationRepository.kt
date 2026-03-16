@@ -9,6 +9,8 @@ interface LocationRepository {
 
     val locationUpdates: Flow<Location?>
 
+    suspend fun currentLocation(): Location?
+
     fun fetchCurrentLocation(
         onSuccess: (location: Location) -> Unit,
         onFailure: (exception: Exception) -> Unit,

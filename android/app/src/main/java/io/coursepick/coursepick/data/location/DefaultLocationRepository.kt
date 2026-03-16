@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.tasks.await
 
 class DefaultLocationRepository(
     private val context: Context,
@@ -53,6 +54,29 @@ class DefaultLocationRepository(
 
     override val locationUpdates: Flow<Location?> =
         merge(locationRefreshUpdates, locationCallbackUpdates())
+
+    @SuppressLint("MissingPermission")
+    override suspend fun currentLocation(): Location? {
+        if (!locationManager.isLocationEnabled || !isCoarseLocationPermissionGranted) return null
+
+        val fetchedLocation: android.location.Location =
+            runCatching {
+                locationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).await()
+                    ?: return null
+            }.getOrElse { return null }
+
+        val location: Location =
+            if (isFineLocationPermissionGranted) {
+                Location.Fine(fetchedLocation.toCoordinate())
+            } else {
+                Location.Coarse(
+                    fetchedLocation.toCoordinate(),
+                    Distance(fetchedLocation.accuracy),
+                )
+            }
+        locationRefreshUpdates.emit(location)
+        return location
+    }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun fetchCurrentLocation(

@@ -542,6 +542,8 @@ class CoursesViewModel
             _state.value = state.value?.copy(showSettings = false)
         }
 
+        suspend fun currentLocation(): Location? = locationRepository.currentLocation()
+
         fun fetchCurrentLocation(
             onSuccess: (location: Location) -> Unit,
             onFailure: (exception: Exception) -> Unit,
