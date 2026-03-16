@@ -147,7 +147,7 @@ class CoursesViewModel
                 viewModelScope.launch {
                     delay(DEBOUNCE_LIMIT_TIME)
 
-                    pendingFavoriteWrites.toMap().forEach { courseId: String, favorite: Boolean ->
+                    pendingFavoriteWrites.toMap().forEach { (courseId: String, favorite: Boolean) ->
                         if (favorite) {
                             favoritesRepository.addFavoriteCourse(courseId)
                         } else {
