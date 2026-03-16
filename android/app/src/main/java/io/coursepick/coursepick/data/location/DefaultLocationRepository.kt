@@ -1,6 +1,7 @@
 package io.coursepick.coursepick.data.location
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.LocationManager
@@ -18,6 +19,11 @@ import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.domain.location.LocationRepository
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.map.kakao.toCoordinate
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.merge
 
 class DefaultLocationRepository(
     private val context: Context,
@@ -37,11 +43,16 @@ class DefaultLocationRepository(
     private val locationManager =
         context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
+    private val locationRefreshUpdates: MutableSharedFlow<Location> = MutableSharedFlow()
+
     override val isCoarseLocationPermissionGranted: Boolean
         get() = context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
     override val isFineLocationPermissionGranted: Boolean
         get() = context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+
+    override val locationUpdates: Flow<Location?> =
+        merge(locationRefreshUpdates, locationCallbackUpdates())
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun fetchCurrentLocation(
@@ -117,6 +128,33 @@ class DefaultLocationRepository(
         }
         locationCallback = null
     }
+
+    @SuppressLint("MissingPermission")
+    private fun locationCallbackUpdates(): Flow<Location?> =
+        callbackFlow {
+            if (!locationManager.isLocationEnabled || !isCoarseLocationPermissionGranted) {
+                trySend(null)
+                close()
+                return@callbackFlow
+            }
+
+            val locationCallback =
+                LocationCallback(onUpdate = ::trySend, onFailure = { trySend(null) })
+
+            runCatching {
+                locationClient.requestLocationUpdates(
+                    locationRequest,
+                    locationCallback,
+                    Looper.getMainLooper(),
+                )
+            }.onFailure {
+                trySend(null)
+                close()
+                return@callbackFlow
+            }
+
+            awaitClose { locationClient.removeLocationUpdates(locationCallback) }
+        }
 
     private fun LocationCallback(
         onUpdate: (location: Location) -> Unit,

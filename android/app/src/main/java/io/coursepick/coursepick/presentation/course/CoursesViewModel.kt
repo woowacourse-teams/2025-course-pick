@@ -28,6 +28,9 @@ import io.coursepick.coursepick.presentation.ui.SingleLiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -57,6 +60,13 @@ class CoursesViewModel
 
         private val _currentLocation: MutableLiveData<Location?> = MutableLiveData(null)
         val currentLocation: LiveData<Location?> get() = _currentLocation
+
+        val locationUpdates: StateFlow<Location?> =
+            locationRepository.locationUpdates.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = null,
+            )
 
         private val _event: MutableSingleLiveData<CoursesUiEvent> = MutableSingleLiveData()
         val event: SingleLiveData<CoursesUiEvent> get() = _event

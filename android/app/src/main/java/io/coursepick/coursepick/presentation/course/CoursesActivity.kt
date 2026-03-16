@@ -33,6 +33,9 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.commit
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
@@ -65,6 +68,7 @@ import io.coursepick.coursepick.presentation.search.SearchActivity
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 import io.coursepick.coursepick.presentation.setting.SettingsScreen
 import io.coursepick.coursepick.presentation.ui.DoublePressDetector
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class CoursesActivity :
@@ -160,6 +164,7 @@ class CoursesActivity :
 
         mapManager.start {
             setUpObservers()
+            setUpFlowCollector()
             setUpMapPadding()
             mapManager.setOnCameraMoveListener {
                 if (viewModel.content.value == CoursesContent.EXPLORE) {
@@ -799,6 +804,16 @@ class CoursesActivity :
                             getString(R.string.explore_failed_to_fetch_next_page_message),
                             Toast.LENGTH_SHORT,
                         ).show()
+                }
+            }
+        }
+    }
+
+    private fun setUpFlowCollector() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                viewModel.locationUpdates.collect { location: Location? ->
+                    location?.let(mapManager::drawUserPosition) ?: run(mapManager::hideUserPosition)
                 }
             }
         }
