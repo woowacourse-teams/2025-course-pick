@@ -1,7 +1,6 @@
 package io.coursepick.coursepick.presentation.map.kakao
 
 import android.content.Context
-import android.location.Location
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.camera.CameraAnimation
@@ -19,9 +18,10 @@ class KakaoMapCameraController(
 
     fun moveTo(
         map: KakaoMap,
-        location: Location,
+        coordinate: Coordinate,
     ) {
-        val cameraUpdate: CameraUpdate = CameraUpdateFactory.newCenterPosition(location.toLatLng())
+        val cameraUpdate: CameraUpdate =
+            CameraUpdateFactory.newCenterPosition(coordinate.toLatLng())
         val cameraAnimation = CameraAnimation.from(MOVE_ANIMATION_DURATION, true, false)
         map.moveCamera(cameraUpdate, cameraAnimation)
     }

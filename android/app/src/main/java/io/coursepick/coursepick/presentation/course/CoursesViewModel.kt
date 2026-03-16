@@ -14,6 +14,8 @@ import io.coursepick.coursepick.domain.course.CoursesPage
 import io.coursepick.coursepick.domain.course.Kilometer
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.domain.favorites.FavoritesRepository
+import io.coursepick.coursepick.domain.location.Location
+import io.coursepick.coursepick.domain.location.LocationRepository
 import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.domain.notice.NoticeRepository
 import io.coursepick.coursepick.presentation.Logger
@@ -37,6 +39,7 @@ class CoursesViewModel
         private val courseRepository: CourseRepository,
         private val favoritesRepository: FavoritesRepository,
         private val noticeRepository: NoticeRepository,
+        private val locationRepository: LocationRepository,
         private val networkMonitor: NetworkMonitor,
     ) : ViewModel() {
         private val _state: MutableLiveData<CoursesUiState> =
@@ -51,6 +54,9 @@ class CoursesViewModel
 
         private val _content: MutableLiveData<CoursesContent> = MutableLiveData(CoursesContent.EXPLORE)
         val content: LiveData<CoursesContent> get() = _content
+
+        private val _currentLocation: MutableLiveData<Location?> = MutableLiveData(null)
+        val currentLocation: LiveData<Location?> get() = _currentLocation
 
         private val _event: MutableSingleLiveData<CoursesUiEvent> = MutableSingleLiveData()
         val event: SingleLiveData<CoursesUiEvent> get() = _event
@@ -525,6 +531,23 @@ class CoursesViewModel
         fun showCourses() {
             _state.value = state.value?.copy(showSettings = false)
         }
+
+        fun fetchCurrentLocation(
+            onSuccess: (location: Location) -> Unit,
+            onFailure: (exception: Exception) -> Unit,
+        ) = locationRepository.fetchCurrentLocation(onSuccess, onFailure)
+
+        fun isCoarseLocationPermissionGranted(): Boolean = locationRepository.isCoarseLocationPermissionGranted
+
+        fun isFineLocationPermissionGranted(): Boolean = locationRepository.isFineLocationPermissionGranted
+
+        fun startLocationUpdates() =
+            locationRepository.startLocationUpdates(
+                onUpdate = { location: Location -> _currentLocation.value = location },
+                onFailure = { _currentLocation.value = null },
+            )
+
+        fun stopLocationUpdates() = locationRepository.stopLocationUpdates()
 
         private fun newCoursesListItem(
             oldCourses: List<CourseListItem>,
