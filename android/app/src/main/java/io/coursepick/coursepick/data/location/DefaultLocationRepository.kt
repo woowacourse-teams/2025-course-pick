@@ -42,40 +42,8 @@ class DefaultLocationRepository(
 
     private val locationRefreshUpdates: MutableSharedFlow<Location> = MutableSharedFlow()
 
-    override val isCoarseLocationPermissionGranted: Boolean
-        get() = context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-
-    override val isFineLocationPermissionGranted: Boolean
-        get() = context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-
-    override val locationUpdates: Flow<Location?> =
-        merge(locationRefreshUpdates, locationCallbackUpdates())
-
     @SuppressLint("MissingPermission")
-    override suspend fun currentLocation(): Location? {
-        if (!locationManager.isLocationEnabled || !isCoarseLocationPermissionGranted) return null
-
-        val fetchedLocation: android.location.Location =
-            runCatching {
-                locationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).await()
-                    ?: return null
-            }.getOrElse { return null }
-
-        val location: Location =
-            if (isFineLocationPermissionGranted) {
-                Location.Fine(fetchedLocation.toCoordinate())
-            } else {
-                Location.Coarse(
-                    fetchedLocation.toCoordinate(),
-                    Distance(fetchedLocation.accuracy),
-                )
-            }
-        locationRefreshUpdates.emit(location)
-        return location
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun locationCallbackUpdates(): Flow<Location?> =
+    val locationCallbackUpdates: Flow<Location?> =
         callbackFlow {
             if (!locationManager.isLocationEnabled || !isCoarseLocationPermissionGranted) {
                 trySend(null)
@@ -100,6 +68,38 @@ class DefaultLocationRepository(
 
             awaitClose { locationClient.removeLocationUpdates(locationCallback) }
         }
+
+    override val isCoarseLocationPermissionGranted: Boolean
+        get() = context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+
+    override val isFineLocationPermissionGranted: Boolean
+        get() = context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+
+    override val locationUpdates: Flow<Location?> =
+        merge(locationRefreshUpdates, locationCallbackUpdates)
+
+    @SuppressLint("MissingPermission")
+    override suspend fun currentLocation(): Location? {
+        if (!locationManager.isLocationEnabled || !isCoarseLocationPermissionGranted) return null
+
+        val fetchedLocation: android.location.Location =
+            runCatching {
+                locationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).await()
+                    ?: return null
+            }.getOrElse { return null }
+
+        val location: Location =
+            if (isFineLocationPermissionGranted) {
+                Location.Fine(fetchedLocation.toCoordinate())
+            } else {
+                Location.Coarse(
+                    fetchedLocation.toCoordinate(),
+                    Distance(fetchedLocation.accuracy),
+                )
+            }
+        locationRefreshUpdates.emit(location)
+        return location
+    }
 
     private fun LocationCallback(
         onUpdate: (location: Location) -> Unit,
