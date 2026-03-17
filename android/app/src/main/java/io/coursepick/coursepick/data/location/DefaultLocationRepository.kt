@@ -82,7 +82,7 @@ class DefaultLocationRepository(
     override suspend fun currentLocation(): Location? {
         if (!locationManager.isLocationEnabled || !isCoarseLocationPermissionGranted) return null
 
-        val fetchedLocation: android.location.Location =
+        val androidLocation: android.location.Location =
             runCatching {
                 locationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).await()
                     ?: return null
@@ -90,11 +90,11 @@ class DefaultLocationRepository(
 
         val location: Location =
             if (isFineLocationPermissionGranted) {
-                Location.Fine(fetchedLocation.toCoordinate())
+                Location.Fine(androidLocation.toCoordinate())
             } else {
                 Location.Coarse(
-                    fetchedLocation.toCoordinate(),
-                    Distance(fetchedLocation.accuracy),
+                    androidLocation.toCoordinate(),
+                    Distance(androidLocation.accuracy),
                 )
             }
         locationRefreshUpdates.emit(location)
