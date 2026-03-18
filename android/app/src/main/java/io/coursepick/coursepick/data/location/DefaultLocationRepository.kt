@@ -85,8 +85,7 @@ class DefaultLocationRepository(
         val androidLocation: android.location.Location =
             runCatching {
                 locationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).await()
-                    ?: return null
-            }.getOrElse { return null }
+            }.getOrNull() ?: return null
 
         val location: Location =
             if (isFineLocationPermissionGranted) {
