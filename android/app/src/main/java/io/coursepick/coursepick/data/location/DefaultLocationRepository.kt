@@ -47,25 +47,17 @@ class DefaultLocationRepository(
         callbackFlow {
             if (!locationManager.isLocationEnabled || !isCoarseLocationPermissionGranted) {
                 trySend(null)
-                close()
+                awaitClose()
                 return@callbackFlow
             }
 
             val locationCallback =
                 LocationCallback(onUpdate = ::trySend, onFailure = { trySend(null) })
-
-            runCatching {
-                locationClient.requestLocationUpdates(
-                    locationRequest,
-                    locationCallback,
-                    Looper.getMainLooper(),
-                )
-            }.onFailure {
-                trySend(null)
-                close()
-                return@callbackFlow
-            }
-
+            locationClient.requestLocationUpdates(
+                locationRequest,
+                locationCallback,
+                Looper.getMainLooper(),
+            )
             awaitClose { locationClient.removeLocationUpdates(locationCallback) }
         }
 
