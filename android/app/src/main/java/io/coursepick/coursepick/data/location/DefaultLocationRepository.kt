@@ -43,7 +43,7 @@ class DefaultLocationRepository(
     private val locationRefreshUpdates: MutableSharedFlow<Location> = MutableSharedFlow()
 
     @SuppressLint("MissingPermission")
-    val locationCallbackUpdates: Flow<Location?> =
+    private val locationCallbackUpdates: Flow<Location?> =
         callbackFlow {
             if (!locationManager.isLocationEnabled || !isCoarseLocationPermissionGranted) {
                 trySend(null)
