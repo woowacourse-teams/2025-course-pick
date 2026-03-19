@@ -3,21 +3,16 @@ package io.coursepick.coursepick.presentation.launcher
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
-import com.google.android.play.core.install.InstallState
-import com.google.android.play.core.install.InstallStateUpdatedListener
 import com.google.android.play.core.install.model.AppUpdateType
-import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.kakao.sdk.common.KakaoSdk
 import com.kakao.vectormap.KakaoMapSdk
@@ -31,24 +26,18 @@ import io.coursepick.coursepick.presentation.FirebaseAnalyticsService
 import io.coursepick.coursepick.presentation.InstallationId
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.MixpanelAnalyticsService
+import io.coursepick.coursepick.presentation.base.BaseActivity
 import io.coursepick.coursepick.presentation.course.CoursesActivity
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 import timber.log.Timber
 
 @AndroidEntryPoint
-class LauncherActivity : ComponentActivity() {
+class LauncherActivity : BaseActivity() {
     private val installationId: InstallationId by lazy { (application as CoursePickApplication).installationId }
 
     private val appUpdateManager: AppUpdateManager by lazy { AppUpdateManagerFactory.create(this) }
 
     private var currentUpdateType: Int = AppUpdateType.FLEXIBLE
-
-    private val onDownloadedListener =
-        InstallStateUpdatedListener { state: InstallState ->
-            if (state.installStatus() == InstallStatus.DOWNLOADED) {
-                showFlexibleUpdateCompleteSnackbar()
-            }
-        }
 
     private val activityResultLauncher: ActivityResultLauncher<IntentSenderRequest> =
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result: ActivityResult ->
@@ -90,18 +79,11 @@ class LauncherActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
 
-        appUpdateManager.registerListener(onDownloadedListener)
         appUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo: AppUpdateInfo ->
             if (appUpdateInfo.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
                 appUpdateInfo.startUpdateFlowForResult(AppUpdateType.IMMEDIATE)
             }
         }
-    }
-
-    override fun onStop() {
-        appUpdateManager.unregisterListener(onDownloadedListener)
-
-        super.onStop()
     }
 
     private fun initialize() {
@@ -134,17 +116,6 @@ class LauncherActivity : ComponentActivity() {
                     initialize()
                 }
             }.addOnFailureListener { initialize() }
-    }
-
-    private fun showFlexibleUpdateCompleteSnackbar() {
-        Snackbar
-            .make(
-                findViewById(android.R.id.content),
-                getString(R.string.app_update_downloaded_message),
-                Snackbar.LENGTH_INDEFINITE,
-            ).setAction(getString(R.string.app_update_action_after_downloaded)) {
-                appUpdateManager.completeUpdate()
-            }.show()
     }
 
     private fun AppUpdateInfo.handleAvailableUpdate() {

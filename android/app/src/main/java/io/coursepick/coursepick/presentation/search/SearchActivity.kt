@@ -3,7 +3,6 @@ package io.coursepick.coursepick.presentation.search
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -18,10 +17,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.coursepick.coursepick.domain.search.Place
 import io.coursepick.coursepick.presentation.DataKeys
 import io.coursepick.coursepick.presentation.Logger
+import io.coursepick.coursepick.presentation.base.BaseActivity
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 
 @AndroidEntryPoint
-class SearchActivity : ComponentActivity() {
+class SearchActivity : BaseActivity() {
     private val viewModel: SearchViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {

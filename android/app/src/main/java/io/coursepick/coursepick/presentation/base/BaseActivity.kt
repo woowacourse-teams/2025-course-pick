@@ -1,5 +1,8 @@
-package io.coursepick.coursepick.presentation
+package io.coursepick.coursepick.presentation.base
 
+import android.R
+import android.os.Bundle
+import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -7,7 +10,7 @@ import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.InstallState
 import com.google.android.play.core.install.InstallStateUpdatedListener
 import com.google.android.play.core.install.model.InstallStatus
-import io.coursepick.coursepick.R
+import io.coursepick.coursepick.presentation.Logger
 
 abstract class BaseActivity : AppCompatActivity() {
     private val updateManager: AppUpdateManager by lazy { AppUpdateManagerFactory.create(this) }
@@ -17,22 +20,46 @@ abstract class BaseActivity : AppCompatActivity() {
             if (state.installStatus() == InstallStatus.DOWNLOADED) {
                 Snackbar
                     .make(
-                        findViewById(android.R.id.content),
-                        getString(R.string.app_update_downloaded_message),
+                        findViewById(R.id.content),
+                        getString(io.coursepick.coursepick.R.string.app_update_downloaded_message),
                         Snackbar.LENGTH_INDEFINITE,
-                    ).setAction(getString(R.string.app_update_action_after_downloaded)) {
+                    ).setAction(getString(io.coursepick.coursepick.R.string.app_update_action_after_downloaded)) {
                         updateManager.completeUpdate()
                     }.show()
             }
         }
 
+    override fun onCreate(
+        savedInstanceState: Bundle?,
+        persistentState: PersistableBundle?,
+    ) {
+        super.onCreate(savedInstanceState, persistentState)
+
+        Logger.log(Logger.Event.Enter(this.javaClass.simpleName))
+    }
+
     override fun onResume() {
         super.onResume()
+
         updateManager.registerListener(onDownloadedListener)
+        Logger.log(Logger.Event.Resume(this.javaClass.simpleName))
+    }
+
+    override fun onPause() {
+        Logger.log(Logger.Event.Pause(this.javaClass.simpleName))
+
+        super.onPause()
     }
 
     override fun onStop() {
         updateManager.unregisterListener(onDownloadedListener)
+
         super.onStop()
+    }
+
+    override fun onDestroy() {
+        Logger.log(Logger.Event.Exit(this.javaClass.simpleName))
+
+        super.onDestroy()
     }
 }
