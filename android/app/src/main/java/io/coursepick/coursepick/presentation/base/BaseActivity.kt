@@ -1,6 +1,5 @@
 package io.coursepick.coursepick.presentation.base
 
-import android.R
 import android.os.Bundle
 import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
@@ -20,7 +19,7 @@ abstract class BaseActivity : AppCompatActivity() {
             if (state.installStatus() == InstallStatus.DOWNLOADED) {
                 Snackbar
                     .make(
-                        findViewById(R.id.content),
+                        findViewById(android.R.id.content),
                         getString(io.coursepick.coursepick.R.string.app_update_downloaded_message),
                         Snackbar.LENGTH_INDEFINITE,
                     ).setAction(getString(io.coursepick.coursepick.R.string.app_update_action_after_downloaded)) {
