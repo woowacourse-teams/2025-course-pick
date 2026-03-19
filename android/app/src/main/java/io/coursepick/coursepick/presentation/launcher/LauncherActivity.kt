@@ -4,11 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -83,7 +83,7 @@ class LauncherActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        installSplashScreen().setKeepOnScreenCondition { true }
         checkForUpdate()
     }
 
@@ -91,7 +91,6 @@ class LauncherActivity : ComponentActivity() {
         super.onResume()
 
         appUpdateManager.registerListener(onDownloadedListener)
-
         appUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo: AppUpdateInfo ->
             if (appUpdateInfo.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
                 appUpdateInfo.startUpdateFlowForResult(AppUpdateType.IMMEDIATE)
@@ -117,6 +116,7 @@ class LauncherActivity : ComponentActivity() {
             Timber.plant(Timber.DebugTree())
         }
         Logger.log(Logger.Event.Enter(javaClass.simpleName))
+
         KakaoMapSdk.init(applicationContext, BuildConfig.KAKAO_NATIVE_APP_KEY)
         KakaoSdk.init(applicationContext, BuildConfig.KAKAO_NATIVE_APP_KEY)
         CoursePickPreferences.init(applicationContext)
