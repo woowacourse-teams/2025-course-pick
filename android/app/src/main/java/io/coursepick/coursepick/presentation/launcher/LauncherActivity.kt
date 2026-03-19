@@ -19,17 +19,11 @@ import com.kakao.vectormap.KakaoMapSdk
 import dagger.hilt.android.AndroidEntryPoint
 import io.coursepick.coursepick.BuildConfig
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.presentation.AmplitudeAnalyticsService
-import io.coursepick.coursepick.presentation.AnalyticsService
 import io.coursepick.coursepick.presentation.CoursePickApplication
-import io.coursepick.coursepick.presentation.FirebaseAnalyticsService
 import io.coursepick.coursepick.presentation.InstallationId
-import io.coursepick.coursepick.presentation.Logger
-import io.coursepick.coursepick.presentation.MixpanelAnalyticsService
 import io.coursepick.coursepick.presentation.base.BaseActivity
 import io.coursepick.coursepick.presentation.course.CoursesActivity
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
-import timber.log.Timber
 
 @AndroidEntryPoint
 class LauncherActivity : BaseActivity() {
@@ -87,18 +81,6 @@ class LauncherActivity : BaseActivity() {
     }
 
     private fun initialize() {
-        val analyticsServices: List<AnalyticsService> =
-            listOf(
-                FirebaseAnalyticsService(installationId),
-                AmplitudeAnalyticsService(applicationContext, installationId),
-                MixpanelAnalyticsService(applicationContext, installationId),
-            )
-        Logger.init(analyticsServices)
-        if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree())
-        }
-        Logger.log(Logger.Event.Enter(javaClass.simpleName))
-
         KakaoMapSdk.init(applicationContext, BuildConfig.KAKAO_NATIVE_APP_KEY)
         KakaoSdk.init(applicationContext, BuildConfig.KAKAO_NATIVE_APP_KEY)
         CoursePickPreferences.init(applicationContext)

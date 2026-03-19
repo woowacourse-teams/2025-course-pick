@@ -35,18 +35,18 @@ abstract class BaseActivity : AppCompatActivity() {
     ) {
         super.onCreate(savedInstanceState, persistentState)
 
-        Logger.log(Logger.Event.Enter(this.javaClass.simpleName))
+        Logger.log(Logger.Event.Enter(javaClass.simpleName))
     }
 
     override fun onResume() {
         super.onResume()
 
         updateManager.registerListener(onDownloadedListener)
-        Logger.log(Logger.Event.Resume(this.javaClass.simpleName))
+        Logger.log(Logger.Event.Resume(javaClass.simpleName))
     }
 
     override fun onPause() {
-        Logger.log(Logger.Event.Pause(this.javaClass.simpleName))
+        Logger.log(Logger.Event.Pause(javaClass.simpleName))
 
         super.onPause()
     }
@@ -58,7 +58,7 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        Logger.log(Logger.Event.Exit(this.javaClass.simpleName))
+        Logger.log(Logger.Event.Exit(javaClass.simpleName))
 
         super.onDestroy()
     }
