@@ -159,6 +159,8 @@ class LauncherActivity : ComponentActivity() {
             startUpdateFlowForResult(AppUpdateType.FLEXIBLE)
             return
         }
+
+        initialize()
     }
 
     private fun AppUpdateInfo.startUpdateFlowForResult(
