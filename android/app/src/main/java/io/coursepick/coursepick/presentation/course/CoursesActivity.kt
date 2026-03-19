@@ -50,7 +50,6 @@ import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.presentation.CoursePickApplication
-import io.coursepick.coursepick.presentation.CoursePickUpdateManager
 import io.coursepick.coursepick.presentation.DataKeys
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
@@ -81,7 +80,6 @@ class CoursesActivity :
     private val viewModel: CoursesViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(courseItemListener) }
     private val doublePressDetector = DoublePressDetector()
-    private lateinit var updateManager: CoursePickUpdateManager
 
     @Inject
     lateinit var mapManagerFactory: MapManagerFactory
@@ -190,9 +188,6 @@ class CoursesActivity :
         setUpDialogs()
 
         searchLauncher = searchActivityResultLauncher()
-
-        updateManager = CoursePickUpdateManager(this)
-        updateManager.checkForUpdate()
 
         if (savedInstanceState == null) {
             showNoticeIfNeeded()
