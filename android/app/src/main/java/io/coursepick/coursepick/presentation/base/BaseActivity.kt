@@ -1,7 +1,6 @@
 package io.coursepick.coursepick.presentation.base
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -28,11 +27,8 @@ abstract class BaseActivity : AppCompatActivity() {
             }
         }
 
-    override fun onCreate(
-        savedInstanceState: Bundle?,
-        persistentState: PersistableBundle?,
-    ) {
-        super.onCreate(savedInstanceState, persistentState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
         Logger.log(Logger.Event.Enter(javaClass.simpleName))
     }
