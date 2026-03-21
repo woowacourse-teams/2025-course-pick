@@ -73,7 +73,10 @@ jobs:
           echo "REVIEWERS=${REVIEWERS:-없음}" >> "$GITHUB_ENV"
 
       - name: PR 생성 알림
-        if: env.SHOULD_NOTIFY == 'true' && github.event.action == 'opened'
+        if: env.SHOULD_NOTIFY == 'true' && (
+          (github.event.action == 'opened' && github.event.pull_request.draft == false) ||
+          github.event.action == 'ready_for_review'
+        )
         uses: Ilshidur/action-discord@0.4.0
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
