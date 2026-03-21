@@ -18,7 +18,7 @@ jobs:
           ID_MAP: ${{ secrets.DISCORD_ID_MAP }}
         run: |
           # 1. PR 생성은 팀 공지 성격이므로 항상 알림
-          if [[ "${{ github.event.action }}" == "opened" ]]; then
+          if [[ "${{ github.event.action }}" == "opened" || "${{ github.event.action }}" == "ready_for_review" ]]; then
             echo "SHOULD_NOTIFY=true" >> $GITHUB_ENV
             echo "MENTION_TARGET=" >> $GITHUB_ENV
             exit 0
@@ -44,7 +44,7 @@ jobs:
           echo "MENTION_TARGET=$DISCORD_ID" >> $GITHUB_ENV
 
       - name: PR 정보 추출
-        if: env.SHOULD_NOTIFY == 'true' && github.event.action == 'opened'
+        if: env.SHOULD_NOTIFY == 'true' && (github.event.action == 'opened' || github.event.action == 'ready_for_review')
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
