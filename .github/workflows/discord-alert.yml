@@ -55,7 +55,7 @@ jobs:
             local discord_id
             discord_id=$(echo "$ID_MAP" | jq -r --arg key "$1" '.[$key] // empty')
             if [ -n "$discord_id" ]; then
-              echo "<@${discord_id}>"
+              echo "${discord_id}"
             else
               echo "$1"
             fi
@@ -79,7 +79,7 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
           args: |
-            🆕 **PR 생성**
+            🆕 **#{{ EVENT_PAYLOAD.pull_request.number }} PR 생성**
             **제목**: [{{ EVENT_PAYLOAD.pull_request.title }}](<{{ EVENT_PAYLOAD.pull_request.html_url }}>)
             **담당자**: ${{ env.ASSIGNEES }}
             **리뷰어**: ${{ env.REVIEWERS }}
