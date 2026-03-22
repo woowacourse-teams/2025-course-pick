@@ -798,7 +798,7 @@ class CoursesActivity :
 
     private fun setUpFlowCollector() {
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.locationUpdates.collect { location: Location? ->
                     location?.let(mapManager::drawUserPosition) ?: run(mapManager::hideUserPosition)
                 }
