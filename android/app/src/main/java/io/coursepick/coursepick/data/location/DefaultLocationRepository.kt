@@ -84,12 +84,6 @@ class DefaultLocationRepository(
                 null
             } ?: return null
 
-        runCatching {
-            locationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).await()
-        }.onFailure { throwable: Throwable ->
-            if (throwable is CancellationException) throw throwable
-        }.getOrNull() ?: return null
-
         val location: Location =
             if (isFineLocationPermissionGranted) {
                 Location.Fine(androidLocation.toCoordinate())
