@@ -47,7 +47,7 @@ class DefaultLocationRepository(
         callbackFlow {
             if (!locationManager.isLocationEnabled || !isCoarseLocationPermissionGranted) {
                 trySend(null)
-                awaitClose()
+                close()
                 return@callbackFlow
             }
 
