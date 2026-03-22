@@ -2,7 +2,7 @@ name: Discord Alert
 
 on:
   pull_request:
-    types: [ review_requested ]
+    types: [ opened, review_requested, ready_for_review ]
   pull_request_review:
     types: [ submitted ]
 
@@ -17,29 +17,98 @@ jobs:
         env:
           ID_MAP: ${{ secrets.DISCORD_ID_MAP }}
         run: |
-          # 1. 이벤트에 따른 알림 대상자 결정
+          # 1. PR 생성은 팀 공지 성격이므로 항상 알림
+          if [[ "${{ github.event.action }}" == "opened" || "${{ github.event.action }}" == "ready_for_review" ]]; then
+            echo "SHOULD_NOTIFY=true" >> $GITHUB_ENV
+            echo "MENTION_TARGET=" >> $GITHUB_ENV
+            exit 0
+          fi
+
+          # 2. 이벤트에 따른 알림 대상자 결정
           if [[ "${{ github.event.action }}" == "review_requested" ]]; then
             TARGET_GITHUB_ID="${{ github.event.requested_reviewer.login }}"
           else
             TARGET_GITHUB_ID="${{ github.event.pull_request.user.login }}"
           fi
-          
-          # 2. 액션을 수행한 사람(발신자) 확인
-          SENDER_GITHUB_ID="${{ github.event.sender.login }}"
-          
+
           # 3. 본인이 본인에게 알림을 보내는 상황인지 체크
+          SENDER_GITHUB_ID="${{ github.event.sender.login }}"
           if [[ "$TARGET_GITHUB_ID" == "$SENDER_GITHUB_ID" ]]; then
             echo "SHOULD_NOTIFY=false" >> $GITHUB_ENV
           else
             echo "SHOULD_NOTIFY=true" >> $GITHUB_ENV
           fi
-          
+
           # 4. Discord ID 매핑
           DISCORD_ID=$(echo "$ID_MAP" | jq -r --arg key "$TARGET_GITHUB_ID" '.[$key] // $key')
           echo "MENTION_TARGET=$DISCORD_ID" >> $GITHUB_ENV
 
+      - name: PR 정보 추출
+        if: env.SHOULD_NOTIFY == 'true' && (github.event.action == 'opened' || github.event.action == 'ready_for_review')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          ID_MAP: ${{ secrets.DISCORD_ID_MAP }}
+        run: |
+          to_mention() {
+            local discord_id
+            discord_id=$(echo "$ID_MAP" | jq -r --arg key "$1" '.[$key] // empty')
+            if [ -n "$discord_id" ]; then
+              echo "${discord_id}"
+            else
+              echo "$1"
+            fi
+          }
+
+          PR_DATA=$(curl -s -H "Authorization: token $GH_TOKEN" \
+            "https://api.github.com/repos/$REPO/pulls/$PR_NUMBER")
+
+          ASSIGNEES=$(echo "$PR_DATA" | jq -r '.assignees[].login' | \
+            while read -r id; do to_mention "$id"; done | paste -sd', ')
+          REVIEWERS=$(echo "$PR_DATA" | jq -r '.requested_reviewers[].login' | \
+            while read -r id; do to_mention "$id"; done | paste -sd', ')
+
+          echo "ASSIGNEES=${ASSIGNEES:-없음}" >> "$GITHUB_ENV"
+          echo "REVIEWERS=${REVIEWERS:-없음}" >> "$GITHUB_ENV"
+
+      - name: PR 생성 알림
+        if: >
+          env.SHOULD_NOTIFY == 'true'
+          && (
+          (github.event.action == 'opened' && github.event.pull_request.draft == false)
+          || github.event.action == 'ready_for_review'
+          )
+        uses: Ilshidur/action-discord@0.4.0
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        with:
+          args: |
+            🆕 **#{{ EVENT_PAYLOAD.pull_request.number }} PR 생성**
+            **제목**: [{{ EVENT_PAYLOAD.pull_request.title }}](<{{ EVENT_PAYLOAD.pull_request.html_url }}>)
+            **담당자**: ${{ env.ASSIGNEES }}
+            **리뷰어**: ${{ env.REVIEWERS }}
+            ―――――――――――――――――――――――――
+
+      - name: PR 생성 시간 확인
+        if: github.event.action == 'review_requested'
+        id: check_age
+        run: |
+          created_at="${{ github.event.pull_request.created_at }}"
+          created_ts=$(date -d "$created_at" +%s)
+          now_ts=$(date +%s)
+          diff=$((now_ts - created_ts))
+          if [ "$diff" -lt 60 ]; then
+            echo "is_new=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_new=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: 리뷰 요청 알림
-        if: env.SHOULD_NOTIFY == 'true' && github.event.action == 'review_requested'
+        if: >
+          env.SHOULD_NOTIFY == 'true'
+          && github.event.action == 'review_requested'
+          && steps.check_age.outputs.is_new != 'true'
         uses: Ilshidur/action-discord@0.4.0
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
