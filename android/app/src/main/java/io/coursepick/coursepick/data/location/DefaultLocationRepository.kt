@@ -17,6 +17,7 @@ import io.coursepick.coursepick.domain.course.Distance
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.domain.location.LocationRepository
 import io.coursepick.coursepick.presentation.map.kakao.toCoordinate
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -75,9 +76,19 @@ class DefaultLocationRepository(
         if (!locationManager.isLocationEnabled || !isCoarseLocationPermissionGranted) return null
 
         val androidLocation: android.location.Location =
-            runCatching {
+            try {
                 locationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).await()
-            }.getOrNull() ?: return null
+            } catch (exception: CancellationException) {
+                throw exception
+            } catch (exception: Exception) {
+                null
+            } ?: return null
+
+        runCatching {
+            locationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).await()
+        }.onFailure { throwable: Throwable ->
+            if (throwable is CancellationException) throw throwable
+        }.getOrNull() ?: return null
 
         val location: Location =
             if (isFineLocationPermissionGranted) {
