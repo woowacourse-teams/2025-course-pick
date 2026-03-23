@@ -33,6 +33,9 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.commit
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
@@ -65,6 +68,7 @@ import io.coursepick.coursepick.presentation.search.SearchActivity
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 import io.coursepick.coursepick.presentation.setting.SettingsScreen
 import io.coursepick.coursepick.presentation.ui.DoublePressDetector
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class CoursesActivity :
@@ -106,13 +110,13 @@ class CoursesActivity :
                     "name" to course.name,
                 )
 
-                if (!viewModel.isFineLocationPermissionGranted()) {
+                if (!viewModel.isFineLocationPermissionGranted) {
                     showFineLocationPermissionRationaleForNavigation()
                     return
                 }
 
-                viewModel.fetchCurrentLocation(
-                    onSuccess = { location: Location ->
+                lifecycleScope.launch {
+                    viewModel.currentLocation()?.let { location: Location ->
                         val selectedApp: RouteFinderApplication? =
                             CoursePickPreferences.selectedRouteFinder
                         if (selectedApp == null) {
@@ -127,11 +131,10 @@ class CoursesActivity :
                                 handleNavigation(course, location.coordinate, selectedApp)
                             }
                             RouteFinderChoiceDialogFragment().show(supportFragmentManager, null)
-                            return@fetchCurrentLocation
+                            return@let
                         }
                         handleNavigation(course, location.coordinate, selectedApp)
-                    },
-                    onFailure = {
+                    } ?: run {
                         mapManager.hideUserPosition()
                         Toast
                             .makeText(
@@ -139,8 +142,8 @@ class CoursesActivity :
                                 getString(R.string.courses_failed_to_get_current_location_message),
                                 Toast.LENGTH_SHORT,
                             ).show()
-                    },
-                )
+                    }
+                }
             }
         }
 
@@ -160,6 +163,7 @@ class CoursesActivity :
 
         mapManager.start {
             setUpObservers()
+            setUpFlowCollector()
             setUpMapPadding()
             mapManager.setOnCameraMoveListener {
                 if (viewModel.content.value == CoursesContent.EXPLORE) {
@@ -192,8 +196,6 @@ class CoursesActivity :
         super.onResume()
 
         mapManager.resume()
-        viewModel.startLocationUpdates()
-
         updateManager.onResume()
     }
 
@@ -201,7 +203,6 @@ class CoursesActivity :
         super.onPause()
 
         mapManager.pause()
-        viewModel.stopLocationUpdates()
     }
 
     override fun onStop() {
@@ -259,16 +260,15 @@ class CoursesActivity :
 
     private fun scopeOrNull(): Scope? {
         val mapPosition: Coordinate = mapCoordinateOrNull() ?: return null
-        val scope: Scope =
-            mapManager.scopeOrNull(mapPosition) ?: run {
-                Toast
-                    .makeText(
-                        this,
-                        getString(R.string.courses_failed_to_calculate_length_range_message),
-                        Toast.LENGTH_SHORT,
-                    ).show()
-                return null
-            }
+        val scope: Scope? = mapManager.scopeOrNull(mapPosition)
+        if (scope == null) {
+            Toast
+                .makeText(
+                    this,
+                    getString(R.string.courses_failed_to_calculate_length_range_message),
+                    Toast.LENGTH_SHORT,
+                ).show()
+        }
         return scope
     }
 
@@ -390,33 +390,32 @@ class CoursesActivity :
     override fun moveToCurrentLocation() {
         Logger.log(Logger.Event.Click("move_to_current_location"))
 
-        if (!viewModel.isCoarseLocationPermissionGranted()) {
+        if (!viewModel.isCoarseLocationPermissionGranted) {
             showLocationPermissionRationaleForCurrentLocation()
             return
         }
 
-        viewModel.fetchCurrentLocation(
-            onSuccess = { location: Location ->
-                if (!viewModel.isFineLocationPermissionGranted()) {
+        lifecycleScope.launch {
+            viewModel.currentLocation()?.let { location: Location ->
+                if (!viewModel.isFineLocationPermissionGranted) {
                     showFineLocationPermissionRationaleForCurrentLocation()
                 }
 
                 mapManager.drawUserPosition(location)
                 mapManager.moveTo(location.coordinate)
                 binding.mainCurrentLocationButton.setColorFilter(
-                    ContextCompat.getColor(this, R.color.gray3),
+                    ContextCompat.getColor(this@CoursesActivity, R.color.gray3),
                 )
-            },
-            onFailure = {
+            } ?: run {
                 mapManager.hideUserPosition()
                 Toast
                     .makeText(
-                        this,
+                        this@CoursesActivity,
                         getString(R.string.courses_failed_to_get_current_location_message),
                         Toast.LENGTH_SHORT,
                     ).show()
-            },
-        )
+            }
+        }
     }
 
     private fun showLocationPermissionRationaleForCurrentLocation() {
@@ -637,20 +636,18 @@ class CoursesActivity :
             CoursesContent.EXPLORE -> {
                 val scope: Scope = Scope.default()
 
-                viewModel.fetchCurrentLocation(
-                    onSuccess = { location: Location ->
+                lifecycleScope.launch {
+                    viewModel.currentLocation()?.let { location: Location ->
                         val userCoordinate = location.coordinate
                         mapManager.drawUserPosition(location)
                         mapManager.moveTo(location.coordinate)
                         viewModel.fetchCourses(userCoordinate, userCoordinate, scope)
-                    },
-                    onFailure = {
+                    } ?: run {
                         mapManager.hideUserPosition()
-                        val mapCoordinate: Coordinate =
-                            mapCoordinateOrNull() ?: return@fetchCurrentLocation
+                        val mapCoordinate: Coordinate = mapCoordinateOrNull() ?: return@run
                         viewModel.fetchCourses(mapCoordinate, null, scope)
-                    },
-                )
+                    }
+                }
             }
 
             CoursesContent.FAVORITES -> {
@@ -662,16 +659,15 @@ class CoursesActivity :
     private fun fetchCourses(targetCoordinate: Coordinate) {
         val scope: Scope = scopeOrNull() ?: return
 
-        viewModel.fetchCurrentLocation(
-            onSuccess = { location: Location ->
+        lifecycleScope.launch {
+            viewModel.currentLocation()?.let { location: Location ->
                 mapManager.drawUserPosition(location)
                 viewModel.fetchCourses(targetCoordinate, location.coordinate, scope)
-            },
-            onFailure = {
+            } ?: run {
                 mapManager.hideUserPosition()
                 viewModel.fetchCourses(targetCoordinate, null, scope)
-            },
-        )
+            }
+        }
     }
 
     private fun setUpDoubleBackPress() {
@@ -717,10 +713,6 @@ class CoursesActivity :
                 binding.mainSearchThisAreaButton.visibility = View.GONE
             }
             switchContent(content)
-        }
-
-        viewModel.currentLocation.observe(this) { location: Location? ->
-            location?.let(mapManager::drawUserPosition) ?: run(mapManager::hideUserPosition)
         }
     }
 
@@ -799,6 +791,16 @@ class CoursesActivity :
                             getString(R.string.explore_failed_to_fetch_next_page_message),
                             Toast.LENGTH_SHORT,
                         ).show()
+                }
+            }
+        }
+    }
+
+    private fun setUpFlowCollector() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.locationUpdates.collect { location: Location? ->
+                    location?.let(mapManager::drawUserPosition) ?: run(mapManager::hideUserPosition)
                 }
             }
         }

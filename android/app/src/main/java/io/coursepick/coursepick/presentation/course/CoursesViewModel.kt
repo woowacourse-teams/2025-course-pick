@@ -28,6 +28,9 @@ import io.coursepick.coursepick.presentation.ui.SingleLiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -55,8 +58,15 @@ class CoursesViewModel
         private val _content: MutableLiveData<CoursesContent> = MutableLiveData(CoursesContent.EXPLORE)
         val content: LiveData<CoursesContent> get() = _content
 
-        private val _currentLocation: MutableLiveData<Location?> = MutableLiveData(null)
-        val currentLocation: LiveData<Location?> get() = _currentLocation
+        val isCoarseLocationPermissionGranted get() = locationRepository.isCoarseLocationPermissionGranted
+        val isFineLocationPermissionGranted get() = locationRepository.isFineLocationPermissionGranted
+
+        val locationUpdates: StateFlow<Location?> =
+            locationRepository.locationUpdates.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = null,
+            )
 
         private val _event: MutableSingleLiveData<CoursesUiEvent> = MutableSingleLiveData()
         val event: SingleLiveData<CoursesUiEvent> get() = _event
@@ -137,7 +147,7 @@ class CoursesViewModel
                 viewModelScope.launch {
                     delay(DEBOUNCE_LIMIT_TIME)
 
-                    pendingFavoriteWrites.toMap().forEach { courseId: String, favorite: Boolean ->
+                    pendingFavoriteWrites.toMap().forEach { (courseId: String, favorite: Boolean) ->
                         if (favorite) {
                             favoritesRepository.addFavoriteCourse(courseId)
                         } else {
@@ -532,22 +542,7 @@ class CoursesViewModel
             _state.value = state.value?.copy(showSettings = false)
         }
 
-        fun fetchCurrentLocation(
-            onSuccess: (location: Location) -> Unit,
-            onFailure: (exception: Exception) -> Unit,
-        ) = locationRepository.fetchCurrentLocation(onSuccess, onFailure)
-
-        fun isCoarseLocationPermissionGranted(): Boolean = locationRepository.isCoarseLocationPermissionGranted
-
-        fun isFineLocationPermissionGranted(): Boolean = locationRepository.isFineLocationPermissionGranted
-
-        fun startLocationUpdates() =
-            locationRepository.startLocationUpdates(
-                onUpdate = { location: Location -> _currentLocation.value = location },
-                onFailure = { _currentLocation.value = null },
-            )
-
-        fun stopLocationUpdates() = locationRepository.stopLocationUpdates()
+        suspend fun currentLocation(): Location? = locationRepository.currentLocation()
 
         private fun newCoursesListItem(
             oldCourses: List<CourseListItem>,

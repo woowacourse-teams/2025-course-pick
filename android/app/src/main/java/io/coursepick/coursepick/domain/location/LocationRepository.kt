@@ -1,19 +1,13 @@
 package io.coursepick.coursepick.domain.location
 
+import kotlinx.coroutines.flow.Flow
+
 interface LocationRepository {
     val isCoarseLocationPermissionGranted: Boolean
 
     val isFineLocationPermissionGranted: Boolean
 
-    fun fetchCurrentLocation(
-        onSuccess: (location: Location) -> Unit,
-        onFailure: (exception: Exception) -> Unit,
-    )
+    val locationUpdates: Flow<Location?>
 
-    fun startLocationUpdates(
-        onUpdate: (location: Location) -> Unit,
-        onFailure: (exception: Exception) -> Unit,
-    )
-
-    fun stopLocationUpdates()
+    suspend fun currentLocation(): Location?
 }
