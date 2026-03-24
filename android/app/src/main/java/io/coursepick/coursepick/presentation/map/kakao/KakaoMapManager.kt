@@ -27,15 +27,15 @@ class KakaoMapManager(
 
     private var courses: List<CourseItem> = emptyList()
 
-    override val cameraPosition: Coordinate?
+    override val cameraCoordinate: Coordinate?
         get() = kakaoMap?.cameraPosition?.position?.toCoordinate()
 
     override val scope: Scope?
         get() {
-            val screenDiagonalTop: LatLng = kakaoMap?.fromScreenPoint(0, 0) ?: return null
-            val mapCenter: Coordinate = cameraPosition ?: return null
+            val screenTopLeft: LatLng = kakaoMap?.fromScreenPoint(0, 0) ?: return null
+            val mapCenter: Coordinate = cameraCoordinate ?: return null
             val distance: Int =
-                DistanceCalculator.distance(mapCenter, screenDiagonalTop.toCoordinate())
+                DistanceCalculator.distance(mapCenter, screenTopLeft.toCoordinate())
                     ?: return null
             return Scope(distance)
         }
@@ -83,15 +83,15 @@ class KakaoMapManager(
         drawer?.removeAllLines() ?: Timber.w("KakaoMapDrawer is null")
     }
 
-    override fun drawSearchPosition(coordinate: Coordinate) {
+    override fun drawSearchCoordinate(coordinate: Coordinate) {
         drawer?.drawSearchPosition(coordinate) ?: Timber.w("KakaoMapDrawer is null")
     }
 
-    override fun drawUserPosition(location: Location) {
+    override fun drawUserLocation(location: Location) {
         drawer?.drawUserPosition(location) ?: Timber.w("KakaoMapDrawer is null")
     }
 
-    override fun hideUserPosition() {
+    override fun hideUserLocation() {
         drawer?.hideUserPosition() ?: Timber.w("KakaoMapDrawer is null")
     }
 

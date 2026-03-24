@@ -6,7 +6,7 @@ import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.course.CourseItem
 
 interface MapManager {
-    val cameraPosition: Coordinate?
+    val cameraCoordinate: Coordinate?
 
     val scope: Scope?
 
@@ -23,11 +23,11 @@ interface MapManager {
 
     fun removeAllRouteLines()
 
-    fun drawSearchPosition(coordinate: Coordinate)
+    fun drawSearchCoordinate(coordinate: Coordinate)
 
-    fun drawUserPosition(location: Location)
+    fun drawUserLocation(location: Location)
 
-    fun hideUserPosition()
+    fun hideUserLocation()
 
     fun fitTo(coordinates: List<Coordinate>)
 

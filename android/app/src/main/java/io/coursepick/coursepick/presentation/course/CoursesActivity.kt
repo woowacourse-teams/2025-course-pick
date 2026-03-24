@@ -135,7 +135,7 @@ class CoursesActivity :
                         }
                         handleNavigation(course, location.coordinate, selectedApp)
                     } ?: run {
-                        mapManager.hideUserPosition()
+                        mapManager.hideUserLocation()
                         Toast
                             .makeText(
                                 this@CoursesActivity,
@@ -212,7 +212,7 @@ class CoursesActivity :
             "longitude" to coordinate.longitude.value,
         )
         binding.mainSearchThisAreaButton.visibility = View.GONE
-        mapManager.drawSearchPosition(coordinate)
+        mapManager.drawSearchCoordinate(coordinate)
 
         fetchCourses(coordinate)
     }
@@ -259,7 +259,7 @@ class CoursesActivity :
     }
 
     private fun mapCoordinateOrNull(): Coordinate? {
-        return mapManager.cameraPosition ?: run {
+        return mapManager.cameraCoordinate ?: run {
             Toast
                 .makeText(
                     this,
@@ -311,7 +311,7 @@ class CoursesActivity :
         val coordinate = Coordinate(latitude, longitude)
 
         mapManager.resetZoom()
-        mapManager.drawSearchPosition(coordinate)
+        mapManager.drawSearchCoordinate(coordinate)
         mapManager.moveTo(coordinate)
         fetchCourses(coordinate)
     }
@@ -387,13 +387,13 @@ class CoursesActivity :
                     showFineLocationPermissionRationaleForCurrentLocation()
                 }
 
-                mapManager.drawUserPosition(location)
+                mapManager.drawUserLocation(location)
                 mapManager.moveTo(location.coordinate)
                 binding.mainCurrentLocationButton.setColorFilter(
                     ContextCompat.getColor(this@CoursesActivity, R.color.gray3),
                 )
             } ?: run {
-                mapManager.hideUserPosition()
+                mapManager.hideUserLocation()
                 Toast
                     .makeText(
                         this@CoursesActivity,
@@ -635,11 +635,11 @@ class CoursesActivity :
                 lifecycleScope.launch {
                     viewModel.currentLocation()?.let { location: Location ->
                         val userCoordinate = location.coordinate
-                        mapManager.drawUserPosition(location)
+                        mapManager.drawUserLocation(location)
                         mapManager.moveTo(location.coordinate)
                         viewModel.fetchCourses(userCoordinate, userCoordinate, scope)
                     } ?: run {
-                        mapManager.hideUserPosition()
+                        mapManager.hideUserLocation()
                         val mapCoordinate: Coordinate = mapCoordinateOrNull() ?: return@run
                         viewModel.fetchCourses(mapCoordinate, null, scope)
                     }
@@ -657,10 +657,10 @@ class CoursesActivity :
 
         lifecycleScope.launch {
             viewModel.currentLocation()?.let { location: Location ->
-                mapManager.drawUserPosition(location)
+                mapManager.drawUserLocation(location)
                 viewModel.fetchCourses(targetCoordinate, location.coordinate, scope)
             } ?: run {
-                mapManager.hideUserPosition()
+                mapManager.hideUserLocation()
                 viewModel.fetchCourses(targetCoordinate, null, scope)
             }
         }
@@ -796,7 +796,7 @@ class CoursesActivity :
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.locationUpdates.collect { location: Location? ->
-                    location?.let(mapManager::drawUserPosition) ?: run(mapManager::hideUserPosition)
+                    location?.let(mapManager::drawUserLocation) ?: run(mapManager::hideUserLocation)
                 }
             }
         }
