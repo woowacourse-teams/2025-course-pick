@@ -142,18 +142,18 @@ class KakaoMapManager(
         bottom: Int,
     ) {
         kakaoMap?.let { kakaoMap: KakaoMap ->
-            kakaoMap.setPadding(0, 0, 0, bottom)
+            kakaoMap.setPadding(left, top, right, bottom)
         } ?: Timber.w("kakaoMap is null")
-    }
-
-    override fun onPause(owner: LifecycleOwner) {
-        super.onPause(owner)
-        mapView.pause()
     }
 
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
         mapView.resume()
+    }
+
+    override fun onPause(owner: LifecycleOwner) {
+        super.onPause(owner)
+        mapView.pause()
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
