@@ -57,8 +57,8 @@ import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
 import io.coursepick.coursepick.presentation.filter.CourseFilterBottomSheet
+import io.coursepick.coursepick.presentation.map.MapManager
 import io.coursepick.coursepick.presentation.map.kakao.KakaoMapManager
-import io.coursepick.coursepick.presentation.map.kakao.toCoordinate
 import io.coursepick.coursepick.presentation.notice.NoticeDialog
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 import io.coursepick.coursepick.presentation.preference.PreferencesActivity
@@ -80,7 +80,7 @@ class CoursesActivity :
     private val viewModel: CoursesViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(courseItemListener) }
     private val doublePressDetector = DoublePressDetector()
-    private val mapManager by lazy { KakaoMapManager(binding.mainMap) }
+    private val mapManager: MapManager by lazy { KakaoMapManager(binding.mainMap, lifecycle) }
     private lateinit var updateManager: CoursePickUpdateManager
 
     private val locationPermissionLauncher: ActivityResultLauncher<Array<String>> =
@@ -161,7 +161,7 @@ class CoursesActivity :
         setUpBottomSheet()
         setUpSettings()
 
-        mapManager.start {
+        mapManager.startMap {
             setUpObservers()
             setUpFlowCollector()
             setUpMapPadding()
@@ -195,26 +195,13 @@ class CoursesActivity :
     override fun onResume() {
         super.onResume()
 
-        mapManager.resume()
         updateManager.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-        mapManager.pause()
     }
 
     override fun onStop() {
         super.onStop()
 
         updateManager.onStop()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-        mapManager.finish()
     }
 
     override fun searchThisArea() {
@@ -259,8 +246,7 @@ class CoursesActivity :
     }
 
     private fun scopeOrNull(): Scope? {
-        val mapPosition: Coordinate = mapCoordinateOrNull() ?: return null
-        val scope: Scope? = mapManager.scopeOrNull(mapPosition)
+        val scope: Scope? = mapManager.scope
         if (scope == null) {
             Toast
                 .makeText(
@@ -273,7 +259,7 @@ class CoursesActivity :
     }
 
     private fun mapCoordinateOrNull(): Coordinate? {
-        return mapManager.cameraPosition?.toCoordinate() ?: run {
+        return mapManager.cameraPosition ?: run {
             Toast
                 .makeText(
                     this,
@@ -324,7 +310,7 @@ class CoursesActivity :
         val longitude = Longitude(longitudeValue)
         val coordinate = Coordinate(latitude, longitude)
 
-        mapManager.resetZoomLevel()
+        mapManager.resetZoom()
         mapManager.drawSearchPosition(coordinate)
         mapManager.moveTo(coordinate)
         fetchCourses(coordinate)
@@ -580,7 +566,12 @@ class CoursesActivity :
 
     private fun setUpMapPadding() {
         val bottomSheet = binding.mainBottomSheet
-        mapManager.setBottomPadding(binding.mainContent.height - bottomSheet.y.toInt())
+        mapManager.setPadding(
+            left = 0,
+            top = 0,
+            right = 0,
+            bottom = binding.mainContent.height - bottomSheet.y.toInt(),
+        )
     }
 
     private fun setUpBottomSheet() {
@@ -601,7 +592,12 @@ class CoursesActivity :
                     bottomSheet: View,
                     slideOffset: Float,
                 ) {
-                    mapManager.setBottomPadding(binding.mainContent.height - bottomSheet.y.toInt())
+                    mapManager.setPadding(
+                        left = 0,
+                        top = 0,
+                        right = 0,
+                        bottom = binding.mainContent.height - bottomSheet.y.toInt(),
+                    )
                 }
             },
         )
@@ -697,15 +693,15 @@ class CoursesActivity :
     private fun setUpStateObserver() {
         viewModel.state.observe(this) { state: CoursesUiState ->
             courseAdapter.submitList(state.courses)
-            mapManager.removeAllLines()
+            mapManager.removeAllRouteLines()
             val courses: List<CourseItem> =
                 state.courses
                     .filterIsInstance<CourseListItem.Course>()
                     .map(CourseListItem.Course::item)
-            mapManager.setOnCourseClickListener(courses) { course: CourseItem ->
+            mapManager.draw(courses)
+            mapManager.setOnCourseClickListener { course: CourseItem ->
                 viewModel.select(course)
             }
-            mapManager.draw(courses)
         }
 
         viewModel.content.observe(this) { content: CoursesContent ->
@@ -742,7 +738,7 @@ class CoursesActivity :
                 }
 
                 is CoursesUiEvent.FetchRouteToCourseSuccess -> {
-                    mapManager.removeAllLines()
+                    mapManager.removeAllRouteLines()
                     mapManager.fitTo(event.route)
                     mapManager.draw(event.course)
                     mapManager.drawRouteToCourse(event.route, event.course)
