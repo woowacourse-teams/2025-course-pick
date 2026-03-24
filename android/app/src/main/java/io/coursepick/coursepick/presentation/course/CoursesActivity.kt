@@ -39,7 +39,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
-import com.kakao.vectormap.MapView
 import dagger.hilt.android.AndroidEntryPoint
 import io.coursepick.coursepick.BuildConfig
 import io.coursepick.coursepick.R
@@ -59,7 +58,7 @@ import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
 import io.coursepick.coursepick.presentation.filter.CourseFilterBottomSheet
 import io.coursepick.coursepick.presentation.map.MapManager
-import io.coursepick.coursepick.presentation.map.kakao.KakaoMapManager
+import io.coursepick.coursepick.presentation.map.MapManagerFactory
 import io.coursepick.coursepick.presentation.notice.NoticeDialog
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 import io.coursepick.coursepick.presentation.preference.PreferencesActivity
@@ -70,6 +69,7 @@ import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 import io.coursepick.coursepick.presentation.setting.SettingsScreen
 import io.coursepick.coursepick.presentation.ui.DoublePressDetector
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CoursesActivity :
@@ -81,15 +81,11 @@ class CoursesActivity :
     private val viewModel: CoursesViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(courseItemListener) }
     private val doublePressDetector = DoublePressDetector()
-
-    private val mapManager: MapManager by lazy {
-        val mapView =
-            layoutInflater.inflate(R.layout.layout_kakao_map, binding.mapContainer, false)
-                as MapView
-        binding.mapContainer.addView(mapView)
-        KakaoMapManager(mapView, lifecycle)
-    }
     private lateinit var updateManager: CoursePickUpdateManager
+
+    @Inject
+    lateinit var mapManagerFactory: MapManagerFactory
+    private val mapManager: MapManager by lazy { mapManagerFactory.create(binding.mapContainer) }
 
     private val locationPermissionLauncher: ActivityResultLauncher<Array<String>> =
         registerForActivityResult(
