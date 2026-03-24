@@ -18,6 +18,11 @@ public class RestClientConfig {
             @Value("${kakao.connect-timeout:1}") int connectTimeoutSeconds,
             @Value("${kakao.read-timeout:5}") int readTimeoutSeconds
     ) {
+        asd
+                asd
+                asd
+                        asd
+
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setConnectTimeout(Duration.ofSeconds(connectTimeoutSeconds));
         requestFactory.setReadTimeout(Duration.ofSeconds(readTimeoutSeconds));
