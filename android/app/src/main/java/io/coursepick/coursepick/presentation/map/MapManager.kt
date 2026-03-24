@@ -42,9 +42,9 @@ interface MapManager {
     fun resetZoom()
 
     fun setPadding(
-        left: Int,
-        top: Int,
-        right: Int,
-        bottom: Int,
+        left: Int = 0,
+        top: Int = 0,
+        right: Int = 0,
+        bottom: Int = 0,
     )
 }
