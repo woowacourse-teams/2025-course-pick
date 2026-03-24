@@ -39,6 +39,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
+import com.kakao.vectormap.MapView
 import dagger.hilt.android.AndroidEntryPoint
 import io.coursepick.coursepick.BuildConfig
 import io.coursepick.coursepick.R
@@ -80,7 +81,14 @@ class CoursesActivity :
     private val viewModel: CoursesViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(courseItemListener) }
     private val doublePressDetector = DoublePressDetector()
-    private val mapManager: MapManager by lazy { KakaoMapManager(binding.mainMap, lifecycle) }
+
+    private val mapManager: MapManager by lazy {
+        val mapView =
+            layoutInflater.inflate(R.layout.layout_kakao_map, binding.mapContainer, false)
+                as MapView
+        binding.mapContainer.addView(mapView)
+        KakaoMapManager(mapView, lifecycle)
+    }
     private lateinit var updateManager: CoursePickUpdateManager
 
     private val locationPermissionLauncher: ActivityResultLauncher<Array<String>> =
