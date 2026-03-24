@@ -1,8 +1,6 @@
 package io.coursepick.coursepick.presentation.map.kakao
 
-import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.MapGravity
@@ -17,9 +15,8 @@ import timber.log.Timber
 
 class KakaoMapManager(
     private val mapView: MapView,
-    lifecycle: Lifecycle,
-) : MapManager,
-    DefaultLifecycleObserver {
+    private val lifecycle: Lifecycle,
+) : MapManager {
     private var kakaoMap: KakaoMap? = null
     private var drawer: KakaoMapDrawer? = null
     private val cameraController = KakaoMapCameraController(mapView.context)
@@ -40,12 +37,8 @@ class KakaoMapManager(
             return Scope(distance)
         }
 
-    init {
-        lifecycle.addObserver(this)
-    }
-
     override fun startMap(onMapReady: () -> Unit) {
-        KakaoMapLifecycleHandler(mapView).start { map: KakaoMap ->
+        KakaoMapLifecycleHandler(mapView, lifecycle).start { map: KakaoMap ->
             kakaoMap = map
             drawer = KakaoMapDrawer(mapView.context, map)
 
@@ -144,20 +137,5 @@ class KakaoMapManager(
         kakaoMap?.let { kakaoMap: KakaoMap ->
             kakaoMap.setPadding(left, top, right, bottom)
         } ?: Timber.w("kakaoMap is null")
-    }
-
-    override fun onResume(owner: LifecycleOwner) {
-        super.onResume(owner)
-        mapView.resume()
-    }
-
-    override fun onPause(owner: LifecycleOwner) {
-        super.onPause(owner)
-        mapView.pause()
-    }
-
-    override fun onDestroy(owner: LifecycleOwner) {
-        super.onDestroy(owner)
-        mapView.finish()
     }
 }
