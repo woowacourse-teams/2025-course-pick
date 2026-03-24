@@ -22,8 +22,6 @@ class KakaoMapManager(
     private val cameraController = KakaoMapCameraController(mapView.context)
     private val eventHandler = KakaoMapEventHandler()
 
-    private var courses: List<CourseItem> = emptyList()
-
     override val cameraCoordinate: Coordinate?
         get() = kakaoMap?.cameraPosition?.position?.toCoordinate()
 
@@ -55,12 +53,12 @@ class KakaoMapManager(
     }
 
     override fun draw(course: CourseItem) {
-        courses = listOf(course)
+        eventHandler.updateCourses(listOf(course))
         drawer?.drawCourse(course) ?: Timber.w("KakaoMapDrawer is null")
     }
 
     override fun draw(courses: List<CourseItem>) {
-        this.courses = courses
+        eventHandler.updateCourses(courses)
         drawer?.drawCourses(courses) ?: Timber.w("KakaoMapDrawer is null")
     }
 
@@ -68,7 +66,7 @@ class KakaoMapManager(
         route: List<Coordinate>,
         course: CourseItem,
     ) {
-        courses = listOf(course)
+        eventHandler.updateCourses(listOf(course))
         drawer?.drawRouteToCourse(route, course) ?: Timber.w("KakaoMapDrawer is null")
     }
 
@@ -102,7 +100,7 @@ class KakaoMapManager(
 
     override fun setOnCourseClickListener(onClick: (CourseItem) -> Unit) {
         kakaoMap?.let { kakaoMap: KakaoMap ->
-            eventHandler.setOnCourseClickListener(kakaoMap, courses) { course: CourseItem ->
+            eventHandler.setOnCourseClickListener(kakaoMap) { course: CourseItem ->
                 onClick(course)
             }
         } ?: Timber.w("kakaoMap is null")

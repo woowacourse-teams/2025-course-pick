@@ -173,6 +173,9 @@ class CoursesActivity :
                     ContextCompat.getColor(this, R.color.item_primary),
                 )
             }
+            mapManager.setOnCourseClickListener { course: CourseItem ->
+                viewModel.select(course)
+            }
             fetchInitialCourses()
         }
 
@@ -689,9 +692,6 @@ class CoursesActivity :
                     .filterIsInstance<CourseListItem.Course>()
                     .map(CourseListItem.Course::item)
             mapManager.draw(courses)
-            mapManager.setOnCourseClickListener { course: CourseItem ->
-                viewModel.select(course)
-            }
         }
 
         viewModel.content.observe(this) { content: CoursesContent ->
