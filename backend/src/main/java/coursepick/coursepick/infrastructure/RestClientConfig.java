@@ -23,6 +23,11 @@ public class RestClientConfig {
                 asd
                         asd
 
+                        asd
+                                asd
+                                asd
+                                        asd
+
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setConnectTimeout(Duration.ofSeconds(connectTimeoutSeconds));
         requestFactory.setReadTimeout(Duration.ofSeconds(readTimeoutSeconds));
