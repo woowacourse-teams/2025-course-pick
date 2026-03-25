@@ -1,4 +1,4 @@
-name: Android CD (Deploy to PlayStore directly)
+name: Android CD (Deploy to PlayStore as Internal Testing)
 
 on:
   # Github Action 탭에서 수동으로 실행
@@ -21,7 +21,7 @@ jobs:
     secrets: inherit
 
   deploy:
-    name: 플레이스토어 배포
+    name: 플레이스토어 내부 테스트 배포
     needs: ci
     runs-on: ubuntu-latest
     # Job에 권한을 부여하여 Google Cloud 인증 토큰을 발급받을 수 있도록 합니다.
