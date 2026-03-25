@@ -10,8 +10,8 @@ import io.coursepick.coursepick.presentation.map.kakao.KakaoMapManagerFactory
 
 @Module
 @InstallIn(ActivityComponent::class)
-interface MapModule {
+abstract class MapModule {
     @Binds
     @ActivityScoped
-    fun bindKakaoMapManagerFactory(implementation: KakaoMapManagerFactory): MapManagerFactory
+    abstract fun bindKakaoMapManagerFactory(implementation: KakaoMapManagerFactory): MapManagerFactory
 }
