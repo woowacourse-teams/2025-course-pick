@@ -19,16 +19,12 @@ import com.kakao.vectormap.KakaoMapSdk
 import dagger.hilt.android.AndroidEntryPoint
 import io.coursepick.coursepick.BuildConfig
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.presentation.CoursePickApplication
-import io.coursepick.coursepick.presentation.InstallationId
 import io.coursepick.coursepick.presentation.base.BaseActivity
 import io.coursepick.coursepick.presentation.course.CoursesActivity
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 
 @AndroidEntryPoint
 class LauncherActivity : BaseActivity() {
-    private val installationId: InstallationId by lazy { (application as CoursePickApplication).installationId }
-
     private val appUpdateManager: AppUpdateManager by lazy { AppUpdateManagerFactory.create(this) }
 
     private var currentUpdateType: Int = AppUpdateType.FLEXIBLE
