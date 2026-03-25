@@ -194,18 +194,6 @@ class CoursesActivity :
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        updateManager.onResume()
-    }
-
-    override fun onStop() {
-        super.onStop()
-
-        updateManager.onStop()
-    }
-
     override fun searchThisArea() {
         val coordinate = mapCoordinateOrNull() ?: return
         Logger.log(
