@@ -34,10 +34,10 @@ class CourseRepositoryTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @CsvSource({
-            "3000, 4",
-            "2500, 3",
-            "2300, 2",
-            "2000, 1",
+            "2000, 4",
+            "1800, 3",
+            "1600, 2",
+            "1300, 1",
     })
     void 거리를_줄여가면서_검색되는_코스_수가_줄어든다(int scope, int expectedSize) {
         var condition = new CourseFindCondition(mapLatitude, mapLongitude, scope, null, null, null);
