@@ -14,9 +14,14 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 class KakaoMapEventHandler {
+    private var courses: List<CourseItem> = listOf()
+
+    fun updateCourses(courses: List<CourseItem>) {
+        this.courses = courses
+    }
+
     fun setOnCourseClickListener(
         map: KakaoMap,
-        courses: List<CourseItem>,
         onClick: (CourseItem) -> Unit,
     ) {
         map.setOnMapClickListener { kakaoMap: KakaoMap, latLng: LatLng, target: PointF, poi: Poi ->

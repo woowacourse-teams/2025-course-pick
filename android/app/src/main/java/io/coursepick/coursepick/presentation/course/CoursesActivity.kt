@@ -57,8 +57,8 @@ import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
 import io.coursepick.coursepick.presentation.filter.CourseFilterBottomSheet
-import io.coursepick.coursepick.presentation.map.kakao.KakaoMapManager
-import io.coursepick.coursepick.presentation.map.kakao.toCoordinate
+import io.coursepick.coursepick.presentation.map.MapManager
+import io.coursepick.coursepick.presentation.map.MapManagerFactory
 import io.coursepick.coursepick.presentation.notice.NoticeDialog
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 import io.coursepick.coursepick.presentation.preference.PreferencesActivity
@@ -69,6 +69,7 @@ import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 import io.coursepick.coursepick.presentation.setting.SettingsScreen
 import io.coursepick.coursepick.presentation.ui.DoublePressDetector
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CoursesActivity :
@@ -80,8 +81,11 @@ class CoursesActivity :
     private val viewModel: CoursesViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(courseItemListener) }
     private val doublePressDetector = DoublePressDetector()
-    private val mapManager by lazy { KakaoMapManager(binding.mainMap) }
     private lateinit var updateManager: CoursePickUpdateManager
+
+    @Inject
+    lateinit var mapManagerFactory: MapManagerFactory
+    private val mapManager: MapManager by lazy { mapManagerFactory.create(binding.mapContainer) }
 
     private val locationPermissionLauncher: ActivityResultLauncher<Array<String>> =
         registerForActivityResult(
@@ -135,7 +139,7 @@ class CoursesActivity :
                         }
                         handleNavigation(course, location.coordinate, selectedApp)
                     } ?: run {
-                        mapManager.hideUserPosition()
+                        mapManager.hideUserLocation()
                         Toast
                             .makeText(
                                 this@CoursesActivity,
@@ -161,7 +165,7 @@ class CoursesActivity :
         setUpBottomSheet()
         setUpSettings()
 
-        mapManager.start {
+        mapManager.startMap {
             setUpObservers()
             setUpFlowCollector()
             setUpMapPadding()
@@ -172,6 +176,9 @@ class CoursesActivity :
                 binding.mainCurrentLocationButton.setColorFilter(
                     ContextCompat.getColor(this, R.color.item_primary),
                 )
+            }
+            mapManager.setOnCourseClickListener { course: CourseItem ->
+                viewModel.select(course)
             }
             fetchInitialCourses()
         }
@@ -195,26 +202,13 @@ class CoursesActivity :
     override fun onResume() {
         super.onResume()
 
-        mapManager.resume()
         updateManager.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-        mapManager.pause()
     }
 
     override fun onStop() {
         super.onStop()
 
         updateManager.onStop()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-        mapManager.finish()
     }
 
     override fun searchThisArea() {
@@ -225,7 +219,7 @@ class CoursesActivity :
             "longitude" to coordinate.longitude.value,
         )
         binding.mainSearchThisAreaButton.visibility = View.GONE
-        mapManager.drawSearchPosition(coordinate)
+        mapManager.drawSearchCoordinate(coordinate)
 
         fetchCourses(coordinate)
     }
@@ -259,8 +253,7 @@ class CoursesActivity :
     }
 
     private fun scopeOrNull(): Scope? {
-        val mapPosition: Coordinate = mapCoordinateOrNull() ?: return null
-        val scope: Scope? = mapManager.scopeOrNull(mapPosition)
+        val scope: Scope? = mapManager.scope
         if (scope == null) {
             Toast
                 .makeText(
@@ -273,7 +266,7 @@ class CoursesActivity :
     }
 
     private fun mapCoordinateOrNull(): Coordinate? {
-        return mapManager.cameraPosition?.toCoordinate() ?: run {
+        return mapManager.cameraCoordinate ?: run {
             Toast
                 .makeText(
                     this,
@@ -324,8 +317,8 @@ class CoursesActivity :
         val longitude = Longitude(longitudeValue)
         val coordinate = Coordinate(latitude, longitude)
 
-        mapManager.resetZoomLevel()
-        mapManager.drawSearchPosition(coordinate)
+        mapManager.resetZoom()
+        mapManager.drawSearchCoordinate(coordinate)
         mapManager.moveTo(coordinate)
         fetchCourses(coordinate)
     }
@@ -401,13 +394,13 @@ class CoursesActivity :
                     showFineLocationPermissionRationaleForCurrentLocation()
                 }
 
-                mapManager.drawUserPosition(location)
+                mapManager.drawUserLocation(location)
                 mapManager.moveTo(location.coordinate)
                 binding.mainCurrentLocationButton.setColorFilter(
                     ContextCompat.getColor(this@CoursesActivity, R.color.gray3),
                 )
             } ?: run {
-                mapManager.hideUserPosition()
+                mapManager.hideUserLocation()
                 Toast
                     .makeText(
                         this@CoursesActivity,
@@ -580,7 +573,7 @@ class CoursesActivity :
 
     private fun setUpMapPadding() {
         val bottomSheet = binding.mainBottomSheet
-        mapManager.setBottomPadding(binding.mainContent.height - bottomSheet.y.toInt())
+        mapManager.setPadding(bottom = binding.mainContent.height - bottomSheet.y.toInt())
     }
 
     private fun setUpBottomSheet() {
@@ -601,7 +594,7 @@ class CoursesActivity :
                     bottomSheet: View,
                     slideOffset: Float,
                 ) {
-                    mapManager.setBottomPadding(binding.mainContent.height - bottomSheet.y.toInt())
+                    mapManager.setPadding(bottom = binding.mainContent.height - bottomSheet.y.toInt())
                 }
             },
         )
@@ -639,11 +632,11 @@ class CoursesActivity :
                 lifecycleScope.launch {
                     viewModel.currentLocation()?.let { location: Location ->
                         val userCoordinate = location.coordinate
-                        mapManager.drawUserPosition(location)
+                        mapManager.drawUserLocation(location)
                         mapManager.moveTo(location.coordinate)
                         viewModel.fetchCourses(userCoordinate, userCoordinate, scope)
                     } ?: run {
-                        mapManager.hideUserPosition()
+                        mapManager.hideUserLocation()
                         val mapCoordinate: Coordinate = mapCoordinateOrNull() ?: return@run
                         viewModel.fetchCourses(mapCoordinate, null, scope)
                     }
@@ -661,10 +654,10 @@ class CoursesActivity :
 
         lifecycleScope.launch {
             viewModel.currentLocation()?.let { location: Location ->
-                mapManager.drawUserPosition(location)
+                mapManager.drawUserLocation(location)
                 viewModel.fetchCourses(targetCoordinate, location.coordinate, scope)
             } ?: run {
-                mapManager.hideUserPosition()
+                mapManager.hideUserLocation()
                 viewModel.fetchCourses(targetCoordinate, null, scope)
             }
         }
@@ -697,14 +690,11 @@ class CoursesActivity :
     private fun setUpStateObserver() {
         viewModel.state.observe(this) { state: CoursesUiState ->
             courseAdapter.submitList(state.courses)
-            mapManager.removeAllLines()
+            mapManager.removeAllRouteLines()
             val courses: List<CourseItem> =
                 state.courses
                     .filterIsInstance<CourseListItem.Course>()
                     .map(CourseListItem.Course::item)
-            mapManager.setOnCourseClickListener(courses) { course: CourseItem ->
-                viewModel.select(course)
-            }
             mapManager.draw(courses)
         }
 
@@ -742,7 +732,7 @@ class CoursesActivity :
                 }
 
                 is CoursesUiEvent.FetchRouteToCourseSuccess -> {
-                    mapManager.removeAllLines()
+                    mapManager.removeAllRouteLines()
                     mapManager.fitTo(event.route)
                     mapManager.draw(event.course)
                     mapManager.drawRouteToCourse(event.route, event.course)
@@ -800,7 +790,7 @@ class CoursesActivity :
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.locationUpdates.collect { location: Location? ->
-                    location?.let(mapManager::drawUserPosition) ?: run(mapManager::hideUserPosition)
+                    location?.let(mapManager::drawUserLocation) ?: run(mapManager::hideUserLocation)
                 }
             }
         }
