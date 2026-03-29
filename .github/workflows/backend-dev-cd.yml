@@ -2,7 +2,7 @@ name: Backend Dev Server CD
 
 on:
   push:
-    branches: [ main ]
+    branches: [ be-develop ]
     paths:
       - 'backend/**'
   workflow_dispatch:
