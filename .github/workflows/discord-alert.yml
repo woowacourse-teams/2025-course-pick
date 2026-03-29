@@ -6,6 +6,20 @@ on:
   pull_request_review:
     types: [ submitted ]
 
+env:
+  ID_MAP: |
+    {
+      "doabletuple": "@<295280090632028160>",
+      "dompoo": "@<354278903130357763>",
+      "kkiseug": "@<476402713111035904>",
+      "giovannijunseokim": "@<1000267441332555776>",
+      "wondroid-world": "@<1114787651422277723>",
+      "jhpark1227": "@<559277825710882841>",
+      "tobae-time": "@<1438454861439041647>",
+      "choizz156": "@<952791760055193631>",
+      "mmm307955": "@<1239952287850565642>"
+    }
+
 jobs:
   notify:
     name: 알림보내기
@@ -14,8 +28,6 @@ jobs:
       - name: GitHub ID와 Discord ID 매핑
         id: mapper
         shell: bash
-        env:
-          ID_MAP: ${{ secrets.DISCORD_ID_MAP }}
         run: |
           # 1. PR 생성은 팀 공지 성격이므로 항상 알림
           if [[ "${{ github.event.action }}" == "opened" || "${{ github.event.action }}" == "ready_for_review" ]]; then
@@ -49,7 +61,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          ID_MAP: ${{ secrets.DISCORD_ID_MAP }}
         run: |
           to_mention() {
             local discord_id
