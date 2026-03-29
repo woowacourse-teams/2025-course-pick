@@ -6,13 +6,7 @@ import coursepick.coursepick.domain.course.Course;
 import coursepick.coursepick.domain.course.CourseFindCondition;
 import coursepick.coursepick.domain.course.CourseName;
 import coursepick.coursepick.domain.course.CourseRepository;
-
-import java.time.LocalDateTime;
-
-import java.time.ZoneId;
-
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -27,7 +21,6 @@ import java.util.stream.StreamSupport;
 
 import static coursepick.coursepick.application.exception.ErrorType.QUERY_TIMEOUT;
 
-@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
@@ -56,8 +49,6 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
 
     @Override
     public Slice<Course> findAllHasDistanceWithin(CourseFindCondition condition) {
-        log.info("findAllHasDistanceWithin 메서드 시작");
-        log.info(LocalDateTime.now(ZoneId.of("Asia/Seoul")).toString());
         try {
             Query query = new Query().maxTimeMsec(5000);
 
@@ -71,10 +62,6 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
 
             boolean hasNext = result.size() > condition.pageSize();
             if (hasNext) result.removeLast();
-
-            log.info("result.removeLast() 수행 완료");
-            log.info(LocalDateTime.now(ZoneId.of("Asia/Seoul")).toString());
-
             return new SliceImpl<>(result, condition.pageable(), hasNext);
         } catch (MongoTimeoutException | MongoExecutionTimeoutException e) {
             throw QUERY_TIMEOUT.create();
