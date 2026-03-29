@@ -6,7 +6,7 @@ on:
   pull_request_review:
     types: [ submitted ]
   schedule:
-    - cron: '0 15 * * *'
+    - cron: '10 15 * * *'
 
 env:
   ID_MAP: |
