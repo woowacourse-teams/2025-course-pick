@@ -3,5 +3,5 @@ package io.coursepick.coursepick.presentation.map
 import android.view.ViewGroup
 
 interface MapManagerFactory {
-    fun create(container: ViewGroup): MapManager
+    suspend fun create(container: ViewGroup): MapManager
 }
