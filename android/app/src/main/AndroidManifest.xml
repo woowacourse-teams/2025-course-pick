@@ -19,6 +19,11 @@
         android:theme="@style/Theme.CoursePick"
         android:usesCleartextTraffic="true"
         tools:ignore="DiscouragedApi,LockedOrientationActivity">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${GOOGLE_MAPS_API_KEY}" />
+
         <activity
             android:name=".presentation.launcher.LauncherActivity"
             android:exported="true"
