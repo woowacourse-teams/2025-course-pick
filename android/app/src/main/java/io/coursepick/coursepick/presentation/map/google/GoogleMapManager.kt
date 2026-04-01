@@ -15,6 +15,9 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.gms.maps.model.StrokeStyle
+import com.google.android.gms.maps.model.StyleSpan
+import com.google.android.gms.maps.model.TextureStyle
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Scope
@@ -60,12 +63,35 @@ class GoogleMapManager(
     }
 
     private fun drawCourse(course: CourseItem) {
+        val polylineOptions =
+            PolylineOptions()
+                .add(*course.coordinates.map(Coordinate::toLatLng).toTypedArray())
+                .clickable(true)
+
+        if (course.selected) {
+            polylineOptions
+                .width(context.resources.getDimension(R.dimen.selected_course_width))
+                .addSpan(
+                    StyleSpan(
+                        StrokeStyle
+                            .colorBuilder(context.getColor(R.color.course_selected))
+                            .stamp(
+                                TextureStyle
+                                    .newBuilder(BitmapDescriptorFactory.fromResource(R.drawable.image_arrow))
+                                    .build(),
+                            ).build(),
+                    ),
+                ).zIndex(SELECTED_COURSE_Z_INDEX)
+        } else {
+            polylineOptions
+                .width(context.resources.getDimension(R.dimen.unselected_course_width))
+                .color(context.getColor(R.color.course_unselected))
+                .zIndex(UNSELECTED_COURSE_Z_INDEX)
+        }
+
         map
-            .addPolyline(
-                PolylineOptions()
-                    .add(*course.coordinates.map(Coordinate::toLatLng).toTypedArray())
-                    .clickable(true),
-            ).apply { tag = course }
+            .addPolyline(polylineOptions)
+            .apply { tag = course }
             .also(polylines::add)
     }
 
@@ -87,7 +113,9 @@ class GoogleMapManager(
         map
             .addPolyline(
                 PolylineOptions()
-                    .add(*course.coordinates.map(Coordinate::toLatLng).toTypedArray()),
+                    .add(*course.coordinates.map(Coordinate::toLatLng).toTypedArray())
+                    .width(context.resources.getDimension(R.dimen.course_route_width))
+                    .color(context.getColor(R.color.course_route)),
             ).also(polylines::add)
         draw(course)
     }
@@ -243,5 +271,7 @@ class GoogleMapManager(
         private const val DEFAULT_LONGITUDE = 127.1026170
         private val DEFAULT_LATLNG = LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
         private const val DEFAULT_ZOOM_LEVEL = 15F
+        private const val SELECTED_COURSE_Z_INDEX = 1F
+        private const val UNSELECTED_COURSE_Z_INDEX = 0F
     }
 }
