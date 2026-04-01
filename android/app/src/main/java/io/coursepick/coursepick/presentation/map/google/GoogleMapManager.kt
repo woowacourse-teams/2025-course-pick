@@ -2,7 +2,10 @@ package io.coursepick.coursepick.presentation.map.google
 
 import android.animation.ValueAnimator
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.graphics.Point
+import androidx.annotation.DrawableRes
+import coil3.Bitmap
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -43,6 +46,13 @@ class GoogleMapManager(
             val distance = DistanceCalculator.distance(center, topLeft) ?: return null
             return Scope(distance)
         }
+
+    private val fineUserLocationImage by lazy {
+        scaleDrawable(R.drawable.image_current_location, 0.5F)
+    }
+    private val searchCoordinateImage by lazy {
+        scaleDrawable(R.drawable.image_search_location, 0.5F)
+    }
 
     private val polylines = mutableListOf<Polyline>()
     private var searchCoordinateMarker: Marker? = null
@@ -131,7 +141,7 @@ class GoogleMapManager(
             searchCoordinateMarker =
                 map.addMarker(
                     MarkerOptions()
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.image_search_location))
+                        .icon(BitmapDescriptorFactory.fromBitmap(searchCoordinateImage))
                         .position(map.cameraPosition.target)
                         .anchor(0.5F, 1F),
                 )
@@ -143,23 +153,6 @@ class GoogleMapManager(
             is Location.Fine -> drawFineUserLocation(location)
             is Location.Coarse -> drawCoarseUserLocation(location)
         }
-    }
-
-    private fun animateLatLng(
-        start: LatLng,
-        end: LatLng,
-        duration: Long,
-        onChange: (latLng: LatLng) -> Unit,
-    ) {
-        val valueAnimator = ValueAnimator.ofFloat(0F, 1F).setDuration(duration)
-        valueAnimator.addUpdateListener { animator: ValueAnimator ->
-            val latitude =
-                (end.latitude - start.latitude) * animator.animatedFraction + start.latitude
-            val longitude =
-                (end.longitude - start.longitude) * animator.animatedFraction + start.longitude
-            onChange(LatLng(latitude, longitude))
-        }
-        valueAnimator.start()
     }
 
     private fun drawFineUserLocation(location: Location.Fine) {
@@ -175,7 +168,7 @@ class GoogleMapManager(
             fineUserLocationMarker =
                 map.addMarker(
                     MarkerOptions()
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.image_current_location))
+                        .icon(BitmapDescriptorFactory.fromBitmap(fineUserLocationImage))
                         .position(location.coordinate.toLatLng())
                         .anchor(0.5F, 0.5F),
                 )
@@ -263,6 +256,36 @@ class GoogleMapManager(
         bottom: Int,
     ) {
         map.setPadding(left, top, right, bottom)
+    }
+
+    private fun animateLatLng(
+        start: LatLng,
+        end: LatLng,
+        duration: Long,
+        onChange: (latLng: LatLng) -> Unit,
+    ) {
+        val valueAnimator = ValueAnimator.ofFloat(0F, 1F).setDuration(duration)
+        valueAnimator.addUpdateListener { animator: ValueAnimator ->
+            val latitude =
+                (end.latitude - start.latitude) * animator.animatedFraction + start.latitude
+            val longitude =
+                (end.longitude - start.longitude) * animator.animatedFraction + start.longitude
+            onChange(LatLng(latitude, longitude))
+        }
+        valueAnimator.start()
+    }
+
+    private fun scaleDrawable(
+        @DrawableRes id: Int,
+        scale: Float,
+    ): Bitmap {
+        val original = BitmapFactory.decodeResource(context.resources, id)
+        return Bitmap.createScaledBitmap(
+            original,
+            (original.width * scale).toInt(),
+            (original.height * scale).toInt(),
+            true,
+        )
     }
 
     companion object {
