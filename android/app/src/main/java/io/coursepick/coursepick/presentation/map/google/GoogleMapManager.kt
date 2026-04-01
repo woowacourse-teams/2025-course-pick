@@ -189,7 +189,7 @@ class GoogleMapManager(
     }
 
     override fun fitTo(coordinates: List<Coordinate>) {
-        map.moveCamera(
+        map.animateCamera(
             CameraUpdateFactory.newLatLngBounds(
                 LatLngBounds
                     .builder()
@@ -197,6 +197,8 @@ class GoogleMapManager(
                     .build(),
                 100,
             ),
+            MOVE_ANIMATION_DURATION_MS.toInt(),
+            null,
         )
     }
 
@@ -215,7 +217,11 @@ class GoogleMapManager(
     }
 
     override fun moveTo(coordinate: Coordinate) {
-        map.moveCamera(CameraUpdateFactory.newLatLng(coordinate.toLatLng()))
+        map.animateCamera(
+            CameraUpdateFactory.newLatLng(coordinate.toLatLng()),
+            MOVE_ANIMATION_DURATION_MS.toInt(),
+            null,
+        )
     }
 
     override fun resetZoom() {
