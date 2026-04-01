@@ -216,7 +216,7 @@ class GoogleMapManager(
                     .builder()
                     .apply { coordinates.map(Coordinate::toLatLng).forEach(::include) }
                     .build(),
-                100,
+                context.resources.getDimensionPixelSize(R.dimen.course_route_padding),
             ),
             MOVE_ANIMATION_DURATION_MS.toInt(),
             null,
