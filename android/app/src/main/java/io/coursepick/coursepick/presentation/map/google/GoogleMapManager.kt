@@ -15,17 +15,21 @@ import io.coursepick.coursepick.presentation.map.MapManager
 class GoogleMapManager(
     private val map: GoogleMap,
 ) : MapManager {
-    override val cameraCoordinate: Coordinate
-        get() = Coordinate(Latitude(0.0), Longitude(0.0))
-    override val scope: Scope
-        get() = Scope(0)
+    override val cameraCoordinate: Coordinate get() = map.cameraPosition.target.toCoordinate()
+    override val scope: Scope get() = Scope(1000)
 
     override fun startMap(onMapReady: () -> Unit) {
         map.moveCamera(
             CameraUpdateFactory.newCameraPosition(
-                CameraPosition.builder().target(DEFAULT_LATLNG).build(),
+                CameraPosition
+                    .builder()
+                    .target(DEFAULT_LATLNG)
+                    .zoom(15f)
+                    .build(),
             ),
         )
+
+        onMapReady()
     }
 
     override fun draw(course: CourseItem) {
