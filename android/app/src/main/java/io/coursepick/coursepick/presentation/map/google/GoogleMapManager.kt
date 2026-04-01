@@ -214,6 +214,7 @@ class GoogleMapManager(
         right: Int,
         bottom: Int,
     ) {
+        map.setPadding(left, top, right, bottom)
     }
 
     companion object {
