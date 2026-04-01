@@ -29,6 +29,7 @@ class GoogleMapManager(
     override val scope: Scope get() = Scope(1000)
 
     private val polylines = mutableListOf<Polyline>()
+    private var searchCoordinateMarker: Marker? = null
     private var fineUserLocationMarker: Marker? = null
     private var coarseUserLocationMarker: Circle? = null
 
@@ -84,11 +85,16 @@ class GoogleMapManager(
     }
 
     override fun drawSearchCoordinate(coordinate: Coordinate) {
-        map.addMarker(
-            MarkerOptions()
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.image_search_location))
-                .position(map.cameraPosition.target),
-        )
+        searchCoordinateMarker?.let { marker: Marker ->
+            marker.position = coordinate.toLatLng()
+        } ?: run {
+            searchCoordinateMarker =
+                map.addMarker(
+                    MarkerOptions()
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.image_search_location))
+                        .position(map.cameraPosition.target),
+                )
+        }
     }
 
     override fun drawUserLocation(location: Location) {
