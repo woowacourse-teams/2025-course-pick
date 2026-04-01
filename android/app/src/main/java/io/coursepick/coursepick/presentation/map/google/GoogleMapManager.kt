@@ -123,11 +123,11 @@ class GoogleMapManager(
         map
             .addPolyline(
                 PolylineOptions()
-                    .add(*course.coordinates.map(Coordinate::toLatLng).toTypedArray())
+                    .add(*route.map(Coordinate::toLatLng).toTypedArray())
                     .width(context.resources.getDimension(R.dimen.course_route_width))
                     .color(context.getColor(R.color.course_route)),
             ).also(polylines::add)
-        draw(course)
+        drawCourse(course)
     }
 
     override fun removeAllRouteLines() {
