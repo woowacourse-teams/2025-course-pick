@@ -2,6 +2,7 @@ package io.coursepick.coursepick.presentation.map.google
 
 import android.animation.ValueAnimator
 import android.content.Context
+import android.graphics.Point
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -19,6 +20,7 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.map.DistanceCalculator
 import io.coursepick.coursepick.presentation.map.MapManager
 
 class GoogleMapManager(
@@ -26,7 +28,18 @@ class GoogleMapManager(
     private val context: Context,
 ) : MapManager {
     override val cameraCoordinate: Coordinate get() = map.cameraPosition.target.toCoordinate()
-    override val scope: Scope get() = Scope(1000)
+    override val scope: Scope?
+        get() {
+            map.projection.fromScreenLocation(Point(0, 0))
+            val center =
+                map.projection.visibleRegion.latLngBounds.center
+                    .toCoordinate()
+            val topLeft =
+                map.projection.visibleRegion.farLeft
+                    .toCoordinate()
+            val distance = DistanceCalculator.distance(center, topLeft) ?: return null
+            return Scope(distance)
+        }
 
     private val polylines = mutableListOf<Polyline>()
     private var searchCoordinateMarker: Marker? = null
@@ -43,7 +56,6 @@ class GoogleMapManager(
                     .build(),
             ),
         )
-
         onMapReady()
     }
 
