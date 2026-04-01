@@ -39,7 +39,7 @@ class GoogleMapManager(
                 CameraPosition
                     .builder()
                     .target(DEFAULT_LATLNG)
-                    .zoom(15f)
+                    .zoom(DEFAULT_ZOOM_LEVEL)
                     .build(),
             ),
         )
@@ -205,6 +205,7 @@ class GoogleMapManager(
     }
 
     override fun resetZoom() {
+        map.moveCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM_LEVEL))
     }
 
     override fun setPadding(
@@ -220,5 +221,6 @@ class GoogleMapManager(
         private const val DEFAULT_LATITUDE = 37.5100226
         private const val DEFAULT_LONGITUDE = 127.1026170
         private val DEFAULT_LATLNG = LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
+        private const val DEFAULT_ZOOM_LEVEL = 15F
     }
 }
