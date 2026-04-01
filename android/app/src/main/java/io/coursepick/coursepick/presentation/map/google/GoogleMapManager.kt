@@ -92,7 +92,8 @@ class GoogleMapManager(
                 map.addMarker(
                     MarkerOptions()
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.image_search_location))
-                        .position(map.cameraPosition.target),
+                        .position(map.cameraPosition.target)
+                        .anchor(0.5F, 1F),
                 )
         }
     }
@@ -135,7 +136,8 @@ class GoogleMapManager(
                 map.addMarker(
                     MarkerOptions()
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.image_current_location))
-                        .position(location.coordinate.toLatLng()),
+                        .position(location.coordinate.toLatLng())
+                        .anchor(0.5F, 0.5F),
                 )
         }
     }
