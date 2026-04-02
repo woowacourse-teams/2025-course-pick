@@ -151,6 +151,7 @@ class GoogleMapManager(
 
     override fun removeAllRouteLines() {
         polylines.forEach(Polyline::remove)
+        polylines.clear()
     }
 
     override fun drawSearchCoordinate(coordinate: Coordinate) {
@@ -222,10 +223,12 @@ class GoogleMapManager(
 
     private fun hideFineUserLocation() {
         fineUserLocationMarker?.remove()
+        fineUserLocationMarker = null
     }
 
     private fun hideCoarseUserLocation() {
         coarseUserLocationCircle?.remove()
+        coarseUserLocationCircle = null
     }
 
     override fun fitTo(coordinates: List<Coordinate>) {
