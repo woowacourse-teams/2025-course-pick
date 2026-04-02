@@ -60,6 +60,7 @@ class GoogleMapManager(
     private var coarseUserLocationMarker: Circle? = null
 
     override fun startMap(onMapReady: () -> Unit) {
+        map.uiSettings.isCompassEnabled = false
         map.moveCamera(
             CameraUpdateFactory.newCameraPosition(
                 CameraPosition
@@ -69,6 +70,7 @@ class GoogleMapManager(
                     .build(),
             ),
         )
+
         onMapReady()
     }
 
