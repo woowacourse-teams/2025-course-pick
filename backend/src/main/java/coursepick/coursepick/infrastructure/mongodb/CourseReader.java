@@ -13,19 +13,32 @@ public class CourseReader implements Converter<Document, Course> {
 
     @Override
     public Course convert(Document source) {
+        List<Coordinate> coordinates = parseCoordinates(source.get("coordinates", Document.class));
+        List<Coordinate> simplifiedCoordinates;
+
+        if (source.containsKey("simplifiedCoordinates")) {
+            simplifiedCoordinates = parseCoordinates(source.get("simplifiedCoordinates", Document.class));
+        } else {
+            simplifiedCoordinates = coordinates; // Or use Course.simplifyCoordinates logic
+        }
+
         return new Course(
                 source.getObjectId("_id").toHexString(),
                 new CourseName(source.getString("name")),
-                parseCoordinates(source.get("coordinates", Document.class)),
+                coordinates,
+                simplifiedCoordinates,
                 new Meter(source.getDouble("length"))
         );
     }
 
     public List<Coordinate> parseCoordinates(Document source) {
-        List<List<Double>> coordinatesData = (List<List<Double>>) source.get("coordinates");
+        List<List<Object>> coordinatesData = (List<List<Object>>) source.get("coordinates");
 
         return coordinatesData.stream()
-                .map(coordinateData -> new Coordinate(coordinateData.get(1), coordinateData.get(0)))
+                .map(coordinateData -> new Coordinate(
+                        ((Number) coordinateData.get(1)).doubleValue(),
+                        ((Number) coordinateData.get(0)).doubleValue()
+                ))
                 .toList();
     }
 }

@@ -4,10 +4,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -21,9 +17,6 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        log.info("doFilterInternal 요청 시작");
-        log.info(LocalDateTime.now(ZoneId.of("Asia/Seoul")).toString());
-
         ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
 
         long startTime = System.currentTimeMillis();
@@ -32,10 +25,6 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
 
         if (!request.getRequestURI().startsWith("/actuator")) {
             log.info("[HTTP]", LogContent.http(requestWrapper, response, duration));
-
-            log.info("응답 완료");
-            log.info(LocalDateTime.now(ZoneId.of("Asia/Seoul")).toString());
-
         }
     }
 }
