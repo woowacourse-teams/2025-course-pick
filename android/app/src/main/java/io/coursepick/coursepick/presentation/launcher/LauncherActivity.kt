@@ -86,7 +86,7 @@ class LauncherActivity : AppCompatActivity() {
         KakaoSdk.init(applicationContext, BuildConfig.KAKAO_NATIVE_APP_KEY)
         CoursePickPreferences.init(applicationContext)
 
-        startActivity(Intent(applicationContext, CoursesActivity::class.java))
+        startActivity(Intent(this, CoursesActivity::class.java))
         finish()
     }
 

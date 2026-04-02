@@ -23,8 +23,8 @@ class CoursePickApplication : Application() {
         val analyticsServices: List<AnalyticsService> =
             listOf(
                 FirebaseAnalyticsService(installationId),
-                AmplitudeAnalyticsService(applicationContext, installationId),
-                MixpanelAnalyticsService(applicationContext, installationId),
+                AmplitudeAnalyticsService(this, installationId),
+                MixpanelAnalyticsService(this, installationId),
             )
         Logger.init(analyticsServices)
         if (BuildConfig.DEBUG) {
