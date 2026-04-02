@@ -58,7 +58,7 @@ class GoogleMapManager(
     private val polylines = mutableListOf<Polyline>()
     private var searchCoordinateMarker: Marker? = null
     private var fineUserLocationMarker: Marker? = null
-    private var coarseUserLocationMarker: Circle? = null
+    private var coarseUserLocationCircle: Circle? = null
 
     override fun startMap(onMapReady: () -> Unit) {
         map.setMapStyle(MapStyleOptions.loadRawResourceStyle(context, R.raw.google_map_style))
@@ -197,14 +197,14 @@ class GoogleMapManager(
     private fun drawCoarseUserLocation(location: Location.Coarse) {
         hideFineUserLocation()
 
-        coarseUserLocationMarker?.let { marker: Circle ->
+        coarseUserLocationCircle?.let { marker: Circle ->
             animateLatLng(
                 start = marker.center,
                 end = location.coordinate.toLatLng(),
                 duration = MOVE_ANIMATION_DURATION_MS,
             ) { latLng: LatLng -> marker.center = latLng }
         } ?: run {
-            coarseUserLocationMarker =
+            coarseUserLocationCircle =
                 map.addCircle(
                     CircleOptions()
                         .center(location.coordinate.toLatLng())
@@ -225,7 +225,7 @@ class GoogleMapManager(
     }
 
     private fun hideCoarseUserLocation() {
-        coarseUserLocationMarker?.remove()
+        coarseUserLocationCircle?.remove()
     }
 
     override fun fitTo(coordinates: List<Coordinate>) {
