@@ -71,7 +71,7 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
     private static void addPositionAndScopeCriteria(CourseFindCondition condition, Query query) {
         GeoJsonPoint point = new GeoJsonPoint(condition.mapPosition().longitude(), condition.mapPosition().latitude());
 
-        Criteria criteria = Criteria.where("coordinates")
+        Criteria criteria = Criteria.where("simplifiedCoordinates")
                 .nearSphere(point)
                 .maxDistance(condition.scope().value());
 
