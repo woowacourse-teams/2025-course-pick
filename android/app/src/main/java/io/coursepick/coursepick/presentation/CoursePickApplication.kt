@@ -58,8 +58,7 @@ class CoursePickApplication : Application() {
                     Logger.log(Logger.Event.Pause(activity.javaClass.simpleName))
                 }
 
-                override fun onActivityStopped(activity: Activity) {
-                }
+                override fun onActivityStopped(activity: Activity) = Unit
 
                 override fun onActivitySaveInstanceState(
                     activity: Activity,
