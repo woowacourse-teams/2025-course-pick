@@ -68,60 +68,6 @@ public class CoordinateBuilder {
         return new CoordinateBuilder(smoothCoordinates);
     }
 
-    /**
-     * Douglas-Peucker 알고리즘을 사용하여 경로를 단순화합니다.
-     * <br>
-     * 오차 범위(tolerance) 내에 있는 점들을 제거하여 꼭짓점 수를 줄입니다.
-     */
-    public CoordinateBuilder simplify(Meter tolerance) {
-        if (coordinates.size() <= 2) {
-            return this;
-        }
-
-        boolean[] kept = new boolean[coordinates.size()];
-        kept[0] = true;
-        kept[coordinates.size() - 1] = true;
-
-        simplifyRecursive(0, coordinates.size() - 1, tolerance, kept);
-
-        List<Coordinate> simplified = new ArrayList<>();
-        for (int i = 0; i < coordinates.size(); i++) {
-            if (kept[i]) {
-                simplified.add(coordinates.get(i));
-            }
-        }
-
-        return new CoordinateBuilder(simplified);
-    }
-
-    private void simplifyRecursive(int first, int last, Meter tolerance, boolean[] kept) {
-        if (first + 1 >= last) {
-            return;
-        }
-
-        double maxDistance = -1.0;
-        int maxIndex = -1;
-
-        GeoLine line = GeoLine.between(coordinates.get(first), coordinates.get(last));
-
-        for (int i = first + 1; i < last; i++) {
-            Coordinate target = coordinates.get(i);
-            Coordinate closest = line.closestCoordinateFrom(target);
-            double distance = GeoLine.between(target, closest).length().value();
-
-            if (distance > maxDistance) {
-                maxDistance = distance;
-                maxIndex = i;
-            }
-        }
-
-        if (maxDistance > tolerance.value()) {
-            kept[maxIndex] = true;
-            simplifyRecursive(first, maxIndex, tolerance, kept);
-            simplifyRecursive(maxIndex, last, tolerance, kept);
-        }
-    }
-
     public List<Coordinate> build() {
         return Collections.unmodifiableList(coordinates);
     }

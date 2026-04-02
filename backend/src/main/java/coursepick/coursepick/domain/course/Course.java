@@ -25,10 +25,8 @@ public class Course {
     @Indexed(name = "idx_name", unique = true)
     private CourseName name;
 
+    @GeoSpatialIndexed(name = "idx_geo_coordinates", type = GeoSpatialIndexType.GEO_2DSPHERE)
     private List<Coordinate> coordinates;
-
-    @GeoSpatialIndexed(name = "idx_geo_simplified_coordinates", type = GeoSpatialIndexType.GEO_2DSPHERE)
-    private List<Coordinate> simplifiedCoordinates;
 
     private Meter length;
 
@@ -36,7 +34,6 @@ public class Course {
         this.id = id;
         this.name = new CourseName(name);
         this.coordinates = refineCoordinates(rawCoordinates);
-        this.simplifiedCoordinates = simplifyCoordinates(this.coordinates);
         this.length = calculateLength(coordinates);
     }
 
@@ -44,12 +41,6 @@ public class Course {
         return CoordinateBuilder.fromRawCoordinates(rawCoordinates)
                 .removeSimilar()
                 .smooth()
-                .build();
-    }
-
-    private List<Coordinate> simplifyCoordinates(List<Coordinate> coordinates) {
-        return CoordinateBuilder.fromRawCoordinates(coordinates)
-                .simplify(new Meter(10))
                 .build();
     }
 
@@ -86,7 +77,6 @@ public class Course {
 
     public void changeCoordinates(List<Coordinate> coordinates) {
         this.coordinates = refineCoordinates(coordinates);
-        this.simplifiedCoordinates = simplifyCoordinates(this.coordinates);
         this.length = calculateLength(this.coordinates);
     }
 
