@@ -87,7 +87,6 @@ class GoogleMapManager(
                     .zIndex(SELECTED_COURSE_Z_INDEX)
             map
                 .addPolyline(selectedCourseOptions)
-                .apply { tag = course }
                 .also(polylines::add)
 
             val selectedCourseOverlayOptions: PolylineOptions =
