@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.presentation.map.MapManager
@@ -17,15 +16,7 @@ import kotlin.coroutines.resume
 
 class GoogleMapManagerFactory
     @Inject
-    constructor() :
-    MapManagerFactory,
-        OnMapReadyCallback {
-        private lateinit var map: GoogleMap
-
-        override fun onMapReady(map: GoogleMap) {
-            this.map = map
-        }
-
+    constructor() : MapManagerFactory {
         override suspend fun create(container: ViewGroup): MapManager =
             suspendCancellableCoroutine { continuation: CancellableContinuation<MapManager> ->
                 val view: View =
