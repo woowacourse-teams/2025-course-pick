@@ -20,6 +20,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.livedata.observeAsState
@@ -50,8 +51,8 @@ import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.DataKeys
+import io.coursepick.coursepick.presentation.InstallStateObserver
 import io.coursepick.coursepick.presentation.Logger
-import io.coursepick.coursepick.presentation.base.BaseActivity
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
@@ -72,7 +73,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class CoursesActivity :
-    BaseActivity(),
+    AppCompatActivity(),
     CoursesAction {
     private val coursePickApplication by lazy { application as CoursePickApplication }
     private var searchLauncher: ActivityResultLauncher<Intent>? = null
@@ -148,6 +149,10 @@ class CoursesActivity :
                 }
             }
         }
+
+    init {
+        lifecycle.addObserver(InstallStateObserver(this))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setUpFragmentFactory()

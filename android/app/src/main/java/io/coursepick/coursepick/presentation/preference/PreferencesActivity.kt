@@ -3,12 +3,17 @@ package io.coursepick.coursepick.presentation.preference
 import android.os.Bundle
 import android.view.View
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.presentation.base.BaseActivity
+import io.coursepick.coursepick.presentation.InstallStateObserver
 
-class PreferencesActivity : BaseActivity() {
+class PreferencesActivity : AppCompatActivity() {
+    init {
+        lifecycle.addObserver(InstallStateObserver(this))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

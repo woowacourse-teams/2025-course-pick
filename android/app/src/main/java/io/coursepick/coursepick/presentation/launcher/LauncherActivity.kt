@@ -7,6 +7,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -19,12 +20,12 @@ import com.kakao.vectormap.KakaoMapSdk
 import dagger.hilt.android.AndroidEntryPoint
 import io.coursepick.coursepick.BuildConfig
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.presentation.base.BaseActivity
+import io.coursepick.coursepick.presentation.InstallStateObserver
 import io.coursepick.coursepick.presentation.course.CoursesActivity
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 
 @AndroidEntryPoint
-class LauncherActivity : BaseActivity() {
+class LauncherActivity : AppCompatActivity() {
     private val appUpdateManager: AppUpdateManager by lazy { AppUpdateManagerFactory.create(this) }
 
     private var currentUpdateType: Int = AppUpdateType.FLEXIBLE
@@ -59,6 +60,10 @@ class LauncherActivity : BaseActivity() {
                 }
             }
         }
+
+    init {
+        lifecycle.addObserver(InstallStateObserver(this))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen().setKeepOnScreenCondition { true }
