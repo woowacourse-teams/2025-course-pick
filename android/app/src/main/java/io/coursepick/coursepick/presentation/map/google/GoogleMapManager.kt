@@ -75,36 +75,52 @@ class GoogleMapManager(
     }
 
     private fun drawCourse(course: CourseItem) {
-        val polylineOptions =
+        val baseOptions =
             PolylineOptions()
                 .add(*course.coordinates.map(Coordinate::toLatLng).toTypedArray())
-                .clickable(true)
 
         if (course.selected) {
-            polylineOptions
-                .width(context.resources.getDimension(R.dimen.selected_course_width))
-                .addSpan(
-                    StyleSpan(
-                        StrokeStyle
-                            .colorBuilder(context.getColor(R.color.course_selected))
-                            .stamp(
-                                TextureStyle
-                                    .newBuilder(BitmapDescriptorFactory.fromResource(R.drawable.image_arrow))
-                                    .build(),
-                            ).build(),
-                    ),
-                ).zIndex(SELECTED_COURSE_Z_INDEX)
-        } else {
-            polylineOptions
-                .width(context.resources.getDimension(R.dimen.unselected_course_width))
-                .color(context.getColor(R.color.course_unselected))
-                .zIndex(UNSELECTED_COURSE_Z_INDEX)
-        }
+            val selectedCourseOptions: PolylineOptions =
+                baseOptions
+                    .color(context.getColor(R.color.course_selected))
+                    .width(context.resources.getDimension(R.dimen.selected_course_width))
+                    .zIndex(SELECTED_COURSE_Z_INDEX)
+            map
+                .addPolyline(selectedCourseOptions)
+                .apply { tag = course }
+                .also(polylines::add)
 
-        map
-            .addPolyline(polylineOptions)
-            .apply { tag = course }
-            .also(polylines::add)
+            val selectedCourseOverlayOptions: PolylineOptions =
+                baseOptions
+                    .width(context.resources.getDimension(R.dimen.selected_course_width) * 1.5F)
+                    .addSpan(
+                        StyleSpan(
+                            StrokeStyle
+                                .transparentColorBuilder()
+                                .stamp(
+                                    TextureStyle
+                                        .newBuilder(BitmapDescriptorFactory.fromResource(R.drawable.image_arrow))
+                                        .build(),
+                                ).build(),
+                        ),
+                    ).zIndex(SELECTED_COURSE_Z_INDEX)
+                    .clickable(true)
+            map
+                .addPolyline(selectedCourseOverlayOptions)
+                .apply { tag = course }
+                .also(polylines::add)
+        } else {
+            val unselectedCourseOptions: PolylineOptions =
+                baseOptions
+                    .color(context.getColor(R.color.course_unselected))
+                    .width(context.resources.getDimension(R.dimen.unselected_course_width))
+                    .zIndex(UNSELECTED_COURSE_Z_INDEX)
+                    .clickable(true)
+            map
+                .addPolyline(unselectedCourseOptions)
+                .apply { tag = course }
+                .also(polylines::add)
+        }
     }
 
     override fun draw(course: CourseItem) {
