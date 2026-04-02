@@ -14,6 +14,7 @@ import com.google.android.gms.maps.model.Circle
 import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.Polyline
@@ -60,6 +61,7 @@ class GoogleMapManager(
     private var coarseUserLocationMarker: Circle? = null
 
     override fun startMap(onMapReady: () -> Unit) {
+        map.setMapStyle(MapStyleOptions.loadRawResourceStyle(context, R.raw.google_map_style))
         map.uiSettings.isCompassEnabled = false
         map.moveCamera(
             CameraUpdateFactory.newCameraPosition(
