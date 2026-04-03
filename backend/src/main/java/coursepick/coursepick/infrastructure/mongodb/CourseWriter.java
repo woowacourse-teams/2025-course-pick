@@ -1,0 +1,65 @@
+package coursepick.coursepick.infrastructure.mongodb;
+
+import coursepick.coursepick.domain.course.Coordinate;
+import coursepick.coursepick.domain.course.Course;
+
+import coursepick.coursepick.infrastructure.compressor.DataCompressor;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import lombok.RequiredArgsConstructor;
+import org.bson.Document;
+import org.bson.types.ObjectId;
+import org.springframework.core.convert.converter.Converter;
+
+@RequiredArgsConstructor
+public class CourseWriter implements Converter<Course, Document> {
+
+    private final DataCompressor dataCompressor;
+
+    @Override
+    public Document convert(Course source) {
+        Document document = new Document();
+        if (source.id() != null && !source.id().isBlank()) {
+            document.put("_id", new ObjectId(source.id()));
+        }
+        document.put("name", source.name().value());
+
+        Document rawCoordinatesDoc = convertCoordinatesToCompressedData(source.coordinates());
+        document.put("coordinates", rawCoordinatesDoc);
+
+        document.put("simplifiedCoordinates", convertCoordinatesToGeoJson(source.simplifiedCoordinates()));
+
+        document.put("length", source.length().value());
+        document.put("schemaVersion", 1);
+        return document;
+    }
+
+    private String convertCoordinatesToJson(List<Coordinate> coordinates) {
+        return coordinates.stream()
+                .map(c -> "[" + c.longitude() + "," + c.latitude() + "]")
+                .collect(Collectors.joining(",", "[", "]"));
+    }
+
+    private Document convertCoordinatesToCompressedData(List<Coordinate> coordinates) {
+        String jsonCoordinates = convertCoordinatesToJson(coordinates);
+
+        Document rawCoordinatesDoc = new Document();
+        rawCoordinatesDoc.put("zip_coordinates", dataCompressor.compress(jsonCoordinates));
+        rawCoordinatesDoc.put("zip_size", jsonCoordinates.getBytes(java.nio.charset.StandardCharsets.UTF_8).length);
+        return rawCoordinatesDoc;
+    }
+
+    private Document convertCoordinatesToGeoJson(List<Coordinate> coordinates) {
+        List<List<Double>> coordinatesData = coordinates.stream()
+                .map(coordinate -> List.of(coordinate.longitude(), coordinate.latitude()))
+                .toList();
+
+        Document document = new Document();
+        document.put("type", "LineString");
+        document.put("coordinates", coordinatesData);
+
+        return document;
+    }
+}
