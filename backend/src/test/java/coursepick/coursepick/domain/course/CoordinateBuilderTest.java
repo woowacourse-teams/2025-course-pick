@@ -1,6 +1,5 @@
 package coursepick.coursepick.domain.course;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -10,9 +9,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CoordinateBuilderTest {
 
     @Test
-    @DisplayName("Douglas-Peucker 알고리즘을 사용하여 경로를 단순화할 수 있다.")
-    void simplifyTest() {
-        // Given: 직선상에 있는 점들과 튀는 점 하나
+    void Douglas_Peucker_알고리즘을_사용하여_경로를_단순화한다() {
+        // 직선상에 있는 점들과 튀는 점 하나
         List<Coordinate> coordinates = List.of(
                 new Coordinate(0, 0),
                 new Coordinate(0.00001, 0.00001), // 직선에 가까움
@@ -25,19 +23,17 @@ class CoordinateBuilderTest {
 
         CoordinateBuilder builder = CoordinateBuilder.fromRawCoordinates(coordinates);
 
-        // When: 10m 오차로 단순화
+        // 10m 오차로 단순화
         List<Coordinate> simplified = builder.simplify(new Meter(10)).build();
 
-        // Then: 점의 개수가 줄어들어야 함
+        // 점의 개수가 줄어들어야 함
         assertThat(simplified.size()).isLessThan(coordinates.size());
         assertThat(simplified.getFirst()).isEqualTo(new Coordinate(0, 0));
         assertThat(simplified.getLast()).isEqualTo(new Coordinate(0.0005, 0.0005));
     }
 
     @Test
-    @DisplayName("직선 경로의 경우 첫 점과 끝 점만 남는다.")
-    void simplifyStraightLineTest() {
-        // Given: 완벽한 직선상에 있는 점들
+    void 직선_경로의_경우_첫_점과_끝_점만_남는다() {
         List<Coordinate> coordinates = List.of(
                 new Coordinate(37.5, 127.0),
                 new Coordinate(37.51, 127.01),
@@ -49,10 +45,10 @@ class CoordinateBuilderTest {
 
         CoordinateBuilder builder = CoordinateBuilder.fromRawCoordinates(coordinates);
 
-        // When: 아주 작은 오차로 단순화해도 직선이면 점이 많이 제거됨
+        // 아주 작은 오차로 단순화해도 직선이면 점이 많이 제거됨
         List<Coordinate> simplified = builder.simplify(new Meter(1)).build();
 
-        // Then: 첫 점과 끝 점만 남음
+        // 첫 점과 끝 점만 남음
         assertThat(simplified).hasSize(2);
         assertThat(simplified.getFirst()).isEqualTo(new Coordinate(37.5, 127.0));
         assertThat(simplified.getLast()).isEqualTo(new Coordinate(37.55, 127.05));
