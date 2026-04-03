@@ -123,7 +123,7 @@ class GoogleMapDrawer(
                 map.addMarker(
                     MarkerOptions()
                         .icon(BitmapDescriptorFactory.fromBitmap(searchCoordinateImage))
-                        .position(map.cameraPosition.target)
+                        .position(coordinate.toLatLng())
                         .anchor(0.5F, 1F),
                 )
         }
