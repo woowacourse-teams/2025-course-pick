@@ -69,6 +69,10 @@ public enum ErrorType {
             "압축 해제에 실패했습니다.",
             RuntimeException::new
     ),
+    INVALID_COMPRESS_DATA(
+            "압축 및 해제할 데이터가 없습니다.",
+            IllegalArgumentException::new
+    ),
     ;
 
     private final String message;

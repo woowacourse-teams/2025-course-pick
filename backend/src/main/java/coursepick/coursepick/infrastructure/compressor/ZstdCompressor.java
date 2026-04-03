@@ -1,5 +1,7 @@
 package coursepick.coursepick.infrastructure.compressor;
 
+import static coursepick.coursepick.application.exception.ErrorType.INVALID_COMPRESS_DATA;
+
 import com.github.luben.zstd.Zstd;
 
 import java.nio.charset.StandardCharsets;
@@ -10,7 +12,7 @@ public class ZstdCompressor implements DataCompressor {
 
     public byte[] compress(String content) {
         if (content == null || content.isBlank()) {
-            return new byte[0];
+            throw INVALID_COMPRESS_DATA.create();
         }
 
         byte[] input = content.getBytes(StandardCharsets.UTF_8);
@@ -19,7 +21,7 @@ public class ZstdCompressor implements DataCompressor {
 
     public String decompress(byte[] compressed, int originalSize) {
         if (compressed == null || compressed.length == 0) {
-            return "";
+            throw INVALID_COMPRESS_DATA.create();
         }
 
         byte[] decompressed = Zstd.decompress(compressed, originalSize);

@@ -1,5 +1,7 @@
 package coursepick.coursepick.infrastructure.compressor;
 
+import coursepick.coursepick.application.exception.ErrorType;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -13,7 +15,7 @@ public class GzipCompressor implements DataCompressor {
 
     public byte[] compress(String content) {
         if (content == null || content.isBlank()) {
-            throw INVALID_COORDINATE_COUNT.create();
+            throw INVALID_COMPRESS_DATA.create();
         }
 
         byte[] input = content.getBytes(StandardCharsets.UTF_8);
@@ -31,7 +33,7 @@ public class GzipCompressor implements DataCompressor {
 
     public String decompress(byte[] bytes, int originalSize) {
         if (bytes == null || bytes.length == 0) {
-            throw INVALID_COORDINATE_COUNT.create();
+            throw INVALID_COMPRESS_DATA.create();
         }
 
         try (GZIPInputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(bytes));
