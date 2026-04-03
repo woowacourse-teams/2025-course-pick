@@ -4,41 +4,65 @@ import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.Course;
 import coursepick.coursepick.domain.course.CourseName;
 import coursepick.coursepick.domain.course.Meter;
-
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-
-import java.util.ArrayList;
-
-import java.util.zip.GZIPInputStream;
-
+import coursepick.coursepick.infrastructure.compressor.DataCompressor;
+import lombok.RequiredArgsConstructor;
 import org.bson.Document;
 import org.bson.types.Binary;
 import org.springframework.core.convert.converter.Converter;
 
+import java.util.ArrayList;
 import java.util.List;
 
+@RequiredArgsConstructor
 public class CourseReader implements Converter<Document, Course> {
+
+    private final DataCompressor dataCompressor;
 
     @Override
     public Course convert(Document source) {
-        try {
-            return new Course(
-                    source.getObjectId("_id").toHexString(),
-                    new CourseName(source.getString("name")),
-                    parseByteCoordinates(source.get("coordinates", Document.class)),
-                    parseCoordinates(source.get("simplifiedCoordinates", Document.class)),
-                    new Meter(source.getDouble("length"))
-            );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        List<Coordinate> coordinates = parseCoordinatesFromSource(source);
+        List<Coordinate> simplifiedCoordinates = parseSimplifiedCoordinates(source);
+
+        return new Course(
+                source.getObjectId("_id").toHexString(),
+                new CourseName(source.getString("name")),
+                coordinates,
+                simplifiedCoordinates,
+                new Meter(source.getDouble("length"))
+        );
     }
 
-    public List<Coordinate> parseCoordinates(Document source) {
+    private List<Coordinate> parseCoordinatesFromSource(Document source) {
+        Document rawCoordinates = (Document) source.get("coordinates");
+
+        Binary binary = rawCoordinates.get("zip_coordinates", Binary.class);
+        int originalSize = rawCoordinates.getInteger("zip_size");
+
+        String json = dataCompressor.decompress(binary.getData(), originalSize);
+        return parseCoordinatesFromJson(json);
+    }
+
+    private List<Coordinate> parseCoordinatesFromJson(String json) {
+        // [ [lng, lat], [lng, lat] ] 형태 파싱
+        if (json == null || json.length() < 4) return List.of();
+
+        String content = json.substring(2, json.length() - 2);
+        String[] pairs = content.split("\\],\\[");
+
+        List<Coordinate> result = new ArrayList<>();
+        for (String pair : pairs) {
+            String[] coords = pair.split(",");
+            result.add(new Coordinate(Double.parseDouble(coords[1]), Double.parseDouble(coords[0])));
+        }
+        return result;
+    }
+
+    private List<Coordinate> parseSimplifiedCoordinates(Document source) {
+        Document simplified = (Document) source.get("simplifiedCoordinates");
+        return parseCoordinatesFromGeoJson(simplified);
+    }
+
+    private List<Coordinate> parseCoordinatesFromGeoJson(Document source) {
         List<List<Object>> coordinatesData = (List<List<Object>>) source.get("coordinates");
 
         return coordinatesData.stream()
@@ -47,42 +71,5 @@ public class CourseReader implements Converter<Document, Course> {
                         ((Number) coordinateData.get(0)).doubleValue()
                 ))
                 .toList();
-    }
-
-    public List<Coordinate> parseByteCoordinates(Document source) throws IOException {
-        Binary byteCoordinates = (Binary) source.get("coordinates");
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-
-        GZIPInputStream gzipInStream = new GZIPInputStream(
-                new BufferedInputStream(new ByteArrayInputStream(byteCoordinates.getData())));
-
-        int size = 0;
-        byte[] buffer = new byte[1024];
-        while ( (size = gzipInStream.read(buffer)) > 0 ) {
-            outStream.write(buffer, 0, size);
-        }
-        outStream.flush();
-        outStream.close();
-
-
-        List<List<Double>> coordinatesData = decompress(outStream.toByteArray());
-
-        return coordinatesData.stream()
-                .map(coordinateData -> new Coordinate(
-                        coordinateData.get(1),
-                        coordinateData.get(0)
-                ))
-                .toList();
-    }
-
-    public static List<List<Double>> decompress(byte[] bytes) {
-        ByteBuffer buffer = ByteBuffer.wrap(bytes);
-        int count = buffer.getInt(); // 첫 4바이트에서 개수 읽기
-
-        List<List<Double>> result = new ArrayList<>(count);
-        for (int i = 0; i < count; i++) {
-            result.add(List.of(buffer.getDouble(), buffer.getDouble()));
-        }
-        return result;
     }
 }
