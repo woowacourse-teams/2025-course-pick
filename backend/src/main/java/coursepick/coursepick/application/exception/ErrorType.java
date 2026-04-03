@@ -61,6 +61,14 @@ public enum ErrorType {
             "쿼리 실행에 제한된 시간을 초과했습니다.",
             QueryTimeoutException::new
     ),
+    COMPRESS_FAIL(
+            "압축에 실패했습니다.",
+            RuntimeException::new
+    ),
+    DECOMPRESS_FAIL(
+            "압축 해제에 실패했습니다.",
+            RuntimeException::new
+    ),
     ;
 
     private final String message;

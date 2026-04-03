@@ -1,44 +1,50 @@
 package coursepick.coursepick.infrastructure.compressor;
 
-import coursepick.coursepick.domain.course.Coordinate;
-
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.List;
+import java.nio.charset.StandardCharsets;
+import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import org.bson.Document;
+import static coursepick.coursepick.application.exception.ErrorType.*;
 
-public class GzipCompressor {
+public class GzipCompressor implements DataCompressor {
 
-    private Document convertCoordinatesToByteArray(List<Coordinate> coordinates) throws IOException {
-        List<List<Double>> coordinatesData = coordinates.stream()
-                .map(coordinate -> List.of(coordinate.longitude(), coordinate.latitude()))
-                .toList();
+    public byte[] compress(String content) {
+        if (content == null || content.isBlank()) {
+            throw INVALID_COORDINATE_COUNT.create();
+        }
+
+        byte[] input = content.getBytes(StandardCharsets.UTF_8);
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
-        gzipOutputStream.write(compress(coordinatesData));
-        gzipOutputStream.flush();
-        gzipOutputStream.close();
+        try (GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream)) {
+            gzipOutputStream.write(input);
+            gzipOutputStream.finish();
+        } catch (IOException e) {
+            throw COMPRESS_FAIL.create(e.getMessage());
+        }
 
-        Document document = new Document();
-        document.put("coordinates", byteArrayOutputStream.toByteArray());
-
-        return document;
+        return byteArrayOutputStream.toByteArray();
     }
 
-    public static byte[] compress(List<List<Double>> data) {
-        int count = data.size();
-        // 헤더(개수 정보 4바이트) + (경도 8바이트 + 위도 8바이트) * 개수
-        ByteBuffer buffer = ByteBuffer.allocate(4 + (count * 2 * 8));
-
-        buffer.putInt(count); // 좌표가 몇 개인지 먼저 기록 (복원용)
-        for (List<Double> coord : data) {
-            buffer.putDouble(coord.get(0)); // Longitude
-            buffer.putDouble(coord.get(1)); // Latitude
+    public String decompress(byte[] bytes, int originalSize) {
+        if (bytes == null || bytes.length == 0) {
+            throw INVALID_COORDINATE_COUNT.create();
         }
-        return buffer.array();
+
+        try (GZIPInputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(bytes));
+             ByteArrayOutputStream outputStream = new ByteArrayOutputStream(originalSize)) {
+
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = gzipInputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, len);
+            }
+            return outputStream.toString(StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw DECOMPRESS_FAIL.create(e.getMessage());
+        }
     }
 }
