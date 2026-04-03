@@ -1,7 +1,5 @@
 package coursepick.coursepick.infrastructure.compressor;
 
-import coursepick.coursepick.application.exception.ErrorType;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

@@ -1,10 +1,10 @@
 package coursepick.coursepick.infrastructure.compressor;
 
-import static coursepick.coursepick.application.exception.ErrorType.INVALID_COMPRESS_DATA;
-
 import com.github.luben.zstd.Zstd;
 
 import java.nio.charset.StandardCharsets;
+
+import static coursepick.coursepick.application.exception.ErrorType.INVALID_COMPRESS_DATA;
 
 public class ZstdCompressor implements DataCompressor {
 
