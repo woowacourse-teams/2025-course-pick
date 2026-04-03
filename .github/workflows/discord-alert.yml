@@ -5,6 +5,22 @@ on:
     types: [ opened, review_requested, ready_for_review ]
   pull_request_review:
     types: [ submitted ]
+  schedule:
+    - cron: '10 15 * * *'
+
+env:
+  ID_MAP: |
+    {
+      "doabletuple": "<@295280090632028160>",
+      "dompoo": "<@354278903130357763>",
+      "kkiseug": "<@476402713111035904>",
+      "giovannijunseokim": "<@1000267441332555776>",
+      "wondroid-world": "<@1114787651422277723>",
+      "jhpark1227": "<@559277825710882841>",
+      "tobae-time": "<@1438454861439041647>",
+      "choizz156": "<@952791760055193631>",
+      "mmm307955": "<@1239952287850565642>"
+    }
 
 jobs:
   notify:
@@ -14,8 +30,6 @@ jobs:
       - name: GitHub ID와 Discord ID 매핑
         id: mapper
         shell: bash
-        env:
-          ID_MAP: ${{ secrets.DISCORD_ID_MAP }}
         run: |
           # 1. PR 생성은 팀 공지 성격이므로 항상 알림
           if [[ "${{ github.event.action }}" == "opened" || "${{ github.event.action }}" == "ready_for_review" ]]; then
@@ -49,7 +63,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          ID_MAP: ${{ secrets.DISCORD_ID_MAP }}
         run: |
           to_mention() {
             local discord_id
@@ -130,3 +143,49 @@ jobs:
             🎯 {{ EVENT_PAYLOAD.sender.login }} → ${{ env.MENTION_TARGET }}
             🔗 [{{ EVENT_PAYLOAD.pull_request.title }}](<{{ EVENT_PAYLOAD.review.html_url }}>)
             ―――――――――――――――――――――――――
+
+      - name: 마감 임박 PR 리마인드 알림
+        if: github.event_name == 'schedule'
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          to_mention() {
+            local discord_id
+            discord_id=$(echo "$ID_MAP" | jq -r --arg key "$1" '.[$key] // empty')
+            if [ -n "$discord_id" ]; then
+              echo "${discord_id}"
+            else
+              echo "$1"
+            fi
+          }
+
+          PRS=$(curl -s -H "Authorization: token $GH_TOKEN" \
+            "https://api.github.com/repos/$REPO/pulls?state=open&per_page=100")
+
+          echo "$PRS" | jq -c '.[]' | while read -r PR; do
+            PR_NUMBER=$(echo "$PR" | jq -r '.number')
+            PR_URL=$(echo "$PR"    | jq -r '.html_url')
+            PR_TITLE=$(echo "$PR"  | jq -r '.title')
+            LABEL=$(echo "$PR" | jq -r '.labels[].name' | grep -E '^(D-[0-9]+|D-Day)$' | head -1)
+
+            [ -z "$LABEL" ] && continue
+
+            ASSIGNEES=$(echo "$PR" | jq -r '[.assignees[].login] | join(" ")' | \
+              xargs -n1 | while read -r id; do to_mention "$id"; done | paste -sd', ')
+            REVIEWERS=$(echo "$PR" | jq -r '[.requested_reviewers[].login] | join(" ")' | \
+              xargs -n1 | while read -r id; do to_mention "$id"; done | paste -sd', ')
+
+            [ -z "$ASSIGNEES" ] && ASSIGNEES="없음"
+            [ -z "$REVIEWERS" ] && REVIEWERS="없음"
+
+            MSG=$(printf "⏰ **#%s PR이 %s 상태입니다!**\n**제목**: [%s](<%s>)\n**담당자**: %s\n**리뷰어**: %s\n―――――――――――――――――――――――――" \
+              "$PR_NUMBER" "$LABEL" "$PR_TITLE" "$PR_URL" "$ASSIGNEES" "$REVIEWERS")
+
+            BODY=$(jq -n --arg content "$MSG" '{"content": $content, "flags": 4}')
+
+            curl -s -X POST "$DISCORD_WEBHOOK" \
+              -H "Content-Type: application/json" \
+              -d "$BODY"
+          done
