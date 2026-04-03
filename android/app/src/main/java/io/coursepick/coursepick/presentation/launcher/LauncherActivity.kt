@@ -15,14 +15,10 @@ import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
-import com.kakao.sdk.common.KakaoSdk
-import com.kakao.vectormap.KakaoMapSdk
 import dagger.hilt.android.AndroidEntryPoint
-import io.coursepick.coursepick.BuildConfig
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.presentation.InstallStateObserver
 import io.coursepick.coursepick.presentation.course.CoursesActivity
-import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 
 @AndroidEntryPoint
 class LauncherActivity : AppCompatActivity() {
@@ -82,10 +78,6 @@ class LauncherActivity : AppCompatActivity() {
     }
 
     private fun initialize() {
-        KakaoMapSdk.init(applicationContext, BuildConfig.KAKAO_NATIVE_APP_KEY)
-        KakaoSdk.init(applicationContext, BuildConfig.KAKAO_NATIVE_APP_KEY)
-        CoursePickPreferences.init(applicationContext)
-
         startActivity(Intent(this, CoursesActivity::class.java))
         finish()
     }
