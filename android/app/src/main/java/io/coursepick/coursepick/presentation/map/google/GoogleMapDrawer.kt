@@ -159,12 +159,13 @@ class GoogleMapDrawer(
     private fun drawCoarseUserLocation(location: Location.Coarse) {
         hideFineUserLocation()
 
-        coarseUserLocationCircle?.let { marker: Circle ->
+        coarseUserLocationCircle?.let { circle: Circle ->
+            circle.radius = location.accuracy.meter.value
             animateLatLng(
-                start = marker.center,
+                start = circle.center,
                 end = location.coordinate.toLatLng(),
                 duration = MOVE_ANIMATION_DURATION_MS,
-            ) { latLng: LatLng -> marker.center = latLng }
+            ) { latLng: LatLng -> circle.center = latLng }
         } ?: run {
             coarseUserLocationCircle =
                 map.addCircle(
