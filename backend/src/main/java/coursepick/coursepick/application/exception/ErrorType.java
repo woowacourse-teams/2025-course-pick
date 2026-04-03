@@ -62,11 +62,11 @@ public enum ErrorType {
             QueryTimeoutException::new
     ),
     COMPRESS_FAIL(
-            "압축에 실패했습니다.",
+            "압축에 실패했습니다. 원인=%s",
             RuntimeException::new
     ),
     DECOMPRESS_FAIL(
-            "압축 해제에 실패했습니다.",
+            "압축 해제에 실패했습니다. 원인=%s",
             RuntimeException::new
     ),
     INVALID_COMPRESS_DATA(
