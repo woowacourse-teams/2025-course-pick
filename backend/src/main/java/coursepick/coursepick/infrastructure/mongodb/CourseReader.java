@@ -13,20 +13,11 @@ public class CourseReader implements Converter<Document, Course> {
 
     @Override
     public Course convert(Document source) {
-        List<Coordinate> coordinates = parseCoordinates(source.get("coordinates", Document.class));
-        List<Coordinate> simplifiedCoordinates;
-
-        if (source.containsKey("simplifiedCoordinates")) {
-            simplifiedCoordinates = parseCoordinates(source.get("simplifiedCoordinates", Document.class));
-        } else {
-            simplifiedCoordinates = coordinates; // Or use Course.simplifyCoordinates logic
-        }
-
         return new Course(
                 source.getObjectId("_id").toHexString(),
                 new CourseName(source.getString("name")),
-                coordinates,
-                simplifiedCoordinates,
+                parseCoordinates(source.get("coordinates", Document.class)),
+                parseCoordinates(source.get("simplifiedCoordinates", Document.class)),
                 new Meter(source.getDouble("length"))
         );
     }
