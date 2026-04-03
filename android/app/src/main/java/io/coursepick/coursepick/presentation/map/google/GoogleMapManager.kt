@@ -2,10 +2,11 @@ package io.coursepick.coursepick.presentation.map.google
 
 import android.animation.ValueAnimator
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Point
 import androidx.annotation.DrawableRes
-import coil3.Bitmap
+import androidx.core.graphics.scale
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -301,13 +302,8 @@ class GoogleMapManager(
         @DrawableRes id: Int,
         scale: Float,
     ): Bitmap {
-        val original = BitmapFactory.decodeResource(context.resources, id)
-        return Bitmap.createScaledBitmap(
-            original,
-            (original.width * scale).toInt(),
-            (original.height * scale).toInt(),
-            true,
-        )
+        val original: Bitmap = BitmapFactory.decodeResource(context.resources, id)
+        return original.scale((original.width * scale).toInt(), (original.height * scale).toInt())
     }
 
     companion object {
