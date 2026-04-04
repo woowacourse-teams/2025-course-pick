@@ -1,6 +1,7 @@
 package io.coursepick.coursepick.presentation.customcourse
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -22,7 +23,7 @@ fun CustomCourseScreen(
     modifier: Modifier = Modifier,
 ) {
     Box(
-        modifier = modifier,
+        modifier = modifier.fillMaxSize(),
     ) {
         FloatingActionButton(
             onClick = onClick,
