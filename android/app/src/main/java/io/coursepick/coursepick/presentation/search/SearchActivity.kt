@@ -17,12 +17,17 @@ import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
 import io.coursepick.coursepick.domain.search.Place
 import io.coursepick.coursepick.presentation.DataKeys
+import io.coursepick.coursepick.presentation.InstallStateObserver
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 
 @AndroidEntryPoint
 class SearchActivity : ComponentActivity() {
     private val viewModel: SearchViewModel by viewModels()
+
+    init {
+        lifecycle.addObserver(InstallStateObserver(this))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

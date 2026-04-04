@@ -7,8 +7,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import io.coursepick.coursepick.R
+import io.coursepick.coursepick.presentation.InstallStateObserver
 
 class PreferencesActivity : AppCompatActivity() {
+    init {
+        lifecycle.addObserver(InstallStateObserver(this))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

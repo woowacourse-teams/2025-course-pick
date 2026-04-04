@@ -1,75 +1,74 @@
-package io.coursepick.coursepick.presentation
+package io.coursepick.coursepick.presentation.launcher
 
-import android.app.Activity
+import android.content.Intent
+import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import com.google.android.material.snackbar.Snackbar
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
-import com.google.android.play.core.install.InstallState
-import com.google.android.play.core.install.InstallStateUpdatedListener
 import com.google.android.play.core.install.model.AppUpdateType
-import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
+import dagger.hilt.android.AndroidEntryPoint
 import io.coursepick.coursepick.R
+import io.coursepick.coursepick.presentation.InstallStateObserver
+import io.coursepick.coursepick.presentation.course.CoursesActivity
 
-class CoursePickUpdateManager(
-    private val activity: ComponentActivity,
-) {
-    private val appUpdateManager: AppUpdateManager = AppUpdateManagerFactory.create(activity)
+@AndroidEntryPoint
+class LauncherActivity : AppCompatActivity() {
+    private val appUpdateManager: AppUpdateManager by lazy { AppUpdateManagerFactory.create(this) }
+
     private var currentUpdateType: Int = AppUpdateType.FLEXIBLE
 
-    private val onDownloadedListener =
-        InstallStateUpdatedListener { state: InstallState ->
-            if (state.installStatus() == InstallStatus.DOWNLOADED) {
-                showFlexibleUpdateCompleteSnackbar()
-            }
-        }
-
     private val activityResultLauncher: ActivityResultLauncher<IntentSenderRequest> =
-        activity.registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result: ActivityResult ->
-            if (result.resultCode != Activity.RESULT_OK) {
+        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result: ActivityResult ->
+            if (result.resultCode == RESULT_OK) {
+                initialize()
+            } else {
                 when (currentUpdateType) {
                     AppUpdateType.FLEXIBLE -> {
                         Toast
                             .makeText(
-                                activity,
+                                this,
                                 R.string.app_update_cancelled_message,
                                 Toast.LENGTH_SHORT,
                             ).show()
+
+                        initialize()
                     }
 
                     AppUpdateType.IMMEDIATE -> {
                         Toast
                             .makeText(
-                                activity,
+                                this,
                                 R.string.app_update_must_be_completed_message,
                                 Toast.LENGTH_LONG,
                             ).show()
 
-                        activity.finish()
+                        finish()
                     }
                 }
             }
         }
 
-    fun checkForUpdate() {
-        appUpdateManager.appUpdateInfo
-            .addOnSuccessListener { appUpdateInfo: AppUpdateInfo ->
-                if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {
-                    appUpdateInfo.handleAvailableUpdate()
-                }
-            }
+    init {
+        lifecycle.addObserver(InstallStateObserver(this))
     }
 
-    fun onResume() {
-        appUpdateManager.registerListener(onDownloadedListener)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen().setKeepOnScreenCondition { true }
+        super.onCreate(savedInstanceState)
+        checkForUpdate()
+    }
+
+    override fun onResume() {
+        super.onResume()
 
         appUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo: AppUpdateInfo ->
             if (appUpdateInfo.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
@@ -78,19 +77,20 @@ class CoursePickUpdateManager(
         }
     }
 
-    fun onStop() {
-        appUpdateManager.unregisterListener(onDownloadedListener)
+    private fun initialize() {
+        startActivity(Intent(this, CoursesActivity::class.java))
+        finish()
     }
 
-    private fun showFlexibleUpdateCompleteSnackbar() {
-        Snackbar
-            .make(
-                activity.findViewById(android.R.id.content),
-                activity.getString(R.string.app_update_downloaded_message),
-                Snackbar.LENGTH_INDEFINITE,
-            ).setAction(activity.getString(R.string.app_update_action_after_downloaded)) {
-                appUpdateManager.completeUpdate()
-            }.show()
+    private fun checkForUpdate() {
+        appUpdateManager.appUpdateInfo
+            .addOnSuccessListener { appUpdateInfo: AppUpdateInfo ->
+                if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {
+                    appUpdateInfo.handleAvailableUpdate()
+                } else {
+                    initialize()
+                }
+            }.addOnFailureListener { initialize() }
     }
 
     private fun AppUpdateInfo.handleAvailableUpdate() {
@@ -105,6 +105,8 @@ class CoursePickUpdateManager(
             startUpdateFlowForResult(AppUpdateType.FLEXIBLE)
             return
         }
+
+        initialize()
     }
 
     private fun AppUpdateInfo.startUpdateFlowForResult(
