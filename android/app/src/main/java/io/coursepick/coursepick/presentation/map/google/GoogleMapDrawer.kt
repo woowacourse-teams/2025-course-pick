@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import androidx.annotation.DrawableRes
 import androidx.core.graphics.scale
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.Circle
 import com.google.android.gms.maps.model.CircleOptions
@@ -32,12 +33,12 @@ class GoogleMapDrawer(
     private var fineUserLocationMarker: Marker? = null
     private var coarseUserLocationCircle: Circle? = null
 
-    private val fineUserLocationImage by lazy {
-        scaleDrawable(R.drawable.image_current_location, 0.5F)
-    }
-    private val searchCoordinateImage by lazy {
-        scaleDrawable(R.drawable.image_search_location, 0.5F)
-    }
+    private val selectedCoursePattern: BitmapDescriptor =
+        BitmapDescriptorFactory.fromResource(R.drawable.image_arrow)
+    private val fineUserLocationImage: BitmapDescriptor =
+        BitmapDescriptorFactory.fromBitmap(scaleDrawable(R.drawable.image_current_location, 0.5F))
+    private val searchCoordinateImage: BitmapDescriptor =
+        BitmapDescriptorFactory.fromBitmap(scaleDrawable(R.drawable.image_search_location, 0.5F))
 
     fun drawCourse(course: CourseItem) {
         if (course.selected) {
@@ -97,7 +98,7 @@ class GoogleMapDrawer(
                 .transparentColorBuilder()
                 .stamp(
                     TextureStyle
-                        .newBuilder(BitmapDescriptorFactory.fromResource(R.drawable.image_arrow))
+                        .newBuilder(selectedCoursePattern)
                         .build(),
                 ).build()
         val courseOverlayOptions: PolylineOptions =
@@ -122,7 +123,7 @@ class GoogleMapDrawer(
             searchCoordinateMarker =
                 map.addMarker(
                     MarkerOptions()
-                        .icon(BitmapDescriptorFactory.fromBitmap(searchCoordinateImage))
+                        .icon(searchCoordinateImage)
                         .position(coordinate.toLatLng())
                         .anchor(0.5F, 1F),
                 )
@@ -149,7 +150,7 @@ class GoogleMapDrawer(
             fineUserLocationMarker =
                 map.addMarker(
                     MarkerOptions()
-                        .icon(BitmapDescriptorFactory.fromBitmap(fineUserLocationImage))
+                        .icon(fineUserLocationImage)
                         .position(location.coordinate.toLatLng())
                         .anchor(0.5F, 0.5F),
                 )
