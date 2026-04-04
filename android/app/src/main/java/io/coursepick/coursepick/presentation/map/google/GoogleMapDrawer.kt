@@ -25,10 +25,10 @@ import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.course.CourseItem
 
 class GoogleMapDrawer(
-    private val map: GoogleMap,
     private val context: Context,
+    private val map: GoogleMap,
 ) {
-    private val polylines = mutableListOf<Polyline>()
+    private val polylinesOnMap = mutableListOf<Polyline>()
     private var searchCoordinateMarker: Marker? = null
     private var fineUserLocationMarker: Marker? = null
     private var coarseUserLocationCircle: Circle? = null
@@ -53,29 +53,29 @@ class GoogleMapDrawer(
         course: CourseItem,
     ) {
         drawRoute(route)
-        drawSelectedCourse(course)
+        drawCourse(course)
     }
 
     private fun drawRoute(route: List<Coordinate>) {
         val options =
             PolylineOptions()
-                .add(*route.map(Coordinate::toLatLng).toTypedArray())
+                .apply { route.forEach { coordinate: Coordinate -> add(coordinate.toLatLng()) } }
                 .width(context.resources.getDimension(R.dimen.course_route_width))
                 .color(context.getColor(R.color.course_route))
 
-        map.addPolyline(options).also(polylines::add)
+        map.addPolyline(options).also(polylinesOnMap::add)
     }
 
     private fun drawUnselectedCourse(course: CourseItem) {
         val options =
             PolylineOptions()
-                .add(*course.coordinates.map(Coordinate::toLatLng).toTypedArray())
+                .apply { course.coordinates.forEach { coordinate: Coordinate -> add(coordinate.toLatLng()) } }
                 .color(context.getColor(R.color.course_unselected))
                 .width(context.resources.getDimension(R.dimen.unselected_course_width))
                 .zIndex(UNSELECTED_COURSE_Z_INDEX)
                 .clickable(true)
 
-        map.addPolyline(options).apply { tag = course }.also(polylines::add)
+        map.addPolyline(options).apply { tag = course }.also(polylinesOnMap::add)
     }
 
     private fun drawSelectedCourse(course: CourseItem) {
@@ -83,7 +83,7 @@ class GoogleMapDrawer(
 
         val baseOptions =
             PolylineOptions()
-                .add(*course.coordinates.map(Coordinate::toLatLng).toTypedArray())
+                .apply { course.coordinates.forEach { coordinate: Coordinate -> add(coordinate.toLatLng()) } }
 
         val courseOptions: PolylineOptions =
             baseOptions
@@ -91,7 +91,7 @@ class GoogleMapDrawer(
                 .width(courseWidth)
                 .zIndex(SELECTED_COURSE_Z_INDEX)
 
-        map.addPolyline(courseOptions).also(polylines::add)
+        map.addPolyline(courseOptions).also(polylinesOnMap::add)
 
         val courseStrokeStyle =
             StrokeStyle
@@ -108,12 +108,12 @@ class GoogleMapDrawer(
                 .zIndex(SELECTED_COURSE_Z_INDEX)
                 .clickable(true)
 
-        map.addPolyline(courseOverlayOptions).apply { tag = course }.also(polylines::add)
+        map.addPolyline(courseOverlayOptions).apply { tag = course }.also(polylinesOnMap::add)
     }
 
     fun removeAllRouteLines() {
-        polylines.forEach(Polyline::remove)
-        polylines.clear()
+        polylinesOnMap.forEach(Polyline::remove)
+        polylinesOnMap.clear()
     }
 
     fun drawSearchCoordinate(coordinate: Coordinate) {
@@ -213,10 +213,10 @@ class GoogleMapDrawer(
 
     private fun scaleDrawable(
         @DrawableRes id: Int,
-        scale: Float,
+        factor: Float,
     ): Bitmap {
         val original: Bitmap = BitmapFactory.decodeResource(context.resources, id)
-        return original.scale((original.width * scale).toInt(), (original.height * scale).toInt())
+        return original.scale((original.width * factor).toInt(), (original.height * factor).toInt())
     }
 
     companion object {
