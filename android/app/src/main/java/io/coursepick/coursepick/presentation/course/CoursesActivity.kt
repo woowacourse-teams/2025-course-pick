@@ -86,7 +86,7 @@ class CoursesActivity :
     @Inject
     @KakaoMap
     lateinit var mapManagerFactory: MapManagerFactory
-    lateinit var mapManager: MapManager
+    private val mapManager: MapManager by lazy { mapManagerFactory.create(binding.mapContainer) }
 
     private val locationPermissionLauncher: ActivityResultLauncher<Array<String>> =
         registerForActivityResult(
@@ -170,26 +170,22 @@ class CoursesActivity :
         setUpBottomSheet()
         setUpSettings()
 
-        lifecycleScope.launch {
-            mapManager = mapManagerFactory.create(binding.mapContainer)
-
-            mapManager.startMap {
-                setUpObservers()
-                setUpFlowCollector()
-                setUpMapPadding()
-                mapManager.setOnCameraMoveListener {
-                    if (viewModel.content.value == CoursesContent.EXPLORE) {
-                        binding.mainSearchThisAreaButton.visibility = View.VISIBLE
-                    }
-                    binding.mainCurrentLocationButton.setColorFilter(
-                        ContextCompat.getColor(this@CoursesActivity, R.color.item_primary),
-                    )
+        mapManager.startMap {
+            setUpObservers()
+            setUpFlowCollector()
+            setUpMapPadding()
+            mapManager.setOnCameraMoveListener {
+                if (viewModel.content.value == CoursesContent.EXPLORE) {
+                    binding.mainSearchThisAreaButton.visibility = View.VISIBLE
                 }
-                mapManager.setOnCourseClickListener { course: CourseItem ->
-                    viewModel.select(course)
-                }
-                fetchInitialCourses()
+                binding.mainCurrentLocationButton.setColorFilter(
+                    ContextCompat.getColor(this@CoursesActivity, R.color.item_primary),
+                )
             }
+            mapManager.setOnCourseClickListener { course: CourseItem ->
+                viewModel.select(course)
+            }
+            fetchInitialCourses()
         }
 
         setUpBottomNavigation()

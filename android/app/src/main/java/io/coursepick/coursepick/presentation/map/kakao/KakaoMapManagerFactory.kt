@@ -14,7 +14,7 @@ import javax.inject.Inject
 class KakaoMapManagerFactory
     @Inject
     constructor() : MapManagerFactory {
-        override suspend fun create(container: ViewGroup): MapManager {
+        override fun create(container: ViewGroup): MapManager {
             val view: View =
                 LayoutInflater
                     .from(container.context)

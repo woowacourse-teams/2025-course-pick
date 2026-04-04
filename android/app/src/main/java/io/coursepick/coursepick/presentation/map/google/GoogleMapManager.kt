@@ -1,9 +1,8 @@
 package io.coursepick.coursepick.presentation.map.google
 
-import android.content.Context
-import android.graphics.Point
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
@@ -18,13 +17,13 @@ import io.coursepick.coursepick.presentation.map.DistanceCalculator
 import io.coursepick.coursepick.presentation.map.MapManager
 
 class GoogleMapManager(
-    private val map: GoogleMap,
-    private val context: Context,
+    private val mapFragment: SupportMapFragment,
 ) : MapManager {
+    private lateinit var map: GoogleMap
+
     override val cameraCoordinate: Coordinate get() = map.cameraPosition.target.toCoordinate()
     override val scope: Scope?
         get() {
-            map.projection.fromScreenLocation(Point(0, 0))
             val center =
                 map.projection.visibleRegion.latLngBounds.center
                     .toCoordinate()
@@ -35,22 +34,30 @@ class GoogleMapManager(
             return Scope(distance)
         }
 
-    private val drawer = GoogleMapDrawer(map, context)
+    private val drawer by lazy { GoogleMapDrawer(map, mapFragment.requireContext()) }
 
     override fun startMap(onMapReady: () -> Unit) {
-        map.setMapStyle(MapStyleOptions.loadRawResourceStyle(context, R.raw.google_map_style))
-        map.uiSettings.isCompassEnabled = false
-        map.moveCamera(
-            CameraUpdateFactory.newCameraPosition(
-                CameraPosition
-                    .builder()
-                    .target(DEFAULT_LATLNG)
-                    .zoom(DEFAULT_ZOOM_LEVEL)
-                    .build(),
-            ),
-        )
+        mapFragment.getMapAsync { map: GoogleMap ->
+            this.map = map
 
-        onMapReady()
+            map.setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(
+                    mapFragment.requireContext(),
+                    R.raw.google_map_style,
+                ),
+            )
+            map.uiSettings.isCompassEnabled = false
+            map.moveCamera(
+                CameraUpdateFactory.newCameraPosition(
+                    CameraPosition
+                        .builder()
+                        .target(DEFAULT_LATLNG)
+                        .zoom(DEFAULT_ZOOM_LEVEL)
+                        .build(),
+                ),
+            )
+            onMapReady()
+        }
     }
 
     override fun draw(course: CourseItem) {
@@ -91,7 +98,7 @@ class GoogleMapManager(
                     .builder()
                     .apply { coordinates.forEach { coordinate: Coordinate -> this.include(coordinate.toLatLng()) } }
                     .build(),
-                context.resources.getDimensionPixelSize(R.dimen.course_route_padding),
+                mapFragment.requireContext().resources.getDimensionPixelSize(R.dimen.course_route_padding),
             ),
             MOVE_ANIMATION_DURATION_MS.toInt(),
             null,
