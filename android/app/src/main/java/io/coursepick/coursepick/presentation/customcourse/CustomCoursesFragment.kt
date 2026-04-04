@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import io.coursepick.coursepick.databinding.FragmentCustomCoursesBinding
 
 class CustomCoursesFragment : Fragment() {
+    @Suppress("ktlint:standard:backing-property-naming")
     private var _binding: FragmentCustomCoursesBinding? = null
     private val binding: FragmentCustomCoursesBinding get() = _binding!!
 
