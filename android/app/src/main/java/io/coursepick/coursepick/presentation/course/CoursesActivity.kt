@@ -56,6 +56,7 @@ import io.coursepick.coursepick.presentation.InstallStateObserver
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.compat.getParcelableCompat
+import io.coursepick.coursepick.presentation.customcourse.CustomCoursesFragment
 import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
 import io.coursepick.coursepick.presentation.filter.CourseFilterBottomSheet
 import io.coursepick.coursepick.presentation.map.MapManager
@@ -317,7 +318,10 @@ class CoursesActivity :
         supportFragmentManager.commit {
             setReorderingAllowed(true)
             supportFragmentManager.fragments.forEach { fragment: Fragment ->
-                if (fragment is ExploreCoursesFragment || fragment is FavoriteCoursesFragment) {
+                if (fragment is ExploreCoursesFragment ||
+                    fragment is FavoriteCoursesFragment ||
+                    fragment is CustomCoursesFragment
+                ) {
                     hide(fragment)
                 }
             }
