@@ -66,6 +66,9 @@
     <string name="search_query_hint">장소를 검색하세요</string>
     <string name="search_no_result_description">검색 결과가 없어요 🥲</string>
 
+    <!--  코스 추가 화면  -->
+    <string name="create_custom_courses">코스 추가</string>
+
     <!--  앱 업데이트 안내  -->
     <string name="app_update_cancelled_message">업데이트가 취소되었습니다.</string>
     <string name="app_update_must_be_completed_message">업데이트를 완료해야 앱을 사용할 수 있습니다.</string>

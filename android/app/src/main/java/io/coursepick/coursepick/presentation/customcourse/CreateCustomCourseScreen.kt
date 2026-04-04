@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,7 +50,7 @@ fun CreateCustomCourseScreen(
                 .navigationBarsPadding(),
     ) {
         CenterAlignedTopAppBar(
-            title = { Text(text = "코스 추가") },
+            title = { Text(text = stringResource(R.string.create_custom_courses)) },
             navigationIcon = {
                 Icon(
                     imageVector = Icons.Default.Close,
