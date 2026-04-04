@@ -17,12 +17,17 @@ class CustomCoursesFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentCustomCoursesBinding.inflate(inflater, container, false)
-        binding.customCourses.setContent { CustomCourseScreen(onClick = {}) }
+        binding.customCourses.setContent { CustomCourseScreen(onClick = { navigateCreateCustomCourse() }) }
         return binding.root
     }
 
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
+    }
+
+    fun navigateCreateCustomCourse() {
+        val intent = CreateCustomCourseActivity.intent(requireContext())
+        startActivity(intent)
     }
 }
