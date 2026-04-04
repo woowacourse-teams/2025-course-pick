@@ -138,7 +138,7 @@ fun CreateCustomCourseScreen(
                             .shadow(elevation = 8.dp, shape = CircleShape)
                             .clip(shape = CircleShape)
                             .background(colorResource(R.color.background_primary))
-                            .size(70.dp)
+                            .size(70.dp),
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
