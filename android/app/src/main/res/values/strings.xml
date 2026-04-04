@@ -68,6 +68,7 @@
 
     <!--  코스 추가 화면  -->
     <string name="create_custom_courses">코스 추가</string>
+    <string name="create_custom_courses_close">이 화면을 닫습니다.</string>
 
     <!--  앱 업데이트 안내  -->
     <string name="app_update_cancelled_message">업데이트가 취소되었습니다.</string>
@@ -102,7 +103,5 @@
     <string name="selected_route_finder_application_value_kakao">kakao map</string>
     <string name="selected_route_finder_application_value_naver">naver map</string>
     <string name="selected_route_finder_application_value_none">none</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

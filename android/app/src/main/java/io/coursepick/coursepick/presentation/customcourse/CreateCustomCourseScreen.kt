@@ -54,7 +54,7 @@ fun CreateCustomCourseScreen(
             navigationIcon = {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.create_custom_courses_close),
                     modifier =
                         Modifier
                             .padding(start = 10.dp)
