@@ -23,7 +23,7 @@ class GoogleMapManager(
     private var map: GoogleMap? = null
     private var drawer: GoogleMapDrawer? = null
 
-    override val cameraCoordinate: Coordinate? get() = map?.cameraPosition?.target?.toCoordinate()
+    override val cameraCoordinate: Coordinate? get() = withNullable(map) { cameraPosition.target.toCoordinate() }
     override val scope: Scope?
         get() =
             withNullable(map) {
@@ -41,7 +41,7 @@ class GoogleMapManager(
         block: T.() -> R,
     ): R? =
         receiver?.block() ?: run {
-            Timber.d("${T::class.simpleName} is null.")
+            Timber.w("${T::class.simpleName} is null.")
             null
         }
 
