@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import io.coursepick.coursepick.databinding.FragmentCustomCoursesBinding
 
@@ -18,7 +19,12 @@ class CustomCoursesFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentCustomCoursesBinding.inflate(inflater, container, false)
-        binding.customCourses.setContent { CustomCourseScreen(onClick = { navigateCreateCustomCourse() }) }
+        binding.customCourses.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                CustomCourseScreen(onClick = { navigateCreateCustomCourse() })
+            }
+        }
         return binding.root
     }
 
