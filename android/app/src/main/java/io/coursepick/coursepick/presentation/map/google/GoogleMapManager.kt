@@ -15,30 +15,40 @@ import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.course.CourseItem
 import io.coursepick.coursepick.presentation.map.DistanceCalculator
 import io.coursepick.coursepick.presentation.map.MapManager
+import timber.log.Timber
 
 class GoogleMapManager(
     private val mapFragment: SupportMapFragment,
 ) : MapManager {
-    private lateinit var map: GoogleMap
+    private var map: GoogleMap? = null
+    private var drawer: GoogleMapDrawer? = null
 
-    override val cameraCoordinate: Coordinate get() = map.cameraPosition.target.toCoordinate()
+    override val cameraCoordinate: Coordinate? get() = map?.cameraPosition?.target?.toCoordinate()
     override val scope: Scope?
-        get() {
-            val center =
-                map.projection.visibleRegion.latLngBounds.center
-                    .toCoordinate()
-            val topLeft =
-                map.projection.visibleRegion.farLeft
-                    .toCoordinate()
-            val distance = DistanceCalculator.distance(center, topLeft) ?: return null
-            return Scope(distance)
-        }
+        get() =
+            withNullable(map) {
+                val center =
+                    projection.visibleRegion.latLngBounds.center
+                        .toCoordinate()
+                val topLeft =
+                    projection.visibleRegion.farLeft
+                        .toCoordinate()
+                DistanceCalculator.distance(center, topLeft)?.let(Scope::invoke)
+            }
 
-    private val drawer by lazy { GoogleMapDrawer(map, mapFragment.requireContext()) }
+    private inline fun <reified T, R> withNullable(
+        receiver: T?,
+        block: T.() -> R,
+    ): R? =
+        receiver?.block() ?: run {
+            Timber.d("${T::class.simpleName} is null.")
+            null
+        }
 
     override fun startMap(onMapReady: () -> Unit) {
         mapFragment.getMapAsync { map: GoogleMap ->
             this.map = map
+            drawer = GoogleMapDrawer(map, mapFragment.requireContext())
 
             map.setMapStyle(
                 MapStyleOptions.loadRawResourceStyle(
@@ -61,48 +71,53 @@ class GoogleMapManager(
     }
 
     override fun draw(course: CourseItem) {
-        drawer.drawCourse(course)
+        withNullable(drawer) { drawCourse(course) }
     }
 
     override fun draw(courses: List<CourseItem>) {
-        courses.forEach(drawer::drawCourse)
+        withNullable(drawer) { courses.forEach(::drawCourse) }
     }
 
     override fun drawRouteToCourse(
         route: List<Coordinate>,
         course: CourseItem,
     ) {
-        drawer.drawRouteToCourse(route, course)
+        withNullable(drawer) { drawRouteToCourse(route, course) }
     }
 
     override fun removeAllRouteLines() {
-        drawer.removeAllRouteLines()
+        withNullable(drawer) { removeAllRouteLines() }
     }
 
     override fun drawSearchCoordinate(coordinate: Coordinate) {
-        drawer.drawSearchCoordinate(coordinate)
+        withNullable(drawer) { drawSearchCoordinate(coordinate) }
     }
 
     override fun drawUserLocation(location: Location) {
-        drawer.drawUserLocation(location)
+        withNullable(drawer) { drawUserLocation(location) }
     }
 
     override fun hideUserLocation() {
-        drawer.hideUserLocation()
+        withNullable(drawer) { hideUserLocation() }
     }
 
     override fun fitTo(coordinates: List<Coordinate>) {
-        map.animateCamera(
-            CameraUpdateFactory.newLatLngBounds(
-                LatLngBounds
-                    .builder()
-                    .apply { coordinates.forEach { coordinate: Coordinate -> this.include(coordinate.toLatLng()) } }
-                    .build(),
-                mapFragment.requireContext().resources.getDimensionPixelSize(R.dimen.course_route_padding),
-            ),
-            MOVE_ANIMATION_DURATION_MS.toInt(),
-            null,
-        )
+        withNullable(map) {
+            animateCamera(
+                CameraUpdateFactory.newLatLngBounds(
+                    LatLngBounds
+                        .builder()
+                        .apply {
+                            coordinates.forEach { coordinate: Coordinate ->
+                                include(coordinate.toLatLng())
+                            }
+                        }.build(),
+                    mapFragment.requireContext().resources.getDimensionPixelSize(R.dimen.course_route_padding),
+                ),
+                MOVE_ANIMATION_DURATION_MS.toInt(),
+                null,
+            )
+        }
     }
 
     override fun fitTo(course: CourseItem) {
@@ -110,25 +125,29 @@ class GoogleMapManager(
     }
 
     override fun setOnCourseClickListener(onClick: (CourseItem) -> Unit) {
-        map.setOnPolylineClickListener { polyline: Polyline ->
-            (polyline.tag as? CourseItem)?.let(onClick)
+        withNullable(map) {
+            setOnPolylineClickListener { polyline: Polyline ->
+                (polyline.tag as? CourseItem)?.let(onClick)
+            }
         }
     }
 
     override fun setOnCameraMoveListener(onCameraMove: () -> Unit) {
-        map.setOnCameraMoveListener { onCameraMove() }
+        withNullable(map) { setOnCameraMoveListener { onCameraMove() } }
     }
 
     override fun moveTo(coordinate: Coordinate) {
-        map.animateCamera(
-            CameraUpdateFactory.newLatLng(coordinate.toLatLng()),
-            MOVE_ANIMATION_DURATION_MS.toInt(),
-            null,
-        )
+        withNullable(map) {
+            animateCamera(
+                CameraUpdateFactory.newLatLng(coordinate.toLatLng()),
+                MOVE_ANIMATION_DURATION_MS.toInt(),
+                null,
+            )
+        }
     }
 
     override fun resetZoom() {
-        map.moveCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM_LEVEL))
+        withNullable(map) { moveCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM_LEVEL)) }
     }
 
     override fun setPadding(
@@ -137,7 +156,7 @@ class GoogleMapManager(
         right: Int,
         bottom: Int,
     ) {
-        map.setPadding(left, top, right, bottom)
+        withNullable(map) { setPadding(left, top, right, bottom) }
     }
 
     companion object {
