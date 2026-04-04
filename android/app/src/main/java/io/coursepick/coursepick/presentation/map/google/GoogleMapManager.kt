@@ -133,7 +133,11 @@ class GoogleMapManager(
     }
 
     override fun setOnCameraMoveListener(onCameraMove: () -> Unit) {
-        withNullable(map) { setOnCameraMoveListener { onCameraMove() } }
+        withNullable(map) {
+            setOnCameraMoveStartedListener { reason: Int ->
+                if (reason == CAMERA_MOVE_REASON_GESTURE) onCameraMove()
+            }
+        }
     }
 
     override fun moveTo(coordinate: Coordinate) {
@@ -165,5 +169,6 @@ class GoogleMapManager(
         private const val DEFAULT_LONGITUDE = 127.1026170
         private val DEFAULT_LATLNG = LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
         private const val DEFAULT_ZOOM_LEVEL = 15F
+        private const val CAMERA_MOVE_REASON_GESTURE = 1
     }
 }
