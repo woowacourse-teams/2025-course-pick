@@ -11,7 +11,7 @@
             android:layout_height="match_parent" />
 
         <androidx.compose.ui.platform.ComposeView
-            android:id="@+id/composeView"
+            android:id="@+id/composeContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </FrameLayout>

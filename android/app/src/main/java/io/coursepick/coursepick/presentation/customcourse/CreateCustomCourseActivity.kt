@@ -28,7 +28,7 @@ class CreateCustomCourseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         mapManager.startMap {}
-        binding.composeView.setContent {
+        binding.composeContainer.setContent {
             CoursePickTheme {
                 CreateCustomCourseScreen(onClose = { finish() })
             }

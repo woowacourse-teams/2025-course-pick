@@ -139,7 +139,6 @@ fun CreateCustomCourseScreen(
                             .clip(shape = CircleShape)
                             .background(colorResource(R.color.background_primary))
                             .size(70.dp)
-                            .clickable {},
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
