@@ -17,6 +17,7 @@ class CustomCoursesFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentCustomCoursesBinding.inflate(inflater, container, false)
+        binding.customCourses.setContent { CustomCourseScreen(onClick = {}) }
         return binding.root
     }
 
