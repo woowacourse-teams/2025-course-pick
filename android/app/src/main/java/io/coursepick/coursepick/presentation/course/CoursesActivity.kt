@@ -352,6 +352,12 @@ class CoursesActivity :
                     true
                 }
 
+                R.id.customCourseMenu -> {
+                    viewModel.showCourses()
+                    viewModel.switchContent(CoursesContent.CUSTOM_COURSE)
+                    true
+                }
+
                 R.id.settingsMenu -> {
                     viewModel.showSettings()
                     true
@@ -521,8 +527,15 @@ class CoursesActivity :
             object : OnReconnectListener {
                 override fun onReconnect() {
                     when (viewModel.content.value) {
-                        CoursesContent.EXPLORE -> mapCoordinateOrNull()?.let(::fetchCourses)
-                        CoursesContent.FAVORITES -> viewModel.fetchFavorites()
+                        CoursesContent.EXPLORE -> {
+                            mapCoordinateOrNull()?.let(::fetchCourses)
+                        }
+
+                        CoursesContent.FAVORITES -> {
+                            viewModel.fetchFavorites()
+                        }
+
+                        CoursesContent.CUSTOM_COURSE -> {}
                     }
                 }
             }
@@ -636,6 +649,8 @@ class CoursesActivity :
             CoursesContent.FAVORITES -> {
                 viewModel.fetchFavorites()
             }
+
+            CoursesContent.CUSTOM_COURSE -> {}
         }
     }
 
