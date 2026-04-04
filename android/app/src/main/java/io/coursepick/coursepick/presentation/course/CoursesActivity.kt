@@ -179,7 +179,7 @@ class CoursesActivity :
                     binding.mainSearchThisAreaButton.visibility = View.VISIBLE
                 }
                 binding.mainCurrentLocationButton.setColorFilter(
-                    ContextCompat.getColor(this@CoursesActivity, R.color.item_primary),
+                    ContextCompat.getColor(this, R.color.item_primary),
                 )
             }
             mapManager.setOnCourseClickListener { course: CourseItem ->
