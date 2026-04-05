@@ -7,11 +7,13 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.android.gms.maps.model.PointOfInterest
 import com.google.android.gms.maps.model.Polyline
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.domain.location.Location
+import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.course.CourseItem
 import io.coursepick.coursepick.presentation.map.DistanceCalculator
 import io.coursepick.coursepick.presentation.map.MapManager
@@ -57,6 +59,7 @@ class GoogleMapManager(
                         .build(),
                 ),
             )
+            setLogger()
 
             onMapReady()
         }
@@ -122,7 +125,14 @@ class GoogleMapManager(
     override fun setOnCourseClickListener(onClick: (CourseItem) -> Unit) {
         withNullable(map) {
             setOnPolylineClickListener { polyline: Polyline ->
-                (polyline.tag as? CourseItem)?.let(onClick)
+                (polyline.tag as? CourseItem)?.let { course: CourseItem ->
+                    Logger.log(
+                        Logger.Event.Click("course_on_map"),
+                        "id" to course.id,
+                        "name" to course.name,
+                    )
+                    onClick(course)
+                }
             }
         }
     }
@@ -130,7 +140,14 @@ class GoogleMapManager(
     override fun setOnCameraMoveListener(onCameraMove: () -> Unit) {
         withNullable(map) {
             setOnCameraMoveStartedListener { reason: Int ->
-                if (reason == CAMERA_MOVE_REASON_GESTURE) onCameraMove()
+                if (reason == CAMERA_MOVE_REASON_GESTURE) {
+                    Logger.log(
+                        Logger.Event.MapMoveStart("map"),
+                        "latitude" to cameraPosition.target.latitude,
+                        "longitude" to cameraPosition.target.longitude,
+                    )
+                    onCameraMove()
+                }
             }
         }
     }
@@ -156,6 +173,27 @@ class GoogleMapManager(
         bottom: Int,
     ) {
         withNullable(map) { setPadding(left, top, right, bottom) }
+    }
+
+    private fun setLogger() {
+        withNullable(map) {
+            setOnPoiClickListener { poi: PointOfInterest ->
+                Logger.log(
+                    Logger.Event.Click("map_poi"),
+                    "point_of_interest" to poi.name,
+                    "latitude" to poi.latLng.latitude,
+                    "longitude" to poi.latLng.longitude,
+                )
+            }
+
+            setOnMapClickListener { latLng: LatLng ->
+                Logger.log(
+                    Logger.Event.Click("map"),
+                    "latitude" to latLng.latitude,
+                    "longitude" to latLng.longitude,
+                )
+            }
+        }
     }
 
     private inline fun <reified T, R> withNullable(
