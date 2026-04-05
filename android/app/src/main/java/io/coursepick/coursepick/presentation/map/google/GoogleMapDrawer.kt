@@ -59,7 +59,7 @@ class GoogleMapDrawer(
     private fun drawRoute(route: List<Coordinate>) {
         val options =
             PolylineOptions()
-                .apply { route.forEach { coordinate: Coordinate -> add(coordinate.toLatLng()) } }
+                .addAll(route.map(Coordinate::toLatLng))
                 .width(context.resources.getDimension(R.dimen.course_route_width))
                 .color(context.getColor(R.color.course_route))
 
@@ -69,7 +69,7 @@ class GoogleMapDrawer(
     private fun drawUnselectedCourse(course: CourseItem) {
         val options =
             PolylineOptions()
-                .apply { course.coordinates.forEach { coordinate: Coordinate -> add(coordinate.toLatLng()) } }
+                .addAll(course.coordinates.map(Coordinate::toLatLng))
                 .color(context.getColor(R.color.course_unselected))
                 .width(context.resources.getDimension(R.dimen.unselected_course_width))
                 .zIndex(UNSELECTED_COURSE_Z_INDEX)
@@ -80,17 +80,13 @@ class GoogleMapDrawer(
 
     private fun drawSelectedCourse(course: CourseItem) {
         val courseWidth: Float = context.resources.getDimension(R.dimen.selected_course_width)
-
-        val baseOptions =
-            PolylineOptions()
-                .apply { course.coordinates.forEach { coordinate: Coordinate -> add(coordinate.toLatLng()) } }
+        val baseOptions = PolylineOptions().addAll(course.coordinates.map(Coordinate::toLatLng))
 
         val courseOptions: PolylineOptions =
             baseOptions
                 .color(context.getColor(R.color.course_selected))
                 .width(courseWidth)
                 .zIndex(SELECTED_COURSE_Z_INDEX)
-
         map.addPolyline(courseOptions).also(polylinesOnMap::add)
 
         val courseStrokeStyle =
@@ -107,7 +103,6 @@ class GoogleMapDrawer(
                 .addSpan(StyleSpan(courseStrokeStyle))
                 .zIndex(SELECTED_COURSE_Z_INDEX)
                 .clickable(true)
-
         map.addPolyline(courseOverlayOptions).apply { tag = course }.also(polylinesOnMap::add)
     }
 
@@ -125,7 +120,7 @@ class GoogleMapDrawer(
                     MarkerOptions()
                         .icon(searchCoordinateImage)
                         .position(coordinate.toLatLng())
-                        .anchor(0.5F, 1F),
+                        .anchor(0.5F, 0.5F),
                 )
         }
     }

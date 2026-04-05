@@ -36,19 +36,10 @@ class GoogleMapManager(
                 DistanceCalculator.distance(center, topLeft)?.let(Scope::invoke)
             }
 
-    private inline fun <reified T, R> withNullable(
-        receiver: T?,
-        block: T.() -> R,
-    ): R? =
-        receiver?.block() ?: run {
-            Timber.w("${T::class.simpleName} is null.")
-            null
-        }
-
     override fun startMap(onMapReady: () -> Unit) {
         mapFragment.getMapAsync { map: GoogleMap ->
             this.map = map
-            drawer = GoogleMapDrawer(map, mapFragment.requireContext())
+            drawer = GoogleMapDrawer(mapFragment.requireContext(), map)
 
             map.setMapStyle(
                 MapStyleOptions.loadRawResourceStyle(
@@ -66,6 +57,7 @@ class GoogleMapManager(
                         .build(),
                 ),
             )
+
             onMapReady()
         }
     }
@@ -103,15 +95,18 @@ class GoogleMapManager(
 
     override fun fitTo(coordinates: List<Coordinate>) {
         withNullable(map) {
+            val bounds =
+                LatLngBounds
+                    .builder()
+                    .apply {
+                        coordinates.forEach { coordinate: Coordinate ->
+                            include(coordinate.toLatLng())
+                        }
+                    }.build()
+
             animateCamera(
                 CameraUpdateFactory.newLatLngBounds(
-                    LatLngBounds
-                        .builder()
-                        .apply {
-                            coordinates.forEach { coordinate: Coordinate ->
-                                include(coordinate.toLatLng())
-                            }
-                        }.build(),
+                    bounds,
                     mapFragment.requireContext().resources.getDimensionPixelSize(R.dimen.course_route_padding),
                 ),
                 MOVE_ANIMATION_DURATION_MS.toInt(),
@@ -162,6 +157,15 @@ class GoogleMapManager(
     ) {
         withNullable(map) { setPadding(left, top, right, bottom) }
     }
+
+    private inline fun <reified T, R> withNullable(
+        receiver: T?,
+        block: T.() -> R,
+    ): R? =
+        receiver?.block() ?: run {
+            Timber.w("${T::class.simpleName} is null.")
+            null
+        }
 
     companion object {
         private const val MOVE_ANIMATION_DURATION_MS = 750L
