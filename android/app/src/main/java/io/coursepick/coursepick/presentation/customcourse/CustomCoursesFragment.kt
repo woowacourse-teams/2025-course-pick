@@ -33,7 +33,7 @@ class CustomCoursesFragment : Fragment() {
         super.onDestroyView()
     }
 
-    fun navigateCreateCustomCourse() {
+    private fun navigateCreateCustomCourse() {
         val intent = CreateCustomCourseActivity.intent(requireContext())
         startActivity(intent)
     }
