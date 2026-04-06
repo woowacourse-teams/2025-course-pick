@@ -13,6 +13,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
+    alias(libs.plugins.mapsplatform.secrets)
 }
 
 private val localProperties: Properties =
@@ -57,7 +58,11 @@ android {
             versionNameSuffix = "-dev"
             resValue("string", "app_name", "런세권(dev)")
 
-            buildConfigField("String", "BASE_URL", localProperties["base.url.debug"].toString())
+            buildConfigField(
+                "String",
+                "BASE_URL",
+                localProperties["base.url.debug"].toString(),
+            )
             buildConfigField(
                 "String",
                 "KAKAO_BASE_URL",
@@ -99,7 +104,11 @@ android {
                 "proguard-rules.pro",
             )
 
-            buildConfigField("String", "BASE_URL", localProperties["base.url.release"].toString())
+            buildConfigField(
+                "String",
+                "BASE_URL",
+                localProperties["base.url.release"].toString(),
+            )
             buildConfigField(
                 "String",
                 "KAKAO_NATIVE_APP_KEY",
@@ -171,6 +180,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.kakao.maps)
+    implementation(libs.google.maps)
     implementation(libs.kakao.user)
     implementation(libs.play.services.location)
     implementation(platform(libs.firebase.bom))

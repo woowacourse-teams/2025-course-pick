@@ -1,0 +1,229 @@
+package io.coursepick.coursepick.presentation.map.google
+
+import android.animation.ValueAnimator
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import androidx.annotation.DrawableRes
+import androidx.core.graphics.scale
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.Circle
+import com.google.android.gms.maps.model.CircleOptions
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.Polyline
+import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.gms.maps.model.StrokeStyle
+import com.google.android.gms.maps.model.StyleSpan
+import com.google.android.gms.maps.model.TextureStyle
+import io.coursepick.coursepick.R
+import io.coursepick.coursepick.domain.course.Coordinate
+import io.coursepick.coursepick.domain.location.Location
+import io.coursepick.coursepick.presentation.course.CourseItem
+
+class GoogleMapDrawer(
+    private val context: Context,
+    private val map: GoogleMap,
+) {
+    private val polylinesOnMap = mutableListOf<Polyline>()
+    private var searchCoordinateMarker: Marker? = null
+    private var fineUserLocationMarker: Marker? = null
+    private var coarseUserLocationCircle: Circle? = null
+
+    private val selectedCoursePattern: BitmapDescriptor =
+        BitmapDescriptorFactory.fromResource(R.drawable.image_arrow)
+    private val fineUserLocationImage: BitmapDescriptor =
+        BitmapDescriptorFactory.fromBitmap(scaleDrawable(R.drawable.image_current_location, 0.5F))
+    private val searchCoordinateImage: BitmapDescriptor =
+        BitmapDescriptorFactory.fromBitmap(scaleDrawable(R.drawable.image_search_location, 0.5F))
+
+    private var fineUserLocationAnimator: ValueAnimator? = null
+    private var coarseUserLocationAnimator: ValueAnimator? = null
+
+    fun drawCourse(course: CourseItem) {
+        if (course.selected) {
+            drawSelectedCourse(course)
+        } else {
+            drawUnselectedCourse(course)
+        }
+    }
+
+    fun drawRouteToCourse(
+        route: List<Coordinate>,
+        course: CourseItem,
+    ) {
+        drawRoute(route)
+        drawCourse(course)
+    }
+
+    private fun drawRoute(route: List<Coordinate>) {
+        val options =
+            PolylineOptions()
+                .addAll(route.map(Coordinate::toLatLng))
+                .width(context.resources.getDimension(R.dimen.course_route_width_google))
+                .color(context.getColor(R.color.course_route))
+
+        map.addPolyline(options).also(polylinesOnMap::add)
+    }
+
+    private fun drawUnselectedCourse(course: CourseItem) {
+        val options =
+            PolylineOptions()
+                .addAll(course.coordinates.map(Coordinate::toLatLng))
+                .color(context.getColor(R.color.course_unselected))
+                .width(context.resources.getDimension(R.dimen.unselected_course_width_google))
+                .zIndex(UNSELECTED_COURSE_Z_INDEX)
+                .clickable(true)
+
+        map.addPolyline(options).apply { tag = course }.also(polylinesOnMap::add)
+    }
+
+    private fun drawSelectedCourse(course: CourseItem) {
+        val courseStrokeStyle =
+            StrokeStyle
+                .colorBuilder(context.getColor(R.color.course_selected))
+                .stamp(
+                    TextureStyle
+                        .newBuilder(selectedCoursePattern)
+                        .build(),
+                ).build()
+        val courseOptions =
+            PolylineOptions()
+                .addAll(course.coordinates.map(Coordinate::toLatLng))
+                .width(context.resources.getDimension(R.dimen.selected_course_width_google))
+                .addSpan(StyleSpan(courseStrokeStyle, 0.1))
+                .zIndex(SELECTED_COURSE_Z_INDEX)
+                .clickable(true)
+
+        map.addPolyline(courseOptions).apply { tag = course }.also(polylinesOnMap::add)
+    }
+
+    fun removeAllRouteLines() {
+        polylinesOnMap.forEach(Polyline::remove)
+        polylinesOnMap.clear()
+    }
+
+    fun drawSearchCoordinate(coordinate: Coordinate) {
+        searchCoordinateMarker?.let { marker: Marker ->
+            marker.position = coordinate.toLatLng()
+        } ?: run {
+            searchCoordinateMarker =
+                map.addMarker(
+                    MarkerOptions()
+                        .icon(searchCoordinateImage)
+                        .position(coordinate.toLatLng())
+                        .anchor(0.5F, 0.5F),
+                )
+        }
+    }
+
+    fun drawUserLocation(location: Location) {
+        when (location) {
+            is Location.Fine -> drawFineUserLocation(location)
+            is Location.Coarse -> drawCoarseUserLocation(location)
+        }
+    }
+
+    private fun drawFineUserLocation(location: Location.Fine) {
+        hideCoarseUserLocation()
+
+        fineUserLocationMarker?.let { marker: Marker ->
+            fineUserLocationAnimator?.cancel()
+            fineUserLocationAnimator =
+                latLngAnimator(
+                    start = marker.position,
+                    end = location.coordinate.toLatLng(),
+                    duration = MOVE_ANIMATION_DURATION_MS,
+                ) { latLng: LatLng -> marker.position = latLng }
+            fineUserLocationAnimator?.start()
+        } ?: run {
+            fineUserLocationMarker =
+                map.addMarker(
+                    MarkerOptions()
+                        .icon(fineUserLocationImage)
+                        .position(location.coordinate.toLatLng())
+                        .anchor(0.5F, 0.5F),
+                )
+        }
+    }
+
+    private fun drawCoarseUserLocation(location: Location.Coarse) {
+        hideFineUserLocation()
+
+        coarseUserLocationCircle?.let { circle: Circle ->
+            circle.radius = location.accuracy.meter.value
+            coarseUserLocationAnimator?.cancel()
+            coarseUserLocationAnimator =
+                latLngAnimator(
+                    start = circle.center,
+                    end = location.coordinate.toLatLng(),
+                    duration = MOVE_ANIMATION_DURATION_MS,
+                ) { latLng: LatLng -> circle.center = latLng }
+            coarseUserLocationAnimator?.start()
+        } ?: run {
+            coarseUserLocationCircle =
+                map.addCircle(
+                    CircleOptions()
+                        .center(location.coordinate.toLatLng())
+                        .radius(location.accuracy.meter.value)
+                        .fillColor(context.getColor(R.color.coarse_location_area))
+                        .strokeWidth(0F),
+                )
+        }
+    }
+
+    fun hideUserLocation() {
+        hideFineUserLocation()
+        hideCoarseUserLocation()
+    }
+
+    private fun hideFineUserLocation() {
+        fineUserLocationMarker?.remove()
+        fineUserLocationMarker = null
+
+        fineUserLocationAnimator?.cancel()
+        fineUserLocationAnimator = null
+    }
+
+    private fun hideCoarseUserLocation() {
+        coarseUserLocationCircle?.remove()
+        coarseUserLocationCircle = null
+
+        coarseUserLocationAnimator?.cancel()
+        coarseUserLocationAnimator = null
+    }
+
+    private fun latLngAnimator(
+        start: LatLng,
+        end: LatLng,
+        duration: Long,
+        onChange: (latLng: LatLng) -> Unit,
+    ): ValueAnimator {
+        val valueAnimator = ValueAnimator.ofFloat(0F, 1F).setDuration(duration)
+        valueAnimator.addUpdateListener { animator: ValueAnimator ->
+            val latitude =
+                (end.latitude - start.latitude) * animator.animatedFraction + start.latitude
+            val longitude =
+                (end.longitude - start.longitude) * animator.animatedFraction + start.longitude
+            onChange(LatLng(latitude, longitude))
+        }
+        return valueAnimator
+    }
+
+    private fun scaleDrawable(
+        @DrawableRes id: Int,
+        factor: Float,
+    ): Bitmap {
+        val original: Bitmap = BitmapFactory.decodeResource(context.resources, id)
+        return original.scale((original.width * factor).toInt(), (original.height * factor).toInt())
+    }
+
+    companion object {
+        private const val MOVE_ANIMATION_DURATION_MS = 750L
+        private const val UNSELECTED_COURSE_Z_INDEX = 0F
+        private const val SELECTED_COURSE_Z_INDEX = 1F
+    }
+}

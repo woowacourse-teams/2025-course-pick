@@ -28,6 +28,7 @@ kotlinx-coroutines-android = "1.8.0"
 lifecycle-viewmodel-ktx = "2.7.0"
 retrofit2-kotlinx-serialization-converter = "1.0.0"
 kakao-maps = "2.12.8"
+google-maps = "20.0.0"
 kakao-user = "2.23.1"
 play-services-location = "21.3.0"
 assertj-core = "3.27.3"
@@ -47,6 +48,7 @@ ksp = "2.0.21-1.0.27"
 coil = "3.0.4"
 tinkAndroid = "1.20.0"
 coreSplashscreen = "1.2.0"
+mapsplatformSecrets = "2.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -80,6 +82,7 @@ androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-view
 retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2-kotlinx-serialization-converter" }
 assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj-core" }
 kakao-maps = { module = "com.kakao.maps.open:android", version.ref = "kakao-maps" }
+google-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "google-maps" }
 kakao-user = { module = "com.kakao.sdk:v2-user", version.ref = "kakao-user" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "play-services-location" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
@@ -118,3 +121,4 @@ kotlin-parcelize = { id = "kotlin-parcelize" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
+mapsplatform-secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "mapsplatformSecrets" }

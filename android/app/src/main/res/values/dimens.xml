@@ -8,4 +8,7 @@
     <dimen name="unselected_course_width">3dp</dimen>
     <dimen name="course_route_width">4dp</dimen>
     <dimen name="course_pattern_between_distance">12dp</dimen>
+    <dimen name="selected_course_width_google">8dp</dimen>
+    <dimen name="unselected_course_width_google">6dp</dimen>
+    <dimen name="course_route_width_google">8dp</dimen>
 </resources>
