@@ -57,9 +57,10 @@ public class CourseReader implements Converter<Document, Course> {
 
     private List<Coordinate> parseCoordinatesFromJson(String json) {
         if (json == null || json.length() < 4) return List.of();
+
         String content = json.substring(2, json.length() - 2);
-        String[] pairs = content.split("\\\\],\\\\["); // 이스케이프 주의
-        if (pairs.length == 1 && pairs[0].isEmpty()) return List.of();
+
+        String[] pairs = content.split("],\\Q[\\E");
 
         List<Coordinate> result = new ArrayList<>();
         try {
@@ -68,10 +69,11 @@ public class CourseReader implements Converter<Document, Course> {
                 result.add(new Coordinate(Double.parseDouble(coords[1]), Double.parseDouble(coords[0])));
             }
         } catch (Exception e) {
-            // 파싱 실패 시 빈 리스트 (로그 출력 권장)
+            // 파싱 에러 시 빈 리스트 반환
         }
         return result;
     }
+
 
     private List<Coordinate> parseSimplifiedCoordinates(Document source, List<Coordinate> original) {
         Object simplified = source.get("simplifiedCoordinates");
