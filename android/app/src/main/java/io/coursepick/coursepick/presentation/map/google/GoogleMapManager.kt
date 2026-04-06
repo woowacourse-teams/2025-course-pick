@@ -25,17 +25,26 @@ class GoogleMapManager(
     private var map: GoogleMap? = null
     private var drawer: GoogleMapDrawer? = null
 
-    override val cameraCoordinate: Coordinate? get() = withNullable(map) { cameraPosition.target.toCoordinate() }
+    override val cameraCoordinate: Coordinate?
+        get() =
+            map?.let { map: GoogleMap -> map.cameraPosition.target.toCoordinate() } ?: run {
+                Timber.w("${GoogleMap::class.simpleName} is null.")
+                null
+            }
+
     override val scope: Scope?
         get() =
-            withNullable(map) {
+            map?.let { map: GoogleMap ->
                 val center =
-                    projection.visibleRegion.latLngBounds.center
+                    map.projection.visibleRegion.latLngBounds.center
                         .toCoordinate()
                 val topLeft =
-                    projection.visibleRegion.farLeft
+                    map.projection.visibleRegion.farLeft
                         .toCoordinate()
                 DistanceCalculator.distance(center, topLeft)?.let(Scope::invoke)
+            } ?: run {
+                Timber.w("${GoogleMap::class.simpleName} is null.")
+                null
             }
 
     override fun startMap(onMapReady: () -> Unit) {
@@ -66,38 +75,45 @@ class GoogleMapManager(
     }
 
     override fun draw(course: CourseItem) {
-        withNullable(drawer) { drawCourse(course) }
+        drawer?.drawCourse(course)
+            ?: run { Timber.w("${GoogleMapDrawer::class.simpleName} is null.") }
     }
 
     override fun draw(courses: List<CourseItem>) {
-        withNullable(drawer) { courses.forEach(::drawCourse) }
+        drawer?.let { drawer: GoogleMapDrawer -> courses.forEach(drawer::drawCourse) }
+            ?: run { Timber.w("${GoogleMapDrawer::class.simpleName} is null.") }
     }
 
     override fun drawRouteToCourse(
         route: List<Coordinate>,
         course: CourseItem,
     ) {
-        withNullable(drawer) { drawRouteToCourse(route, course) }
+        drawer?.drawRouteToCourse(route, course)
+            ?: run { Timber.w("${GoogleMapDrawer::class.simpleName} is null.") }
     }
 
     override fun removeAllRouteLines() {
-        withNullable(drawer) { removeAllRouteLines() }
+        drawer?.removeAllRouteLines()
+            ?: run { Timber.w("${GoogleMapDrawer::class.simpleName} is null.") }
     }
 
     override fun drawSearchCoordinate(coordinate: Coordinate) {
-        withNullable(drawer) { drawSearchCoordinate(coordinate) }
+        drawer?.drawSearchCoordinate(coordinate)
+            ?: run { Timber.w("${GoogleMapDrawer::class.simpleName} is null.") }
     }
 
     override fun drawUserLocation(location: Location) {
-        withNullable(drawer) { drawUserLocation(location) }
+        drawer?.drawUserLocation(location)
+            ?: run { Timber.w("${GoogleMapDrawer::class.simpleName} is null.") }
     }
 
     override fun hideUserLocation() {
-        withNullable(drawer) { hideUserLocation() }
+        drawer?.hideUserLocation()
+            ?: run { Timber.w("${GoogleMapDrawer::class.simpleName} is null.") }
     }
 
     override fun fitTo(coordinates: List<Coordinate>) {
-        withNullable(map) {
+        map?.let { map: GoogleMap ->
             val bounds =
                 LatLngBounds
                     .builder()
@@ -107,7 +123,7 @@ class GoogleMapManager(
                         }
                     }.build()
 
-            animateCamera(
+            map.animateCamera(
                 CameraUpdateFactory.newLatLngBounds(
                     bounds,
                     mapFragment.requireContext().resources.getDimensionPixelSize(R.dimen.course_route_padding),
@@ -115,7 +131,7 @@ class GoogleMapManager(
                 MOVE_ANIMATION_DURATION_MS.toInt(),
                 null,
             )
-        }
+        } ?: run { Timber.w("${GoogleMap::class.simpleName} is null.") }
     }
 
     override fun fitTo(course: CourseItem) {
@@ -123,8 +139,8 @@ class GoogleMapManager(
     }
 
     override fun setOnCourseClickListener(onClick: (CourseItem) -> Unit) {
-        withNullable(map) {
-            setOnPolylineClickListener { polyline: Polyline ->
+        map?.let { map: GoogleMap ->
+            map.setOnPolylineClickListener { polyline: Polyline ->
                 (polyline.tag as? CourseItem)?.let { course: CourseItem ->
                     Logger.log(
                         Logger.Event.Click("course_on_map"),
@@ -134,36 +150,38 @@ class GoogleMapManager(
                     onClick(course)
                 }
             }
-        }
+        } ?: run { Timber.w("${GoogleMap::class.simpleName} is null.") }
     }
 
     override fun setOnCameraMoveListener(onCameraMove: () -> Unit) {
-        withNullable(map) {
-            setOnCameraMoveStartedListener { reason: Int ->
+        map?.let { map: GoogleMap ->
+            map.setOnCameraMoveStartedListener { reason: Int ->
                 if (reason == CAMERA_MOVE_REASON_GESTURE) {
                     Logger.log(
                         Logger.Event.MapMoveStart("map"),
-                        "latitude" to cameraPosition.target.latitude,
-                        "longitude" to cameraPosition.target.longitude,
+                        "latitude" to map.cameraPosition.target.latitude,
+                        "longitude" to map.cameraPosition.target.longitude,
                     )
                     onCameraMove()
                 }
             }
-        }
+        } ?: run { Timber.w("${GoogleMap::class.simpleName} is null.") }
     }
 
     override fun moveTo(coordinate: Coordinate) {
-        withNullable(map) {
-            animateCamera(
+        map?.let { map: GoogleMap ->
+            map.animateCamera(
                 CameraUpdateFactory.newLatLng(coordinate.toLatLng()),
                 MOVE_ANIMATION_DURATION_MS.toInt(),
                 null,
             )
-        }
+        } ?: run { Timber.w("${GoogleMap::class.simpleName} is null.") }
     }
 
     override fun resetZoom() {
-        withNullable(map) { moveCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM_LEVEL)) }
+        map?.let { map: GoogleMap ->
+            map.moveCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM_LEVEL))
+        } ?: run { Timber.w("${GoogleMap::class.simpleName} is null.") }
     }
 
     override fun setPadding(
@@ -172,12 +190,14 @@ class GoogleMapManager(
         right: Int,
         bottom: Int,
     ) {
-        withNullable(map) { setPadding(left, top, right, bottom) }
+        map?.let { map: GoogleMap ->
+            map.setPadding(left, top, right, bottom)
+        } ?: run { Timber.w("${GoogleMap::class.simpleName} is null.") }
     }
 
     private fun setLogger() {
-        withNullable(map) {
-            setOnPoiClickListener { poi: PointOfInterest ->
+        map?.let { map: GoogleMap ->
+            map.setOnPoiClickListener { poi: PointOfInterest ->
                 Logger.log(
                     Logger.Event.Click("map_poi"),
                     "point_of_interest" to poi.name,
@@ -186,24 +206,15 @@ class GoogleMapManager(
                 )
             }
 
-            setOnMapClickListener { latLng: LatLng ->
+            map.setOnMapClickListener { latLng: LatLng ->
                 Logger.log(
                     Logger.Event.Click("map"),
                     "latitude" to latLng.latitude,
                     "longitude" to latLng.longitude,
                 )
             }
-        }
+        } ?: run { Timber.w("${GoogleMap::class.simpleName} is null.") }
     }
-
-    private inline fun <reified T, R> withNullable(
-        receiver: T?,
-        block: T.() -> R,
-    ): R? =
-        receiver?.block() ?: run {
-            Timber.w("${T::class.simpleName} is null.")
-            null
-        }
 
     companion object {
         private const val MOVE_ANIMATION_DURATION_MS = 750L
