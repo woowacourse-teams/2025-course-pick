@@ -3,6 +3,7 @@ package coursepick.coursepick.presentation.api;
 import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
 import coursepick.coursepick.presentation.dto.CourseWebResponse;
 import coursepick.coursepick.presentation.dto.CoursesWebResponse;
+import coursepick.coursepick.presentation.dto.CustomCourseWebRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,6 +14,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
+
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Tag(name = "러닝 코스 (Course)")
 public interface CourseWebApi {
@@ -104,5 +107,9 @@ public interface CourseWebApi {
                     schema = @Schema(type = "array", implementation = String.class)
             )
             List<String> coursesId
+    );
+
+    List<CoordinateWebResponse> addCustomCourses(
+        CustomCourseWebRequest customCourseWebRequest
     );
 }
