@@ -61,7 +61,7 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
     @Override
     public Slice<Course> findAllHasDistanceWithin(CourseFindCondition condition) {
         long start = System.nanoTime();
-        log.error("쿼리 시작 시간 : {}", start);
+        log.info("쿼리 시작 시간 : {}", start);
         try {
             Query query = new Query().maxTimeMsec(5000);
 
@@ -76,8 +76,8 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
             boolean hasNext = result.size() > condition.pageSize();
             if (hasNext) result.removeLast();
             long end = System.nanoTime();
-            log.error("끝 시간 : {}", end);
-            log.error("소요 시간 : {}ms", (end - start) / 1000000);
+            log.info("끝 시간 : {}", end);
+            log.info("소요 시간 : {}ms", (end - start) / 1000000);
             return new SliceImpl<>(result, condition.pageable(), hasNext);
         } catch (MongoTimeoutException | MongoExecutionTimeoutException e) {
             throw QUERY_TIMEOUT.create();
