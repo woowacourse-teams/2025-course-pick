@@ -15,8 +15,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.RequestBody;
-
 @Tag(name = "러닝 코스 (Course)")
 public interface CourseWebApi {
 
@@ -109,8 +107,8 @@ public interface CourseWebApi {
             List<String> coursesId
     );
 
-    List<CoordinateWebResponse> addCustomCourses(
-        CustomCourseWebRequest customCourseWebRequest,
-        String userId
+    void addCustomCourses(
+            CustomCourseWebRequest customCourseWebRequest,
+            String userId
     );
 }

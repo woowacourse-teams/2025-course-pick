@@ -9,15 +9,14 @@ import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
 import coursepick.coursepick.presentation.dto.CourseWebResponse;
 import coursepick.coursepick.presentation.dto.CoursesWebResponse;
 import coursepick.coursepick.presentation.dto.CustomCourseWebRequest;
-import coursepick.coursepick.security.Login;
-import coursepick.coursepick.security.UserId;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/v2")
 @RequiredArgsConstructor
@@ -73,17 +72,14 @@ public class CourseV2WebController implements CourseWebApi {
     }
 
     @Override
-    @Login
     @PostMapping("/courses")
-    public List<CoordinateWebResponse> addCustomCourses(@Valid @RequestBody CustomCourseWebRequest request, @UserId String userId) {
+    public void addCustomCourses(@Valid @RequestBody CustomCourseWebRequest request, @RequestParam String userId) {
 
         List<List<Double>> rawCoordinates = request.coordinates();
         List<Coordinate> coordinates = rawCoordinates.stream()
                 .map(rawCoordinate -> new Coordinate(rawCoordinate.getFirst(), rawCoordinate.get(1)))
                 .toList();
 
-        courseApplicationService.addCustomCourse(request.name(), request.length(), coordinates, userId);
-
-        return List.of();
+        courseApplicationService.addCustomCourse(request.name(), coordinates, userId);
     }
 }

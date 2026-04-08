@@ -70,7 +70,6 @@ public class CourseV1WebController implements CourseWebApi {
     }
 
     @Override
-    public List<CoordinateWebResponse> addCustomCourses(CustomCourseWebRequest customCourseWebRequest, String userId) {
-        return List.of();
+    public void addCustomCourses(CustomCourseWebRequest customCourseWebRequest, String userId) {
     }
 }
