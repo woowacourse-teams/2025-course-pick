@@ -1,9 +1,15 @@
 package coursepick.coursepick.presentation.dto;
 
+import jakarta.validation.constraints.NotNull;
+
 import java.util.List;
 
 public record CustomCourseWebRequest(
-        List<List<Double>> coordinates,
-        String name
+        @NotNull
+        String name,
+        @NotNull
+        Double length,
+        @NotNull
+        List<List<Double>> coordinates
 ) {
 }
