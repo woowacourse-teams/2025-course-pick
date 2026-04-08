@@ -22,6 +22,12 @@ public class CourseApplicationService {
     private final CourseRepository courseRepository;
     private final RouteFinder routeFinder;
 
+    @Transactional
+    public void addCustomCourse(String name, List<Coordinate> coordinates, String userId) {
+        Course newCourse = Course.ofUser(name, coordinates, userId);
+        courseRepository.save(newCourse);
+    }
+
     @Transactional(readOnly = true)
     public CoursesResponse findNearbyCourses(CourseFindCondition condition, @Nullable Double userLatitude, @Nullable Double userLongitude) {
         Slice<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(condition);
@@ -66,10 +72,5 @@ public class CourseApplicationService {
                 log.warn("존재하지 않는 코스에 대한 조회: {}", course.id());
             }
         }
-    }
-
-    public void addCustomCourse(String name, List<Coordinate> coordinates, String userId) {
-        Course newCourse = Course.ofUser(name, coordinates, userId);
-        courseRepository.save(newCourse);
     }
 }
