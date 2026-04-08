@@ -15,7 +15,7 @@ public class CourseReader implements Converter<Document, Course> {
                 new CourseName(source.getString("name")),
                 parseCoordinates(source.get("coordinates", Document.class)),
                 new Meter(source.getDouble("length")),
-                new CourseOrigin(source.getString("origin"))
+                new CourseCreator(source.getString("courseCreator"))
         );
     }
 

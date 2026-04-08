@@ -30,7 +30,7 @@ public class Course {
 
     private Meter length;
 
-    private CourseOrigin origin;
+    private CourseCreator courseCreator;
 
     public Course(String id, String name, List<Coordinate> rawCoordinates) {
         this.id = id;
@@ -44,7 +44,7 @@ public class Course {
         this.name = new CourseName(name);
         this.coordinates = refineCoordinates(rawCoordinates);
         this.length = calculateLength(coordinates);
-        this.origin = CourseOrigin.byUser(userId);
+        this.courseCreator = CourseCreator.fromUser(userId);
     }
 
     public static Course ofUser(String name, List<Coordinate> rawCoordinates, String userId) {
