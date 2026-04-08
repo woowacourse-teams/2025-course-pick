@@ -39,16 +39,16 @@ public class Course {
         this.length = calculateLength(coordinates);
     }
 
-    public Course(String name, Meter length, List<Coordinate> rawCoordinates, String userId) {
+    public Course(String name, List<Coordinate> rawCoordinates, String userId) {
         this.id = null;
         this.name = new CourseName(name);
         this.coordinates = refineCoordinates(rawCoordinates);
-        this.length = length;
+        this.length = calculateLength(coordinates);
         this.origin = CourseOrigin.byUser(userId);
     }
 
-    public static Course ofUser(String name, Meter length, List<Coordinate> rawCoordinates, String userId) {
-        return new Course(name, length, rawCoordinates, userId);
+    public static Course ofUser(String name, List<Coordinate> rawCoordinates, String userId) {
+        return new Course(name, rawCoordinates, userId);
     }
 
     private List<Coordinate> refineCoordinates(List<Coordinate> rawCoordinates) {

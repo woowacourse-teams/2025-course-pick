@@ -8,8 +8,6 @@ public record CustomCourseWebRequest(
         @NotNull
         String name,
         @NotNull
-        Double length,
-        @NotNull
         List<List<Double>> coordinates
 ) {
 }
