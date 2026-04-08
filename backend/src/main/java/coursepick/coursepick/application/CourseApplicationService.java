@@ -67,4 +67,9 @@ public class CourseApplicationService {
             }
         }
     }
+
+    public void addCustomCourse(String name, Double length, List<Coordinate> coordinates, String userId) {
+        Course newCourse = Course.ofUser(name, new Meter(length), coordinates, userId);
+        courseRepository.save(newCourse);
+    }
 }
