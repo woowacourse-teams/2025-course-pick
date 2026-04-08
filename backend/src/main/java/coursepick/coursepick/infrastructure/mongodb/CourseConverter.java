@@ -2,6 +2,7 @@ package coursepick.coursepick.infrastructure.mongodb;
 
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.Course;
+import coursepick.coursepick.domain.course.CourseOrigin;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.core.convert.converter.Converter;
@@ -26,6 +27,8 @@ public abstract class CourseConverter {
             document.put("coordinates", convertCoordinatesToGeoJson(source.coordinates()));
             document.put("length", source.length().value());
             document.put("schemaVersion", 1);
+            document.put("origin", source.origin().id());
+
             return document;
         }
 
