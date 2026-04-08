@@ -234,4 +234,22 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         Assertions.assertThatThrownBy(() -> sut.findClosestCoordinate("notId", 0, 0))
                 .isInstanceOf(NoSuchElementException.class);
     }
+
+    @Test
+    void 유저가_생성한_코스를_저장한다() {
+
+        String name = "나만의 코스1";
+        List<Coordinate> coordinates = List.of(
+                new Coordinate(37.602500, 126.967000),
+                new Coordinate(37.603000, 126.968000),
+                new Coordinate(37.603500, 126.969000),
+                new Coordinate(37.602500, 126.967000)
+        );
+        String userId = "userId";
+
+        sut.addCustomCourse(name, coordinates, userId);
+        Course result = dbUtil.findCourseByName(name);
+
+        assertThat(result.name().value()).isEqualTo(name);
+    }
 }
