@@ -1,0 +1,9 @@
+package coursepick.coursepick.presentation.dto;
+
+import java.util.List;
+
+public record CustomCourseWebRequest(
+        List<List<Double>> coordinates,
+        String name
+) {
+}
