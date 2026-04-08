@@ -15,8 +15,14 @@ public record CourseWebResponse(
         Double distance,
         @Schema(description = "코스 전체 길이 (미터)", example = "2146.123")
         double length,
-        @Schema(description = "코스를 구성하는 좌표 목록")
-        List<CoordinateWebResponse> coordinates
+        @Schema(description = "코스를 구성하는 좌표 목록 [위도, 경도]")
+        List<Double[]> coordinates,
+        @Schema(
+                description = "코스 등록 주체\n- 운영자: null 또는 admin\n- 유저: 생성한 유저의 id",
+                example = "689c1233232cecc6353cda7b"
+        )
+        String courseCreator
+
 ) {
     public static List<CourseWebResponse> from(List<CourseResponse> courseResponses) {
         return courseResponses.stream()
@@ -32,7 +38,10 @@ public record CourseWebResponse(
                         .map(Meter::value)
                         .orElse(null),
                 courseResponse.length().value(),
-                CoordinateWebResponse.from(courseResponse.coordinates())
+                courseResponse.coordinates().stream()
+                        .map(c -> new Double[]{c.latitude(), c.longitude()})
+                        .toList(),
+                courseResponse.origin().id()
         );
     }
 }
