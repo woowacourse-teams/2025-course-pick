@@ -107,7 +107,7 @@ public interface CourseWebApi {
             List<String> coursesId
     );
 
-    void addCustomCourses(
+    String addCustomCourses(
             CustomCourseWebRequest customCourseWebRequest,
             String userId
     );

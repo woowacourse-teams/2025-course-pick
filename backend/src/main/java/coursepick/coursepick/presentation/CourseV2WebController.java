@@ -9,6 +9,8 @@ import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
 import coursepick.coursepick.presentation.dto.CourseWebResponse;
 import coursepick.coursepick.presentation.dto.CoursesWebResponse;
 import coursepick.coursepick.presentation.dto.CustomCourseWebRequest;
+import coursepick.coursepick.security.Login;
+import coursepick.coursepick.security.UserId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -72,8 +74,9 @@ public class CourseV2WebController implements CourseWebApi {
     }
 
     @Override
+    @Login
     @PostMapping("/courses")
-    public void addCustomCourses(@Valid @RequestBody CustomCourseWebRequest request, @RequestParam String userId) {
+    public String addCustomCourses(@Valid @RequestBody CustomCourseWebRequest request, @UserId String userId) {
 
         List<List<Double>> rawCoordinates = request.coordinates();
         List<Coordinate> coordinates = rawCoordinates.stream()
@@ -81,5 +84,7 @@ public class CourseV2WebController implements CourseWebApi {
                 .toList();
 
         courseApplicationService.addCustomCourse(request.name(), coordinates, userId);
+
+        return "코스 추가 성공";
     }
 }
