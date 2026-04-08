@@ -8,11 +8,13 @@ import coursepick.coursepick.presentation.api.CourseWebApi;
 import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
 import coursepick.coursepick.presentation.dto.CourseWebResponse;
 import coursepick.coursepick.presentation.dto.CoursesWebResponse;
+import coursepick.coursepick.presentation.dto.CustomCourseWebRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Deprecated
 @RestController
 @RequestMapping("/v1")
 @RequiredArgsConstructor
@@ -65,5 +67,10 @@ public class CourseV1WebController implements CourseWebApi {
         return courseApplicationService.findFavoriteCourses(ids).stream()
                 .map(CourseWebResponse::from)
                 .toList();
+    }
+
+    @Override
+    public List<CoordinateWebResponse> addCustomCourses(CustomCourseWebRequest customCourseWebRequest, String userId) {
+        return List.of();
     }
 }
