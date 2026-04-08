@@ -92,22 +92,6 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
         Criteria v2Criteria = Criteria.where("coordinates").withinSphere(circle);
 
         query.addCriteria(v2Criteria);
-
-        //near
-//        GeoJsonPoint point = new GeoJsonPoint(condition.mapPosition().longitude(), condition.mapPosition().latitude());
-//
-//        Criteria criteria = Criteria.where("coordinates")
-//                .nearSphere(point)
-//                .maxDistance(condition.scope().value());
-
-        //within
-//        double radiusInMeters = condition.scope().value();
-//
-//        // nearSphere 대신 withinSphere 사용
-//        Criteria criteria = Criteria.where("coordinates")
-//                .withinSphere(new Circle(point, radiusInMeters / 6378137.0));
-
-//        query.addCriteria(criteria);
     }
 
     private static void addLengthCriteria(CourseFindCondition condition, Query query) {
