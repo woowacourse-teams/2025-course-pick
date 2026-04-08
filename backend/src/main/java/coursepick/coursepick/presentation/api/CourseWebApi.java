@@ -110,6 +110,7 @@ public interface CourseWebApi {
     );
 
     List<CoordinateWebResponse> addCustomCourses(
-        CustomCourseWebRequest customCourseWebRequest
+        CustomCourseWebRequest customCourseWebRequest,
+        String userId
     );
 }
