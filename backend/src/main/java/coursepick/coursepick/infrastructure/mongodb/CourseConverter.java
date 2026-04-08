@@ -27,7 +27,10 @@ public abstract class CourseConverter {
             document.put("coordinates", convertCoordinatesToGeoJson(source.coordinates()));
             document.put("length", source.length().value());
             document.put("schemaVersion", 1);
-            document.put("origin", source.origin().id());
+
+            if(source.origin() != null && !source.origin().id().isBlank()) {
+                document.put("origin", source.origin().id());
+            }
 
             return document;
         }
