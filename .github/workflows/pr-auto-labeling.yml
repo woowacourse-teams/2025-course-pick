@@ -25,7 +25,7 @@ jobs:
           base-date: ${{ github.event.pull_request.created_at }}
           pr-number: ${{ github.event.pull_request.number }}
 
-      - name: 매일 자정에 라벨 업데이트
+      - name: 매일 오전 10시 라벨 업데이트
         if: github.event_name == 'schedule'
         uses: kkiseug/pr-deadline-labeler@v1
         with:
