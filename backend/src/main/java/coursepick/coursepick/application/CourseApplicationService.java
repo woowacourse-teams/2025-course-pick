@@ -22,6 +22,12 @@ public class CourseApplicationService {
     private final CourseRepository courseRepository;
     private final RouteFinder routeFinder;
 
+    @Transactional
+    public void addCustomCourse(String name, List<Coordinate> coordinates, String userId) {
+        Course newCourse = new Course(null, name, coordinates, userId);
+        courseRepository.save(newCourse);
+    }
+
     @Transactional(readOnly = true)
     public CoursesResponse findNearbyCourses(CourseFindCondition condition, @Nullable Double userLatitude, @Nullable Double userLongitude) {
         Slice<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(condition);

@@ -9,16 +9,20 @@ import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
 import coursepick.coursepick.presentation.dto.CourseWebResponse;
 import coursepick.coursepick.presentation.dto.CoursesWebResponse;
 import coursepick.coursepick.presentation.dto.CourseCreateWebRequest;
+import coursepick.coursepick.security.Login;
+import coursepick.coursepick.security.UserId;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Deprecated
+@Slf4j
 @RestController
-@RequestMapping("/v1")
+@RequestMapping("/v2")
 @RequiredArgsConstructor
-public class CourseV1WebController implements CourseWebApi {
+public class CourseV2WebController implements CourseWebApi {
 
     private final CourseApplicationService courseApplicationService;
 
@@ -70,7 +74,10 @@ public class CourseV1WebController implements CourseWebApi {
     }
 
     @Override
-    public String addCustomCourses(CourseCreateWebRequest customCourseWebRequest, String userId) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    @Login
+    @PostMapping("/courses")
+    public String addCustomCourses(@Valid @RequestBody CourseCreateWebRequest request, @UserId String userId) {
+        courseApplicationService.addCustomCourse(request.name(), request.toCoordinates(), userId);
+        return "코스 추가 성공";
     }
 }
