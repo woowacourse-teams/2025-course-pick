@@ -7,11 +7,16 @@ import coursepick.coursepick.presentation.dto.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+
+import com.mongodb.DuplicateKeyException;
 
 @RestControllerAdvice
 @Slf4j
@@ -34,6 +39,24 @@ public class WebExceptionHandler {
         log.warn("[EXCEPTION] MissingServletRequestParameterException 예외 응답 반환", LogContent.exception(e));
         return ResponseEntity.badRequest().body(ErrorResponse.from(e));
     }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        log.warn("[EXCEPTION] MethodArgumentNotValidException 예외 응답 반환", LogContent.exception(e));
+        String errorMessage = e.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .collect(Collectors.joining(", "));
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse(errorMessage, LocalDateTime.now().toString()));
+    }
+
+    @ExceptionHandler(DuplicateKeyException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateKeyException(DuplicateKeyException e) {
+        log.warn("[EXCEPTION] DuplicateKeyException 예외 응답 반환", LogContent.exception(e));
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse("이미 존재하는 데이터입니다.", LocalDateTime.now().toString()));
+    }
+
 
     @ExceptionHandler(QueryTimeoutException.class)
     public ResponseEntity<ErrorResponse> handleQueryTimeoutException(QueryTimeoutException e) {
