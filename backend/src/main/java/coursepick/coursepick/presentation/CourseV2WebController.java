@@ -8,7 +8,7 @@ import coursepick.coursepick.presentation.api.CourseWebApi;
 import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
 import coursepick.coursepick.presentation.dto.CourseWebResponse;
 import coursepick.coursepick.presentation.dto.CoursesWebResponse;
-import coursepick.coursepick.presentation.dto.CustomCourseWebRequest;
+import coursepick.coursepick.presentation.dto.CourseCreateWebRequest;
 import coursepick.coursepick.security.Login;
 import coursepick.coursepick.security.UserId;
 import jakarta.validation.Valid;
@@ -76,7 +76,7 @@ public class CourseV2WebController implements CourseWebApi {
     @Override
     @Login
     @PostMapping("/courses")
-    public String addCustomCourses(@Valid @RequestBody CustomCourseWebRequest request, @UserId String userId) {
+    public String addCustomCourses(@Valid @RequestBody CourseCreateWebRequest request, @UserId String userId) {
 
         List<List<Double>> rawCoordinates = request.coordinates();
         List<Coordinate> coordinates = rawCoordinates.stream()
