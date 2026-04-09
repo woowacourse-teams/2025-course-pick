@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.map.kakao
+package io.coursepick.coursepick.presentation.map
 
 import android.location.Location
 import io.coursepick.coursepick.domain.course.Coordinate
