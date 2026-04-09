@@ -3,14 +3,16 @@ package coursepick.coursepick.presentation.api;
 import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
 import coursepick.coursepick.presentation.dto.CourseWebResponse;
 import coursepick.coursepick.presentation.dto.CoursesWebResponse;
-import coursepick.coursepick.presentation.dto.CustomCourseWebRequest;
+import coursepick.coursepick.presentation.dto.CourseCreateWebRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
@@ -107,8 +109,26 @@ public interface CourseWebApi {
             List<String> coursesId
     );
 
+    @Operation(summary = "유저 커스텀 코스 등록", security = {@SecurityRequirement(name = "BearerAuth")})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "코스 등록 성공"),
+            @ApiResponse(responseCode = "400", description = "입력값 검증 실패 (null 등)"),
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
+    })
     String addCustomCourses(
-            CustomCourseWebRequest customCourseWebRequest,
+            @RequestBody(
+                    description = "커스텀 코스 생성 요청 데이터",
+                    required = true,
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    name = "커스텀 코스 요청 예시",
+                                    value = "{\n  \"name\": \"매일 뛰는 한강변 코스\",\n  \"coordinates\": [\n    [127.1040109, 37.5165004],\n    [127.1050109, 37.5175004]\n  ]\n}"
+                            )
+                    )
+            )
+            CourseCreateWebRequest courseCreateWebRequest,
+
+            @Parameter(hidden = true)
             String userId
     );
 }
