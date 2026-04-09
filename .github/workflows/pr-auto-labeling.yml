@@ -5,8 +5,6 @@ on:
     types: [opened]
   schedule:
     - cron: '0 15 * * *'
-  pull_request_review:
-    types: [submitted]
 
 jobs:
   label:
@@ -32,11 +30,3 @@ jobs:
         uses: kkiseug/pr-deadline-labeler@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: 리뷰 제출 시 마감일로 라벨 조정
-        if: github.event_name == 'pull_request_review'
-        uses: kkiseug/pr-deadline-labeler@v1
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          base-date: ${{ github.event.review.submitted_at }}
-          pr-number: ${{ github.event.pull_request.number }}
