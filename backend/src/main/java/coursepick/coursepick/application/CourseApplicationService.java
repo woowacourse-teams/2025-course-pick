@@ -46,6 +46,21 @@ public class CourseApplicationService {
     }
 
     @Transactional(readOnly = true)
+    public DraftSegment findDraftRoute(List<Coordinate> waypoints) {
+        DraftSegment draftRoute = null;
+        for (int i = 0; i < waypoints.size() - 1; i++) {
+            List<Coordinate> path = routeFinder.find(waypoints.get(i), waypoints.get(i + 1));
+            DraftSegment segment = DraftSegment.of(path);
+            if (draftRoute == null) {
+                draftRoute = segment;
+            } else {
+                draftRoute = draftRoute.merge(segment);
+            }
+        }
+        return draftRoute;
+    }
+
+    @Transactional(readOnly = true)
     public List<Coordinate> routesToCourse(String id, double originLatitude, double originLongitude) {
         Coordinate destination = findClosestCoordinate(id, originLatitude, originLongitude);
         return routeFinder.find(new Coordinate(originLatitude, originLongitude), destination);
