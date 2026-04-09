@@ -30,25 +30,14 @@ public class Course {
 
     private Meter length;
 
-    private CourseCreator courseCreator;
+    private CourseCreator creator;
 
-    public Course(String id, String name, List<Coordinate> rawCoordinates) {
+    public Course(String id, String name, List<Coordinate> rawCoordinates, String userId) {
         this.id = id;
         this.name = new CourseName(name);
         this.coordinates = refineCoordinates(rawCoordinates);
         this.length = calculateLength(coordinates);
-    }
-
-    public Course(String name, List<Coordinate> rawCoordinates, String userId) {
-        this.id = null;
-        this.name = new CourseName(name);
-        this.coordinates = refineCoordinates(rawCoordinates);
-        this.length = calculateLength(coordinates);
-        this.courseCreator = CourseCreator.fromUser(userId);
-    }
-
-    public static Course ofUser(String name, List<Coordinate> rawCoordinates, String userId) {
-        return new Course(name, rawCoordinates, userId);
+        this.creator = new CourseCreator(userId);
     }
 
     private List<Coordinate> refineCoordinates(List<Coordinate> rawCoordinates) {

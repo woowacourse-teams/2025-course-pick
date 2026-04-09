@@ -24,7 +24,7 @@ public class CourseApplicationService {
 
     @Transactional
     public void addCustomCourse(String name, List<Coordinate> coordinates, String userId) {
-        Course newCourse = Course.ofUser(name, coordinates, userId);
+        Course newCourse = new Course(null, name, coordinates, userId);
         courseRepository.save(newCourse);
     }
 
