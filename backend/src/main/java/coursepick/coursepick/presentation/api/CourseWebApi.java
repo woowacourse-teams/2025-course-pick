@@ -1,9 +1,6 @@
 package coursepick.coursepick.presentation.api;
 
-import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
-import coursepick.coursepick.presentation.dto.CourseWebResponse;
-import coursepick.coursepick.presentation.dto.CoursesWebResponse;
-import coursepick.coursepick.presentation.dto.CustomCourseWebRequest;
+import coursepick.coursepick.presentation.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -111,4 +108,8 @@ public interface CourseWebApi {
             CustomCourseWebRequest customCourseWebRequest,
             String userId
     );
+
+    @Operation(summary = "코스 생성 시 웨이포인트 기반 전체 경로 및 총 거리 조회")
+    @ApiResponse(responseCode = "200")
+    DraftRouteWebResponse findDraftRoute(FindDraftRouteWebRequest request);
 }

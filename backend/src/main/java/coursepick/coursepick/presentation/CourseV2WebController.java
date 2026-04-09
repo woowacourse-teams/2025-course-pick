@@ -4,13 +4,13 @@ import coursepick.coursepick.application.CourseApplicationService;
 import coursepick.coursepick.application.dto.CoursesResponse;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.CourseFindCondition;
+import coursepick.coursepick.domain.course.DraftSegment;
 import coursepick.coursepick.presentation.api.CourseWebApi;
-import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
-import coursepick.coursepick.presentation.dto.CourseWebResponse;
-import coursepick.coursepick.presentation.dto.CoursesWebResponse;
-import coursepick.coursepick.presentation.dto.CustomCourseWebRequest;
+import coursepick.coursepick.presentation.dto.*;
 import coursepick.coursepick.security.Login;
 import coursepick.coursepick.security.UserId;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -86,5 +86,12 @@ public class CourseV2WebController implements CourseWebApi {
         courseApplicationService.addCustomCourse(request.name(), coordinates, userId);
 
         return "코스 추가 성공";
+    }
+
+    @Override
+    @PostMapping("/courses/draft/route")
+    public DraftRouteWebResponse findDraftRoute(@Valid @RequestBody FindDraftRouteWebRequest request) {
+        DraftSegment route = courseApplicationService.findDraftRoute(request.toCoordinates());
+        return DraftRouteWebResponse.of(route.coordinates(), route.length());
     }
 }
