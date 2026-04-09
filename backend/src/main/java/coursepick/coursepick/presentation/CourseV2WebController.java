@@ -77,14 +77,7 @@ public class CourseV2WebController implements CourseWebApi {
     @Login
     @PostMapping("/courses")
     public String addCustomCourses(@Valid @RequestBody CourseCreateWebRequest request, @UserId String userId) {
-
-        List<List<Double>> rawCoordinates = request.coordinates();
-        List<Coordinate> coordinates = rawCoordinates.stream()
-                .map(rawCoordinate -> new Coordinate(rawCoordinate.getFirst(), rawCoordinate.get(1)))
-                .toList();
-
-        courseApplicationService.addCustomCourse(request.name(), coordinates, userId);
-
+        courseApplicationService.addCustomCourse(request.name(), request.toCoordinates(), userId);
         return "코스 추가 성공";
     }
 }

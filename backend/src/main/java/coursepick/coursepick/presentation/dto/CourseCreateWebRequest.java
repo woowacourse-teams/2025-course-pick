@@ -1,5 +1,6 @@
 package coursepick.coursepick.presentation.dto;
 
+import coursepick.coursepick.domain.course.Coordinate;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 
@@ -14,4 +15,11 @@ public record CourseCreateWebRequest(
         @NotNull
         List<List<Double>> coordinates
 ) {
+
+    public List<Coordinate> toCoordinates() {
+        return coordinates.stream()
+                .map(raw -> new Coordinate(raw.getFirst(), raw.get(1)))
+                .toList();
+    }
 }
+
