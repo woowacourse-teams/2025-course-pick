@@ -1,51 +1,32 @@
 package coursepick.coursepick.infrastructure.mongodb;
 
-import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.Course;
+import coursepick.coursepick.infrastructure.compressor.DataCompressor;
+import coursepick.coursepick.infrastructure.compressor.ZstdCompressor;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.data.convert.WritingConverter;
 
-import java.util.List;
-
 public abstract class CourseConverter {
 
-    private static final CourseReader COURSE_READER = new CourseReader();
+    private static final DataCompressor DATA_COMPRESSOR = new ZstdCompressor();
+    private static final CourseReader COURSE_READER = new CourseReader(DATA_COMPRESSOR);
+    private static final CourseWriter COURSE_WRITER = new CourseWriter(DATA_COMPRESSOR);
 
     @WritingConverter
     public static class Writer implements Converter<Course, Document> {
         @Override
         public Document convert(Course source) {
-            Document document = new Document();
-            if (source.id() != null && !source.id().isBlank()) {
-                document.put("_id", new ObjectId(source.id()));
-            }
-            document.put("name", source.name().value());
-            document.put("coordinates", convertCoordinatesToGeoJson(source.coordinates()));
-            document.put("length", source.length().value());
-            document.put("schemaVersion", 2);
-
-            if(source.creator().id() != null && !source.creator().id().isBlank()) {
-                document.put("creator", source.creator().id());
-            }
-
-            return document;
-        }
-
-        private Document convertCoordinatesToGeoJson(List<Coordinate> coordinates) {
-            List<List<Double>> coordinatesData = coordinates.stream()
-                    .map(coordinate -> List.of(coordinate.longitude(), coordinate.latitude()))
-                    .toList();
-
-            Document document = new Document();
-            document.put("type", "LineString");
-            document.put("coordinates", coordinatesData);
-
-            return document;
+            return COURSE_WRITER.convert(source);
         }
     }
+
+//     document.put("schemaVersion", 2);
+//
+//            if(source.creator().id() != null && !source.creator().id().isBlank()) {
+//        document.put("creator", source.creator().id());
+//    }
 
     @ReadingConverter
     public static class Reader implements Converter<Document, Course> {

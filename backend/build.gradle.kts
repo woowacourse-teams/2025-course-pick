@@ -26,6 +26,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.9")
 
+    // Zstandard Compression
+    implementation("com.github.luben:zstd-jni:1.5.7-1")
+
     // JSpecify
     compileOnly("org.jspecify:jspecify:1.0.0")
 

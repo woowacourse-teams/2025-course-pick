@@ -1,6 +1,5 @@
 package coursepick.coursepick.infrastructure.mongodb;
 
-import com.mongodb.ExplainVerbosity;
 import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoTimeoutException;
 import coursepick.coursepick.domain.course.Course;
@@ -8,29 +7,20 @@ import coursepick.coursepick.domain.course.CourseFindCondition;
 import coursepick.coursepick.domain.course.CourseName;
 import coursepick.coursepick.domain.course.CourseRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.bson.Document;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
-import org.springframework.data.geo.Circle;
-import org.springframework.data.geo.Distance;
-import org.springframework.data.geo.Metrics;
-import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
-import org.springframework.data.mongodb.core.geo.GeoJsonPolygon;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
 
 import static coursepick.coursepick.application.exception.ErrorType.QUERY_TIMEOUT;
 
-@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
@@ -57,11 +47,8 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
         mongoTemplate.insertAll(listCourses);
     }
 
-
     @Override
     public Slice<Course> findAllHasDistanceWithin(CourseFindCondition condition) {
-        long start = System.nanoTime();
-        log.info("쿼리 시작 시간 : {}", start);
         try {
             Query query = new Query().maxTimeMsec(5000);
 
@@ -69,15 +56,12 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
             if (condition.minLength() != null || condition.maxLength() != null) addLengthCriteria(condition, query);
 
             query.with(condition.pageable())
-                    .limit(condition.pageSize() + 1); //다음 데이터가 있는지 확인하기 위해 + 1을 한다.
+                    .limit(condition.pageSize() + 1);
 
             List<Course> result = mongoTemplate.find(query, Course.class);
 
             boolean hasNext = result.size() > condition.pageSize();
             if (hasNext) result.removeLast();
-            long end = System.nanoTime();
-            log.info("끝 시간 : {}", end);
-            log.info("소요 시간 : {}ms", (end - start) / 1000000);
             return new SliceImpl<>(result, condition.pageable(), hasNext);
         } catch (MongoTimeoutException | MongoExecutionTimeoutException e) {
             throw QUERY_TIMEOUT.create();
@@ -85,13 +69,13 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
     }
 
     private static void addPositionAndScopeCriteria(CourseFindCondition condition, Query query) {
-        Point point = new Point(condition.mapPosition().longitude(), condition.mapPosition().latitude());
-        Distance distance = new Distance(condition.scope().value() / 1000.0, Metrics.KILOMETERS);
-        Circle circle = new Circle(point, distance);
+        GeoJsonPoint point = new GeoJsonPoint(condition.mapPosition().longitude(), condition.mapPosition().latitude());
 
-        Criteria v2Criteria = Criteria.where("coordinates").withinSphere(circle);
+        Criteria criteria = Criteria.where("simplifiedCoordinates")
+                .nearSphere(point)
+                .maxDistance(condition.scope().value());
 
-        query.addCriteria(v2Criteria);
+        query.addCriteria(criteria);
     }
 
     private static void addLengthCriteria(CourseFindCondition condition, Query query) {
