@@ -9,6 +9,7 @@ import coursepick.coursepick.domain.course.CourseName;
 import coursepick.coursepick.domain.course.Meter;
 import coursepick.coursepick.infrastructure.compressor.DataCompressor;
 import lombok.RequiredArgsConstructor;
+import coursepick.coursepick.domain.course.*;
 import org.bson.Document;
 import org.bson.types.Binary;
 import org.springframework.core.convert.converter.Converter;
@@ -31,7 +32,8 @@ public class CourseReader implements Converter<Document, Course> {
                 new CourseName(source.getString("name")),
                 coordinates,
                 simplifiedCoordinates,
-                new Meter(source.getDouble("length"))
+                new Meter(source.getDouble("length")),
+                new CourseCreator(source.getString("creator"))
         );
     }
 
