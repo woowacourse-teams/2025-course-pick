@@ -2,16 +2,14 @@ package coursepick.coursepick.infrastructure.mongodb;
 
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.Course;
-
 import coursepick.coursepick.infrastructure.compressor.DataCompressor;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.core.convert.converter.Converter;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class CourseWriter implements Converter<Course, Document> {
@@ -32,7 +30,11 @@ public class CourseWriter implements Converter<Course, Document> {
         document.put("simplifiedCoordinates", convertCoordinatesToGeoJson(source.simplifiedCoordinates()));
 
         document.put("length", source.length().value());
-        document.put("schemaVersion", 1);
+        document.put("schemaVersion", 2);
+
+        if (source.creator().id() != null && !source.creator().id().isBlank()) {
+            document.put("creator", source.creator().id());
+        }
         return document;
     }
 

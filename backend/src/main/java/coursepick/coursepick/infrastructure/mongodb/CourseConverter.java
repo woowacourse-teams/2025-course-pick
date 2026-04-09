@@ -22,12 +22,6 @@ public abstract class CourseConverter {
         }
     }
 
-//     document.put("schemaVersion", 2);
-//
-//            if(source.creator().id() != null && !source.creator().id().isBlank()) {
-//        document.put("creator", source.creator().id());
-//    }
-
     @ReadingConverter
     public static class Reader implements Converter<Document, Course> {
         @Override
