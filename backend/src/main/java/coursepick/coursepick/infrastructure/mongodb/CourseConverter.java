@@ -25,10 +25,10 @@ public abstract class CourseConverter {
             document.put("name", source.name().value());
             document.put("coordinates", convertCoordinatesToGeoJson(source.coordinates()));
             document.put("length", source.length().value());
-            document.put("schemaVersion", 1);
+            document.put("schemaVersion", 2);
 
-            if(source.courseCreator() != null && !source.courseCreator().id().isBlank()) {
-                document.put("courseCreator", source.courseCreator().id());
+            if(source.creator().id() != null && !source.creator().id().isBlank()) {
+                document.put("creator", source.creator().id());
             }
 
             return document;
