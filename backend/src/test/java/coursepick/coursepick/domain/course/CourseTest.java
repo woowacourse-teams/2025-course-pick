@@ -80,13 +80,13 @@ class CourseTest {
 
         @Test
         void 유저가_만든_코스를_생성한다() {
-            assertThatCode(() -> new Course(null, "코스", List.of(new Coordinate(0, 0), new Coordinate(2, 2)), "userId"))
+            assertThatCode(() -> new Course(null, "코스", List.of(new Coordinate(0, 0), new Coordinate(2, 2)), CourseCreator.of("userId")))
                     .doesNotThrowAnyException();
         }
 
         @Test
         void 앞_뒤_공백을_제거하여_생성한다() {
-            var course = new Course(null, " 코스   ", List.of(new Coordinate(0, 0), new Coordinate(2, 2)), "userid");
+            var course = new Course(null, " 코스   ", List.of(new Coordinate(0, 0), new Coordinate(2, 2)), CourseCreator.of("userId"));
             assertThat(course.name().value()).isEqualTo("코스");
         }
 
