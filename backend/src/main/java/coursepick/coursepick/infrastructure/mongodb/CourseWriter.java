@@ -1,22 +1,21 @@
 package coursepick.coursepick.infrastructure.mongodb;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.Course;
-
 import coursepick.coursepick.infrastructure.compressor.DataCompressor;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.core.convert.converter.Converter;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 public class CourseWriter implements Converter<Course, Document> {
 
     private final DataCompressor dataCompressor;
+    private final ObjectMapper objectMapper;
 
     @Override
     public Document convert(Course source) {
@@ -37,9 +36,15 @@ public class CourseWriter implements Converter<Course, Document> {
     }
 
     private String convertCoordinatesToJson(List<Coordinate> coordinates) {
-        return coordinates.stream()
-                .map(c -> "[" + c.longitude() + "," + c.latitude() + "]")
-                .collect(Collectors.joining(",", "[", "]"));
+        try {
+            List<Double[]> rawData = coordinates.stream()
+                    .map(c -> new Double[]{c.longitude(), c.latitude()})
+                    .toList();
+
+            return objectMapper.writeValueAsString(rawData);
+        } catch (Exception e) {
+            throw new RuntimeException("좌표 데이터를 JSON으로 변환하는 중 오류 발생", e);
+        }
     }
 
     private Document convertCoordinatesToCompressedData(List<Coordinate> coordinates) {
