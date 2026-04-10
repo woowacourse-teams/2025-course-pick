@@ -4,10 +4,13 @@ import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.Course;
 import coursepick.coursepick.domain.course.CourseFindCondition;
+import coursepick.coursepick.domain.user.User;
+import coursepick.coursepick.domain.user.UserProvider;
 import coursepick.coursepick.test_util.AbstractIntegrationTest;
 import coursepick.coursepick.test_util.CoordinateTestUtil;
-import org.assertj.core.api.Assertions;
 import org.assertj.core.data.Percentage;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,6 +20,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
@@ -231,25 +235,69 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
     @Test
     void 코스가_존재하지_않을_경우_예외가_발생한다() {
-        Assertions.assertThatThrownBy(() -> sut.findClosestCoordinate("notId", 0, 0))
+        assertThatThrownBy(() -> sut.findClosestCoordinate("notId", 0, 0))
                 .isInstanceOf(NoSuchElementException.class);
     }
 
-    @Test
-    void 유저가_생성한_코스를_저장한다() {
+    @Nested
+    class 유저_코스_생성 {
 
-        String name = "나만의 코스1";
-        List<Coordinate> coordinates = List.of(
-                new Coordinate(37.602500, 126.967000),
-                new Coordinate(37.603000, 126.968000),
-                new Coordinate(37.603500, 126.969000),
-                new Coordinate(37.602500, 126.967000)
-        );
-        String userId = "userId";
+        private User user;
 
-        sut.addCustomCourse(name, coordinates, userId);
-        Course result = dbUtil.findCourseByName(name);
+        @BeforeEach
+        void setUp() {
+            user = dbUtil.saveUser(new User(UserProvider.KAKAO, "providerId"));
+        }
 
-        assertThat(result.name().value()).isEqualTo(name);
+        @Test
+        void 유저가_생성한_코스를_저장한다() {
+
+            String name = "나만의 코스1";
+            List<Coordinate> coordinates = List.of(
+                    new Coordinate(37.602500, 126.967000),
+                    new Coordinate(37.603000, 126.968000),
+                    new Coordinate(37.603500, 126.969000),
+                    new Coordinate(37.602500, 126.967000)
+            );
+
+            sut.addCustomCourse(name, coordinates, user.id());
+
+            Course result = dbUtil.findCourseByName(name);
+            assertThat(result.name().value()).isEqualTo(name);
+        }
+
+        @Test
+        void 유저_id가_null일_경우_admin의_id가_들어간다() {
+
+            String name = "나만의 코스1";
+            List<Coordinate> coordinates = List.of(
+                    new Coordinate(37.602500, 126.967000),
+                    new Coordinate(37.603000, 126.968000),
+                    new Coordinate(37.603500, 126.969000),
+                    new Coordinate(37.602500, 126.967000)
+            );
+            // when
+            dbUtil.saveCourse(new Course(null, name, coordinates, null));
+            // then
+            Course result = dbUtil.findCourseByName(name);
+            assertThat(result.creatorId()).isEqualTo("admin");
+
+        }
+
+        @Test
+        void 유저가_존재하지_않을_경우_예외를_던진다() {
+            String name = "나만의 코스1";
+            List<Coordinate> coordinates = List.of(
+                    new Coordinate(37.602500, 126.967000),
+                    new Coordinate(37.603000, 126.968000),
+                    new Coordinate(37.603500, 126.969000),
+                    new Coordinate(37.602500, 126.967000)
+            );
+
+            assertThatThrownBy(() -> sut.addCustomCourse(name, coordinates, "userid"))
+                    .isInstanceOf(NoSuchElementException.class);
+
+        }
     }
+
 }

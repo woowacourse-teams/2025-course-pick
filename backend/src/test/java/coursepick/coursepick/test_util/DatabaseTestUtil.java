@@ -45,4 +45,8 @@ public class DatabaseTestUtil {
     public User saveUser(User user) {
         return mongoTemplate.save(user, "user");
     }
+
+    public void deleteUsers() {
+        mongoTemplate.remove(new Query(), User.class);
+    }
 }
