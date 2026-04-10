@@ -34,13 +34,13 @@ public class Course {
 
     private CourseCreator creator;
 
-    public Course(String id, String name, List<Coordinate> rawCoordinates, String userId) {
+    public Course(String id, String name, List<Coordinate> rawCoordinates, CourseCreator creator) {
         this.id = id;
         this.name = new CourseName(name);
         this.coordinates = refineCoordinates(rawCoordinates);
         this.simplifiedCoordinates = simplifyCoordinates(this.coordinates);
         this.length = calculateLength(coordinates);
-        this.creator = new CourseCreator(userId);
+        this.creator = creator;
     }
 
     private List<Coordinate> refineCoordinates(List<Coordinate> rawCoordinates) {
