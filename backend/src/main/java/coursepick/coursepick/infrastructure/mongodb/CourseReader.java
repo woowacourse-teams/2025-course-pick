@@ -1,5 +1,8 @@
 package coursepick.coursepick.infrastructure.mongodb;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.Course;
 import coursepick.coursepick.domain.course.CourseName;
@@ -10,13 +13,13 @@ import org.bson.Document;
 import org.bson.types.Binary;
 import org.springframework.core.convert.converter.Converter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
 public class CourseReader implements Converter<Document, Course> {
 
     private final DataCompressor dataCompressor;
+    private final ObjectMapper objectMapper;
 
     @Override
     public Course convert(Document source) {
@@ -43,18 +46,13 @@ public class CourseReader implements Converter<Document, Course> {
     }
 
     private List<Coordinate> parseCoordinatesFromJson(String json) {
-        // [ [lng, lat], [lng, lat] ] 형태 파싱
-        if (json == null || json.length() < 4) return List.of();
+        if (json == null || json.isBlank()) return List.of();
 
-        String content = json.substring(2, json.length() - 2);
-        String[] pairs = content.split("\\],\\[");
-
-        List<Coordinate> result = new ArrayList<>();
-        for (String pair : pairs) {
-            String[] coords = pair.split(",");
-            result.add(new Coordinate(Double.parseDouble(coords[1]), Double.parseDouble(coords[0])));
+        try {
+            return objectMapper.readValue(json, new TypeReference<List<Coordinate>>() {});
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("JSON을 좌표 데이터로 변환하는 중 오류 발생", e);
         }
-        return result;
     }
 
     private List<Coordinate> parseSimplifiedCoordinates(Document source) {

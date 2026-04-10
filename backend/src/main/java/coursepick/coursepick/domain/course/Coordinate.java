@@ -1,11 +1,16 @@
 package coursepick.coursepick.domain.course;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_LATITUDE_RANGE;
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_LONGITUDE_RANGE;
 
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder({ "longitude", "latitude" })
 public record Coordinate(
         double latitude,
         double longitude

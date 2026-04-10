@@ -1,5 +1,7 @@
 package coursepick.coursepick.infrastructure.mongodb;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.boot.autoconfigure.mongo.MongoClientSettingsBuilderCustomizer;
@@ -12,11 +14,17 @@ import java.util.List;
 @Configuration
 public class MongoConfig {
 
+    private final ObjectMapper objectMapper;
+
+    public MongoConfig(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
     @Bean
     public MongoCustomConversions mongoCustomConversions() {
         return new MongoCustomConversions(List.of(
-                new CourseConverter.Reader(),
-                new CourseConverter.Writer()
+                new CourseConverter.Reader(objectMapper),
+                new CourseConverter.Writer(objectMapper)
         ));
     }
 
