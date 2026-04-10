@@ -21,7 +21,7 @@ public class MongoConfig {
     }
 
     @Bean
-    public MongoCustomConversions mongoCustomConversions(ObjectMapper objectMapper) {
+    public MongoCustomConversions mongoCustomConversions() {
         return new MongoCustomConversions(List.of(
                 new CourseConverter.Reader(objectMapper),
                 new CourseConverter.Writer(objectMapper)

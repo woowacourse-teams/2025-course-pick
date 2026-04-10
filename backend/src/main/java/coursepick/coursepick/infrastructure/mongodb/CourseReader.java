@@ -45,7 +45,7 @@ public class CourseReader implements Converter<Document, Course> {
     }
 
     private List<Coordinate> parseCoordinatesFromJson(String json) {
-        if (json == null || json.length() < 4) return List.of();
+        if (json == null || json.isBlank()) return List.of();
 
         try {
             return objectMapper.readValue(json, new TypeReference<List<Coordinate>>() {});
