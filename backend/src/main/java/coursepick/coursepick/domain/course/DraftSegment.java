@@ -7,6 +7,10 @@ public record DraftSegment(
         List<Coordinate> coordinates,
         Meter length
 ) {
+    public DraftSegment {
+        coordinates = List.copyOf(coordinates);
+    }
+
     public static DraftSegment of(List<Coordinate> coordinates) {
         Meter length = Meter.zero();
         for (int i = 0; i < coordinates.size() - 1; i++) {
