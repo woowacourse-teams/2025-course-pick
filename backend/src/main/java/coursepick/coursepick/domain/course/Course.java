@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
@@ -32,15 +33,15 @@ public class Course {
 
     private Meter length;
 
-    private CourseCreator creator;
+    private String creatorId;
 
-    public Course(String id, String name, List<Coordinate> rawCoordinates, CourseCreator creator) {
+    public Course(String id, String name, List<Coordinate> rawCoordinates, String userId) {
         this.id = id;
         this.name = new CourseName(name);
         this.coordinates = refineCoordinates(rawCoordinates);
         this.simplifiedCoordinates = simplifyCoordinates(this.coordinates);
         this.length = calculateLength(coordinates);
-        this.creator = creator;
+        this.creatorId = userId;
     }
 
     private List<Coordinate> refineCoordinates(List<Coordinate> rawCoordinates) {

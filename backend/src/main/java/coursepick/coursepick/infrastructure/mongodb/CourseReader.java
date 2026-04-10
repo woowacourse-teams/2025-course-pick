@@ -33,7 +33,7 @@ public class CourseReader implements Converter<Document, Course> {
                 coordinates,
                 simplifiedCoordinates,
                 new Meter(source.getDouble("length")),
-                new CourseCreator(source.getString("creator"))
+                source.getString("creatorId")
         );
     }
 

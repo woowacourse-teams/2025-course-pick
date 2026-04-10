@@ -2,9 +2,7 @@ package coursepick.coursepick.application.dto;
 
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.Course;
-import coursepick.coursepick.domain.course.CourseCreator;
 import coursepick.coursepick.domain.course.Meter;
-import coursepick.coursepick.domain.user.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
@@ -24,7 +22,7 @@ public class CourseResponse {
     private final Meter distance;
     private final Meter length;
     private final List<Coordinate> coordinates;
-    private final CourseCreator creator;
+    private final String creatorId;
 
     public static CourseResponse from(Course course) {
         return from(course, null);
@@ -37,7 +35,7 @@ public class CourseResponse {
                 target != null ? course.distanceFrom(target) : null,
                 course.length(),
                 course.coordinates(),
-                course.creator()
+                course.creatorId()
         );
     }
 

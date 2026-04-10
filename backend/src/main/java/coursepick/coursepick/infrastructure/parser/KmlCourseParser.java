@@ -5,7 +5,6 @@ import coursepick.coursepick.application.dto.CourseFileExtension;
 import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.Course;
-import coursepick.coursepick.domain.course.CourseCreator;
 import coursepick.coursepick.domain.course.CourseParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -65,7 +64,7 @@ public class KmlCourseParser implements CourseParser {
         if (courseName == null || courseName.isBlank()) return null;
         if (coordinates.isEmpty()) return null;
 
-        return new Course(null, courseName, coordinates, CourseCreator.ofCoursePick());
+        return new Course(null, courseName, coordinates, null);
     }
 
     private String parseCourseName(Element placemark) {

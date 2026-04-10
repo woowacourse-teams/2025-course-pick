@@ -127,6 +127,6 @@ public class Gpx {
     }
 
     public List<Course> toCourses() {
-        return List.of(new Course(id, name, coordinates, CourseCreator.ofCoursePick()));
+        return List.of(new Course(id, name, coordinates, null));
     }
 }
