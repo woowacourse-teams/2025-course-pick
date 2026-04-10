@@ -73,6 +73,10 @@ public enum ErrorType {
             "압축 및 해제할 데이터가 없습니다.",
             IllegalArgumentException::new
     ),
+    NOT_EXIST_USER(
+            "유저가 존재하지 않습니다. 유저id=%s",
+            NoSuchElementException::new
+    ),
     ;
 
     private final String message;

@@ -21,10 +21,12 @@ public class CourseApplicationService {
 
     private final CourseRepository courseRepository;
     private final RouteFinder routeFinder;
+    private final UserApplicationService userApplicationService;
 
     @Transactional
     public void addCustomCourse(String name, List<Coordinate> coordinates, String userId) {
-        Course newCourse = new Course(null, name, coordinates, CourseCreator.of(userId));
+        userApplicationService.checkUserExists(userId);
+        Course newCourse = new Course(null, name, coordinates, userId);
         courseRepository.save(newCourse);
     }
 
