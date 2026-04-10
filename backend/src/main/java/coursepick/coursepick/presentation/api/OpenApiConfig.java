@@ -41,14 +41,6 @@ public class OpenApiConfig {
     }
 
     @Bean
-    public GroupedOpenApi v2Api() {
-        return GroupedOpenApi.builder()
-                .group("v2")
-                .pathsToMatch("/v2/**")
-                .build();
-    }
-
-    @Bean
     public OpenApiCustomizer customize() {
         return openApi -> {
             Components components = openApi.getComponents();
