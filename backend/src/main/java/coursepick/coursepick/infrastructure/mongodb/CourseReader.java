@@ -48,11 +48,7 @@ public class CourseReader implements Converter<Document, Course> {
         if (json == null || json.length() < 4) return List.of();
 
         try {
-            List<Double[]> rawList = objectMapper.readValue(json, new TypeReference<List<Double[]>>() {});
-
-            return rawList.stream()
-                    .map(point -> new Coordinate(point[1], point[0])) // [1]이 lat, [0]이 lng
-                    .toList();
+            return objectMapper.readValue(json, new TypeReference<List<Coordinate>>() {});
         } catch (Exception e) {
             throw new RuntimeException("JSON을 좌표 데이터로 변환하는 중 오류 발생", e);
         }

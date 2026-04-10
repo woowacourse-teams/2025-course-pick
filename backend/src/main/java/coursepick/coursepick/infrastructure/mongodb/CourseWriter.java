@@ -37,11 +37,7 @@ public class CourseWriter implements Converter<Course, Document> {
 
     private String convertCoordinatesToJson(List<Coordinate> coordinates) {
         try {
-            List<Double[]> rawData = coordinates.stream()
-                    .map(c -> new Double[]{c.longitude(), c.latitude()})
-                    .toList();
-
-            return objectMapper.writeValueAsString(rawData);
+            return objectMapper.writeValueAsString(coordinates);
         } catch (Exception e) {
             throw new RuntimeException("좌표 데이터를 JSON으로 변환하는 중 오류 발생", e);
         }
