@@ -1,5 +1,6 @@
 package coursepick.coursepick.infrastructure.mongodb;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.Course;
@@ -38,8 +39,8 @@ public class CourseWriter implements Converter<Course, Document> {
     private String convertCoordinatesToJson(List<Coordinate> coordinates) {
         try {
             return objectMapper.writeValueAsString(coordinates);
-        } catch (Exception e) {
-            throw new RuntimeException("좌표 데이터를 JSON으로 변환하는 중 오류 발생", e);
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("좌표 데이터를 JSON으로 변환하는 중 오류 발생", e);
         }
     }
 
