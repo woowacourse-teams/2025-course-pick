@@ -4,14 +4,16 @@ import android.content.Context
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.label.Label
 import com.kakao.vectormap.label.LabelLayer
+import com.kakao.vectormap.label.LabelLayerOptions
+import com.kakao.vectormap.label.LabelManager
 import com.kakao.vectormap.label.LabelOptions
 import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
 import com.kakao.vectormap.label.LabelTransition
 import com.kakao.vectormap.label.TransformMethod
 import com.kakao.vectormap.label.Transition
-import com.kakao.vectormap.route.RouteLine
 import com.kakao.vectormap.route.RouteLineLayer
+import com.kakao.vectormap.route.RouteLineManager
 import com.kakao.vectormap.route.RouteLineOptions
 import com.kakao.vectormap.route.RouteLineSegment
 import com.kakao.vectormap.route.RouteLineStyle
@@ -22,6 +24,7 @@ import com.kakao.vectormap.shape.PolygonStyles
 import com.kakao.vectormap.shape.PolygonStylesSet
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Coordinate
+import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.course.CourseItem
 
@@ -97,39 +100,59 @@ class KakaoMapDrawer(
         layer.removeAll()
     }
 
-    private val draftWaypoints = mutableListOf<Label>()
-    private val draftSegments = mutableListOf<RouteLine>()
-
     fun drawWaypoint(coordinate: Coordinate) {
-        val layer: LabelLayer = map.labelManager?.layer ?: return
+        map.labelManager?.let { manager: LabelManager ->
+            val layer: LabelLayer =
+                manager.getLayer(ID_WAYPOINTS_LAYER_ID)
+                    ?: manager.addLayer(LabelLayerOptions.from(ID_WAYPOINTS_LAYER_ID))
+                    ?: return
 
-        val style =
-            LabelStyle
-                .from(R.drawable.icon_waypoint)
-                .setAnchorPoint(0.5F, 1F)
-                .setIconTransition(LabelTransition.from(Transition.None, Transition.None))
-        val options = LabelOptions.from(coordinate.toLatLng()).setStyles(LabelStyles.from(style))
+            val style =
+                LabelStyle
+                    .from(R.drawable.icon_waypoint)
+                    .setAnchorPoint(0.5F, 1F)
+                    .setIconTransition(LabelTransition.from(Transition.None, Transition.None))
+            val options =
+                LabelOptions.from(coordinate.toLatLng()).setStyles(LabelStyles.from(style))
 
-        layer.addLabel(options).also(draftWaypoints::add)
+            layer.addLabel(options)
+        }
     }
 
-    fun removeLastWaypoint() {
-        draftWaypoints.removeLastOrNull()?.also(Label::remove)
-        draftSegments.removeLastOrNull()?.also(RouteLine::remove)
+    fun removeWaypoints() {
+        map.labelManager?.let { labelManager: LabelManager ->
+            labelManager.getLayer(ID_WAYPOINTS_LAYER_ID)?.removeAll()
+        }
     }
 
-    fun drawSegment(segment: List<Coordinate>) {
-        val layer: RouteLineLayer = map.routeLineManager?.layer ?: return
+    fun drawDraftSegment(segment: DraftSegment) {
+        map.routeLineManager?.let { manager: RouteLineManager ->
+            val layer: RouteLineLayer =
+                manager.getLayer(ID_DRAFT_SEGMENTS_LAYER_ID)
+                    ?: manager.addLayer(ID_DRAFT_SEGMENTS_LAYER_ID)
+                    ?: return
 
-        val style =
-            RouteLineStyle.from(
-                context.resources.getDimension(R.dimen.draft_segment_width),
-                context.getColor(R.color.course_draft),
-            )
-        val options =
-            RouteLineOptions.from(RouteLineSegment.from(segment.map(Coordinate::toLatLng), style))
+            val style =
+                RouteLineStyle.from(
+                    context.resources.getDimension(R.dimen.draft_segment_width),
+                    context.getColor(R.color.course_draft),
+                )
+            val options =
+                RouteLineOptions.from(
+                    RouteLineSegment.from(
+                        segment.coordinates.map(Coordinate::toLatLng),
+                        style,
+                    ),
+                )
 
-        layer.addRouteLine(options).also(draftSegments::add)
+            layer.addRouteLine(options)
+        }
+    }
+
+    fun removeDraftSegments() {
+        map.routeLineManager?.let { manager: RouteLineManager ->
+            manager.getLayer(ID_DRAFT_SEGMENTS_LAYER_ID)?.removeAll()
+        }
     }
 
     private fun drawAccurateUserPosition(location: Location.Fine) {
@@ -214,5 +237,7 @@ class KakaoMapDrawer(
         private const val ID_SEARCH_POSITION_MARK = "id_search_position_mark"
         private const val ID_ACCURATE_USER_POSITION_MARK = "id_accurate_user_position_mark"
         private const val ID_APPROXIMATE_USER_POSITION_MARK = "id_approximate_user_position_mark"
+        private const val ID_WAYPOINTS_LAYER_ID = "id_waypoints_layer_id"
+        private const val ID_DRAFT_SEGMENTS_LAYER_ID = "id_draft_segments_layer_id"
     }
 }

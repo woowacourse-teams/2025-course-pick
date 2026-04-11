@@ -8,6 +8,7 @@ import com.kakao.vectormap.MapView
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Scope
+import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.course.CourseItem
 import io.coursepick.coursepick.presentation.map.DistanceCalculator
@@ -91,12 +92,16 @@ class KakaoMapManager(
         drawer?.drawWaypoint(coordinate) ?: Timber.w("KakaoMapDrawer is null")
     }
 
-    override fun removeLastWaypoint() {
-        drawer?.removeLastWaypoint() ?: Timber.w("KakaoMapDrawer is null")
+    override fun removeWaypoints() {
+        drawer?.removeWaypoints() ?: Timber.w("KakaoMapDrawer is null")
     }
 
-    override fun drawSegment(coordinates: List<Coordinate>) {
-        drawSegment(coordinates)
+    override fun drawDraftSegment(segment: DraftSegment) {
+        drawer?.drawDraftSegment(segment) ?: Timber.w("KakaoMapDrawer is null")
+    }
+
+    override fun removeDraftSegments() {
+        drawer?.removeDraftSegments() ?: Timber.w("KakaoMapDrawer is null")
     }
 
     override fun fitTo(coordinates: List<Coordinate>) {
