@@ -96,8 +96,16 @@ class KakaoMapManager(
         drawer?.removeLastWaypoint() ?: Timber.w("KakaoMapDrawer is null")
     }
 
+    override fun clearWaypoints() {
+        drawer?.clearWaypoints() ?: Timber.w("KakaoMapDrawer is null")
+    }
+
     override fun drawDraftSegment(segment: DraftSegment) {
         drawer?.drawDraftSegment(segment) ?: Timber.w("KakaoMapDrawer is null")
+    }
+
+    override fun clearDraftSegments() {
+        drawer?.clearDraftSegment() ?: Timber.w("KakaoMapDrawer is null")
     }
 
     override fun fitTo(coordinates: List<Coordinate>) {

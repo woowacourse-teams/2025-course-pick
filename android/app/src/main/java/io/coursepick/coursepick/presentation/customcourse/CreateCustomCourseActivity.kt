@@ -39,6 +39,10 @@ class CreateCustomCourseActivity : AppCompatActivity() {
 
         mapManager.startMap {
             setUpCollectors()
+
+            if (savedInstanceState != null) {
+                restoreProgress()
+            }
         }
 
         binding.composeContainer.setContent {
@@ -54,7 +58,7 @@ class CreateCustomCourseActivity : AppCompatActivity() {
         }
     }
 
-    fun setUpCollectors() {
+    private fun setUpCollectors() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.event.collect { event: CustomCourseUiEvent ->
@@ -73,6 +77,13 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun restoreProgress() {
+        mapManager.clearWaypoints()
+        mapManager.clearDraftSegments()
+        viewModel.waypoints.value.forEach(mapManager::drawWaypoint)
+        viewModel.segments.value.forEach(mapManager::drawDraftSegment)
     }
 
     companion object {

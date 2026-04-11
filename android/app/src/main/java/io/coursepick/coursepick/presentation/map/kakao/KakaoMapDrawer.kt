@@ -11,7 +11,6 @@ import com.kakao.vectormap.label.TransformMethod
 import com.kakao.vectormap.label.Transition
 import com.kakao.vectormap.route.RouteLine
 import com.kakao.vectormap.route.RouteLineLayer
-import com.kakao.vectormap.route.RouteLineManager
 import com.kakao.vectormap.route.RouteLineOptions
 import com.kakao.vectormap.route.RouteLineSegment
 import com.kakao.vectormap.route.RouteLineStyle
@@ -121,6 +120,11 @@ class KakaoMapDrawer(
         segments.removeLastOrNull()?.also(RouteLine::remove)
     }
 
+    fun clearWaypoints() {
+        waypoints.forEach(Label::remove)
+        waypoints.clear()
+    }
+
     fun drawDraftSegment(segment: DraftSegment) {
         val style =
             RouteLineStyle.from(
@@ -141,10 +145,9 @@ class KakaoMapDrawer(
             ?.also(segments::add)
     }
 
-    fun removeDraftSegments() {
-        map.routeLineManager?.let { manager: RouteLineManager ->
-            manager.getLayer(ID_DRAFT_SEGMENTS_LAYER_ID)?.removeAll()
-        }
+    fun clearDraftSegment() {
+        segments.forEach(RouteLine::remove)
+        segments.clear()
     }
 
     private fun drawAccurateUserPosition(location: Location.Fine) {

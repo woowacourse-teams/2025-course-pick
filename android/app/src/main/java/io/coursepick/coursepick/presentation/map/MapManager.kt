@@ -34,7 +34,11 @@ interface MapManager {
 
     fun removeLastWaypoint()
 
+    fun clearWaypoints()
+
     fun drawDraftSegment(segment: DraftSegment)
+
+    fun clearDraftSegments()
 
     fun fitTo(coordinates: List<Coordinate>)
 
