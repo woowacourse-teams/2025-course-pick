@@ -10,6 +10,7 @@ import java.util.List;
 
 import static coursepick.coursepick.test_util.CoordinateTestUtil.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.data.Percentage.withPercentage;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -21,7 +22,15 @@ class FindDraftRouteTest {
     CourseApplicationService sut = new CourseApplicationService(courseRepository, routeFinder);
 
     @Test
-    void 웨이포인트_두_개로_경로를_조회한다() {
+    void 경로_좌표가_1개이면_예외가_발생한다() {
+        var start = new Coordinate(0, 0);
+
+        assertThatThrownBy(() -> sut.findDraftRoute(List.of(start)))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 경로_좌표_두_개로_경로를_조회한다() {
         var start = new Coordinate(0, 0);
         var end = right(start, 1000);
         when(routeFinder.find(start, end)).thenReturn(List.of(start, end));
@@ -33,7 +42,7 @@ class FindDraftRouteTest {
     }
 
     @Test
-    void 웨이포인트_세_개로_경로를_조회하면_구간이_합산된다() {
+    void 경로_좌표_세_개로_경로를_조회하면_구간이_합산된다() {
         var start = new Coordinate(0, 0);
         var mid = right(start, 1000);
         var end = right(mid, 1000);
