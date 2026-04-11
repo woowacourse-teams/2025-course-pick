@@ -126,7 +126,7 @@ public class Gpx {
         xsw.writeEndElement();
     }
 
-    public List<Course> toCourses() {
-        return List.of(new Course(id, name, coordinates, null));
+    public List<Course> toCourses(String creatorId) {
+        return List.of(new Course(id, name, coordinates, creatorId));
     }
 }

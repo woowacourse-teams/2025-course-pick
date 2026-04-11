@@ -8,5 +8,5 @@ public interface CourseParser {
 
     boolean canParse(CourseFile file);
 
-    List<Course> parse(CourseFile file);
+    List<Course> parse(CourseFile file, String creatorId);
 }

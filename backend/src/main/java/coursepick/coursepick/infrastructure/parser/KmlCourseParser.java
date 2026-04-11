@@ -31,7 +31,7 @@ public class KmlCourseParser implements CourseParser {
     }
 
     @Override
-    public List<Course> parse(CourseFile file) {
+    public List<Course> parse(CourseFile file, String creatorId) {
         List<Course> courses = new ArrayList<>();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         NodeList placemarks;
@@ -48,7 +48,7 @@ public class KmlCourseParser implements CourseParser {
             Node placemark = placemarks.item(i);
             if (placemark.getNodeType() == Node.ELEMENT_NODE) {
                 Element placemarkElement = (Element) placemark;
-                Course course = parseCourse(placemarkElement);
+                Course course = parseCourse(placemarkElement, creatorId);
                 if (course != null) {
                     courses.add(course);
                 }
@@ -57,14 +57,16 @@ public class KmlCourseParser implements CourseParser {
         return courses;
     }
 
-    private Course parseCourse(Element placemark) {
+    private Course parseCourse(Element placemark, String creatorId) {
         String courseName = parseCourseName(placemark);
         List<Coordinate> coordinates = parseCoordinates(placemark);
 
-        if (courseName == null || courseName.isBlank()) return null;
-        if (coordinates.isEmpty()) return null;
+        if (courseName == null || courseName.isBlank())
+            return null;
+        if (coordinates.isEmpty())
+            return null;
 
-        return new Course(null, courseName, coordinates, null);
+        return new Course(null, courseName, coordinates, creatorId);
     }
 
     private String parseCourseName(Element placemark) {

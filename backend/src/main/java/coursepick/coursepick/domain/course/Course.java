@@ -96,8 +96,4 @@ public class Course {
     public void changeName(String courseName) {
         this.name = new CourseName(courseName);
     }
-
-    public void assignAdminId(String adminId) {
-        this.creatorId = adminId;
-    }
 }

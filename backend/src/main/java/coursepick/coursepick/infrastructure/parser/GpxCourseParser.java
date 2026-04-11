@@ -18,7 +18,7 @@ public class GpxCourseParser implements CourseParser {
     }
 
     @Override
-    public List<Course> parse(CourseFile file) {
-        return Gpx.from(file).toCourses();
+    public List<Course> parse(CourseFile file, String creatorId) {
+        return Gpx.from(file).toCourses(creatorId);
     }
 }
