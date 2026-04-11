@@ -56,6 +56,7 @@ import io.coursepick.coursepick.presentation.InstallStateObserver
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.compat.getParcelableCompat
+import io.coursepick.coursepick.presentation.customcourse.CustomCoursesFragment
 import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
 import io.coursepick.coursepick.presentation.filter.CourseFilterBottomSheet
 import io.coursepick.coursepick.presentation.map.MapManager
@@ -317,7 +318,10 @@ class CoursesActivity :
         supportFragmentManager.commit {
             setReorderingAllowed(true)
             supportFragmentManager.fragments.forEach { fragment: Fragment ->
-                if (fragment is ExploreCoursesFragment || fragment is FavoriteCoursesFragment) {
+                if (fragment is ExploreCoursesFragment ||
+                    fragment is FavoriteCoursesFragment ||
+                    fragment is CustomCoursesFragment
+                ) {
                     hide(fragment)
                 }
             }
@@ -349,6 +353,12 @@ class CoursesActivity :
                     viewModel.showCourses()
                     viewModel.switchContent(CoursesContent.FAVORITES)
                     viewModel.fetchFavorites()
+                    true
+                }
+
+                R.id.customCourseMenu -> {
+                    viewModel.showCourses()
+                    viewModel.switchContent(CoursesContent.CUSTOM_COURSE)
                     true
                 }
 
@@ -521,8 +531,15 @@ class CoursesActivity :
             object : OnReconnectListener {
                 override fun onReconnect() {
                     when (viewModel.content.value) {
-                        CoursesContent.EXPLORE -> mapCoordinateOrNull()?.let(::fetchCourses)
-                        CoursesContent.FAVORITES -> viewModel.fetchFavorites()
+                        CoursesContent.EXPLORE -> {
+                            mapCoordinateOrNull()?.let(::fetchCourses)
+                        }
+
+                        CoursesContent.FAVORITES -> {
+                            viewModel.fetchFavorites()
+                        }
+
+                        CoursesContent.CUSTOM_COURSE -> {}
                     }
                 }
             }
@@ -636,6 +653,8 @@ class CoursesActivity :
             CoursesContent.FAVORITES -> {
                 viewModel.fetchFavorites()
             }
+
+            CoursesContent.CUSTOM_COURSE -> {}
         }
     }
 
