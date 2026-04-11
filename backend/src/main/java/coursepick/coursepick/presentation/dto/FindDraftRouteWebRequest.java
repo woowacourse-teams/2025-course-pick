@@ -10,13 +10,13 @@ import java.util.List;
 
 public record FindDraftRouteWebRequest(
         @NotNull
-        @Size(min = 2, message = "경로는 2개 이상의 웨이포인트로 구성되어야 합니다.")
+        @Size(min = 2, message = "경로는 2개 이상의 좌표로 구성되어야 합니다.")
         @Valid
-        @Schema(description = "지금까지 찍은 웨이포인트 목록 (순서대로)")
-        List<CoordinateWebRequest> waypoints
+        @Schema(description = "지금까지 찍은 경로 좌표 목록 (순서대로)")
+        List<CoordinateWebRequest> routePoints
 ) {
     public List<Coordinate> toCoordinates() {
-        return waypoints.stream()
+        return routePoints.stream()
                 .map(CoordinateWebRequest::toCoordinate)
                 .toList();
     }
