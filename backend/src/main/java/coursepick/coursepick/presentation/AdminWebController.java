@@ -1,5 +1,7 @@
 package coursepick.coursepick.presentation;
 
+import coursepick.coursepick.application.AdminIdProvider;
+
 import coursepick.coursepick.application.CourseParserFacade;
 import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.exception.ErrorType;
@@ -33,6 +35,7 @@ public class AdminWebController {
     private final CourseRepository courseRepository;
     private final CourseParserFacade courseParserFacade;
     private final CoordinateSnapper coordinateSnapper;
+    private final AdminIdProvider adminIdProvider;
     @Value("${admin.token}")
     private String adminToken;
     @Value("${admin.kakao-map-api-key}")
@@ -107,6 +110,7 @@ public class AdminWebController {
         for (MultipartFile file : files) {
             try (CourseFile courseFile = CourseFile.from(file)) {
                 List<Course> courses = courseParserFacade.parse(courseFile);
+                courses.forEach(course -> course.assignAdminId(adminIdProvider.get()));
                 courseRepository.saveAll(courses);
             }
         }
