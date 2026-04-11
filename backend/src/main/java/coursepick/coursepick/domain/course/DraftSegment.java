@@ -11,6 +11,10 @@ public record DraftSegment(
         coordinates = List.copyOf(coordinates);
     }
 
+    public static DraftSegment empty() {
+        return new DraftSegment(List.of(), Meter.zero());
+    }
+
     public static DraftSegment of(List<Coordinate> coordinates) {
         Meter length = Meter.zero();
         for (int i = 0; i < coordinates.size() - 1; i++) {

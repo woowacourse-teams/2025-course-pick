@@ -47,15 +47,10 @@ public class CourseApplicationService {
 
     @Transactional(readOnly = true)
     public DraftSegment findDraftRoute(List<Coordinate> waypoints) {
-        DraftSegment draftRoute = null;
+        DraftSegment draftRoute = DraftSegment.empty();
         for (int i = 0; i < waypoints.size() - 1; i++) {
             List<Coordinate> path = routeFinder.find(waypoints.get(i), waypoints.get(i + 1));
-            DraftSegment segment = DraftSegment.of(path);
-            if (draftRoute == null) {
-                draftRoute = segment;
-            } else {
-                draftRoute = draftRoute.merge(segment);
-            }
+            draftRoute = draftRoute.merge(DraftSegment.of(path));
         }
         return draftRoute;
     }
