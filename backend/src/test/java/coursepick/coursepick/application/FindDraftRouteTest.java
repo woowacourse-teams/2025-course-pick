@@ -19,39 +19,50 @@ class FindDraftRouteTest {
 
     CourseRepository courseRepository = mock(CourseRepository.class);
     RouteFinder routeFinder = mock(RouteFinder.class);
-    CourseApplicationService sut = new CourseApplicationService(courseRepository, routeFinder);
+    CourseApplicationService courseService = new CourseApplicationService(courseRepository, routeFinder);
 
     @Test
     void 경로_좌표가_1개이면_예외가_발생한다() {
-        var start = new Coordinate(0, 0);
+        var coordinate = new Coordinate(0, 0);
 
-        assertThatThrownBy(() -> sut.findDraftRoute(List.of(start)))
+        assertThatThrownBy(() -> courseService.findDraftRoute(List.of(coordinate)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    void 경로_좌표_두_개로_경로를_조회한다() {
+    void 경로_좌표_두_개로_경로를_조회할_때_반환된_경로에_중간_좌표까지_모두_포함된다() {
+        // 사용자가 입력하는 좌표: start -> end (2개)
         var start = new Coordinate(0, 0);
         var end = right(start, 1000);
-        when(routeFinder.find(start, end)).thenReturn(List.of(start, end));
 
-        DraftSegment result = sut.findDraftRoute(List.of(start, end));
+        // routeFinder가 실제 도로 경로를 탐색하면 중간 좌표도 함께 반환된다.
+        var midPoint1 = right(start, 300);
+        var midPoint2 = right(start, 700);
+        when(routeFinder.find(start, end)).thenReturn(List.of(start, midPoint1, midPoint2, end));
 
-        assertThat(result.coordinates()).containsExactly(start, end);
+        DraftSegment result = courseService.findDraftRoute(List.of(start, end));
+
+        assertThat(result.coordinates()).containsExactly(start, midPoint1, midPoint2, end);
         assertThat(result.length().value()).isCloseTo(1000, withPercentage(1));
     }
 
     @Test
-    void 경로_좌표_세_개로_경로를_조회하면_구간이_합산된다() {
+    void 경로_좌표_세_개로_경로를_조회할_때_두_구간이_중복_없이_병합된다() {
+        // 사용자가 입력하는 좌표: start -> mid -> end (3개, 구간 2개)
         var start = new Coordinate(0, 0);
         var mid = right(start, 1000);
         var end = right(mid, 1000);
-        when(routeFinder.find(start, mid)).thenReturn(List.of(start, mid));
-        when(routeFinder.find(mid, end)).thenReturn(List.of(mid, end));
 
-        DraftSegment result = sut.findDraftRoute(List.of(start, mid, end));
+        // 각 구간별로 routeFinder가 중간 좌표를 포함한 경로를 반환
+        var midPoint1 = right(start, 300);  // start -> mid 구간의 중간 좌표
+        var midPoint2 = right(mid, 300);    // mid -> end 구간의 중간 좌표
+        when(routeFinder.find(start, mid)).thenReturn(List.of(start, midPoint1, mid));
+        when(routeFinder.find(mid, end)).thenReturn(List.of(mid, midPoint2, end));
 
-        assertThat(result.coordinates()).containsExactly(start, mid, mid, end);
+        DraftSegment result = courseService.findDraftRoute(List.of(start, mid, end));
+
+        // 두 구간이 하나로 합쳐지고, 연결점(mid)이 중복되지 않는다.
+        assertThat(result.coordinates()).containsExactly(start, midPoint1, mid, midPoint2, end);
         assertThat(result.length().value()).isCloseTo(2000, withPercentage(1));
     }
 }
