@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -17,11 +18,13 @@ public class UserApplicationService {
 
     private final UserRepository userRepository;
     private final OAuthProvider oauthProvider;
+    private final NicknameGenerator nicknameGenerator;
     private final SecretKey secretKey;
 
-    public UserApplicationService(UserRepository userRepository, OAuthProvider oauthProvider, @Value("${jwt.secret-key}") String secretKeyString) {
+    public UserApplicationService(UserRepository userRepository, OAuthProvider oauthProvider, NicknameGenerator nicknameGenerator, @Value("${jwt.secret-key}") String secretKeyString) {
         this.userRepository = userRepository;
         this.oauthProvider = oauthProvider;
+        this.nicknameGenerator = nicknameGenerator;
         this.secretKey = Keys.hmacShaKeyFor(secretKeyString.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -41,7 +44,10 @@ public class UserApplicationService {
         Optional<User> user = userRepository.findByProviderAndProviderId(userProvider, providerId);
 
         if (user.isPresent()) {
-            return Authentication.auth(secretKey, user.get());
+            User existingUser = user.get();
+            existingUser.assignNicknameIfAbsent(nicknameGenerator);
+            userRepository.save(existingUser);
+            return Authentication.auth(secretKey, existingUser);
         }
 
         User registeredUser = register(userProvider, providerId);
@@ -49,7 +55,7 @@ public class UserApplicationService {
     }
 
     private User register(UserProvider userProvider, String providerId) {
-        User user = new User(userProvider, providerId);
+        User user = new User(userProvider, providerId, nicknameGenerator.generate());
         return userRepository.save(user);
     }
 }

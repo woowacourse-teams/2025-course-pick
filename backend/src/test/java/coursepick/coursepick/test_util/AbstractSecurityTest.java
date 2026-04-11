@@ -44,7 +44,7 @@ public class AbstractSecurityTest {
         userId = UUID.randomUUID().toString();
         accessToken = Authentication.auth(
                 Keys.hmacShaKeyFor(secretKeyString.getBytes(StandardCharsets.UTF_8)),
-                new User(userId, UserProvider.KAKAO, "")
+                new User(userId, UserProvider.KAKAO, "", "테스트 닉네임")
         ).accessToken();
     }
 }

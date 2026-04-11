@@ -20,10 +20,18 @@ public class User {
     private final String id;
     private final UserProvider provider;
     private final String providerId;
+    private String nickname;
 
-    public User(UserProvider provider, String providerId) {
+    public User(UserProvider provider, String providerId, String nickname) {
         this.id = null;
         this.provider = provider;
         this.providerId = providerId;
+        this.nickname = nickname;
+    }
+
+    public void assignNicknameIfAbsent(NicknameGenerator nicknameGenerator) {
+        if (nickname == null || nickname.isBlank()) {
+            this.nickname = nicknameGenerator.generate();
+        }
     }
 }
