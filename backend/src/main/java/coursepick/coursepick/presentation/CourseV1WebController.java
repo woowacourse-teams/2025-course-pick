@@ -80,7 +80,6 @@ public class CourseV1WebController implements CourseWebApi {
 
     @Override
     @Login
-    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/courses/{id}/reviews")
     public void addReview(
             @PathVariable("id") String id,
