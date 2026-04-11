@@ -28,39 +28,35 @@ class CreateCustomCourseViewModel
         private val _event = MutableSharedFlow<CustomCourseUiEvent>()
         val event: SharedFlow<CustomCourseUiEvent> get() = _event.asSharedFlow()
 
-        private val _waypoints = MutableStateFlow<List<Coordinate>>(emptyList())
-        val waypoints: StateFlow<List<Coordinate>> get() = _waypoints.asStateFlow()
-
         private val _segments = MutableStateFlow<List<DraftSegment>>(emptyList())
         val segments: StateFlow<List<DraftSegment>> get() = _segments.asStateFlow()
 
         val length: StateFlow<Length> =
             segments
-                .map { segments: List<DraftSegment> -> Length(segments.sumOf { segment: DraftSegment -> segment.length.meter.value }) }
-                .stateIn(
+                .map { segments: List<DraftSegment> ->
+                    Length(segments.sumOf { segment: DraftSegment -> segment.length.meter.value })
+                }.stateIn(
                     scope = viewModelScope,
                     started = SharingStarted.WhileSubscribed(5_000),
                     initialValue = Length(0),
                 )
 
+        val waypoints: List<Coordinate> get() = segments.value.mapNotNull { segment: DraftSegment -> segment.coordinates.lastOrNull() }
+
         fun addWaypoint(waypoint: Coordinate) {
             viewModelScope.launch {
                 val newSegment: DraftSegment =
-                    repository.draftSegment(waypoints.value.lastOrNull(), waypoint)
+                    repository.draftSegment(waypoints.lastOrNull(), waypoint)
                 if (newSegment.coordinates.isEmpty()) return@launch
 
-                _waypoints.value = waypoints.value + newSegment.coordinates.last()
-                _segments.value = segments.value + newSegment
-
+                _segments.value += newSegment
                 _event.emit(CustomCourseUiEvent.NewSegment(newSegment))
             }
         }
 
         fun removeLastWaypoint() {
-            _waypoints.value = waypoints.value.dropLast(1)
-            _segments.value = segments.value.dropLast(1)
-
             viewModelScope.launch {
+                _segments.value = segments.value.dropLast(1)
                 _event.emit(CustomCourseUiEvent.RemoveLastWaypoint)
             }
         }

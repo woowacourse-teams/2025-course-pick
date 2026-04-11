@@ -82,7 +82,7 @@ class CreateCustomCourseActivity : AppCompatActivity() {
     private fun restoreProgress() {
         mapManager.clearWaypoints()
         mapManager.clearDraftSegments()
-        viewModel.waypoints.value.forEach(mapManager::drawWaypoint)
+        viewModel.waypoints.forEach(mapManager::drawWaypoint)
         viewModel.segments.value.forEach(mapManager::drawDraftSegment)
     }
 
