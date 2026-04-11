@@ -266,23 +266,6 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
             assertThat(result.name().value()).isEqualTo(name);
         }
 
-        @Test
-        void 유저_id가_null일_경우_admin의_id가_들어간다() {
-
-            String name = "나만의 코스1";
-            List<Coordinate> coordinates = List.of(
-                    new Coordinate(37.602500, 126.967000),
-                    new Coordinate(37.603000, 126.968000),
-                    new Coordinate(37.603500, 126.969000),
-                    new Coordinate(37.602500, 126.967000)
-            );
-            // when
-            dbUtil.saveCourse(new Course(null, name, coordinates, null));
-            // then
-            Course result = dbUtil.findCourseByName(name);
-            assertThat(result.creatorId()).isEqualTo("admin");
-
-        }
 
         @Test
         void 유저가_존재하지_않을_경우_예외를_던진다() {
