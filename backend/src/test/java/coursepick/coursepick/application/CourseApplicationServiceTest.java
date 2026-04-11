@@ -295,7 +295,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
                 new Coordinate(0, 0)
         ), ADMIN_USER);
         var savedCourse = dbUtil.saveCourse(course);
-        var user = dbUtil.saveUser(new User(UserProvider.KAKAO, "kakao-1", "피곤한 하마"));
+        var user = dbUtil.saveUser(new User(UserProvider.KAKAO, "kakao-1"));
 
         sut.addReview(savedCourse.id(), user.id(), "아주 좋은 코스입니다");
 
@@ -306,7 +306,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         assertThat(detail.reviews())
                 .hasSize(1)
                 .extracting(ReviewResponse::authorNickname, ReviewResponse::content)
-                .containsExactly(org.assertj.core.groups.Tuple.tuple("피곤한 하마", "아주 좋은 코스입니다"));
+                .containsExactly(org.assertj.core.groups.Tuple.tuple(user.nickname().value(), "아주 좋은 코스입니다"));
     }
 
     @Test
@@ -318,7 +318,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
                 new Coordinate(0, 0)
         ), ADMIN_USER);
         var savedCourse = dbUtil.saveCourse(course);
-        var user = dbUtil.saveUser(new User(UserProvider.KAKAO, "kakao-2", "행복한 기린"));
+        var user = dbUtil.saveUser(new User(UserProvider.KAKAO, "kakao-2"));
 
         sut.addReview(savedCourse.id(), user.id(), "첫 번째 리뷰");
         sut.addReview(savedCourse.id(), user.id(), "두 번째 리뷰");
@@ -326,12 +326,12 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         CourseDetailResponse detail = sut.findCourseDetail(savedCourse.id());
 
         assertThat(detail.reviews()).hasSize(2)
-                .allMatch(r -> r.authorNickname().equals("행복한 기린"));
+                .allMatch(r -> r.authorNickname().equals(user.nickname().value()));
     }
 
     @Test
     void 존재하지_않는_코스에_리뷰를_작성하면_예외가_발생한다() {
-        var user = dbUtil.saveUser(new User(UserProvider.KAKAO, "kakao-3", "용감한 펭귄"));
+        var user = dbUtil.saveUser(new User(UserProvider.KAKAO, "kakao-3"));
 
         assertThatThrownBy(() -> sut.addReview("689c3143182cecc6353cca7b", user.id(), "내용"))
                 .isInstanceOf(NoSuchElementException.class);
@@ -346,7 +346,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
                 new Coordinate(0, 0)
         ), ADMIN_USER);
         var savedCourse = dbUtil.saveCourse(course);
-        var user = dbUtil.saveUser(new User(UserProvider.KAKAO, "kakao-4", "졸린 다람쥐"));
+        var user = dbUtil.saveUser(new User(UserProvider.KAKAO, "kakao-4"));
 
         assertThatThrownBy(() -> sut.addReview(savedCourse.id(), user.id(), ""))
                 .isInstanceOf(IllegalArgumentException.class);

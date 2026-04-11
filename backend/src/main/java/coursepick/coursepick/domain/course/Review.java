@@ -28,7 +28,7 @@ public class Review {
     }
 
     public Review(User author, String content) {
-        this(author.nickname(), content, Instant.now());
+        this(author.nickname().value(), content, Instant.now());
     }
 
     private static void validateContent(String content) {
