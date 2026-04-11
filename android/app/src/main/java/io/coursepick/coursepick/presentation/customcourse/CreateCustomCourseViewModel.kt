@@ -7,9 +7,12 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Length
 import io.coursepick.coursepick.domain.customcourse.CustomCourseRepository
 import io.coursepick.coursepick.domain.customcourse.DraftSegment
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -22,6 +25,9 @@ class CreateCustomCourseViewModel
     constructor(
         private val repository: CustomCourseRepository,
     ) : ViewModel() {
+        private val _event = MutableSharedFlow<CustomCourseUiEvent>()
+        val event: SharedFlow<CustomCourseUiEvent> get() = _event.asSharedFlow()
+
         private val _waypoints = MutableStateFlow<List<Coordinate>>(emptyList())
         val waypoints: StateFlow<List<Coordinate>> get() = _waypoints.asStateFlow()
 
@@ -45,11 +51,17 @@ class CreateCustomCourseViewModel
 
                 _waypoints.value = waypoints.value + newSegment.coordinates.last()
                 _segments.value = segments.value + newSegment
+
+                _event.emit(CustomCourseUiEvent.NewSegment(newSegment))
             }
         }
 
         fun removeLastWaypoint() {
             _waypoints.value = waypoints.value.dropLast(1)
             _segments.value = segments.value.dropLast(1)
+
+            viewModelScope.launch {
+                _event.emit(CustomCourseUiEvent.RemoveLastWaypoint)
+            }
         }
     }

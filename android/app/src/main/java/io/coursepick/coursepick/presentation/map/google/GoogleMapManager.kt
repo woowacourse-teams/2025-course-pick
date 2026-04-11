@@ -117,15 +117,11 @@ class GoogleMapManager(
         TODO("Not yet implemented")
     }
 
-    override fun removeWaypoints() {
+    override fun removeLastWaypoint() {
         TODO("Not yet implemented")
     }
 
     override fun drawDraftSegment(segment: DraftSegment) {
-        TODO("Not yet implemented")
-    }
-
-    override fun removeDraftSegments() {
         TODO("Not yet implemented")
     }
 

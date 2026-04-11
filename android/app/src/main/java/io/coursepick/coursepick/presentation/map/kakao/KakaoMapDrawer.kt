@@ -3,15 +3,13 @@ package io.coursepick.coursepick.presentation.map.kakao
 import android.content.Context
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.label.Label
-import com.kakao.vectormap.label.LabelLayer
-import com.kakao.vectormap.label.LabelLayerOptions
-import com.kakao.vectormap.label.LabelManager
 import com.kakao.vectormap.label.LabelOptions
 import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
 import com.kakao.vectormap.label.LabelTransition
 import com.kakao.vectormap.label.TransformMethod
 import com.kakao.vectormap.label.Transition
+import com.kakao.vectormap.route.RouteLine
 import com.kakao.vectormap.route.RouteLineLayer
 import com.kakao.vectormap.route.RouteLineManager
 import com.kakao.vectormap.route.RouteLineOptions
@@ -33,6 +31,9 @@ class KakaoMapDrawer(
     private val map: KakaoMap,
 ) {
     private val routeLineOptionsFactory = RouteLineOptionsFactory(context)
+
+    private val waypoints = mutableListOf<Label>()
+    private val segments = mutableListOf<RouteLine>()
 
     fun drawCourse(course: CourseItem) {
         val layer: RouteLineLayer = map.routeLineManager?.layer ?: return
@@ -101,52 +102,43 @@ class KakaoMapDrawer(
     }
 
     fun drawWaypoint(coordinate: Coordinate) {
-        map.labelManager?.let { manager: LabelManager ->
-            val layer: LabelLayer =
-                manager.getLayer(ID_WAYPOINTS_LAYER_ID)
-                    ?: manager.addLayer(LabelLayerOptions.from(ID_WAYPOINTS_LAYER_ID))
-                    ?: return
+        val style =
+            LabelStyle
+                .from(R.drawable.icon_waypoint)
+                .setAnchorPoint(0.5F, 1F)
+                .setIconTransition(LabelTransition.from(Transition.None, Transition.None))
+        val options =
+            LabelOptions.from(coordinate.toLatLng()).setStyles(LabelStyles.from(style))
 
-            val style =
-                LabelStyle
-                    .from(R.drawable.icon_waypoint)
-                    .setAnchorPoint(0.5F, 1F)
-                    .setIconTransition(LabelTransition.from(Transition.None, Transition.None))
-            val options =
-                LabelOptions.from(coordinate.toLatLng()).setStyles(LabelStyles.from(style))
-
-            layer.addLabel(options)
-        }
+        map.labelManager
+            ?.layer
+            ?.addLabel(options)
+            ?.also(waypoints::add)
     }
 
-    fun removeWaypoints() {
-        map.labelManager?.let { labelManager: LabelManager ->
-            labelManager.getLayer(ID_WAYPOINTS_LAYER_ID)?.removeAll()
-        }
+    fun removeLastWaypoint() {
+        waypoints.removeLastOrNull()?.also(Label::remove)
+        segments.removeLastOrNull()?.also(RouteLine::remove)
     }
 
     fun drawDraftSegment(segment: DraftSegment) {
-        map.routeLineManager?.let { manager: RouteLineManager ->
-            val layer: RouteLineLayer =
-                manager.getLayer(ID_DRAFT_SEGMENTS_LAYER_ID)
-                    ?: manager.addLayer(ID_DRAFT_SEGMENTS_LAYER_ID)
-                    ?: return
+        val style =
+            RouteLineStyle.from(
+                context.resources.getDimension(R.dimen.draft_segment_width),
+                context.getColor(R.color.course_draft),
+            )
+        val options =
+            RouteLineOptions.from(
+                RouteLineSegment.from(
+                    segment.coordinates.map(Coordinate::toLatLng),
+                    style,
+                ),
+            )
 
-            val style =
-                RouteLineStyle.from(
-                    context.resources.getDimension(R.dimen.draft_segment_width),
-                    context.getColor(R.color.course_draft),
-                )
-            val options =
-                RouteLineOptions.from(
-                    RouteLineSegment.from(
-                        segment.coordinates.map(Coordinate::toLatLng),
-                        style,
-                    ),
-                )
-
-            layer.addRouteLine(options)
-        }
+        map.routeLineManager
+            ?.layer
+            ?.addRouteLine(options)
+            ?.also(segments::add)
     }
 
     fun removeDraftSegments() {

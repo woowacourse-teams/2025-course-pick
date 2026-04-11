@@ -12,8 +12,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import io.coursepick.coursepick.databinding.ActivityCustomCourseBinding
 import io.coursepick.coursepick.di.KakaoMap
-import io.coursepick.coursepick.domain.course.Coordinate
-import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.presentation.InstallStateObserver
 import io.coursepick.coursepick.presentation.map.MapManager
 import io.coursepick.coursepick.presentation.map.MapManagerFactory
@@ -59,18 +57,19 @@ class CreateCustomCourseActivity : AppCompatActivity() {
     fun setUpCollectors() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.waypoints.collect { waypoints: List<Coordinate> ->
-                    mapManager.removeWaypoints()
-                    waypoints.forEach(mapManager::drawWaypoint)
-                }
-            }
-        }
+                viewModel.event.collect { event: CustomCourseUiEvent ->
+                    when (event) {
+                        is CustomCourseUiEvent.NewSegment -> {
+                            event.segment.coordinates
+                                .lastOrNull()
+                                ?.let(mapManager::drawWaypoint)
+                            mapManager.drawDraftSegment(event.segment)
+                        }
 
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.segments.collect { segments: List<DraftSegment> ->
-                    mapManager.removeDraftSegments()
-                    segments.forEach(mapManager::drawDraftSegment)
+                        CustomCourseUiEvent.RemoveLastWaypoint -> {
+                            mapManager.removeLastWaypoint()
+                        }
+                    }
                 }
             }
         }
