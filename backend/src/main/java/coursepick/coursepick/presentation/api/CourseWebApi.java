@@ -132,7 +132,7 @@ public interface CourseWebApi {
     })
     void addReview(
             @Parameter(description = "코스 ID", example = "689c3143182cecc6353cca7b", required = true) String id,
-            String userId,
+            @Parameter(hidden = true) String userId,
             CreateReviewWebRequest request
     );
 
