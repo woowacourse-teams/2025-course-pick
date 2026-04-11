@@ -23,7 +23,7 @@ public class LegacyUserNicknameMigrationRunner implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         List<User> legacyUsers = userRepository.findAllByNicknameIsNull();
         for (User user : legacyUsers) {
-            user.assignNicknameIfAbsent(nicknameGenerator);
+            user.assignNickname(nicknameGenerator);
             userRepository.save(user);
         }
         int updated = legacyUsers.size();

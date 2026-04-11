@@ -44,10 +44,7 @@ public class UserApplicationService {
         Optional<User> user = userRepository.findByProviderAndProviderId(userProvider, providerId);
 
         if (user.isPresent()) {
-            User existingUser = user.get();
-            existingUser.assignNicknameIfAbsent(nicknameGenerator);
-            userRepository.save(existingUser);
-            return Authentication.auth(secretKey, existingUser);
+            return Authentication.auth(secretKey, user.get());
         }
 
         User registeredUser = register(userProvider, providerId);

@@ -29,9 +29,7 @@ public class User {
         this.nickname = nickname;
     }
 
-    public void assignNicknameIfAbsent(NicknameGenerator nicknameGenerator) {
-        if (nickname == null || nickname.isBlank()) {
-            this.nickname = nicknameGenerator.generate();
-        }
+    public void assignNickname(NicknameGenerator nicknameGenerator) {
+        this.nickname = nicknameGenerator.generate();
     }
 }
