@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class EndpointsDto(
-    val origin: CoordinateDto,
+    val origin: CoordinateDto?,
     val destination: CoordinateDto,
 )
