@@ -87,6 +87,18 @@ class KakaoMapManager(
         drawer?.hideUserPosition() ?: Timber.w("KakaoMapDrawer is null")
     }
 
+    override fun drawWaypoint(coordinate: Coordinate) {
+        drawer?.drawWaypoint(coordinate) ?: Timber.w("KakaoMapDrawer is null")
+    }
+
+    override fun removeLastWaypoint() {
+        drawer?.removeLastWaypoint() ?: Timber.w("KakaoMapDrawer is null")
+    }
+
+    override fun drawSegment(coordinates: List<Coordinate>) {
+        drawSegment(coordinates)
+    }
+
     override fun fitTo(coordinates: List<Coordinate>) {
         kakaoMap?.let { kakaoMap: KakaoMap ->
             cameraController.fitTo(coordinates, kakaoMap)

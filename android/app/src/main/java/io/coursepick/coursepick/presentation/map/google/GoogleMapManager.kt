@@ -112,6 +112,18 @@ class GoogleMapManager(
             ?: run { Timber.w("${GoogleMapDrawer::class.simpleName} is null.") }
     }
 
+    override fun drawWaypoint(coordinate: Coordinate) {
+        TODO("Not yet implemented")
+    }
+
+    override fun removeLastWaypoint() {
+        TODO("Not yet implemented")
+    }
+
+    override fun drawSegment(coordinates: List<Coordinate>) {
+        TODO("Not yet implemented")
+    }
+
     override fun fitTo(coordinates: List<Coordinate>) {
         map?.let { map: GoogleMap ->
             val bounds =

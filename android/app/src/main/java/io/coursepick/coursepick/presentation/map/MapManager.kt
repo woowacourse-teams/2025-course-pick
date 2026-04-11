@@ -29,6 +29,12 @@ interface MapManager {
 
     fun hideUserLocation()
 
+    fun drawWaypoint(coordinate: Coordinate)
+
+    fun removeLastWaypoint()
+
+    fun drawSegment(coordinates: List<Coordinate>)
+
     fun fitTo(coordinates: List<Coordinate>)
 
     fun fitTo(course: CourseItem)

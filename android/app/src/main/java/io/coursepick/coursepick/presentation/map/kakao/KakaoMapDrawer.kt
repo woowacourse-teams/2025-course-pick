@@ -3,14 +3,18 @@ package io.coursepick.coursepick.presentation.map.kakao
 import android.content.Context
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.label.Label
+import com.kakao.vectormap.label.LabelLayer
 import com.kakao.vectormap.label.LabelOptions
 import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
 import com.kakao.vectormap.label.LabelTransition
 import com.kakao.vectormap.label.TransformMethod
 import com.kakao.vectormap.label.Transition
+import com.kakao.vectormap.route.RouteLine
 import com.kakao.vectormap.route.RouteLineLayer
 import com.kakao.vectormap.route.RouteLineOptions
+import com.kakao.vectormap.route.RouteLineSegment
+import com.kakao.vectormap.route.RouteLineStyle
 import com.kakao.vectormap.shape.DotPoints
 import com.kakao.vectormap.shape.Polygon
 import com.kakao.vectormap.shape.PolygonOptions
@@ -91,6 +95,41 @@ class KakaoMapDrawer(
     fun removeAllLines() {
         val layer: RouteLineLayer = map.routeLineManager?.layer ?: return
         layer.removeAll()
+    }
+
+    private val draftWaypoints = mutableListOf<Label>()
+    private val draftSegments = mutableListOf<RouteLine>()
+
+    fun drawWaypoint(coordinate: Coordinate) {
+        val layer: LabelLayer = map.labelManager?.layer ?: return
+
+        val style =
+            LabelStyle
+                .from(R.drawable.icon_waypoint)
+                .setAnchorPoint(0.5F, 1F)
+                .setIconTransition(LabelTransition.from(Transition.None, Transition.None))
+        val options = LabelOptions.from(coordinate.toLatLng()).setStyles(LabelStyles.from(style))
+
+        layer.addLabel(options).also(draftWaypoints::add)
+    }
+
+    fun removeLastWaypoint() {
+        draftWaypoints.removeLastOrNull()?.also(Label::remove)
+        draftSegments.removeLastOrNull()?.also(RouteLine::remove)
+    }
+
+    fun drawSegment(segment: List<Coordinate>) {
+        val layer: RouteLineLayer = map.routeLineManager?.layer ?: return
+
+        val style =
+            RouteLineStyle.from(
+                context.resources.getDimension(R.dimen.draft_segment_width),
+                context.getColor(R.color.course_draft),
+            )
+        val options =
+            RouteLineOptions.from(RouteLineSegment.from(segment.map(Coordinate::toLatLng), style))
+
+        layer.addRouteLine(options).also(draftSegments::add)
     }
 
     private fun drawAccurateUserPosition(location: Location.Fine) {
