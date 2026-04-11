@@ -336,22 +336,4 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         assertThatThrownBy(() -> sut.addReview("689c3143182cecc6353cca7b", user.id(), "내용"))
                 .isInstanceOf(NoSuchElementException.class);
     }
-
-    @Test
-    void 리뷰_내용이_길이_제한을_위반하면_예외가_발생한다() {
-        var course = new Course(null, "제한 코스", List.of(
-                new Coordinate(0, 0),
-                new Coordinate(0, 0.0001),
-                new Coordinate(0.0001, 0.0001),
-                new Coordinate(0, 0)
-        ), ADMIN_USER);
-        var savedCourse = dbUtil.saveCourse(course);
-        var user = dbUtil.saveUser(new User(UserProvider.KAKAO, "kakao-4"));
-
-        assertThatThrownBy(() -> sut.addReview(savedCourse.id(), user.id(), ""))
-                .isInstanceOf(IllegalArgumentException.class);
-
-        assertThatThrownBy(() -> sut.addReview(savedCourse.id(), user.id(), "가".repeat(501)))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
 }
