@@ -37,7 +37,7 @@ class KmlCourseParserTest {
                 """;
         var inputStream = new ByteArrayInputStream(kmlContent.getBytes(StandardCharsets.UTF_8));
 
-        var courses = sut.parse(new CourseFile("테스트코스", CourseFileExtension.KML, inputStream));
+        var courses = sut.parse(new CourseFile("테스트코스", CourseFileExtension.KML, inputStream), "admin-id");
 
         assertThat(courses).hasSize(1);
         var course = courses.getFirst();
@@ -61,7 +61,7 @@ class KmlCourseParserTest {
                 """;
         var inputStream = new ByteArrayInputStream(kmlContent.getBytes(StandardCharsets.UTF_8));
 
-        var courses = sut.parse(new CourseFile("테스트코스", CourseFileExtension.KML, inputStream));
+        var courses = sut.parse(new CourseFile("테스트코스", CourseFileExtension.KML, inputStream), "admin-id");
 
         assertThat(courses).isEmpty();
     }

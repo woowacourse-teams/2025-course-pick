@@ -18,10 +18,9 @@ class GpxCourseParserTest {
         var inputStream = createGpxInputStreamOf(
                 new Coordinate(37.4869510, 126.9230870),
                 new Coordinate(37.4869515, 126.9230875),
-                new Coordinate(37.4845100, 126.9255380)
-        );
+                new Coordinate(37.4845100, 126.9255380));
 
-        var courses = sut.parse(new CourseFile("테스트코스", CourseFileExtension.GPX, inputStream));
+        var courses = sut.parse(new CourseFile("테스트코스", CourseFileExtension.GPX, inputStream), "admin-id");
 
         assertThat(courses.size()).isEqualTo(1);
         assertThat(courses).extracting(course -> course.name().value())
