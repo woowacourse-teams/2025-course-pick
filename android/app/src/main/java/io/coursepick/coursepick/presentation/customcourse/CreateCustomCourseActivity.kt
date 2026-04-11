@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,7 +46,8 @@ class CreateCustomCourseActivity : AppCompatActivity() {
         binding.composeContainer.setContent {
             CoursePickTheme {
                 CreateCustomCourseScreen(
-                    onClose = { finish() },
+                    length = viewModel.length.collectAsStateWithLifecycle().value,
+                    onClose = ::finish,
                     onUndoWaypoint = viewModel::removeLastWaypoint,
                     onAddWaypoint = { mapManager.cameraCoordinate?.let(viewModel::addWaypoint) },
                     onConfirm = { },

@@ -34,10 +34,13 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.coursepick.coursepick.R
+import io.coursepick.coursepick.domain.course.Length
+import io.coursepick.coursepick.presentation.toDistanceText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateCustomCourseScreen(
+    length: Length,
     onClose: () -> Unit,
     onUndoWaypoint: () -> Unit,
     onAddWaypoint: () -> Unit,
@@ -45,7 +48,10 @@ fun CreateCustomCourseScreen(
     modifier: Modifier = Modifier,
 ) {
     Box(
-        modifier = modifier.fillMaxSize().navigationBarsPadding(),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .navigationBarsPadding(),
     ) {
         CenterAlignedTopAppBar(
             title = { Text(text = stringResource(R.string.create_custom_courses)) },
@@ -53,14 +59,20 @@ fun CreateCustomCourseScreen(
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = stringResource(R.string.create_custom_courses_close),
-                    modifier = Modifier.padding(start = 10.dp).clickable { onClose() },
+                    modifier =
+                        Modifier
+                            .padding(start = 10.dp)
+                            .clickable { onClose() },
                 )
             },
             actions = {
                 Icon(
                     imageVector = Icons.Default.Done,
                     contentDescription = null,
-                    modifier = Modifier.padding(end = 10.dp).clickable { onConfirm() },
+                    modifier =
+                        Modifier
+                            .padding(end = 10.dp)
+                            .clickable { onConfirm() },
                 )
             },
             colors =
@@ -78,7 +90,10 @@ fun CreateCustomCourseScreen(
             painter = painterResource(R.drawable.icon_add_waypoint),
             contentDescription = null,
             tint = colorResource(R.color.point_primary),
-            modifier = Modifier.align(Alignment.Center).size(40.dp),
+            modifier =
+                Modifier
+                    .align(Alignment.Center)
+                    .size(40.dp),
         )
 
         Row(
@@ -90,7 +105,7 @@ fun CreateCustomCourseScreen(
                     .padding(start = 10.dp, end = 10.dp, bottom = 10.dp),
         ) {
             Text(
-                text = "123km",
+                text = length.toDistanceText(),
                 fontSize = 24.sp,
                 color = colorResource(R.color.item_primary),
                 modifier =
@@ -147,8 +162,21 @@ fun CreateCustomCourseScreen(
 
 @PreviewLightDark
 @Composable
-fun CreateCustomCourseScreenPreview() {
+fun CreateCustomCourseScreenPreview_ShortCourse() {
     CreateCustomCourseScreen(
+        length = Length(123),
+        onClose = { },
+        onUndoWaypoint = { },
+        onAddWaypoint = { },
+        onConfirm = { },
+    )
+}
+
+@PreviewLightDark
+@Composable
+fun CreateCustomCourseScreenPreview_LongCourse() {
+    CreateCustomCourseScreen(
+        length = Length(12345),
         onClose = { },
         onUndoWaypoint = { },
         onAddWaypoint = { },
