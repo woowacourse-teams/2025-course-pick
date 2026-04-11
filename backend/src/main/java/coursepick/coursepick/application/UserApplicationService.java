@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,13 +17,11 @@ public class UserApplicationService {
 
     private final UserRepository userRepository;
     private final OAuthProvider oauthProvider;
-    private final NicknameGenerator nicknameGenerator;
     private final SecretKey secretKey;
 
-    public UserApplicationService(UserRepository userRepository, OAuthProvider oauthProvider, NicknameGenerator nicknameGenerator, @Value("${jwt.secret-key}") String secretKeyString) {
+    public UserApplicationService(UserRepository userRepository, OAuthProvider oauthProvider, @Value("${jwt.secret-key}") String secretKeyString) {
         this.userRepository = userRepository;
         this.oauthProvider = oauthProvider;
-        this.nicknameGenerator = nicknameGenerator;
         this.secretKey = Keys.hmacShaKeyFor(secretKeyString.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -52,7 +49,7 @@ public class UserApplicationService {
     }
 
     private User register(UserProvider userProvider, String providerId) {
-        User user = new User(userProvider, providerId, nicknameGenerator.generate());
+        User user = new User(userProvider, providerId);
         return userRepository.save(user);
     }
 }

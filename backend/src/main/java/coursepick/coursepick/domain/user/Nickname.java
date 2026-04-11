@@ -1,12 +1,11 @@
 package coursepick.coursepick.domain.user;
 
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-@Component
-public class NicknameGenerator {
+public record Nickname(
+        String value
+) {
 
     private static final List<String> ADJECTIVES = List.of(
             "피곤한", "행복한", "용감한", "졸린", "배고픈",
@@ -22,10 +21,10 @@ public class NicknameGenerator {
             "문어", "돌고래", "거북이", "부엉이", "곰"
     );
 
-    public String generate() {
+    public static Nickname random() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         String adjective = ADJECTIVES.get(random.nextInt(ADJECTIVES.size()));
         String animal = ANIMALS.get(random.nextInt(ANIMALS.size()));
-        return adjective + " " + animal;
+        return new Nickname(adjective + " " + animal);
     }
 }

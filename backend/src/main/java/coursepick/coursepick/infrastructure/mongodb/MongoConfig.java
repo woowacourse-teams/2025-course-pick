@@ -24,7 +24,9 @@ public class MongoConfig {
     public MongoCustomConversions mongoCustomConversions() {
         return new MongoCustomConversions(List.of(
                 new CourseConverter.Reader(objectMapper),
-                new CourseConverter.Writer(objectMapper)
+                new CourseConverter.Writer(objectMapper),
+                new UserConverter.Reader(),
+                new UserConverter.Writer()
         ));
     }
 

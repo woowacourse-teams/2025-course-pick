@@ -20,16 +20,16 @@ public class User {
     private final String id;
     private final UserProvider provider;
     private final String providerId;
-    private String nickname;
+    private Nickname nickname;
 
-    public User(UserProvider provider, String providerId, String nickname) {
+    public User(UserProvider provider, String providerId) {
         this.id = null;
         this.provider = provider;
         this.providerId = providerId;
-        this.nickname = nickname;
+        this.nickname = Nickname.random();
     }
 
-    public void assignNickname(NicknameGenerator nicknameGenerator) {
-        this.nickname = nicknameGenerator.generate();
+    public void assignRandomNickname() {
+        this.nickname = Nickname.random();
     }
 }

@@ -15,7 +15,7 @@ class AuthenticationTest {
 
     private static final Duration TOKEN_VALIDITY = Duration.ofDays(30);
     private static final SecretKey TEST_KEY = Jwts.SIG.HS256.key().build();
-    private static final User TEST_USER = new User("user123", UserProvider.KAKAO, "kakaoUserId123", "테스트 닉네임");
+    private static final User TEST_USER = new User("user123", UserProvider.KAKAO, "kakaoUserId123", new Nickname("테스트 닉네임"));
 
     @Test
     void 생성된_토큰은_사용자_ID를_subject로_포함한다() {
