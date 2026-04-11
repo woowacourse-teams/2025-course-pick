@@ -25,7 +25,7 @@ public record DraftSegment(
 
     public DraftSegment merge(DraftSegment next) {
         List<Coordinate> merged = new ArrayList<>(this.coordinates);
-        merged.addAll(next.coordinates);
+        merged.addAll(next.coordinates.subList(1, next.coordinates.size()));
         return new DraftSegment(merged, this.length.add(next.length));
     }
 }
