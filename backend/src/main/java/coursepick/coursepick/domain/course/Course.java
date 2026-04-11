@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
@@ -96,5 +95,9 @@ public class Course {
 
     public void changeName(String courseName) {
         this.name = new CourseName(courseName);
+    }
+
+    public void assignAdminId(String adminId) {
+        this.creatorId = adminId;
     }
 }
