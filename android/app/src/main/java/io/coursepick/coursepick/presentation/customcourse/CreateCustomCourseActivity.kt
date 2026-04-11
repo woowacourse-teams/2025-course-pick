@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
 import io.coursepick.coursepick.databinding.ActivityCustomCourseBinding
+import io.coursepick.coursepick.di.KakaoMap
 import io.coursepick.coursepick.presentation.InstallStateObserver
 import io.coursepick.coursepick.presentation.map.MapManager
 import io.coursepick.coursepick.presentation.map.MapManagerFactory
@@ -17,6 +18,7 @@ class CreateCustomCourseActivity : AppCompatActivity() {
     private val binding by lazy { ActivityCustomCourseBinding.inflate(layoutInflater) }
 
     @Inject
+    @KakaoMap
     lateinit var mapManagerFactory: MapManagerFactory
     private val mapManager: MapManager by lazy { mapManagerFactory.create(binding.mapContainer) }
 
