@@ -39,13 +39,13 @@ import io.coursepick.coursepick.R
 @Composable
 fun CreateCustomCourseScreen(
     onClose: () -> Unit,
+    onUndoWaypoint: () -> Unit,
+    onAddWaypoint: () -> Unit,
+    onConfirm: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .navigationBarsPadding(),
+        modifier = modifier.fillMaxSize().navigationBarsPadding(),
     ) {
         CenterAlignedTopAppBar(
             title = { Text(text = stringResource(R.string.create_custom_courses)) },
@@ -53,17 +53,14 @@ fun CreateCustomCourseScreen(
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = stringResource(R.string.create_custom_courses_close),
-                    modifier =
-                        Modifier
-                            .padding(start = 10.dp)
-                            .clickable(onClick = onClose),
+                    modifier = Modifier.padding(start = 10.dp).clickable { onClose() },
                 )
             },
             actions = {
                 Icon(
                     imageVector = Icons.Default.Done,
                     contentDescription = null,
-                    modifier = Modifier.padding(end = 10.dp),
+                    modifier = Modifier.padding(end = 10.dp).clickable { onConfirm() },
                 )
             },
             colors =
@@ -81,10 +78,7 @@ fun CreateCustomCourseScreen(
             painter = painterResource(R.drawable.icon_add_waypoint),
             contentDescription = null,
             tint = colorResource(R.color.point_primary),
-            modifier =
-                Modifier
-                    .align(Alignment.Center)
-                    .size(40.dp),
+            modifier = Modifier.align(Alignment.Center).size(40.dp),
         )
 
         Row(
@@ -117,7 +111,7 @@ fun CreateCustomCourseScreen(
                             .clip(shape = CircleShape)
                             .background(colorResource(R.color.background_primary))
                             .size(70.dp)
-                            .clickable {},
+                            .clickable { onUndoWaypoint() },
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.icon_undo),
@@ -136,7 +130,8 @@ fun CreateCustomCourseScreen(
                             .shadow(elevation = 8.dp, shape = CircleShape)
                             .clip(shape = CircleShape)
                             .background(colorResource(R.color.background_primary))
-                            .size(70.dp),
+                            .size(70.dp)
+                            .clickable { onAddWaypoint() },
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
@@ -154,6 +149,9 @@ fun CreateCustomCourseScreen(
 @Composable
 fun CreateCustomCourseScreenPreview() {
     CreateCustomCourseScreen(
-        onClose = {},
+        onClose = { },
+        onUndoWaypoint = { },
+        onAddWaypoint = { },
+        onConfirm = { },
     )
 }

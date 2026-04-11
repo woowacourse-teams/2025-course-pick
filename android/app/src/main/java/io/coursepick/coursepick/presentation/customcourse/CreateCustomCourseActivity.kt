@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
 import io.coursepick.coursepick.databinding.ActivityCustomCourseBinding
 import io.coursepick.coursepick.di.KakaoMap
+import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.presentation.InstallStateObserver
 import io.coursepick.coursepick.presentation.map.MapManager
 import io.coursepick.coursepick.presentation.map.MapManagerFactory
@@ -29,10 +30,22 @@ class CreateCustomCourseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        mapManager.startMap {}
+        mapManager.startMap { }
+
         binding.composeContainer.setContent {
             CoursePickTheme {
-                CreateCustomCourseScreen(onClose = { finish() })
+                CreateCustomCourseScreen(
+                    onClose = { finish() },
+                    onUndoWaypoint = {
+                        mapManager.removeLastWaypoint()
+                    },
+                    onAddWaypoint = {
+                        mapManager.cameraCoordinate?.let { coordinate: Coordinate ->
+                            mapManager.drawWaypoint(coordinate)
+                        }
+                    },
+                    onConfirm = { },
+                )
             }
         }
     }
