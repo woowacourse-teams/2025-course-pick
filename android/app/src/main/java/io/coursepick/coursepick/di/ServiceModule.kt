@@ -6,6 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.coursepick.coursepick.data.auth.SignService
 import io.coursepick.coursepick.data.course.CourseService
+import io.coursepick.coursepick.data.customcourse.CustomCourseService
 import io.coursepick.coursepick.data.notice.NoticeService
 import io.coursepick.coursepick.data.search.SearchService
 import retrofit2.Retrofit
@@ -32,4 +33,9 @@ object ServiceModule {
     fun provideSignService(
         @CoursePickRetrofit retrofit: Retrofit,
     ): SignService = retrofit.create(SignService::class.java)
+
+    @Provides
+    fun provideCustomCourseService(
+        @CoursePickRetrofit retrofit: Retrofit,
+    ): CustomCourseService = retrofit.create(CustomCourseService::class.java)
 }
