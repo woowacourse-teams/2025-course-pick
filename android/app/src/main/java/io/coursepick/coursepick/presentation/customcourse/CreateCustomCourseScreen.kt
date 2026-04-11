@@ -46,7 +46,6 @@ fun CreateCustomCourseScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .statusBarsPadding()
                 .navigationBarsPadding(),
     ) {
         CenterAlignedTopAppBar(
