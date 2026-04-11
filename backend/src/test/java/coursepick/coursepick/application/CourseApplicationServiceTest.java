@@ -1,6 +1,8 @@
 package coursepick.coursepick.application;
 
+import coursepick.coursepick.application.dto.CourseDetailResponse;
 import coursepick.coursepick.application.dto.CourseResponse;
+import coursepick.coursepick.application.dto.ReviewResponse;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.Course;
 import coursepick.coursepick.domain.course.CourseFindCondition;
@@ -283,4 +285,73 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         }
     }
 
+    @Test
+    void 코스_상세를_조회하면_리뷰_목록이_함께_반환된다() {
+        var course = new Course(null, "리뷰 테스트 코스", List.of(
+                new Coordinate(0, 0),
+                new Coordinate(0, 0.0001),
+                new Coordinate(0.0001, 0.0001),
+                new Coordinate(0.0001, 0),
+                new Coordinate(0, 0)
+        ), ADMIN_USER);
+        var savedCourse = dbUtil.saveCourse(course);
+        var user = dbUtil.saveUser(new User(UserProvider.KAKAO, "kakao-1", "피곤한 하마"));
+
+        sut.addReview(savedCourse.id(), user.id(), "아주 좋은 코스입니다");
+
+        CourseDetailResponse detail = sut.findCourseDetail(savedCourse.id());
+
+        assertThat(detail.id()).isEqualTo(savedCourse.id());
+        assertThat(detail.name()).isEqualTo("리뷰 테스트 코스");
+        assertThat(detail.reviews())
+                .hasSize(1)
+                .extracting(ReviewResponse::authorNickname, ReviewResponse::content)
+                .containsExactly(org.assertj.core.groups.Tuple.tuple("피곤한 하마", "아주 좋은 코스입니다"));
+    }
+
+    @Test
+    void 동일_사용자가_여러_리뷰를_작성하면_모두_같은_닉네임으로_저장된다() {
+        var course = new Course(null, "동일 사용자 리뷰 코스", List.of(
+                new Coordinate(0, 0),
+                new Coordinate(0, 0.0001),
+                new Coordinate(0.0001, 0.0001),
+                new Coordinate(0, 0)
+        ), ADMIN_USER);
+        var savedCourse = dbUtil.saveCourse(course);
+        var user = dbUtil.saveUser(new User(UserProvider.KAKAO, "kakao-2", "행복한 기린"));
+
+        sut.addReview(savedCourse.id(), user.id(), "첫 번째 리뷰");
+        sut.addReview(savedCourse.id(), user.id(), "두 번째 리뷰");
+
+        CourseDetailResponse detail = sut.findCourseDetail(savedCourse.id());
+
+        assertThat(detail.reviews()).hasSize(2)
+                .allMatch(r -> r.authorNickname().equals("행복한 기린"));
+    }
+
+    @Test
+    void 존재하지_않는_코스에_리뷰를_작성하면_예외가_발생한다() {
+        var user = dbUtil.saveUser(new User(UserProvider.KAKAO, "kakao-3", "용감한 펭귄"));
+
+        assertThatThrownBy(() -> sut.addReview("689c3143182cecc6353cca7b", user.id(), "내용"))
+                .isInstanceOf(NoSuchElementException.class);
+    }
+
+    @Test
+    void 리뷰_내용이_길이_제한을_위반하면_예외가_발생한다() {
+        var course = new Course(null, "제한 코스", List.of(
+                new Coordinate(0, 0),
+                new Coordinate(0, 0.0001),
+                new Coordinate(0.0001, 0.0001),
+                new Coordinate(0, 0)
+        ), ADMIN_USER);
+        var savedCourse = dbUtil.saveCourse(course);
+        var user = dbUtil.saveUser(new User(UserProvider.KAKAO, "kakao-4", "졸린 다람쥐"));
+
+        assertThatThrownBy(() -> sut.addReview(savedCourse.id(), user.id(), ""))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        assertThatThrownBy(() -> sut.addReview(savedCourse.id(), user.id(), "가".repeat(501)))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }

@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Document
@@ -33,6 +34,8 @@ public class Course {
 
     private Meter length;
 
+    private List<Review> reviews;
+
     private String creatorId;
 
     public Course(String id, String name, List<Coordinate> rawCoordinates, User user) {
@@ -41,6 +44,7 @@ public class Course {
         this.coordinates = refineCoordinates(rawCoordinates);
         this.simplifiedCoordinates = simplifyCoordinates(this.coordinates);
         this.length = calculateLength(coordinates);
+        this.reviews = new ArrayList<>();
         this.creatorId = user.id();
     }
 
@@ -96,5 +100,9 @@ public class Course {
 
     public void changeName(String courseName) {
         this.name = new CourseName(courseName);
+    }
+
+    public void addReview(User author, String content) {
+        reviews.add(new Review(author, content));
     }
 }

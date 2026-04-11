@@ -1,6 +1,7 @@
 package coursepick.coursepick.presentation;
 
 import coursepick.coursepick.application.CourseApplicationService;
+import coursepick.coursepick.application.dto.CourseDetailResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.CourseFindCondition;
@@ -11,6 +12,7 @@ import coursepick.coursepick.security.Login;
 import coursepick.coursepick.security.UserId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -67,6 +69,25 @@ public class CourseV1WebController implements CourseWebApi {
         return courseApplicationService.findFavoriteCourses(ids).stream()
                 .map(CourseWebResponse::from)
                 .toList();
+    }
+
+    @Override
+    @GetMapping("/courses/{id}")
+    public CourseDetailWebResponse findCourseDetail(@PathVariable("id") String id) {
+        CourseDetailResponse response = courseApplicationService.findCourseDetail(id);
+        return CourseDetailWebResponse.from(response);
+    }
+
+    @Override
+    @Login
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/courses/{id}/reviews")
+    public void addReview(
+            @PathVariable("id") String id,
+            @UserId String userId,
+            @RequestBody CreateReviewWebRequest request
+    ) {
+        courseApplicationService.addReview(id, userId, request.content());
     }
 
     @Override

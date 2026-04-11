@@ -94,6 +94,48 @@ public interface CourseWebApi {
             @Parameter(description = "사용자 경도(-180 ~ 180)", example = "127.1040109", required = true) double longitude
     );
 
+    @Operation(summary = "코스 상세 조회 (리뷰 포함)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content(examples = {
+                    @ExampleObject(
+                            name = "코스가 존재하지 않는 경우",
+                            ref = "#/components/examples/NOT_EXIST_COURSE"
+                    )
+            })),
+    })
+    CourseDetailWebResponse findCourseDetail(
+            @Parameter(description = "코스 ID", example = "689c3143182cecc6353cca7b", required = true) String id
+    );
+
+    @Operation(summary = "코스 리뷰 작성")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "400", content = @Content(examples = {
+                    @ExampleObject(
+                            name = "리뷰 내용 길이가 범위 외인 경우",
+                            ref = "#/components/examples/INVALID_REVIEW_CONTENT_LENGTH"
+                    )
+            })),
+            @ApiResponse(responseCode = "401", content = @Content(examples = {
+                    @ExampleObject(
+                            name = "인증에 실패한 경우",
+                            ref = "#/components/examples/AUTHENTICATION_FAIL"
+                    )
+            })),
+            @ApiResponse(responseCode = "404", content = @Content(examples = {
+                    @ExampleObject(
+                            name = "코스가 존재하지 않는 경우",
+                            ref = "#/components/examples/NOT_EXIST_COURSE"
+                    )
+            })),
+    })
+    void addReview(
+            @Parameter(description = "코스 ID", example = "689c3143182cecc6353cca7b", required = true) String id,
+            String userId,
+            CreateReviewWebRequest request
+    );
+
     @Operation(summary = "즐겨찾기 코스 조회")
     @ApiResponse(responseCode = "200")
     List<CourseWebResponse> findFavoriteCourses(
