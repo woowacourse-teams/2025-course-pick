@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -42,7 +43,7 @@ fun DiscardCustomCourseDialog(
                     .padding(20.dp),
         ) {
             Text(
-                text = "코스가 저장되지 않았어요.\n정말로 나가시겠어요?",
+                text = stringResource(R.string.custom_course_discard_dialog_title),
                 fontSize = 18.sp,
                 textAlign = TextAlign.Center,
                 color = colorResource(R.color.item_primary),
@@ -69,7 +70,7 @@ fun DiscardCustomCourseDialog(
                             .padding(horizontal = 20.dp, vertical = 10.dp),
                 ) {
                     Text(
-                        text = "취소",
+                        text = stringResource(R.string.custom_course_discard_dialog_cancel_button),
                         fontSize = 16.sp,
                         color = colorResource(R.color.item_tertiary),
                     )
@@ -86,7 +87,7 @@ fun DiscardCustomCourseDialog(
                             .padding(horizontal = 20.dp, vertical = 10.dp),
                 ) {
                     Text(
-                        text = "확인",
+                        text = stringResource(R.string.custom_course_discard_dialog_confirm_button),
                         fontSize = 16.sp,
                         color = colorResource(R.color.item_white),
                     )

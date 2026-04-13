@@ -28,6 +28,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -63,7 +64,7 @@ fun SubmitCustomCourseDialog(
                     .padding(20.dp),
         ) {
             Text(
-                text = "코스에 이름을 붙여주세요.",
+                text = stringResource(R.string.custom_course_submit_dialog_course_name_prompt_title),
                 fontSize = 18.sp,
                 color = colorResource(R.color.item_primary),
             )
@@ -80,7 +81,7 @@ fun SubmitCustomCourseDialog(
                     ),
                 placeholder = {
                     Text(
-                        text = "이름을 붙여주세요",
+                        text = stringResource(R.string.custom_course_submit_dialog_course_name_placeholder),
                         fontSize = 16.sp,
                         color = colorResource(R.color.item_tertiary),
                     )
@@ -106,7 +107,9 @@ fun SubmitCustomCourseDialog(
             Row(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
             ) {
                 Box(
                     contentAlignment = Alignment.Center,
@@ -119,7 +122,7 @@ fun SubmitCustomCourseDialog(
                             .padding(horizontal = 20.dp, vertical = 10.dp),
                 ) {
                     Text(
-                        text = "취소",
+                        text = stringResource(R.string.custom_course_submit_dialog_cancel_button),
                         fontSize = 16.sp,
                         color = colorResource(R.color.item_tertiary),
                     )
@@ -136,7 +139,7 @@ fun SubmitCustomCourseDialog(
                             .padding(horizontal = 20.dp, vertical = 10.dp),
                 ) {
                     Text(
-                        text = "확인",
+                        text = stringResource(R.string.custom_course_submit_dialog_confirm_button),
                         fontSize = 16.sp,
                         color = colorResource(R.color.item_white),
                     )
