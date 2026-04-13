@@ -1,6 +1,10 @@
 package io.coursepick.coursepick.presentation.map.kakao
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import androidx.annotation.DrawableRes
+import androidx.core.graphics.scale
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.label.Label
 import com.kakao.vectormap.label.LabelOptions
@@ -30,6 +34,13 @@ class KakaoMapDrawer(
     private val map: KakaoMap,
 ) {
     private val routeLineOptionsFactory = RouteLineOptionsFactory(context)
+
+    private val searchLocationIcon: Bitmap =
+        resizeDrawableWidth(id = R.drawable.image_search_location, widthDp = 50F)
+    private val currentLocationIcon: Bitmap =
+        resizeDrawable(id = R.drawable.image_current_location, widthDp = 25F, heightDp = 25F)
+    private val waypointIcon: Bitmap =
+        resizeDrawable(id = R.drawable.icon_waypoint, widthDp = 15F, heightDp = 15F)
 
     private val waypoints = mutableListOf<Label>()
     private val segments = mutableListOf<RouteLine>()
@@ -81,7 +92,7 @@ class KakaoMapDrawer(
         val latLng = coordinate.toLatLng()
         val style =
             LabelStyle
-                .from(R.drawable.image_search_location)
+                .from(searchLocationIcon)
                 .setAnchorPoint(0.5F, 0.5F)
                 .setIconTransition(LabelTransition.from(Transition.None, Transition.None))
         val options: LabelOptions =
@@ -103,7 +114,7 @@ class KakaoMapDrawer(
     fun drawWaypoint(coordinate: Coordinate) {
         val style =
             LabelStyle
-                .from(R.drawable.icon_waypoint)
+                .from(waypointIcon)
                 .setAnchorPoint(0.5F, 0.5F)
                 .setIconTransition(LabelTransition.from(Transition.None, Transition.None))
         val options =
@@ -154,7 +165,7 @@ class KakaoMapDrawer(
         hideApproximateUserPosition()
 
         val latLng = location.coordinate.toLatLng()
-        val style = LabelStyle.from(R.drawable.image_current_location).setAnchorPoint(0.5F, 0.5F)
+        val style = LabelStyle.from(currentLocationIcon).setAnchorPoint(0.5F, 0.5F)
         val options: LabelOptions =
             LabelOptions
                 .from(latLng)
@@ -223,6 +234,29 @@ class KakaoMapDrawer(
             return
         }
         layer.addPolygon(options)
+    }
+
+    private fun resizeDrawable(
+        @DrawableRes id: Int,
+        widthDp: Float,
+        heightDp: Float,
+    ): Bitmap {
+        val original: Bitmap = BitmapFactory.decodeResource(context.resources, id)
+        val factor: Float = context.resources.displayMetrics.density / map.mapDpScale
+        val widthPx: Float = widthDp * factor
+        val heightPx: Float = heightDp * factor
+        return original.scale(widthPx.toInt(), heightPx.toInt())
+    }
+
+    private fun resizeDrawableWidth(
+        @DrawableRes id: Int,
+        widthDp: Float,
+    ): Bitmap {
+        val original: Bitmap = BitmapFactory.decodeResource(context.resources, id)
+        val factor: Float = context.resources.displayMetrics.density / map.mapDpScale
+        val widthPx: Float = widthDp * factor
+        val heightPx: Float = original.height * (widthDp / original.width) * factor
+        return original.scale(widthPx.toInt(), heightPx.toInt())
     }
 
     companion object {
