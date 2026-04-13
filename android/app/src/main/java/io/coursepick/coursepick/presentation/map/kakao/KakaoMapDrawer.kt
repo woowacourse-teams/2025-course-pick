@@ -33,7 +33,7 @@ class KakaoMapDrawer(
     private val context: Context,
     private val map: KakaoMap,
 ) {
-    private val routeLineOptionsFactory = RouteLineOptionsFactory(context)
+    private val routeLineOptionsFactory = RouteLineOptionsFactory(context, map.mapDpScale)
 
     private val searchLocationIcon: Bitmap =
         resizeDrawableWidth(id = R.drawable.image_search_location, widthDp = 50F)
@@ -242,7 +242,7 @@ class KakaoMapDrawer(
         heightDp: Float,
     ): Bitmap {
         val original: Bitmap = BitmapFactory.decodeResource(context.resources, id)
-        val factor: Float = context.resources.displayMetrics.density / map.mapDpScale
+        val factor = context.resources.displayMetrics.density / map.mapDpScale
         val widthPx: Float = widthDp * factor
         val heightPx: Float = heightDp * factor
         return original.scale(widthPx.toInt(), heightPx.toInt())
@@ -253,7 +253,7 @@ class KakaoMapDrawer(
         widthDp: Float,
     ): Bitmap {
         val original: Bitmap = BitmapFactory.decodeResource(context.resources, id)
-        val factor: Float = context.resources.displayMetrics.density / map.mapDpScale
+        val factor = context.resources.displayMetrics.density / map.mapDpScale
         val widthPx: Float = widthDp * factor
         val heightPx: Float = original.height * (widthDp / original.width) * factor
         return original.scale(widthPx.toInt(), heightPx.toInt())
@@ -266,7 +266,5 @@ class KakaoMapDrawer(
         private const val ID_SEARCH_POSITION_MARK = "id_search_position_mark"
         private const val ID_ACCURATE_USER_POSITION_MARK = "id_accurate_user_position_mark"
         private const val ID_APPROXIMATE_USER_POSITION_MARK = "id_approximate_user_position_mark"
-        private const val ID_WAYPOINTS_LAYER_ID = "id_waypoints_layer_id"
-        private const val ID_DRAFT_SEGMENTS_LAYER_ID = "id_draft_segments_layer_id"
     }
 }

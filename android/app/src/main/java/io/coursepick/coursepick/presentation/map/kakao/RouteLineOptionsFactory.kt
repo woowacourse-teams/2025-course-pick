@@ -15,9 +15,10 @@ import io.coursepick.coursepick.presentation.course.CourseItem
 
 class RouteLineOptionsFactory(
     private val context: Context,
+    private val mapDpScale: Float,
 ) {
     private val patternDistance: Float =
-        context.resources.getDimension(R.dimen.course_pattern_between_distance)
+        context.resources.getDimension(R.dimen.course_pattern_between_distance) / mapDpScale
 
     private val selectedStyle =
         RouteLineStyles(R.color.course_selected, R.dimen.selected_course_width, true)
@@ -49,8 +50,10 @@ class RouteLineOptionsFactory(
     ): RouteLineStyles {
         val baseStyle =
             RouteLineStyle
-                .from(context.resources.getDimension(dimenRes), context.getColor(colorRes))
-                .apply {
+                .from(
+                    context.resources.getDimension(dimenRes) / mapDpScale,
+                    context.getColor(colorRes),
+                ).apply {
                     if (withPattern) {
                         setPattern(RouteLinePattern.from(R.drawable.image_arrow, patternDistance))
                     }
