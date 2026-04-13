@@ -3,6 +3,7 @@ package io.coursepick.coursepick.presentation.createcustomcourse
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +12,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import dagger.hilt.android.AndroidEntryPoint
+import io.coursepick.coursepick.R
 import io.coursepick.coursepick.databinding.ActivityCustomCourseBinding
 import io.coursepick.coursepick.di.KakaoMap
 import io.coursepick.coursepick.presentation.InstallStateObserver
@@ -92,7 +94,16 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                             mapManager.removeLastWaypoint()
                         }
 
-                        CustomCourseUiEvent.Exit -> {
+                        CreateCustomCourseUiEvent.EmptyCourseSubmission -> {
+                            Toast
+                                .makeText(
+                                    this@CreateCustomCourseActivity,
+                                    getString(R.string.create_custom_course_empty_course_warning),
+                                    Toast.LENGTH_SHORT,
+                                ).show()
+                        }
+
+                        CreateCustomCourseUiEvent.Exit -> {
                             finish()
                         }
                     }

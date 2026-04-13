@@ -8,4 +8,8 @@ sealed interface CreateCustomCourseUiEvent {
     ) : CreateCustomCourseUiEvent
 
     data object RemoveLastWaypoint : CreateCustomCourseUiEvent
+
+    data object EmptyCourseSubmission : CreateCustomCourseUiEvent
+
+    data object Exit : CreateCustomCourseUiEvent
 }
