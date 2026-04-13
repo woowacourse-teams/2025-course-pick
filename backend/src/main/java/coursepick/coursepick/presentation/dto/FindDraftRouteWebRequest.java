@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public record FindDraftRouteWebRequest(
-        @NotNull @Valid
+        @NotNull
         @Schema(description = "직전 포인트")
         CoordinateWebRequest origin,
 
