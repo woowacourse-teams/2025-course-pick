@@ -565,6 +565,10 @@ class CoursesActivity :
                             )
                         }
 
+                        CustomCoursesFragment::class.java.name -> {
+                            CustomCoursesFragment(mapManager)
+                        }
+
                         else -> {
                             super.instantiate(classLoader, className)
                         }

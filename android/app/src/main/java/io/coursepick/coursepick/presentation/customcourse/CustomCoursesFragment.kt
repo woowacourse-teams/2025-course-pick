@@ -7,9 +7,12 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import io.coursepick.coursepick.databinding.FragmentCustomCoursesBinding
+import io.coursepick.coursepick.presentation.map.MapManager
 import io.coursepick.coursepick.presentation.createcustomcourse.CreateCustomCourseActivity
 
-class CustomCoursesFragment : Fragment() {
+class CustomCoursesFragment(
+    private val mapManager: MapManager,
+) : Fragment() {
     @Suppress("ktlint:standard:backing-property-naming")
     private var _binding: FragmentCustomCoursesBinding? = null
     private val binding: FragmentCustomCoursesBinding get() = _binding!!
@@ -35,7 +38,11 @@ class CustomCoursesFragment : Fragment() {
     }
 
     private fun navigateCreateCustomCourse() {
-        val intent = CreateCustomCourseActivity.intent(requireContext())
+        val intent =
+            CreateCustomCourseActivity.intent(
+                requireContext(),
+                mapManager.cameraCoordinate?.let(::CoordinateUiModel),
+            )
         startActivity(intent)
     }
 }
