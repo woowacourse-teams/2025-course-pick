@@ -7,11 +7,10 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static coursepick.coursepick.test_util.GpxTestUtil.createGpxInputStreamOf;
+import static coursepick.coursepick.test_util.UserFixture.ADMIN_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GpxTest {
-
-    private static final String ADMIN_ID = "admin";
 
     @Test
     void CourseFile_객체를_Gpx로_변환한다() {
@@ -41,7 +40,7 @@ class GpxTest {
                 new Coordinate(0.00001, 0.00001),
                 new Coordinate(0, 0)
         );
-        var course = new Course(null, "테스트코스", coordinates, ADMIN_ID);
+        var course = new Course(null, "테스트코스", coordinates, ADMIN_USER);
 
         var sut = Gpx.from(course);
 
@@ -62,7 +61,7 @@ class GpxTest {
                 new Coordinate(0.00001, 0.00001),
                 new Coordinate(0, 0)
         );
-        var course = new Course(null, "테스트코스", coordinates, ADMIN_ID);
+        var course = new Course(null, "테스트코스", coordinates, ADMIN_USER);
         var sut = Gpx.from(course);
 
         var xml = sut.toXmlContent();
@@ -84,10 +83,10 @@ class GpxTest {
                 new Coordinate(0.00001, 0.00001),
                 new Coordinate(0, 0)
         );
-        var course = new Course(null, "테스트코스", coordinates, ADMIN_ID);
+        var course = new Course(null, "테스트코스", coordinates, ADMIN_USER);
         var sut = Gpx.from(course);
 
-        var courses = sut.toCourses(ADMIN_ID);
+        var courses = sut.toCourses(ADMIN_USER);
 
         assertThat(courses.getFirst().coordinates()).containsExactlyInAnyOrder(
                 new Coordinate(0, 0),
