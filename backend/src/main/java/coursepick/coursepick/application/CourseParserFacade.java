@@ -30,7 +30,7 @@ public class CourseParserFacade {
         User adminUser = userRepository.findByProviderAndProviderId(null, "admin")
                 .orElseThrow(() -> ErrorType.NOT_EXIST_USER.create("admin"));
 
-        List<Course> result = parser.parse(file, adminUser.id());
+        List<Course> result = parser.parse(file, adminUser);
         log.debug("{}개의 코스를 파싱했습니다.", result.size());
         return result;
     }

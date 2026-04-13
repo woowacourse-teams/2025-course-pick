@@ -6,6 +6,7 @@ import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.Course;
 import coursepick.coursepick.domain.course.CourseParser;
+import coursepick.coursepick.domain.user.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -31,7 +32,7 @@ public class KmlCourseParser implements CourseParser {
     }
 
     @Override
-    public List<Course> parse(CourseFile file, String creatorId) {
+    public List<Course> parse(CourseFile file, User user) {
         List<Course> courses = new ArrayList<>();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         NodeList placemarks;
@@ -48,7 +49,7 @@ public class KmlCourseParser implements CourseParser {
             Node placemark = placemarks.item(i);
             if (placemark.getNodeType() == Node.ELEMENT_NODE) {
                 Element placemarkElement = (Element) placemark;
-                Course course = parseCourse(placemarkElement, creatorId);
+                Course course = parseCourse(placemarkElement, user);
                 if (course != null) {
                     courses.add(course);
                 }
@@ -57,7 +58,7 @@ public class KmlCourseParser implements CourseParser {
         return courses;
     }
 
-    private Course parseCourse(Element placemark, String creatorId) {
+    private Course parseCourse(Element placemark, User user) {
         String courseName = parseCourseName(placemark);
         List<Coordinate> coordinates = parseCoordinates(placemark);
 
@@ -66,7 +67,7 @@ public class KmlCourseParser implements CourseParser {
         if (coordinates.isEmpty())
             return null;
 
-        return new Course(null, courseName, coordinates, creatorId);
+        return new Course(null, courseName, coordinates, user);
     }
 
     private String parseCourseName(Element placemark) {

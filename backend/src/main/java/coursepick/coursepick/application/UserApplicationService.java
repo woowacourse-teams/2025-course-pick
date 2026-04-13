@@ -2,7 +2,6 @@ package coursepick.coursepick.application;
 
 import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_USER;
 
-import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.user.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,8 +31,8 @@ public class UserApplicationService {
     }
 
     @Transactional(readOnly = true)
-    public void checkUserExists(String userId){
-        userRepository.findById(userId).
+    public User findUser(String userId){
+        return userRepository.findById(userId).
                 orElseThrow(() -> NOT_EXIST_USER.create(userId));
     }
 
