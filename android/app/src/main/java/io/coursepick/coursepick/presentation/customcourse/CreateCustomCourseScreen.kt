@@ -87,7 +87,7 @@ fun CreateCustomCourseScreen(
         )
 
         Icon(
-            painter = painterResource(R.drawable.icon_add_waypoint),
+            painter = painterResource(R.drawable.icon_new_waypoint_position),
             contentDescription = null,
             tint = colorResource(R.color.point_primary),
             modifier =

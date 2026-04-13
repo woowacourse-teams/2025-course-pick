@@ -104,7 +104,7 @@ class KakaoMapDrawer(
         val style =
             LabelStyle
                 .from(R.drawable.icon_waypoint)
-                .setAnchorPoint(0.5F, 1F)
+                .setAnchorPoint(0.5F, 0.5F)
                 .setIconTransition(LabelTransition.from(Transition.None, Transition.None))
         val options =
             LabelOptions.from(coordinate.toLatLng()).setStyles(LabelStyles.from(style))
