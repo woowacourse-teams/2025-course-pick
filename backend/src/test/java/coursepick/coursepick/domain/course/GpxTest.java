@@ -11,78 +11,88 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class GpxTest {
 
-        @Test
-        void CourseFile_객체를_Gpx로_변환한다() {
-                var inputStream = createGpxInputStreamOf(
-                                new Coordinate(0, 0),
-                                new Coordinate(0.00001, 0.00001),
-                                new Coordinate(0, 0));
-                var courseFile = new CourseFile("테스트코스", CourseFileExtension.GPX, inputStream);
+    private static final String ADMIN_ID = "admin";
 
-                var sut = Gpx.from(courseFile);
+    @Test
+    void CourseFile_객체를_Gpx로_변환한다() {
+        var inputStream = createGpxInputStreamOf(
+                new Coordinate(0, 0),
+                new Coordinate(0.00001, 0.00001),
+                new Coordinate(0, 0)
+        );
+        var courseFile = new CourseFile("테스트코스", CourseFileExtension.GPX, inputStream);
 
-                assertThat(sut.toXmlContent().strip()).containsIgnoringWhitespaces(
-                                """
-                                                <trkpt lat="0" lon="0"></trkpt>""",
-                                """
-                                                <trkpt lat="0.00001" lon="0.00001"></trkpt>""",
-                                """
-                                                <trkpt lat="0" lon="0"></trkpt>""");
-        }
+        var sut = Gpx.from(courseFile);
 
-        @Test
-        void Course_객체를_Gpx로_변환한다() {
-                var coordinates = List.of(
-                                new Coordinate(0, 0),
-                                new Coordinate(0.00001, 0.00001),
-                                new Coordinate(0, 0));
-                var course = new Course(null, "테스트코스", coordinates, null);
+        assertThat(sut.toXmlContent().strip()).containsIgnoringWhitespaces(
+                """
+                        <trkpt lat="0" lon="0"></trkpt>""",
+                """
+                        <trkpt lat="0.00001" lon="0.00001"></trkpt>""",
+                """
+                        <trkpt lat="0" lon="0"></trkpt>"""
+        );
+    }
 
-                var sut = Gpx.from(course);
+    @Test
+    void Course_객체를_Gpx로_변환한다() {
+        var coordinates = List.of(
+                new Coordinate(0, 0),
+                new Coordinate(0.00001, 0.00001),
+                new Coordinate(0, 0)
+        );
+        var course = new Course(null, "테스트코스", coordinates, ADMIN_ID);
 
-                assertThat(sut.toXmlContent().strip()).containsIgnoringWhitespaces(
-                                """
-                                                <trkpt lat="0" lon="0"></trkpt>""",
-                                """
-                                                <trkpt lat="0.00001" lon="0.00001"></trkpt>""",
-                                """
-                                                <trkpt lat="0" lon="0"></trkpt>""");
-        }
+        var sut = Gpx.from(course);
 
-        @Test
-        void Gpx_객체를_Xml로_변환한다() {
-                var coordinates = List.of(
-                                new Coordinate(0, 0),
-                                new Coordinate(0.00001, 0.00001),
-                                new Coordinate(0, 0));
-                var course = new Course(null, "테스트코스", coordinates, null);
-                var sut = Gpx.from(course);
+        assertThat(sut.toXmlContent().strip()).containsIgnoringWhitespaces(
+                """
+                        <trkpt lat="0" lon="0"></trkpt>""",
+                """
+                        <trkpt lat="0.00001" lon="0.00001"></trkpt>""",
+                """
+                        <trkpt lat="0" lon="0"></trkpt>"""
+        );
+    }
 
-                var xml = sut.toXmlContent();
+    @Test
+    void Gpx_객체를_Xml로_변환한다() {
+        var coordinates = List.of(
+                new Coordinate(0, 0),
+                new Coordinate(0.00001, 0.00001),
+                new Coordinate(0, 0)
+        );
+        var course = new Course(null, "테스트코스", coordinates, ADMIN_ID);
+        var sut = Gpx.from(course);
 
-                assertThat(xml.strip()).containsIgnoringWhitespaces(
-                                """
-                                                <trkpt lat="0" lon="0"></trkpt>""",
-                                """
-                                                <trkpt lat="0.00001" lon="0.00001"></trkpt>""",
-                                """
-                                                <trkpt lat="0" lon="0"></trkpt>""");
-        }
+        var xml = sut.toXmlContent();
 
-        @Test
-        void Gpx_객체를_Course로_변환한다() {
-                var coordinates = List.of(
-                                new Coordinate(0, 0),
-                                new Coordinate(0.00001, 0.00001),
-                                new Coordinate(0, 0));
-                var course = new Course(null, "테스트코스", coordinates, null);
-                var sut = Gpx.from(course);
+        assertThat(xml.strip()).containsIgnoringWhitespaces(
+                """
+                        <trkpt lat="0" lon="0"></trkpt>""",
+                """
+                        <trkpt lat="0.00001" lon="0.00001"></trkpt>""",
+                """
+                        <trkpt lat="0" lon="0"></trkpt>"""
+        );
+    }
 
-                var courses = sut.toCourses("admin-id");
+    @Test
+    void Gpx_객체를_Course로_변환한다() {
+        var coordinates = List.of(
+                new Coordinate(0, 0),
+                new Coordinate(0.00001, 0.00001),
+                new Coordinate(0, 0)
+        );
+        var course = new Course(null, "테스트코스", coordinates, ADMIN_ID);
+        var sut = Gpx.from(course);
 
-                assertThat(courses.getFirst().coordinates()).containsExactlyInAnyOrder(
-                                new Coordinate(0, 0),
-                                new Coordinate(0.00001, 0.00001),
-                                new Coordinate(0, 0));
-        }
+        var courses = sut.toCourses(ADMIN_ID);
+
+        assertThat(courses.getFirst().coordinates()).containsExactlyInAnyOrder(
+                new Coordinate(0, 0),
+                new Coordinate(0.00001, 0.00001),
+                new Coordinate(0, 0)
+        );
+    }
 }
