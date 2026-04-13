@@ -86,16 +86,6 @@ fun CreateCustomCourseScreen(
             modifier = Modifier.shadow(elevation = 10.dp),
         )
 
-        Icon(
-            painter = painterResource(R.drawable.icon_new_waypoint_position),
-            contentDescription = null,
-            tint = colorResource(R.color.point_primary),
-            modifier =
-                Modifier
-                    .align(Alignment.Center)
-                    .size(40.dp),
-        )
-
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier =
