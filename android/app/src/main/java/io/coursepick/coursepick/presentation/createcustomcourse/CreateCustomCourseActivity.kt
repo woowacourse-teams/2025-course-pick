@@ -51,7 +51,7 @@ class CreateCustomCourseActivity : AppCompatActivity() {
             CoursePickTheme {
                 CreateCustomCourseScreen(
                     length = viewModel.length.collectAsStateWithLifecycle().value,
-                    onClose = ::finish,
+                    onClose = viewModel::handleExitAction,
                     onUndoWaypoint = viewModel::removeLastWaypoint,
                     onAddWaypoint = { mapManager.cameraCoordinate?.let(viewModel::addWaypoint) },
                     onConfirm = viewModel::showSubmitDialog,
@@ -63,6 +63,13 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                         onCourseNameChange = viewModel::updateCourseName,
                         onDismiss = viewModel::dismissSubmitDialog,
                         onConfirm = viewModel::submitCourse,
+                    )
+                }
+
+                if (viewModel.showDiscardDialog.collectAsStateWithLifecycle().value) {
+                    DiscardCustomCourseDialog(
+                        onDismiss = viewModel::dismissExitDialog,
+                        onConfirm = ::finish,
                     )
                 }
             }
@@ -83,6 +90,10 @@ class CreateCustomCourseActivity : AppCompatActivity() {
 
                         CreateCustomCourseUiEvent.RemoveLastWaypoint -> {
                             mapManager.removeLastWaypoint()
+                        }
+
+                        CustomCourseUiEvent.Exit -> {
+                            finish()
                         }
                     }
                 }

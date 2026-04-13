@@ -31,6 +31,9 @@ class CreateCustomCourseViewModel
         private val _showSubmitDialog = MutableStateFlow(false)
         val showSubmitDialog: StateFlow<Boolean> get() = _showSubmitDialog.asStateFlow()
 
+        private val _showDiscardDialog = MutableStateFlow(false)
+        val showDiscardDialog: StateFlow<Boolean> get() = _showDiscardDialog.asStateFlow()
+
         private val _courseName = MutableStateFlow("")
         val courseName: StateFlow<String> get() = _courseName.asStateFlow()
 
@@ -71,6 +74,20 @@ class CreateCustomCourseViewModel
 
         fun dismissSubmitDialog() {
             _showSubmitDialog.value = false
+        }
+
+        fun handleExitAction() {
+            if (segments.value.isEmpty()) {
+                viewModelScope.launch {
+                    _event.emit(CustomCourseUiEvent.Exit)
+                }
+            } else {
+                _showDiscardDialog.value = true
+            }
+        }
+
+        fun dismissExitDialog() {
+            _showDiscardDialog.value = false
         }
 
         fun updateCourseName(courseName: String) {
