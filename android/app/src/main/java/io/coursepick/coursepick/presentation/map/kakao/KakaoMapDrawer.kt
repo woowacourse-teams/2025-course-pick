@@ -118,7 +118,10 @@ class KakaoMapDrawer(
                 .setAnchorPoint(0.5F, 0.5F)
                 .setIconTransition(LabelTransition.from(Transition.None, Transition.None))
         val options =
-            LabelOptions.from(coordinate.toLatLng()).setStyles(LabelStyles.from(style))
+            LabelOptions
+                .from(coordinate.toLatLng())
+                .setStyles(LabelStyles.from(style))
+                .setTransform(TransformMethod.Decal)
 
         map.labelManager
             ?.layer
