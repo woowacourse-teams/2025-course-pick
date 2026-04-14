@@ -16,7 +16,7 @@ class DefaultCustomCourseRepository
             origin: Coordinate,
             destination: Coordinate,
         ): DraftSegment {
-            return DraftSegment(listOfNotNull(origin, destination), Length(1))
+            return DraftSegment(listOf(origin, destination), Length(1))
 //            return service
 //                .draftSegment(
 //                    EndpointsDto(

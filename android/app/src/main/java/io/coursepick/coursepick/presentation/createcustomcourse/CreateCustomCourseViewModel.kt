@@ -47,8 +47,6 @@ class CreateCustomCourseViewModel
             viewModelScope.launch {
                 val lastWaypoint: Coordinate = waypoints.lastOrNull() ?: newWaypoint
                 val newSegment: DraftSegment = repository.draftSegment(lastWaypoint, newWaypoint)
-                if (newSegment.coordinates.isEmpty()) return@launch
-
                 _segments.value += newSegment
                 _event.emit(CreateCustomCourseUiEvent.NewSegment(newSegment))
             }
