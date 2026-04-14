@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.customcourse
+package io.coursepick.coursepick.presentation.createcustomcourse
 
 import android.content.Context
 import android.content.Intent
@@ -61,16 +61,16 @@ class CreateCustomCourseActivity : AppCompatActivity() {
     private fun setUpCollectors() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.event.collect { event: CustomCourseUiEvent ->
+                viewModel.event.collect { event: CreateCustomCourseUiEvent ->
                     when (event) {
-                        is CustomCourseUiEvent.NewSegment -> {
+                        is CreateCustomCourseUiEvent.NewSegment -> {
                             event.segment.coordinates
                                 .lastOrNull()
                                 ?.let(mapManager::drawWaypoint)
                             mapManager.drawDraftSegment(event.segment)
                         }
 
-                        CustomCourseUiEvent.RemoveLastWaypoint -> {
+                        CreateCustomCourseUiEvent.RemoveLastWaypoint -> {
                             mapManager.removeLastWaypoint()
                         }
                     }

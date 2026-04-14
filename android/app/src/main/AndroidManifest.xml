@@ -48,7 +48,7 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".presentation.customcourse.CreateCustomCourseActivity"
+            android:name=".presentation.createcustomcourse.CreateCustomCourseActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity

@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.customcourse
+package io.coursepick.coursepick.presentation.createcustomcourse
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -25,8 +25,8 @@ class CreateCustomCourseViewModel
     constructor(
         private val repository: CustomCourseRepository,
     ) : ViewModel() {
-        private val _event = MutableSharedFlow<CustomCourseUiEvent>()
-        val event: SharedFlow<CustomCourseUiEvent> get() = _event.asSharedFlow()
+        private val _event = MutableSharedFlow<CreateCustomCourseUiEvent>()
+        val event: SharedFlow<CreateCustomCourseUiEvent> get() = _event.asSharedFlow()
 
         private val _segments = MutableStateFlow<List<DraftSegment>>(emptyList())
         val segments: StateFlow<List<DraftSegment>> get() = _segments.asStateFlow()
@@ -50,14 +50,14 @@ class CreateCustomCourseViewModel
                 if (newSegment.coordinates.isEmpty()) return@launch
 
                 _segments.value += newSegment
-                _event.emit(CustomCourseUiEvent.NewSegment(newSegment))
+                _event.emit(CreateCustomCourseUiEvent.NewSegment(newSegment))
             }
         }
 
         fun removeLastWaypoint() {
             viewModelScope.launch {
                 _segments.value = segments.value.dropLast(1)
-                _event.emit(CustomCourseUiEvent.RemoveLastWaypoint)
+                _event.emit(CreateCustomCourseUiEvent.RemoveLastWaypoint)
             }
         }
     }
