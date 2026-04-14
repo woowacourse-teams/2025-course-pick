@@ -57,6 +57,7 @@ fun CreateCustomCourseScreen(
                     modifier =
                         Modifier
                             .padding(start = 10.dp)
+                            .clip(CircleShape)
                             .clickable { onClose() },
                 )
             },
@@ -67,6 +68,7 @@ fun CreateCustomCourseScreen(
                     modifier =
                         Modifier
                             .padding(end = 10.dp)
+                            .clip(CircleShape)
                             .clickable { onConfirm() },
                 )
             },
