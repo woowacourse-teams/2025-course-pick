@@ -1,5 +1,12 @@
 package coursepick.coursepick.presentation;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import coursepick.coursepick.application.CourseApplicationService;
 import coursepick.coursepick.application.dto.CoursesResponse;
 import coursepick.coursepick.domain.course.CourseFindCondition;
@@ -11,7 +18,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v2")
@@ -36,7 +42,7 @@ public class CourseV2WebController {
         return CoursesWebResponse.from(response);
     }
 
-    @Operation(summary = "코스 생성 시 웨이포인트 기반 전체 경로 및 총 거리 조회")
+    @Operation(summary = "코스 생성 시 직전 포인트와 새 포인트 사이의 경로 및 거리 조회 (첫 점인 경우 origin과 destination을 동일하게 전송)")
     @ApiResponse(responseCode = "200")
     @PostMapping("/courses/draft/route")
     public DraftRouteWebResponse findDraftRoute(@Valid @RequestBody FindDraftRouteWebRequest request) {
