@@ -10,10 +10,6 @@ spring:
     password: ${MONGO_PASSWORD}
     authentication-database: ${MONGO_AUTH_DATABASE}
 
-springdoc:
-  dev-server-url: ${DEV_SERVER_URL}
-  prod-server-url: ${PROD_SERVER_URL}
-
 osrm.url: ${OSRM_URL}
 admin:
   token: ${ADMIN_TOKEN}
