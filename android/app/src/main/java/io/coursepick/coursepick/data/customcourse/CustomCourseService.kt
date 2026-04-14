@@ -3,11 +3,12 @@ package io.coursepick.coursepick.data.customcourse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface CustomCourseService {
     @GET("")
     suspend fun draftSegment(
-        @Body endpoints: EndpointsDto,
+        @Query("") endpoints: EndpointsDto,
     ): DraftSegmentDto
 
     @POST("")
