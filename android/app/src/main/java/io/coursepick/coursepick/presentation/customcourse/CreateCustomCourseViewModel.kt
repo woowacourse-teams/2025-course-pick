@@ -43,10 +43,10 @@ class CreateCustomCourseViewModel
 
         val waypoints: List<Coordinate> get() = segments.value.mapNotNull { segment: DraftSegment -> segment.coordinates.lastOrNull() }
 
-        fun addWaypoint(waypoint: Coordinate) {
+        fun addWaypoint(newWaypoint: Coordinate) {
             viewModelScope.launch {
-                val newSegment: DraftSegment =
-                    repository.draftSegment(waypoints.lastOrNull(), waypoint)
+                val lastWaypoint: Coordinate = waypoints.lastOrNull() ?: newWaypoint
+                val newSegment: DraftSegment = repository.draftSegment(lastWaypoint, newWaypoint)
                 if (newSegment.coordinates.isEmpty()) return@launch
 
                 _segments.value += newSegment

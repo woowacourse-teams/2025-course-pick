@@ -13,14 +13,14 @@ class DefaultCustomCourseRepository
         private val service: CustomCourseService,
     ) : CustomCourseRepository {
         override suspend fun draftSegment(
-            origin: Coordinate?,
+            origin: Coordinate,
             destination: Coordinate,
         ): DraftSegment {
             return DraftSegment(listOfNotNull(origin, destination), Length(1))
 //            return service
 //                .draftSegment(
 //                    EndpointsDto(
-//                        origin?.let(CoordinateDto::invoke),
+//                        CoordinateDto(origin),
 //                        CoordinateDto(destination),
 //                    ),
 //                ).toDraftSegment()

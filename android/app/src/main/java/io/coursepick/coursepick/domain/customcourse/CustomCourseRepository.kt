@@ -4,7 +4,7 @@ import io.coursepick.coursepick.domain.course.Coordinate
 
 interface CustomCourseRepository {
     suspend fun draftSegment(
-        origin: Coordinate?,
+        origin: Coordinate,
         destination: Coordinate,
     ): DraftSegment
 
