@@ -8,8 +8,8 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import io.coursepick.coursepick.databinding.FragmentCustomCoursesBinding
 import io.coursepick.coursepick.presentation.createcustomcourse.CoordinateUiModel
-import io.coursepick.coursepick.presentation.map.MapManager
 import io.coursepick.coursepick.presentation.createcustomcourse.CreateCustomCourseActivity
+import io.coursepick.coursepick.presentation.map.MapManager
 
 class CustomCoursesFragment(
     private val mapManager: MapManager,
