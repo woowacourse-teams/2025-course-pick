@@ -35,30 +35,8 @@ public class OpenApiConfig {
     }
 
     @Bean
-    public OpenApiCustomizer customize(
-            @Value("${springdoc.dev-server-url:http://localhost:8080}") String devServerUrl,
-            @Value("${springdoc.prod-server-url:http://localhost:8080}") String prodServerUrl
-    ) {
+    public OpenApiCustomizer customize() {
         return openApi -> {
-            String devDescription = devServerUrl.equals("http://localhost:8080")
-                    ? "개발 서버 (환경 변수 미설정)"
-                    : "개발 서버";
-            String prodDescription = prodServerUrl.equals("http://localhost:8080")
-                    ? "운영 서버 (환경 변수 미설정)"
-                    : "운영 서버";
-
-            openApi.setServers(List.of(
-                    new Server()
-                            .url("http://localhost:8080")
-                            .description("로컬 서버"),
-                    new Server()
-                            .url(devServerUrl)
-                            .description(devDescription),
-                    new Server()
-                            .url(prodServerUrl)
-                            .description(prodDescription)
-            ));
-
             Components components = openApi.getComponents();
 
             Arrays.stream(values()).forEach(

@@ -1,0 +1,46 @@
+name: coursepick-home-dev
+services:
+
+  mongodb:
+    image: mongo:8.0.12
+    container_name: coursepick-home-dev-mongodb
+    environment:
+      - MONGO_INITDB_DATABASE=${MONGO_DATABASE}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+    volumes:
+      - mongodb_dev_data:/data/db
+    restart: unless-stopped
+
+  backend:
+    image: coursepick-backend:home-dev
+    container_name: coursepick-home-dev-backend
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=${PROFILE}
+      - MONGO_HOST=${MONGO_HOST}
+      - MONGO_PORT=${MONGO_PORT}
+      - MONGO_DATABASE=${MONGO_DATABASE}
+      - MONGO_USERNAME=${MONGO_ROOT_USERNAME}
+      - MONGO_PASSWORD=${MONGO_ROOT_PASSWORD}
+      - MONGO_AUTH_DATABASE=${MONGO_AUTH_DATABASE}
+      - ADMIN_TOKEN=${ADMIN_TOKEN}
+      - ADMIN_KAKAO_MAP_API_KEY=${ADMIN_KAKAO_MAP_API_KEY}
+      - OSRM_URL=${OSRM_URL}
+      - BASE_URL=${BASE_URL}
+      - JWT_SECRET_KEY=${JWT_SECRET}
+    volumes:
+      - /var/lib/coursepick/logs/home-dev:/var/lib/coursepick/logs
+      - /var/lib/coursepick/gcp-credentials.json:/var/lib/coursepick/gcp-credentials.json
+    depends_on:
+      - mongodb
+
+volumes:
+  mongodb_dev_data:
