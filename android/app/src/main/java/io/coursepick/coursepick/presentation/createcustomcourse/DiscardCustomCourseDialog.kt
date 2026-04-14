@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.customcourse
+package io.coursepick.coursepick.presentation.createcustomcourse
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

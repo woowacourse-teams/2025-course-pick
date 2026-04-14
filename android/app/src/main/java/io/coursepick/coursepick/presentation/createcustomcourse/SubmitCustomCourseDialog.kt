@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.customcourse
+package io.coursepick.coursepick.presentation.createcustomcourse
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -107,9 +107,10 @@ fun SubmitCustomCourseDialog(
             Row(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp),
             ) {
                 Box(
                     contentAlignment = Alignment.Center,

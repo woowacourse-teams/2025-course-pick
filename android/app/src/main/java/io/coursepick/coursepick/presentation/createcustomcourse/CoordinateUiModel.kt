@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.customcourse
+package io.coursepick.coursepick.presentation.createcustomcourse
 
 import android.os.Parcelable
 import io.coursepick.coursepick.domain.course.Coordinate

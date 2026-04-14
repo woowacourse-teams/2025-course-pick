@@ -85,7 +85,7 @@ class CreateCustomCourseViewModel
         fun handleExitAction() {
             if (segments.value.isEmpty()) {
                 viewModelScope.launch {
-                    _event.emit(CustomCourseUiEvent.Exit)
+                    _event.emit(CreateCustomCourseUiEvent.Exit)
                 }
             } else {
                 _showDiscardDialog.value = true
