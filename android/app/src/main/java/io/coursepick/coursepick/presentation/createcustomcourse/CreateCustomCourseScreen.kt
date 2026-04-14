@@ -47,12 +47,7 @@ fun CreateCustomCourseScreen(
     onConfirm: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .navigationBarsPadding(),
-    ) {
+    Box(modifier.fillMaxSize()) {
         CenterAlignedTopAppBar(
             title = { Text(text = stringResource(R.string.create_custom_courses)) },
             navigationIcon = {
@@ -86,13 +81,24 @@ fun CreateCustomCourseScreen(
             modifier = Modifier.shadow(elevation = 10.dp),
         )
 
+        Icon(
+            painter = painterResource(R.drawable.icon_new_waypoint_position),
+            contentDescription = null,
+            tint = colorResource(R.color.point_primary),
+            modifier =
+                Modifier
+                    .align(Alignment.Center)
+                    .size(40.dp),
+        )
+
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier =
                 Modifier
                     .align(alignment = Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .padding(start = 10.dp, end = 10.dp, bottom = 10.dp),
+                    .padding(start = 10.dp, end = 10.dp, bottom = 10.dp)
+                    .navigationBarsPadding(),
         ) {
             Text(
                 text = length.toDistanceText(),
