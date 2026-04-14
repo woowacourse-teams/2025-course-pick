@@ -159,7 +159,7 @@ class KakaoMapDrawer(
             ?.also(segments::add)
     }
 
-    fun clearDraftSegment() {
+    fun clearDraftSegments() {
         segments.forEach(RouteLine::remove)
         segments.clear()
     }

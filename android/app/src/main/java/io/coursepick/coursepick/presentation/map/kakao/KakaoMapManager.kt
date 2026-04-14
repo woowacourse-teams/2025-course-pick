@@ -105,7 +105,7 @@ class KakaoMapManager(
     }
 
     override fun clearDraftSegments() {
-        drawer?.clearDraftSegment() ?: Timber.w("KakaoMapDrawer is null")
+        drawer?.clearDraftSegments() ?: Timber.w("KakaoMapDrawer is null")
     }
 
     override fun fitTo(coordinates: List<Coordinate>) {
