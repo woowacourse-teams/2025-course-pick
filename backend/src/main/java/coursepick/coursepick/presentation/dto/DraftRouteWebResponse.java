@@ -10,7 +10,7 @@ public record DraftRouteWebResponse(
         @Schema(description = "전체 경로 좌표 목록")
         List<CoordinateWebResponse> coordinates,
         @Schema(description = "총 거리(미터)", example = "1250.5")
-        double totalLength
+        double length
 ) {
     public static DraftRouteWebResponse of(List<Coordinate> coordinates, Meter totalLength) {
         return new DraftRouteWebResponse(
