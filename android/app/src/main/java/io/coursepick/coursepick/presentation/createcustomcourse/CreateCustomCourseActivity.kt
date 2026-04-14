@@ -59,9 +59,9 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                 CreateCustomCourseScreen(
                     length = viewModel.length.collectAsStateWithLifecycle().value,
                     onClose = viewModel::handleExitAction,
+                    onConfirm = viewModel::handleSubmitAction,
                     onUndoWaypoint = viewModel::removeLastWaypoint,
                     onAddWaypoint = { mapManager.cameraCoordinate?.let(viewModel::addWaypoint) },
-                    onConfirm = viewModel::showSubmitDialog,
                 )
 
                 if (viewModel.showSubmitDialog.collectAsStateWithLifecycle().value) {

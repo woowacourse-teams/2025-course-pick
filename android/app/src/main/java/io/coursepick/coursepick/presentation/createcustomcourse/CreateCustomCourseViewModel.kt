@@ -68,7 +68,7 @@ class CreateCustomCourseViewModel
             }
         }
 
-        fun showSubmitDialog() {
+        fun handleSubmitAction() {
             if (segments.value.isEmpty()) {
                 viewModelScope.launch {
                     _event.emit(CreateCustomCourseUiEvent.EmptyCourseSubmission)

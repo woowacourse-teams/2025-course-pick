@@ -42,9 +42,9 @@ import io.coursepick.coursepick.presentation.toDistanceText
 fun CreateCustomCourseScreen(
     length: Length,
     onClose: () -> Unit,
+    onConfirm: () -> Unit,
     onUndoWaypoint: () -> Unit,
     onAddWaypoint: () -> Unit,
-    onConfirm: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier.fillMaxSize()) {
@@ -162,9 +162,9 @@ fun CreateCustomCourseScreenPreview_ShortCourse() {
     CreateCustomCourseScreen(
         length = Length(123),
         onClose = { },
+        onConfirm = { },
         onUndoWaypoint = { },
         onAddWaypoint = { },
-        onConfirm = { },
     )
 }
 
@@ -174,8 +174,8 @@ fun CreateCustomCourseScreenPreview_LongCourse() {
     CreateCustomCourseScreen(
         length = Length(12345),
         onClose = { },
+        onConfirm = { },
         onUndoWaypoint = { },
         onAddWaypoint = { },
-        onConfirm = { },
     )
 }
