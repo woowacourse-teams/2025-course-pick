@@ -38,7 +38,6 @@ services:
       - JWT_SECRET_KEY=${JWT_SECRET}
     volumes:
       - /var/lib/coursepick/logs/home-dev:/var/lib/coursepick/logs
-      - /var/lib/coursepick/gcp-credentials.json:/var/lib/coursepick/gcp-credentials.json
     depends_on:
       - mongodb
 
