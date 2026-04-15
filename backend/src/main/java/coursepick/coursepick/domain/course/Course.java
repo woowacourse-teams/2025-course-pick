@@ -38,7 +38,7 @@ public class Course {
 
     private String creatorId;
 
-    private Set<User> reportUsers;
+    private Set<String> reportUserIds;
 
     public Course(String id, String name, List<Coordinate> rawCoordinates, User user) {
         this.id = id;
@@ -47,7 +47,7 @@ public class Course {
         this.simplifiedCoordinates = simplifyCoordinates(this.coordinates);
         this.length = calculateLength(coordinates);
         this.creatorId = user.id();
-        this.reportUsers = new HashSet<>();
+        this.reportUserIds = new HashSet<>();
     }
 
     private List<Coordinate> refineCoordinates(List<Coordinate> rawCoordinates) {
@@ -107,20 +107,18 @@ public class Course {
     @SuppressWarnings("RedundantCollectionOperation")
     public void report(User user, Discord discord, String environment) {
         // 새로운 사람이면 효과 있다.
-        if (!reportUsers.contains(user)) reportUsers.add(user);
+        if (!reportUserIds.contains(user.id())) reportUserIds.add(user.id());
 
         // 리포트 3개 쌓이면 디코 알림 준다.
-        if (reportUsers.size() >= 3) {
-            String reporterIds = reportUsers.stream()
-                    .map(User::id)
-                    .collect(Collectors.joining(", "));
+        if (reportUserIds.size() >= 3) {
+            String reporterIds = String.join(", ", reportUserIds);
             String message = """
                     [%s] 코스 신고 알림
                     - 코스 ID: %s
                     - 코스 이름: %s
                     - 신고 수: %d
                     - 신고자 ID: [%s]
-                    """.formatted(environment, this.id, this.name.value(), reportUsers.size(), reporterIds);
+                    """.formatted(environment, this.id, this.name.value(), reportUserIds.size(), reporterIds);
             discord.alert(message);
         }
     }

@@ -16,6 +16,7 @@ import org.springframework.core.convert.converter.Converter;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 public class CourseReader implements Converter<Document, Course> {
@@ -35,8 +36,14 @@ public class CourseReader implements Converter<Document, Course> {
                 simplifiedCoordinates,
                 new Meter(source.getDouble("length")),
                 source.getString("creatorId"),
-                new HashSet<>()
+                parseReportUserIds(source)
         );
+    }
+
+    private Set<String> parseReportUserIds(Document source) {
+        List<String> reportUserIds = source.getList("reportUserIds", String.class);
+        if (reportUserIds == null) return new HashSet<>();
+        return new HashSet<>(reportUserIds);
     }
 
     private List<Coordinate> parseCoordinatesFromSource(Document source) {

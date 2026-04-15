@@ -33,6 +33,7 @@ public class CourseWriter implements Converter<Course, Document> {
 
         document.put("length", source.length().value());
         document.put("creatorId", source.creatorId());
+        document.put("reportUserIds", List.copyOf(source.reportUserIds()));
         document.put("schemaVersion", 1);
         return document;
     }
