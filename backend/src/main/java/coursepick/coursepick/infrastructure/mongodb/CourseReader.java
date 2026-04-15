@@ -14,6 +14,7 @@ import org.bson.Document;
 import org.bson.types.Binary;
 import org.springframework.core.convert.converter.Converter;
 
+import java.util.HashSet;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -33,7 +34,8 @@ public class CourseReader implements Converter<Document, Course> {
                 coordinates,
                 simplifiedCoordinates,
                 new Meter(source.getDouble("length")),
-                source.getString("creatorId")
+                source.getString("creatorId"),
+                new HashSet<>()
         );
     }
 
