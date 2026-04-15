@@ -32,7 +32,7 @@ fun DiscardCustomCourseDialog(
     modifier: Modifier = Modifier,
 ) {
     Dialog(
-        onDismissRequest = { },
+        onDismissRequest = onDismiss,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

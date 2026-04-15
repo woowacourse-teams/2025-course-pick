@@ -49,7 +49,7 @@ fun SubmitCustomCourseDialog(
     }
 
     Dialog(
-        onDismissRequest = { },
+        onDismissRequest = onDismiss,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
