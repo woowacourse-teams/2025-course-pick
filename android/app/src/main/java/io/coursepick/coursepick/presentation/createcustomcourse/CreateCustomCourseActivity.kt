@@ -7,6 +7,9 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.Insets
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -33,6 +36,8 @@ class CreateCustomCourseActivity : AppCompatActivity() {
     lateinit var mapManagerFactory: MapManagerFactory
     private val mapManager: MapManager by lazy { mapManagerFactory.create(binding.mapContainer) }
 
+    private var mapBottomPadding = 0
+
     init {
         lifecycle.addObserver(InstallStateObserver(this))
     }
@@ -42,9 +47,15 @@ class CreateCustomCourseActivity : AppCompatActivity() {
         setContentView(binding.root)
         enableEdgeToEdge()
 
-        mapManager.startMap {
-            setUpCollectors()
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets: WindowInsetsCompat ->
+            val systemBars: Insets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            mapBottomPadding = systemBars.bottom
+            insets
+        }
 
+        mapManager.startMap {
+            mapManager.setPadding(bottom = mapBottomPadding)
+            setUpCollectors()
             intent
                 .getParcelableCompat<CoordinateUiModel>(KEY_INITIAL_COORDINATE)
                 ?.let { coordinate: CoordinateUiModel -> mapManager.moveTo(coordinate.value) }
