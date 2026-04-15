@@ -125,8 +125,8 @@ class CourseTest {
         User user1 = new User("user1", UserProvider.KAKAO, "providerId");
         User user2 = new User("user2", UserProvider.KAKAO, "providerId");
 
-        course.report(user1, discord);
-        course.report(user2, discord);
+        course.report(user1, discord, "test");
+        course.report(user2, discord, "test");
 
         verify(discord, times(0)).alert(Mockito.anyString());
     }
@@ -140,9 +140,9 @@ class CourseTest {
         User user2 = new User("user2", UserProvider.KAKAO, "providerId");
         User user3 = new User("user3", UserProvider.KAKAO, "providerId");
 
-        course.report(user1, discord);
-        course.report(user2, discord);
-        course.report(user3, discord);
+        course.report(user1, discord, "test");
+        course.report(user2, discord, "test");
+        course.report(user3, discord, "test");
 
         verify(discord, times(1)).alert(Mockito.anyString());
     }
@@ -155,11 +155,11 @@ class CourseTest {
         User user1 = new User("user1", UserProvider.KAKAO, "providerId");
         User user2 = new User("user2", UserProvider.KAKAO, "providerId");
 
-        course.report(user1, discord);
-        course.report(user1, discord);
-        course.report(user1, discord);
-        course.report(user1, discord);
-        course.report(user2, discord);
+        course.report(user1, discord, "test");
+        course.report(user1, discord, "test");
+        course.report(user1, discord, "test");
+        course.report(user1, discord, "test");
+        course.report(user2, discord, "test");
 
         verify(discord, times(0)).alert(Mockito.anyString());
     }
