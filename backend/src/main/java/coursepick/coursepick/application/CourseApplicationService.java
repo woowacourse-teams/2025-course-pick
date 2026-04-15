@@ -3,6 +3,7 @@ package coursepick.coursepick.application;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
 import coursepick.coursepick.domain.course.*;
+import coursepick.coursepick.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
@@ -21,6 +22,14 @@ public class CourseApplicationService {
 
     private final CourseRepository courseRepository;
     private final RouteFinder routeFinder;
+    private final UserApplicationService userApplicationService;
+
+    @Transactional
+    public void addCustomCourse(String name, List<Coordinate> coordinates, String userId) {
+        User user = userApplicationService.findUser(userId);
+        Course newCourse = new Course(null, name, coordinates, user);
+        courseRepository.save(newCourse);
+    }
 
     @Transactional(readOnly = true)
     public CoursesResponse findNearbyCourses(CourseFindCondition condition, @Nullable Double userLatitude, @Nullable Double userLongitude) {

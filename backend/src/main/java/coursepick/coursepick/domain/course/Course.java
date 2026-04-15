@@ -1,5 +1,6 @@
 package coursepick.coursepick.domain.course;
 
+import coursepick.coursepick.domain.user.User;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,12 +33,15 @@ public class Course {
 
     private Meter length;
 
-    public Course(String id, String name, List<Coordinate> rawCoordinates) {
+    private String creatorId;
+
+    public Course(String id, String name, List<Coordinate> rawCoordinates, User user) {
         this.id = id;
         this.name = new CourseName(name);
         this.coordinates = refineCoordinates(rawCoordinates);
         this.simplifiedCoordinates = simplifyCoordinates(this.coordinates);
         this.length = calculateLength(coordinates);
+        this.creatorId = user.id();
     }
 
     private List<Coordinate> refineCoordinates(List<Coordinate> rawCoordinates) {

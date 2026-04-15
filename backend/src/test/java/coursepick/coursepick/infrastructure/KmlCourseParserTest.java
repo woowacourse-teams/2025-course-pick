@@ -2,12 +2,15 @@ package coursepick.coursepick.infrastructure;
 
 import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.dto.CourseFileExtension;
+import coursepick.coursepick.domain.user.User;
+import coursepick.coursepick.domain.user.UserProvider;
 import coursepick.coursepick.infrastructure.parser.KmlCourseParser;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 
+import static coursepick.coursepick.test_util.UserFixture.ADMIN_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class KmlCourseParserTest {
@@ -37,7 +40,7 @@ class KmlCourseParserTest {
                 """;
         var inputStream = new ByteArrayInputStream(kmlContent.getBytes(StandardCharsets.UTF_8));
 
-        var courses = sut.parse(new CourseFile("테스트코스", CourseFileExtension.KML, inputStream));
+        var courses = sut.parse(new CourseFile("테스트코스", CourseFileExtension.KML, inputStream), ADMIN_USER);
 
         assertThat(courses).hasSize(1);
         var course = courses.getFirst();
@@ -61,7 +64,7 @@ class KmlCourseParserTest {
                 """;
         var inputStream = new ByteArrayInputStream(kmlContent.getBytes(StandardCharsets.UTF_8));
 
-        var courses = sut.parse(new CourseFile("테스트코스", CourseFileExtension.KML, inputStream));
+        var courses = sut.parse(new CourseFile("테스트코스", CourseFileExtension.KML, inputStream), ADMIN_USER);
 
         assertThat(courses).isEmpty();
     }

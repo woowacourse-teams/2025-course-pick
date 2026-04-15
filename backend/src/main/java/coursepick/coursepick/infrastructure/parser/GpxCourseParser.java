@@ -5,6 +5,7 @@ import coursepick.coursepick.application.dto.CourseFileExtension;
 import coursepick.coursepick.domain.course.Course;
 import coursepick.coursepick.domain.course.CourseParser;
 import coursepick.coursepick.domain.course.Gpx;
+import coursepick.coursepick.domain.user.User;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class GpxCourseParser implements CourseParser {
     }
 
     @Override
-    public List<Course> parse(CourseFile file) {
-        return Gpx.from(file).toCourses();
+    public List<Course> parse(CourseFile file, User user) {
+        return Gpx.from(file).toCourses(user);
     }
 }
