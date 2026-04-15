@@ -8,6 +8,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -16,6 +18,7 @@ import static coursepick.coursepick.test_util.CoordinateTestUtil.*;
 import static coursepick.coursepick.test_util.UserFixture.ADMIN_USER;
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.data.Percentage.withPercentage;
+import static org.mockito.Mockito.*;
 
 class CourseTest {
 
@@ -126,5 +129,51 @@ class CourseTest {
             assertThatThrownBy(() -> new Course(null, "코스", List.of(new Coordinate(0, 0), new Coordinate(0, 0)), ADMIN_USER))
                     .isInstanceOf(IllegalArgumentException.class);
         }
+    }
+
+    @Test
+    void 두번_이하로_신고되면_알람이_안간다() {
+        Discord discord = mock(Discord.class);
+        Course course = new Course(null, "코스", List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
+        User user1 = new User("user1", UserProvider.KAKAO, "providerId");
+        User user2 = new User("user2", UserProvider.KAKAO, "providerId");
+
+        course.report(user1, discord);
+        course.report(user2, discord);
+
+        verify(discord, times(0)).alert(Mockito.anyString());
+    }
+
+    @Test
+    void 세번_이상으로_신고되면_알람이_간다() {
+        Discord discord = mock(Discord.class);
+
+        Course course = new Course(null, "코스", List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
+        User user1 = new User("user1", UserProvider.KAKAO, "providerId");
+        User user2 = new User("user2", UserProvider.KAKAO, "providerId");
+        User user3 = new User("user3", UserProvider.KAKAO, "providerId");
+
+        course.report(user1, discord);
+        course.report(user2, discord);
+        course.report(user3, discord);
+
+        verify(discord, times(1)).alert(Mockito.anyString());
+    }
+
+    @Test
+    void 동일_유저는_카운트하지_않는다() {
+        Discord discord = mock(Discord.class);
+
+        Course course = new Course(null, "코스", List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
+        User user1 = new User("user1", UserProvider.KAKAO, "providerId");
+        User user2 = new User("user2", UserProvider.KAKAO, "providerId");
+
+        course.report(user1, discord);
+        course.report(user1, discord);
+        course.report(user1, discord);
+        course.report(user1, discord);
+        course.report(user2, discord);
+
+        verify(discord, times(0)).alert(Mockito.anyString());
     }
 }

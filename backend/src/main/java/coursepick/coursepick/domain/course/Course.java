@@ -12,7 +12,9 @@ import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Document
 @AllArgsConstructor(access = AccessLevel.PUBLIC, onConstructor_ = @PersistenceCreator)
@@ -35,6 +37,8 @@ public class Course {
 
     private String creatorId;
 
+    private Set<User> reportUsers;
+
     public Course(String id, String name, List<Coordinate> rawCoordinates, User user) {
         this.id = id;
         this.name = new CourseName(name);
@@ -42,6 +46,7 @@ public class Course {
         this.simplifiedCoordinates = simplifyCoordinates(this.coordinates);
         this.length = calculateLength(coordinates);
         this.creatorId = user.id();
+        this.reportUsers = new HashSet<>();
     }
 
     private List<Coordinate> refineCoordinates(List<Coordinate> rawCoordinates) {
@@ -96,5 +101,16 @@ public class Course {
 
     public void changeName(String courseName) {
         this.name = new CourseName(courseName);
+    }
+
+    @SuppressWarnings("RedundantCollectionOperation")
+    public void report(User user, Discord discord) {
+        // 새로운 사람이면 효과 있다.
+        if (!reportUsers.contains(user)) reportUsers.add(user);
+
+        // 리포트 3개 쌓이면 디코 알림 준다.
+        if (reportUsers.size() >= 3) {
+            discord.alert("먼가먼가 메시지");
+        }
     }
 }
