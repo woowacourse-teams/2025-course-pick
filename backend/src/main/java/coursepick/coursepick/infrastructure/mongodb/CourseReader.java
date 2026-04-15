@@ -11,6 +11,7 @@ import org.bson.Document;
 import org.bson.types.Binary;
 import org.springframework.core.convert.converter.Converter;
 
+import java.util.HashSet;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,7 +36,8 @@ public class CourseReader implements Converter<Document, Course> {
                 simplifiedCoordinates,
                 new Meter(source.getDouble("length")),
                 reviews,
-                source.getString("creatorId")
+                source.getString("creatorId"),
+                new HashSet<>()
         );
     }
 
