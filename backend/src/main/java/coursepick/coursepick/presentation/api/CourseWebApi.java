@@ -1,9 +1,6 @@
 package coursepick.coursepick.presentation.api;
 
-import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
-import coursepick.coursepick.presentation.dto.CourseWebResponse;
-import coursepick.coursepick.presentation.dto.CoursesWebResponse;
-import coursepick.coursepick.presentation.dto.CourseCreateWebRequest;
+import coursepick.coursepick.presentation.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -131,4 +128,8 @@ public interface CourseWebApi {
             @Parameter(hidden = true)
             String userId
     );
+
+    @Operation(summary = "코스 생성 시 직전 포인트와 새 포인트 사이의 경로 및 거리 조회 (첫 점인 경우 origin과 destination을 동일하게 전송)")
+    @ApiResponse(responseCode = "200")
+    DraftRouteWebResponse findDraftRoute(FindDraftRouteWebRequest request);
 }

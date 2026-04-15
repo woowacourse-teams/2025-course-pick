@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static coursepick.coursepick.application.exception.ErrorType.INVALID_COORDINATE_COUNT;
 import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_COURSE;
 
 @Slf4j
@@ -43,6 +44,19 @@ public class CourseApplicationService {
             coordinate = new Coordinate(userLatitude, userLongitude);
         }
         return coordinate;
+    }
+
+    @Transactional(readOnly = true)
+    public DraftSegment findDraftRoute(List<Coordinate> routePoints) {
+        if (routePoints.size() < 2) {
+            throw INVALID_COORDINATE_COUNT.create(routePoints.size());
+        }
+        DraftSegment draftRoute = DraftSegment.empty();
+        for (int i = 0; i < routePoints.size() - 1; i++) {
+            List<Coordinate> path = routeFinder.find(routePoints.get(i), routePoints.get(i + 1));
+            draftRoute = draftRoute.merge(DraftSegment.of(path));
+        }
+        return draftRoute;
     }
 
     @Transactional(readOnly = true)
