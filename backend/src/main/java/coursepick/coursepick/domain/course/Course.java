@@ -15,6 +15,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Document
 @AllArgsConstructor(access = AccessLevel.PUBLIC, onConstructor_ = @PersistenceCreator)
@@ -104,13 +105,23 @@ public class Course {
     }
 
     @SuppressWarnings("RedundantCollectionOperation")
-    public void report(User user, Discord discord) {
+    public void report(User user, Discord discord, String environment) {
         // 새로운 사람이면 효과 있다.
         if (!reportUsers.contains(user)) reportUsers.add(user);
 
         // 리포트 3개 쌓이면 디코 알림 준다.
         if (reportUsers.size() >= 3) {
-            discord.alert("먼가먼가 메시지");
+            String reporterIds = reportUsers.stream()
+                    .map(User::id)
+                    .collect(Collectors.joining(", "));
+            String message = """
+                    [%s] 코스 신고 알림
+                    - 코스 ID: %s
+                    - 코스 이름: %s
+                    - 신고 수: %d
+                    - 신고자 ID: [%s]
+                    """.formatted(environment, this.id, this.name.value(), reportUsers.size(), reporterIds);
+            discord.alert(message);
         }
     }
 }

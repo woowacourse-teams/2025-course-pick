@@ -29,6 +29,22 @@ public class RestClientConfig {
     }
 
     @Bean
+    public RestClient discordRestClient(
+            @Value("${discord.webhook-url}") String webhookUrl,
+            @Value("${discord.connect-timeout:1}") int connectTimeoutSeconds,
+            @Value("${discord.read-timeout:5}") int readTimeoutSeconds
+    ) {
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(Duration.ofSeconds(connectTimeoutSeconds));
+        requestFactory.setReadTimeout(Duration.ofSeconds(readTimeoutSeconds));
+
+        return RestClient.builder()
+                .requestFactory(requestFactory)
+                .baseUrl(webhookUrl)
+                .build();
+    }
+
+    @Bean
     public RestClient osrmRestClient(
             @Value("${osrm.url}") String osrmUrl,
             @Value("${osrm.connect-timeout:1}") int connectTimeoutSeconds,

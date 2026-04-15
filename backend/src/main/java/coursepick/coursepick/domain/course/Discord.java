@@ -1,8 +1,6 @@
 package coursepick.coursepick.domain.course;
 
-public class Discord {
+public interface Discord {
 
-    public void alert(String message) {
-        // TODO : 구현
-    }
+    void alert(String message);
 }
