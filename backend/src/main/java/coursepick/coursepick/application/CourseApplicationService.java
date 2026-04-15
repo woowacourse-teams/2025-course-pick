@@ -10,6 +10,7 @@ import coursepick.coursepick.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,8 @@ public class CourseApplicationService {
     private final UserRepository userRepository;
     private final RouteFinder routeFinder;
     private final UserApplicationService userApplicationService;
+    private final Discord discord;
+    private final Environment environment;
 
 
     @Transactional
@@ -46,7 +49,8 @@ public class CourseApplicationService {
 
         User user = userApplicationService.findUser(userId);
 
-        course.report(user, new Discord());
+        String activeProfile = String.join(",", environment.getActiveProfiles());
+        course.report(user, discord, activeProfile);
     }
 
     private void validateDuplicatedCourseName(CourseName courseName) {
