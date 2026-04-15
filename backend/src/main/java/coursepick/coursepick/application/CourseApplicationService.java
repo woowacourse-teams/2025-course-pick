@@ -39,6 +39,16 @@ public class CourseApplicationService {
         courseRepository.save(newCourse);
     }
 
+    @Transactional
+    public void report(String courseId, String userId) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> NOT_EXIST_COURSE.create(courseId));
+
+        User user = userApplicationService.findUser(userId);
+
+        course.report(user, new Discord());
+    }
+
     private void validateDuplicatedCourseName(CourseName courseName) {
         if (courseRepository.existByCourseName(courseName)) {
             throw ErrorType.DUPLICATED_COURSE_NAME.create(courseName.value());
