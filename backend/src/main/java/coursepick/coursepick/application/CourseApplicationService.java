@@ -32,6 +32,16 @@ public class CourseApplicationService {
         courseRepository.save(newCourse);
     }
 
+    @Transactional
+    public void report(String courseId, String userId) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> NOT_EXIST_COURSE.create(courseId));
+
+        User user = userApplicationService.findUser(userId);
+
+        course.report(user, new Discord());
+    }
+
     @Transactional(readOnly = true)
     public CoursesResponse findNearbyCourses(CourseFindCondition condition, @Nullable Double userLatitude, @Nullable Double userLongitude) {
         Slice<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(condition);
