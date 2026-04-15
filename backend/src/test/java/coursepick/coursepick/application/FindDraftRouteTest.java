@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static coursepick.coursepick.test_util.CoordinateTestUtil.*;
+import static coursepick.coursepick.test_util.CoordinateTestUtil.right;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.data.Percentage.withPercentage;
@@ -19,7 +19,7 @@ class FindDraftRouteTest {
 
     CourseRepository courseRepository = mock(CourseRepository.class);
     RouteFinder routeFinder = mock(RouteFinder.class);
-    CourseApplicationService courseService = new CourseApplicationService(courseRepository, routeFinder);
+    CourseApplicationService courseService = new CourseApplicationService(courseRepository, routeFinder, null);
 
     @Test
     void 경로_좌표가_1개이면_예외가_발생한다() {
