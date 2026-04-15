@@ -83,4 +83,11 @@ public class CourseV1WebController implements CourseWebApi {
         DraftSegment route = courseApplicationService.findDraftRoute(request.toCoordinates());
         return DraftRouteWebResponse.of(route.coordinates(), route.length());
     }
+
+    @Override
+    @Login
+    @PostMapping("/courses/{id}/report")
+    public void reportCourse(@PathVariable("id") String courseId, @UserId String userId) {
+        courseApplicationService.report(courseId, userId);
+    }
 }
