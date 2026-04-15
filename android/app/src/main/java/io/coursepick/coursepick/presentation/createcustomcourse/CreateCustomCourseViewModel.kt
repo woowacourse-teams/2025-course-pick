@@ -80,6 +80,7 @@ class CreateCustomCourseViewModel
 
         fun dismissSubmitDialog() {
             _showSubmitDialog.value = false
+            _courseName.value = ""
         }
 
         fun handleExitAction() {
