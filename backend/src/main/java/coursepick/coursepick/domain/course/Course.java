@@ -25,6 +25,8 @@ import java.util.Set;
 @Accessors(fluent = true)
 public class Course {
 
+    private static final int REPORT_ALERT_THRESHOLD = 3;
+
     @Id
     private final String id;
 
@@ -106,25 +108,15 @@ public class Course {
         this.name = new CourseName(courseName);
     }
 
-    public void report(User user, Alerter alerter, String environment) {
-
+    public void addReport(User user) {
         if (reportUserIds.contains(user.id())) {
             throw ErrorType.ALREADY_REPORTED_COURSE.create(this.id, user.id());
         }
         reportUserIds.add(user.id());
+    }
 
-        if (reportUserIds.size() >= 3) {
-            String reporterIds = String.join(", ", reportUserIds);
-            String message = """
-                    [%s] 코스 신고 알림
-                    - 코스 ID: %s
-                    - 코스 이름: %s
-                    - 신고 수: %d
-                    - 신고자 ID: [%s]
-                    """.formatted(environment, this.id, this.name.value(), reportUserIds.size(), reporterIds);
-
-            alerter.alert(message);
-        }
+    public boolean isReportThreshold() {
+        return reportUserIds.size() >= REPORT_ALERT_THRESHOLD;
     }
 }
 
