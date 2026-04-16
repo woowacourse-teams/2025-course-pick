@@ -176,7 +176,7 @@ public interface CourseWebApi {
     @ApiResponse(responseCode = "200")
     DraftRouteWebResponse findDraftRoute(FindDraftRouteWebRequest request);
 
-    @Operation(summary = "유저 커스텀 코스 등록", security = {@SecurityRequirement(name = "BearerAuth")})
+    @Operation(summary = "코스 신고", security = {@SecurityRequirement(name = "BearerAuth")})
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "코스 신고 완료"),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 코스"),

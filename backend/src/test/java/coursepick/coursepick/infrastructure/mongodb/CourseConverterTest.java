@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,6 +32,7 @@ class CourseConverterTest {
                 List.of(new Coordinate(37.5, 127.0), new Coordinate(37.51, 127.01), new Coordinate(37.52, 127.02)),
                 List.of(new Coordinate(37.5, 127.0), new Coordinate(37.52, 127.02)),
                 new Meter(1500.0),
+                Set.of("reportMan1"),
                 List.of(new Review(new User(null, "providerId", "reviewer"), "hi")),
                 "creatorId123"
         );
@@ -40,6 +42,7 @@ class CourseConverterTest {
 
     @Test
     void Course를_Document로_변환한다() {
+
         Document document = writer.convert(course);
 
         assertThat(document.get("_id")).isEqualTo(new ObjectId(course.id()));
@@ -49,6 +52,7 @@ class CourseConverterTest {
         assertThat(document.get("simplifiedCoordinates")).isInstanceOf(Document.class);
         assertThat(document.get("reviews")).isInstanceOf(List.class);
         assertThat(document.getString("creatorId")).isEqualTo(course.creatorId());
+        assertThat(document.getList("reportUserIds", String.class)).isNotEmpty();
     }
 
     @Test
@@ -67,5 +71,6 @@ class CourseConverterTest {
         assertThat(result.length()).isEqualTo(course.length());
         assertThat(result.reviews()).hasSameSizeAs(course.reviews());
         assertThat(result.creatorId()).isEqualTo(course.creatorId());
+        assertThat(result.reportUserIds()).containsExactly("reportMan1");
     }
 }
