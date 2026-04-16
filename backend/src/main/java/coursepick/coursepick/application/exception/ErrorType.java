@@ -77,6 +77,10 @@ public enum ErrorType {
             "유저가 존재하지 않습니다. 유저id=%s",
             NoSuchElementException::new
     ),
+    ALREADY_REPORTED_COURSE(
+            "이미 신고한 코스입니다. 코스id=%s, 유저id=%s",
+            IllegalArgumentException::new
+    ),
     ;
 
     private final String message;

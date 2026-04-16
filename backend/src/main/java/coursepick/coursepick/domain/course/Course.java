@@ -1,9 +1,11 @@
 package coursepick.coursepick.domain.course;
 
+import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.user.User;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceCreator;
@@ -16,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@ToString
 @Document
 @AllArgsConstructor(access = AccessLevel.PUBLIC, onConstructor_ = @PersistenceCreator)
 @Getter
@@ -103,9 +106,12 @@ public class Course {
         this.name = new CourseName(courseName);
     }
 
-    @SuppressWarnings("RedundantCollectionOperation")
     public void report(User user, Alerter alerter, String environment) {
-        if (!reportUserIds.contains(user.id())) reportUserIds.add(user.id());
+
+        if (reportUserIds.contains(user.id())) {
+            throw ErrorType.ALREADY_REPORTED_COURSE.create(this.id, user.id());
+        }
+        reportUserIds.add(user.id());
 
         if (reportUserIds.size() >= 3) {
             String reporterIds = String.join(", ", reportUserIds);
@@ -121,3 +127,4 @@ public class Course {
         }
     }
 }
+
