@@ -69,7 +69,7 @@
     <!--  코스 추가 화면  -->
     <string name="create_custom_courses">코스 추가</string>
     <string name="create_custom_courses_close">이 화면을 닫습니다.</string>
-    <string name="create_custom_course_empty_course_warning">우선 코스를 그려주세요.</string>
+    <string name="create_custom_course_empty_course_warning">우선 코스를 완성해주세요.</string>
 
     <!--  코스 추가 화면 - 취소 다이얼로그  -->
     <string name="custom_course_discard_dialog_title">코스가 저장되지 않았어요.\n정말로 나가시겠어요?</string>

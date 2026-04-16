@@ -110,7 +110,7 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                             mapManager.removeLastWaypoint()
                         }
 
-                        CreateCustomCourseUiEvent.EmptyCourseSubmission -> {
+                        CreateCustomCourseUiEvent.CourseTooShort -> {
                             Toast
                                 .makeText(
                                     this@CreateCustomCourseActivity,

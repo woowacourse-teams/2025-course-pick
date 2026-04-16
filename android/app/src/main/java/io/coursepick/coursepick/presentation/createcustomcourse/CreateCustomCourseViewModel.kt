@@ -69,9 +69,9 @@ class CreateCustomCourseViewModel
         }
 
         fun handleSubmitAction() {
-            if (segments.value.isEmpty()) {
+            if (segments.value.isEmpty() || length.value < MINIMUM_COURSE_LENGTH) {
                 viewModelScope.launch {
-                    _event.emit(CreateCustomCourseUiEvent.EmptyCourseSubmission)
+                    _event.emit(CreateCustomCourseUiEvent.CourseTooShort)
                 }
             } else {
                 _showSubmitDialog.value = true
@@ -84,7 +84,7 @@ class CreateCustomCourseViewModel
         }
 
         fun handleExitAction() {
-            if (segments.value.isEmpty()) {
+            if (segments.value.isEmpty() || length.value < MINIMUM_COURSE_LENGTH) {
                 viewModelScope.launch {
                     _event.emit(CreateCustomCourseUiEvent.Exit)
                 }
@@ -102,5 +102,9 @@ class CreateCustomCourseViewModel
         }
 
         fun submitCourse() {
+        }
+
+        companion object {
+            private val MINIMUM_COURSE_LENGTH = Length(1)
         }
     }
