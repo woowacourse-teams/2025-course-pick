@@ -68,7 +68,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         var latitude = 37.5122;
         var longitude = 127.0276;
-        var condition = new CourseFindCondition(latitude, longitude, 300, null, null, null);
+        var condition = new CourseFindCondition(latitude, longitude, 300, null, null, null, null);
 
         var nearbyCourses = sut.findNearbyCourses(condition, null, null);
 
@@ -99,7 +99,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         var latitude = 37.5122;
         var longitude = 127.0276;
-        var condition = new CourseFindCondition(latitude, longitude, 15000, null, null, null);
+        var condition = new CourseFindCondition(latitude, longitude, 15000, null, null, null, null);
 
         var nearbyCourses = sut.findNearbyCourses(condition, null, null);
 
@@ -136,7 +136,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         var latitude = 37.5172;
         var longitude = 127.0276;
-        var condition = new CourseFindCondition(latitude, longitude, 1000, null, null, null);
+        var condition = new CourseFindCondition(latitude, longitude, 1000, null, null, null, null);
 
         var courses = sut.findNearbyCourses(condition, null, null);
 
@@ -175,7 +175,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         var mapLongitude = 127.0276;
         var userLatitude = 37.5153291;
         var userLongitude = 127.1031347;
-        var condition = new CourseFindCondition(mapLatitude, mapLongitude, 1000, null, null, null);
+        var condition = new CourseFindCondition(mapLatitude, mapLongitude, 1000, null, null, null, null);
 
         var courses = sut.findNearbyCourses(condition, userLatitude, userLongitude);
 
@@ -198,7 +198,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         List<Course> courses = new ArrayList<>();
         for (int i = 0; i < 5; i++) courses.add(new Course(null, new CourseName("코스" + i), coordinates, ADMIN_USER));
         dbUtil.saveAllCourses(courses);
-        var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, 0);
+        var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, 0, null);
 
         var result = sut.findNearbyCourses(condition, null, null);
 
@@ -211,7 +211,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         List<Course> courses = new ArrayList<>();
         for (int i = 0; i < 15; i++) courses.add(new Course(null, new CourseName("코스" + i), coordinates, ADMIN_USER));
         dbUtil.saveAllCourses(courses);
-        var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, 0);
+        var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, 0, null);
 
         var result = sut.findNearbyCourses(condition, null, null);
 
@@ -224,7 +224,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         List<Course> courses = new ArrayList<>();
         for (int i = 0; i < 15; i++) courses.add(new Course(null, new CourseName("코스" + i), coordinates, ADMIN_USER));
         dbUtil.saveAllCourses(courses);
-        var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, 1);
+        var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, 1, null);
 
         var result = sut.findNearbyCourses(condition, null, null);
 
