@@ -55,7 +55,7 @@ fun CreateCustomCourseScreen(
                 navigationIcon = {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = stringResource(R.string.create_custom_courses_close),
+                        contentDescription = stringResource(R.string.create_custom_courses_exit_button_description),
                         modifier =
                             Modifier
                                 .padding(start = 10.dp)
@@ -68,7 +68,7 @@ fun CreateCustomCourseScreen(
                 actions = {
                     Icon(
                         imageVector = Icons.Default.Done,
-                        contentDescription = null,
+                        contentDescription = stringResource(R.string.create_custom_courses_confirm_button_description),
                         modifier =
                             Modifier
                                 .padding(end = 10.dp)
@@ -131,7 +131,7 @@ fun CreateCustomCourseScreen(
             ) {
                 Icon(
                     painter = painterResource(R.drawable.icon_undo),
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.create_custom_courses_remove_waypoint_button_description),
                     tint = colorResource(R.color.item_primary),
                     modifier = Modifier.size(40.dp),
                 )
@@ -151,7 +151,7 @@ fun CreateCustomCourseScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.create_custom_courses_add_waypoint_button_description),
                     tint = colorResource(R.color.item_primary),
                     modifier = Modifier.size(40.dp),
                 )
