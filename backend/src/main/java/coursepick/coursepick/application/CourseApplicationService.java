@@ -40,9 +40,11 @@ public class CourseApplicationService {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> NOT_EXIST_COURSE.create(courseId));
         User user = findUser(userId);
-
         String activeProfile = String.join(",", environment.getActiveProfiles());
+
         course.report(user, alerter, activeProfile);
+
+        courseRepository.save(course);
     }
 
     @Transactional(readOnly = true)
