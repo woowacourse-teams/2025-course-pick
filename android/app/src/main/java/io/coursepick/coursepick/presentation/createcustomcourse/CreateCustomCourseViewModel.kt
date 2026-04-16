@@ -84,7 +84,7 @@ class CreateCustomCourseViewModel
         }
 
         fun handleExitAction() {
-            if (segments.value.isEmpty() || length.value < MINIMUM_COURSE_LENGTH) {
+            if (segments.value.isEmpty()) {
                 viewModelScope.launch {
                     _event.emit(CreateCustomCourseUiEvent.Exit)
                 }
