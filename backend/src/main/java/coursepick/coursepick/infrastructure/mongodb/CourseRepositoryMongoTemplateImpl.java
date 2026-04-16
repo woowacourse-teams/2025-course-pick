@@ -49,12 +49,31 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
 
     @Override
     public Slice<Course> findAllHasDistanceWithin(CourseFindCondition condition) {
+        Query query = buildCourseSearchQuery(condition);
+        return executeSliceQuery(condition, query);
+    }
+
+    @Override
+    public Slice<Course> findAllMyCourses(CourseFindCondition condition) {
+        Query query = buildCourseSearchQuery(condition);
+
+        if (condition.creatorId() != null) {
+            query.addCriteria(Criteria.where("creatorId").is(condition.creatorId()));
+        }
+
+        return executeSliceQuery(condition, query);
+    }
+
+    private Query buildCourseSearchQuery(CourseFindCondition condition) {
+        Query query = new Query().maxTimeMsec(5000);
+
+        addPositionAndScopeCriteria(condition, query);
+        if (condition.minLength() != null || condition.maxLength() != null) addLengthCriteria(condition, query);
+        return query;
+    }
+
+    private SliceImpl<Course> executeSliceQuery(CourseFindCondition condition, Query query) {
         try {
-            Query query = new Query().maxTimeMsec(5000);
-
-            addPositionAndScopeCriteria(condition, query);
-            if (condition.minLength() != null || condition.maxLength() != null) addLengthCriteria(condition, query);
-
             query.with(condition.pageable())
                     .limit(condition.pageSize() + 1);
 
@@ -72,8 +91,11 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
         GeoJsonPoint point = new GeoJsonPoint(condition.mapPosition().longitude(), condition.mapPosition().latitude());
 
         Criteria criteria = Criteria.where("simplifiedCoordinates")
-                .nearSphere(point)
-                .maxDistance(condition.scope().value());
+                .nearSphere(point);
+
+        if (condition.scope() != null) {
+            criteria.maxDistance(condition.scope().value());
+        }
 
         query.addCriteria(criteria);
     }
