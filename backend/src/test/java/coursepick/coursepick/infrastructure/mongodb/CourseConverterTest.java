@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,9 +34,9 @@ class CourseConverterTest {
                 List.of(new Coordinate(37.5, 127.0), new Coordinate(37.51, 127.01), new Coordinate(37.52, 127.02)),
                 List.of(new Coordinate(37.5, 127.0), new Coordinate(37.52, 127.02)),
                 new Meter(1500.0),
-                "creatorId123"
+                "creatorId123",
+                Set.of("reportMan1")
         );
-
     }
 
 
@@ -50,6 +51,7 @@ class CourseConverterTest {
         assertThat(document.get("coordinates")).isInstanceOf(Document.class);
         assertThat(document.get("simplifiedCoordinates")).isInstanceOf(Document.class);
         assertThat(document.getString("creatorId")).isEqualTo(course.creatorId());
+        assertThat(document.getList("reportUserIds", String.class)).isNotEmpty();
     }
 
     @Test
@@ -67,5 +69,6 @@ class CourseConverterTest {
         assertThat(result.simplifiedCoordinates()).isEqualTo(course.simplifiedCoordinates());
         assertThat(result.length()).isEqualTo(course.length());
         assertThat(result.creatorId()).isEqualTo(course.creatorId());
+        assertThat(result.reportUserIds()).containsExactly("reportMan1");
     }
 }
