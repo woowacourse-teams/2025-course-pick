@@ -27,8 +27,8 @@ public class CourseApplicationService {
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
     private final RouteFinder routeFinder;
-    private final UserApplicationService userApplicationService;
-    private final Discord discord;
+    private final UserRepository userRepository;
+    private final Alerter alerter;
     private final Environment environment;
 
 
@@ -36,7 +36,7 @@ public class CourseApplicationService {
     public void addCustomCourse(String name, List<Coordinate> coordinates, String userId) {
         CourseName courseName = new CourseName(name);
         validateDuplicatedCourseName(courseName);
-        User user = userApplicationService.findUser(userId);
+        User user = findUser(userId);
 
         Course newCourse = new Course(null, courseName, coordinates, user);
         courseRepository.save(newCourse);
@@ -46,11 +46,10 @@ public class CourseApplicationService {
     public void report(String courseId, String userId) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> NOT_EXIST_COURSE.create(courseId));
-
-        User user = userApplicationService.findUser(userId);
+        User user = findUser(userId);
 
         String activeProfile = String.join(",", environment.getActiveProfiles());
-        course.report(user, discord, activeProfile);
+        course.report(user, alerter, activeProfile);
     }
 
     private void validateDuplicatedCourseName(CourseName courseName) {
@@ -63,6 +62,11 @@ public class CourseApplicationService {
     public CoursesResponse findNearbyCourses(CourseFindCondition condition, @Nullable Double userLatitude, @Nullable Double userLongitude) {
         Slice<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(condition);
         return CoursesResponse.from(coursesWithinScope, createUserPositionOrNull(userLatitude, userLongitude));
+    }
+
+    private User findUser(String userId) {
+        return userRepository.findById(userId).
+                orElseThrow(() -> NOT_EXIST_USER.create(userId));
     }
 
     private static Coordinate createUserPositionOrNull(@Nullable Double userLatitude, @Nullable Double userLongitude) {
