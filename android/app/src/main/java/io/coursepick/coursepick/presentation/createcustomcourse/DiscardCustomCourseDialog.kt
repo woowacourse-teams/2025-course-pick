@@ -89,7 +89,7 @@ fun DiscardCustomCourseDialog(
                     Text(
                         text = stringResource(R.string.custom_course_discard_dialog_confirm_button),
                         fontSize = 16.sp,
-                        color = colorResource(R.color.item_white),
+                        color = colorResource(R.color.item_primary),
                     )
                 }
             }
