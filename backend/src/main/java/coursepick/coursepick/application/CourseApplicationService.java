@@ -71,6 +71,12 @@ public class CourseApplicationService {
                 orElseThrow(() -> NOT_EXIST_USER.create(userId));
     }
 
+    @Transactional(readOnly = true)
+    public CoursesResponse findMyCourses(CourseFindCondition condition, @Nullable Double userLatitude, @Nullable Double userLongitude) {
+        Slice<Course> myCourses = courseRepository.findAllMyCourses(condition);
+        return CoursesResponse.from(myCourses, createUserPositionOrNull(userLatitude, userLongitude));
+    }
+
     private static Coordinate createUserPositionOrNull(@Nullable Double userLatitude, @Nullable Double userLongitude) {
         Coordinate coordinate = null;
         if (userLatitude != null && userLongitude != null) {
