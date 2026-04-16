@@ -1,6 +1,6 @@
 package coursepick.coursepick.infrastructure.discord;
 
-import coursepick.coursepick.domain.course.Discord;
+import coursepick.coursepick.domain.course.Alerter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -14,7 +14,7 @@ import java.util.Map;
 @Component
 @Profile({"dev", "prod"})
 @RequiredArgsConstructor
-public class WebHookDiscord implements Discord {
+public class WebHookDiscord implements Alerter {
 
     private final RestClient discordRestClient;
 
@@ -27,7 +27,7 @@ public class WebHookDiscord implements Discord {
                     .retrieve()
                     .toBodilessEntity();
         } catch (Exception e) {
-            log.warn("Discord 알림 전송 실패: {}", e.getMessage());
+            log.warn("Alerter 알림 전송 실패: {}", e.getMessage());
         }
     }
 }
