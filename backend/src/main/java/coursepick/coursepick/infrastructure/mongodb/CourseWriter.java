@@ -32,6 +32,7 @@ public class CourseWriter implements Converter<Course, Document> {
         document.put("simplifiedCoordinates", convertCoordinatesToGeoJson(source.simplifiedCoordinates()));
 
         document.put("length", source.length().value());
+        document.put("creatorId", source.creatorId());
         document.put("schemaVersion", 1);
         return document;
     }
