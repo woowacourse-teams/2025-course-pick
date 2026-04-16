@@ -7,6 +7,7 @@ import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.course.*;
 import coursepick.coursepick.domain.user.User;
 import coursepick.coursepick.domain.user.UserRepository;
+import coursepick.coursepick.infrastructure.discord.DiscordAlerter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
@@ -28,15 +29,15 @@ public class CourseApplicationService {
     private final UserRepository userRepository;
     private final RouteFinder routeFinder;
     private final UserRepository userRepository;
-    private final Alerter alerter;
-    private final Environment environment;
+    private final DiscordAlerter discordAlerter;
+
 
 
     @Transactional
     public void addCustomCourse(String name, List<Coordinate> coordinates, String userId) {
         CourseName courseName = new CourseName(name);
         validateDuplicatedCourseName(courseName);
-        User user = findUser(userId);
+        User user = getUser(userId);
 
         Course newCourse = new Course(null, courseName, coordinates, user);
         courseRepository.save(newCourse);
@@ -46,12 +47,14 @@ public class CourseApplicationService {
     public void report(String courseId, String userId) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> NOT_EXIST_COURSE.create(courseId));
-        User user = findUser(userId);
-        String activeProfile = String.join(",", environment.getActiveProfiles());
+        User user = getUser(userId);
 
-        course.report(user, alerter, activeProfile);
-
+        course.addReport(user);
         courseRepository.save(course);
+
+        if (course.isReportThreshold()) {
+            discordAlerter.alert(course);
+        }
     }
 
     private void validateDuplicatedCourseName(CourseName courseName) {
@@ -66,7 +69,7 @@ public class CourseApplicationService {
         return CoursesResponse.from(coursesWithinScope, createUserPositionOrNull(userLatitude, userLongitude));
     }
 
-    private User findUser(String userId) {
+    private User getUser(String userId) {
         return userRepository.findById(userId).
                 orElseThrow(() -> NOT_EXIST_USER.create(userId));
     }
