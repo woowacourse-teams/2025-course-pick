@@ -8,7 +8,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.util.List;
@@ -120,47 +119,47 @@ class CourseTest {
 
     @Test
     void 두번_이하로_신고되면_알람이_안간다() {
-        Discord discord = mock(Discord.class);
+        Alerter alerter = mock(Alerter.class);
         Course course = new Course(null, "코스", List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
         User user1 = new User("user1", UserProvider.KAKAO, "providerId");
         User user2 = new User("user2", UserProvider.KAKAO, "providerId");
 
-        course.report(user1, discord, "test");
-        course.report(user2, discord, "test");
+        course.report(user1, alerter, "test");
+        course.report(user2, alerter, "test");
 
-        verify(discord, times(0)).alert(Mockito.anyString());
+        verify(alerter, times(0)).alert(Mockito.anyString());
     }
 
     @Test
     void 세번_이상으로_신고되면_알람이_간다() {
-        Discord discord = mock(Discord.class);
+        Alerter alerter = mock(Alerter.class);
 
         Course course = new Course(null, "코스", List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
         User user1 = new User("user1", UserProvider.KAKAO, "providerId");
         User user2 = new User("user2", UserProvider.KAKAO, "providerId");
         User user3 = new User("user3", UserProvider.KAKAO, "providerId");
 
-        course.report(user1, discord, "test");
-        course.report(user2, discord, "test");
-        course.report(user3, discord, "test");
+        course.report(user1, alerter, "test");
+        course.report(user2, alerter, "test");
+        course.report(user3, alerter, "test");
 
-        verify(discord, times(1)).alert(Mockito.anyString());
+        verify(alerter, times(1)).alert(Mockito.anyString());
     }
 
     @Test
     void 동일_유저는_카운트하지_않는다() {
-        Discord discord = mock(Discord.class);
+        Alerter alerter = mock(Alerter.class);
 
         Course course = new Course(null, "코스", List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
         User user1 = new User("user1", UserProvider.KAKAO, "providerId");
         User user2 = new User("user2", UserProvider.KAKAO, "providerId");
 
-        course.report(user1, discord, "test");
-        course.report(user1, discord, "test");
-        course.report(user1, discord, "test");
-        course.report(user1, discord, "test");
-        course.report(user2, discord, "test");
+        course.report(user1, alerter, "test");
+        course.report(user1, alerter, "test");
+        course.report(user1, alerter, "test");
+        course.report(user1, alerter, "test");
+        course.report(user2, alerter, "test");
 
-        verify(discord, times(0)).alert(Mockito.anyString());
+        verify(alerter, times(0)).alert(Mockito.anyString());
     }
 }
