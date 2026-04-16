@@ -16,6 +16,24 @@ public class CourseFindCondition {
     private final @Nullable Integer minLength;
     private final @Nullable Integer maxLength;
     private final @Nullable Integer pageNumber;
+    private final @Nullable String creatorId;
+
+
+    public CourseFindCondition(double mapLatitude,
+                               double mapLongitude,
+                               @Nullable Integer scope,
+                               @Nullable Integer minLength,
+                               @Nullable Integer maxLength,
+                               @Nullable Integer pageNumber
+    ) {
+        this.mapLatitude = mapLatitude;
+        this.mapLongitude = mapLongitude;
+        this.scope = scope;
+        this.minLength = minLength;
+        this.maxLength = maxLength;
+        this.pageNumber = pageNumber;
+        this.creatorId = null;
+    }
 
     public Coordinate mapPosition() {
         return new Coordinate(mapLatitude, mapLongitude);
@@ -44,5 +62,9 @@ public class CourseFindCondition {
 
     public int pageSize() {
         return PAGE_SIZE;
+    }
+
+    public String creatorId() {
+        return creatorId;
     }
 }
