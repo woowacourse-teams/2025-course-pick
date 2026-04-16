@@ -245,6 +245,25 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
                 .isInstanceOf(NoSuchElementException.class);
     }
 
+    @Test
+    void 동일한_유저가_코스_횟수에_카운트_하지_않는다() {
+        User user = new User("user1", UserProvider.KAKAO, "provierId");
+        var course1 = new Course(null, "한강 러닝 코스", List.of(
+                new Coordinate(37.5180, 127.0280),
+                new Coordinate(37.5175, 127.0270),
+                new Coordinate(37.5170, 127.0265),
+                new Coordinate(37.5180, 127.0280)
+        ), user);
+
+        dbUtil.saveUser(user);
+        Course course = dbUtil.saveCourse(course1);
+
+        sut.report(course.id(), user.id());
+
+        Course result =  dbUtil.findCourseById(course.id());
+        assertThat(result.reportUserIds()).hasSize(1);
+    }
+
     @Nested
     class 유저_코스_생성 {
 

@@ -147,19 +147,16 @@ class CourseTest {
     }
 
     @Test
-    void 동일_유저는_카운트하지_않는다() {
+    void 동일_유저_신고시_예외를_던진다() {
         Alerter alerter = mock(Alerter.class);
 
         Course course = new Course(null, "코스", List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
         User user1 = new User("user1", UserProvider.KAKAO, "providerId");
-        User user2 = new User("user2", UserProvider.KAKAO, "providerId");
 
         course.report(user1, alerter, "test");
-        course.report(user1, alerter, "test");
-        course.report(user1, alerter, "test");
-        course.report(user1, alerter, "test");
-        course.report(user2, alerter, "test");
 
-        verify(alerter, times(0)).alert(Mockito.anyString());
+        assertThatThrownBy(() -> course.report(user1, alerter, "test"))
+                .isInstanceOf(IllegalArgumentException.class);
+
     }
 }
