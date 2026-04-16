@@ -1,6 +1,6 @@
 package coursepick.coursepick.domain.course;
 
-public interface Discord {
+public interface Alerter {
 
     void alert(String message);
 }
