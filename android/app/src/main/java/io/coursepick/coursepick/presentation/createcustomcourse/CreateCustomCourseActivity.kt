@@ -19,7 +19,6 @@ import io.coursepick.coursepick.R
 import io.coursepick.coursepick.databinding.ActivityCustomCourseBinding
 import io.coursepick.coursepick.di.KakaoMap
 import io.coursepick.coursepick.presentation.InstallStateObserver
-import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.map.MapManager
 import io.coursepick.coursepick.presentation.map.MapManagerFactory
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
@@ -56,9 +55,6 @@ class CreateCustomCourseActivity : AppCompatActivity() {
         mapManager.startMap {
             mapManager.setPadding(bottom = mapBottomPadding)
             setUpCollectors()
-            intent
-                .getParcelableCompat<CoordinateUiModel>(KEY_INITIAL_COORDINATE)
-                ?.let { coordinate: CoordinateUiModel -> mapManager.moveTo(coordinate.value) }
 
             if (savedInstanceState != null) {
                 restoreProgress()
@@ -136,15 +132,6 @@ class CreateCustomCourseActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val KEY_INITIAL_COORDINATE = "key_initial_coordinate"
-
-        fun intent(
-            context: Context,
-            initialCoordinate: CoordinateUiModel?,
-        ): Intent =
-            Intent(
-                context,
-                CreateCustomCourseActivity::class.java,
-            ).putExtra(KEY_INITIAL_COORDINATE, initialCoordinate)
+        fun intent(context: Context): Intent = Intent(context, CreateCustomCourseActivity::class.java)
     }
 }
