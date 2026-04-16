@@ -2,6 +2,7 @@ package coursepick.coursepick.domain.course;
 
 import coursepick.coursepick.domain.user.User;
 import coursepick.coursepick.domain.user.UserProvider;
+import coursepick.coursepick.infrastructure.discord.DiscordAlerter;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -131,45 +132,14 @@ class CourseTest {
     }
 
     @Test
-    void 두번_이하로_신고되면_알람이_안간다() {
-        Alerter alerter = mock(Alerter.class);
-        Course course = new Course(null, "코스", List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
-        User user1 = new User("user1", UserProvider.KAKAO, "providerId");
-        User user2 = new User("user2", UserProvider.KAKAO, "providerId");
-
-        course.report(user1, alerter, "test");
-        course.report(user2, alerter, "test");
-
-        verify(alerter, times(0)).alert(Mockito.anyString());
-    }
-
-    @Test
-    void 세번_이상으로_신고되면_알람이_간다() {
-        Alerter alerter = mock(Alerter.class);
-
-        Course course = new Course(null, "코스", List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
-        User user1 = new User("user1", UserProvider.KAKAO, "providerId");
-        User user2 = new User("user2", UserProvider.KAKAO, "providerId");
-        User user3 = new User("user3", UserProvider.KAKAO, "providerId");
-
-        course.report(user1, alerter, "test");
-        course.report(user2, alerter, "test");
-        course.report(user3, alerter, "test");
-
-        verify(alerter, times(1)).alert(Mockito.anyString());
-    }
-
-    @Test
     void 동일_유저_신고시_예외를_던진다() {
-        Alerter alerter = mock(Alerter.class);
 
         Course course = new Course(null, "코스", List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
         User user1 = new User("user1", UserProvider.KAKAO, "providerId");
 
-        course.report(user1, alerter, "test");
+        course.addReport(user1);
 
-        assertThatThrownBy(() -> course.report(user1, alerter, "test"))
+        assertThatThrownBy(() -> course.addReport(user1))
                 .isInstanceOf(IllegalArgumentException.class);
-
     }
 }
