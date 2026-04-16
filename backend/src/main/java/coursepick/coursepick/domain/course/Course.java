@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceCreator;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 @Document
+@CompoundIndex(name = "idx_creatorId_geo", def = "{'creatorId': 1, 'simplifiedCoordinates': '2dsphere'}")
 @AllArgsConstructor(access = AccessLevel.PUBLIC, onConstructor_ = @PersistenceCreator)
 @Getter
 @Accessors(fluent = true)
