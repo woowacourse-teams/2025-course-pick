@@ -1,10 +1,6 @@
 package io.coursepick.coursepick.presentation.map.kakao
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import androidx.annotation.DrawableRes
-import androidx.core.graphics.scale
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.label.Label
 import com.kakao.vectormap.label.LabelOptions
@@ -13,11 +9,8 @@ import com.kakao.vectormap.label.LabelStyles
 import com.kakao.vectormap.label.LabelTransition
 import com.kakao.vectormap.label.TransformMethod
 import com.kakao.vectormap.label.Transition
-import com.kakao.vectormap.route.RouteLine
 import com.kakao.vectormap.route.RouteLineLayer
 import com.kakao.vectormap.route.RouteLineOptions
-import com.kakao.vectormap.route.RouteLineSegment
-import com.kakao.vectormap.route.RouteLineStyle
 import com.kakao.vectormap.shape.DotPoints
 import com.kakao.vectormap.shape.Polygon
 import com.kakao.vectormap.shape.PolygonOptions
@@ -25,7 +18,6 @@ import com.kakao.vectormap.shape.PolygonStyles
 import com.kakao.vectormap.shape.PolygonStylesSet
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Coordinate
-import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.course.CourseItem
 
@@ -33,17 +25,7 @@ class KakaoMapDrawer(
     private val context: Context,
     private val map: KakaoMap,
 ) {
-    private val routeLineOptionsFactory = RouteLineOptionsFactory(context, map.mapDpScale)
-
-    private val searchLocationIcon: Bitmap =
-        resizeDrawableWidth(id = R.drawable.image_search_location, widthDp = 50F)
-    private val currentLocationIcon: Bitmap =
-        resizeDrawable(id = R.drawable.image_current_location, widthDp = 25F, heightDp = 25F)
-    private val waypointIcon: Bitmap =
-        resizeDrawable(id = R.drawable.icon_waypoint, widthDp = 15F, heightDp = 15F)
-
-    private val waypoints = mutableListOf<Label>()
-    private val segments = mutableListOf<RouteLine>()
+    private val routeLineOptionsFactory = RouteLineOptionsFactory(context)
 
     fun drawCourse(course: CourseItem) {
         val layer: RouteLineLayer = map.routeLineManager?.layer ?: return
@@ -92,7 +74,7 @@ class KakaoMapDrawer(
         val latLng = coordinate.toLatLng()
         val style =
             LabelStyle
-                .from(searchLocationIcon)
+                .from(R.drawable.image_search_location)
                 .setAnchorPoint(0.5F, 0.5F)
                 .setIconTransition(LabelTransition.from(Transition.None, Transition.None))
         val options: LabelOptions =
@@ -111,64 +93,11 @@ class KakaoMapDrawer(
         layer.removeAll()
     }
 
-    fun drawWaypoint(coordinate: Coordinate) {
-        val style =
-            LabelStyle
-                .from(waypointIcon)
-                .setAnchorPoint(0.5F, 0.5F)
-                .setIconTransition(LabelTransition.from(Transition.None, Transition.None))
-        val options =
-            LabelOptions
-                .from(coordinate.toLatLng())
-                .setStyles(LabelStyles.from(style))
-                .setTransform(TransformMethod.Decal)
-
-        map.labelManager
-            ?.layer
-            ?.addLabel(options)
-            ?.also(waypoints::add)
-    }
-
-    fun removeLastWaypoint() {
-        waypoints.removeLastOrNull()?.also(Label::remove)
-        segments.removeLastOrNull()?.also(RouteLine::remove)
-    }
-
-    fun clearWaypoints() {
-        waypoints.forEach(Label::remove)
-        waypoints.clear()
-    }
-
-    fun drawDraftSegment(segment: DraftSegment) {
-        val style =
-            RouteLineStyle.from(
-                context.resources.getDimension(R.dimen.draft_segment_width),
-                context.getColor(R.color.course_draft),
-            )
-        val options =
-            RouteLineOptions.from(
-                RouteLineSegment.from(
-                    segment.coordinates.map(Coordinate::toLatLng),
-                    style,
-                ),
-            )
-
-        map.routeLineManager
-            ?.layer
-            ?.addRouteLine(options)
-            ?.also(segments::add)
-    }
-
-    fun clearDraftSegments() {
-        segments.forEach(RouteLine::remove)
-        segments.clear()
-    }
-
     private fun drawAccurateUserPosition(location: Location.Fine) {
         hideApproximateUserPosition()
 
         val latLng = location.coordinate.toLatLng()
-        val style = LabelStyle.from(currentLocationIcon).setAnchorPoint(0.5F, 0.5F)
+        val style = LabelStyle.from(R.drawable.image_current_location).setAnchorPoint(0.5F, 0.5F)
         val options: LabelOptions =
             LabelOptions
                 .from(latLng)
@@ -237,29 +166,6 @@ class KakaoMapDrawer(
             return
         }
         layer.addPolygon(options)
-    }
-
-    private fun resizeDrawable(
-        @DrawableRes id: Int,
-        widthDp: Float,
-        heightDp: Float,
-    ): Bitmap {
-        val original: Bitmap = BitmapFactory.decodeResource(context.resources, id)
-        val factor = context.resources.displayMetrics.density / map.mapDpScale
-        val widthPx: Float = widthDp * factor
-        val heightPx: Float = heightDp * factor
-        return original.scale(widthPx.toInt(), heightPx.toInt())
-    }
-
-    private fun resizeDrawableWidth(
-        @DrawableRes id: Int,
-        widthDp: Float,
-    ): Bitmap {
-        val original: Bitmap = BitmapFactory.decodeResource(context.resources, id)
-        val factor = context.resources.displayMetrics.density / map.mapDpScale
-        val widthPx: Float = widthDp * factor
-        val heightPx: Float = original.height * (widthDp / original.width) * factor
-        return original.scale(widthPx.toInt(), heightPx.toInt())
     }
 
     companion object {

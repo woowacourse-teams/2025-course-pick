@@ -12,7 +12,6 @@ import com.google.android.gms.maps.model.Polyline
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Scope
-import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.course.CourseItem
@@ -111,26 +110,6 @@ class GoogleMapManager(
     override fun hideUserLocation() {
         drawer?.hideUserLocation()
             ?: run { Timber.w("${GoogleMapDrawer::class.simpleName} is null.") }
-    }
-
-    override fun drawWaypoint(coordinate: Coordinate) {
-        TODO("Not yet implemented")
-    }
-
-    override fun removeLastWaypoint() {
-        TODO("Not yet implemented")
-    }
-
-    override fun clearWaypoints() {
-        TODO("Not yet implemented")
-    }
-
-    override fun drawDraftSegment(segment: DraftSegment) {
-        TODO("Not yet implemented")
-    }
-
-    override fun clearDraftSegments() {
-        TODO("Not yet implemented")
     }
 
     override fun fitTo(coordinates: List<Coordinate>) {

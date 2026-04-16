@@ -2,7 +2,6 @@ package io.coursepick.coursepick.presentation.map
 
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Scope
-import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.course.CourseItem
 
@@ -29,16 +28,6 @@ interface MapManager {
     fun drawUserLocation(location: Location)
 
     fun hideUserLocation()
-
-    fun drawWaypoint(coordinate: Coordinate)
-
-    fun removeLastWaypoint()
-
-    fun clearWaypoints()
-
-    fun drawDraftSegment(segment: DraftSegment)
-
-    fun clearDraftSegments()
 
     fun fitTo(coordinates: List<Coordinate>)
 

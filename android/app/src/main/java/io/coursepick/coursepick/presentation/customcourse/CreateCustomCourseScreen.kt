@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.createcustomcourse
+package io.coursepick.coursepick.presentation.customcourse
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,20 +34,19 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.domain.course.Length
-import io.coursepick.coursepick.presentation.toDistanceText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateCustomCourseScreen(
-    length: Length,
     onClose: () -> Unit,
-    onUndoWaypoint: () -> Unit,
-    onAddWaypoint: () -> Unit,
-    onConfirm: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier.fillMaxSize()) {
+    Box(
+        modifier =
+            modifier
+                .fillMaxSize()
+                .navigationBarsPadding(),
+    ) {
         CenterAlignedTopAppBar(
             title = { Text(text = stringResource(R.string.create_custom_courses)) },
             navigationIcon = {
@@ -57,17 +56,14 @@ fun CreateCustomCourseScreen(
                     modifier =
                         Modifier
                             .padding(start = 10.dp)
-                            .clickable { onClose() },
+                            .clickable(onClick = onClose),
                 )
             },
             actions = {
                 Icon(
                     imageVector = Icons.Default.Done,
                     contentDescription = null,
-                    modifier =
-                        Modifier
-                            .padding(end = 10.dp)
-                            .clickable { onConfirm() },
+                    modifier = Modifier.padding(end = 10.dp),
                 )
             },
             colors =
@@ -82,7 +78,7 @@ fun CreateCustomCourseScreen(
         )
 
         Icon(
-            painter = painterResource(R.drawable.icon_new_waypoint_position),
+            painter = painterResource(R.drawable.icon_add_waypoint),
             contentDescription = null,
             tint = colorResource(R.color.point_primary),
             modifier =
@@ -97,11 +93,10 @@ fun CreateCustomCourseScreen(
                 Modifier
                     .align(alignment = Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .padding(start = 10.dp, end = 10.dp, bottom = 10.dp)
-                    .navigationBarsPadding(),
+                    .padding(start = 10.dp, end = 10.dp, bottom = 10.dp),
         ) {
             Text(
-                text = length.toDistanceText(),
+                text = "123km",
                 fontSize = 24.sp,
                 color = colorResource(R.color.item_primary),
                 modifier =
@@ -122,7 +117,7 @@ fun CreateCustomCourseScreen(
                             .clip(shape = CircleShape)
                             .background(colorResource(R.color.background_primary))
                             .size(70.dp)
-                            .clickable { onUndoWaypoint() },
+                            .clickable {},
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.icon_undo),
@@ -141,8 +136,7 @@ fun CreateCustomCourseScreen(
                             .shadow(elevation = 8.dp, shape = CircleShape)
                             .clip(shape = CircleShape)
                             .background(colorResource(R.color.background_primary))
-                            .size(70.dp)
-                            .clickable { onAddWaypoint() },
+                            .size(70.dp),
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
@@ -158,24 +152,8 @@ fun CreateCustomCourseScreen(
 
 @PreviewLightDark
 @Composable
-fun CreateCustomCourseScreenPreview_ShortCourse() {
+fun CreateCustomCourseScreenPreview() {
     CreateCustomCourseScreen(
-        length = Length(123),
-        onClose = { },
-        onUndoWaypoint = { },
-        onAddWaypoint = { },
-        onConfirm = { },
-    )
-}
-
-@PreviewLightDark
-@Composable
-fun CreateCustomCourseScreenPreview_LongCourse() {
-    CreateCustomCourseScreen(
-        length = Length(12345),
-        onClose = { },
-        onUndoWaypoint = { },
-        onAddWaypoint = { },
-        onConfirm = { },
+        onClose = {},
     )
 }

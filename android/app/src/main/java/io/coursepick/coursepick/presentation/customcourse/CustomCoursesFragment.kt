@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import io.coursepick.coursepick.databinding.FragmentCustomCoursesBinding
-import io.coursepick.coursepick.presentation.createcustomcourse.CreateCustomCourseActivity
 
 class CustomCoursesFragment : Fragment() {
     @Suppress("ktlint:standard:backing-property-naming")

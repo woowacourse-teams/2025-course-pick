@@ -63,7 +63,7 @@ class GoogleMapDrawer(
         val options =
             PolylineOptions()
                 .addAll(route.map(Coordinate::toLatLng))
-                .width(context.resources.getDimension(R.dimen.course_route_width))
+                .width(context.resources.getDimension(R.dimen.course_route_width_google))
                 .color(context.getColor(R.color.course_route))
 
         map.addPolyline(options).also(polylinesOnMap::add)
@@ -74,7 +74,7 @@ class GoogleMapDrawer(
             PolylineOptions()
                 .addAll(course.coordinates.map(Coordinate::toLatLng))
                 .color(context.getColor(R.color.course_unselected))
-                .width(context.resources.getDimension(R.dimen.unselected_course_width))
+                .width(context.resources.getDimension(R.dimen.unselected_course_width_google))
                 .zIndex(UNSELECTED_COURSE_Z_INDEX)
                 .clickable(true)
 
@@ -93,7 +93,7 @@ class GoogleMapDrawer(
         val courseOptions =
             PolylineOptions()
                 .addAll(course.coordinates.map(Coordinate::toLatLng))
-                .width(context.resources.getDimension(R.dimen.selected_course_width))
+                .width(context.resources.getDimension(R.dimen.selected_course_width_google))
                 .addSpan(StyleSpan(courseStrokeStyle, 0.1))
                 .zIndex(SELECTED_COURSE_Z_INDEX)
                 .clickable(true)
