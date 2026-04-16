@@ -16,7 +16,8 @@ import java.io.IOException;
 public class HttpLoggingFilter extends OncePerRequestFilter {
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
         ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
 
         long startTime = System.currentTimeMillis();
@@ -24,7 +25,7 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
         long duration = System.currentTimeMillis() - startTime;
 
         if (!request.getRequestURI().startsWith("/actuator")) {
-            log.info("[HTTP]", LogContent.http(requestWrapper, response, duration));
+            log.info("[HTTP] {} | {} | {} | {} | {}", LogContent.http(requestWrapper, response.getStatus(), duration));
         }
     }
 }

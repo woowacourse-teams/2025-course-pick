@@ -1,6 +1,6 @@
 package coursepick.coursepick.logging;
 
-import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
@@ -12,36 +12,41 @@ import java.util.regex.Pattern;
 import static net.logstash.logback.argument.StructuredArguments.kv;
 import static org.apache.commons.lang3.StringUtils.left;
 
+@Slf4j
 public class LogContent {
 
+    private static final int MAX_BODY_LENGTH = 500;
     private static final Set<Pattern> SENSITIVE_URI_PATTERNS = Set.of(
-            Pattern.compile("^/admin/login$")
-    );
+            Pattern.compile("^/admin/login$"));
 
-    public static Object[] http(ContentCachingRequestWrapper request, HttpServletResponse response, long duration) {
-        String method = request.getMethod();
-        String uri = extractUriWithQueryString(request);
-        String headers = extractHeaderString(request);
-        String requestBody = new String(request.getContentAsByteArray(), StandardCharsets.UTF_8).strip();
-        if (isSensitivePath(request)) {
-            requestBody = "[this is sensitive data]";
-        }
-        int status = response.getStatus();
 
+    public static Object[] http(ContentCachingRequestWrapper request, int status, long duration) {
+        boolean sensitive = isSensitivePath(request);
         return new Object[]{
-                kv("method", method),
-                kv("uri", uri),
+                kv("method", request.getMethod()),
+                kv("uri", extractUriWithQueryString(request)),
                 kv("status", status),
+                kv("req_headers", extractHeaderString(request)),
                 kv("duration_ms", duration),
-                kv("req_headers", headers),
-                kv("req_body", left(requestBody, 100))
+                kv("req_body", extractRequestBody(request, sensitive))
         };
+    }
+
+    private static String extractRequestBody(ContentCachingRequestWrapper request, boolean isSensitive) {
+        if (isSensitive) {
+            return "[민감 정보 - 마스킹됨]";
+        }
+        String body = new String(request.getContentAsByteArray(), StandardCharsets.UTF_8).strip();
+        if (body.isEmpty()) {
+            return "(없음)";
+        }
+        return left(body, MAX_BODY_LENGTH) + (body.length() > MAX_BODY_LENGTH ? "...(생략)" : "");
     }
 
     private static boolean isSensitivePath(ContentCachingRequestWrapper request) {
         String uri = request.getRequestURI();
         return SENSITIVE_URI_PATTERNS.stream()
-                .anyMatch(path -> path.matcher(uri).matches());
+                .anyMatch(pattern -> pattern.matcher(uri).matches());
     }
 
     public static Object[] exception(Document document, Exception e) {
@@ -64,7 +69,6 @@ public class LogContent {
     private static String extractUriWithQueryString(ContentCachingRequestWrapper request) {
         String requestURI = request.getRequestURI();
         String queryString = request.getQueryString();
-
         if (queryString != null) {
             requestURI += "?" + queryString;
         }
