@@ -1,14 +1,13 @@
 package coursepick.coursepick.application;
 
-import coursepick.coursepick.application.dto.CourseDetailResponse;
 import coursepick.coursepick.application.dto.CourseResponse;
-import coursepick.coursepick.application.dto.ReviewResponse;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.Course;
 import coursepick.coursepick.domain.course.CourseFindCondition;
 import coursepick.coursepick.domain.course.CourseName;
 import coursepick.coursepick.domain.user.User;
 import coursepick.coursepick.domain.user.UserProvider;
+import coursepick.coursepick.infrastructure.discord.DiscordAlerter;
 import coursepick.coursepick.test_util.AbstractIntegrationTest;
 import coursepick.coursepick.test_util.CoordinateTestUtil;
 import org.assertj.core.data.Percentage;
@@ -18,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,11 +27,15 @@ import java.util.Optional;
 import static coursepick.coursepick.test_util.UserFixture.ADMIN_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
 
 class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
     @Autowired
     CourseApplicationService sut;
+
+    @MockitoBean
+    DiscordAlerter discordAlerter;
 
     @Test
     void 코스는_최소_1KM부터_탐색할_수_있다() {
@@ -246,7 +250,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
     }
 
     @Test
-    void 동일한_유저가_코스_횟수에_카운트_하지_않는다() {
+    void 동일한_유저는_코스_횟수에_카운트_하지_않는다() {
         User user = new User("user1", UserProvider.KAKAO, "provierId");
         var course1 = new Course(null, "한강 러닝 코스", List.of(
                 new Coordinate(37.5180, 127.0280),
@@ -260,8 +264,47 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         sut.report(course.id(), user.id());
 
-        Course result =  dbUtil.findCourseById(course.id());
+        Course result = dbUtil.findCourseById(course.id());
         assertThat(result.reportUserIds()).hasSize(1);
+    }
+
+    @Test
+    void 두번_이하로_신고되면_알람이_안간다() {
+        Course course = new Course(null, "코스", List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
+        User user1 = new User("user1", UserProvider.KAKAO, "providerId1");
+        User user2 = new User("user2", UserProvider.KAKAO, "providerId2");
+
+        Course targetCourse = dbUtil.saveCourse(course);
+        dbUtil.saveUser(user1);
+        dbUtil.saveUser(user2);
+
+        sut.report(targetCourse.id(), user1.id());
+        sut.report(targetCourse.id(), user2.id());
+
+        Course result = dbUtil.findCourseById(targetCourse.id());
+        assertThat(result.reportUserIds()).hasSize(2);
+        verify(discordAlerter, times(0)).alert(any(Course.class));
+    }
+
+    @Test
+    void 세번_이상으로_신고되면_알람이_간다() {
+        Course course = new Course(null, "코스", List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
+        User user1 = new User("user1", UserProvider.KAKAO, "providerId1");
+        User user2 = new User("user2", UserProvider.KAKAO, "providerId2");
+        User user3 = new User("user3", UserProvider.KAKAO, "providerId3");
+
+        Course targetCourse = dbUtil.saveCourse(course);
+        dbUtil.saveUser(user1);
+        dbUtil.saveUser(user2);
+        dbUtil.saveUser(user3);
+
+        sut.report(targetCourse.id(), user1.id());
+        sut.report(targetCourse.id(), user2.id());
+        sut.report(targetCourse.id(), user3.id());
+
+        Course result = dbUtil.findCourseById(targetCourse.id());
+        assertThat(result.reportUserIds()).hasSize(3);
+        verify(discordAlerter, times(1)).alert(any(Course.class));
     }
 
     @Nested
