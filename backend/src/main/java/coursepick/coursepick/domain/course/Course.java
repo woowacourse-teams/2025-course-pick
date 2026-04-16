@@ -104,11 +104,9 @@ public class Course {
     }
 
     @SuppressWarnings("RedundantCollectionOperation")
-    public void report(User user, Discord discord, String environment) {
-        // 새로운 사람이면 효과 있다.
+    public void report(User user, Alerter alerter, String environment) {
         if (!reportUserIds.contains(user.id())) reportUserIds.add(user.id());
 
-        // 리포트 3개 쌓이면 디코 알림 준다.
         if (reportUserIds.size() >= 3) {
             String reporterIds = String.join(", ", reportUserIds);
             String message = """
@@ -118,7 +116,8 @@ public class Course {
                     - 신고 수: %d
                     - 신고자 ID: [%s]
                     """.formatted(environment, this.id, this.name.value(), reportUserIds.size(), reporterIds);
-            discord.alert(message);
+
+            alerter.alert(message);
         }
     }
 }

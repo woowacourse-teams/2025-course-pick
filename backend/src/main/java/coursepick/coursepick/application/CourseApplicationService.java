@@ -4,6 +4,7 @@ import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
 import coursepick.coursepick.domain.course.*;
 import coursepick.coursepick.domain.user.User;
+import coursepick.coursepick.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
@@ -14,8 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static coursepick.coursepick.application.exception.ErrorType.INVALID_COORDINATE_COUNT;
-import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_COURSE;
+import static coursepick.coursepick.application.exception.ErrorType.*;
 
 @Slf4j
 @Service
@@ -24,13 +24,13 @@ public class CourseApplicationService {
 
     private final CourseRepository courseRepository;
     private final RouteFinder routeFinder;
-    private final UserApplicationService userApplicationService;
-    private final Discord discord;
+    private final UserRepository userRepository;
+    private final Alerter alerter;
     private final Environment environment;
 
     @Transactional
     public void addCustomCourse(String name, List<Coordinate> coordinates, String userId) {
-        User user = userApplicationService.findUser(userId);
+        User user = findUser(userId);
         Course newCourse = new Course(null, name, coordinates, user);
         courseRepository.save(newCourse);
     }
@@ -39,17 +39,21 @@ public class CourseApplicationService {
     public void report(String courseId, String userId) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> NOT_EXIST_COURSE.create(courseId));
-
-        User user = userApplicationService.findUser(userId);
+        User user = findUser(userId);
 
         String activeProfile = String.join(",", environment.getActiveProfiles());
-        course.report(user, discord, activeProfile);
+        course.report(user, alerter, activeProfile);
     }
 
     @Transactional(readOnly = true)
     public CoursesResponse findNearbyCourses(CourseFindCondition condition, @Nullable Double userLatitude, @Nullable Double userLongitude) {
         Slice<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(condition);
         return CoursesResponse.from(coursesWithinScope, createUserPositionOrNull(userLatitude, userLongitude));
+    }
+
+    private User findUser(String userId) {
+        return userRepository.findById(userId).
+                orElseThrow(() -> NOT_EXIST_USER.create(userId));
     }
 
     private static Coordinate createUserPositionOrNull(@Nullable Double userLatitude, @Nullable Double userLongitude) {
