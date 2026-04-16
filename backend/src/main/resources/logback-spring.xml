@@ -3,6 +3,27 @@
     <springProfile name="local">
         <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
         <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+        <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                <providers>
+                    <timestamp/>
+                    <loggerName/>
+                    <logLevel/>
+                    <mdc/>
+                    <message/>
+                    <arguments>
+                        <includeStructuredArguments>true</includeStructuredArguments>
+                        <includeNonStructuredArguments>false</includeNonStructuredArguments>
+                    </arguments>
+                </providers>
+            </encoder>
+        </appender>
+
+        <logger name="coursepick.coursepick.logging.HttpLoggingFilter" level="INFO" additivity="false">
+            <appender-ref ref="JSON_CONSOLE"/>
+        </logger>
+
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
         </root>

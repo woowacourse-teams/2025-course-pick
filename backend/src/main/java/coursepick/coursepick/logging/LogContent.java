@@ -2,6 +2,8 @@ package coursepick.coursepick.logging;
 
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
 import java.nio.charset.StandardCharsets;
