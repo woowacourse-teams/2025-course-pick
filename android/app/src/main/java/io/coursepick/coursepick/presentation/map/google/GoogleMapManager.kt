@@ -1,9 +1,9 @@
 package io.coursepick.coursepick.presentation.map.google
 
+import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
@@ -61,15 +61,6 @@ class GoogleMapManager(
                 ),
             )
             map.uiSettings.isCompassEnabled = false
-            map.moveCamera(
-                CameraUpdateFactory.newCameraPosition(
-                    CameraPosition
-                        .builder()
-                        .target(DEFAULT_LATLNG)
-                        .zoom(DEFAULT_ZOOM_LEVEL)
-                        .build(),
-                ),
-            )
             setLogger()
 
             onMapReady()
@@ -190,13 +181,21 @@ class GoogleMapManager(
         } ?: run { Timber.w("${GoogleMap::class.simpleName} is null.") }
     }
 
-    override fun moveTo(coordinate: Coordinate) {
+    override fun moveTo(
+        coordinate: Coordinate,
+        animate: Boolean,
+    ) {
         map?.let { map: GoogleMap ->
-            map.animateCamera(
-                CameraUpdateFactory.newLatLng(coordinate.toLatLng()),
-                MOVE_ANIMATION_DURATION_MS.toInt(),
-                null,
-            )
+            val cameraUpdate: CameraUpdate = CameraUpdateFactory.newLatLng(coordinate.toLatLng())
+            if (animate) {
+                map.animateCamera(
+                    cameraUpdate,
+                    MOVE_ANIMATION_DURATION_MS.toInt(),
+                    null,
+                )
+            } else {
+                map.moveCamera(cameraUpdate)
+            }
         } ?: run { Timber.w("${GoogleMap::class.simpleName} is null.") }
     }
 
@@ -240,9 +239,6 @@ class GoogleMapManager(
 
     companion object {
         private const val MOVE_ANIMATION_DURATION_MS = 750L
-        private const val DEFAULT_LATITUDE = 37.5100226
-        private const val DEFAULT_LONGITUDE = 127.1026170
-        private val DEFAULT_LATLNG = LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
         private const val DEFAULT_ZOOM_LEVEL = 15F
         private const val CAMERA_MOVE_REASON_GESTURE = 1
     }

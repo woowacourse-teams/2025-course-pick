@@ -48,7 +48,10 @@ interface MapManager {
 
     fun setOnCameraMoveListener(onCameraMove: (coordinate: Coordinate?, reason: CameraMoveReason) -> Unit)
 
-    fun moveTo(coordinate: Coordinate)
+    fun moveTo(
+        coordinate: Coordinate,
+        animate: Boolean,
+    )
 
     fun resetZoom()
 

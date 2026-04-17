@@ -18,6 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.databinding.ActivityCustomCourseBinding
 import io.coursepick.coursepick.di.KakaoMap
+import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.presentation.InstallStateObserver
 import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.map.MapManager
@@ -53,15 +54,18 @@ class CreateCustomCourseActivity : AppCompatActivity() {
             insets
         }
 
+        val initialCoordinate: Coordinate? =
+            intent
+                .getParcelableCompat<CoordinateUiModel>(KEY_INITIAL_COORDINATE)
+                ?.let(CoordinateUiModel::value)
+
         mapManager.startMap {
             mapManager.setPadding(bottom = mapBottomPadding)
             setUpCollectors()
 
-            intent
-                .getParcelableCompat<CoordinateUiModel>(KEY_INITIAL_COORDINATE)
-                ?.let { initialCoordinate: CoordinateUiModel ->
-                    mapManager.moveTo(initialCoordinate.value)
-                }
+            if (initialCoordinate != null) {
+                mapManager.moveTo(coordinate = initialCoordinate, animate = false)
+            }
 
             if (savedInstanceState != null) {
                 restoreProgress()

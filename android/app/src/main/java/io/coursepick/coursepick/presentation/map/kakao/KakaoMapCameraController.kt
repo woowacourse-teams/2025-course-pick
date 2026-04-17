@@ -19,11 +19,16 @@ class KakaoMapCameraController(
     fun moveTo(
         map: KakaoMap,
         coordinate: Coordinate,
+        animate: Boolean,
     ) {
         val cameraUpdate: CameraUpdate =
             CameraUpdateFactory.newCenterPosition(coordinate.toLatLng())
-        val cameraAnimation = CameraAnimation.from(MOVE_ANIMATION_DURATION, true, false)
-        map.moveCamera(cameraUpdate, cameraAnimation)
+        if (animate) {
+            val cameraAnimation = CameraAnimation.from(MOVE_ANIMATION_DURATION, true, false)
+            map.moveCamera(cameraUpdate, cameraAnimation)
+        } else {
+            map.moveCamera(cameraUpdate)
+        }
     }
 
     fun fitTo(

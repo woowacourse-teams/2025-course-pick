@@ -199,6 +199,8 @@ class CoursesActivity :
                 viewModel.select(course)
             }
 
+            mapManager.moveTo(coordinate = INITIAL_COORDINATE, animate = false)
+
             fetchInitialCourses()
         }
 
@@ -323,7 +325,7 @@ class CoursesActivity :
 
         mapManager.resetZoom()
         mapManager.drawSearchCoordinate(coordinate)
-        mapManager.moveTo(coordinate)
+        mapManager.moveTo(coordinate = coordinate, animate = true)
         fetchCourses(coordinate)
     }
 
@@ -408,7 +410,7 @@ class CoursesActivity :
                 }
 
                 mapManager.drawUserLocation(location)
-                mapManager.moveTo(location.coordinate)
+                mapManager.moveTo(coordinate = location.coordinate, animate = true)
                 binding.mainCurrentLocationButton.setColorFilter(
                     ContextCompat.getColor(this@CoursesActivity, R.color.gray3),
                 )
@@ -653,7 +655,7 @@ class CoursesActivity :
                     viewModel.currentLocation()?.let { location: Location ->
                         val userCoordinate = location.coordinate
                         mapManager.drawUserLocation(location)
-                        mapManager.moveTo(location.coordinate)
+                        mapManager.moveTo(coordinate = location.coordinate, animate = true)
                         viewModel.fetchCourses(userCoordinate, userCoordinate, scope)
                     } ?: run {
                         mapManager.hideUserLocation()
@@ -880,5 +882,9 @@ class CoursesActivity :
                 }
             }
         }
+    }
+
+    companion object {
+        private val INITIAL_COORDINATE = Coordinate(Latitude(37.5100226), Longitude(127.1026170))
     }
 }

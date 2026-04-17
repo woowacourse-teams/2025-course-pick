@@ -135,9 +135,12 @@ class KakaoMapManager(
         } ?: Timber.w("kakaoMap is null")
     }
 
-    override fun moveTo(coordinate: Coordinate) {
+    override fun moveTo(
+        coordinate: Coordinate,
+        animate: Boolean,
+    ) {
         kakaoMap?.let { kakaoMap: KakaoMap ->
-            cameraController.moveTo(kakaoMap, coordinate)
+            cameraController.moveTo(map = kakaoMap, coordinate = coordinate, animate = animate)
         } ?: Timber.w("kakaoMap is null")
     }
 
