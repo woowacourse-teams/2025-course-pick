@@ -7,13 +7,11 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import dagger.hilt.android.AndroidEntryPoint
 import io.coursepick.coursepick.databinding.FragmentCustomCoursesBinding
 import io.coursepick.coursepick.presentation.course.CoursesViewModel
 import io.coursepick.coursepick.presentation.createcustomcourse.CoordinateUiModel
 import io.coursepick.coursepick.presentation.createcustomcourse.CreateCustomCourseActivity
 
-@AndroidEntryPoint
 class CustomCoursesFragment : Fragment() {
     @Suppress("ktlint:standard:backing-property-naming")
     private var _binding: FragmentCustomCoursesBinding? = null
