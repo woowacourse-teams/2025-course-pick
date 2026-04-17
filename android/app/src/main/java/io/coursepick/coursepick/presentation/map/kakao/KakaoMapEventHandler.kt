@@ -51,28 +51,32 @@ class KakaoMapEventHandler {
 
     fun setOnCameraMoveListener(
         map: KakaoMap,
-        onCameraMove: (coordinate: Coordinate?, reason: CameraMoveReason) -> Unit,
+        onCameraMove: (coordinate: Coordinate, reason: CameraMoveReason) -> Unit,
     ) {
         map.setOnCameraMoveStartListener { _, gestureType: GestureType ->
-            onCameraMove(
-                map.cameraPosition?.position?.toCoordinate(),
-                if (gestureType == GestureType.Unknown) {
-                    CameraMoveReason.SYSTEM
-                } else {
-                    CameraMoveReason.GESTURE
-                },
-            )
+            map.cameraPosition?.position?.toCoordinate()?.let { coordinate: Coordinate ->
+                onCameraMove(
+                    coordinate,
+                    if (gestureType == GestureType.Unknown) {
+                        CameraMoveReason.SYSTEM
+                    } else {
+                        CameraMoveReason.GESTURE
+                    },
+                )
+            }
         }
 
         map.setOnCameraMoveEndListener { _, cameraPosition: CameraPosition, gestureType: GestureType ->
-            onCameraMove(
-                cameraPosition.position?.toCoordinate(),
-                if (gestureType == GestureType.Unknown) {
-                    CameraMoveReason.SYSTEM
-                } else {
-                    CameraMoveReason.GESTURE
-                },
-            )
+            cameraPosition.position?.toCoordinate()?.let { coordinate: Coordinate ->
+                onCameraMove(
+                    coordinate,
+                    if (gestureType == GestureType.Unknown) {
+                        CameraMoveReason.SYSTEM
+                    } else {
+                        CameraMoveReason.GESTURE
+                    },
+                )
+            }
         }
     }
 

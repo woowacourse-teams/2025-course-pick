@@ -177,8 +177,9 @@ class CoursesActivity :
             setUpFlowCollector()
             setUpMapPadding()
 
-            mapManager.setOnCameraMoveListener { coordinate: Coordinate?, reason: CameraMoveReason ->
-                coordinate?.let(viewModel::onMapMoved)
+            mapManager.setOnCameraMoveListener { coordinate: Coordinate, reason: CameraMoveReason ->
+                viewModel.onMapMoved(coordinate)
+
                 if (reason == CameraMoveReason.GESTURE) {
                     if (viewModel.content.value == CoursesContent.EXPLORE) {
                         binding.mainSearchThisAreaButton.visibility = View.VISIBLE

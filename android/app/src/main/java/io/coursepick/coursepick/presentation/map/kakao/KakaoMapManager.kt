@@ -129,7 +129,7 @@ class KakaoMapManager(
         } ?: Timber.w("kakaoMap is null")
     }
 
-    override fun setOnCameraMoveListener(onCameraMove: (coordinate: Coordinate?, reason: CameraMoveReason) -> Unit) {
+    override fun setOnCameraMoveListener(onCameraMove: (coordinate: Coordinate, reason: CameraMoveReason) -> Unit) {
         kakaoMap?.let { kakaoMap: KakaoMap ->
             eventHandler.setOnCameraMoveListener(kakaoMap, onCameraMove)
         } ?: Timber.w("kakaoMap is null")

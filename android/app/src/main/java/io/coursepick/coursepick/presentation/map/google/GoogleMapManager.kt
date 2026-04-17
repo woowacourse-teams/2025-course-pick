@@ -166,7 +166,7 @@ class GoogleMapManager(
         } ?: run { Timber.w("${GoogleMap::class.simpleName} is null.") }
     }
 
-    override fun setOnCameraMoveListener(onCameraMove: (coordinate: Coordinate?, reason: CameraMoveReason) -> Unit) {
+    override fun setOnCameraMoveListener(onCameraMove: (coordinate: Coordinate, reason: CameraMoveReason) -> Unit) {
         map?.let { map: GoogleMap ->
             map.setOnCameraMoveStartedListener { reason: Int ->
                 onCameraMove(
