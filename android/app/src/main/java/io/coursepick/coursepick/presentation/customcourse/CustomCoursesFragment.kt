@@ -8,9 +8,10 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import io.coursepick.coursepick.databinding.FragmentCustomCoursesBinding
+import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.presentation.course.CoursesViewModel
-import io.coursepick.coursepick.presentation.createcustomcourse.CoordinateUiModel
 import io.coursepick.coursepick.presentation.createcustomcourse.CreateCustomCourseActivity
+import io.coursepick.coursepick.presentation.createcustomcourse.toUiModel
 
 class CustomCoursesFragment : Fragment() {
     @Suppress("ktlint:standard:backing-property-naming")
@@ -43,7 +44,7 @@ class CustomCoursesFragment : Fragment() {
         startActivity(
             CreateCustomCourseActivity.intent(
                 requireContext(),
-                viewModel.mapCoordinate?.let(::CoordinateUiModel),
+                viewModel.mapCoordinate?.let(Coordinate::toUiModel),
             ),
         )
     }

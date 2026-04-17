@@ -6,5 +6,8 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class CoordinateUiModel(
-    val value: Coordinate,
+    val latitude: Double,
+    val longitude: Double,
 ) : Parcelable
+
+fun Coordinate.toUiModel(): CoordinateUiModel = CoordinateUiModel(latitude.value, longitude.value)
