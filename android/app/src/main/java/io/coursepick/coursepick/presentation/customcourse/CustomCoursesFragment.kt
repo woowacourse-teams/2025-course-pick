@@ -35,7 +35,6 @@ class CustomCoursesFragment : Fragment() {
     }
 
     private fun navigateCreateCustomCourse() {
-        val intent = CreateCustomCourseActivity.intent(requireContext())
-        startActivity(intent)
+        startActivity(CreateCustomCourseActivity.intent(requireContext()))
     }
 }

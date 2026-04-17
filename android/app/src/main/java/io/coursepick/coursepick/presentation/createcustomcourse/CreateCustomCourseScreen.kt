@@ -2,13 +2,10 @@ package io.coursepick.coursepick.presentation.createcustomcourse
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -42,44 +39,70 @@ import io.coursepick.coursepick.presentation.toDistanceText
 fun CreateCustomCourseScreen(
     length: Length,
     onClose: () -> Unit,
+    onConfirm: () -> Unit,
     onUndoWaypoint: () -> Unit,
     onAddWaypoint: () -> Unit,
-    onConfirm: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier.fillMaxSize()) {
-        CenterAlignedTopAppBar(
-            title = { Text(text = stringResource(R.string.create_custom_courses)) },
-            navigationIcon = {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = stringResource(R.string.create_custom_courses_close),
-                    modifier =
-                        Modifier
-                            .padding(start = 10.dp)
-                            .clickable { onClose() },
-                )
-            },
-            actions = {
-                Icon(
-                    imageVector = Icons.Default.Done,
-                    contentDescription = null,
-                    modifier =
-                        Modifier
-                            .padding(end = 10.dp)
-                            .clickable { onConfirm() },
-                )
-            },
-            colors =
-                TopAppBarColors(
-                    containerColor = colorResource(R.color.background_primary),
-                    scrolledContainerColor = colorResource(R.color.background_primary),
-                    navigationIconContentColor = colorResource(R.color.item_primary),
-                    titleContentColor = colorResource(R.color.item_primary),
-                    actionIconContentColor = colorResource(R.color.item_primary),
-                ),
-            modifier = Modifier.shadow(elevation = 10.dp),
-        )
+    Box(
+        modifier
+            .fillMaxSize()
+            .navigationBarsPadding(),
+    ) {
+        Column {
+            CenterAlignedTopAppBar(
+                title = { Text(text = stringResource(R.string.create_custom_courses)) },
+                navigationIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = stringResource(R.string.create_custom_courses_exit_button_description),
+                        modifier =
+                            Modifier
+                                .padding(start = 10.dp)
+                                .size(48.dp)
+                                .clip(CircleShape)
+                                .clickable { onClose() }
+                                .padding(10.dp),
+                    )
+                },
+                actions = {
+                    Icon(
+                        imageVector = Icons.Default.Done,
+                        contentDescription = stringResource(R.string.create_custom_courses_confirm_button_description),
+                        modifier =
+                            Modifier
+                                .padding(end = 10.dp)
+                                .size(48.dp)
+                                .clip(CircleShape)
+                                .clickable { onConfirm() }
+                                .padding(10.dp),
+                    )
+                },
+                colors =
+                    TopAppBarColors(
+                        containerColor = colorResource(R.color.background_primary),
+                        scrolledContainerColor = colorResource(R.color.background_primary),
+                        navigationIconContentColor = colorResource(R.color.item_primary),
+                        titleContentColor = colorResource(R.color.item_primary),
+                        actionIconContentColor = colorResource(R.color.item_primary),
+                    ),
+                modifier = Modifier.shadow(elevation = 10.dp),
+            )
+
+            Text(
+                text = length.toDistanceText(),
+                fontSize = 24.sp,
+                color = colorResource(R.color.item_primary),
+                modifier =
+                    Modifier
+                        .align(Alignment.Start)
+                        .padding(10.dp)
+                        .shadow(elevation = 8.dp, shape = CircleShape)
+                        .clip(shape = CircleShape)
+                        .background(color = colorResource(R.color.background_primary))
+                        .padding(horizontal = 20.dp, vertical = 10.dp),
+            )
+        }
 
         Icon(
             painter = painterResource(R.drawable.icon_new_waypoint_position),
@@ -91,66 +114,47 @@ fun CreateCustomCourseScreen(
                     .size(40.dp),
         )
 
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier =
-                Modifier
-                    .align(alignment = Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .padding(start = 10.dp, end = 10.dp, bottom = 10.dp)
-                    .navigationBarsPadding(),
+        Column(
+            Modifier
+                .align(Alignment.BottomEnd)
+                .padding(10.dp),
         ) {
-            Text(
-                text = length.toDistanceText(),
-                fontSize = 24.sp,
-                color = colorResource(R.color.item_primary),
+            Box(
+                contentAlignment = Alignment.Center,
                 modifier =
                     Modifier
                         .shadow(elevation = 8.dp, shape = CircleShape)
                         .clip(shape = CircleShape)
-                        .background(color = colorResource(R.color.background_primary))
-                        .padding(20.dp)
-                        .align(Alignment.Bottom),
-            )
+                        .background(colorResource(R.color.background_primary))
+                        .size(70.dp)
+                        .clickable { onUndoWaypoint() },
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.icon_undo),
+                    contentDescription = stringResource(R.string.create_custom_courses_remove_waypoint_button_description),
+                    tint = colorResource(R.color.item_primary),
+                    modifier = Modifier.size(40.dp),
+                )
+            }
 
-            Column {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier =
-                        Modifier
-                            .shadow(elevation = 8.dp, shape = CircleShape)
-                            .clip(shape = CircleShape)
-                            .background(colorResource(R.color.background_primary))
-                            .size(70.dp)
-                            .clickable { onUndoWaypoint() },
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.icon_undo),
-                        contentDescription = null,
-                        tint = colorResource(R.color.item_primary),
-                        modifier = Modifier.size(40.dp),
-                    )
-                }
+            Spacer(modifier = Modifier.size(10.dp))
 
-                Spacer(modifier = Modifier.size(10.dp))
-
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier =
-                        Modifier
-                            .shadow(elevation = 8.dp, shape = CircleShape)
-                            .clip(shape = CircleShape)
-                            .background(colorResource(R.color.background_primary))
-                            .size(70.dp)
-                            .clickable { onAddWaypoint() },
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = null,
-                        tint = colorResource(R.color.item_primary),
-                        modifier = Modifier.size(40.dp),
-                    )
-                }
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier =
+                    Modifier
+                        .shadow(elevation = 8.dp, shape = CircleShape)
+                        .clip(shape = CircleShape)
+                        .background(colorResource(R.color.background_primary))
+                        .size(70.dp)
+                        .clickable { onAddWaypoint() },
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(R.string.create_custom_courses_add_waypoint_button_description),
+                    tint = colorResource(R.color.item_primary),
+                    modifier = Modifier.size(40.dp),
+                )
             }
         }
     }
@@ -162,9 +166,9 @@ fun CreateCustomCourseScreenPreview_ShortCourse() {
     CreateCustomCourseScreen(
         length = Length(123),
         onClose = { },
+        onConfirm = { },
         onUndoWaypoint = { },
         onAddWaypoint = { },
-        onConfirm = { },
     )
 }
 
@@ -174,8 +178,8 @@ fun CreateCustomCourseScreenPreview_LongCourse() {
     CreateCustomCourseScreen(
         length = Length(12345),
         onClose = { },
+        onConfirm = { },
         onUndoWaypoint = { },
         onAddWaypoint = { },
-        onConfirm = { },
     )
 }

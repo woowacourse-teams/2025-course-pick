@@ -28,6 +28,15 @@ class CreateCustomCourseViewModel
         private val _event = MutableSharedFlow<CreateCustomCourseUiEvent>()
         val event: SharedFlow<CreateCustomCourseUiEvent> get() = _event.asSharedFlow()
 
+        private val _showSubmitDialog = MutableStateFlow(false)
+        val showSubmitDialog: StateFlow<Boolean> get() = _showSubmitDialog.asStateFlow()
+
+        private val _showDiscardDialog = MutableStateFlow(false)
+        val showDiscardDialog: StateFlow<Boolean> get() = _showDiscardDialog.asStateFlow()
+
+        private val _courseName = MutableStateFlow("")
+        val courseName: StateFlow<String> get() = _courseName.asStateFlow()
+
         private val _segments = MutableStateFlow<List<DraftSegment>>(emptyList())
         val segments: StateFlow<List<DraftSegment>> get() = _segments.asStateFlow()
 
@@ -57,5 +66,45 @@ class CreateCustomCourseViewModel
                 _segments.value = segments.value.dropLast(1)
                 _event.emit(CreateCustomCourseUiEvent.RemoveLastWaypoint)
             }
+        }
+
+        fun handleSubmitAction() {
+            if (segments.value.isEmpty() || length.value < MINIMUM_COURSE_LENGTH) {
+                viewModelScope.launch {
+                    _event.emit(CreateCustomCourseUiEvent.CourseLengthTooShort)
+                }
+            } else {
+                _showSubmitDialog.value = true
+            }
+        }
+
+        fun dismissSubmitDialog() {
+            _showSubmitDialog.value = false
+            _courseName.value = ""
+        }
+
+        fun handleExitAction() {
+            if (segments.value.isEmpty()) {
+                viewModelScope.launch {
+                    _event.emit(CreateCustomCourseUiEvent.Exit)
+                }
+            } else {
+                _showDiscardDialog.value = true
+            }
+        }
+
+        fun dismissExitDialog() {
+            _showDiscardDialog.value = false
+        }
+
+        fun updateCourseName(courseName: String) {
+            _courseName.value = courseName.lines().joinToString("")
+        }
+
+        fun submitCourse() {
+        }
+
+        companion object {
+            private val MINIMUM_COURSE_LENGTH = Length(1)
         }
     }
