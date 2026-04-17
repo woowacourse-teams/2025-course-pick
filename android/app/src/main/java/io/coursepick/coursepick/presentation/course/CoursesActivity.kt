@@ -59,6 +59,7 @@ import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.customcourse.CustomCoursesFragment
 import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
 import io.coursepick.coursepick.presentation.filter.CourseFilterBottomSheet
+import io.coursepick.coursepick.presentation.map.CameraMoveReason
 import io.coursepick.coursepick.presentation.map.MapManager
 import io.coursepick.coursepick.presentation.map.MapManagerFactory
 import io.coursepick.coursepick.presentation.notice.NoticeDialog
@@ -175,17 +176,29 @@ class CoursesActivity :
             setUpObservers()
             setUpFlowCollector()
             setUpMapPadding()
-            mapManager.setOnCameraMoveListener {
-                if (viewModel.content.value == CoursesContent.EXPLORE) {
-                    binding.mainSearchThisAreaButton.visibility = View.VISIBLE
+
+            mapManager.setOnCameraMoveListener { coordinate: Coordinate?, reason: CameraMoveReason ->
+                coordinate?.let(viewModel::onMapMoved)
+                if (reason == CameraMoveReason.GESTURE) {
+                    if (viewModel.content.value == CoursesContent.EXPLORE) {
+                        binding.mainSearchThisAreaButton.visibility = View.VISIBLE
+                    }
+                    binding.mainCurrentLocationButton.setColorFilter(
+                        ContextCompat.getColor(this, R.color.item_primary),
+                    )
+
+                    Logger.log(
+                        Logger.Event.MapMove("map"),
+                        "latitude" to coordinate.latitude,
+                        "longitude" to coordinate.longitude,
+                    )
                 }
-                binding.mainCurrentLocationButton.setColorFilter(
-                    ContextCompat.getColor(this, R.color.item_primary),
-                )
             }
+
             mapManager.setOnCourseClickListener { course: CourseItem ->
                 viewModel.select(course)
             }
+
             fetchInitialCourses()
         }
 

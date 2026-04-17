@@ -46,7 +46,7 @@ interface MapManager {
 
     fun setOnCourseClickListener(onClick: (CourseItem) -> Unit)
 
-    fun setOnCameraMoveListener(onCameraMove: () -> Unit)
+    fun setOnCameraMoveListener(onCameraMove: (coordinate: Coordinate?, reason: CameraMoveReason) -> Unit)
 
     fun moveTo(coordinate: Coordinate)
 

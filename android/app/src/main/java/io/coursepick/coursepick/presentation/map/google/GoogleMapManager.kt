@@ -16,6 +16,7 @@ import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.map.CameraMoveReason
 import io.coursepick.coursepick.presentation.map.DistanceCalculator
 import io.coursepick.coursepick.presentation.map.MapManager
 import timber.log.Timber
@@ -174,17 +175,17 @@ class GoogleMapManager(
         } ?: run { Timber.w("${GoogleMap::class.simpleName} is null.") }
     }
 
-    override fun setOnCameraMoveListener(onCameraMove: () -> Unit) {
+    override fun setOnCameraMoveListener(onCameraMove: (coordinate: Coordinate?, reason: CameraMoveReason) -> Unit) {
         map?.let { map: GoogleMap ->
             map.setOnCameraMoveStartedListener { reason: Int ->
-                if (reason == CAMERA_MOVE_REASON_GESTURE) {
-                    Logger.log(
-                        Logger.Event.MapMoveStart("map"),
-                        "latitude" to map.cameraPosition.target.latitude,
-                        "longitude" to map.cameraPosition.target.longitude,
-                    )
-                    onCameraMove()
-                }
+                onCameraMove(
+                    map.cameraPosition.target.toCoordinate(),
+                    if (reason == CAMERA_MOVE_REASON_GESTURE) {
+                        CameraMoveReason.GESTURE
+                    } else {
+                        CameraMoveReason.SYSTEM
+                    },
+                )
             }
         } ?: run { Timber.w("${GoogleMap::class.simpleName} is null.") }
     }

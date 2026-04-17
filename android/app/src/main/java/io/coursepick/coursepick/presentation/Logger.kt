@@ -68,16 +68,10 @@ object Logger {
             override val name: String = "${target}_click"
         }
 
-        class MapMoveStart(
+        class MapMove(
             target: String,
         ) : Event() {
-            override val name: String = "${target}_map_move_start"
-        }
-
-        class MapMoveEnd(
-            target: String,
-        ) : Event() {
-            override val name: String = "${target}_map_move_end"
+            override val name: String = "${target}_map_move"
         }
 
         class Search(
