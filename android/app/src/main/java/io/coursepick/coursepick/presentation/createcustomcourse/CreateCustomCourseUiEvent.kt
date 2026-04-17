@@ -9,7 +9,7 @@ sealed interface CreateCustomCourseUiEvent {
 
     data object RemoveLastWaypoint : CreateCustomCourseUiEvent
 
-    data object CourseTooShort : CreateCustomCourseUiEvent
+    data object CourseLengthTooShort : CreateCustomCourseUiEvent
 
     data object Exit : CreateCustomCourseUiEvent
 }

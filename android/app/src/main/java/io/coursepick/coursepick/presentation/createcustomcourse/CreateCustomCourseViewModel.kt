@@ -71,7 +71,7 @@ class CreateCustomCourseViewModel
         fun handleSubmitAction() {
             if (segments.value.isEmpty() || length.value < MINIMUM_COURSE_LENGTH) {
                 viewModelScope.launch {
-                    _event.emit(CreateCustomCourseUiEvent.CourseTooShort)
+                    _event.emit(CreateCustomCourseUiEvent.CourseLengthTooShort)
                 }
             } else {
                 _showSubmitDialog.value = true
