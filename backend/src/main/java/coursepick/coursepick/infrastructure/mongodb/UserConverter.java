@@ -33,7 +33,7 @@ public abstract class UserConverter {
         public User convert(Document source) {
             String nicknameValue = source.getString("nickname");
             return new User(
-                    source.getString("_id"),
+                    source.getObjectId("_id").toHexString(),
                     UserProvider.valueOf(source.getString("provider")),
                     source.getString("providerId"),
                     nicknameValue == null ? null : new Nickname(nicknameValue) // 마이그레이션 이후 제거

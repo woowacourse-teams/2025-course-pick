@@ -22,11 +22,12 @@ public class User {
     private final String providerId;
     private Nickname nickname;
 
+    public User(UserProvider provider, String providerId, String nickname) {
+        this(null, provider, providerId, new Nickname(nickname));
+    }
+
     public User(UserProvider provider, String providerId) {
-        this.id = null;
-        this.provider = provider;
-        this.providerId = providerId;
-        this.nickname = Nickname.random();
+        this(null, provider, providerId, Nickname.random());
     }
 
     public void assignRandomNickname() {

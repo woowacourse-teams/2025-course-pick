@@ -19,7 +19,7 @@ import static org.assertj.core.data.Percentage.withPercentage;
 
 class CourseTest {
 
-    private static final User TEST_USER = new User("userId", UserProvider.KAKAO, "providerId");
+    private static final User TEST_USER = new User(UserProvider.KAKAO, "userId", "providerId");
 
     public static Stream<Arguments> targetAndDistance() {
         var base = new Coordinate(0, 0);
