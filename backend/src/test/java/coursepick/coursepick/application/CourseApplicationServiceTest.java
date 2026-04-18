@@ -252,7 +252,6 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         @Test
         void 유저가_생성한_코스를_저장한다() {
-
             String name = "나만의 코스1";
             List<Coordinate> coordinates = List.of(
                     new Coordinate(37.602500, 126.967000),
