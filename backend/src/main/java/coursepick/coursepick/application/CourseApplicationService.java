@@ -1,9 +1,11 @@
 package coursepick.coursepick.application;
 
+import coursepick.coursepick.application.dto.CourseDetailResponse;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
 import coursepick.coursepick.domain.course.*;
 import coursepick.coursepick.domain.user.User;
+import coursepick.coursepick.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
@@ -13,8 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static coursepick.coursepick.application.exception.ErrorType.INVALID_COORDINATE_COUNT;
-import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_COURSE;
+import static coursepick.coursepick.application.exception.ErrorType.*;
 
 @Slf4j
 @Service
@@ -22,6 +23,7 @@ import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_CO
 public class CourseApplicationService {
 
     private final CourseRepository courseRepository;
+    private final UserRepository userRepository;
     private final RouteFinder routeFinder;
     private final UserApplicationService userApplicationService;
 
@@ -81,6 +83,23 @@ public class CourseApplicationService {
         return courses.stream()
                 .map(CourseResponse::from)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public CourseDetailResponse findCourseDetail(String id) {
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() -> NOT_EXIST_COURSE.create(id));
+        return CourseDetailResponse.from(course);
+    }
+
+    @Transactional
+    public void addReview(String courseId, String userId, String content) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(AUTHENTICATION_FAIL::create);
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> NOT_EXIST_COURSE.create(courseId));
+        course.addReview(user, content);
+        courseRepository.save(course);
     }
 
     private void loggingForNotExistsCourse(List<String> ids, List<Course> courses) {

@@ -73,6 +73,10 @@ public enum ErrorType {
             "압축 및 해제할 데이터가 없습니다.",
             IllegalArgumentException::new
     ),
+    INVALID_REVIEW_CONTENT_LENGTH(
+            "리뷰 내용은 1자 이상 500자 이하여야 합니다. 입력 길이=%s",
+            IllegalArgumentException::new
+    ),
     NOT_EXIST_USER(
             "유저가 존재하지 않습니다. 유저id=%s",
             NoSuchElementException::new

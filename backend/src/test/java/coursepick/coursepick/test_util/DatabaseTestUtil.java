@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
 import java.util.Collection;
-import java.util.Optional;
 
 @TestComponent
 public class DatabaseTestUtil {

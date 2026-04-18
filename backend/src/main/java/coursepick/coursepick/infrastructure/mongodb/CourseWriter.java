@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.Course;
+import coursepick.coursepick.domain.course.Review;
 import coursepick.coursepick.infrastructure.compressor.DataCompressor;
 import lombok.RequiredArgsConstructor;
 import org.bson.Document;
@@ -32,9 +33,22 @@ public class CourseWriter implements Converter<Course, Document> {
         document.put("simplifiedCoordinates", convertCoordinatesToGeoJson(source.simplifiedCoordinates()));
 
         document.put("length", source.length().value());
+        document.put("reviews", convertReviewsToDocuments(source.reviews()));
         document.put("creatorId", source.creatorId());
         document.put("schemaVersion", 1);
         return document;
+    }
+
+    private List<Document> convertReviewsToDocuments(List<Review> reviews) {
+        return reviews.stream()
+                .map(review -> {
+                    Document reviewDoc = new Document();
+                    reviewDoc.put("authorNickname", review.authorNickname());
+                    reviewDoc.put("content", review.content());
+                    reviewDoc.put("createdAt", review.createdAt());
+                    return reviewDoc;
+                })
+                .toList();
     }
 
     private String convertCoordinatesToJson(List<Coordinate> coordinates) {

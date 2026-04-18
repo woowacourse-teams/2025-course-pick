@@ -4,6 +4,7 @@ import coursepick.coursepick.domain.user.Nickname;
 import coursepick.coursepick.domain.user.User;
 import coursepick.coursepick.domain.user.UserProvider;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.data.convert.WritingConverter;
@@ -17,7 +18,7 @@ public abstract class UserConverter {
         public Document convert(User source) {
             Document document = new Document();
             if (source.id() != null && !source.id().isBlank()) {
-                document.put("_id", source.id());
+                document.put("_id", new ObjectId(source.id()));
             }
             document.put("provider", source.provider().name());
             document.put("providerId", source.providerId());
