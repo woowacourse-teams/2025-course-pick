@@ -1,7 +1,5 @@
 spring:
-  config:
-    activate.on-profile: dev
-    import: classpath:monitoring-config.yml
+  config.activate.on-profile: dev
   data.mongodb:
     host: mongodb
     port: 27017

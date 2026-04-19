@@ -1,7 +1,5 @@
 spring:
-  config:
-    activate.on-profile: prod
-    import: classpath:monitoring-config.yml
+  config.activate.on-profile: prod
   data.mongodb:
     host: mongodb
     port: 27017
@@ -17,6 +15,7 @@ admin:
 notice.base-url: http://prod.coursepick.cloud/images
 jwt.secret-key: ${JWT_SECRET_KEY}
 
+# 운영환경에서는 API 문서를 사용하지 않는다.
 springdoc:
   api-docs.enabled: false
   swagger-ui.enabled: false

@@ -20,5 +20,12 @@ springdoc:
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
 
-notice:
-  base-url: ${BASE_URL}
+management:
+  endpoints.web.exposure.include: health,info,metrics,prometheus
+  prometheus.metrics.export.enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    mongo:
+      command.enabled: true
+      connectionpool.enabled: true
