@@ -1,13 +1,14 @@
 package coursepick.coursepick.application;
 
+import coursepick.coursepick.application.dto.CourseDetailResponse;
 import coursepick.coursepick.application.dto.CourseResponse;
+import coursepick.coursepick.application.dto.ReviewResponse;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.Course;
 import coursepick.coursepick.domain.course.CourseFindCondition;
 import coursepick.coursepick.domain.course.CourseName;
 import coursepick.coursepick.domain.user.User;
 import coursepick.coursepick.domain.user.UserProvider;
-import coursepick.coursepick.infrastructure.discord.DiscordAlerter;
 import coursepick.coursepick.test_util.AbstractIntegrationTest;
 import coursepick.coursepick.test_util.CoordinateTestUtil;
 import org.assertj.core.data.Percentage;
@@ -27,7 +28,9 @@ import java.util.Optional;
 import static coursepick.coursepick.test_util.UserFixture.ADMIN_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
@@ -35,7 +38,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
     CourseApplicationService sut;
 
     @MockitoBean
-    DiscordAlerter discordAlerter;
+    CourseReportAlerter courseReportAlerter;
 
     @Test
     void 코스는_최소_1KM부터_탐색할_수_있다() {
@@ -283,7 +286,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         Course result = dbUtil.findCourseById(targetCourse.id());
         assertThat(result.reportUserIds()).hasSize(2);
-        verify(discordAlerter, times(0)).alert(any(Course.class));
+        verify(courseReportAlerter, times(0)).alert(any(Course.class));
     }
 
     @Test
@@ -304,7 +307,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         Course result = dbUtil.findCourseById(targetCourse.id());
         assertThat(result.reportUserIds()).hasSize(3);
-        verify(discordAlerter, times(1)).alert(any(Course.class));
+        verify(courseReportAlerter, times(1)).alert(any(Course.class));
     }
 
     @Nested
