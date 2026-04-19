@@ -31,9 +31,9 @@ public class UserApplicationService {
     }
 
     @Transactional(readOnly = true)
-    public User findUser(String userId){
-        return userRepository.findById(userId).
-                orElseThrow(() -> NOT_EXIST_USER.create(userId));
+    public User getUser(String userId){
+        return userRepository.findById(userId)
+                .orElseThrow(() -> NOT_EXIST_USER.create(userId));
     }
 
     private Authentication registerOrLoginAndGetAuthentication(UserProvider userProvider, String oauthAccessToken) {
