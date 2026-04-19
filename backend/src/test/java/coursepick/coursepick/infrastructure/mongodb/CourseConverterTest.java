@@ -3,6 +3,7 @@ package coursepick.coursepick.infrastructure.mongodb;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import coursepick.coursepick.domain.course.*;
 import coursepick.coursepick.domain.user.User;
+import coursepick.coursepick.domain.user.User;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.Course;
 import coursepick.coursepick.domain.course.CourseName;
@@ -35,9 +36,9 @@ class CourseConverterTest extends AbstractIntegrationTest {
                 List.of(new Coordinate(37.5, 127.0), new Coordinate(37.51, 127.01), new Coordinate(37.52, 127.02)),
                 List.of(new Coordinate(37.5, 127.0), new Coordinate(37.52, 127.02)),
                 new Meter(1500.0),
-                Set.of("reportMan1"),
                 List.of(new Review(new User(null, "providerId", "reviewer"), "hi")),
-                "creatorId123"
+                "creatorId123",
+                Set.of("reportMan1")
         );
 
     }

@@ -1,7 +1,6 @@
 package coursepick.coursepick.presentation.api;
 
 import coursepick.coursepick.presentation.dto.*;
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -175,15 +174,4 @@ public interface CourseWebApi {
     @Operation(summary = "코스 생성 시 직전 포인트와 새 포인트 사이의 경로 및 거리 조회 (첫 점인 경우 origin과 destination을 동일하게 전송)")
     @ApiResponse(responseCode = "200")
     DraftRouteWebResponse findDraftRoute(FindDraftRouteWebRequest request);
-
-    @Operation(summary = "코스 신고", security = {@SecurityRequirement(name = "BearerAuth")})
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "코스 신고 완료"),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 코스"),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 유저")
-    })
-    void reportCourse(
-            @Parameter(description = "신고할 코스 ID") String courseId,
-            @Parameter(hidden = true) String userId
-    );
 }

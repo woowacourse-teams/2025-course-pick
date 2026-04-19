@@ -26,7 +26,6 @@ public class CourseApplicationService {
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
     private final RouteFinder routeFinder;
-    private final UserRepository userRepository;
     private final CourseReportAlerter courseReportAlerter;
 
 

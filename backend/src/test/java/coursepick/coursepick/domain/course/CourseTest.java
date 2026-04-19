@@ -1,5 +1,6 @@
 package coursepick.coursepick.domain.course;
 
+import coursepick.coursepick.domain.user.Nickname;
 import coursepick.coursepick.domain.user.User;
 import coursepick.coursepick.domain.user.UserProvider;
 import coursepick.coursepick.infrastructure.discord.DiscordAlerter;
@@ -122,7 +123,7 @@ class CourseTest {
     void 동일_유저_신고시_예외를_던진다() {
 
         Course course = new Course(null, "코스", List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
-        User user1 = new User("user1", UserProvider.KAKAO, "providerId");
+        User user1 = new User("user1", UserProvider.KAKAO, "providerId", Nickname.random());
 
         course.addReport(user1);
 
