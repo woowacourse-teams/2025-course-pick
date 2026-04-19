@@ -3,6 +3,7 @@ package coursepick.coursepick.application;
 import coursepick.coursepick.application.dto.CourseDetailResponse;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
+import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.course.*;
 import coursepick.coursepick.domain.user.User;
 import coursepick.coursepick.domain.user.UserRepository;
@@ -27,11 +28,21 @@ public class CourseApplicationService {
     private final RouteFinder routeFinder;
     private final UserApplicationService userApplicationService;
 
+
     @Transactional
     public void addCustomCourse(String name, List<Coordinate> coordinates, String userId) {
+        CourseName courseName = new CourseName(name);
+        validateDuplicatedCourseName(courseName.value());
         User user = userApplicationService.findUser(userId);
-        Course newCourse = new Course(null, name, coordinates, user);
+
+        Course newCourse = new Course(null, courseName, coordinates, user);
         courseRepository.save(newCourse);
+    }
+
+    private void validateDuplicatedCourseName(String parsedCourseName) {
+        if (courseRepository.existsByName(parsedCourseName)) {
+            throw ErrorType.DUPLICATED_COURSE_NAME.create(parsedCourseName);
+        }
     }
 
     @Transactional(readOnly = true)

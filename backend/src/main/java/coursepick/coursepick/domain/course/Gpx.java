@@ -128,6 +128,6 @@ public class Gpx {
     }
 
     public List<Course> toCourses(User user) {
-        return List.of(new Course(id, name, coordinates, user));
+        return List.of(new Course(id, new CourseName(name), coordinates, user));
     }
 }
