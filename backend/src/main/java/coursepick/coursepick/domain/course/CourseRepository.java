@@ -20,4 +20,6 @@ public interface CourseRepository {
     Optional<Course> findByName(CourseName courseName);
 
     void delete(Course course);
+
+    boolean existsByName(String name);
 }
