@@ -5,7 +5,6 @@ import coursepick.coursepick.application.exception.UnauthorizedException;
 import coursepick.coursepick.logging.LogContent;
 import coursepick.coursepick.presentation.dto.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -31,6 +30,12 @@ public class WebExceptionHandler {
         return ResponseEntity.badRequest().body(ErrorResponse.from(e));
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException e) {
+        log.warn("[EXCEPTION] IllegalStateException() 예외 응답 반환", LogContent.exception(e));
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorResponse.from(e));
+    }
+
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ErrorResponse> handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
         log.warn("[EXCEPTION] MissingServletRequestParameterException 예외 응답 반환", LogContent.exception(e));
@@ -42,14 +47,6 @@ public class WebExceptionHandler {
         log.warn("[EXCEPTION] MethodArgumentNotValidException 예외 응답 반환", LogContent.exception(e));
         return ResponseEntity.badRequest()
                 .body(ErrorResponse.from(e.getBindingResult()));
-    }
-
-    @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateKeyException(DuplicateKeyException e) {
-        log.warn("[EXCEPTION] DuplicateKeyException 예외 응답 반환", LogContent.exception(e));
-
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(ErrorResponse.fromDuplicatedKey(e.getMessage()));
     }
 
     @ExceptionHandler(QueryTimeoutException.class)
