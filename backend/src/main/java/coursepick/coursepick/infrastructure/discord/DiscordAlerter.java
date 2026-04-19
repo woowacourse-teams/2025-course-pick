@@ -1,11 +1,13 @@
 package coursepick.coursepick.infrastructure.discord;
 
+import coursepick.coursepick.application.CourseReportAlerter;
 import coursepick.coursepick.domain.course.Course;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -15,19 +17,21 @@ import java.util.Map;
 @Component
 @Profile({"dev", "prod"})
 @RequiredArgsConstructor
-public class DiscordAlerter {
+public class DiscordAlerter implements CourseReportAlerter {
 
     private final RestClient discordRestClient;
     private final Environment environment;
 
 
+    @Async
+    @Override
     public void alert(Course course) {
-//        String message = generateReportMessage(course);
+        String message = generateReportMessage(course);
 
         try {
             discordRestClient.post()
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body(Map.of("content", "asdf"))
+                    .body(Map.of("content", message))
                     .retrieve()
                     .toBodilessEntity();
         } catch (Exception e) {
