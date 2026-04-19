@@ -3,7 +3,6 @@ package coursepick.coursepick.presentation.dto;
 import org.springframework.validation.BindingResult;
 
 import java.time.LocalDateTime;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -21,7 +20,7 @@ public record ErrorResponse(
 
     public static ErrorResponse from(BindingResult bindingResult) {
         String errorMessage = bindingResult.getFieldErrors().stream()
-                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .map(error -> error.getDefaultMessage())
                 .collect(Collectors.joining(", "));
         return new ErrorResponse(errorMessage, LocalDateTime.now().toString());
     }
