@@ -37,19 +37,12 @@ services:
     ports:
       - "80:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=${PROFILE}
-      - MONGO_HOST=${MONGO_HOST}
-      - MONGO_PORT=${MONGO_PORT}
-      - MONGO_DATABASE=${MONGO_DATABASE}
+      - SPRING_PROFILES_ACTIVE=dev
       - MONGO_USERNAME=${MONGO_ROOT_USERNAME}
       - MONGO_PASSWORD=${MONGO_ROOT_PASSWORD}
-      - MONGO_AUTH_DATABASE=${MONGO_AUTH_DATABASE}
       - ADMIN_TOKEN=${ADMIN_TOKEN}
       - ADMIN_KAKAO_MAP_API_KEY=${ADMIN_KAKAO_MAP_API_KEY}
       - OSRM_URL=${OSRM_URL}
-      - DEV_SERVER_URL=${DEV_SERVER_URL}
-      - PROD_SERVER_URL=${PROD_SERVER_URL}
-      - BASE_URL=${BASE_URL}
       - JWT_SECRET_KEY=${JWT_SECRET}
     volumes:
       - /var/lib/coursepick/logs:/var/lib/coursepick/logs
