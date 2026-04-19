@@ -71,6 +71,9 @@ class CoursesViewModel
         private val _event: MutableSingleLiveData<CoursesUiEvent> = MutableSingleLiveData()
         val event: SingleLiveData<CoursesUiEvent> get() = _event
 
+        var mapCoordinate: Coordinate? = null
+            private set
+
         private var writeFavoriteJob: Job? = null
         private val pendingFavoriteWrites: MutableMap<String, Boolean> = mutableMapOf()
 
@@ -96,6 +99,10 @@ class CoursesViewModel
 
         fun switchContent(content: CoursesContent) {
             _content.value = content
+        }
+
+        fun onMapMoved(coordinate: Coordinate) {
+            mapCoordinate = coordinate
         }
 
         fun select(course: CourseItem) {

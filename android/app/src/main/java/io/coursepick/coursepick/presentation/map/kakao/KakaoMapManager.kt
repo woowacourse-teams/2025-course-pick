@@ -11,6 +11,7 @@ import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.map.CameraMoveReason
 import io.coursepick.coursepick.presentation.map.DistanceCalculator
 import io.coursepick.coursepick.presentation.map.MapManager
 import timber.log.Timber
@@ -128,17 +129,18 @@ class KakaoMapManager(
         } ?: Timber.w("kakaoMap is null")
     }
 
-    override fun setOnCameraMoveListener(onCameraMove: () -> Unit) {
+    override fun setOnCameraMoveListener(onCameraMove: (coordinate: Coordinate, reason: CameraMoveReason) -> Unit) {
         kakaoMap?.let { kakaoMap: KakaoMap ->
-            eventHandler.setOnCameraMoveListener(kakaoMap) {
-                onCameraMove()
-            }
+            eventHandler.setOnCameraMoveListener(kakaoMap, onCameraMove)
         } ?: Timber.w("kakaoMap is null")
     }
 
-    override fun moveTo(coordinate: Coordinate) {
+    override fun moveTo(
+        coordinate: Coordinate,
+        animate: Boolean,
+    ) {
         kakaoMap?.let { kakaoMap: KakaoMap ->
-            cameraController.moveTo(kakaoMap, coordinate)
+            cameraController.moveTo(map = kakaoMap, coordinate = coordinate, animate = animate)
         } ?: Timber.w("kakaoMap is null")
     }
 

@@ -6,13 +6,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import io.coursepick.coursepick.databinding.FragmentCustomCoursesBinding
+import io.coursepick.coursepick.domain.course.Coordinate
+import io.coursepick.coursepick.presentation.course.CoursesViewModel
 import io.coursepick.coursepick.presentation.createcustomcourse.CreateCustomCourseActivity
+import io.coursepick.coursepick.presentation.createcustomcourse.toUiModel
 
 class CustomCoursesFragment : Fragment() {
     @Suppress("ktlint:standard:backing-property-naming")
     private var _binding: FragmentCustomCoursesBinding? = null
     private val binding: FragmentCustomCoursesBinding get() = _binding!!
+
+    private val viewModel: CoursesViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,6 +41,11 @@ class CustomCoursesFragment : Fragment() {
     }
 
     private fun navigateCreateCustomCourse() {
-        startActivity(CreateCustomCourseActivity.intent(requireContext()))
+        startActivity(
+            CreateCustomCourseActivity.intent(
+                requireContext(),
+                viewModel.mapCoordinate?.let(Coordinate::toUiModel),
+            ),
+        )
     }
 }

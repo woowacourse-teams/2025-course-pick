@@ -18,7 +18,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.databinding.ActivityCustomCourseBinding
 import io.coursepick.coursepick.di.KakaoMap
+import io.coursepick.coursepick.domain.course.Coordinate
+import io.coursepick.coursepick.domain.course.Latitude
+import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.presentation.InstallStateObserver
+import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.map.MapManager
 import io.coursepick.coursepick.presentation.map.MapManagerFactory
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
@@ -52,9 +56,20 @@ class CreateCustomCourseActivity : AppCompatActivity() {
             insets
         }
 
+        val initialCoordinate: Coordinate? =
+            intent
+                .getParcelableCompat<CoordinateUiModel>(KEY_INITIAL_COORDINATE)
+                ?.let { coordinate: CoordinateUiModel ->
+                    Coordinate(Latitude(coordinate.latitude), Longitude(coordinate.longitude))
+                }
+
         mapManager.startMap {
             mapManager.setPadding(bottom = mapBottomPadding)
             setUpCollectors()
+
+            if (initialCoordinate != null) {
+                mapManager.moveTo(coordinate = initialCoordinate, animate = false)
+            }
 
             if (savedInstanceState != null) {
                 restoreProgress()
@@ -132,6 +147,15 @@ class CreateCustomCourseActivity : AppCompatActivity() {
     }
 
     companion object {
-        fun intent(context: Context): Intent = Intent(context, CreateCustomCourseActivity::class.java)
+        private const val KEY_INITIAL_COORDINATE = "key_initial_coordinate"
+
+        fun intent(
+            context: Context,
+            initialCoordinate: CoordinateUiModel?,
+        ): Intent =
+            Intent(
+                context,
+                CreateCustomCourseActivity::class.java,
+            ).putExtra(KEY_INITIAL_COORDINATE, initialCoordinate)
     }
 }

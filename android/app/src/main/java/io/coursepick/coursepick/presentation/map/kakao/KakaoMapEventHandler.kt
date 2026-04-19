@@ -10,6 +10,7 @@ import com.kakao.vectormap.camera.CameraPosition
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.map.CameraMoveReason
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -50,36 +51,32 @@ class KakaoMapEventHandler {
 
     fun setOnCameraMoveListener(
         map: KakaoMap,
-        onCameraMove: () -> Unit,
+        onCameraMove: (coordinate: Coordinate, reason: CameraMoveReason) -> Unit,
     ) {
         map.setOnCameraMoveStartListener { _, gestureType: GestureType ->
-            if (gestureType == GestureType.Unknown) return@setOnCameraMoveStartListener
-            val cameraPosition: CameraPosition? = map.cameraPosition
-            Logger.log(
-                Logger.Event.MapMoveStart("map"),
-                "gesture_type" to gestureType.name,
-                "latitude" to cameraPosition?.position?.latitude.toString(),
-                "longitude" to cameraPosition?.position?.longitude.toString(),
-                "height" to cameraPosition?.height.toString(),
-                "tilt_angle" to cameraPosition?.tiltAngle.toString(),
-                "rotation_angle" to cameraPosition?.rotationAngle.toString(),
-                "zoom_level" to cameraPosition?.zoomLevel.toString(),
-            )
-            onCameraMove()
+            map.cameraPosition?.position?.toCoordinate()?.let { coordinate: Coordinate ->
+                onCameraMove(
+                    coordinate,
+                    if (gestureType == GestureType.Unknown) {
+                        CameraMoveReason.SYSTEM
+                    } else {
+                        CameraMoveReason.GESTURE
+                    },
+                )
+            }
         }
 
         map.setOnCameraMoveEndListener { _, cameraPosition: CameraPosition, gestureType: GestureType ->
-            if (gestureType == GestureType.Unknown) return@setOnCameraMoveEndListener
-            Logger.log(
-                Logger.Event.MapMoveEnd("map"),
-                "gesture_type" to gestureType.name,
-                "latitude" to cameraPosition.position.latitude,
-                "longitude" to cameraPosition.position.longitude,
-                "height" to cameraPosition.height,
-                "tilt_angle" to cameraPosition.tiltAngle,
-                "rotation_angle" to cameraPosition.rotationAngle,
-                "zoom_level" to cameraPosition.zoomLevel,
-            )
+            cameraPosition.position?.toCoordinate()?.let { coordinate: Coordinate ->
+                onCameraMove(
+                    coordinate,
+                    if (gestureType == GestureType.Unknown) {
+                        CameraMoveReason.SYSTEM
+                    } else {
+                        CameraMoveReason.GESTURE
+                    },
+                )
+            }
         }
     }
 

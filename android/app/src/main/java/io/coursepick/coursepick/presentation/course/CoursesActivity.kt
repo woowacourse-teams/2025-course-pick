@@ -59,6 +59,7 @@ import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.customcourse.CustomCoursesFragment
 import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
 import io.coursepick.coursepick.presentation.filter.CourseFilterBottomSheet
+import io.coursepick.coursepick.presentation.map.CameraMoveReason
 import io.coursepick.coursepick.presentation.map.MapManager
 import io.coursepick.coursepick.presentation.map.MapManagerFactory
 import io.coursepick.coursepick.presentation.notice.NoticeDialog
@@ -175,17 +176,32 @@ class CoursesActivity :
             setUpObservers()
             setUpFlowCollector()
             setUpMapPadding()
-            mapManager.setOnCameraMoveListener {
-                if (viewModel.content.value == CoursesContent.EXPLORE) {
-                    binding.mainSearchThisAreaButton.visibility = View.VISIBLE
+
+            mapManager.setOnCameraMoveListener { coordinate: Coordinate, reason: CameraMoveReason ->
+                viewModel.onMapMoved(coordinate)
+
+                if (reason == CameraMoveReason.GESTURE) {
+                    if (viewModel.content.value == CoursesContent.EXPLORE) {
+                        binding.mainSearchThisAreaButton.visibility = View.VISIBLE
+                    }
+                    binding.mainCurrentLocationButton.setColorFilter(
+                        ContextCompat.getColor(this, R.color.item_primary),
+                    )
+
+                    Logger.log(
+                        Logger.Event.MapMove("map"),
+                        "latitude" to coordinate.latitude,
+                        "longitude" to coordinate.longitude,
+                    )
                 }
-                binding.mainCurrentLocationButton.setColorFilter(
-                    ContextCompat.getColor(this, R.color.item_primary),
-                )
             }
+
             mapManager.setOnCourseClickListener { course: CourseItem ->
                 viewModel.select(course)
             }
+
+            mapManager.moveTo(coordinate = INITIAL_COORDINATE, animate = false)
+
             fetchInitialCourses()
         }
 
@@ -310,7 +326,7 @@ class CoursesActivity :
 
         mapManager.resetZoom()
         mapManager.drawSearchCoordinate(coordinate)
-        mapManager.moveTo(coordinate)
+        mapManager.moveTo(coordinate = coordinate, animate = true)
         fetchCourses(coordinate)
     }
 
@@ -395,7 +411,7 @@ class CoursesActivity :
                 }
 
                 mapManager.drawUserLocation(location)
-                mapManager.moveTo(location.coordinate)
+                mapManager.moveTo(coordinate = location.coordinate, animate = true)
                 binding.mainCurrentLocationButton.setColorFilter(
                     ContextCompat.getColor(this@CoursesActivity, R.color.gray3),
                 )
@@ -640,7 +656,7 @@ class CoursesActivity :
                     viewModel.currentLocation()?.let { location: Location ->
                         val userCoordinate = location.coordinate
                         mapManager.drawUserLocation(location)
-                        mapManager.moveTo(location.coordinate)
+                        mapManager.moveTo(coordinate = location.coordinate, animate = true)
                         viewModel.fetchCourses(userCoordinate, userCoordinate, scope)
                     } ?: run {
                         mapManager.hideUserLocation()
@@ -867,5 +883,9 @@ class CoursesActivity :
                 }
             }
         }
+    }
+
+    companion object {
+        private val INITIAL_COORDINATE = Coordinate(Latitude(37.5100226), Longitude(127.1026170))
     }
 }
