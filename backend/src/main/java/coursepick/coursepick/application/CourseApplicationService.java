@@ -7,11 +7,9 @@ import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.course.*;
 import coursepick.coursepick.domain.user.User;
 import coursepick.coursepick.domain.user.UserRepository;
-import coursepick.coursepick.infrastructure.discord.DiscordAlerter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
-import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +27,7 @@ public class CourseApplicationService {
     private final UserRepository userRepository;
     private final RouteFinder routeFinder;
     private final UserRepository userRepository;
-    private final DiscordAlerter discordAlerter;
+    private final CourseReportAlerter courseReportAlerter;
 
 
 
@@ -53,7 +51,7 @@ public class CourseApplicationService {
         courseRepository.save(course);
 
         if (course.isReportThreshold()) {
-            discordAlerter.alert(course);
+            courseReportAlerter.alert(course);
         }
     }
 
