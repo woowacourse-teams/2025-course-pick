@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -14,6 +15,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import io.coursepick.coursepick.databinding.FragmentCustomCoursesBinding
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.presentation.auth.AuthDialog
+import io.coursepick.coursepick.presentation.auth.AuthUiEvent
 import io.coursepick.coursepick.presentation.auth.AuthViewModel
 import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
 import io.coursepick.coursepick.presentation.course.CoursesViewModel
@@ -51,13 +53,8 @@ class CustomCoursesFragment : Fragment() {
                     AuthDialog(
                         featureName = "코스 추가",
                         onDismissRequest = customCourseViewModel::dismissAuthDialog,
-                    ) {
-                        lifecycleScope.launch {
-                            authViewModel.authenticate(KakaoAuthenticator(requireActivity())) {
-                                goToCreateCustomCourse()
-                            }
-                        }
-                    }
+                        onKakaoLoginClick = { authViewModel.authenticate(KakaoAuthenticator(requireActivity())) },
+                    )
                 }
             }
         }
@@ -72,9 +69,26 @@ class CustomCoursesFragment : Fragment() {
     private fun setUpCollectors() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                customCourseViewModel.uiEvent.collect { event: UiEvent ->
-                    when (event) {
-                        UiEvent.NavigateToCreateCourse -> goToCreateCustomCourse()
+                launch {
+                    customCourseViewModel.uiEvent.collect { event: UiEvent ->
+                        when (event) {
+                            UiEvent.NavigateToCreateCourse -> goToCreateCustomCourse()
+                        }
+                    }
+                }
+
+                launch {
+                    authViewModel.uiEvent.collect { event: AuthUiEvent ->
+                        when (event) {
+                            AuthUiEvent.AuthenticateSuccess -> {
+                                customCourseViewModel.dismissAuthDialog()
+                                goToCreateCustomCourse()
+                            }
+
+                            AuthUiEvent.AuthenticateFailure -> {
+                                Toast.makeText(requireActivity(), "로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                            }
+                        }
                     }
                 }
             }

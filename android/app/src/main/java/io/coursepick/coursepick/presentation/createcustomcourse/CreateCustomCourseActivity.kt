@@ -22,6 +22,10 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.presentation.InstallStateObserver
+import io.coursepick.coursepick.presentation.auth.AuthDialog
+import io.coursepick.coursepick.presentation.auth.AuthUiEvent
+import io.coursepick.coursepick.presentation.auth.AuthViewModel
+import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
 import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.map.MapManager
 import io.coursepick.coursepick.presentation.map.MapManagerFactory
@@ -33,6 +37,7 @@ import javax.inject.Inject
 class CreateCustomCourseActivity : AppCompatActivity() {
     private val binding by lazy { ActivityCustomCourseBinding.inflate(layoutInflater) }
     private val viewModel: CreateCustomCourseViewModel by viewModels()
+    private val authViewModel: AuthViewModel by viewModels()
 
     @Inject
     @KakaoMap
@@ -101,6 +106,14 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                         onConfirm = ::finish,
                     )
                 }
+
+                if (viewModel.showAuthDialog.collectAsStateWithLifecycle().value) {
+                    AuthDialog(
+                        featureName = "코스 추가",
+                        onDismissRequest = viewModel::dismissAuthDialog,
+                        onKakaoLoginClick = { authViewModel.authenticate(KakaoAuthenticator(this@CreateCustomCourseActivity)) },
+                    )
+                }
             }
         }
     }
@@ -108,67 +121,84 @@ class CreateCustomCourseActivity : AppCompatActivity() {
     private fun setUpCollectors() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.event.collect { event: CreateCustomCourseUiEvent ->
-                    when (event) {
-                        is CreateCustomCourseUiEvent.NewSegment -> {
-                            event.segment.coordinates
-                                .lastOrNull()
-                                ?.let(mapManager::drawWaypoint)
-                            mapManager.drawDraftSegment(event.segment)
-                        }
+                launch {
+                    viewModel.event.collect { event: CreateCustomCourseUiEvent ->
+                        when (event) {
+                            is CreateCustomCourseUiEvent.NewSegment -> {
+                                event.segment.coordinates
+                                    .lastOrNull()
+                                    ?.let(mapManager::drawWaypoint)
+                                mapManager.drawDraftSegment(event.segment)
+                            }
 
-                        CreateCustomCourseUiEvent.RemoveLastWaypoint -> {
-                            mapManager.removeLastWaypoint()
-                        }
+                            CreateCustomCourseUiEvent.RemoveLastWaypoint -> {
+                                mapManager.removeLastWaypoint()
+                            }
 
-                        CreateCustomCourseUiEvent.Exit -> {
-                            finish()
-                        }
+                            CreateCustomCourseUiEvent.Exit -> {
+                                finish()
+                            }
 
-                        CreateCustomCourseUiEvent.CreateCustomCourseSuccess -> {
-                            Toast
-                                .makeText(
-                                    this@CreateCustomCourseActivity,
-                                    "코스가 추가됐습니다.",
-                                    Toast.LENGTH_SHORT,
-                                ).show()
-                            finish()
-                        }
+                            CreateCustomCourseUiEvent.CreateCustomCourseSuccess -> {
+                                Toast
+                                    .makeText(
+                                        this@CreateCustomCourseActivity,
+                                        "코스가 추가됐습니다.",
+                                        Toast.LENGTH_SHORT,
+                                    ).show()
+                                finish()
+                            }
 
-                        CreateCustomCourseUiEvent.CourseLengthTooShort -> {
-                            Toast
-                                .makeText(
-                                    this@CreateCustomCourseActivity,
-                                    getString(R.string.create_custom_course_empty_course_warning),
-                                    Toast.LENGTH_SHORT,
-                                ).show()
-                        }
+                            CreateCustomCourseUiEvent.CourseLengthTooShort -> {
+                                Toast
+                                    .makeText(
+                                        this@CreateCustomCourseActivity,
+                                        getString(R.string.create_custom_course_empty_course_warning),
+                                        Toast.LENGTH_SHORT,
+                                    ).show()
+                            }
 
-                        CreateCustomCourseUiEvent.InvalidCourseName -> {
-                            Toast
-                                .makeText(
-                                    this@CreateCustomCourseActivity,
-                                    "코스 이름은 2~50자로 붙여주세요.",
-                                    Toast.LENGTH_SHORT,
-                                ).show()
-                        }
+                            CreateCustomCourseUiEvent.InvalidCourseName -> {
+                                Toast
+                                    .makeText(
+                                        this@CreateCustomCourseActivity,
+                                        "코스 이름은 2~50자로 붙여주세요.",
+                                        Toast.LENGTH_SHORT,
+                                    ).show()
+                            }
 
-                        CreateCustomCourseUiEvent.UnauthorizedUser -> {
-                            Toast
-                                .makeText(
-                                    this@CreateCustomCourseActivity,
-                                    "코스 추가를 위해 로그인을 해주세요.",
-                                    Toast.LENGTH_SHORT,
-                                ).show()
-                        }
+                            CreateCustomCourseUiEvent.UnauthorizedUser -> {
+                                Toast
+                                    .makeText(
+                                        this@CreateCustomCourseActivity,
+                                        "코스 추가를 위해 로그인을 해주세요.",
+                                        Toast.LENGTH_SHORT,
+                                    ).show()
+                            }
 
-                        CreateCustomCourseUiEvent.UnknownError -> {
-                            Toast
-                                .makeText(
-                                    this@CreateCustomCourseActivity,
-                                    "알 수 없는 오류가 발생했습니다.",
-                                    Toast.LENGTH_SHORT,
-                                ).show()
+                            CreateCustomCourseUiEvent.UnknownError -> {
+                                Toast
+                                    .makeText(
+                                        this@CreateCustomCourseActivity,
+                                        "알 수 없는 오류가 발생했습니다.",
+                                        Toast.LENGTH_SHORT,
+                                    ).show()
+                            }
+                        }
+                    }
+                }
+
+                launch {
+                    authViewModel.uiEvent.collect { event: AuthUiEvent ->
+                        when (event) {
+                            AuthUiEvent.AuthenticateSuccess -> {
+                                viewModel.dismissAuthDialog()
+                                viewModel.submitCourse()
+                            }
+
+                            AuthUiEvent.AuthenticateFailure -> {
+                                Toast.makeText(this@CreateCustomCourseActivity, "로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     }
                 }

@@ -45,6 +45,6 @@ class AuthViewModelTest {
         )
 
         // then
-        assertThat(viewModel.event.value).isEqualTo(AuthUiEvent.AuthenticateFailure)
+        assertThat(viewModel.uiEvent.value).isEqualTo(AuthUiEvent.AuthenticateFailure)
     }
 }

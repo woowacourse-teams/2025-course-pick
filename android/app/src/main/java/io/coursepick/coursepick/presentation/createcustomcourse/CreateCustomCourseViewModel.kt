@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.coursepick.coursepick.domain.Result
+import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.CourseName
 import io.coursepick.coursepick.domain.course.Length
@@ -27,10 +28,14 @@ import javax.inject.Inject
 class CreateCustomCourseViewModel
     @Inject
     constructor(
-        private val repository: CustomCourseRepository,
+        private val customCourseRepository: CustomCourseRepository,
+        private val authRepository: AuthRepository,
     ) : ViewModel() {
         private val _event = MutableSharedFlow<CreateCustomCourseUiEvent>()
         val event: SharedFlow<CreateCustomCourseUiEvent> get() = _event.asSharedFlow()
+
+        private val _showAuthDialog = MutableStateFlow(false)
+        val showAuthDialog: StateFlow<Boolean> get() = _showAuthDialog.asStateFlow()
 
         private val _showSubmitDialog = MutableStateFlow(false)
         val showSubmitDialog: StateFlow<Boolean> get() = _showSubmitDialog.asStateFlow()
@@ -59,7 +64,7 @@ class CreateCustomCourseViewModel
         fun addWaypoint(waypoint: Coordinate) {
             viewModelScope.launch {
                 val origin: Coordinate = waypoints.lastOrNull() ?: waypoint
-                val rawSegment: DraftSegment = repository.draftSegment(origin, waypoint)
+                val rawSegment: DraftSegment = customCourseRepository.draftSegment(origin, waypoint)
                 val adjustedSegment: DraftSegment =
                     rawSegment
                         .copy(coordinates = rawSegment.coordinates.dropLast(1), length = rawSegment.length)
@@ -129,8 +134,13 @@ class CreateCustomCourseViewModel
                         return@launch
                     }
 
+                if (authRepository.accessToken() == null) {
+                    _showAuthDialog.value = true
+                    return@launch
+                }
+
                 val result: Result<Unit, CustomCourseFailure> =
-                    repository.submitCourse(DraftCourse(CourseName(courseName.value), waypoints))
+                    customCourseRepository.submitCourse(DraftCourse(CourseName(courseName.value), waypoints))
 
                 _event.emit(
                     when (result) {
@@ -148,6 +158,10 @@ class CreateCustomCourseViewModel
                     },
                 )
             }
+        }
+
+        fun dismissAuthDialog() {
+            _showAuthDialog.value = false
         }
 
         companion object {
