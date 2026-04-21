@@ -3,9 +3,11 @@ package io.coursepick.coursepick.presentation.createcustomcourse
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.coursepick.coursepick.domain.Result
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.CourseName
 import io.coursepick.coursepick.domain.course.Length
+import io.coursepick.coursepick.domain.customcourse.CustomCourseFailure
 import io.coursepick.coursepick.domain.customcourse.CustomCourseRepository
 import io.coursepick.coursepick.domain.customcourse.DraftCourse
 import io.coursepick.coursepick.domain.customcourse.DraftSegment
@@ -117,7 +119,34 @@ class CreateCustomCourseViewModel
 
         fun submitCourse() {
             viewModelScope.launch {
-                repository.submitCourse(DraftCourse(CourseName(courseName.value), waypoints))
+                val courseName =
+                    runCatching { CourseName(courseName.value) }.getOrElse { exception: Throwable ->
+                        if (exception is IllegalArgumentException) {
+                            _event.emit(CreateCustomCourseUiEvent.InvalidCourseName)
+                        } else {
+                            _event.emit(CreateCustomCourseUiEvent.UnknownError)
+                        }
+                        return@launch
+                    }
+
+                val result: Result<Unit, CustomCourseFailure> =
+                    repository.submitCourse(DraftCourse(CourseName(courseName.value), waypoints))
+
+                _event.emit(
+                    when (result) {
+                        is Result.Success<Unit> -> {
+                            CreateCustomCourseUiEvent.CreateCustomCourseSuccess
+                        }
+
+                        is Result.Failure<CustomCourseFailure> -> {
+                            when (result.type) {
+                                CustomCourseFailure.InvalidCourseName -> CreateCustomCourseUiEvent.InvalidCourseName
+                                CustomCourseFailure.UnauthorizedUser -> CreateCustomCourseUiEvent.UnauthorizedUser
+                                CustomCourseFailure.Unknown -> CreateCustomCourseUiEvent.UnknownError
+                            }
+                        }
+                    },
+                )
             }
         }
 

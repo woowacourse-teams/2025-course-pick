@@ -1,11 +1,12 @@
 package io.coursepick.coursepick.data.customcourse
 
 import io.coursepick.coursepick.data.course.CoordinateDto
+import io.coursepick.coursepick.domain.Result
 import io.coursepick.coursepick.domain.course.Coordinate
+import io.coursepick.coursepick.domain.customcourse.CustomCourseFailure
 import io.coursepick.coursepick.domain.customcourse.CustomCourseRepository
 import io.coursepick.coursepick.domain.customcourse.DraftCourse
 import io.coursepick.coursepick.domain.customcourse.DraftSegment
-import io.coursepick.coursepick.domain.customcourse.SubmitCourseResult
 import javax.inject.Inject
 
 class DefaultCustomCourseRepository
@@ -25,15 +26,15 @@ class DefaultCustomCourseRepository
                     ),
                 ).toDraftSegment()
 
-        override suspend fun submitCourse(course: DraftCourse): SubmitCourseResult {
+        override suspend fun submitCourse(course: DraftCourse): Result<Unit, CustomCourseFailure> {
             val response = service.submitCourse(DraftCourseDto(course))
             return if (response.isSuccessful) {
-                SubmitCourseResult.Success
+                Result.Success(Unit)
             } else {
                 when (response.code()) {
-                    400 -> SubmitCourseResult.Failure.InvalidCourseName
-                    401 -> SubmitCourseResult.Failure.UnauthorizedUser
-                    else -> SubmitCourseResult.Failure.Unknown
+                    400 -> Result.Failure(CustomCourseFailure.InvalidCourseName)
+                    401 -> Result.Failure(CustomCourseFailure.UnauthorizedUser)
+                    else -> Result.Failure(CustomCourseFailure.Unknown)
                 }
             }
         }

@@ -121,6 +121,20 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                             mapManager.removeLastWaypoint()
                         }
 
+                        CreateCustomCourseUiEvent.Exit -> {
+                            finish()
+                        }
+
+                        CreateCustomCourseUiEvent.CreateCustomCourseSuccess -> {
+                            Toast
+                                .makeText(
+                                    this@CreateCustomCourseActivity,
+                                    "코스가 추가됐습니다.",
+                                    Toast.LENGTH_SHORT,
+                                ).show()
+                            finish()
+                        }
+
                         CreateCustomCourseUiEvent.CourseLengthTooShort -> {
                             Toast
                                 .makeText(
@@ -130,8 +144,31 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                                 ).show()
                         }
 
-                        CreateCustomCourseUiEvent.Exit -> {
-                            finish()
+                        CreateCustomCourseUiEvent.InvalidCourseName -> {
+                            Toast
+                                .makeText(
+                                    this@CreateCustomCourseActivity,
+                                    "코스 이름은 2~50자로 붙여주세요.",
+                                    Toast.LENGTH_SHORT,
+                                ).show()
+                        }
+
+                        CreateCustomCourseUiEvent.UnauthorizedUser -> {
+                            Toast
+                                .makeText(
+                                    this@CreateCustomCourseActivity,
+                                    "코스 추가를 위해 로그인을 해주세요.",
+                                    Toast.LENGTH_SHORT,
+                                ).show()
+                        }
+
+                        CreateCustomCourseUiEvent.UnknownError -> {
+                            Toast
+                                .makeText(
+                                    this@CreateCustomCourseActivity,
+                                    "알 수 없는 오류가 발생했습니다.",
+                                    Toast.LENGTH_SHORT,
+                                ).show()
                         }
                     }
                 }
