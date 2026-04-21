@@ -14,6 +14,10 @@ import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
 
@@ -27,6 +31,8 @@ class CourseConverterTest extends AbstractIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
+
         ObjectMapper objectMapper = new ObjectMapper();
         writer = new CourseConverter.Writer(objectMapper);
         reader = new CourseConverter.Reader(objectMapper);
@@ -38,9 +44,9 @@ class CourseConverterTest extends AbstractIntegrationTest {
                 new Meter(1500.0),
                 List.of(new Review(new User(null, "providerId", "reviewer"), "hi")),
                 "creatorId123",
-                Set.of("reportMan1")
+                Set.of("reportMan1"),
+                now
         );
-
     }
 
     @Test
@@ -56,6 +62,13 @@ class CourseConverterTest extends AbstractIntegrationTest {
         assertThat(document.getString("creatorId")).isEqualTo(course.creatorId());
         // mongodb에서 set 타입을 list 타입으로 변환되는 과정을 거치지 않아서 set 타입으로 검증합니다.
         assertThat(document.get("reportUserIds", Set.class)).isNotEmpty();
+        assertThat(document.getDate("createdAt")).isEqualTo(
+                Date.from(
+                        course.createdAt()
+                                .atZone(ZoneId.systemDefault())
+                                .toInstant()
+                )
+        );
     }
 
     @Test
@@ -71,5 +84,6 @@ class CourseConverterTest extends AbstractIntegrationTest {
         assertThat(result.reviews()).hasSameSizeAs(course.reviews());
         assertThat(result.creatorId()).isEqualTo(course.creatorId());
         assertThat(result.reportUserIds()).containsExactly("reportMan1");
+        assertThat(result.createdAt()).isEqualTo(course.createdAt());
     }
 }

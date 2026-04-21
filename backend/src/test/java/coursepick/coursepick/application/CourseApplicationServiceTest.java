@@ -8,6 +8,7 @@ import coursepick.coursepick.domain.course.Course;
 import coursepick.coursepick.domain.course.CourseFindCondition;
 import coursepick.coursepick.domain.course.CourseName;
 import coursepick.coursepick.domain.user.Nickname;
+import coursepick.coursepick.domain.course.*;
 import coursepick.coursepick.domain.user.User;
 import coursepick.coursepick.domain.user.UserProvider;
 import coursepick.coursepick.test_util.AbstractIntegrationTest;
@@ -22,6 +23,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -68,7 +70,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         var latitude = 37.5122;
         var longitude = 127.0276;
-        var condition = new CourseFindCondition(latitude, longitude, 300, null, null, null, null);
+        var condition = new CourseFindCondition(latitude, longitude, 300, null, null, null);
 
         var nearbyCourses = sut.findNearbyCourses(condition, null, null);
 
@@ -99,7 +101,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         var latitude = 37.5122;
         var longitude = 127.0276;
-        var condition = new CourseFindCondition(latitude, longitude, 15000, null, null, null, null);
+        var condition = new CourseFindCondition(latitude, longitude, 15000, null, null, null);
 
         var nearbyCourses = sut.findNearbyCourses(condition, null, null);
 
@@ -136,7 +138,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         var latitude = 37.5172;
         var longitude = 127.0276;
-        var condition = new CourseFindCondition(latitude, longitude, 1000, null, null, null, null);
+        var condition = new CourseFindCondition(latitude, longitude, 1000, null, null, null);
 
         var courses = sut.findNearbyCourses(condition, null, null);
 
@@ -175,7 +177,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         var mapLongitude = 127.0276;
         var userLatitude = 37.5153291;
         var userLongitude = 127.1031347;
-        var condition = new CourseFindCondition(mapLatitude, mapLongitude, 1000, null, null, null, null);
+        var condition = new CourseFindCondition(mapLatitude, mapLongitude, 1000, null, null, null);
 
         var courses = sut.findNearbyCourses(condition, userLatitude, userLongitude);
 
@@ -198,7 +200,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         List<Course> courses = new ArrayList<>();
         for (int i = 0; i < 5; i++) courses.add(new Course(null, new CourseName("코스" + i), coordinates, ADMIN_USER));
         dbUtil.saveAllCourses(courses);
-        var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, 0, null);
+        var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, 0);
 
         var result = sut.findNearbyCourses(condition, null, null);
 
@@ -211,7 +213,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         List<Course> courses = new ArrayList<>();
         for (int i = 0; i < 15; i++) courses.add(new Course(null, new CourseName("코스" + i), coordinates, ADMIN_USER));
         dbUtil.saveAllCourses(courses);
-        var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, 0, null);
+        var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, 0);
 
         var result = sut.findNearbyCourses(condition, null, null);
 
@@ -224,7 +226,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         List<Course> courses = new ArrayList<>();
         for (int i = 0; i < 15; i++) courses.add(new Course(null, new CourseName("코스" + i), coordinates, ADMIN_USER));
         dbUtil.saveAllCourses(courses);
-        var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, 1, null);
+        var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, 1);
 
         var result = sut.findNearbyCourses(condition, null, null);
 
@@ -313,6 +315,78 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         Course result = dbUtil.findCourseById(targetCourse.id());
         assertThat(result.reportUserIds()).hasSize(3);
         verify(courseReportAlerter, times(1)).alert(any(Course.class));
+    }
+
+    @Nested
+    class 나의_코스_조회 {
+
+        private User user;
+        private User otherUser;
+        private List<Coordinate> sampleCoordinates;
+
+        @BeforeEach
+        void setUp() {
+            user = dbUtil.saveUser(new User(UserProvider.KAKAO, "myProviderId"));
+            otherUser = dbUtil.saveUser(new User(UserProvider.KAKAO, "otherProviderId"));
+            sampleCoordinates = CoordinateTestUtil.square(new Coordinate(37.5180, 127.0280), new Coordinate(37.5175, 127.0270));
+        }
+
+        @Test
+        void 내가_만든_코스만_조회된다() {
+            dbUtil.saveCourse(new Course(null, new CourseName("내 코스1"), sampleCoordinates, user));
+            dbUtil.saveCourse(new Course(null, new CourseName("내 코스2"), sampleCoordinates, user));
+            dbUtil.saveCourse(new Course(null, new CourseName("남의 코스"), sampleCoordinates, otherUser));
+            ;
+
+            var result = sut.findCustomCourses(user.id(), null, null);
+
+            assertThat(result.courses())
+                    .hasSize(2)
+                    .extracting(CourseResponse::name)
+                    .containsExactlyInAnyOrder("내 코스1", "내 코스2");
+        }
+
+        @Test
+        void 내가_만든_코스가_없으면_빈_리스트를_반환한다() {
+            dbUtil.saveCourse(new Course(null, new CourseName("남의 코스"), sampleCoordinates, otherUser));
+
+            var result = sut.findCustomCourses(user.id(), null, null);
+
+            assertThat(result.courses()).isEmpty();
+        }
+
+        @Test
+        void 최신순으로_정렬된다() {
+            var now = LocalDateTime.now();
+            var oldCourse = new Course(
+                    null, new CourseName("오래된 코스"),
+                    sampleCoordinates,
+                    sampleCoordinates,
+                    new Meter(1000),
+                    List.<Review>of(),
+                    user.id(),
+                    now
+            );
+            var newCourse = new Course(
+                    null,
+                    new CourseName("최신 코스"),
+                    sampleCoordinates,
+                    sampleCoordinates,
+                    new Meter(1000),
+                    List.<Review>of(),
+                    user.id(),
+                    now.plusSeconds(1L)
+            );
+
+            dbUtil.saveCourse(oldCourse);
+            dbUtil.saveCourse(newCourse);
+
+            var result = sut.findCustomCourses(user.id(), null, null);
+
+            assertThat(result.courses())
+                    .extracting(CourseResponse::name)
+                    .containsExactly("최신 코스", "오래된 코스");
+        }
     }
 
     @Nested

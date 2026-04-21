@@ -47,7 +47,7 @@ class CourseRepositoryTest extends AbstractIntegrationTest {
             "2000, 1",
     })
     void 거리를_줄여가면서_검색되는_코스_수가_줄어든다(int scope, int expectedSize) {
-        var condition = new CourseFindCondition(mapLatitude, mapLongitude, scope, null, null, null, null);
+        var condition = new CourseFindCondition(mapLatitude, mapLongitude, scope, null, null, null);
 
         var courses = sut.findAllHasDistanceWithin(condition);
 
@@ -60,7 +60,7 @@ class CourseRepositoryTest extends AbstractIntegrationTest {
             "1, 0, false",
     })
     void 검색하는_코스를_페이징한다(int pageNumber, int expectedResultSize, boolean expectedHasNext) {
-        var condition = new CourseFindCondition(mapLatitude, mapLongitude, 3000, null, null, pageNumber, null);
+        var condition = new CourseFindCondition(mapLatitude, mapLongitude, 3000, null, null, pageNumber);
 
         var courses = sut.findAllHasDistanceWithin(condition);
 
@@ -93,7 +93,7 @@ class CourseRepositoryTest extends AbstractIntegrationTest {
 
         @Test
         void 최소_길이로_필터링한다() {
-            var condition = new CourseFindCondition(mapLatitude, mapLongitude, 3000, 5000, null, null, null);
+            var condition = new CourseFindCondition(mapLatitude, mapLongitude, 3000, 5000, null, null);
 
             var courses = sut.findAllHasDistanceWithin(condition);
 
@@ -103,7 +103,7 @@ class CourseRepositoryTest extends AbstractIntegrationTest {
 
         @Test
         void 최대_길이로_필터링한다() {
-            var condition = new CourseFindCondition(mapLatitude, mapLongitude, 3000, null, 5000, null, null);
+            var condition = new CourseFindCondition(mapLatitude, mapLongitude, 3000, null, 5000, null);
 
             var courses = sut.findAllHasDistanceWithin(condition);
 
@@ -113,7 +113,7 @@ class CourseRepositoryTest extends AbstractIntegrationTest {
 
         @Test
         void 최소_최대_길이로_범위_필터링한다() {
-            var condition = new CourseFindCondition(mapLatitude, mapLongitude, 3000, 1000, 10000, null, null);
+            var condition = new CourseFindCondition(mapLatitude, mapLongitude, 3000, 1000, 10000, null);
 
             var courses = sut.findAllHasDistanceWithin(condition);
 
