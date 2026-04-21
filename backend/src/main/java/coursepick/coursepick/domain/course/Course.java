@@ -14,13 +14,14 @@ import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Document
-@CompoundIndex(name = "idx_creatorId_geo", def = "{'creatorId': 1, 'simplifiedCoordinates': '2dsphere'}")
+@CompoundIndex(name = "idx_creatorId_createdAt", def = "{'creatorId': 1, 'createdAt': -1}")
 @AllArgsConstructor(access = AccessLevel.PUBLIC, onConstructor_ = @PersistenceCreator)
 @Getter
 @Accessors(fluent = true)
@@ -46,6 +47,7 @@ public class Course {
     private String creatorId;
 
     private Set<String> reportUserIds;
+    private LocalDateTime createdAt;
 
     public Course(String id, CourseName courseName, List<Coordinate> rawCoordinates, User user) {
         this.id = id;
@@ -56,6 +58,7 @@ public class Course {
         this.reviews = new ArrayList<>();
         this.creatorId = user.id();
         this.reportUserIds = new HashSet<>();
+        this.createdAt = LocalDateTime.now();
     }
 
     private List<Coordinate> refineCoordinates(List<Coordinate> rawCoordinates) {
