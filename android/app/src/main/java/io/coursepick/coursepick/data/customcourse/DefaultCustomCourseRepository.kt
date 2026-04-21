@@ -5,6 +5,7 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.customcourse.CustomCourseRepository
 import io.coursepick.coursepick.domain.customcourse.DraftCourse
 import io.coursepick.coursepick.domain.customcourse.DraftSegment
+import io.coursepick.coursepick.domain.customcourse.SubmitCourseResult
 import javax.inject.Inject
 
 class DefaultCustomCourseRepository
@@ -24,7 +25,16 @@ class DefaultCustomCourseRepository
                     ),
                 ).toDraftSegment()
 
-        override suspend fun submitCourse(course: DraftCourse) {
-            service.submitCourse(DraftCourseDto(course))
+        override suspend fun submitCourse(course: DraftCourse): SubmitCourseResult {
+            val response = service.submitCourse(DraftCourseDto(course))
+            return if (response.isSuccessful) {
+                SubmitCourseResult.Success
+            } else {
+                when (response.code()) {
+                    400 -> SubmitCourseResult.Failure.InvalidCourseName
+                    401 -> SubmitCourseResult.Failure.UnauthorizedUser
+                    else -> SubmitCourseResult.Failure.Unknown
+                }
+            }
         }
     }

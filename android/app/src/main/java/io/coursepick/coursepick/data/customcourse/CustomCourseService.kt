@@ -1,5 +1,6 @@
 package io.coursepick.coursepick.data.customcourse
 
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
 
@@ -12,5 +13,5 @@ interface CustomCourseService {
     @POST("courses")
     suspend fun submitCourse(
         @Body course: DraftCourseDto,
-    )
+    ): Response<Unit>
 }

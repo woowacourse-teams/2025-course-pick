@@ -8,5 +8,5 @@ interface CustomCourseRepository {
         destination: Coordinate,
     ): DraftSegment
 
-    suspend fun submitCourse(course: DraftCourse)
+    suspend fun submitCourse(course: DraftCourse): SubmitCourseResult
 }
