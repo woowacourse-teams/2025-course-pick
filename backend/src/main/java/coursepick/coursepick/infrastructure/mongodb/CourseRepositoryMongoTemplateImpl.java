@@ -9,6 +9,7 @@ import coursepick.coursepick.domain.course.CourseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -49,31 +50,13 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
 
     @Override
     public Slice<Course> findAllHasDistanceWithin(CourseFindCondition condition) {
-        Query query = buildCourseSearchQuery(condition);
-        return executeSliceQuery(condition, query);
-    }
 
-    @Override
-    public Slice<Course> findAllMyCourses(CourseFindCondition condition) {
-        Query query = buildCourseSearchQuery(condition);
-
-        if (condition.creatorId() != null) {
-            query.addCriteria(Criteria.where("creatorId").is(condition.creatorId()));
-        }
-
-        return executeSliceQuery(condition, query);
-    }
-
-    private Query buildCourseSearchQuery(CourseFindCondition condition) {
-        Query query = new Query().maxTimeMsec(5000);
-
-        addPositionAndScopeCriteria(condition, query);
-        if (condition.minLength() != null || condition.maxLength() != null) addLengthCriteria(condition, query);
-        return query;
-    }
-
-    private SliceImpl<Course> executeSliceQuery(CourseFindCondition condition, Query query) {
         try {
+            Query query = new Query().maxTimeMsec(5000);
+
+            addPositionAndScopeCriteria(condition, query);
+            if (condition.minLength() != null || condition.maxLength() != null) addLengthCriteria(condition, query);
+
             query.with(condition.pageable())
                     .limit(condition.pageSize() + 1);
 
@@ -87,15 +70,29 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
         }
     }
 
+    @Override
+    public List<Course> findAllCustomCourses(String creatorId) {
+        try {
+
+            Query query = new Query().maxTimeMsec(5000);
+
+            query.addCriteria(Criteria.where("creatorId").is(creatorId));
+            query.with(Sort.by(Sort.Direction.DESC, "createdAt"));
+
+            return mongoTemplate.find(query, Course.class);
+
+        } catch (MongoTimeoutException | MongoExecutionTimeoutException e) {
+            throw QUERY_TIMEOUT.create();
+        }
+    }
+
+
     private static void addPositionAndScopeCriteria(CourseFindCondition condition, Query query) {
         GeoJsonPoint point = new GeoJsonPoint(condition.mapPosition().longitude(), condition.mapPosition().latitude());
 
         Criteria criteria = Criteria.where("simplifiedCoordinates")
-                .nearSphere(point);
-
-        if (condition.scope() != null) {
-            criteria.maxDistance(condition.scope().value());
-        }
+                .nearSphere(point)
+                .maxDistance(condition.scope().value());
 
         query.addCriteria(criteria);
     }

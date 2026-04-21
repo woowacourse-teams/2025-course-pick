@@ -13,7 +13,7 @@ public interface CourseRepository {
 
     Slice<Course> findAllHasDistanceWithin(CourseFindCondition condition);
 
-    Slice<Course> findAllMyCourses(CourseFindCondition condition);
+    List<Course> findAllCustomCourses(String creatorId);
 
     List<Course> findByIdIn(List<String> ids);
 
