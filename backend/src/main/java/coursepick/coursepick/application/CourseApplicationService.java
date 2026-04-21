@@ -72,9 +72,9 @@ public class CourseApplicationService {
     }
 
     @Transactional(readOnly = true)
-    public CoursesResponse findMyCourses(CourseFindCondition condition, @Nullable Double userLatitude, @Nullable Double userLongitude) {
-        Slice<Course> myCourses = courseRepository.findAllMyCourses(condition);
-        return CoursesResponse.from(myCourses, createUserPositionOrNull(userLatitude, userLongitude));
+    public CoursesResponse findCustomCourses(String userId, @Nullable Double userLatitude, @Nullable Double userLongitude) {
+        List<Course> customCourses = courseRepository.findAllCustomCourses(userId);
+        return CoursesResponse.from(customCourses, createUserPositionOrNull(userLatitude, userLongitude));
     }
 
     private static Coordinate createUserPositionOrNull(@Nullable Double userLatitude, @Nullable Double userLongitude) {
