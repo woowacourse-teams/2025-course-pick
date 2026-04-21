@@ -13,6 +13,7 @@ import io.coursepick.coursepick.data.NetworkMonitor
 import io.coursepick.coursepick.data.interceptor.ClientIdInterceptor
 import io.coursepick.coursepick.data.interceptor.KakaoAuthInterceptor
 import io.coursepick.coursepick.data.interceptor.OffLineInterceptor
+import io.coursepick.coursepick.data.interceptor.SignInterceptor
 import io.coursepick.coursepick.presentation.InstallationId
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -23,6 +24,9 @@ import javax.inject.Qualifier
 
 @Qualifier
 annotation class CoursePickRetrofit
+
+@Qualifier
+annotation class SignRetrofit
 
 @Qualifier
 annotation class KakaoRetrofit
@@ -51,12 +55,39 @@ object NetworkModule {
     fun provideCoursePickRetrofit(
         loggingInterceptor: HttpLoggingInterceptor,
         networkMonitor: NetworkMonitor,
+        signInterceptor: SignInterceptor,
         installationId: InstallationId,
     ): Retrofit {
         val client: OkHttpClient =
             OkHttpClient
                 .Builder()
                 .addInterceptor(ClientIdInterceptor(installationId))
+                .addInterceptor(signInterceptor)
+                .addInterceptor(loggingInterceptor)
+                .addInterceptor(OffLineInterceptor(networkMonitor))
+                .build()
+        val json =
+            Json {
+                ignoreUnknownKeys = true
+            }
+
+        return Retrofit
+            .Builder()
+            .baseUrl(BuildConfig.BASE_URL)
+            .client(client)
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .build()
+    }
+
+    @SignRetrofit
+    @Provides
+    fun provideSignRetrofit(
+        loggingInterceptor: HttpLoggingInterceptor,
+        networkMonitor: NetworkMonitor,
+    ): Retrofit {
+        val client: OkHttpClient =
+            OkHttpClient
+                .Builder()
                 .addInterceptor(loggingInterceptor)
                 .addInterceptor(OffLineInterceptor(networkMonitor))
                 .build()

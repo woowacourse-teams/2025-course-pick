@@ -5,7 +5,7 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface SignService {
-    @POST("/login/{socialType}")
+    @POST("login/{socialType}")
     suspend fun sign(
         @Path("socialType") socialType: String,
         @Body socialToken: TokenDto,
