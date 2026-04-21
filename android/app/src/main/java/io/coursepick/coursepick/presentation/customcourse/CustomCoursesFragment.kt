@@ -7,14 +7,33 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import io.coursepick.coursepick.databinding.FragmentCustomCoursesBinding
+import io.coursepick.coursepick.domain.course.Coordinate
+import io.coursepick.coursepick.presentation.auth.AuthDialog
+import io.coursepick.coursepick.presentation.auth.AuthViewModel
+import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
+import io.coursepick.coursepick.presentation.course.CoursesViewModel
+import io.coursepick.coursepick.presentation.createcustomcourse.CreateCustomCourseActivity
+import io.coursepick.coursepick.presentation.createcustomcourse.toUiModel
+import kotlinx.coroutines.launch
 
 class CustomCoursesFragment : Fragment() {
     @Suppress("ktlint:standard:backing-property-naming")
     private var _binding: FragmentCustomCoursesBinding? = null
     private val binding: FragmentCustomCoursesBinding get() = _binding!!
 
+    private val coursesViewModel: CoursesViewModel by activityViewModels()
     private val customCourseViewModel: CustomCourseViewModel by activityViewModels()
+    private val authViewModel: AuthViewModel by activityViewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setUpCollectors()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -25,7 +44,21 @@ class CustomCoursesFragment : Fragment() {
         binding.customCourses.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                CustomCourseScreen(onClick = { navigateCreateCustomCourse() })
+                CustomCourseScreen(onGoToCreateCustomCourse = customCourseViewModel::onGoToCreateCustomCourse)
+
+                val showAuthDialog: Boolean = customCourseViewModel.showAuthDialog.collectAsStateWithLifecycle().value
+                if (showAuthDialog) {
+                    AuthDialog(
+                        featureName = "코스 추가",
+                        onDismissRequest = customCourseViewModel::dismissAuthDialog,
+                    ) {
+                        lifecycleScope.launch {
+                            authViewModel.authenticate(KakaoAuthenticator(requireActivity())) {
+                                goToCreateCustomCourse()
+                            }
+                        }
+                    }
+                }
             }
         }
         return binding.root
@@ -36,7 +69,24 @@ class CustomCoursesFragment : Fragment() {
         super.onDestroyView()
     }
 
-    private fun navigateCreateCustomCourse() {
-        customCourseViewModel.onNavigateToCreateCustomCourse()
+    private fun setUpCollectors() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                customCourseViewModel.uiEvent.collect { event: UiEvent ->
+                    when (event) {
+                        UiEvent.NavigateToCreateCourse -> goToCreateCustomCourse()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun goToCreateCustomCourse() {
+        startActivity(
+            CreateCustomCourseActivity.intent(
+                requireActivity(),
+                coursesViewModel.mapCoordinate?.let(Coordinate::toUiModel),
+            ),
+        )
     }
 }

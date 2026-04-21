@@ -34,7 +34,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
@@ -55,14 +54,8 @@ import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.DataKeys
 import io.coursepick.coursepick.presentation.InstallStateObserver
 import io.coursepick.coursepick.presentation.Logger
-import io.coursepick.coursepick.presentation.auth.AuthDialog
-import io.coursepick.coursepick.presentation.auth.AuthViewModel
-import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.compat.getParcelableCompat
-import io.coursepick.coursepick.presentation.createcustomcourse.CreateCustomCourseActivity
-import io.coursepick.coursepick.presentation.createcustomcourse.toUiModel
-import io.coursepick.coursepick.presentation.customcourse.CustomCourseViewModel
 import io.coursepick.coursepick.presentation.customcourse.CustomCoursesFragment
 import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
 import io.coursepick.coursepick.presentation.filter.CourseFilterBottomSheet
@@ -89,8 +82,6 @@ class CoursesActivity :
     private var searchLauncher: ActivityResultLauncher<Intent>? = null
     private val binding by lazy { ActivityCoursesBinding.inflate(layoutInflater) }
     private val viewModel: CoursesViewModel by viewModels()
-    private val authViewModel: AuthViewModel by viewModels()
-    private val customCourseViewModel: CustomCourseViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(courseItemListener) }
     private val doublePressDetector = DoublePressDetector()
 
@@ -888,25 +879,6 @@ class CoursesActivity :
                             onDismissRequest = viewModel::dismissFilterDialog,
                             onFilterAction = viewModel::handleFilterAction,
                         )
-                    }
-
-                    val showAuthDialog: Boolean = customCourseViewModel.showAuthDialog.collectAsStateWithLifecycle().value
-                    if (showAuthDialog) {
-                        AuthDialog(
-                            featureName = "코스 추가",
-                            onDismissRequest = customCourseViewModel::dismissAuthDialog,
-                        ) {
-                            lifecycleScope.launch {
-                                authViewModel.authenticate(KakaoAuthenticator(this@CoursesActivity)) {
-                                    startActivity(
-                                        CreateCustomCourseActivity.intent(
-                                            this@CoursesActivity,
-                                            viewModel.mapCoordinate?.let(Coordinate::toUiModel),
-                                        ),
-                                    )
-                                }
-                            }
-                        }
                     }
                 }
             }
