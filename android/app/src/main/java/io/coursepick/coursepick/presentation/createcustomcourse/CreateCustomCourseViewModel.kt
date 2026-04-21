@@ -52,12 +52,24 @@ class CreateCustomCourseViewModel
 
         val waypoints: List<Coordinate> get() = segments.value.mapNotNull { segment: DraftSegment -> segment.coordinates.lastOrNull() }
 
-        fun addWaypoint(newWaypoint: Coordinate) {
+        fun addWaypoint(waypoint: Coordinate) {
             viewModelScope.launch {
-                val lastWaypoint: Coordinate = waypoints.lastOrNull() ?: newWaypoint
-                val newSegment: DraftSegment = repository.draftSegment(lastWaypoint, newWaypoint)
-                _segments.value += newSegment
-                _event.emit(CreateCustomCourseUiEvent.NewSegment(newSegment))
+                val origin: Coordinate = waypoints.lastOrNull() ?: waypoint
+                val rawSegment: DraftSegment = repository.draftSegment(origin, waypoint)
+                val adjustedSegment: DraftSegment =
+                    rawSegment
+                        .copy(coordinates = rawSegment.coordinates.dropLast(1), length = rawSegment.length)
+                        .let { segment: DraftSegment ->
+                            if (waypoints.isEmpty()) {
+                                val firstWaypoint = segment.coordinates.lastOrNull() ?: return@launch
+                                DraftSegment(listOf(firstWaypoint), segment.length)
+                            } else {
+                                segment
+                            }
+                        }
+
+                _segments.value += adjustedSegment
+                _event.emit(CreateCustomCourseUiEvent.NewSegment(adjustedSegment))
             }
         }
 
