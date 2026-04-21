@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import coursepick.coursepick.domain.course.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import coursepick.coursepick.domain.course.*;
 import coursepick.coursepick.infrastructure.compressor.DataCompressor;
 import lombok.RequiredArgsConstructor;
 import org.bson.Document;
@@ -15,6 +14,8 @@ import java.util.HashSet;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Set;
 
@@ -38,7 +39,8 @@ public class CourseReader implements Converter<Document, Course> {
                 new Meter(source.getDouble("length")),
                 reviews,
                 source.getString("creatorId"),
-                parseReportUserIds(source)
+                parseReportUserIds(source),
+                toLocalDateTime(source.getDate("createdAt"))
         );
     }
 
@@ -46,6 +48,15 @@ public class CourseReader implements Converter<Document, Course> {
         List<String> reportUserIds = source.getList("reportUserIds", String.class);
         if (reportUserIds == null) return new HashSet<>();
         return new HashSet<>(reportUserIds);
+    }
+
+    private LocalDateTime toLocalDateTime(Date date) {
+        if (date == null) {
+            return null;
+        }
+        return date.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
     }
 
     private List<Coordinate> parseCoordinatesFromSource(Document source) {
