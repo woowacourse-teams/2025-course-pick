@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.coursepick.coursepick.domain.course.Coordinate
+import io.coursepick.coursepick.domain.course.CourseName
 import io.coursepick.coursepick.domain.course.Length
 import io.coursepick.coursepick.domain.customcourse.CustomCourseRepository
+import io.coursepick.coursepick.domain.customcourse.DraftCourse
 import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -114,6 +116,9 @@ class CreateCustomCourseViewModel
         }
 
         fun submitCourse() {
+            viewModelScope.launch {
+                repository.submitCourse(DraftCourse(CourseName(courseName.value), waypoints))
+            }
         }
 
         companion object {

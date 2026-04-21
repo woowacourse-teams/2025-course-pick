@@ -9,7 +9,7 @@ interface CustomCourseService {
         @Body endpoints: EndpointsDto,
     ): DraftSegmentDto
 
-    @POST("")
+    @POST("courses")
     suspend fun submitCourse(
         @Body course: DraftCourseDto,
     )

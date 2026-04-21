@@ -25,6 +25,6 @@ class DefaultCustomCourseRepository
                 ).toDraftSegment()
 
         override suspend fun submitCourse(course: DraftCourse) {
-//            service.submitCourse(DraftCourseDto(course))
+            service.submitCourse(DraftCourseDto(course))
         }
     }
