@@ -163,11 +163,11 @@ class CreateCustomCourseViewModel
 
                 _event.emit(
                     when (result) {
-                        is Result.Success<Unit> -> {
+                        is Result.Success -> {
                             CreateCustomCourseUiEvent.CreateCustomCourseSuccess
                         }
 
-                        is Result.Failure<CustomCourseFailure> -> {
+                        is Result.Failure -> {
                             when (result.type) {
                                 CustomCourseFailure.InvalidCourseName -> CreateCustomCourseUiEvent.InvalidCourseName
                                 CustomCourseFailure.DuplicateCourseName -> CreateCustomCourseUiEvent.DuplicateCourseName
