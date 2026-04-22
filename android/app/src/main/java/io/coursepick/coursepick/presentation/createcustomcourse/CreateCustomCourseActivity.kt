@@ -154,7 +154,7 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                                 Toast
                                     .makeText(
                                         this@CreateCustomCourseActivity,
-                                        "이전 위치와 조금 더 가까운 위치를 선택해주세요.",
+                                        getString(R.string.create_custom_course_waypoint_too_far_message),
                                         Toast.LENGTH_SHORT,
                                     ).show()
                             }
@@ -163,7 +163,7 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                                 Toast
                                     .makeText(
                                         this@CreateCustomCourseActivity,
-                                        "코스 길이는 30km를 넘을 수 없습니다.",
+                                        getString(R.string.create_custom_course_course_length_too_long_message),
                                         Toast.LENGTH_SHORT,
                                     ).show()
                             }
@@ -176,7 +176,7 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                                 Toast
                                     .makeText(
                                         this@CreateCustomCourseActivity,
-                                        "코스가 추가됐습니다.",
+                                        getString(R.string.create_custom_course_course_added_message),
                                         Toast.LENGTH_SHORT,
                                     ).show()
                                 finish()
@@ -195,7 +195,7 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                                 Toast
                                     .makeText(
                                         this@CreateCustomCourseActivity,
-                                        "코스 이름을 다시 확인해주세요.",
+                                        getString(R.string.create_custom_course_invalid_course_name_message),
                                         Toast.LENGTH_SHORT,
                                     ).show()
                             }
@@ -204,7 +204,7 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                                 Toast
                                     .makeText(
                                         this@CreateCustomCourseActivity,
-                                        "이미 같은 이름의 코스가 있어요.",
+                                        getString(R.string.create_custom_course_duplicate_course_name_message),
                                         Toast.LENGTH_SHORT,
                                     ).show()
                             }
@@ -213,7 +213,7 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                                 Toast
                                     .makeText(
                                         this@CreateCustomCourseActivity,
-                                        "코스 추가를 위해 로그인을 해주세요.",
+                                        getString(R.string.create_custom_course_unauthorized_user_message),
                                         Toast.LENGTH_SHORT,
                                     ).show()
                             }
@@ -222,7 +222,7 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                                 Toast
                                     .makeText(
                                         this@CreateCustomCourseActivity,
-                                        "알 수 없는 오류가 발생했습니다.",
+                                        getString(R.string.create_custom_course_unknown_error_message),
                                         Toast.LENGTH_SHORT,
                                     ).show()
                             }

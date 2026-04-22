@@ -51,11 +51,11 @@ fun CreateCustomCourseScreen(
     ) {
         Column {
             CenterAlignedTopAppBar(
-                title = { Text(text = stringResource(R.string.create_custom_courses)) },
+                title = { Text(text = stringResource(R.string.create_custom_course)) },
                 navigationIcon = {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = stringResource(R.string.create_custom_courses_exit_button_description),
+                        contentDescription = stringResource(R.string.create_custom_course_exit_button_description),
                         modifier =
                             Modifier
                                 .padding(start = 10.dp)
@@ -68,7 +68,7 @@ fun CreateCustomCourseScreen(
                 actions = {
                     Icon(
                         imageVector = Icons.Default.Done,
-                        contentDescription = stringResource(R.string.create_custom_courses_confirm_button_description),
+                        contentDescription = stringResource(R.string.create_custom_course_confirm_button_description),
                         modifier =
                             Modifier
                                 .padding(end = 10.dp)
@@ -131,7 +131,7 @@ fun CreateCustomCourseScreen(
             ) {
                 Icon(
                     painter = painterResource(R.drawable.icon_undo),
-                    contentDescription = stringResource(R.string.create_custom_courses_remove_waypoint_button_description),
+                    contentDescription = stringResource(R.string.create_custom_course_remove_waypoint_button_description),
                     tint = colorResource(R.color.item_primary),
                     modifier = Modifier.size(40.dp),
                 )
@@ -151,7 +151,7 @@ fun CreateCustomCourseScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(R.string.create_custom_courses_add_waypoint_button_description),
+                    contentDescription = stringResource(R.string.create_custom_course_add_waypoint_button_description),
                     tint = colorResource(R.color.item_primary),
                     modifier = Modifier.size(40.dp),
                 )

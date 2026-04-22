@@ -82,7 +82,11 @@ fun SubmitCustomCourseDialog(
                     )
                 },
                 supportingText = {
-                    if (isCourseNameOutOfBounds) Text(text = "코스 이름은 2~30자로 붙여주세요.")
+                    if (isCourseNameOutOfBounds) {
+                        Text(
+                            text = stringResource(R.string.custom_course_submit_dialog_course_name_out_of_bounds_message),
+                        )
+                    }
                 },
                 isError = isCourseNameOutOfBounds,
                 singleLine = true,
@@ -97,7 +101,7 @@ fun SubmitCustomCourseDialog(
                         errorContainerColor = colorResource(R.color.background_primary),
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
-                        errorIndicatorColor = Color.Transparent
+                        errorIndicatorColor = Color.Transparent,
                     ),
                 modifier = Modifier.focusRequester(focusRequester),
             )

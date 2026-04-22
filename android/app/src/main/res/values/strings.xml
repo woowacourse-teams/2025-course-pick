@@ -67,12 +67,19 @@
     <string name="search_no_result_description">검색 결과가 없어요 🥲</string>
 
     <!--  코스 추가 화면  -->
-    <string name="create_custom_courses">코스 추가</string>
+    <string name="create_custom_course">코스 추가</string>
     <string name="create_custom_course_empty_course_warning">우선 코스를 완성해주세요.</string>
-    <string name="create_custom_courses_exit_button_description">이 화면을 닫습니다.</string>
-    <string name="create_custom_courses_confirm_button_description">코스를 생성합니다.</string>
-    <string name="create_custom_courses_remove_waypoint_button_description">코스가 지나가는 좌표 중 마지막 좌표를 제거합니다.</string>
-    <string name="create_custom_courses_add_waypoint_button_description">코스가 지나갈 좌표를 추가합니다.</string>
+    <string name="create_custom_course_exit_button_description">이 화면을 닫습니다.</string>
+    <string name="create_custom_course_confirm_button_description">코스를 생성합니다.</string>
+    <string name="create_custom_course_remove_waypoint_button_description">코스가 지나가는 좌표 중 마지막 좌표를 제거합니다.</string>
+    <string name="create_custom_course_add_waypoint_button_description">코스가 지나갈 좌표를 추가합니다.</string>
+    <string name="create_custom_course_waypoint_too_far_message">이전 위치와 조금 더 가까운 위치를 선택해주세요.</string>
+    <string name="create_custom_course_course_length_too_long_message">코스 길이는 30km를 넘을 수 없습니다.</string>
+    <string name="create_custom_course_course_added_message">코스가 추가됐습니다.</string>
+    <string name="create_custom_course_invalid_course_name_message">코스 이름을 다시 확인해주세요.</string>
+    <string name="create_custom_course_duplicate_course_name_message">이미 같은 이름의 코스가 있어요.</string>
+    <string name="create_custom_course_unauthorized_user_message">코스 추가를 위해 로그인을 해주세요.</string>
+    <string name="create_custom_course_unknown_error_message">알 수 없는 오류가 발생했습니다.</string>
 
     <!--  코스 추가 화면 - 취소 다이얼로그  -->
     <string name="custom_course_discard_dialog_title">코스가 저장되지 않았어요.\n정말로 나가시겠어요?</string>
@@ -82,6 +89,7 @@
     <!--  코스 추가 화면 - 확인 다이얼로그  -->
     <string name="custom_course_submit_dialog_course_name_prompt_title">코스에 이름을 붙여주세요.</string>
     <string name="custom_course_submit_dialog_course_name_placeholder">이름을 붙여주세요</string>
+    <string name="custom_course_submit_dialog_course_name_out_of_bounds_message">코스 이름은 2~30자로 붙여주세요.</string>
     <string name="custom_course_submit_dialog_cancel_button">취소</string>
     <string name="custom_course_submit_dialog_confirm_button">확인</string>
 
@@ -118,5 +126,4 @@
     <string name="selected_route_finder_application_value_kakao">kakao map</string>
     <string name="selected_route_finder_application_value_naver">naver map</string>
     <string name="selected_route_finder_application_value_none">none</string>
-
 </resources>
