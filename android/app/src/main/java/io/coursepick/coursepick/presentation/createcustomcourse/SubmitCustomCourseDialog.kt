@@ -170,7 +170,7 @@ private fun SubmitCustomCourseDialogPreview_Normal() {
 @Composable
 private fun SubmitCustomCourseDialogPreview_Error() {
     SubmitCustomCourseDialog(
-        courseName = "내가 만든 코스",
+        courseName = "0",
         onCourseNameChange = { },
         isCourseNameOutOfBounds = true,
         onDismiss = { },
