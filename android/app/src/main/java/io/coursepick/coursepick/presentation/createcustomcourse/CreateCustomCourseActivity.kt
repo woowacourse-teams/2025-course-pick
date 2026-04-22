@@ -162,7 +162,16 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                                 Toast
                                     .makeText(
                                         this@CreateCustomCourseActivity,
-                                        "코스 이름은 2~50자로 붙여주세요.",
+                                        "코스 이름을 다시 확인해주세요.",
+                                        Toast.LENGTH_SHORT,
+                                    ).show()
+                            }
+
+                            CreateCustomCourseUiEvent.DuplicateCourseName -> {
+                                Toast
+                                    .makeText(
+                                        this@CreateCustomCourseActivity,
+                                        "이미 같은 이름의 코스가 있어요.",
                                         Toast.LENGTH_SHORT,
                                     ).show()
                             }

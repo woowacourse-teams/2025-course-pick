@@ -17,6 +17,8 @@ sealed interface CreateCustomCourseUiEvent {
 
     data object InvalidCourseName : CreateCustomCourseUiEvent
 
+    data object DuplicateCourseName : CreateCustomCourseUiEvent
+
     data object UnauthorizedUser : CreateCustomCourseUiEvent
 
     data object UnknownError : CreateCustomCourseUiEvent

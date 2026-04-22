@@ -151,6 +151,7 @@ class CreateCustomCourseViewModel
                         is Result.Failure<CustomCourseFailure> -> {
                             when (result.type) {
                                 CustomCourseFailure.InvalidCourseName -> CreateCustomCourseUiEvent.InvalidCourseName
+                                CustomCourseFailure.DuplicateCourseName -> CreateCustomCourseUiEvent.DuplicateCourseName
                                 CustomCourseFailure.UnauthorizedUser -> CreateCustomCourseUiEvent.UnauthorizedUser
                                 CustomCourseFailure.Unknown -> CreateCustomCourseUiEvent.UnknownError
                             }

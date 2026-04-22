@@ -34,6 +34,7 @@ class DefaultCustomCourseRepository
                 when (response.code()) {
                     400 -> Result.Failure(CustomCourseFailure.InvalidCourseName)
                     401 -> Result.Failure(CustomCourseFailure.UnauthorizedUser)
+                    409 -> Result.Failure(CustomCourseFailure.DuplicateCourseName)
                     else -> Result.Failure(CustomCourseFailure.Unknown)
                 }
             }
