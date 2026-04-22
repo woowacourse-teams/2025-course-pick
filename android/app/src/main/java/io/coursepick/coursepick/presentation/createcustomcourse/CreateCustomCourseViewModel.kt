@@ -71,7 +71,7 @@ class CreateCustomCourseViewModel
                         .let { segment: DraftSegment ->
                             if (waypoints.isEmpty()) {
                                 val firstWaypoint = segment.coordinates.lastOrNull() ?: return@launch
-                                DraftSegment(listOf(firstWaypoint), segment.length)
+                                DraftSegment(listOf(firstWaypoint), Length(0))
                             } else {
                                 segment
                             }
