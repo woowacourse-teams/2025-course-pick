@@ -1,7 +1,7 @@
 package coursepick.coursepick.application;
 
-
 import coursepick.coursepick.application.dto.CourseDetailResponse;
+import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
 import coursepick.coursepick.application.exception.ErrorType;
@@ -17,7 +17,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 import static coursepick.coursepick.application.exception.ErrorType.*;
@@ -30,18 +32,35 @@ public class CourseApplicationService {
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
     private final RouteFinder routeFinder;
+    private final CourseParserFacade courseParserFacade;
     private final Alerter alerter;
     private final CourseTagGenerator courseTagGenerator;
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public void addCustomCourse(String name, List<Coordinate> coordinates, String userId) {
+        User user = getUser(userId);
+        Course newCourse = new Course(null, name, coordinates, user);
         CourseName courseName = new CourseName(name);
         validateDuplicatedCourseName(courseName);
         User user = getUser(userId);
 
         Course newCourse = new Course(null, courseName, coordinates, user);
         courseRepository.save(newCourse);
+    }
+
+    @Transactional
+    public void importCustomCourseFile(MultipartFile file, String courseName, String userId) {
+        User user = getUser(userId);
+
+        try (CourseFile courseFile = CourseFile.from(file)) {
+            Course course = courseParserFacade.parse(courseFile, user).getFirst();
+            course.changeName(courseName);
+
+            courseRepository.save(course);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Transactional
