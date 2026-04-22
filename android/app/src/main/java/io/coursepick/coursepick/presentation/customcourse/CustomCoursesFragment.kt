@@ -12,6 +12,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import io.coursepick.coursepick.R
 import io.coursepick.coursepick.databinding.FragmentCustomCoursesBinding
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.presentation.auth.AuthDialog
@@ -51,7 +52,7 @@ class CustomCoursesFragment : Fragment() {
                 val showAuthDialog: Boolean = customCourseViewModel.showAuthDialog.collectAsStateWithLifecycle().value
                 if (showAuthDialog) {
                     AuthDialog(
-                        featureName = "코스 추가",
+                        featureName = getString(R.string.create_custom_course),
                         onDismissRequest = customCourseViewModel::dismissAuthDialog,
                         onKakaoLoginClick = { authViewModel.authenticate(KakaoAuthenticator(requireActivity())) },
                     )
@@ -86,7 +87,12 @@ class CustomCoursesFragment : Fragment() {
                             }
 
                             AuthUiEvent.AuthenticateFailure -> {
-                                Toast.makeText(requireActivity(), "로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                                Toast
+                                    .makeText(
+                                        requireActivity(),
+                                        getString(R.string.authentication_failure_message),
+                                        Toast.LENGTH_SHORT,
+                                    ).show()
                             }
                         }
                     }

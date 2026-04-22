@@ -113,7 +113,7 @@ class CreateCustomCourseActivity : AppCompatActivity() {
 
                 if (viewModel.showAuthDialog.collectAsStateWithLifecycle().value) {
                     AuthDialog(
-                        featureName = "코스 추가",
+                        featureName = getString(R.string.create_custom_course),
                         onDismissRequest = viewModel::dismissAuthDialog,
                         onKakaoLoginClick = { authViewModel.authenticate(KakaoAuthenticator(this@CreateCustomCourseActivity)) },
                     )

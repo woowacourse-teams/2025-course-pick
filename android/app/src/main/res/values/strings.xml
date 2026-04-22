@@ -117,6 +117,7 @@
 
     <!--  로그인 UI  -->
     <string name="auth_restriction_message">%1$s 기능은\n로그인이 필요한 서비스입니다.</string>
+    <string name="authentication_failure_message">로그인에 실패했습니다.</string>
 
     <!--  Key/Value용 문자열  -->
     <string name="favorited_courses_key">favorited_courses_key</string>
