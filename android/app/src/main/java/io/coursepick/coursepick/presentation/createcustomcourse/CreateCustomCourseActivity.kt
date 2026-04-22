@@ -95,6 +95,7 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                     SubmitCustomCourseDialog(
                         courseName = viewModel.courseName.collectAsStateWithLifecycle().value,
                         onCourseNameChange = viewModel::updateCourseName,
+                        isCourseNameOutOfBounds = viewModel.isCourseNameOutOfBounds.collectAsStateWithLifecycle().value,
                         onDismiss = viewModel::dismissSubmitDialog,
                         onConfirm = viewModel::submitCourse,
                     )

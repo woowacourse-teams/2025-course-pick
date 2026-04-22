@@ -46,6 +46,9 @@ class CreateCustomCourseViewModel
         private val _courseName = MutableStateFlow("")
         val courseName: StateFlow<String> get() = _courseName.asStateFlow()
 
+        private val _isCourseNameOutOfBounds = MutableStateFlow(false)
+        val isCourseNameOutOfBounds: StateFlow<Boolean> get() = _isCourseNameOutOfBounds.asStateFlow()
+
         private val _segments = MutableStateFlow<List<DraftSegment>>(emptyList())
         val segments: StateFlow<List<DraftSegment>> get() = _segments.asStateFlow()
 
@@ -119,7 +122,8 @@ class CreateCustomCourseViewModel
         }
 
         fun updateCourseName(courseName: String) {
-            _courseName.value = courseName.lines().joinToString("")
+            _courseName.value = courseName.lines().joinToString("").take(CourseName.MAX_LENGTH)
+            _isCourseNameOutOfBounds.value = courseName.length !in CourseName.MIN_LENGTH..CourseName.MAX_LENGTH
         }
 
         fun submitCourse() {
