@@ -159,7 +159,7 @@ class CreateCustomCourseViewModel
                 }
 
                 val result: Result<Unit, CustomCourseFailure> =
-                    customCourseRepository.submitCourse(DraftCourse(CourseName(courseName.value), waypoints))
+                    customCourseRepository.submitCourse(DraftCourse(courseName, waypoints))
 
                 _event.emit(
                     when (result) {
