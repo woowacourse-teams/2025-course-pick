@@ -5,6 +5,8 @@ import coursepick.coursepick.application.CourseParserFacade;
 import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.course.*;
+import coursepick.coursepick.domain.user.User;
+import coursepick.coursepick.domain.user.UserRepository;
 import coursepick.coursepick.presentation.dto.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,7 @@ public class AdminWebController {
     private final CourseRepository courseRepository;
     private final CourseParserFacade courseParserFacade;
     private final CoordinateSnapper coordinateSnapper;
+    private final UserRepository userRepository;
 
     @Value("${admin.token}")
     private String adminToken;
@@ -104,9 +107,12 @@ public class AdminWebController {
 
     @PostMapping("/admin/api/import")
     public void importFiles(@RequestParam("files") List<MultipartFile> files) throws IOException {
+        User user = userRepository.findByProviderAndProviderId(null, "ADMIN")
+            .orElseThrow(() -> ErrorType.NOT_EXIST_USER.create("admin"));
+
         for (MultipartFile file : files) {
             try (CourseFile courseFile = CourseFile.from(file)) {
-                List<Course> courses = courseParserFacade.parse(courseFile);
+                List<Course> courses = courseParserFacade.parse(courseFile, user);
                 courseRepository.saveAll(courses);
             }
         }
