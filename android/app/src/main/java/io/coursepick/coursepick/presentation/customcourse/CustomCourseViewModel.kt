@@ -19,8 +19,8 @@ class CustomCourseViewModel
     constructor(
         private val authRepository: AuthRepository,
     ) : ViewModel() {
-        private val _uiEvent = MutableSharedFlow<UiEvent>()
-        val uiEvent: SharedFlow<UiEvent> get() = _uiEvent.asSharedFlow()
+        private val _uiEvent = MutableSharedFlow<CustomCourseUiEvent>()
+        val uiEvent: SharedFlow<CustomCourseUiEvent> get() = _uiEvent.asSharedFlow()
 
         private val _showAuthDialog = MutableStateFlow(false)
         val showAuthDialog: StateFlow<Boolean> get() = _showAuthDialog.asStateFlow()
@@ -30,7 +30,7 @@ class CustomCourseViewModel
                 if (authRepository.accessToken() == null) {
                     _showAuthDialog.value = true
                 } else {
-                    _uiEvent.emit(UiEvent.NavigateToCreateCourse)
+                    _uiEvent.emit(CustomCourseUiEvent.NavigateToCreateCourse)
                 }
             }
         }

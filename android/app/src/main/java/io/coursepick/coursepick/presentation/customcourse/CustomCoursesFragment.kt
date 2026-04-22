@@ -70,9 +70,9 @@ class CustomCoursesFragment : Fragment() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    customCourseViewModel.uiEvent.collect { event: UiEvent ->
+                    customCourseViewModel.uiEvent.collect { event: CustomCourseUiEvent ->
                         when (event) {
-                            UiEvent.NavigateToCreateCourse -> goToCreateCustomCourse()
+                            CustomCourseUiEvent.NavigateToCreateCourse -> goToCreateCustomCourse()
                         }
                     }
                 }
@@ -98,7 +98,7 @@ class CustomCoursesFragment : Fragment() {
     private fun goToCreateCustomCourse() {
         startActivity(
             CreateCustomCourseActivity.intent(
-                requireActivity(),
+                requireContext(),
                 coursesViewModel.mapCoordinate?.let(Coordinate::toUiModel),
             ),
         )
