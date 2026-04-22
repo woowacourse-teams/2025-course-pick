@@ -12,6 +12,7 @@ import coursepick.coursepick.security.UserId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -113,6 +114,18 @@ public class CourseV1WebController {
         return DraftRouteWebResponse.of(route.coordinates(), route.length());
     }
 
+    @Login
+    @PostMapping("/courses/file")
+    public String importFilesToCustomCourse(
+            @RequestParam("file") MultipartFile multipartFile,
+            @RequestParam("name") String name,
+            @UserId String userId
+    ) {
+        courseApplicationService.importCustomCourseFile(multipartFile, name, userId);
+        return "파일 추가 성공";
+    }
+
+    @Override
     @Login
     @PostMapping("/courses/{id}/report")
     public void reportCourse(@PathVariable("id") String id, @UserId String userId) {
