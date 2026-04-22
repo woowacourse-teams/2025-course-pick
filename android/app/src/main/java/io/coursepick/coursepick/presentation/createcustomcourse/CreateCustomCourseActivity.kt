@@ -150,6 +150,24 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                                 mapManager.removeLastWaypoint()
                             }
 
+                            CreateCustomCourseUiEvent.SegmentLengthTooLong -> {
+                                Toast
+                                    .makeText(
+                                        this@CreateCustomCourseActivity,
+                                        "이전 위치와 조금 더 가까운 위치를 선택해주세요.",
+                                        Toast.LENGTH_SHORT,
+                                    ).show()
+                            }
+
+                            CreateCustomCourseUiEvent.CourseLengthTooLong -> {
+                                Toast
+                                    .makeText(
+                                        this@CreateCustomCourseActivity,
+                                        "코스 길이는 30km를 넘을 수 없습니다.",
+                                        Toast.LENGTH_SHORT,
+                                    ).show()
+                            }
+
                             CreateCustomCourseUiEvent.Exit -> {
                                 finish()
                             }

@@ -7,11 +7,13 @@ import io.coursepick.coursepick.domain.Result
 import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.CourseName
+import io.coursepick.coursepick.domain.course.Distance
 import io.coursepick.coursepick.domain.course.Length
 import io.coursepick.coursepick.domain.customcourse.CustomCourseFailure
 import io.coursepick.coursepick.domain.customcourse.CustomCourseRepository
 import io.coursepick.coursepick.domain.customcourse.DraftCourse
 import io.coursepick.coursepick.domain.customcourse.DraftSegment
+import io.coursepick.coursepick.presentation.map.DistanceCalculator
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -66,6 +68,15 @@ class CreateCustomCourseViewModel
 
         fun addWaypoint(waypoint: Coordinate) {
             viewModelScope.launch {
+                waypoints.lastOrNull()?.let { lastWaypoint: Coordinate ->
+                    DistanceCalculator.distance(lastWaypoint, waypoint)?.let { distance: Int ->
+                        if (Distance(distance) > MAXIMUM_WAYPOINT_DISTANCE) {
+                            _event.emit(CreateCustomCourseUiEvent.SegmentLengthTooLong)
+                            return@launch
+                        }
+                    }
+                }
+
                 val origin: Coordinate = waypoints.lastOrNull() ?: waypoint
                 val rawSegment: DraftSegment = customCourseRepository.draftSegment(origin, waypoint)
                 val adjustedSegment: DraftSegment =
@@ -80,8 +91,12 @@ class CreateCustomCourseViewModel
                             }
                         }
 
-                _segments.value += adjustedSegment
-                _event.emit(CreateCustomCourseUiEvent.NewSegment(adjustedSegment))
+                if (length.value + adjustedSegment.length > MAXIMUM_COURSE_LENGTH) {
+                    _event.emit(CreateCustomCourseUiEvent.CourseLengthTooLong)
+                } else {
+                    _segments.value += adjustedSegment
+                    _event.emit(CreateCustomCourseUiEvent.NewSegment(adjustedSegment))
+                }
             }
         }
 
@@ -171,5 +186,7 @@ class CreateCustomCourseViewModel
 
         companion object {
             private val MINIMUM_COURSE_LENGTH = Length(1)
+            private val MAXIMUM_COURSE_LENGTH = Length(30_000)
+            private val MAXIMUM_WAYPOINT_DISTANCE = Distance(10_000)
         }
     }

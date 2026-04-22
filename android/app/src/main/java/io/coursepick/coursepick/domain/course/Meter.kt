@@ -8,6 +8,8 @@ value class Meter(
 
     constructor(value: Float) : this(value.toDouble())
 
+    operator fun plus(other: Meter): Meter = Meter(value + other.value)
+
     override fun compareTo(other: Meter): Int = this.value.compareTo(other.value)
 
     operator fun compareTo(other: Int): Int = this.value.compareTo(other)
