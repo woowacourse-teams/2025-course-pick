@@ -120,6 +120,7 @@ class CreateCustomCourseViewModel
         fun dismissSubmitDialog() {
             _showSubmitDialog.value = false
             _courseName.value = ""
+            _isCourseNameOutOfBounds.value = false
         }
 
         fun handleExitAction() {
