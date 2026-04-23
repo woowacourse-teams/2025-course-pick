@@ -10,10 +10,10 @@ import dagger.hilt.components.SingletonComponent
 import io.coursepick.coursepick.BuildConfig
 import io.coursepick.coursepick.data.DefaultNetworkMonitor
 import io.coursepick.coursepick.data.NetworkMonitor
+import io.coursepick.coursepick.data.interceptor.AccessTokenInterceptor
 import io.coursepick.coursepick.data.interceptor.ClientIdInterceptor
 import io.coursepick.coursepick.data.interceptor.KakaoAuthInterceptor
 import io.coursepick.coursepick.data.interceptor.OffLineInterceptor
-import io.coursepick.coursepick.data.interceptor.SignInterceptor
 import io.coursepick.coursepick.presentation.InstallationId
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -26,7 +26,7 @@ import javax.inject.Qualifier
 annotation class CoursePickRetrofit
 
 @Qualifier
-annotation class SignRetrofit
+annotation class UnauthenticatedRetrofit
 
 @Qualifier
 annotation class KakaoRetrofit
@@ -55,14 +55,14 @@ object NetworkModule {
     fun provideCoursePickRetrofit(
         loggingInterceptor: HttpLoggingInterceptor,
         networkMonitor: NetworkMonitor,
-        signInterceptor: SignInterceptor,
+        accessTokenInterceptor: AccessTokenInterceptor,
         installationId: InstallationId,
     ): Retrofit {
         val client: OkHttpClient =
             OkHttpClient
                 .Builder()
                 .addInterceptor(ClientIdInterceptor(installationId))
-                .addInterceptor(signInterceptor)
+                .addInterceptor(accessTokenInterceptor)
                 .addInterceptor(loggingInterceptor)
                 .addInterceptor(OffLineInterceptor(networkMonitor))
                 .build()
@@ -79,9 +79,9 @@ object NetworkModule {
             .build()
     }
 
-    @SignRetrofit
+    @UnauthenticatedRetrofit
     @Provides
-    fun provideSignRetrofit(
+    fun provideUnauthenticatedRetrofit(
         loggingInterceptor: HttpLoggingInterceptor,
         networkMonitor: NetworkMonitor,
     ): Retrofit {
