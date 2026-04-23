@@ -22,34 +22,27 @@ class AuthViewModel
         val uiEvent: SharedFlow<AuthUiEvent> get() = _uiEvent.asSharedFlow()
 
         fun authenticate(authenticator: SocialAuthenticator) {
-            viewModelScope.launch {
-                if (authRepository.accessToken() != null) {
-                    _uiEvent.emit(AuthUiEvent.AuthenticateSuccess)
-                    return@launch
-                }
-
-                authenticator.authenticate(
-                    onSuccess = { socialAccessToken: String ->
-                        viewModelScope.launch {
-                            runCatching {
-                                authRepository.sign(
-                                    authenticator.socialType,
-                                    SocialToken(socialAccessToken),
-                                )
-                            }.onSuccess { token: String ->
-                                authRepository.saveAccessToken(token)
-                                _uiEvent.emit(AuthUiEvent.AuthenticateSuccess)
-                            }.onFailure {
-                                _uiEvent.emit(AuthUiEvent.AuthenticateFailure)
-                            }
-                        }
-                    },
-                    onFailure = {
-                        viewModelScope.launch {
+            authenticator.authenticate(
+                onSuccess = { socialAccessToken: String ->
+                    viewModelScope.launch {
+                        runCatching {
+                            authRepository.sign(
+                                authenticator.socialType,
+                                SocialToken(socialAccessToken),
+                            )
+                        }.onSuccess { token: String ->
+                            authRepository.saveAccessToken(token)
+                            _uiEvent.emit(AuthUiEvent.AuthenticateSuccess)
+                        }.onFailure {
                             _uiEvent.emit(AuthUiEvent.AuthenticateFailure)
                         }
-                    },
-                )
-            }
+                    }
+                },
+                onFailure = {
+                    viewModelScope.launch {
+                        _uiEvent.emit(AuthUiEvent.AuthenticateFailure)
+                    }
+                },
+            )
         }
     }
