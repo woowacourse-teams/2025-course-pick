@@ -68,7 +68,7 @@
 
     <!--  코스 추가 화면  -->
     <string name="create_custom_course">코스 추가</string>
-    <string name="create_custom_course_empty_course_warning">우선 코스를 완성해주세요.</string>
+    <string name="create_custom_course_course_length_too_short_message">우선 코스를 완성해주세요.</string>
     <string name="create_custom_course_exit_button_description">이 화면을 닫습니다.</string>
     <string name="create_custom_course_confirm_button_description">코스를 생성합니다.</string>
     <string name="create_custom_course_remove_waypoint_button_description">코스가 지나가는 좌표 중 마지막 좌표를 제거합니다.</string>

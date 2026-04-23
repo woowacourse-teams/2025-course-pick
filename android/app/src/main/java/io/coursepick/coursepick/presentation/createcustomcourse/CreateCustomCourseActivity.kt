@@ -177,7 +177,7 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                                 Toast
                                     .makeText(
                                         this@CreateCustomCourseActivity,
-                                        getString(R.string.create_custom_course_empty_course_warning),
+                                        getString(R.string.create_custom_course_course_length_too_short_message),
                                         Toast.LENGTH_SHORT,
                                     ).show()
                             }
@@ -230,7 +230,12 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                             }
 
                             AuthUiEvent.AuthenticateFailure -> {
-                                Toast.makeText(this@CreateCustomCourseActivity, "로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                                Toast
+                                    .makeText(
+                                        this@CreateCustomCourseActivity,
+                                        getString(R.string.authentication_failure_message),
+                                        Toast.LENGTH_SHORT,
+                                    ).show()
                             }
                         }
                     }
