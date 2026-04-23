@@ -1,6 +1,5 @@
 package io.coursepick.coursepick.domain.customcourse
 
-import io.coursepick.coursepick.domain.Result
 import io.coursepick.coursepick.domain.course.Coordinate
 
 interface CustomCourseRepository {
@@ -9,5 +8,5 @@ interface CustomCourseRepository {
         destination: Coordinate,
     ): DraftSegment
 
-    suspend fun submitCourse(course: DraftCourse): Result<Unit, CustomCourseFailure>
+    suspend fun submitCourse(course: DraftCourse)
 }

@@ -3,13 +3,12 @@ package io.coursepick.coursepick.presentation.createcustomcourse
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.coursepick.coursepick.domain.Result
+import io.coursepick.coursepick.data.interceptor.NoNetworkException
 import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.CourseName
 import io.coursepick.coursepick.domain.course.Distance
 import io.coursepick.coursepick.domain.course.Length
-import io.coursepick.coursepick.domain.customcourse.CustomCourseFailure
 import io.coursepick.coursepick.domain.customcourse.CustomCourseRepository
 import io.coursepick.coursepick.domain.customcourse.DraftCourse
 import io.coursepick.coursepick.domain.customcourse.DraftSegment
@@ -24,6 +23,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -68,24 +68,24 @@ class CreateCustomCourseViewModel
 
         fun addWaypoint(waypoint: Coordinate) {
             viewModelScope.launch {
-                waypoints.lastOrNull()?.let { lastWaypoint: Coordinate ->
-                    DistanceCalculator.distance(lastWaypoint, waypoint)?.let { distance: Int ->
-                        if (Distance(distance) > MAXIMUM_WAYPOINT_DISTANCE) {
-                            _event.emit(CreateCustomCourseUiEvent.SegmentLengthTooLong)
-                            return@launch
-                        }
-                    }
+                if (isWaypointTooFar(waypoint)) {
+                    _event.emit(CreateCustomCourseUiEvent.WaypointTooFar)
+                    return@launch
                 }
 
                 val origin: Coordinate = waypoints.lastOrNull() ?: waypoint
-                val rawSegment: DraftSegment = customCourseRepository.draftSegment(origin, waypoint)
+                val rawSegment: DraftSegment =
+                    runCatching { customCourseRepository.draftSegment(origin, waypoint) }.getOrElse { exception: Throwable ->
+                        if (exception is NoNetworkException) _event.emit(CreateCustomCourseUiEvent.NoNetwork)
+                        return@launch
+                    }
                 val adjustedSegment: DraftSegment =
                     rawSegment
                         .copy(coordinates = rawSegment.coordinates.dropLast(1), length = rawSegment.length)
                         .let { segment: DraftSegment ->
                             if (waypoints.isEmpty()) {
-                                val firstWaypoint = segment.coordinates.lastOrNull() ?: return@launch
-                                DraftSegment(listOf(firstWaypoint), Length(0))
+                                val initialWaypoint = segment.coordinates.lastOrNull() ?: return@launch
+                                DraftSegment(listOf(initialWaypoint), Length(0))
                             } else {
                                 segment
                             }
@@ -98,6 +98,14 @@ class CreateCustomCourseViewModel
                     _event.emit(CreateCustomCourseUiEvent.NewSegment(adjustedSegment))
                 }
             }
+        }
+
+        private fun isWaypointTooFar(waypoint: Coordinate): Boolean {
+            val distance: Distance =
+                waypoints.lastOrNull()?.let { lastWaypoint: Coordinate ->
+                    DistanceCalculator.distance(lastWaypoint, waypoint)?.let(::Distance)
+                } ?: return false
+            return distance > MAXIMUM_WAYPOINT_DISTANCE
         }
 
         fun removeLastWaypoint() {
@@ -159,25 +167,23 @@ class CreateCustomCourseViewModel
                     return@launch
                 }
 
-                val result: Result<Unit, CustomCourseFailure> =
+                try {
                     customCourseRepository.submitCourse(DraftCourse(courseName, waypoints))
-
-                _event.emit(
-                    when (result) {
-                        is Result.Success -> {
-                            CreateCustomCourseUiEvent.CreateCustomCourseSuccess
-                        }
-
-                        is Result.Failure -> {
-                            when (result.type) {
-                                CustomCourseFailure.InvalidCourseName -> CreateCustomCourseUiEvent.InvalidCourseName
-                                CustomCourseFailure.DuplicateCourseName -> CreateCustomCourseUiEvent.DuplicateCourseName
-                                CustomCourseFailure.UnauthorizedUser -> CreateCustomCourseUiEvent.UnauthorizedUser
-                                CustomCourseFailure.Unknown -> CreateCustomCourseUiEvent.UnknownError
-                            }
-                        }
-                    },
-                )
+                    _event.emit(CreateCustomCourseUiEvent.CreateCustomCourseSuccess)
+                } catch (_: NoNetworkException) {
+                    _event.emit(CreateCustomCourseUiEvent.NoNetwork)
+                } catch (exception: HttpException) {
+                    _event.emit(
+                        when (exception.code()) {
+                            400 -> CreateCustomCourseUiEvent.InvalidCourseName
+                            401 -> CreateCustomCourseUiEvent.DuplicateCourseName
+                            409 -> CreateCustomCourseUiEvent.UnauthorizedUser
+                            else -> CreateCustomCourseUiEvent.UnknownError
+                        },
+                    )
+                } catch (_: Throwable) {
+                    _event.emit(CreateCustomCourseUiEvent.UnknownError)
+                }
             }
         }
 

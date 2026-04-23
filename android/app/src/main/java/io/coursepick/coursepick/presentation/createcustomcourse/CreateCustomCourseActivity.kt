@@ -150,7 +150,7 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                                 mapManager.removeLastWaypoint()
                             }
 
-                            CreateCustomCourseUiEvent.SegmentLengthTooLong -> {
+                            CreateCustomCourseUiEvent.WaypointTooFar -> {
                                 Toast
                                     .makeText(
                                         this@CreateCustomCourseActivity,
@@ -164,6 +164,15 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                                     .makeText(
                                         this@CreateCustomCourseActivity,
                                         getString(R.string.create_custom_course_course_length_too_long_message),
+                                        Toast.LENGTH_SHORT,
+                                    ).show()
+                            }
+
+                            CreateCustomCourseUiEvent.NoNetwork -> {
+                                Toast
+                                    .makeText(
+                                        this@CreateCustomCourseActivity,
+                                        getString(R.string.create_custom_course_no_network_message),
                                         Toast.LENGTH_SHORT,
                                     ).show()
                             }
