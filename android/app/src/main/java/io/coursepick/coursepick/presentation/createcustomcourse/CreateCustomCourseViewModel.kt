@@ -74,7 +74,7 @@ class CreateCustomCourseViewModel
                     }
                 val adjustedSegment: DraftSegment =
                     rawSegment
-                        .copy(coordinates = rawSegment.coordinates.dropLast(1), length = rawSegment.length)
+                        .copy(coordinates = rawSegment.coordinates.dropLast(1))
                         .let { segment: DraftSegment ->
                             if (waypoints.isEmpty()) {
                                 val initialWaypoint = segment.coordinates.lastOrNull() ?: return@launch
