@@ -11,6 +11,7 @@ import io.coursepick.coursepick.domain.course.Length
 import io.coursepick.coursepick.domain.customcourse.CustomCourseRepository
 import io.coursepick.coursepick.domain.customcourse.DraftCourse
 import io.coursepick.coursepick.domain.customcourse.DraftSegment
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -162,7 +163,8 @@ class CreateCustomCourseViewModel
                             else -> CreateCustomCourseUiEvent.UnknownError
                         },
                     )
-                } catch (_: Throwable) {
+                } catch (exception: Throwable) {
+                    if (exception is CancellationException) throw exception
                     _event.emit(CreateCustomCourseUiEvent.UnknownError)
                 }
             }
