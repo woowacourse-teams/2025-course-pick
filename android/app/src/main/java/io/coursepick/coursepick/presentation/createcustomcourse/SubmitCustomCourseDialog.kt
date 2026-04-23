@@ -95,7 +95,6 @@ fun SubmitCustomCourseDialog(
                     TextFieldDefaults.colors(
                         focusedTextColor = colorResource(R.color.item_primary),
                         unfocusedTextColor = colorResource(R.color.item_tertiary),
-                        errorTextColor = colorResource(R.color.item_primary),
                         focusedContainerColor = colorResource(R.color.background_primary),
                         unfocusedContainerColor = colorResource(R.color.background_tertiary),
                         errorContainerColor = colorResource(R.color.background_primary),
