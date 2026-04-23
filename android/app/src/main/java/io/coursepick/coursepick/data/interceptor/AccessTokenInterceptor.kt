@@ -1,6 +1,7 @@
 package io.coursepick.coursepick.data.interceptor
 
 import io.coursepick.coursepick.domain.auth.AuthRepository
+import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
@@ -13,9 +14,12 @@ class AccessTokenInterceptor
     ) : Interceptor {
         override fun intercept(chain: Interceptor.Chain): Response {
             val requestBuilder: Request.Builder = chain.request().newBuilder()
-            authRepository.cachedAccessToken?.let { accessToken: String ->
+
+            val accessToken: String? = authRepository.cachedAccessToken ?: runBlocking { authRepository.accessToken() }
+            if (accessToken != null) {
                 requestBuilder.addHeader("Authorization", "Bearer $accessToken")
             }
+
             return chain.proceed(requestBuilder.build())
         }
     }

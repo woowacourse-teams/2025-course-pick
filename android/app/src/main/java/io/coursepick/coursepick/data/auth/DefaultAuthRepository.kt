@@ -29,9 +29,7 @@ class DefaultAuthRepository
         }
 
         override suspend fun preloadAccessToken() {
-            if (cachedAccessToken == null) {
-                cachedAccessToken = accessToken()
-            }
+            accessToken()
         }
 
         override suspend fun accessToken(): String? {
@@ -42,7 +40,7 @@ class DefaultAuthRepository
         }
 
         override suspend fun clearAccessToken() {
-            cachedAccessToken = null
             tokenLocalDataSource.clearAccessToken()
+            cachedAccessToken = null
         }
     }
