@@ -7,12 +7,10 @@ import io.coursepick.coursepick.data.interceptor.NoNetworkException
 import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.CourseName
-import io.coursepick.coursepick.domain.course.Distance
 import io.coursepick.coursepick.domain.course.Length
 import io.coursepick.coursepick.domain.customcourse.CustomCourseRepository
 import io.coursepick.coursepick.domain.customcourse.DraftCourse
 import io.coursepick.coursepick.domain.customcourse.DraftSegment
-import io.coursepick.coursepick.presentation.map.DistanceCalculator
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -68,11 +66,6 @@ class CreateCustomCourseViewModel
 
         fun addWaypoint(waypoint: Coordinate) {
             viewModelScope.launch {
-                if (isWaypointTooFar(waypoint)) {
-                    _event.emit(CreateCustomCourseUiEvent.WaypointTooFar)
-                    return@launch
-                }
-
                 val origin: Coordinate = waypoints.lastOrNull() ?: waypoint
                 val rawSegment: DraftSegment =
                     runCatching { customCourseRepository.draftSegment(origin, waypoint) }.getOrElse { exception: Throwable ->
@@ -91,21 +84,9 @@ class CreateCustomCourseViewModel
                             }
                         }
 
-                if (length.value + adjustedSegment.length > MAXIMUM_COURSE_LENGTH) {
-                    _event.emit(CreateCustomCourseUiEvent.CourseLengthTooLong)
-                } else {
-                    _segments.value += adjustedSegment
-                    _event.emit(CreateCustomCourseUiEvent.NewSegment(adjustedSegment))
-                }
+                _segments.value += adjustedSegment
+                _event.emit(CreateCustomCourseUiEvent.NewSegment(adjustedSegment))
             }
-        }
-
-        private fun isWaypointTooFar(waypoint: Coordinate): Boolean {
-            val distance: Distance =
-                waypoints.lastOrNull()?.let { lastWaypoint: Coordinate ->
-                    DistanceCalculator.distance(lastWaypoint, waypoint)?.let(::Distance)
-                } ?: return false
-            return distance > MAXIMUM_WAYPOINT_DISTANCE
         }
 
         fun removeLastWaypoint() {
@@ -193,7 +174,5 @@ class CreateCustomCourseViewModel
 
         companion object {
             private val MINIMUM_COURSE_LENGTH = Length(1)
-            private val MAXIMUM_COURSE_LENGTH = Length(30_000)
-            private val MAXIMUM_WAYPOINT_DISTANCE = Distance(10_000)
         }
     }

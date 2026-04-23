@@ -9,10 +9,6 @@ sealed interface CreateCustomCourseUiEvent {
 
     data object RemoveLastWaypoint : CreateCustomCourseUiEvent
 
-    data object WaypointTooFar : CreateCustomCourseUiEvent
-
-    data object CourseLengthTooLong : CreateCustomCourseUiEvent
-
     data object NoNetwork : CreateCustomCourseUiEvent
 
     data object Exit : CreateCustomCourseUiEvent
