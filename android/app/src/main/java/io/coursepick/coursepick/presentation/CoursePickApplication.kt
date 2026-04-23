@@ -7,7 +7,11 @@ import com.kakao.sdk.common.KakaoSdk
 import com.kakao.vectormap.KakaoMapSdk
 import dagger.hilt.android.HiltAndroidApp
 import io.coursepick.coursepick.BuildConfig
+import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -15,6 +19,9 @@ import javax.inject.Inject
 class CoursePickApplication : Application() {
     @Inject
     lateinit var installationId: InstallationId
+
+    @Inject
+    lateinit var authRepository: AuthRepository
 
     @Volatile
     var hasShownNoticeThisSession: Boolean = false
@@ -34,6 +41,10 @@ class CoursePickApplication : Application() {
             Timber.plant(Timber.DebugTree())
         }
         Logger.log(Logger.Event.Enter(javaClass.simpleName))
+
+        CoroutineScope(Dispatchers.IO).launch {
+            authRepository.preloadAccessToken()
+        }
 
         KakaoMapSdk.init(applicationContext, BuildConfig.KAKAO_NATIVE_APP_KEY)
         KakaoSdk.init(applicationContext, BuildConfig.KAKAO_NATIVE_APP_KEY)

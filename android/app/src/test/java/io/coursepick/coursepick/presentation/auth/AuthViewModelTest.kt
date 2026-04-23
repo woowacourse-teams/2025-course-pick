@@ -26,12 +26,16 @@ class AuthViewModelTest {
                 AuthViewModel(
                     authRepository =
                         object : AuthRepository {
+                            override val cachedAccessToken: String? = null
+
                             override suspend fun sign(
                                 socialType: String,
                                 socialToken: SocialToken,
                             ): String = "token 123456"
 
                             override suspend fun saveAccessToken(token: String) = Unit
+
+                            override suspend fun preloadAccessToken() = Unit
 
                             override suspend fun accessToken(): String? = null
 
