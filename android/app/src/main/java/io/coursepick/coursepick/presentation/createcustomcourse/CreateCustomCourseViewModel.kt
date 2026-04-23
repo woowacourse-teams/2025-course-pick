@@ -158,8 +158,8 @@ class CreateCustomCourseViewModel
                     _event.emit(
                         when (exception.code()) {
                             400 -> CreateCustomCourseUiEvent.InvalidCourseName
-                            401 -> CreateCustomCourseUiEvent.DuplicateCourseName
-                            409 -> CreateCustomCourseUiEvent.UnauthorizedUser
+                            401 -> CreateCustomCourseUiEvent.UnauthorizedUser
+                            409 -> CreateCustomCourseUiEvent.DuplicateCourseName
                             else -> CreateCustomCourseUiEvent.UnknownError
                         },
                     )
