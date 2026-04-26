@@ -59,6 +59,7 @@ class NaverMapOverlayManager(
             coords = course.coordinates.map(Coordinate::toLatLng)
             color = courseColor
             width = courseWidth
+            outlineWidth = 0
             zIndex = courseZIndex
             tag = course
             onClickListener = courseClickListener
@@ -75,6 +76,7 @@ class NaverMapOverlayManager(
             coords = route.map(Coordinate::toLatLng)
             color = context.getColor(R.color.course_route)
             width = context.resources.getDimension(R.dimen.course_route_width).toInt()
+            outlineWidth = 0
             map = this@NaverMapOverlayManager.map
             courses.add(this)
         }
@@ -196,6 +198,7 @@ class NaverMapOverlayManager(
             coords = segment.coordinates.map(Coordinate::toLatLng)
             color = context.getColor(R.color.course_draft)
             width = context.resources.getDimension(R.dimen.draft_segment_width).toInt()
+            outlineWidth = 0
             map = this@NaverMapOverlayManager.map
             segments.add(this)
         }
