@@ -180,6 +180,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.kakao.maps)
+    implementation(libs.naver.maps)
     implementation(libs.google.maps)
     implementation(libs.kakao.user)
     implementation(libs.play.services.location)
