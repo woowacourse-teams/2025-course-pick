@@ -2,6 +2,7 @@ package io.coursepick.coursepick.presentation.map.naver
 
 import android.content.Context
 import android.graphics.PointF
+import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.CameraAnimation
 import com.naver.maps.map.CameraPosition
@@ -9,11 +10,13 @@ import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.CameraUpdate.REASON_GESTURE
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
+import com.naver.maps.map.Symbol
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.domain.location.Location
+import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.course.CourseItem
 import io.coursepick.coursepick.presentation.map.CameraMoveReason
 import io.coursepick.coursepick.presentation.map.DistanceCalculator
@@ -51,7 +54,12 @@ class NaverMapManager(
         mapFragment.getMapAsync { naverMap: NaverMap ->
             map = naverMap
             overlayManager = NaverMapOverlayManager(mapFragment.requireContext(), naverMap)
-
+            naverMap.uiSettings.apply {
+                isCompassEnabled = false
+                isScaleBarEnabled = false
+                isZoomControlEnabled = false
+            }
+            setLogger()
             onMapReady()
         }
     }
@@ -164,6 +172,30 @@ class NaverMapManager(
     ) {
         map?.let { map: NaverMap ->
             map.setContentPadding(left, top, right, bottom)
+        } ?: run { Timber.w(MAP_IS_NULL_MESSAGE) }
+    }
+
+    private fun setLogger() {
+        map?.let { map: NaverMap ->
+            map.onSymbolClickListener =
+                NaverMap.OnSymbolClickListener { symbol: Symbol ->
+                    Logger.log(
+                        Logger.Event.Click("map_poi"),
+                        "point_of_interest" to symbol.caption,
+                        "latitude" to symbol.position.latitude,
+                        "longitude" to symbol.position.longitude,
+                    )
+                    false
+                }
+
+            map.onMapClickListener =
+                NaverMap.OnMapClickListener { _, latLng: LatLng ->
+                    Logger.log(
+                        Logger.Event.Click("map"),
+                        "latitude" to latLng.latitude,
+                        "longitude" to latLng.longitude,
+                    )
+                }
         } ?: run { Timber.w(MAP_IS_NULL_MESSAGE) }
     }
 
