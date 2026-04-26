@@ -16,6 +16,7 @@ import com.google.android.gms.maps.model.StyleSpan
 import com.google.android.gms.maps.model.TextureStyle
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Coordinate
+import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.course.CourseItem
 import io.coursepick.coursepick.presentation.map.BitmapScaler
@@ -25,7 +26,10 @@ class GoogleMapDrawer(
     private val context: Context,
     private val map: GoogleMap,
 ) {
-    private val polylinesOnMap = mutableListOf<Polyline>()
+    private val courses = mutableListOf<Polyline>()
+    private val waypoints = mutableListOf<Marker>()
+    private val segments = mutableListOf<Polyline>()
+
     private var searchCoordinateMarker: Marker? = null
     private var fineUserLocationMarker: Marker? = null
     private var coarseUserLocationCircle: Circle? = null
@@ -46,6 +50,14 @@ class GoogleMapDrawer(
                 R.drawable.image_current_location,
                 context.resources.getDimension(R.dimen.fine_user_location_size),
                 context.resources.getDimension(R.dimen.fine_user_location_size),
+            ),
+        )
+    private val waypointImage: BitmapDescriptor =
+        BitmapDescriptorFactory.fromBitmap(
+            bitmapScaler.scaleDrawableToSize(
+                R.drawable.icon_waypoint,
+                context.resources.getDimension(R.dimen.waypoint_marker_size),
+                context.resources.getDimension(R.dimen.waypoint_marker_size),
             ),
         )
 
@@ -75,7 +87,7 @@ class GoogleMapDrawer(
                 .width(context.resources.getDimension(R.dimen.course_route_width))
                 .color(context.getColor(R.color.course_route))
 
-        map.addPolyline(options).also(polylinesOnMap::add)
+        map.addPolyline(options).also(courses::add)
     }
 
     private fun drawUnselectedCourse(course: CourseItem) {
@@ -87,7 +99,7 @@ class GoogleMapDrawer(
                 .zIndex(UNSELECTED_COURSE_Z_INDEX)
                 .clickable(true)
 
-        map.addPolyline(options).apply { tag = course }.also(polylinesOnMap::add)
+        map.addPolyline(options).apply { tag = course }.also(courses::add)
     }
 
     private fun drawSelectedCourse(course: CourseItem) {
@@ -107,12 +119,12 @@ class GoogleMapDrawer(
                 .zIndex(SELECTED_COURSE_Z_INDEX)
                 .clickable(true)
 
-        map.addPolyline(courseOptions).apply { tag = course }.also(polylinesOnMap::add)
+        map.addPolyline(courseOptions).apply { tag = course }.also(courses::add)
     }
 
     fun removeAllRouteLines() {
-        polylinesOnMap.forEach(Polyline::remove)
-        polylinesOnMap.clear()
+        courses.forEach(Polyline::remove)
+        courses.clear()
     }
 
     fun drawSearchCoordinate(coordinate: Coordinate) {
@@ -201,6 +213,41 @@ class GoogleMapDrawer(
 
         coarseUserLocationAnimator?.cancel()
         coarseUserLocationAnimator = null
+    }
+
+    fun drawWaypoint(coordinate: Coordinate) {
+        map
+            .addMarker(
+                MarkerOptions()
+                    .icon(waypointImage)
+                    .position(coordinate.toLatLng())
+                    .anchor(0.5F, 0.5F),
+            )?.also(waypoints::add)
+    }
+
+    fun removeLastWaypoint() {
+        waypoints.removeLastOrNull()?.remove()
+        segments.removeLastOrNull()?.remove()
+    }
+
+    fun clearWaypoints() {
+        waypoints.forEach(Marker::remove)
+        waypoints.clear()
+    }
+
+    fun drawDraftSegment(segment: DraftSegment) {
+        val options =
+            PolylineOptions()
+                .addAll(segment.coordinates.map(Coordinate::toLatLng))
+                .width(context.resources.getDimension(R.dimen.draft_segment_width))
+                .color(context.getColor(R.color.course_draft))
+
+        map.addPolyline(options).also(segments::add)
+    }
+
+    fun clearDraftSegments() {
+        segments.forEach(Polyline::remove)
+        segments.clear()
     }
 
     companion object {

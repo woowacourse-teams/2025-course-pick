@@ -3,6 +3,7 @@ package io.coursepick.coursepick.presentation.map.google
 import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
@@ -103,23 +104,23 @@ class GoogleMapManager(
     }
 
     override fun drawWaypoint(coordinate: Coordinate) {
-        TODO("Not yet implemented")
+        drawer?.drawWaypoint(coordinate) ?: run { Timber.w(DRAWER_IS_NULL_MESSAGE) }
     }
 
     override fun removeLastWaypoint() {
-        TODO("Not yet implemented")
+        drawer?.removeLastWaypoint() ?: run { Timber.w(DRAWER_IS_NULL_MESSAGE) }
     }
 
     override fun clearWaypoints() {
-        TODO("Not yet implemented")
+        drawer?.clearWaypoints() ?: run { Timber.w(DRAWER_IS_NULL_MESSAGE) }
     }
 
     override fun drawDraftSegment(segment: DraftSegment) {
-        TODO("Not yet implemented")
+        drawer?.drawDraftSegment(segment) ?: run { Timber.w(DRAWER_IS_NULL_MESSAGE) }
     }
 
     override fun clearDraftSegments() {
-        TODO("Not yet implemented")
+        drawer?.clearDraftSegments() ?: run { Timber.w(DRAWER_IS_NULL_MESSAGE) }
     }
 
     override fun fitTo(coordinates: List<Coordinate>) {
@@ -168,12 +169,12 @@ class GoogleMapManager(
             map.setOnCameraMoveStartedListener { reason: Int ->
                 onCameraMove(
                     map.cameraPosition.target.toCoordinate(),
-                    if (reason == CAMERA_MOVE_REASON_GESTURE) {
-                        CameraMoveReason.GESTURE
-                    } else {
-                        CameraMoveReason.SYSTEM
-                    },
+                    if (reason == REASON_GESTURE) CameraMoveReason.GESTURE else CameraMoveReason.SYSTEM,
                 )
+            }
+
+            map.setOnCameraIdleListener {
+                onCameraMove(map.cameraPosition.target.toCoordinate(), CameraMoveReason.UNKNOWN)
             }
         } ?: run { Timber.w(MAP_IS_NULL_MESSAGE) }
     }
@@ -239,6 +240,5 @@ class GoogleMapManager(
         private val DRAWER_IS_NULL_MESSAGE = "${GoogleMapDrawer::class.simpleName} is null."
         private const val MOVE_ANIMATION_DURATION_MS = 750L
         private const val DEFAULT_ZOOM_LEVEL = 15F
-        private const val CAMERA_MOVE_REASON_GESTURE = 1
     }
 }
