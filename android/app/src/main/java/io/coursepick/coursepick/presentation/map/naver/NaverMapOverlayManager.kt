@@ -41,28 +41,24 @@ class NaverMapOverlayManager(
     private var courseClickListener: Overlay.OnClickListener? = null
 
     fun drawCourse(course: CourseItem) {
-        val courseColor: Int
-        val courseWidth: Int
-        val courseZIndex: Int
-
-        if (course.selected) {
-            courseColor = context.getColor(R.color.course_selected)
-            courseWidth = context.resources.getDimension(R.dimen.selected_course_width).toInt()
-            courseZIndex = SELECTED_COURSE_Z_INDEX
-        } else {
-            courseColor = context.getColor(R.color.course_unselected)
-            courseWidth = context.resources.getDimension(R.dimen.unselected_course_width).toInt()
-            courseZIndex = UNSELECTED_COURSE_Z_INDEX
-        }
-
         PathOverlay().apply {
             coords = course.coordinates.map(Coordinate::toLatLng)
-            color = courseColor
-            width = courseWidth
             outlineWidth = 0
-            zIndex = courseZIndex
             tag = course
             onClickListener = courseClickListener
+
+            if (course.selected) {
+                color = context.getColor(R.color.course_selected)
+                width = context.resources.getDimension(R.dimen.selected_course_width).toInt()
+                zIndex = SELECTED_COURSE_Z_INDEX
+                patternImage = OverlayImage.fromResource(R.drawable.image_arrow)
+                patternInterval = context.resources.getDimension(R.dimen.course_pattern_between_distance).toInt()
+            } else {
+                color = context.getColor(R.color.course_unselected)
+                width = context.resources.getDimension(R.dimen.unselected_course_width).toInt()
+                zIndex = UNSELECTED_COURSE_Z_INDEX
+            }
+
             map = this@NaverMapOverlayManager.map
             courses.add(this)
         }
