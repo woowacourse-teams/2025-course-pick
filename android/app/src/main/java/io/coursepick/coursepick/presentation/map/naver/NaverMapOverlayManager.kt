@@ -7,18 +7,22 @@ import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.overlay.CircleOverlay
 import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.overlay.PathOverlay
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.location.Location
+import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.course.CourseItem
 
-class NaverMapDrawer(
+class NaverMapOverlayManager(
     private val context: Context,
     private val map: NaverMap,
 ) {
     private val pathOverlays = mutableListOf<PathOverlay>()
+
+    private var courseClickListener: Overlay.OnClickListener? = null
 
     private var searchCoordinateMarker: Marker? = null
 
@@ -48,7 +52,9 @@ class NaverMapDrawer(
             color = courseColor
             width = courseWidth
             zIndex = courseZIndex
-            map = this@NaverMapDrawer.map
+            tag = course
+            onClickListener = courseClickListener
+            map = this@NaverMapOverlayManager.map
             pathOverlays.add(this)
         }
     }
@@ -174,6 +180,29 @@ class NaverMapDrawer(
             onChange(LatLng(latitude, longitude))
         }
         return valueAnimator
+    }
+
+    fun setOnCourseClickListener(onClick: (CourseItem) -> Unit) {
+        courseClickListener =
+            Overlay.OnClickListener { overlay: Overlay ->
+                if (overlay is PathOverlay) {
+                    (overlay.tag as? CourseItem)?.let { course: CourseItem ->
+                        Logger.log(
+                            Logger.Event.Click("course_on_map"),
+                            "id" to course.id,
+                            "name" to course.name,
+                        )
+                        onClick(course)
+                    }
+                }
+                true
+            }
+
+        pathOverlays.forEach { pathOverlay: PathOverlay ->
+            if (pathOverlay.tag is CourseItem) {
+                pathOverlay.onClickListener = courseClickListener
+            }
+        }
     }
 
     companion object {
