@@ -200,6 +200,7 @@ class CoursesActivity :
                 viewModel.select(course)
             }
 
+            mapManager.resetZoom()
             mapManager.moveTo(coordinate = INITIAL_COORDINATE, animate = false)
 
             fetchInitialCourses()
