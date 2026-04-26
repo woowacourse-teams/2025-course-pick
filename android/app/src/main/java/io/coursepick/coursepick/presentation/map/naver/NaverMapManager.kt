@@ -24,12 +24,14 @@ class NaverMapManager(
     private val mapFragment: MapFragment,
 ) : MapManager {
     private var map: NaverMap? = null
-    private var drawer: NaverMapOverlayManager? = null
+    private var overlayManager: NaverMapOverlayManager? = null
     private val context: Context = mapFragment.requireContext()
 
     override val cameraCoordinate: Coordinate?
         get() =
-            map?.let { map: NaverMap -> map.cameraPosition.target.toCoordinate() } ?: run {
+            map?.let { map: NaverMap ->
+                map.cameraPosition.target.toCoordinate()
+            } ?: run {
                 Timber.w(MAP_IS_NULL_MESSAGE)
                 null
             }
@@ -48,14 +50,14 @@ class NaverMapManager(
     override fun startMap(onMapReady: () -> Unit) {
         mapFragment.getMapAsync { naverMap: NaverMap ->
             map = naverMap
-            drawer = NaverMapOverlayManager(mapFragment.requireContext(), naverMap)
+            overlayManager = NaverMapOverlayManager(mapFragment.requireContext(), naverMap)
 
             onMapReady()
         }
     }
 
     override fun draw(course: CourseItem) {
-        drawer?.drawCourse(course) ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
+        overlayManager?.drawCourse(course) ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
     }
 
     override fun draw(courses: List<CourseItem>) {
@@ -66,43 +68,43 @@ class NaverMapManager(
         route: List<Coordinate>,
         course: CourseItem,
     ) {
-        drawer?.drawRouteToCourse(route, course) ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
+        overlayManager?.drawRouteToCourse(route, course) ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
     }
 
     override fun removeAllRouteLines() {
-        drawer?.removeAllRouteLines() ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
+        overlayManager?.removeAllRouteLines() ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
     }
 
     override fun drawSearchCoordinate(coordinate: Coordinate) {
-        drawer?.drawSearchCoordinate(coordinate) ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
+        overlayManager?.drawSearchCoordinate(coordinate) ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
     }
 
     override fun drawUserLocation(location: Location) {
-        drawer?.drawUserLocation(location) ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
+        overlayManager?.drawUserLocation(location) ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
     }
 
     override fun hideUserLocation() {
-        drawer?.hideUserLocation() ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
+        overlayManager?.hideUserLocation() ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
     }
 
     override fun drawWaypoint(coordinate: Coordinate) {
-        TODO("Not yet implemented")
+        overlayManager?.drawWaypoint(coordinate) ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
     }
 
     override fun removeLastWaypoint() {
-        TODO("Not yet implemented")
+        overlayManager?.removeLastWaypoint() ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
     }
 
     override fun clearWaypoints() {
-        TODO("Not yet implemented")
+        overlayManager?.clearWaypoints() ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
     }
 
     override fun drawDraftSegment(segment: DraftSegment) {
-        TODO("Not yet implemented")
+        overlayManager?.drawDraftSegment(segment) ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
     }
 
     override fun clearDraftSegments() {
-        TODO("Not yet implemented")
+        overlayManager?.clearDraftSegments() ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
     }
 
     override fun fitTo(coordinates: List<Coordinate>) {
@@ -121,7 +123,7 @@ class NaverMapManager(
     }
 
     override fun setOnCourseClickListener(onClick: (CourseItem) -> Unit) {
-        drawer?.setOnCourseClickListener(onClick) ?: run { Timber.w(MAP_IS_NULL_MESSAGE) }
+        overlayManager?.setOnCourseClickListener(onClick) ?: run { Timber.w(MAP_IS_NULL_MESSAGE) }
     }
 
     override fun setOnCameraMoveListener(onCameraMove: (coordinate: Coordinate, reason: CameraMoveReason) -> Unit) {

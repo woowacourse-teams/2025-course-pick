@@ -12,6 +12,7 @@ import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.overlay.PathOverlay
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Coordinate
+import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.course.CourseItem
@@ -20,9 +21,10 @@ class NaverMapOverlayManager(
     private val context: Context,
     private val map: NaverMap,
 ) {
-    private val pathOverlays = mutableListOf<PathOverlay>()
+    private val courses = mutableListOf<PathOverlay>()
 
-    private var courseClickListener: Overlay.OnClickListener? = null
+    private val waypoints = mutableListOf<Marker>()
+    private val segments = mutableListOf<PathOverlay>()
 
     private var searchCoordinateMarker: Marker? = null
 
@@ -31,6 +33,8 @@ class NaverMapOverlayManager(
 
     private var coarseUserLocationCircle: CircleOverlay? = null
     private var coarseUserLocationAnimator: ValueAnimator? = null
+
+    private var courseClickListener: Overlay.OnClickListener? = null
 
     fun drawCourse(course: CourseItem) {
         val courseColor: Int
@@ -55,7 +59,7 @@ class NaverMapOverlayManager(
             tag = course
             onClickListener = courseClickListener
             map = this@NaverMapOverlayManager.map
-            pathOverlays.add(this)
+            courses.add(this)
         }
     }
 
@@ -67,16 +71,16 @@ class NaverMapOverlayManager(
             coords = route.map(Coordinate::toLatLng)
             color = context.getColor(R.color.course_route)
             width = context.resources.getDimension(R.dimen.course_route_width).toInt()
-            this.map = map
-            pathOverlays.add(this)
+            map = this@NaverMapOverlayManager.map
+            courses.add(this)
         }
 
         drawCourse(course)
     }
 
     fun removeAllRouteLines() {
-        pathOverlays.forEach { pathOverlay: PathOverlay -> pathOverlay.map = null }
-        pathOverlays.clear()
+        courses.forEach { pathOverlay: PathOverlay -> pathOverlay.map = null }
+        courses.clear()
     }
 
     fun drawSearchCoordinate(coordinate: Coordinate) {
@@ -88,7 +92,7 @@ class NaverMapOverlayManager(
                     position = coordinate.toLatLng()
                     icon = OverlayImage.fromResource(R.drawable.image_search_location)
                     anchor = PointF(0.5F, 0.5F)
-                    this.map = map
+                    map = this@NaverMapOverlayManager.map
                 }
         }
     }
@@ -117,7 +121,7 @@ class NaverMapOverlayManager(
                     position = location.coordinate.toLatLng()
                     icon = OverlayImage.fromResource(R.drawable.image_current_location)
                     anchor = PointF(0.5F, 0.5F)
-                    this.map = map
+                    map = this@NaverMapOverlayManager.map
                 }
         }
     }
@@ -139,7 +143,7 @@ class NaverMapOverlayManager(
                     center = location.coordinate.toLatLng()
                     radius = location.accuracy.meter.value
                     color = context.getColor(R.color.coarse_location_area)
-                    this.map = map
+                    map = this@NaverMapOverlayManager.map
                 }
         }
     }
@@ -163,6 +167,41 @@ class NaverMapOverlayManager(
 
         coarseUserLocationAnimator?.cancel()
         coarseUserLocationAnimator = null
+    }
+
+    fun drawWaypoint(coordinate: Coordinate) {
+        Marker().apply {
+            position = coordinate.toLatLng()
+            icon = OverlayImage.fromResource(R.drawable.icon_waypoint)
+            anchor = PointF(0.5F, 0.5F)
+            map = this@NaverMapOverlayManager.map
+            waypoints.add(this)
+        }
+    }
+
+    fun removeLastWaypoint() {
+        waypoints.removeLastOrNull()?.apply { map = null }
+        segments.removeLastOrNull()?.apply { map = null }
+    }
+
+    fun clearWaypoints() {
+        waypoints.forEach { waypoint: Marker -> waypoint.map = null }
+        waypoints.clear()
+    }
+
+    fun drawDraftSegment(segment: DraftSegment) {
+        PathOverlay().apply {
+            coords = segment.coordinates.map(Coordinate::toLatLng)
+            color = context.getColor(R.color.course_draft)
+            width = context.resources.getDimension(R.dimen.draft_segment_width).toInt()
+            map = this@NaverMapOverlayManager.map
+            segments.add(this)
+        }
+    }
+
+    fun clearDraftSegments() {
+        segments.forEach { segment: PathOverlay -> segment.map = null }
+        segments.clear()
     }
 
     private fun latLngAnimator(
@@ -198,7 +237,7 @@ class NaverMapOverlayManager(
                 true
             }
 
-        pathOverlays.forEach { pathOverlay: PathOverlay ->
+        courses.forEach { pathOverlay: PathOverlay ->
             if (pathOverlay.tag is CourseItem) {
                 pathOverlay.onClickListener = courseClickListener
             }
