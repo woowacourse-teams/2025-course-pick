@@ -2,10 +2,6 @@ package io.coursepick.coursepick.presentation.map.google
 
 import android.animation.ValueAnimator
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import androidx.annotation.DrawableRes
-import androidx.core.graphics.scale
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -22,6 +18,7 @@ import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.map.BitmapScaler
 import io.coursepick.coursepick.presentation.map.CoordinateAnimator
 
 class GoogleMapDrawer(
@@ -33,12 +30,12 @@ class GoogleMapDrawer(
     private var fineUserLocationMarker: Marker? = null
     private var coarseUserLocationCircle: Circle? = null
 
-    private val selectedCoursePattern: BitmapDescriptor =
-        BitmapDescriptorFactory.fromResource(R.drawable.image_arrow)
+    private val bitmapScaler = BitmapScaler(context)
+    private val selectedCoursePattern: BitmapDescriptor = BitmapDescriptorFactory.fromResource(R.drawable.image_arrow)
     private val fineUserLocationImage: BitmapDescriptor =
-        BitmapDescriptorFactory.fromBitmap(scaleDrawable(R.drawable.image_current_location, 0.5F))
+        BitmapDescriptorFactory.fromBitmap(bitmapScaler.scaleDrawable(R.drawable.image_current_location, 0.5))
     private val searchCoordinateImage: BitmapDescriptor =
-        BitmapDescriptorFactory.fromBitmap(scaleDrawable(R.drawable.image_search_location, 0.5F))
+        BitmapDescriptorFactory.fromBitmap(bitmapScaler.scaleDrawable(R.drawable.image_search_location, 0.5))
 
     private var fineUserLocationAnimator: ValueAnimator? = null
     private var coarseUserLocationAnimator: ValueAnimator? = null
@@ -192,14 +189,6 @@ class GoogleMapDrawer(
 
         coarseUserLocationAnimator?.cancel()
         coarseUserLocationAnimator = null
-    }
-
-    private fun scaleDrawable(
-        @DrawableRes id: Int,
-        factor: Float,
-    ): Bitmap {
-        val original: Bitmap = BitmapFactory.decodeResource(context.resources, id)
-        return original.scale((original.width * factor).toInt(), (original.height * factor).toInt())
     }
 
     companion object {

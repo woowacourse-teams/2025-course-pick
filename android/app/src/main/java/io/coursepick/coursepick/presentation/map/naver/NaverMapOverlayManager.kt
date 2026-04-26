@@ -2,6 +2,7 @@ package io.coursepick.coursepick.presentation.map.naver
 
 import android.animation.ValueAnimator
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.PointF
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.overlay.CircleOverlay
@@ -15,6 +16,7 @@ import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.map.BitmapScaler
 import io.coursepick.coursepick.presentation.map.CoordinateAnimator
 
 class NaverMapOverlayManager(
@@ -22,16 +24,18 @@ class NaverMapOverlayManager(
     private val map: NaverMap,
 ) {
     private val courses = mutableListOf<PathOverlay>()
-
     private val waypoints = mutableListOf<Marker>()
     private val segments = mutableListOf<PathOverlay>()
 
+    private val bitmapScaler = BitmapScaler(context)
+    private val searchCoordinateImage: Bitmap = bitmapScaler.scaleDrawable(R.drawable.image_search_location, 0.5)
+    private val fineUserLocationImage: Bitmap = bitmapScaler.scaleDrawable(R.drawable.image_current_location, 0.5)
+
     private var searchCoordinateMarker: Marker? = null
-
     private var fineUserLocationMarker: Marker? = null
-    private var fineUserLocationAnimator: ValueAnimator? = null
-
     private var coarseUserLocationCircle: CircleOverlay? = null
+
+    private var fineUserLocationAnimator: ValueAnimator? = null
     private var coarseUserLocationAnimator: ValueAnimator? = null
 
     private var courseClickListener: Overlay.OnClickListener? = null
@@ -90,7 +94,7 @@ class NaverMapOverlayManager(
             searchCoordinateMarker =
                 Marker().apply {
                     position = coordinate.toLatLng()
-                    icon = OverlayImage.fromResource(R.drawable.image_search_location)
+                    icon = OverlayImage.fromBitmap(searchCoordinateImage)
                     anchor = PointF(0.5F, 0.5F)
                     map = this@NaverMapOverlayManager.map
                 }
@@ -118,7 +122,7 @@ class NaverMapOverlayManager(
             fineUserLocationMarker =
                 Marker().apply {
                     position = location.coordinate.toLatLng()
-                    icon = OverlayImage.fromResource(R.drawable.image_current_location)
+                    icon = OverlayImage.fromBitmap(fineUserLocationImage)
                     anchor = PointF(0.5F, 0.5F)
                     map = this@NaverMapOverlayManager.map
                 }
