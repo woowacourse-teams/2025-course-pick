@@ -40,6 +40,7 @@ android {
         manifestPlaceholders +=
             mapOf(
                 "KAKAO_NATIVE_APP_KEY" to localProperties["kakao.native.app.key"].toString(),
+                "NAVER_MAP_CLIENT_ID" to localProperties["naver.map.client.id"].toString(),
             )
     }
 
