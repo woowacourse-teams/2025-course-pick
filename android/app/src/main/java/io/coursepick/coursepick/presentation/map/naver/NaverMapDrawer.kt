@@ -1,0 +1,184 @@
+package io.coursepick.coursepick.presentation.map.naver
+
+import android.animation.ValueAnimator
+import android.content.Context
+import android.graphics.PointF
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.NaverMap
+import com.naver.maps.map.overlay.CircleOverlay
+import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.OverlayImage
+import com.naver.maps.map.overlay.PathOverlay
+import io.coursepick.coursepick.R
+import io.coursepick.coursepick.domain.course.Coordinate
+import io.coursepick.coursepick.domain.location.Location
+import io.coursepick.coursepick.presentation.course.CourseItem
+
+class NaverMapDrawer(
+    private val context: Context,
+    private val map: NaverMap,
+) {
+    private val pathOverlays = mutableListOf<PathOverlay>()
+
+    private var searchCoordinateMarker: Marker? = null
+
+    private var fineUserLocationMarker: Marker? = null
+    private var fineUserLocationAnimator: ValueAnimator? = null
+
+    private var coarseUserLocationCircle: CircleOverlay? = null
+    private var coarseUserLocationAnimator: ValueAnimator? = null
+
+    fun drawCourse(course: CourseItem) {
+        val courseColor: Int
+        val courseWidth: Int
+        val courseZIndex: Int
+
+        if (course.selected) {
+            courseColor = context.getColor(R.color.course_selected)
+            courseWidth = context.resources.getDimension(R.dimen.selected_course_width).toInt()
+            courseZIndex = SELECTED_COURSE_Z_INDEX
+        } else {
+            courseColor = context.getColor(R.color.course_unselected)
+            courseWidth = context.resources.getDimension(R.dimen.unselected_course_width).toInt()
+            courseZIndex = UNSELECTED_COURSE_Z_INDEX
+        }
+
+        PathOverlay().apply {
+            coords = course.coordinates.map(Coordinate::toLatLng)
+            color = courseColor
+            width = courseWidth
+            zIndex = courseZIndex
+            map = this@NaverMapDrawer.map
+            pathOverlays.add(this)
+        }
+    }
+
+    fun drawRouteToCourse(
+        route: List<Coordinate>,
+        course: CourseItem,
+    ) {
+        PathOverlay().apply {
+            coords = route.map(Coordinate::toLatLng)
+            color = context.getColor(R.color.course_route)
+            width = context.resources.getDimension(R.dimen.course_route_width).toInt()
+            this.map = map
+            pathOverlays.add(this)
+        }
+
+        drawCourse(course)
+    }
+
+    fun removeAllRouteLines() {
+        pathOverlays.forEach { pathOverlay: PathOverlay -> pathOverlay.map = null }
+        pathOverlays.clear()
+    }
+
+    fun drawSearchCoordinate(coordinate: Coordinate) {
+        searchCoordinateMarker?.let { marker: Marker ->
+            marker.position = coordinate.toLatLng()
+        } ?: run {
+            searchCoordinateMarker =
+                Marker().apply {
+                    position = coordinate.toLatLng()
+                    icon = OverlayImage.fromResource(R.drawable.image_search_location)
+                    anchor = PointF(0.5F, 0.5F)
+                    this.map = map
+                }
+        }
+    }
+
+    fun drawUserLocation(location: Location) {
+        when (location) {
+            is Location.Fine -> drawFineUserLocation(location)
+            is Location.Coarse -> drawCoarseUserLocation(location)
+        }
+    }
+
+    private fun drawFineUserLocation(location: Location.Fine) {
+        hideCoarseUserLocation()
+
+        fineUserLocationMarker?.apply {
+            fineUserLocationAnimator?.cancel()
+            fineUserLocationAnimator =
+                latLngAnimator(
+                    start = position,
+                    end = location.coordinate.toLatLng(),
+                    duration = MOVE_ANIMATION_DURATION_MS,
+                ) { latLng: LatLng -> position = latLng }
+        } ?: run {
+            fineUserLocationMarker =
+                Marker().apply {
+                    position = location.coordinate.toLatLng()
+                    icon = OverlayImage.fromResource(R.drawable.image_current_location)
+                    anchor = PointF(0.5F, 0.5F)
+                    this.map = map
+                }
+        }
+    }
+
+    private fun drawCoarseUserLocation(location: Location.Coarse) {
+        hideFineUserLocation()
+
+        coarseUserLocationCircle?.apply {
+            coarseUserLocationAnimator?.cancel()
+            coarseUserLocationAnimator =
+                latLngAnimator(
+                    start = center,
+                    end = location.coordinate.toLatLng(),
+                    duration = MOVE_ANIMATION_DURATION_MS,
+                ) { latLng: LatLng -> center = latLng }
+        } ?: run {
+            coarseUserLocationCircle =
+                CircleOverlay().apply {
+                    center = location.coordinate.toLatLng()
+                    radius = location.accuracy.meter.value
+                    color = context.getColor(R.color.coarse_location_area)
+                    this.map = map
+                }
+        }
+    }
+
+    fun hideUserLocation() {
+        hideFineUserLocation()
+        hideCoarseUserLocation()
+    }
+
+    private fun hideFineUserLocation() {
+        fineUserLocationMarker?.map = null
+        fineUserLocationMarker = null
+
+        fineUserLocationAnimator?.cancel()
+        fineUserLocationAnimator = null
+    }
+
+    private fun hideCoarseUserLocation() {
+        coarseUserLocationCircle?.map = null
+        coarseUserLocationCircle = null
+
+        coarseUserLocationAnimator?.cancel()
+        coarseUserLocationAnimator = null
+    }
+
+    private fun latLngAnimator(
+        start: LatLng,
+        end: LatLng,
+        duration: Long,
+        onChange: (latLng: LatLng) -> Unit,
+    ): ValueAnimator {
+        val valueAnimator = ValueAnimator.ofFloat(0F, 1F).setDuration(duration)
+        valueAnimator.addUpdateListener { animator: ValueAnimator ->
+            val latitude =
+                (end.latitude - start.latitude) * animator.animatedFraction + start.latitude
+            val longitude =
+                (end.longitude - start.longitude) * animator.animatedFraction + start.longitude
+            onChange(LatLng(latitude, longitude))
+        }
+        return valueAnimator
+    }
+
+    companion object {
+        private const val MOVE_ANIMATION_DURATION_MS = 750L
+        private const val UNSELECTED_COURSE_Z_INDEX = 0
+        private const val SELECTED_COURSE_Z_INDEX = 1
+    }
+}
