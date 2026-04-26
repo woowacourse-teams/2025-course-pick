@@ -11,7 +11,6 @@ import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.Circle
 import com.google.android.gms.maps.model.CircleOptions
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.Polyline
@@ -23,6 +22,7 @@ import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.map.CoordinateAnimator
 
 class GoogleMapDrawer(
     private val context: Context,
@@ -133,11 +133,10 @@ class GoogleMapDrawer(
         fineUserLocationMarker?.let { marker: Marker ->
             fineUserLocationAnimator?.cancel()
             fineUserLocationAnimator =
-                latLngAnimator(
-                    start = marker.position,
-                    end = location.coordinate.toLatLng(),
-                    duration = MOVE_ANIMATION_DURATION_MS,
-                ) { latLng: LatLng -> marker.position = latLng }
+                CoordinateAnimator.animator(
+                    start = marker.position.toCoordinate(),
+                    end = location.coordinate,
+                ) { coordinate: Coordinate -> marker.position = coordinate.toLatLng() }
             fineUserLocationAnimator?.start()
         } ?: run {
             fineUserLocationMarker =
@@ -157,11 +156,10 @@ class GoogleMapDrawer(
             circle.radius = location.accuracy.meter.value
             coarseUserLocationAnimator?.cancel()
             coarseUserLocationAnimator =
-                latLngAnimator(
-                    start = circle.center,
-                    end = location.coordinate.toLatLng(),
-                    duration = MOVE_ANIMATION_DURATION_MS,
-                ) { latLng: LatLng -> circle.center = latLng }
+                CoordinateAnimator.animator(
+                    start = circle.center.toCoordinate(),
+                    end = location.coordinate,
+                ) { coordinate: Coordinate -> circle.center = coordinate.toLatLng() }
             coarseUserLocationAnimator?.start()
         } ?: run {
             coarseUserLocationCircle =
@@ -196,23 +194,6 @@ class GoogleMapDrawer(
         coarseUserLocationAnimator = null
     }
 
-    private fun latLngAnimator(
-        start: LatLng,
-        end: LatLng,
-        duration: Long,
-        onChange: (latLng: LatLng) -> Unit,
-    ): ValueAnimator {
-        val valueAnimator = ValueAnimator.ofFloat(0F, 1F).setDuration(duration)
-        valueAnimator.addUpdateListener { animator: ValueAnimator ->
-            val latitude =
-                (end.latitude - start.latitude) * animator.animatedFraction + start.latitude
-            val longitude =
-                (end.longitude - start.longitude) * animator.animatedFraction + start.longitude
-            onChange(LatLng(latitude, longitude))
-        }
-        return valueAnimator
-    }
-
     private fun scaleDrawable(
         @DrawableRes id: Int,
         factor: Float,
@@ -222,7 +203,6 @@ class GoogleMapDrawer(
     }
 
     companion object {
-        private const val MOVE_ANIMATION_DURATION_MS = 750L
         private const val UNSELECTED_COURSE_Z_INDEX = 0F
         private const val SELECTED_COURSE_Z_INDEX = 1F
     }

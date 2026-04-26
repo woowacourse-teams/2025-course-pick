@@ -3,7 +3,6 @@ package io.coursepick.coursepick.presentation.map.naver
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.PointF
-import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.overlay.CircleOverlay
 import com.naver.maps.map.overlay.Marker
@@ -16,6 +15,7 @@ import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.map.CoordinateAnimator
 
 class NaverMapOverlayManager(
     private val context: Context,
@@ -110,11 +110,10 @@ class NaverMapOverlayManager(
         fineUserLocationMarker?.apply {
             fineUserLocationAnimator?.cancel()
             fineUserLocationAnimator =
-                latLngAnimator(
-                    start = position,
-                    end = location.coordinate.toLatLng(),
-                    duration = MOVE_ANIMATION_DURATION_MS,
-                ) { latLng: LatLng -> position = latLng }
+                CoordinateAnimator.animator(
+                    start = position.toCoordinate(),
+                    end = location.coordinate,
+                ) { coordinate: Coordinate -> position = coordinate.toLatLng() }
         } ?: run {
             fineUserLocationMarker =
                 Marker().apply {
@@ -132,11 +131,10 @@ class NaverMapOverlayManager(
         coarseUserLocationCircle?.apply {
             coarseUserLocationAnimator?.cancel()
             coarseUserLocationAnimator =
-                latLngAnimator(
-                    start = center,
-                    end = location.coordinate.toLatLng(),
-                    duration = MOVE_ANIMATION_DURATION_MS,
-                ) { latLng: LatLng -> center = latLng }
+                CoordinateAnimator.animator(
+                    start = center.toCoordinate(),
+                    end = location.coordinate,
+                ) { coordinate: Coordinate -> center = coordinate.toLatLng() }
         } ?: run {
             coarseUserLocationCircle =
                 CircleOverlay().apply {
@@ -204,23 +202,6 @@ class NaverMapOverlayManager(
         segments.clear()
     }
 
-    private fun latLngAnimator(
-        start: LatLng,
-        end: LatLng,
-        duration: Long,
-        onChange: (latLng: LatLng) -> Unit,
-    ): ValueAnimator {
-        val valueAnimator = ValueAnimator.ofFloat(0F, 1F).setDuration(duration)
-        valueAnimator.addUpdateListener { animator: ValueAnimator ->
-            val latitude =
-                (end.latitude - start.latitude) * animator.animatedFraction + start.latitude
-            val longitude =
-                (end.longitude - start.longitude) * animator.animatedFraction + start.longitude
-            onChange(LatLng(latitude, longitude))
-        }
-        return valueAnimator
-    }
-
     fun setOnCourseClickListener(onClick: (CourseItem) -> Unit) {
         courseClickListener =
             Overlay.OnClickListener { overlay: Overlay ->
@@ -245,7 +226,6 @@ class NaverMapOverlayManager(
     }
 
     companion object {
-        private const val MOVE_ANIMATION_DURATION_MS = 750L
         private const val UNSELECTED_COURSE_Z_INDEX = 0
         private const val SELECTED_COURSE_Z_INDEX = 1
     }
