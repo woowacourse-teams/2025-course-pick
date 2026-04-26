@@ -130,8 +130,8 @@ class KakaoMapDrawer(
     }
 
     fun removeLastWaypoint() {
-        waypoints.removeLastOrNull()?.also(Label::remove)
-        segments.removeLastOrNull()?.also(RouteLine::remove)
+        waypoints.removeLastOrNull()?.remove()
+        segments.removeLastOrNull()?.remove()
     }
 
     fun clearWaypoints() {
@@ -205,14 +205,14 @@ class KakaoMapDrawer(
         map.labelManager
             ?.layer
             ?.getLabel(ID_ACCURATE_USER_POSITION_MARK)
-            ?.let(Label::remove)
+            ?.remove()
     }
 
     private fun hideApproximateUserPosition() {
         map.shapeManager
             ?.layer
             ?.getPolygon(ID_APPROXIMATE_USER_POSITION_MARK)
-            ?.let(Polygon::remove)
+            ?.remove()
     }
 
     private fun addOrUpdateLabel(
