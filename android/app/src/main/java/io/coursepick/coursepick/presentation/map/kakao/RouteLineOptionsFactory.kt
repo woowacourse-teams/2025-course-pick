@@ -18,7 +18,7 @@ class RouteLineOptionsFactory(
     private val mapDpScale: Float,
 ) {
     private val patternDistance: Float =
-        context.resources.getDimension(R.dimen.course_pattern_between_distance) / mapDpScale
+        context.resources.getDimension(R.dimen.selected_course_pattern_interval_kakao) / mapDpScale
 
     private val selectedStyle =
         RouteLineStyles(R.color.course_selected, R.dimen.selected_course_width, true)

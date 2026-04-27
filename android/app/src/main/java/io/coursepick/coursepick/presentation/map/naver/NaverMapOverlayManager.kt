@@ -28,6 +28,11 @@ class NaverMapOverlayManager(
     private val segments = mutableListOf<PathOverlay>()
 
     private val bitmapScaler = BitmapScaler(context)
+    private val selectedCoursePatternImage: Bitmap =
+        bitmapScaler.scaleDrawableToWidth(
+            R.drawable.image_arrow,
+            context.resources.getDimension(R.dimen.selected_course_width),
+        )
     private val searchCoordinateImage: Bitmap =
         bitmapScaler.scaleDrawableToHeight(
             R.drawable.image_search_location,
@@ -66,8 +71,8 @@ class NaverMapOverlayManager(
                 color = context.getColor(R.color.course_selected)
                 width = context.resources.getDimension(R.dimen.selected_course_width).toInt()
                 zIndex = SELECTED_COURSE_Z_INDEX
-                patternImage = OverlayImage.fromResource(R.drawable.image_arrow)
-                patternInterval = context.resources.getDimension(R.dimen.course_pattern_between_distance).toInt()
+                patternImage = OverlayImage.fromBitmap(selectedCoursePatternImage)
+                patternInterval = context.resources.getDimension(R.dimen.selected_course_pattern_interval_naver).toInt()
             } else {
                 color = context.getColor(R.color.course_unselected)
                 width = context.resources.getDimension(R.dimen.unselected_course_width).toInt()

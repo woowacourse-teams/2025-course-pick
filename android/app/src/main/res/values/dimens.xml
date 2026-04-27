@@ -9,7 +9,9 @@
     <dimen name="unselected_course_width">6dp</dimen>
     <dimen name="course_route_width">9dp</dimen>
     <dimen name="draft_segment_width">6dp</dimen>
-    <dimen name="course_pattern_between_distance">10dp</dimen>
+
+    <dimen name="selected_course_pattern_interval_kakao">10dp</dimen>
+    <dimen name="selected_course_pattern_interval_naver">20dp</dimen>
 
     <dimen name="search_coordinate_marker_height">64dp</dimen>
     <dimen name="fine_user_location_size">28dp</dimen>
