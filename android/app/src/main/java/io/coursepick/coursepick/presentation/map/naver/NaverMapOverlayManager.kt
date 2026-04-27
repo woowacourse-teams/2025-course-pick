@@ -4,6 +4,7 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.PointF
+import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.overlay.CircleOverlay
 import com.naver.maps.map.overlay.Marker
@@ -61,11 +62,11 @@ class NaverMapOverlayManager(
     private var courseClickListener: Overlay.OnClickListener? = null
 
     fun drawCourse(course: CourseItem) {
+        val latLngs: List<LatLng> = course.coordinates.map(Coordinate::toLatLng)
+
         PathOverlay().apply {
-            coords = course.coordinates.map(Coordinate::toLatLng)
+            coords = latLngs
             outlineWidth = 0
-            tag = course
-            onClickListener = courseClickListener
 
             if (course.selected) {
                 color = context.getColor(R.color.course_selected)
@@ -75,6 +76,32 @@ class NaverMapOverlayManager(
                 patternInterval = context.resources.getDimension(R.dimen.selected_course_pattern_interval_naver).toInt()
             } else {
                 color = context.getColor(R.color.course_unselected)
+                width = context.resources.getDimension(R.dimen.unselected_course_width).toInt()
+                zIndex = UNSELECTED_COURSE_Z_INDEX
+            }
+
+            map = this@NaverMapOverlayManager.map
+            courses.add(this)
+        }
+
+        drawClickableOverlay(latLngs, course)
+    }
+
+    private fun drawClickableOverlay(
+        latLngs: List<LatLng>,
+        course: CourseItem,
+    ) {
+        PathOverlay().apply {
+            coords = latLngs
+            color = context.getColor(R.color.transparent)
+            globalZIndex = 0
+            tag = course
+            onClickListener = courseClickListener
+
+            if (course.selected) {
+                width = context.resources.getDimension(R.dimen.selected_course_width).toInt()
+                zIndex = SELECTED_COURSE_Z_INDEX
+            } else {
                 width = context.resources.getDimension(R.dimen.unselected_course_width).toInt()
                 zIndex = UNSELECTED_COURSE_Z_INDEX
             }
@@ -248,7 +275,7 @@ class NaverMapOverlayManager(
                         onClick(course)
                     }
                 }
-                true
+                false
             }
 
         courses.forEach { pathOverlay: PathOverlay ->
