@@ -131,6 +131,7 @@ class NaverMapOverlayManager(
                     start = position.toCoordinate(),
                     end = location.coordinate,
                 ) { coordinate: Coordinate -> position = coordinate.toLatLng() }
+            fineUserLocationAnimator?.start()
         } ?: run {
             fineUserLocationMarker =
                 Marker().apply {
@@ -152,6 +153,7 @@ class NaverMapOverlayManager(
                     start = center.toCoordinate(),
                     end = location.coordinate,
                 ) { coordinate: Coordinate -> center = coordinate.toLatLng() }
+            coarseUserLocationAnimator?.start()
         } ?: run {
             coarseUserLocationCircle =
                 CircleOverlay().apply {
