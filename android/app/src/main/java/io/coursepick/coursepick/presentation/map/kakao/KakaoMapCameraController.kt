@@ -14,7 +14,7 @@ class KakaoMapCameraController(
     context: Context,
 ) {
     private val fitMapPadding =
-        context.resources.getDimensionPixelSize(R.dimen.course_route_padding)
+        context.resources.getDimensionPixelSize(R.dimen.fit_map_padding)
 
     fun moveTo(
         map: KakaoMap,

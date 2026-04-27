@@ -139,7 +139,7 @@ class GoogleMapManager(
             map.animateCamera(
                 CameraUpdateFactory.newLatLngBounds(
                     bounds,
-                    mapFragment.requireContext().resources.getDimensionPixelSize(R.dimen.course_route_padding),
+                    mapFragment.requireContext().resources.getDimensionPixelSize(R.dimen.fit_map_padding),
                 ),
                 MOVE_ANIMATION_DURATION_MS.toInt(),
                 null,

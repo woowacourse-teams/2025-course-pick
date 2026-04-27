@@ -120,7 +120,7 @@ class NaverMapManager(
             CameraUpdate
                 .fitBounds(
                     LatLngBounds.from(coordinates.map(Coordinate::toLatLng)),
-                    context.resources.getDimension(R.dimen.course_route_padding).toInt(),
+                    context.resources.getDimension(R.dimen.fit_map_padding).toInt(),
                 ).animate(CameraAnimation.Easing, MOVE_ANIMATION_DURATION_MS),
         ) ?: run { Timber.w(MAP_IS_NULL_MESSAGE) }
     }
