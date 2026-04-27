@@ -2,9 +2,7 @@ package io.coursepick.coursepick.presentation.map.kakao
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import androidx.annotation.DrawableRes
-import androidx.core.graphics.scale
+import androidx.annotation.DimenRes
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.label.Label
 import com.kakao.vectormap.label.LabelOptions
@@ -28,6 +26,7 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.map.BitmapScaler
 
 class KakaoMapDrawer(
     private val context: Context,
@@ -35,12 +34,24 @@ class KakaoMapDrawer(
 ) {
     private val routeLineOptionsFactory = RouteLineOptionsFactory(context, map.mapDpScale)
 
-    private val searchLocationIcon: Bitmap =
-        resizeDrawableWidth(id = R.drawable.image_search_location, widthDp = 50F)
-    private val currentLocationIcon: Bitmap =
-        resizeDrawable(id = R.drawable.image_current_location, widthDp = 25F, heightDp = 25F)
-    private val waypointIcon: Bitmap =
-        resizeDrawable(id = R.drawable.icon_waypoint, widthDp = 15F, heightDp = 15F)
+    private val bitmapScaler = BitmapScaler(context)
+    private val searchCoordinateImage: Bitmap =
+        bitmapScaler.scaleDrawableToHeight(
+            R.drawable.image_search_location,
+            kakaoAdjustedDimension(R.dimen.search_coordinate_marker_height),
+        )
+    private val fineUserLocationImage: Bitmap =
+        bitmapScaler.scaleDrawableToSize(
+            R.drawable.image_current_location,
+            kakaoAdjustedDimension(R.dimen.fine_user_location_size),
+            kakaoAdjustedDimension(R.dimen.fine_user_location_size),
+        )
+    private val waypointImage: Bitmap =
+        bitmapScaler.scaleDrawableToSize(
+            R.drawable.icon_waypoint,
+            kakaoAdjustedDimension(R.dimen.waypoint_marker_size),
+            kakaoAdjustedDimension(R.dimen.waypoint_marker_size),
+        )
 
     private val waypoints = mutableListOf<Label>()
     private val segments = mutableListOf<RouteLine>()
@@ -92,7 +103,7 @@ class KakaoMapDrawer(
         val latLng = coordinate.toLatLng()
         val style =
             LabelStyle
-                .from(searchLocationIcon)
+                .from(searchCoordinateImage)
                 .setAnchorPoint(0.5F, 0.5F)
                 .setIconTransition(LabelTransition.from(Transition.None, Transition.None))
         val options: LabelOptions =
@@ -114,7 +125,7 @@ class KakaoMapDrawer(
     fun drawWaypoint(coordinate: Coordinate) {
         val style =
             LabelStyle
-                .from(waypointIcon)
+                .from(waypointImage)
                 .setAnchorPoint(0.5F, 0.5F)
                 .setIconTransition(LabelTransition.from(Transition.None, Transition.None))
         val options =
@@ -142,7 +153,7 @@ class KakaoMapDrawer(
     fun drawDraftSegment(segment: DraftSegment) {
         val style =
             RouteLineStyle.from(
-                context.resources.getDimension(R.dimen.draft_segment_width),
+                kakaoAdjustedDimension(R.dimen.draft_segment_width),
                 context.getColor(R.color.course_draft),
             )
         val options =
@@ -168,7 +179,7 @@ class KakaoMapDrawer(
         hideApproximateUserPosition()
 
         val latLng = location.coordinate.toLatLng()
-        val style = LabelStyle.from(currentLocationIcon).setAnchorPoint(0.5F, 0.5F)
+        val style = LabelStyle.from(fineUserLocationImage).setAnchorPoint(0.5F, 0.5F)
         val options: LabelOptions =
             LabelOptions
                 .from(latLng)
@@ -239,28 +250,9 @@ class KakaoMapDrawer(
         layer.addPolygon(options)
     }
 
-    private fun resizeDrawable(
-        @DrawableRes id: Int,
-        widthDp: Float,
-        heightDp: Float,
-    ): Bitmap {
-        val original: Bitmap = BitmapFactory.decodeResource(context.resources, id)
-        val factor = context.resources.displayMetrics.density / map.mapDpScale
-        val widthPx: Float = widthDp * factor
-        val heightPx: Float = heightDp * factor
-        return original.scale(widthPx.toInt(), heightPx.toInt())
-    }
-
-    private fun resizeDrawableWidth(
-        @DrawableRes id: Int,
-        widthDp: Float,
-    ): Bitmap {
-        val original: Bitmap = BitmapFactory.decodeResource(context.resources, id)
-        val factor = context.resources.displayMetrics.density / map.mapDpScale
-        val widthPx: Float = widthDp * factor
-        val heightPx: Float = original.height * (widthDp / original.width) * factor
-        return original.scale(widthPx.toInt(), heightPx.toInt())
-    }
+    private fun kakaoAdjustedDimension(
+        @DimenRes id: Int,
+    ): Float = context.resources.getDimension(id) / map.mapDpScale
 
     companion object {
         private const val LABEL_MOVE_ANIMATION_DURATION = 500

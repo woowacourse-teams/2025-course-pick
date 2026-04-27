@@ -16,4 +16,21 @@ class BitmapScaler(
         val original: Bitmap = BitmapFactory.decodeResource(context.resources, id)
         return original.scale((original.width * factor).toInt(), (original.height * factor).toInt())
     }
+
+    fun scaleDrawableToSize(
+        @DrawableRes id: Int,
+        widthPx: Float,
+        heightPx: Float,
+    ): Bitmap {
+        val original: Bitmap = BitmapFactory.decodeResource(context.resources, id)
+        return original.scale(widthPx.toInt(), heightPx.toInt())
+    }
+
+    fun scaleDrawableToHeight(
+        @DrawableRes id: Int,
+        heightPx: Float,
+    ): Bitmap {
+        val original: Bitmap = BitmapFactory.decodeResource(context.resources, id)
+        return original.scale((original.width / original.height.toFloat() * heightPx).toInt(), heightPx.toInt())
+    }
 }

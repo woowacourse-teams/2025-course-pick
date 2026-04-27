@@ -28,8 +28,23 @@ class NaverMapOverlayManager(
     private val segments = mutableListOf<PathOverlay>()
 
     private val bitmapScaler = BitmapScaler(context)
-    private val searchCoordinateImage: Bitmap = bitmapScaler.scaleDrawable(R.drawable.image_search_location, 0.5)
-    private val fineUserLocationImage: Bitmap = bitmapScaler.scaleDrawable(R.drawable.image_current_location, 0.5)
+    private val searchCoordinateImage: Bitmap =
+        bitmapScaler.scaleDrawableToHeight(
+            R.drawable.image_search_location,
+            context.resources.getDimension(R.dimen.search_coordinate_marker_height),
+        )
+    private val fineUserLocationImage: Bitmap =
+        bitmapScaler.scaleDrawableToSize(
+            R.drawable.image_current_location,
+            context.resources.getDimension(R.dimen.fine_user_location_size),
+            context.resources.getDimension(R.dimen.fine_user_location_size),
+        )
+    private val waypointImage: Bitmap =
+        bitmapScaler.scaleDrawableToSize(
+            R.drawable.icon_waypoint,
+            context.resources.getDimension(R.dimen.waypoint_marker_size),
+            context.resources.getDimension(R.dimen.waypoint_marker_size),
+        )
 
     private var searchCoordinateMarker: Marker? = null
     private var fineUserLocationMarker: Marker? = null
@@ -172,7 +187,7 @@ class NaverMapOverlayManager(
     fun drawWaypoint(coordinate: Coordinate) {
         Marker().apply {
             position = coordinate.toLatLng()
-            icon = OverlayImage.fromResource(R.drawable.icon_waypoint)
+            icon = OverlayImage.fromBitmap(waypointImage)
             anchor = PointF(0.5F, 0.5F)
             map = this@NaverMapOverlayManager.map
             waypoints.add(this)

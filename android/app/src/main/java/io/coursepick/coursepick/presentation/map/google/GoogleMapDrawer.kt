@@ -31,11 +31,23 @@ class GoogleMapDrawer(
     private var coarseUserLocationCircle: Circle? = null
 
     private val bitmapScaler = BitmapScaler(context)
-    private val selectedCoursePattern: BitmapDescriptor = BitmapDescriptorFactory.fromResource(R.drawable.image_arrow)
-    private val fineUserLocationImage: BitmapDescriptor =
-        BitmapDescriptorFactory.fromBitmap(bitmapScaler.scaleDrawable(R.drawable.image_current_location, 0.5))
+    private val selectedCoursePattern: BitmapDescriptor =
+        BitmapDescriptorFactory.fromBitmap(bitmapScaler.scaleDrawable(R.drawable.image_arrow, -1.0))
     private val searchCoordinateImage: BitmapDescriptor =
-        BitmapDescriptorFactory.fromBitmap(bitmapScaler.scaleDrawable(R.drawable.image_search_location, 0.5))
+        BitmapDescriptorFactory.fromBitmap(
+            bitmapScaler.scaleDrawableToHeight(
+                R.drawable.image_search_location,
+                context.resources.getDimension(R.dimen.search_coordinate_marker_height),
+            ),
+        )
+    private val fineUserLocationImage: BitmapDescriptor =
+        BitmapDescriptorFactory.fromBitmap(
+            bitmapScaler.scaleDrawableToSize(
+                R.drawable.image_current_location,
+                context.resources.getDimension(R.dimen.fine_user_location_size),
+                context.resources.getDimension(R.dimen.fine_user_location_size),
+            ),
+        )
 
     private var fineUserLocationAnimator: ValueAnimator? = null
     private var coarseUserLocationAnimator: ValueAnimator? = null
