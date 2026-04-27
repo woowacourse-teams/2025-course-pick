@@ -190,8 +190,15 @@ class NaverMapOverlayManager(
     }
 
     fun drawDraftSegment(segment: DraftSegment) {
+        val coordinates: List<Coordinate> =
+            when (segment.coordinates.size) {
+                0 -> return
+                1 -> segment.coordinates + segment.coordinates
+                else -> segment.coordinates
+            }
+
         PathOverlay().apply {
-            coords = segment.coordinates.map(Coordinate::toLatLng)
+            coords = coordinates.map(Coordinate::toLatLng)
             color = context.getColor(R.color.course_draft)
             width = context.resources.getDimension(R.dimen.draft_segment_width).toInt()
             outlineWidth = 0
