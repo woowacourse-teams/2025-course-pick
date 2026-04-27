@@ -152,6 +152,7 @@ class NaverMapOverlayManager(
         hideFineUserLocation()
 
         coarseUserLocationCircle?.apply {
+            radius = location.accuracy.meter.value
             coarseUserLocationAnimator?.cancel()
             coarseUserLocationAnimator =
                 CoordinateAnimator.animator(

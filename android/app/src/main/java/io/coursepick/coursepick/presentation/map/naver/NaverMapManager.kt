@@ -116,7 +116,6 @@ class NaverMapManager(
     }
 
     override fun fitTo(coordinates: List<Coordinate>) {
-        coordinates.map(Coordinate::toLatLng).toTypedArray()
         map?.moveCamera(
             CameraUpdate
                 .fitBounds(
@@ -131,7 +130,7 @@ class NaverMapManager(
     }
 
     override fun setOnCourseClickListener(onClick: (CourseItem) -> Unit) {
-        overlayManager?.setOnCourseClickListener(onClick) ?: run { Timber.w(MAP_IS_NULL_MESSAGE) }
+        overlayManager?.setOnCourseClickListener(onClick) ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
     }
 
     override fun setOnCameraMoveListener(onCameraMove: (coordinate: Coordinate, reason: CameraMoveReason) -> Unit) {
@@ -160,7 +159,7 @@ class NaverMapManager(
 
     override fun resetZoom() {
         map?.let { map: NaverMap ->
-            map.moveCamera(CameraUpdate.zoomTo(DEFAULT_ZOOM_LEVEL).animate(CameraAnimation.Easing))
+            map.moveCamera(CameraUpdate.zoomTo(DEFAULT_ZOOM_LEVEL))
         } ?: run { Timber.w(MAP_IS_NULL_MESSAGE) }
     }
 
