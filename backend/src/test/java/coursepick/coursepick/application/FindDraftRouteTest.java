@@ -32,39 +32,49 @@ class FindDraftRouteTest {
     }
 
     @Test
-    void 경로_좌표_두_개로_경로를_조회할_때_반환된_경로에_중간_좌표까지_모두_포함된다() {
-        // 사용자가 입력하는 좌표: start -> end (2개)
-        var start = new Coordinate(0, 0);
-        var end = right(start, 1000);
+    void 경로_좌표_두_개로_경로를_조회할_때_원본_첫_끝_좌표는_제외되고_보정된_경로가_반환된다() {
+        // 사용자가 도로 밖을 탭한 원본 좌표
+        var rawStart = new Coordinate(0, 0);
+        var rawEnd = right(rawStart, 1000);
 
-        // routeFinder가 실제 도로 경로를 탐색하면 중간 좌표도 함께 반환된다.
-        var midPoint1 = right(start, 300);
-        var midPoint2 = right(start, 700);
-        when(routeFinder.find(start, end)).thenReturn(List.of(start, midPoint1, midPoint2, end));
+        // OsrmRouteFinder: OSRM 보정 경로 앞뒤에 원본(raw) 좌표를 붙여서 반환한다
+        var snappedStart = right(rawStart, 50);  // OSRM이 도로에 보정한 시작 좌표
+        var midPoint = right(rawStart, 500);
+        var snappedEnd = right(rawStart, 950);   // OSRM이 도로에 보정한 끝 좌표
+        when(routeFinder.find(rawStart, rawEnd))
+                .thenReturn(List.of(rawStart, snappedStart, midPoint, snappedEnd, rawEnd));
 
-        DraftSegment result = courseService.findDraftRoute(List.of(start, end));
+        DraftSegment result = courseService.findDraftRoute(List.of(rawStart, rawEnd));
 
-        assertThat(result.coordinates()).containsExactly(start, midPoint1, midPoint2, end);
-        assertThat(result.length().value()).isCloseTo(1000, withPercentage(1));
+        // 원본(raw) 첫/마지막 좌표는 제외되고, 보정된 좌표로 시작/끝난다
+        assertThat(result.coordinates()).containsExactly(snappedStart, midPoint, snappedEnd);
+
+        //snappedStart부터 midPoint까지(450m), midPoint부터 snappedEnd까지(450m) = 900m
+        assertThat(result.length().value()).isCloseTo(900, withPercentage(1));
     }
 
     @Test
     void 경로_좌표_세_개로_경로를_조회할_때_두_구간이_중복_없이_병합된다() {
-        // 사용자가 입력하는 좌표: start -> mid -> end (3개, 구간 2개)
-        var start = new Coordinate(0, 0);
-        var mid = right(start, 1000);
-        var end = right(mid, 1000);
+        // 사용자가 입력하는 좌표: rawStart -> rawMid -> rawEnd (3개, 구간 2개)
+        var rawStart = new Coordinate(0, 0);
+        var rawMid = right(rawStart, 1000);
+        var rawEnd = right(rawMid, 1000);
 
-        // 각 구간별로 routeFinder가 중간 좌표를 포함한 경로를 반환
-        var midPoint1 = right(start, 300);  // start -> mid 구간의 중간 좌표
-        var midPoint2 = right(mid, 300);    // mid -> end 구간의 중간 좌표
-        when(routeFinder.find(start, mid)).thenReturn(List.of(start, midPoint1, mid));
-        when(routeFinder.find(mid, end)).thenReturn(List.of(mid, midPoint2, end));
+        // 각 구간은 OsrmRouteFinder처럼 원본 좌표를 앞뒤에 붙여서 반환
+        var snappedStart = right(rawStart, 50); // 보정된 시작 좌표
+        var midPoint1 = right(rawStart, 300);
+        var midPoint2 = right(rawMid, 300);
+        var snappedEnd = right(rawMid, 950); // 보정된 끝 좌표
+        when(routeFinder.find(rawStart, rawMid))
+                .thenReturn(List.of(rawStart, snappedStart, midPoint1, rawMid));
+        when(routeFinder.find(rawMid, rawEnd))
+                .thenReturn(List.of(rawMid, midPoint2, snappedEnd, rawEnd));
 
-        DraftSegment result = courseService.findDraftRoute(List.of(start, mid, end));
+        DraftSegment result = courseService.findDraftRoute(List.of(rawStart, rawMid, rawEnd));
 
-        // 두 구간이 하나로 합쳐지고, 연결점(mid)이 중복되지 않는다.
-        assertThat(result.coordinates()).containsExactly(start, midPoint1, mid, midPoint2, end);
-        assertThat(result.length().value()).isCloseTo(2000, withPercentage(1));
+        // 원본 첫/끝 좌표 제외, 중간 웨이포인트(rawMid)는 연결점으로 유지되며 중복 없이 병합된다
+        assertThat(result.coordinates()).containsExactly(snappedStart, midPoint1, rawMid, midPoint2, snappedEnd);
+        // snappedStart부터 midPoint1까지(250m) + midPoint1부터 rawMid까지(700m) + rawMid부터 midPoint2까지(300m) + midPoint2부터 snappedEnd까지(650m) = 1900m
+        assertThat(result.length().value()).isCloseTo(1900, withPercentage(1));
     }
 }
