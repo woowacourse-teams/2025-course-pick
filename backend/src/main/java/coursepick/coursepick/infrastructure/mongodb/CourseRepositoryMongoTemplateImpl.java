@@ -121,7 +121,7 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
     }
 
     @Override
-    public boolean existsByName(String name) {
-        return mongoTemplate.exists(Query.query(Criteria.where("name").is(name)), Course.class);
+    public boolean existByCourseName(CourseName courseName) {
+        return mongoTemplate.exists(Query.query(Criteria.where("name").is(courseName.value())), Course.class);
     }
 }

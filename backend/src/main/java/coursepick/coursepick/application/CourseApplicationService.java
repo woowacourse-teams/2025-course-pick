@@ -32,16 +32,16 @@ public class CourseApplicationService {
     @Transactional
     public void addCustomCourse(String name, List<Coordinate> coordinates, String userId) {
         CourseName courseName = new CourseName(name);
-        validateDuplicatedCourseName(courseName.value());
+        validateDuplicatedCourseName(courseName);
         User user = userApplicationService.findUser(userId);
 
         Course newCourse = new Course(null, courseName, coordinates, user);
         courseRepository.save(newCourse);
     }
 
-    private void validateDuplicatedCourseName(String parsedCourseName) {
-        if (courseRepository.existsByName(parsedCourseName)) {
-            throw ErrorType.DUPLICATED_COURSE_NAME.create(parsedCourseName);
+    private void validateDuplicatedCourseName(CourseName courseName) {
+        if (courseRepository.existByCourseName(courseName)) {
+            throw ErrorType.DUPLICATED_COURSE_NAME.create(courseName.value());
         }
     }
 

@@ -21,5 +21,5 @@ public interface CourseRepository {
 
     void delete(Course course);
 
-    boolean existsByName(String name);
+    boolean existByCourseName(CourseName courseName);
 }
