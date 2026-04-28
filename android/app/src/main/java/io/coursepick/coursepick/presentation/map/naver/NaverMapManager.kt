@@ -1,6 +1,5 @@
 package io.coursepick.coursepick.presentation.map.naver
 
-import android.content.Context
 import android.graphics.PointF
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
@@ -28,7 +27,6 @@ class NaverMapManager(
 ) : MapManager {
     private var map: NaverMap? = null
     private var overlayManager: NaverMapOverlayManager? = null
-    private val context: Context = mapFragment.requireContext()
 
     override val cameraCoordinate: Coordinate?
         get() =
@@ -42,9 +40,9 @@ class NaverMapManager(
     override val scope: Scope?
         get() =
             map?.let { map: NaverMap ->
-                val center = map.projection.fromScreenLocation(PointF(0.5F, 0.5F)).toCoordinate()
-                val topLeft = map.projection.fromScreenLocation(PointF(0F, 0F)).toCoordinate()
-                DistanceCalculator.distance(center, topLeft)?.let(Scope::invoke)
+                val mapCenter = map.projection.fromScreenLocation(PointF(map.contentWidth / 2F, map.contentHeight / 2F)).toCoordinate()
+                val mapTopLeft = map.projection.fromScreenLocation(PointF(0F, 0F)).toCoordinate()
+                DistanceCalculator.distance(mapCenter, mapTopLeft)?.let(Scope::invoke)
             } ?: run {
                 Timber.w(MAP_IS_NULL_MESSAGE)
                 null
@@ -120,7 +118,11 @@ class NaverMapManager(
             CameraUpdate
                 .fitBounds(
                     LatLngBounds.from(coordinates.map(Coordinate::toLatLng)),
-                    context.resources.getDimension(R.dimen.fit_map_padding).toInt(),
+                    mapFragment
+                        .requireContext()
+                        .resources
+                        .getDimension(R.dimen.fit_map_padding)
+                        .toInt(),
                 ).animate(CameraAnimation.Easing, MOVE_ANIMATION_DURATION_MS),
         ) ?: run { Timber.w(MAP_IS_NULL_MESSAGE) }
     }
