@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -43,6 +44,7 @@ fun AuthDialog(
                 modifier =
                     Modifier
                         .size(48.dp)
+                        .clip(CircleShape)
                         .clickable { onDismissRequest() }
                         .padding(12.dp),
                 tint = colorResource(R.color.item_primary),

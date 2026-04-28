@@ -6,8 +6,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.auth.SocialAuthenticator
 import io.coursepick.coursepick.domain.auth.SocialToken
-import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
-import io.coursepick.coursepick.presentation.ui.SingleLiveData
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,8 +18,8 @@ class AuthViewModel
     constructor(
         private val authRepository: AuthRepository,
     ) : ViewModel() {
-        private val _event: MutableSingleLiveData<AuthUiEvent> = MutableSingleLiveData()
-        val event: SingleLiveData<AuthUiEvent> get() = _event
+        private val _uiEvent = MutableSharedFlow<AuthUiEvent>()
+        val uiEvent: SharedFlow<AuthUiEvent> get() = _uiEvent.asSharedFlow()
 
         fun authenticate(authenticator: SocialAuthenticator) {
             authenticator.authenticate(
@@ -31,14 +32,16 @@ class AuthViewModel
                             )
                         }.onSuccess { token: String ->
                             authRepository.saveAccessToken(token)
-                            _event.value = AuthUiEvent.AuthenticateSuccess
+                            _uiEvent.emit(AuthUiEvent.AuthenticateSuccess)
                         }.onFailure {
-                            _event.value = AuthUiEvent.AuthenticateFailure
+                            _uiEvent.emit(AuthUiEvent.AuthenticateFailure)
                         }
                     }
                 },
-                onFailure = { error: Throwable ->
-                    _event.value = AuthUiEvent.AuthenticateFailure
+                onFailure = {
+                    viewModelScope.launch {
+                        _uiEvent.emit(AuthUiEvent.AuthenticateFailure)
+                    }
                 },
             )
         }

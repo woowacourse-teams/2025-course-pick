@@ -10,6 +10,8 @@ value class Length(
 
     constructor(meter: Int) : this(Meter(meter))
 
+    operator fun plus(other: Length): Length = Length(meter + other.meter)
+
     override fun compareTo(other: Length): Int = meter.compareTo(other.meter)
 
     companion object {

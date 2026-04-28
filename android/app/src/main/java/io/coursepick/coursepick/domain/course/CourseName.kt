@@ -9,7 +9,7 @@ value class CourseName(
     }
 
     companion object {
-        private const val MIN_LENGTH = 2
-        private const val MAX_LENGTH = 30
+        const val MIN_LENGTH = 2
+        const val MAX_LENGTH = 30
     }
 }

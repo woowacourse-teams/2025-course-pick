@@ -36,6 +36,7 @@ import io.coursepick.coursepick.R
 fun SubmitCustomCourseDialog(
     courseName: String,
     onCourseNameChange: (courseName: String) -> Unit,
+    isCourseNameOutOfBounds: Boolean,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
     modifier: Modifier = Modifier,
@@ -80,6 +81,14 @@ fun SubmitCustomCourseDialog(
                         color = colorResource(R.color.item_tertiary),
                     )
                 },
+                supportingText = {
+                    if (isCourseNameOutOfBounds) {
+                        Text(
+                            text = stringResource(R.string.custom_course_submit_dialog_course_name_out_of_bounds_message),
+                        )
+                    }
+                },
+                isError = isCourseNameOutOfBounds,
                 singleLine = true,
                 shape = RoundedCornerShape(10),
                 colors =
@@ -88,8 +97,10 @@ fun SubmitCustomCourseDialog(
                         unfocusedTextColor = colorResource(R.color.item_tertiary),
                         focusedContainerColor = colorResource(R.color.background_primary),
                         unfocusedContainerColor = colorResource(R.color.background_tertiary),
+                        errorContainerColor = colorResource(R.color.background_primary),
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
+                        errorIndicatorColor = Color.Transparent,
                     ),
                 modifier = Modifier.focusRequester(focusRequester),
             )
@@ -144,10 +155,23 @@ fun SubmitCustomCourseDialog(
 
 @PreviewLightDark
 @Composable
-private fun SubmitCustomCourseDialogPreview() {
+private fun SubmitCustomCourseDialogPreview_Normal() {
     SubmitCustomCourseDialog(
         courseName = "내가 만든 코스",
         onCourseNameChange = { },
+        isCourseNameOutOfBounds = false,
+        onDismiss = { },
+        onConfirm = { },
+    )
+}
+
+@PreviewLightDark
+@Composable
+private fun SubmitCustomCourseDialogPreview_Error() {
+    SubmitCustomCourseDialog(
+        courseName = "0",
+        onCourseNameChange = { },
+        isCourseNameOutOfBounds = true,
         onDismiss = { },
         onConfirm = { },
     )

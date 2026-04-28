@@ -19,14 +19,14 @@ import io.coursepick.coursepick.R
 
 @Composable
 fun CustomCourseScreen(
-    onClick: () -> Unit,
+    onGoToCreateCustomCourse: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
     ) {
         FloatingActionButton(
-            onClick = onClick,
+            onClick = onGoToCreateCustomCourse,
             shape = CircleShape,
             containerColor = colorResource(R.color.point_primary),
             modifier =
@@ -48,6 +48,6 @@ fun CustomCourseScreen(
 @Composable
 fun CustomCourseScreenPreview() {
     CustomCourseScreen(
-        onClick = { },
+        onGoToCreateCustomCourse = { },
     )
 }

@@ -3,6 +3,7 @@ package io.coursepick.coursepick.data.auth
 import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.auth.SocialToken
 import javax.inject.Inject
+import kotlin.concurrent.Volatile
 
 class DefaultAuthRepository
     @Inject
@@ -10,6 +11,10 @@ class DefaultAuthRepository
         private val tokenLocalDataSource: TokenLocalDataSource,
         private val service: SignService,
     ) : AuthRepository {
+        @Volatile
+        override var cachedAccessToken: String? = null
+            private set
+
         override suspend fun sign(
             socialType: String,
             socialToken: SocialToken,
@@ -19,10 +24,23 @@ class DefaultAuthRepository
         }
 
         override suspend fun saveAccessToken(token: String) {
+            cachedAccessToken = token
             tokenLocalDataSource.saveAccessToken(token)
         }
 
-        override suspend fun accessToken(): String? = tokenLocalDataSource.accessToken()
+        override suspend fun preloadAccessToken() {
+            accessToken()
+        }
 
-        override suspend fun clearAccessToken() = tokenLocalDataSource.clearAccessToken()
+        override suspend fun accessToken(): String? {
+            if (cachedAccessToken == null) {
+                cachedAccessToken = tokenLocalDataSource.accessToken()
+            }
+            return cachedAccessToken
+        }
+
+        override suspend fun clearAccessToken() {
+            tokenLocalDataSource.clearAccessToken()
+            cachedAccessToken = null
+        }
     }

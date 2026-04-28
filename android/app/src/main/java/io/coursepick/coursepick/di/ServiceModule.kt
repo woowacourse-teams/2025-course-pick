@@ -31,7 +31,7 @@ object ServiceModule {
 
     @Provides
     fun provideSignService(
-        @CoursePickRetrofit retrofit: Retrofit,
+        @UnauthenticatedRetrofit retrofit: Retrofit,
     ): SignService = retrofit.create(SignService::class.java)
 
     @Provides
