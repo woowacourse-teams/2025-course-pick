@@ -3,14 +3,12 @@ package coursepick.coursepick.domain.course;
 import coursepick.coursepick.domain.user.Nickname;
 import coursepick.coursepick.domain.user.User;
 import coursepick.coursepick.domain.user.UserProvider;
-import coursepick.coursepick.infrastructure.discord.DiscordAlerter;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.Mockito;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -20,7 +18,6 @@ import static coursepick.coursepick.test_util.UserFixture.ADMIN_USER;
 import static java.util.List.of;
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.data.Percentage.withPercentage;
-import static org.mockito.Mockito.*;
 
 class CourseTest {
 
@@ -105,7 +102,6 @@ class CourseTest {
         }
 
 
-
         @Test
         void 코스의_좌표의_개수가_2보다_적으면_예외가_발생한다() {
             assertThatThrownBy(() -> new Course(null, new CourseName("코스"), of(new Coordinate(0, 0)), ADMIN_USER))
@@ -122,7 +118,7 @@ class CourseTest {
     @Test
     void 동일_유저_신고시_예외를_던진다() {
 
-        Course course = new Course(null, "코스", List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
+        Course course = new Course(null, new CourseName("코스"), List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
         User user1 = new User("user1", UserProvider.KAKAO, "providerId", Nickname.random());
 
         course.addReport(user1);

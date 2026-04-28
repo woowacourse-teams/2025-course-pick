@@ -14,6 +14,7 @@ import coursepick.coursepick.test_util.AbstractIntegrationTest;
 import coursepick.coursepick.test_util.CoordinateTestUtil;
 import org.assertj.core.data.Percentage;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -257,7 +258,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
     void 동일한_유저는_코스_횟수에_카운트_하지_않는다() {
         User user = new User("507f1f77bcf86cd799439011", UserProvider.KAKAO, "provierId", Nickname.random());
 
-        var course1 = new Course(null, "한강 러닝 코스", List.of(
+        var course1 = new Course(null, new CourseName("한강 러닝 코스"), List.of(
                 new Coordinate(37.5180, 127.0280),
                 new Coordinate(37.5175, 127.0270),
                 new Coordinate(37.5170, 127.0265),
@@ -275,7 +276,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
     @Test
     void 두번_이하로_신고되면_알람이_안간다() {
-        Course course = new Course("507f1f77bcf86cd799439011", "코스", List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
+        Course course = new Course("507f1f77bcf86cd799439011", new CourseName("코스"), List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
         User user1 = new User("507f191e810c19729de860ea", UserProvider.KAKAO, "providerId1", Nickname.random());
         User user2 = new User("507f191e810c19729de860eb", UserProvider.KAKAO, "providerId2", Nickname.random());
 
@@ -294,7 +295,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
     @Test
     void 세번_이상으로_신고되면_알람이_간다() {
-        Course course = new Course(null, "코스", List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
+        Course course = new Course(null, new CourseName("코스"), List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
         User user1 = new User("507f191e810c19729de860ea", UserProvider.KAKAO, "providerId1", Nickname.random());
         User user2 = new User("507f191e810c19729de860eb", UserProvider.KAKAO, "providerId2", Nickname.random());
         User user3 = new User("507f191e810c19729de860ec", UserProvider.KAKAO, "providerId3", Nickname.random());
