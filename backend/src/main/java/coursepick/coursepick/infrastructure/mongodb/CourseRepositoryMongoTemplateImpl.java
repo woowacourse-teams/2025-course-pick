@@ -119,4 +119,9 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
     public void delete(Course course) {
         mongoTemplate.remove(course);
     }
+
+    @Override
+    public boolean existByCourseName(CourseName courseName) {
+        return mongoTemplate.exists(Query.query(Criteria.where("name").is(courseName.value())), Course.class);
+    }
 }

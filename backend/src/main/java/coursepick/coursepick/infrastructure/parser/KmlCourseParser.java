@@ -5,6 +5,7 @@ import coursepick.coursepick.application.dto.CourseFileExtension;
 import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.Course;
+import coursepick.coursepick.domain.course.CourseName;
 import coursepick.coursepick.domain.course.CourseParser;
 import coursepick.coursepick.domain.user.User;
 import lombok.extern.slf4j.Slf4j;
@@ -59,15 +60,15 @@ public class KmlCourseParser implements CourseParser {
     }
 
     private Course parseCourse(Element placemark, User user) {
-        String courseName = parseCourseName(placemark);
+        String parsedName = parseCourseName(placemark);
         List<Coordinate> coordinates = parseCoordinates(placemark);
 
-        if (courseName == null || courseName.isBlank())
+        if (parsedName == null || parsedName.isBlank())
             return null;
         if (coordinates.isEmpty())
             return null;
 
-        return new Course(null, courseName, coordinates, user);
+        return new Course(null, new CourseName(parsedName), coordinates, user);
     }
 
     private String parseCourseName(Element placemark) {

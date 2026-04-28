@@ -38,9 +38,9 @@ public class Course {
 
     private String creatorId;
 
-    public Course(String id, String name, List<Coordinate> rawCoordinates, User user) {
+    public Course(String id, CourseName courseName, List<Coordinate> rawCoordinates, User user) {
         this.id = id;
-        this.name = new CourseName(name);
+        this.name = courseName;
         this.coordinates = refineCoordinates(rawCoordinates);
         this.simplifiedCoordinates = simplifyCoordinates(this.coordinates);
         this.length = calculateLength(coordinates);

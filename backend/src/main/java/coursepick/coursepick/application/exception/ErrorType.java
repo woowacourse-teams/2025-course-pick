@@ -81,7 +81,10 @@ public enum ErrorType {
             "유저가 존재하지 않습니다. 유저id=%s",
             NoSuchElementException::new
     ),
-    ;
+    DUPLICATED_COURSE_NAME(
+            "'%s'은(는) 이미 존재하는 코스 이름입니다.",
+            IllegalStateException::new
+    );
 
     private final String message;
     private final Function<String, ? extends RuntimeException> exceptionConstructor;
