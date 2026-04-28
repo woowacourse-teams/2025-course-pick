@@ -62,6 +62,7 @@ class NaverMapOverlayManager(
     private var courseClickListener: Overlay.OnClickListener? = null
 
     fun drawCourse(course: CourseItem) {
+        if (course.coordinates.size < 2) return
         val latLngs: List<LatLng> = course.coordinates.map(Coordinate::toLatLng)
 
         PathOverlay().apply {
@@ -115,6 +116,8 @@ class NaverMapOverlayManager(
         route: List<Coordinate>,
         course: CourseItem,
     ) {
+        if (route.size < 2) return
+
         PathOverlay().apply {
             coords = route.map(Coordinate::toLatLng)
             color = context.getColor(R.color.course_route)

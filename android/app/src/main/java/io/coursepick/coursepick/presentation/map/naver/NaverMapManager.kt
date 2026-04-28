@@ -114,6 +114,8 @@ class NaverMapManager(
     }
 
     override fun fitTo(coordinates: List<Coordinate>) {
+        if (coordinates.isEmpty()) return
+
         map?.moveCamera(
             CameraUpdate
                 .fitBounds(
