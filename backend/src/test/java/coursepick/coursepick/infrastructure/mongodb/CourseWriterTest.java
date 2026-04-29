@@ -59,7 +59,7 @@ class CourseWriterTest {
         assertThat(reviews).hasSize(1);
         Document reviewDoc = reviews.get(0);
         Review originalReview = course.reviews().get(0);
-        assertThat(reviewDoc.getString("id")).isEqualTo(originalReview.id());
+        assertThat(reviewDoc.getObjectId("id").toHexString()).isEqualTo(originalReview.id());
         assertThat(reviewDoc.getString("userId")).isEqualTo(originalReview.userId());
         assertThat(reviewDoc.getString("authorNickname")).isEqualTo(originalReview.authorNickname());
         assertThat(reviewDoc.getString("content")).isEqualTo(originalReview.content());
