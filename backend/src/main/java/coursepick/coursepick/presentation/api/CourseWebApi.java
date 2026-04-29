@@ -200,7 +200,6 @@ public interface CourseWebApi {
     CoursesWebResponse findCustomCourse(
             @Parameter(description = "사용자 위치의 위도(-90 ~ 90)", example = "38.5165004") Double userLatitude,
             @Parameter(description = "사용자 위치의 경도(-180 ~ 180)", example = "126.1040109") Double userLongitude,
-            @Parameter(description = "코스 ID", example = "689c3143182cecc6353cca7b", required = true) String id,
             @Parameter(hidden = true) String userId
     );
 }

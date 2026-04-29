@@ -363,7 +363,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
                     sampleCoordinates,
                     sampleCoordinates,
                     new Meter(1000),
-                    List.<Review>of(),
+                    List.of(),
                     user.id(),
                     now
             );
@@ -373,7 +373,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
                     sampleCoordinates,
                     sampleCoordinates,
                     new Meter(1000),
-                    List.<Review>of(),
+                    List.of(),
                     user.id(),
                     now.plusSeconds(1L)
             );
