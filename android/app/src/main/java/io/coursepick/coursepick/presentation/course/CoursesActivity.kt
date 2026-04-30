@@ -369,8 +369,7 @@ class CoursesActivity :
 
     private fun navigateToPreferences() {
         Logger.log(Logger.Event.Click("navigate_to_preferences"))
-        val intent = Intent(this, PreferencesActivity::class.java)
-        startActivity(intent)
+        startActivity(PreferencesActivity.intent(this))
     }
 
     override fun moveToCurrentLocation() {
