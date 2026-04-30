@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.coursepick.coursepick.data.NetworkMonitor
 import io.coursepick.coursepick.data.interceptor.NoNetworkException
+import io.coursepick.coursepick.data.preference.RouteFinder
 import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
@@ -19,12 +20,12 @@ import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.domain.location.LocationRepository
 import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.domain.notice.NoticeRepository
+import io.coursepick.coursepick.domain.preference.SettingsRepository
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.auth.AuthFeature
 import io.coursepick.coursepick.presentation.filter.CourseFilter
 import io.coursepick.coursepick.presentation.filter.CourseFilterAction
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
-import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
 import kotlinx.coroutines.CancellationException
@@ -35,6 +36,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -49,6 +51,7 @@ class CoursesViewModel
         private val favoritesRepository: FavoritesRepository,
         private val noticeRepository: NoticeRepository,
         private val locationRepository: LocationRepository,
+        private val settingsRepository: SettingsRepository,
         private val authRepository: AuthRepository,
         private val networkMonitor: NetworkMonitor,
     ) : ViewModel() {
@@ -74,6 +77,9 @@ class CoursesViewModel
                 started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = null,
             )
+
+        private val _routeFinderDialogCourse = MutableStateFlow<CourseItem?>(null)
+        val routeFinderDialogCourse: StateFlow<CourseItem?> get() = _routeFinderDialogCourse.asStateFlow()
 
         private val _reportCourseDialogState = MutableStateFlow<CourseItem?>(null)
         val reportCourseDialogState: StateFlow<CourseItem?> get() = _reportCourseDialogState.asStateFlow()
@@ -408,66 +414,76 @@ class CoursesViewModel
             }
         }
 
-        fun fetchRouteToCourse(
-            course: CourseItem,
-            origin: Coordinate,
-        ) {
-            val oldCourses: List<CourseListItem> = state.value?.courses ?: return
-            val newCourseItems: List<CourseListItem> = newCoursesListItem(oldCourses, course)
-            _state.value =
-                state.value?.copy(
-                    courses = newCourseItems,
-                    status = UiStatus.Loading,
-                )
+        fun onNavigateToCourse(course: CourseItem) {
+            if (!locationRepository.isFineLocationPermissionGranted) {
+                _event.value = CoursesUiEvent.RequireFineLocationPermission
+                return
+            }
 
-            val selectedCourse: CourseItem = course.copy(selected = true)
             viewModelScope.launch {
-                runCatching {
-                    courseRepository.routeToCourse(selectedCourse.course, origin)
-                }.onSuccess { route: List<Coordinate> ->
-                    Logger.log(Logger.Event.Success("fetch_route_to_course"))
-                    _state.value = state.value?.copy(status = UiStatus.Success)
-                    _event.value = CoursesUiEvent.FetchRouteToCourseSuccess(route, selectedCourse)
-                }.onFailure { error: Throwable ->
-                    Logger.log(
-                        Logger.Event.Failure("fetch_route_to_course"),
-                        "message" to error.message.toString(),
-                    )
-                    _state.value = state.value?.copy(status = UiStatus.Failure)
-                    _event.value =
-                        if (error is NoNetworkException) {
-                            CoursesUiEvent.NoNetworkConnection
-                        } else {
-                            CoursesUiEvent.FetchRouteToCourseFailure
-                        }
+                val routeFinder: RouteFinder? = settingsRepository.routeFinder.first()
+                if (routeFinder == null) {
+                    _routeFinderDialogCourse.value = course
+                } else {
+                    fetchRouteToCourse(course, routeFinder)
                 }
             }
         }
 
-        fun fetchNearestCoordinate(
-            selectedCourse: CourseItem,
-            location: Coordinate,
-            routeFinder: RouteFinderApplication.ThirdParty,
+        fun onRouteFinderSelected(
+            course: CourseItem,
+            routeFinder: RouteFinder,
+            rememberSelection: Boolean,
+        ) {
+            dismissRouteFinderDialog()
+
+            if (rememberSelection) {
+                viewModelScope.launch {
+                    settingsRepository.setRouteFinder(routeFinder)
+                }
+            }
+
+            fetchRouteToCourse(course, routeFinder)
+        }
+
+        fun dismissRouteFinderDialog() {
+            _routeFinderDialogCourse.value = null
+        }
+
+        private fun fetchRouteToCourse(
+            course: CourseItem,
+            routeFinder: RouteFinder,
         ) {
             viewModelScope.launch {
-                runCatching {
-                    courseRepository.nearestCoordinate(selectedCourse.course, location)
-                }.onSuccess { nearest: Coordinate ->
-                    Logger.log(Logger.Event.Success("fetch_nearest_coordinate"))
-                    _event.value =
-                        CoursesUiEvent.FetchNearestCoordinateSuccess(
-                            origin = location,
-                            destination = nearest,
-                            destinationName = selectedCourse.name,
-                            routeFinder,
-                        )
-                }.onFailure { error: Throwable ->
-                    Logger.log(
-                        Logger.Event.Failure("fetch_nearest_coordinate"),
-                        "message" to error.message.toString(),
-                    )
-                    _event.value = CoursesUiEvent.FetchNearestCoordinateFailure
+                currentLocation()?.let { location: Location ->
+                    when (routeFinder) {
+                        RouteFinder.Local -> {
+                            val route = courseRepository.routeToCourse(course.course, location.coordinate)
+                            _event.value = CoursesUiEvent.FetchRouteToCourseSuccess(route, course)
+                        }
+
+                        RouteFinder.KakaoMap -> {
+                            launchThirdPartyRouteFinder(course, location.coordinate, RouteFinderUiModel.ThirdParty.KakaoMap)
+                        }
+
+                        RouteFinder.NaverMap -> {
+                            launchThirdPartyRouteFinder(course, location.coordinate, RouteFinderUiModel.ThirdParty.NaverMap)
+                        }
+                    }
+                } ?: run {
+                    _event.value = CoursesUiEvent.FetchCurrentLocationFailure
                 }
+            }
+        }
+
+        private fun launchThirdPartyRouteFinder(
+            course: CourseItem,
+            origin: Coordinate,
+            routeFinder: RouteFinderUiModel.ThirdParty,
+        ) {
+            viewModelScope.launch {
+                val destination: Coordinate = courseRepository.nearestCoordinate(course.course, origin)
+                _event.value = CoursesUiEvent.LaunchThirdPartyRouteFinder(course, origin, destination, routeFinder)
             }
         }
 
