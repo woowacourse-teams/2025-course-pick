@@ -69,8 +69,8 @@ import io.coursepick.coursepick.presentation.map.CameraMoveReason
 import io.coursepick.coursepick.presentation.map.MapManager
 import io.coursepick.coursepick.presentation.map.MapManagerFactory
 import io.coursepick.coursepick.presentation.notice.NoticeDialog
-import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
-import io.coursepick.coursepick.presentation.preference.PreferencesActivity
+import io.coursepick.coursepick.presentation.setting.CoursePickPreferences
+import io.coursepick.coursepick.presentation.setting.UserPreferenceActivity
 import io.coursepick.coursepick.presentation.search.SearchActivity
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 import io.coursepick.coursepick.presentation.setting.SettingsScreen
@@ -369,7 +369,7 @@ class CoursesActivity :
 
     private fun navigateToPreferences() {
         Logger.log(Logger.Event.Click("navigate_to_preferences"))
-        startActivity(PreferencesActivity.intent(this))
+        startActivity(UserPreferenceActivity.intent(this))
     }
 
     override fun moveToCurrentLocation() {

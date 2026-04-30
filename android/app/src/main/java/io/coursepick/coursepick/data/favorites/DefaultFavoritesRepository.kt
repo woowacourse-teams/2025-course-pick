@@ -1,7 +1,7 @@
 package io.coursepick.coursepick.data.favorites
 
 import io.coursepick.coursepick.domain.favorites.FavoritesRepository
-import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
+import io.coursepick.coursepick.presentation.setting.CoursePickPreferences
 import javax.inject.Inject
 
 class DefaultFavoritesRepository

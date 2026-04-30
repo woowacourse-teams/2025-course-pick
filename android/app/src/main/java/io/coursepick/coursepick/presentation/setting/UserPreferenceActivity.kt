@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.preference
+package io.coursepick.coursepick.presentation.setting
 
 import android.content.Context
 import android.content.Intent
@@ -18,8 +18,8 @@ import io.coursepick.coursepick.presentation.InstallStateObserver
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 
 @AndroidEntryPoint
-class PreferencesActivity : AppCompatActivity() {
-    private val viewModel: PreferencesViewModel by viewModels()
+class UserPreferenceActivity : AppCompatActivity() {
+    private val viewModel: UserPreferenceViewModel by viewModels()
 
     init {
         lifecycle.addObserver(InstallStateObserver(this))
@@ -32,9 +32,12 @@ class PreferencesActivity : AppCompatActivity() {
         setContent {
             CoursePickTheme {
                 Scaffold { innerPadding: PaddingValues ->
-                    PreferencesScreen(
+                    UserPreferenceScreen(
                         onOpenRouteFinderPreference = viewModel::onOpenRouteFinderPreference,
-                        modifier = Modifier.fillMaxSize().padding(innerPadding),
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .padding(innerPadding),
                     )
 
                     if (viewModel.showRouteFinderPreferenceDialog.collectAsStateWithLifecycle().value) {
@@ -49,6 +52,6 @@ class PreferencesActivity : AppCompatActivity() {
     }
 
     companion object {
-        fun intent(context: Context): Intent = Intent(context, PreferencesActivity::class.java)
+        fun intent(context: Context): Intent = Intent(context, UserPreferenceActivity::class.java)
     }
 }

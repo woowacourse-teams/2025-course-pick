@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.preference
+package io.coursepick.coursepick.presentation.setting
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.sp
 import io.coursepick.coursepick.R
 
 @Composable
-fun PreferencesScreen(
+fun UserPreferenceScreen(
     onOpenRouteFinderPreference: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -46,8 +46,8 @@ fun PreferencesScreen(
 
 @PreviewLightDark
 @Composable
-private fun PreferencesScreenPreview() {
-    PreferencesScreen(
+private fun UserPreferenceScreenPreview() {
+    UserPreferenceScreen(
         onOpenRouteFinderPreference = { },
     )
 }

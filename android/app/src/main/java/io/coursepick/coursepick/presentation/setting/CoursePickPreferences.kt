@@ -1,19 +1,15 @@
-package io.coursepick.coursepick.presentation.preference
+package io.coursepick.coursepick.presentation.setting
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.presentation.Logger
-import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 
 object CoursePickPreferences {
     private lateinit var preferences: SharedPreferences
     private lateinit var favoritedCoursesKey: String
     private lateinit var doNotShowNoticesKey: String
-
 
     fun init(context: Context) {
         preferences = PreferenceManager.getDefaultSharedPreferences(context)
