@@ -43,6 +43,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import io.coursepick.coursepick.BuildConfig
 import io.coursepick.coursepick.R
+import io.coursepick.coursepick.data.preference.RouteFinder
 import io.coursepick.coursepick.databinding.ActivityCoursesBinding
 import io.coursepick.coursepick.di.NaverMap
 import io.coursepick.coursepick.domain.course.Coordinate
@@ -61,7 +62,6 @@ import io.coursepick.coursepick.presentation.auth.AuthUiEvent
 import io.coursepick.coursepick.presentation.auth.AuthViewModel
 import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
-import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.customcourse.CustomCourseItem
 import io.coursepick.coursepick.presentation.customcourse.CustomCourseViewModel
 import io.coursepick.coursepick.presentation.customcourse.CustomCoursesFragment
@@ -74,8 +74,6 @@ import io.coursepick.coursepick.presentation.map.MapManagerFactory
 import io.coursepick.coursepick.presentation.notice.NoticeDialog
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 import io.coursepick.coursepick.presentation.preference.PreferencesActivity
-import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
-import io.coursepick.coursepick.presentation.routefinder.RouteFinderChoiceDialogFragment
 import io.coursepick.coursepick.presentation.search.SearchActivity
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 import io.coursepick.coursepick.presentation.setting.SettingsScreen
@@ -416,39 +414,7 @@ class CoursesActivity :
             "name" to course.name,
         )
 
-        if (!viewModel.isFineLocationPermissionGranted) {
-            showFineLocationPermissionRationaleForNavigation()
-            return
-        }
-        lifecycleScope.launch {
-            viewModel.currentLocation()?.let { location: Location ->
-                val selectedApp: RouteFinderApplication? =
-                    CoursePickPreferences.selectedRouteFinder
-                if (selectedApp == null) {
-                    supportFragmentManager.setFragmentResultListener(
-                        DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_REQUEST,
-                        this@CoursesActivity,
-                    ) { _, bundle: Bundle ->
-                        supportFragmentManager.clearFragmentResultListener(DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_REQUEST)
-                        val selectedApp: RouteFinderApplication =
-                            bundle.getParcelableCompat<RouteFinderApplication>(DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_RESULT)
-                                ?: return@setFragmentResultListener
-                        handleNavigation(course, location.coordinate, selectedApp)
-                    }
-                    RouteFinderChoiceDialogFragment().show(supportFragmentManager, null)
-                    return@let
-                }
-                handleNavigation(course, location.coordinate, selectedApp)
-            } ?: run {
-                mapManager.hideUserLocation()
-                Toast
-                    .makeText(
-                        this@CoursesActivity,
-                        getString(R.string.courses_failed_to_get_current_location_message),
-                        Toast.LENGTH_SHORT,
-                    ).show()
-            }
-        }
+        viewModel.onNavigateToCourse(course)
     }
 
     private fun showLocationPermissionRationaleForCurrentLocation() {
@@ -536,34 +502,6 @@ class CoursesActivity :
     private fun navigateToOpenSourceNotice() {
         Logger.log(Logger.Event.Click("navigate_to_open_source_notice"))
         startActivity(Intent(this, OssLicensesMenuActivity::class.java))
-    }
-
-    private fun handleNavigation(
-        course: CourseItem,
-        origin: Coordinate,
-        selectedApp: RouteFinderApplication,
-    ) {
-        when (selectedApp) {
-            is RouteFinderApplication.InApp -> {
-                viewModel.fetchRouteToCourse(course, origin)
-            }
-
-            is RouteFinderApplication.KakaoMap -> {
-                viewModel.fetchNearestCoordinate(
-                    course,
-                    origin,
-                    RouteFinderApplication.KakaoMap,
-                )
-            }
-
-            is RouteFinderApplication.NaverMap -> {
-                viewModel.fetchNearestCoordinate(
-                    course,
-                    origin,
-                    RouteFinderApplication.NaverMap,
-                )
-            }
-        }
     }
 
     private fun setUpFragmentFactory() {
@@ -832,24 +770,6 @@ class CoursesActivity :
                         ).show()
                 }
 
-                is CoursesUiEvent.FetchNearestCoordinateSuccess -> {
-                    event.routeFinder.launch(
-                        this@CoursesActivity,
-                        event.origin,
-                        event.destination,
-                        event.destinationName,
-                    )
-                }
-
-                CoursesUiEvent.FetchNearestCoordinateFailure -> {
-                    Toast
-                        .makeText(
-                            this,
-                            getString(R.string.courses_failed_to_find_route_to_course_message),
-                            Toast.LENGTH_SHORT,
-                        ).show()
-                }
-
                 CoursesUiEvent.FetchNextCoursesFailure -> {
                     Toast
                         .makeText(
@@ -857,6 +777,30 @@ class CoursesActivity :
                             getString(R.string.explore_failed_to_fetch_next_page_message),
                             Toast.LENGTH_SHORT,
                         ).show()
+                }
+
+                CoursesUiEvent.FetchCurrentLocationFailure -> {
+                    Toast
+                        .makeText(
+                            this@CoursesActivity,
+                            getString(R.string.courses_failed_to_get_current_location_message),
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                }
+
+                is CoursesUiEvent.LaunchThirdPartyRouteFinder -> {
+                    val intent: Intent =
+                        event.routeFinder.intent(
+                            origin = event.origin,
+                            originName = getString(R.string.course_item_navigate_to_course_origin_name),
+                            destination = event.destination,
+                            destinationName = event.course.name,
+                        )
+                    startActivity(intent)
+                }
+
+                CoursesUiEvent.RequireFineLocationPermission -> {
+                    showFineLocationPermissionRationaleForNavigation()
                 }
 
                 CoursesUiEvent.ReportCourseSuccess -> {
@@ -903,8 +847,7 @@ class CoursesActivity :
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     viewModel.locationUpdates.collect { location: Location? ->
-                        location?.let(mapManager::drawUserLocation)
-                            ?: run(mapManager::hideUserLocation)
+                        location?.let(mapManager::drawUserLocation) ?: run(mapManager::hideUserLocation)
                     }
                 }
 
@@ -990,16 +933,20 @@ class CoursesActivity :
                         )
                     }
 
+                    viewModel.routeFinderDialogCourse.collectAsStateWithLifecycle().value?.let { course: CourseItem ->
+                        RouteFinderDialog(
+                            onConfirm = { routeFinder: RouteFinder, rememberSelection: Boolean ->
+                                viewModel.onRouteFinderSelected(course, routeFinder, rememberSelection)
+                            },
+                            onDismiss = viewModel::dismissRouteFinderDialog,
+                        )
+                    }
+
                     viewModel.authDialogState.collectAsStateWithLifecycle().value?.let { feature: AuthFeature ->
                         AuthDialog(
                             feature = feature,
                             onDismissRequest = viewModel::dismissAuthDialog,
-                            onKakaoLoginClick = {
-                                authViewModel.authenticate(
-                                    KakaoAuthenticator(this@CoursesActivity),
-                                    feature,
-                                )
-                            },
+                            onKakaoLoginClick = { authViewModel.authenticate(KakaoAuthenticator(this@CoursesActivity), feature) },
                         )
                     }
 
