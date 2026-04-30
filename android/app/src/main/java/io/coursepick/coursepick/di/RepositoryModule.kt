@@ -9,12 +9,14 @@ import io.coursepick.coursepick.data.course.DefaultCourseRepository
 import io.coursepick.coursepick.data.customcourse.DefaultCustomCourseRepository
 import io.coursepick.coursepick.data.favorites.DefaultFavoritesRepository
 import io.coursepick.coursepick.data.notice.DefaultNoticeRepository
+import io.coursepick.coursepick.data.preference.DefaultSettingsRepository
 import io.coursepick.coursepick.data.search.DefaultSearchRepository
 import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.course.CourseRepository
 import io.coursepick.coursepick.domain.customcourse.CustomCourseRepository
 import io.coursepick.coursepick.domain.favorites.FavoritesRepository
 import io.coursepick.coursepick.domain.notice.NoticeRepository
+import io.coursepick.coursepick.domain.preference.SettingsRepository
 import io.coursepick.coursepick.domain.search.SearchRepository
 
 @Module
@@ -37,4 +39,7 @@ abstract class RepositoryModule {
 
     @Binds
     abstract fun bindCustomCourseRepository(implementation: DefaultCustomCourseRepository): CustomCourseRepository
+
+    @Binds
+    abstract fun bindSettingsRepository(implementation: DefaultSettingsRepository): SettingsRepository
 }

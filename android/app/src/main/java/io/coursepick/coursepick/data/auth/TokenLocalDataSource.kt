@@ -8,13 +8,14 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.google.crypto.tink.Aead
 import com.google.crypto.tink.subtle.Base64
 import io.coursepick.coursepick.BuildConfig
+import io.coursepick.coursepick.di.Auth
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class TokenLocalDataSource
     @Inject
     constructor(
-        private val dataStore: DataStore<Preferences>,
+        @Auth private val dataStore: DataStore<Preferences>,
         private val aead: Aead,
     ) {
         private val tokenSecurity: ByteArray = BuildConfig.TOKEN_SECURITY.toByteArray()
