@@ -129,8 +129,10 @@
     <string name="selected_route_finder_application_entry_in_app">이 앱에서 보기</string>
     <string name="selected_route_finder_application_entry_kakao_map">카카오맵에서 보기</string>
     <string name="selected_route_finder_application_entry_naver_map">네이버 지도에서 보기</string>
-    <string name="selected_route_finder_application_entry_none_map">선택 안 함</string>
+    <string name="selected_route_finder_application_entry_none">선택 안 함</string>
     <string name="selected_route_finder_application_failed_to_launch_route_finder_app_message">길찾기 앱을 실행할 수 없습니다.</string>
+    <string name="selected_route_finder_application_cancel_button">취소</string>
+    <string name="selected_route_finder_application_confirm_button">확인</string>
 
     <!--  공지 다이얼로그  -->
     <string name="notice_dialog_do_not_show_again_button">다시 보지 않음</string>
