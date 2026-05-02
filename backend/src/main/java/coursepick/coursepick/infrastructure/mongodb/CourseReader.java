@@ -1,23 +1,19 @@
 package coursepick.coursepick.infrastructure.mongodb;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import coursepick.coursepick.domain.course.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import coursepick.coursepick.domain.course.*;
 import coursepick.coursepick.infrastructure.compressor.DataCompressor;
 import lombok.RequiredArgsConstructor;
 import org.bson.Document;
 import org.bson.types.Binary;
 import org.springframework.core.convert.converter.Converter;
 
-import java.util.HashSet;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @RequiredArgsConstructor
 public class CourseReader implements Converter<Document, Course> {
@@ -40,7 +36,7 @@ public class CourseReader implements Converter<Document, Course> {
                 reviews,
                 source.getString("creatorId"),
                 parseReportUserIds(source),
-                toLocalDateTime(source.getDate("createdAt"))
+                parseCreatedAt(source)
         );
     }
 
@@ -50,10 +46,10 @@ public class CourseReader implements Converter<Document, Course> {
         return new HashSet<>(reportUserIds);
     }
 
-    private LocalDateTime toLocalDateTime(Date date) {
-        if (date == null) {
-            return null;
-        }
+    private LocalDateTime parseCreatedAt(Document source) {
+        Date date = Optional.ofNullable(source.getDate("createdAt"))
+                .orElseGet(() -> source.getObjectId("_id").getDate());
+
         return date.toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime();
