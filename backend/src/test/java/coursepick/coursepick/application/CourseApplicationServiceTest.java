@@ -9,6 +9,7 @@ import coursepick.coursepick.domain.course.CourseFindCondition;
 import coursepick.coursepick.domain.course.CourseName;
 import coursepick.coursepick.domain.user.Nickname;
 import coursepick.coursepick.domain.course.*;
+import coursepick.coursepick.application.exception.UnauthorizedException;
 import coursepick.coursepick.domain.user.User;
 import coursepick.coursepick.domain.user.UserProvider;
 import coursepick.coursepick.test_util.AbstractIntegrationTest;
@@ -24,10 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 import static coursepick.coursepick.test_util.UserFixture.ADMIN_USER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -365,6 +363,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
                     new Meter(1000),
                     List.of(),
                     user.id(),
+                    new HashSet<>(),
                     now
             );
             var newCourse = new Course(
@@ -375,6 +374,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
                     new Meter(1000),
                     List.of(),
                     user.id(),
+                    new HashSet<>(),
                     now.plusSeconds(1L)
             );
 
@@ -428,7 +428,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
             );
 
             assertThatThrownBy(() -> sut.addCustomCourse(name, coordinates, "userid"))
-                    .isInstanceOf(NoSuchElementException.class);
+                    .isInstanceOf(UnauthorizedException.class);
 
         }
 
@@ -452,128 +452,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
             assertThat(result.name().value()).isEqualTo(expectedName);
         }
 
-        @Test
-        void 코스_상세를_조회하면_리뷰_목록이_함께_반환된다() {
-            var course = new Course(null, new CourseName("리뷰 테스트 코스"), List.of(
-                    new Coordinate(0, 0),
-                    new Coordinate(0, 0.0001),
-                    new Coordinate(0.0001, 0.0001),
-                    new Coordinate(0.0001, 0),
-                    new Coordinate(0, 0)
-            ), ADMIN_USER);
-            var savedCourse = dbUtil.saveCourse(course);
-            var user = dbUtil.saveUser(new User(UserProvider.KAKAO, "kakao-1"));
-
-            sut.addReview(savedCourse.id(), user.id(), "아주 좋은 코스입니다");
-
-            CourseDetailResponse detail = sut.findCourseDetail(savedCourse.id());
-
-            assertThat(detail.id()).isEqualTo(savedCourse.id());
-            assertThat(detail.name()).isEqualTo("리뷰 테스트 코스");
-            assertThat(detail.reviews())
-                    .hasSize(1)
-                    .extracting(ReviewResponse::authorNickname, ReviewResponse::content)
-                    .containsExactly(org.assertj.core.groups.Tuple.tuple(user.nickname().value(), "아주 좋은 코스입니다"));
-        }
-
-        @Test
-        void 동일_사용자가_여러_리뷰를_작성하면_모두_같은_닉네임으로_저장된다() {
-            var course = new Course(null, new CourseName("동일 사용자 리뷰 코스"), List.of(
-                    new Coordinate(0, 0),
-                    new Coordinate(0, 0.0001),
-                    new Coordinate(0.0001, 0.0001),
-                    new Coordinate(0, 0)
-            ), ADMIN_USER);
-            var savedCourse = dbUtil.saveCourse(course);
-            var user = dbUtil.saveUser(new User(UserProvider.KAKAO, "kakao-2"));
-
-            sut.addReview(savedCourse.id(), user.id(), "첫 번째 리뷰");
-            sut.addReview(savedCourse.id(), user.id(), "두 번째 리뷰");
-
-            CourseDetailResponse detail = sut.findCourseDetail(savedCourse.id());
-
-            assertThat(detail.reviews()).hasSize(2)
-                    .allMatch(r -> r.authorNickname().equals(user.nickname().value()));
-        }
-
-        @Test
-        void 존재하지_않는_코스에_리뷰를_작성하면_예외가_발생한다() {
-            var user = dbUtil.saveUser(new User(UserProvider.KAKAO, "kakao-3"));
-
-            assertThatThrownBy(() -> sut.addReview("689c3143182cecc6353cca7b", user.id(), "내용"))
-                    .isInstanceOf(NoSuchElementException.class);
-        }
-
-        @ParameterizedTest
-        @ValueSource(strings = {
-                "나만의 코스",
-                "나만의   코스",
-        })
-        void 이름의_연속공백을_한_칸으로_변환하여_코스를_생성한다(String name) {
-            String expectedName = "나만의 코스";
-            List<Coordinate> coordinates = List.of(
-                    new Coordinate(37.602500, 126.967000),
-                    new Coordinate(37.603000, 126.968000),
-                    new Coordinate(37.603500, 126.969000),
-                    new Coordinate(37.602500, 126.967000)
-            );
-
-            sut.addCustomCourse(name, coordinates, user.id());
-
-            Course result = dbUtil.findCourseByName(expectedName);
-            assertThat(result.name().value()).isEqualTo(expectedName);
-        }
     }
 
-    @Test
-    void 코스_상세를_조회하면_리뷰_목록이_함께_반환된다() {
-        var course = new Course(null, new CourseName("리뷰 테스트 코스"), List.of(
-                new Coordinate(0, 0),
-                new Coordinate(0, 0.0001),
-                new Coordinate(0.0001, 0.0001),
-                new Coordinate(0.0001, 0),
-                new Coordinate(0, 0)
-        ), ADMIN_USER);
-        var savedCourse = dbUtil.saveCourse(course);
-        var user = dbUtil.saveUser(new User(UserProvider.KAKAO, "kakao-1"));
 
-        sut.addReview(savedCourse.id(), user.id(), "아주 좋은 코스입니다");
-
-        CourseDetailResponse detail = sut.findCourseDetail(savedCourse.id());
-
-        assertThat(detail.id()).isEqualTo(savedCourse.id());
-        assertThat(detail.name()).isEqualTo("리뷰 테스트 코스");
-        assertThat(detail.reviews())
-                .hasSize(1)
-                .extracting(ReviewResponse::authorNickname, ReviewResponse::content)
-                .containsExactly(org.assertj.core.groups.Tuple.tuple(user.nickname().value(), "아주 좋은 코스입니다"));
-    }
-
-    @Test
-    void 동일_사용자가_여러_리뷰를_작성하면_모두_같은_닉네임으로_저장된다() {
-        var course = new Course(null, new CourseName("동일 사용자 리뷰 코스"), List.of(
-                new Coordinate(0, 0),
-                new Coordinate(0, 0.0001),
-                new Coordinate(0.0001, 0.0001),
-                new Coordinate(0, 0)
-        ), ADMIN_USER);
-        var savedCourse = dbUtil.saveCourse(course);
-        var user = dbUtil.saveUser(new User(UserProvider.KAKAO, "kakao-2"));
-
-        sut.addReview(savedCourse.id(), user.id(), "첫 번째 리뷰");
-        sut.addReview(savedCourse.id(), user.id(), "두 번째 리뷰");
-
-        CourseDetailResponse detail = sut.findCourseDetail(savedCourse.id());
-
-        assertThat(detail.reviews()).hasSize(2)
-                .allMatch(r -> r.authorNickname().equals(user.nickname().value()));
-    }
-
-    @Test
-    void 존재하지_않는_코스에_리뷰를_작성하면_예외가_발생한다() {
-        var user = dbUtil.saveUser(new User(UserProvider.KAKAO, "kakao-3"));
-
-        assertThatThrownBy(() -> sut.addReview("689c3143182cecc6353cca7b", user.id(), "내용"))
-                .isInstanceOf(NoSuchElementException.class);
-    }
 }

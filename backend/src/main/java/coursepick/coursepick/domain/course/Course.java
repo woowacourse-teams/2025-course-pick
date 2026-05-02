@@ -47,6 +47,7 @@ public class Course {
     private String creatorId;
 
     private Set<String> reportUserIds;
+
     private LocalDateTime createdAt;
 
     public Course(String id, CourseName courseName, List<Coordinate> rawCoordinates, User user) {
