@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
@@ -38,25 +39,42 @@ public class Course {
 
     private String creatorId;
 
-    public Course(String id, CourseName courseName, List<Coordinate> rawCoordinates, User user) {
+    public Course(String id, CourseName courseName, List<Coordinate> coordinates, User user) {
         this.id = id;
         this.name = courseName;
-        this.coordinates = refineCoordinates(rawCoordinates);
+        this.coordinates = coordinates;
         this.simplifiedCoordinates = simplifyCoordinates(this.coordinates);
+        this.length = calculateLength(this.coordinates);
+        this.reviews = new ArrayList<>();
+        this.creatorId = user.id();
+    }
+
+    public Course(String id, List<RawCoordinate> rawCoordinates, CourseName courseName, User user) {
+        this.id = id;
+        this.name = courseName;
+        this.coordinates = convertCourseCoordinate(rawCoordinates);
+        this.simplifiedCoordinates = optimizeCoordinates(rawCoordinates);
         this.length = calculateLength(coordinates);
         this.reviews = new ArrayList<>();
         this.creatorId = user.id();
     }
 
-    private List<Coordinate> refineCoordinates(List<Coordinate> rawCoordinates) {
-        return CoordinateBuilder.fromRawCoordinates(rawCoordinates)
-                .removeSimilar()
-                .smooth()
-                .build();
+    private List<Coordinate> convertCourseCoordinate(List<RawCoordinate> rawCoordinates) {
+        return rawCoordinates.stream()
+                .map(raw -> new Coordinate(raw.latitude(), raw.longitude()))
+                .toList();
     }
 
     private List<Coordinate> simplifyCoordinates(List<Coordinate> coordinates) {
-        return CoordinateBuilder.fromRawCoordinates(coordinates)
+        return CoordinateBuilder.fromCoordinates(coordinates)
+                .simplify(new Meter(10))
+                .build();
+    }
+
+    private List<Coordinate> optimizeCoordinates(List<RawCoordinate> rawCoordinates) {
+        return CoordinateBuilder.fromRawCoordinates(rawCoordinates)
+                .removeSimilar(new Meter(100))
+                .smooth()
                 .simplify(new Meter(10))
                 .build();
     }
@@ -93,8 +111,8 @@ public class Course {
     }
 
     public void changeCoordinates(List<Coordinate> coordinates) {
-        this.coordinates = refineCoordinates(coordinates);
-        this.simplifiedCoordinates = simplifyCoordinates(this.coordinates);
+        this.coordinates = coordinates;
+        this.simplifiedCoordinates = simplifyCoordinates(coordinates);
         this.length = calculateLength(this.coordinates);
     }
 

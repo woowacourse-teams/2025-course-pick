@@ -3,6 +3,9 @@ package coursepick.coursepick.domain.course;
 import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.domain.user.User;
 import coursepick.coursepick.logging.LogContent;
+
+import java.time.Instant;
+
 import lombok.extern.slf4j.Slf4j;
 
 import javax.xml.stream.*;
@@ -18,16 +21,18 @@ public class Gpx {
     private static final String CREATOR = "Coursepick - https://github.com/woowacourse-teams/2025-course-pick";
     private final String id;
     private final String name;
-    private final List<Coordinate> coordinates;
+    private final List<RawCoordinate> coordinates;
 
-    private Gpx(String id, String name, List<Coordinate> coordinates) {
+    private Gpx(String id, String name, List<RawCoordinate> coordinates) {
         this.id = id;
         this.name = name;
         this.coordinates = coordinates;
     }
 
     public static Gpx from(Course course) {
-        List<Coordinate> coordinates = course.coordinates();
+        List<RawCoordinate> coordinates = course.coordinates().stream()
+                .map(coord -> new RawCoordinate(coord.latitude(), coord.longitude(), null))
+                .toList();
 
         return new Gpx(course.id(), course.name().value(), coordinates);
     }
@@ -38,9 +43,10 @@ public class Gpx {
             XMLStreamReader xsr = xif.createXMLStreamReader(file.inputStream());
             String id = null;
             Double lat = null, lon = null;
+            Instant time = null;
             boolean hasExtensions = false;
 
-            List<Coordinate> coordinates = new ArrayList<>();
+            List<RawCoordinate> coordinates = new ArrayList<>();
 
             while (xsr.hasNext()) {
                 int event = xsr.next();
@@ -57,13 +63,20 @@ public class Gpx {
                         if (xsr.getEventType() == XMLStreamConstants.CHARACTERS) {
                             id = xsr.getText();
                         }
+                    } else if ("time".equals(localName)) {
+                        time = Instant.parse(xsr.getElementText());
                     }
                 } else if (event == XMLStreamConstants.END_ELEMENT) {
                     String localName = xsr.getLocalName();
                     if ("trkpt".equals(localName)) {
-                        if (lat != null && lon != null) {
-                            coordinates.add(new Coordinate(lat, lon));
+                        if (lat != null && lon != null && time != null) {
+                            coordinates.add(new RawCoordinate(lat, lon, time));
+                        } else if (lat != null && lon != null) {
+                            coordinates.add(new RawCoordinate(lat, lon, null));
                         }
+
+                        lat = lon = null;
+                        time = null;
                     } else if ("extensions".equals(localName)) {
                         hasExtensions = false;
                     }
@@ -128,6 +141,6 @@ public class Gpx {
     }
 
     public List<Course> toCourses(User user) {
-        return List.of(new Course(id, new CourseName(name), coordinates, user));
+        return List.of(new Course(id, coordinates, new CourseName(name), user));
     }
 }

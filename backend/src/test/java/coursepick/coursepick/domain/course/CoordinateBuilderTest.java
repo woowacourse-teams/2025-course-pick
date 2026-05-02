@@ -21,7 +21,7 @@ class CoordinateBuilderTest {
                 new Coordinate(0.0005, 0.0005)    // 마지막 점
         );
 
-        CoordinateBuilder builder = CoordinateBuilder.fromRawCoordinates(coordinates);
+        CoordinateBuilder builder = CoordinateBuilder.fromCoordinates(coordinates);
 
         // 10m 오차로 단순화
         List<Coordinate> simplified = builder.simplify(new Meter(10)).build();
@@ -43,7 +43,7 @@ class CoordinateBuilderTest {
                 new Coordinate(37.55, 127.05)
         );
 
-        CoordinateBuilder builder = CoordinateBuilder.fromRawCoordinates(coordinates);
+        CoordinateBuilder builder = CoordinateBuilder.fromCoordinates(coordinates);
 
         // 아주 작은 오차로 단순화해도 직선이면 점이 많이 제거됨
         List<Coordinate> simplified = builder.simplify(new Meter(1)).build();

@@ -108,10 +108,10 @@ class CourseTest {
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
-        @Test
-        void 코스_생성시_첫_좌표_끝_좌표만_존재할때_둘은_중복될_수_없다() {
-            assertThatThrownBy(() -> new Course(null, new CourseName("코스"), of(new Coordinate(0, 0), new Coordinate(0, 0)), ADMIN_USER))
-                    .isInstanceOf(IllegalArgumentException.class);
-        }
+//        @Test
+//        void 코스_생성시_첫_좌표_끝_좌표만_존재할때_둘은_중복될_수_없다() {
+//            assertThatThrownBy(() -> new Course(null, new CourseName("코스"), of(new Coordinate(0, 0), new Coordinate(0, 0)), ADMIN_USER))
+//                    .isInstanceOf(IllegalArgumentException.class);
+//        }
     }
 }

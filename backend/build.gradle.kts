@@ -32,6 +32,9 @@ dependencies {
     // JSpecify
     compileOnly("org.jspecify:jspecify:1.0.0")
 
+    // Gps Optimizer
+    implementation("io.github.kkiseug:gps-track-optimizer:0.1.0")
+
     // DB Connector
     runtimeOnly("com.mysql:mysql-connector-j")
     runtimeOnly("com.h2database:h2")
