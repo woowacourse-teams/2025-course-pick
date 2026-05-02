@@ -26,17 +26,32 @@ public class CourseApplicationService {
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
     private final RouteFinder routeFinder;
-    private final UserApplicationService userApplicationService;
+    private final CourseReportAlerter courseReportAlerter;
+
 
 
     @Transactional
     public void addCustomCourse(String name, List<Coordinate> coordinates, String userId) {
         CourseName courseName = new CourseName(name);
         validateDuplicatedCourseName(courseName);
-        User user = userApplicationService.findUser(userId);
+        User user = getUser(userId);
 
         Course newCourse = new Course(null, courseName, coordinates, user);
         courseRepository.save(newCourse);
+    }
+
+    @Transactional
+    public void report(String courseId, String userId) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> NOT_EXIST_COURSE.create(courseId));
+        User user = getUser(userId);
+
+        course.addReport(user);
+        courseRepository.save(course);
+
+        if (course.isReportThreshold()) {
+            courseReportAlerter.alert(course);
+        }
     }
 
     private void validateDuplicatedCourseName(CourseName courseName) {
@@ -49,6 +64,11 @@ public class CourseApplicationService {
     public CoursesResponse findNearbyCourses(CourseFindCondition condition, @Nullable Double userLatitude, @Nullable Double userLongitude) {
         Slice<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(condition);
         return CoursesResponse.from(coursesWithinScope, createUserPositionOrNull(userLatitude, userLongitude));
+    }
+
+    private User getUser(String userId) {
+        return userRepository.findById(userId).
+                orElseThrow(() -> NOT_EXIST_USER.create(userId));
     }
 
     private static Coordinate createUserPositionOrNull(@Nullable Double userLatitude, @Nullable Double userLongitude) {

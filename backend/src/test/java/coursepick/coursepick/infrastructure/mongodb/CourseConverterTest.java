@@ -3,18 +3,23 @@ package coursepick.coursepick.infrastructure.mongodb;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import coursepick.coursepick.domain.course.*;
 import coursepick.coursepick.domain.user.User;
+import coursepick.coursepick.domain.user.User;
+import coursepick.coursepick.domain.course.Coordinate;
+import coursepick.coursepick.domain.course.Course;
+import coursepick.coursepick.domain.course.CourseName;
+import coursepick.coursepick.domain.course.Meter;
+import coursepick.coursepick.test_util.AbstractIntegrationTest;
 import org.bson.Document;
-import org.bson.types.Binary;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class CourseConverterTest {
-
+class CourseConverterTest extends AbstractIntegrationTest {
 
     private CourseConverter.Writer writer;
     private CourseConverter.Reader reader;
@@ -32,11 +37,11 @@ class CourseConverterTest {
                 List.of(new Coordinate(37.5, 127.0), new Coordinate(37.52, 127.02)),
                 new Meter(1500.0),
                 List.of(new Review(new User(null, "providerId", "reviewer"), "hi")),
-                "creatorId123"
+                "creatorId123",
+                Set.of("reportMan1")
         );
 
     }
-
 
     @Test
     void Course를_Document로_변환한다() {
@@ -49,16 +54,14 @@ class CourseConverterTest {
         assertThat(document.get("simplifiedCoordinates")).isInstanceOf(Document.class);
         assertThat(document.get("reviews")).isInstanceOf(List.class);
         assertThat(document.getString("creatorId")).isEqualTo(course.creatorId());
+        // mongodb에서 set 타입을 list 타입으로 변환되는 과정을 거치지 않아서 set 타입으로 검증합니다.
+        assertThat(document.get("reportUserIds", Set.class)).isNotEmpty();
     }
 
     @Test
     void Document를_Course로_변환한다() {
-        Document document = writer.convert(course);
-
-        Document coordinatesDoc = (Document) document.get("coordinates");
-        coordinatesDoc.put("zip_coordinates", new Binary((byte[]) coordinatesDoc.get("zip_coordinates")));
-
-        Course result = reader.convert(document);
+        Course saved = dbUtil.saveCourse(course);
+        Course result = dbUtil.findCourseById(saved.id());
 
         assertThat(result.id()).isEqualTo(course.id());
         assertThat(result.name()).isEqualTo(course.name());
@@ -67,5 +70,6 @@ class CourseConverterTest {
         assertThat(result.length()).isEqualTo(course.length());
         assertThat(result.reviews()).hasSameSizeAs(course.reviews());
         assertThat(result.creatorId()).isEqualTo(course.creatorId());
+        assertThat(result.reportUserIds()).containsExactly("reportMan1");
     }
 }

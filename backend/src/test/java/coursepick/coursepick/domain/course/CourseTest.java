@@ -1,5 +1,6 @@
 package coursepick.coursepick.domain.course;
 
+import coursepick.coursepick.domain.user.Nickname;
 import coursepick.coursepick.domain.user.User;
 import coursepick.coursepick.domain.user.UserProvider;
 import org.junit.jupiter.api.Nested;
@@ -101,7 +102,6 @@ class CourseTest {
         }
 
 
-
         @Test
         void 코스의_좌표의_개수가_2보다_적으면_예외가_발생한다() {
             assertThatThrownBy(() -> new Course(null, new CourseName("코스"), of(new Coordinate(0, 0)), ADMIN_USER))
@@ -113,5 +113,17 @@ class CourseTest {
             assertThatThrownBy(() -> new Course(null, new CourseName("코스"), of(new Coordinate(0, 0), new Coordinate(0, 0)), ADMIN_USER))
                     .isInstanceOf(IllegalArgumentException.class);
         }
+    }
+
+    @Test
+    void 동일_유저_신고시_예외를_던진다() {
+
+        Course course = new Course(null, new CourseName("코스"), List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
+        User user1 = new User("user1", UserProvider.KAKAO, "providerId", Nickname.random());
+
+        course.addReport(user1);
+
+        assertThatThrownBy(() -> course.addReport(user1))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

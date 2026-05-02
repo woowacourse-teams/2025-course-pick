@@ -1,5 +1,6 @@
 package coursepick.coursepick.domain.course;
 
+import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.user.User;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,13 +14,17 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Document
 @AllArgsConstructor(access = AccessLevel.PUBLIC, onConstructor_ = @PersistenceCreator)
 @Getter
 @Accessors(fluent = true)
 public class Course {
+
+    private static final int REPORT_ALERT_THRESHOLD = 3;
 
     @Id
     private final String id;
@@ -38,6 +43,8 @@ public class Course {
 
     private String creatorId;
 
+    private Set<String> reportUserIds;
+
     public Course(String id, CourseName courseName, List<Coordinate> rawCoordinates, User user) {
         this.id = id;
         this.name = courseName;
@@ -46,6 +53,7 @@ public class Course {
         this.length = calculateLength(coordinates);
         this.reviews = new ArrayList<>();
         this.creatorId = user.id();
+        this.reportUserIds = new HashSet<>();
     }
 
     private List<Coordinate> refineCoordinates(List<Coordinate> rawCoordinates) {
@@ -104,5 +112,16 @@ public class Course {
 
     public void addReview(User author, String content) {
         reviews.add(new Review(author, content));
+    }
+
+    public void addReport(User user) {
+        if (reportUserIds.contains(user.id())) {
+            throw ErrorType.ALREADY_REPORTED_COURSE.create(this.id, user.id());
+        }
+        reportUserIds.add(user.id());
+    }
+
+    public boolean isReportThreshold() {
+        return reportUserIds.size() >= REPORT_ALERT_THRESHOLD;
     }
 }

@@ -1,7 +1,5 @@
 package coursepick.coursepick.application;
 
-import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_USER;
-
 import coursepick.coursepick.domain.user.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,12 +26,6 @@ public class UserApplicationService {
     @Transactional
     public Authentication registerOrLoginAndGetAuthentication(String oauthAccessToken) {
         return registerOrLoginAndGetAuthentication(UserProvider.KAKAO, oauthAccessToken);
-    }
-
-    @Transactional(readOnly = true)
-    public User findUser(String userId){
-        return userRepository.findById(userId).
-                orElseThrow(() -> NOT_EXIST_USER.create(userId));
     }
 
     private Authentication registerOrLoginAndGetAuthentication(UserProvider userProvider, String oauthAccessToken) {
