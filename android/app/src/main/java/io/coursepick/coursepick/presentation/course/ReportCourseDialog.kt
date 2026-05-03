@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -47,6 +46,16 @@ fun ReportCourseDialog(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val reportReasons: List<String> =
+        listOf(
+            stringResource(R.string.report_course_reason_duplicate_course),
+            stringResource(R.string.report_course_reason_incorrect_course_data),
+            stringResource(R.string.report_course_reason_cannot_access_course),
+            stringResource(R.string.report_course_reason_incorrect_course_name),
+        )
+
+    var isConfirmEnabled by remember { mutableStateOf(false) }
+
     Dialog(onDismiss) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -60,100 +69,121 @@ fun ReportCourseDialog(
 
             Spacer(Modifier.height(10.dp))
 
-            Text(text = stringResource(R.string.report_course_dialog_description), fontSize = 16.sp)
+            ReportReasonDescription(reportReasons)
 
-            Spacer(Modifier.height(10.dp))
-
-            val reportReasons: List<String> =
-                listOf(
-                    stringResource(R.string.report_course_reason_duplicate_course),
-                    stringResource(R.string.report_course_reason_incorrect_course_data),
-                    stringResource(R.string.report_course_reason_cannot_access_course),
-                    stringResource(R.string.report_course_reason_incorrect_course_name),
-                )
-
-            Text(
-                text =
-                    buildAnnotatedString {
-                        withBulletList {
-                            reportReasons.forEach { reason: String ->
-                                withBulletListItem { append(reason) }
-                            }
-                        }
-                    },
-                fontSize = 14.sp,
-                textAlign = TextAlign.Start,
-                modifier =
-                    Modifier
-                        .align(Alignment.Start)
-                        .fillMaxWidth()
-                        .background(colorResource(R.color.background_tertiary), RoundedCornerShape(10.dp))
-                        .padding(10.dp),
+            ReportConfirmCheckbox(
+                checked = isConfirmEnabled,
+                onCheckChanged = { checked: Boolean -> isConfirmEnabled = checked },
+                modifier = Modifier.align(Alignment.Start),
             )
 
-            var isConfirmButtonEnabled by remember { mutableStateOf(false) }
+            ReportCourseDialogButtons(
+                isConfirmEnabled = isConfirmEnabled,
+                onConfirm = { onConfirm(course) },
+                onDismiss = onDismiss,
+                modifier = Modifier.padding(10.dp),
+            )
+        }
+    }
+}
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.align(Alignment.Start),
-            ) {
-                Checkbox(
-                    checked = isConfirmButtonEnabled,
-                    onCheckedChange = { isChecked: Boolean -> isConfirmButtonEnabled = isChecked },
-                    colors = CheckboxDefaults.colors(checkedColor = colorResource(R.color.point_primary)),
-                )
+@Composable
+private fun ReportReasonDescription(
+    reasons: List<String>,
+    modifier: Modifier = Modifier,
+) {
+    Text(text = stringResource(R.string.report_course_dialog_description), fontSize = 16.sp)
 
-                Text(
-                    text = "이 중 해당되는 것이 있어요",
-                    fontSize = 14.sp,
-                    modifier =
-                        Modifier
-                            .clickable { isConfirmButtonEnabled = !isConfirmButtonEnabled },
-                )
-            }
+    Spacer(Modifier.height(10.dp))
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp),
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier =
-                        Modifier
-                            .weight(1F)
-                            .clip(RoundedCornerShape(50))
-                            .clickable { onDismiss() }
-                            .background(colorResource(R.color.background_tertiary))
-                            .padding(horizontal = 20.dp, vertical = 10.dp),
-                ) {
-                    Text(
-                        text = stringResource(R.string.report_course_dialog_cancel_button),
-                        fontSize = 16.sp,
-                        color = colorResource(R.color.item_tertiary),
-                    )
+    Text(
+        text =
+            buildAnnotatedString {
+                withBulletList {
+                    reasons.forEach { reason: String ->
+                        withBulletListItem { append(reason) }
+                    }
                 }
+            },
+        fontSize = 14.sp,
+        textAlign = TextAlign.Start,
+        modifier =
+            modifier
+                .background(colorResource(R.color.background_tertiary), RoundedCornerShape(10.dp))
+                .padding(10.dp),
+    )
+}
 
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier =
-                        Modifier
-                            .weight(1F)
-                            .clip(RoundedCornerShape(50))
-                            .clickable(isConfirmButtonEnabled) { onConfirm(course) }
-                            .background(colorResource(if (isConfirmButtonEnabled) R.color.point_primary else R.color.background_tertiary))
-                            .padding(horizontal = 20.dp, vertical = 10.dp),
-                ) {
-                    Text(
-                        text = stringResource(R.string.report_course_dialog_confirm_button),
-                        fontSize = 16.sp,
-                        color = colorResource(if (isConfirmButtonEnabled) R.color.item_primary else R.color.item_tertiary),
-                    )
-                }
-            }
+@Composable
+private fun ReportConfirmCheckbox(
+    checked: Boolean,
+    onCheckChanged: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier,
+    ) {
+        Checkbox(
+            checked = checked,
+            onCheckedChange = onCheckChanged,
+            colors = CheckboxDefaults.colors(checkedColor = colorResource(R.color.point_primary)),
+        )
+
+        Text(
+            text = stringResource(R.string.report_course_confirm_reason_description),
+            fontSize = 14.sp,
+            modifier =
+                Modifier
+                    .clickable { onCheckChanged(!checked) },
+        )
+    }
+}
+
+@Composable
+private fun ReportCourseDialogButtons(
+    isConfirmEnabled: Boolean,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier,
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier =
+                Modifier
+                    .weight(1F)
+                    .clip(RoundedCornerShape(50))
+                    .clickable { onDismiss() }
+                    .background(colorResource(R.color.background_tertiary))
+                    .padding(horizontal = 20.dp, vertical = 10.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.report_course_dialog_cancel_button),
+                fontSize = 16.sp,
+                color = colorResource(R.color.item_tertiary),
+            )
+        }
+
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier =
+                Modifier
+                    .weight(1F)
+                    .clip(RoundedCornerShape(50))
+                    .clickable(isConfirmEnabled) { onConfirm() }
+                    .background(colorResource(if (isConfirmEnabled) R.color.point_primary else R.color.background_tertiary))
+                    .padding(horizontal = 20.dp, vertical = 10.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.report_course_dialog_confirm_button),
+                fontSize = 16.sp,
+                color = colorResource(if (isConfirmEnabled) R.color.item_primary else R.color.item_tertiary),
+            )
         }
     }
 }
