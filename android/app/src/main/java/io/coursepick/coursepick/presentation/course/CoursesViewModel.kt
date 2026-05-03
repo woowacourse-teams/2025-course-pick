@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.coursepick.coursepick.data.NetworkMonitor
 import io.coursepick.coursepick.data.interceptor.NoNetworkException
+import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseRepository
@@ -19,6 +20,7 @@ import io.coursepick.coursepick.domain.location.LocationRepository
 import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.domain.notice.NoticeRepository
 import io.coursepick.coursepick.presentation.Logger
+import io.coursepick.coursepick.presentation.auth.AuthFeature
 import io.coursepick.coursepick.presentation.filter.CourseFilter
 import io.coursepick.coursepick.presentation.filter.CourseFilterAction
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
@@ -47,6 +49,7 @@ class CoursesViewModel
         private val favoritesRepository: FavoritesRepository,
         private val noticeRepository: NoticeRepository,
         private val locationRepository: LocationRepository,
+        private val authRepository: AuthRepository,
         private val networkMonitor: NetworkMonitor,
     ) : ViewModel() {
         private val _state: MutableLiveData<CoursesUiState> =
@@ -72,8 +75,11 @@ class CoursesViewModel
                 initialValue = null,
             )
 
-        private val _reportCourseDialogTarget = MutableStateFlow<CourseItem?>(null)
-        val reportCourseDialogTarget: StateFlow<CourseItem?> get() = _reportCourseDialogTarget.asStateFlow()
+        private val _reportCourseDialogState = MutableStateFlow<CourseItem?>(null)
+        val reportCourseDialogState: StateFlow<CourseItem?> get() = _reportCourseDialogState.asStateFlow()
+
+        private val _authDialogState = MutableStateFlow<AuthFeature?>(null)
+        val authDialogState: StateFlow<AuthFeature?> get() = _authDialogState.asStateFlow()
 
         private val _event: MutableSingleLiveData<CoursesUiEvent> = MutableSingleLiveData()
         val event: SingleLiveData<CoursesUiEvent> get() = _event
@@ -559,7 +565,13 @@ class CoursesViewModel
         suspend fun currentLocation(): Location? = locationRepository.currentLocation()
 
         fun onReportCourse(course: CourseItem) {
-            _reportCourseDialogTarget.value = course
+            viewModelScope.launch {
+                if (authRepository.accessToken() == null) {
+                    _authDialogState.value = AuthFeature.ReportCourse(course)
+                } else {
+                    _reportCourseDialogState.value = course
+                }
+            }
         }
 
         fun submitCourseReport(course: CourseItem) {
@@ -583,7 +595,22 @@ class CoursesViewModel
         }
 
         fun dismissReportCourseDialog() {
-            _reportCourseDialogTarget.value = null
+            _reportCourseDialogState.value = null
+        }
+
+        fun dismissAuthDialog() {
+            _authDialogState.value = null
+        }
+
+        fun onAuthSuccess(feature: AuthFeature) {
+            when (feature) {
+                is AuthFeature.ReportCourse -> {
+                    _authDialogState.value = null
+                    onReportCourse(feature.course)
+                }
+
+                else -> {}
+            }
         }
 
         private fun newCoursesListItem(

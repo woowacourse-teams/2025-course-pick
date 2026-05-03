@@ -55,6 +55,11 @@ import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.DataKeys
 import io.coursepick.coursepick.presentation.InstallStateObserver
 import io.coursepick.coursepick.presentation.Logger
+import io.coursepick.coursepick.presentation.auth.AuthDialog
+import io.coursepick.coursepick.presentation.auth.AuthFeature
+import io.coursepick.coursepick.presentation.auth.AuthUiEvent
+import io.coursepick.coursepick.presentation.auth.AuthViewModel
+import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.customcourse.CustomCoursesFragment
@@ -83,6 +88,7 @@ class CoursesActivity :
     private var searchLauncher: ActivityResultLauncher<Intent>? = null
     private val binding by lazy { ActivityCoursesBinding.inflate(layoutInflater) }
     private val viewModel: CoursesViewModel by viewModels()
+    private val authViewModel: AuthViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(courseItemListener) }
     private val doublePressDetector = DoublePressDetector()
 
@@ -847,8 +853,29 @@ class CoursesActivity :
     private fun setUpFlowCollector() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.locationUpdates.collect { location: Location? ->
-                    location?.let(mapManager::drawUserLocation) ?: run(mapManager::hideUserLocation)
+                launch {
+                    viewModel.locationUpdates.collect { location: Location? ->
+                        location?.let(mapManager::drawUserLocation) ?: run(mapManager::hideUserLocation)
+                    }
+                }
+
+                launch {
+                    authViewModel.uiEvent.collect { event: AuthUiEvent ->
+                        when (event) {
+                            is AuthUiEvent.AuthenticateSuccess -> {
+                                viewModel.onAuthSuccess(event.feature)
+                            }
+
+                            AuthUiEvent.AuthenticateFailure -> {
+                                Toast
+                                    .makeText(
+                                        this@CoursesActivity,
+                                        getString(R.string.authentication_failure_message),
+                                        Toast.LENGTH_SHORT,
+                                    ).show()
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -914,7 +941,15 @@ class CoursesActivity :
                         )
                     }
 
-                    viewModel.reportCourseDialogTarget.collectAsStateWithLifecycle().value?.let { course: CourseItem ->
+                    viewModel.authDialogState.collectAsStateWithLifecycle().value?.let { feature: AuthFeature ->
+                        AuthDialog(
+                            feature = feature,
+                            onDismissRequest = viewModel::dismissAuthDialog,
+                            onKakaoLoginClick = { authViewModel.authenticate(KakaoAuthenticator(this@CoursesActivity), feature) },
+                        )
+                    }
+
+                    viewModel.reportCourseDialogState.collectAsStateWithLifecycle().value?.let { course: CourseItem ->
                         ReportCourseDialog(
                             course = course,
                             onConfirm = viewModel::submitCourseReport,

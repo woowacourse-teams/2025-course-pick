@@ -29,7 +29,7 @@ class CustomCourseViewModel
         fun onGoToCreateCustomCourse() {
             viewModelScope.launch {
                 if (authRepository.accessToken() == null) {
-                    _authDialogState.value = AuthFeature.CUSTOM_COURSE
+                    _authDialogState.value = AuthFeature.CustomCourse
                 } else {
                     _uiEvent.emit(CustomCourseUiEvent.NavigateToCreateCourse)
                 }

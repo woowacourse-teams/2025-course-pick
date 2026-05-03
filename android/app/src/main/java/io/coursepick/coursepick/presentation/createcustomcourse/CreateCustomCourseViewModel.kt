@@ -146,7 +146,7 @@ class CreateCustomCourseViewModel
                     }
 
                 if (authRepository.accessToken() == null) {
-                    _authDialogState.value = AuthFeature.CUSTOM_COURSE
+                    _authDialogState.value = AuthFeature.CustomCourse
                     return@launch
                 }
 
