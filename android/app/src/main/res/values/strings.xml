@@ -137,4 +137,8 @@
     <string name="selected_route_finder_application_value_kakao">kakao map</string>
     <string name="selected_route_finder_application_value_naver">naver map</string>
     <string name="selected_route_finder_application_value_none">none</string>
+    <string name="report_course_reason_duplicate_course">똑같은 코스가 이미 있어요</string>
+    <string name="report_course_reason_incorrect_course_data">코스의 경로가 실제와 달라요</string>
+    <string name="report_course_reason_cannot_access_course">위험하거나 출입이 제한된 곳을 지나가요</string>
+    <string name="report_course_reason_incorrect_course_name">코스의 이름이 부적절해요</string>
 </resources>

@@ -64,14 +64,21 @@ fun ReportCourseDialog(
 
             Spacer(Modifier.height(10.dp))
 
+            val reportReasons: List<String> =
+                listOf(
+                    stringResource(R.string.report_course_reason_duplicate_course),
+                    stringResource(R.string.report_course_reason_incorrect_course_data),
+                    stringResource(R.string.report_course_reason_cannot_access_course),
+                    stringResource(R.string.report_course_reason_incorrect_course_name),
+                )
+
             Text(
                 text =
                     buildAnnotatedString {
                         withBulletList {
-                            withBulletListItem { append("똑같은 코스가 이미 있어요") }
-                            withBulletListItem { append("코스의 경로가 실제와 달라요") }
-                            withBulletListItem { append("위험하거나 출입이 제한된 곳을 지나가요") }
-                            withBulletListItem { append("코스의 이름이 부적절해요") }
+                            reportReasons.forEach { reason: String ->
+                                withBulletListItem { append(reason) }
+                            }
                         }
                     },
                 fontSize = 14.sp,
