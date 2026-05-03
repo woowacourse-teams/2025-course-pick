@@ -46,4 +46,7 @@ class FakeCourseRepository : CourseRepository {
         selected: Course,
         origin: Coordinate,
     ): Coordinate = COORDINATE_FIXTURE
+
+    override suspend fun report(course: Course) {
+    }
 }
