@@ -617,7 +617,7 @@ class CoursesViewModel
         fun onAuthSuccess(feature: AuthFeature) {
             when (feature) {
                 is AuthFeature.ReportCourse -> {
-                    _authDialogState.value = null
+                    dismissAuthDialog()
                     onReportCourse(feature.course)
                 }
 

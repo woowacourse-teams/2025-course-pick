@@ -82,8 +82,7 @@ class CustomCoursesFragment : Fragment() {
                     authViewModel.uiEvent.collect { event: AuthUiEvent ->
                         when (event) {
                             is AuthUiEvent.AuthenticateSuccess -> {
-                                customCourseViewModel.dismissAuthDialog()
-                                goToCreateCustomCourse()
+                                customCourseViewModel.onAuthSuccess(event.feature)
                             }
 
                             AuthUiEvent.AuthenticateFailure -> {
