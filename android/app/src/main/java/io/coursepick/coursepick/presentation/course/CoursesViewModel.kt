@@ -578,6 +578,8 @@ class CoursesViewModel
             viewModelScope.launch {
                 try {
                     courseRepository.report(course.course)
+                    _reportCourseDialogState.value = null
+                    _event.value = CoursesUiEvent.ReportCourseSuccess
                 } catch (exception: CancellationException) {
                     throw exception
                 } catch (_: NoNetworkException) {
