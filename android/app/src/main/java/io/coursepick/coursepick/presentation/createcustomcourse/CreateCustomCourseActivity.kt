@@ -24,6 +24,7 @@ import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.presentation.InstallStateObserver
 import io.coursepick.coursepick.presentation.auth.AuthDialog
+import io.coursepick.coursepick.presentation.auth.AuthFeature
 import io.coursepick.coursepick.presentation.auth.AuthUiEvent
 import io.coursepick.coursepick.presentation.auth.AuthViewModel
 import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
@@ -112,11 +113,11 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                     )
                 }
 
-                viewModel.authDialogState.collectAsStateWithLifecycle().value?.let { authFeature ->
+                viewModel.authDialogState.collectAsStateWithLifecycle().value?.let { feature: AuthFeature ->
                     AuthDialog(
-                        feature = authFeature,
+                        feature = feature,
                         onDismissRequest = viewModel::dismissAuthDialog,
-                        onKakaoLoginClick = { authViewModel.authenticate(KakaoAuthenticator(this@CreateCustomCourseActivity)) },
+                        onKakaoLoginClick = { authViewModel.authenticate(KakaoAuthenticator(this@CreateCustomCourseActivity), feature) },
                     )
                 }
             }
@@ -225,7 +226,7 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                 launch {
                     authViewModel.uiEvent.collect { event: AuthUiEvent ->
                         when (event) {
-                            AuthUiEvent.AuthenticateSuccess -> {
+                            is AuthUiEvent.AuthenticateSuccess -> {
                                 viewModel.dismissAuthDialog()
                                 viewModel.submitCourse()
                             }

@@ -54,7 +54,7 @@ class CustomCoursesFragment : Fragment() {
                     AuthDialog(
                         feature = feature,
                         onDismissRequest = customCourseViewModel::dismissAuthDialog,
-                        onKakaoLoginClick = { authViewModel.authenticate(KakaoAuthenticator(requireActivity())) },
+                        onKakaoLoginClick = { authViewModel.authenticate(KakaoAuthenticator(requireActivity()), feature) },
                     )
                 }
             }
@@ -81,7 +81,7 @@ class CustomCoursesFragment : Fragment() {
                 launch {
                     authViewModel.uiEvent.collect { event: AuthUiEvent ->
                         when (event) {
-                            AuthUiEvent.AuthenticateSuccess -> {
+                            is AuthUiEvent.AuthenticateSuccess -> {
                                 customCourseViewModel.dismissAuthDialog()
                                 goToCreateCustomCourse()
                             }
