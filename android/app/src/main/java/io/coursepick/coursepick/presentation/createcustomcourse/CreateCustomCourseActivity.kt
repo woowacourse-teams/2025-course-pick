@@ -73,6 +73,7 @@ class CreateCustomCourseActivity : AppCompatActivity() {
 
         mapManager.startMap {
             mapManager.setPadding(bottom = mapBottomPadding)
+            mapManager.resetZoom()
             setUpCollectors()
 
             if (initialCoordinate != null) {
