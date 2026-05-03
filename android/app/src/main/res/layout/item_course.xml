@@ -41,54 +41,51 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="석촌 호수 뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑이" />
 
-        <ImageView
-            android:id="@+id/courseLengthIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/icon_length"
-            app:layout_constraintBottom_toBottomOf="@id/courseLength"
-            app:layout_constraintEnd_toStartOf="@id/courseLength"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/courseLength" />
-
-        <TextView
+        <LinearLayout
             android:id="@+id/courseLength"
-            courseLength="@{course.length}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
-            android:textColor="@color/item_primary"
-            android:textSize="14sp"
-            android:textStyle="bold"
+            android:background="@drawable/background_course_detail"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
             app:layout_constraintBottom_toBottomOf="@id/courseNavigationButton"
-            app:layout_constraintStart_toEndOf="@id/courseLengthIcon"
-            app:layout_constraintTop_toTopOf="@id/courseNavigationButton"
-            tools:text="5km" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/courseNavigationButton">
 
-        <TextView
-            android:id="@+id/courseLengthDistanceSeparator"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:paddingHorizontal="6dp"
-            android:text="@string/course_item_length_distance_separator"
-            android:textColor="@color/item_tertiary"
-            android:textSize="16sp"
-            android:visibility="@{course.distance != null ? View.VISIBLE : View.GONE}"
-            app:layout_constraintBottom_toBottomOf="@id/courseLength"
-            app:layout_constraintStart_toEndOf="@id/courseLength"
-            app:layout_constraintTop_toTopOf="@id/courseLength" />
+            <ImageView
+                android:id="@+id/courseLengthIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_length" />
+
+            <TextView
+                android:id="@+id/courseLengthText"
+                courseLength="@{course.length}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:textColor="@color/item_primary"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                tools:text="5km" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/courseDistance"
             courseDistance="@{course.distance}"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/background_course_detail"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
             android:textColor="@color/point_primary"
             android:textSize="12sp"
             android:textStyle="bold"
             android:visibility="@{course.distance != null ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@id/courseLength"
-            app:layout_constraintStart_toEndOf="@id/courseLengthDistanceSeparator"
+            app:layout_constraintStart_toEndOf="@id/courseLength"
             app:layout_constraintTop_toTopOf="@id/courseLength"
             app:layout_constraintVertical_chainStyle="spread_inside"
             tools:text="10m만큼 떨어짐" />
@@ -103,7 +100,8 @@
             android:src="@drawable/icon_report_course"
             app:layout_constraintBottom_toTopOf="@id/courseNavigationButton"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/item_secondary" />
 
         <ImageView
             android:id="@+id/courseFavoriteButton"

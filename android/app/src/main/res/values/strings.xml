@@ -18,7 +18,6 @@
     <string name="course_item_unit_meter">%dm</string>
     <string name="course_item_unit_kilometer">%.2fkm</string>
     <string name="course_item_distance_to_course_format">%s만큼 떨어짐</string>
-    <string name="course_item_length_distance_separator">•</string>
     <string name="course_item_navigate_to_course_button">길찾기</string>
 
     <!--  코스 화면 - 코스 탐색 메뉴  -->
