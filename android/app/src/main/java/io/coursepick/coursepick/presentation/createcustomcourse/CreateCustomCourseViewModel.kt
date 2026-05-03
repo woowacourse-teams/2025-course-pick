@@ -11,6 +11,7 @@ import io.coursepick.coursepick.domain.course.Length
 import io.coursepick.coursepick.domain.customcourse.CustomCourseRepository
 import io.coursepick.coursepick.domain.customcourse.DraftCourse
 import io.coursepick.coursepick.domain.customcourse.DraftSegment
+import io.coursepick.coursepick.presentation.auth.AuthFeature
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,8 +36,8 @@ class CreateCustomCourseViewModel
         private val _event = MutableSharedFlow<CreateCustomCourseUiEvent>()
         val event: SharedFlow<CreateCustomCourseUiEvent> get() = _event.asSharedFlow()
 
-        private val _showAuthDialog = MutableStateFlow(false)
-        val showAuthDialog: StateFlow<Boolean> get() = _showAuthDialog.asStateFlow()
+        private val _authDialogState = MutableStateFlow<AuthFeature?>(null)
+        val authDialogState: StateFlow<AuthFeature?> get() = _authDialogState.asStateFlow()
 
         private val _showSubmitDialog = MutableStateFlow(false)
         val showSubmitDialog: StateFlow<Boolean> get() = _showSubmitDialog.asStateFlow()
@@ -145,7 +146,7 @@ class CreateCustomCourseViewModel
                     }
 
                 if (authRepository.accessToken() == null) {
-                    _showAuthDialog.value = true
+                    _authDialogState.value = AuthFeature.CUSTOM_COURSE
                     return@launch
                 }
 
@@ -171,7 +172,7 @@ class CreateCustomCourseViewModel
         }
 
         fun dismissAuthDialog() {
-            _showAuthDialog.value = false
+            _authDialogState.value = null
         }
 
         companion object {

@@ -59,6 +59,7 @@
     <string name="navigate_fine_location_permission_rationale_dialog_positive_button">닫기</string>
 
     <!--  코스 화면: 코스 신고  -->
+    <string name="report_course_feature_name">코스 신고</string>
     <string name="report_course_dialog_description">이 코스에 문제가 있다면 알려주세요.</string>
     <string name="report_course_dialog_cancel_button">취소</string>
     <string name="report_course_dialog_confirm_button">신고하기</string>
@@ -76,7 +77,8 @@
     <string name="search_no_result_description">검색 결과가 없어요 🥲</string>
 
     <!--  코스 추가 화면  -->
-    <string name="create_custom_course">코스 추가</string>
+    <string name="create_custom_course_header">코스 추가</string>
+    <string name="create_custom_course_feature_name">코스 추가</string>
     <string name="create_custom_course_course_length_too_short_message">우선 코스를 완성해주세요.</string>
     <string name="create_custom_course_exit_button_description">이 화면을 닫습니다.</string>
     <string name="create_custom_course_confirm_button_description">코스를 생성합니다.</string>
