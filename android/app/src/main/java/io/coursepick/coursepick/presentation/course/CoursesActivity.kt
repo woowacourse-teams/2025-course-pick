@@ -838,7 +838,7 @@ class CoursesActivity :
                         ).show()
                 }
 
-                CoursesUiEvent.ReportCourseFailureUnknown -> {
+                CoursesUiEvent.ReportCourseUnknownFailure -> {
                     Toast
                         .makeText(
                             this,

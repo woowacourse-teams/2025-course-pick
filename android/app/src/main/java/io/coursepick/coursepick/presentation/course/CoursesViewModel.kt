@@ -436,7 +436,7 @@ class CoursesViewModel
                     _state.value = state.value?.copy(status = UiStatus.Failure)
                     _event.value =
                         if (error is NoNetworkException) {
-                            CoursesUiEvent.ReportCourseFailureUnknown
+                            CoursesUiEvent.ReportCourseUnknownFailure
                         } else {
                             CoursesUiEvent.FetchRouteToCourseFailure
                         }
@@ -586,10 +586,10 @@ class CoursesViewModel
                     _event.value =
                         when (exception.code()) {
                             401 -> CoursesUiEvent.ReportCourseUnauthorizedUser
-                            else -> CoursesUiEvent.ReportCourseFailureUnknown
+                            else -> CoursesUiEvent.ReportCourseUnknownFailure
                         }
                 } catch (_: Throwable) {
-                    _event.value = CoursesUiEvent.ReportCourseFailureUnknown
+                    _event.value = CoursesUiEvent.ReportCourseUnknownFailure
                 }
             }
         }
