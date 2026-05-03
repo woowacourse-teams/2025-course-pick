@@ -25,6 +25,7 @@ import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -35,6 +36,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -70,8 +72,8 @@ class CoursesViewModel
                 initialValue = null,
             )
 
-        private val _reportDialogCourse = MutableStateFlow<CourseItem?>(null)
-        val reportDialogCourse: StateFlow<CourseItem?> get() = _reportDialogCourse.asStateFlow()
+        private val _reportCourseDialogTarget = MutableStateFlow<CourseItem?>(null)
+        val reportCourseDialogTarget: StateFlow<CourseItem?> get() = _reportCourseDialogTarget.asStateFlow()
 
         private val _event: MutableSingleLiveData<CoursesUiEvent> = MutableSingleLiveData()
         val event: SingleLiveData<CoursesUiEvent> get() = _event
@@ -428,7 +430,7 @@ class CoursesViewModel
                     _state.value = state.value?.copy(status = UiStatus.Failure)
                     _event.value =
                         if (error is NoNetworkException) {
-                            CoursesUiEvent.FetchRouteToCourseNoNetwork
+                            CoursesUiEvent.ReportCourseFailureUnknown
                         } else {
                             CoursesUiEvent.FetchRouteToCourseFailure
                         }
@@ -557,14 +559,31 @@ class CoursesViewModel
         suspend fun currentLocation(): Location? = locationRepository.currentLocation()
 
         fun onReportCourse(course: CourseItem) {
-            _reportDialogCourse.value = course
+            _reportCourseDialogTarget.value = course
         }
 
         fun submitCourseReport(course: CourseItem) {
+            viewModelScope.launch {
+                try {
+                    courseRepository.report(course.course)
+                } catch (exception: CancellationException) {
+                    throw exception
+                } catch (_: NoNetworkException) {
+                    _event.value = CoursesUiEvent.NoNetworkConnection
+                } catch (exception: HttpException) {
+                    _event.value =
+                        when (exception.code()) {
+                            401 -> CoursesUiEvent.ReportCourseUnauthorizedUser
+                            else -> CoursesUiEvent.ReportCourseFailureUnknown
+                        }
+                } catch (_: Throwable) {
+                    _event.value = CoursesUiEvent.ReportCourseFailureUnknown
+                }
+            }
         }
 
-        fun dismissReportCourse() {
-            _reportDialogCourse.value = null
+        fun dismissReportCourseDialog() {
+            _reportCourseDialogTarget.value = null
         }
 
         private fun newCoursesListItem(

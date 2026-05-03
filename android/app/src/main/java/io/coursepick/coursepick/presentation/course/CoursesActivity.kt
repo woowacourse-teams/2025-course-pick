@@ -778,11 +778,11 @@ class CoursesActivity :
                         ).show()
                 }
 
-                is CoursesUiEvent.FetchRouteToCourseNoNetwork -> {
+                is CoursesUiEvent.NoNetworkConnection -> {
                     Toast
                         .makeText(
                             this,
-                            getString(R.string.courses_no_network_connection_for_route_message),
+                            getString(R.string.courses_no_network_message),
                             Toast.LENGTH_SHORT,
                         ).show()
                 }
@@ -810,6 +810,33 @@ class CoursesActivity :
                         .makeText(
                             this,
                             getString(R.string.explore_failed_to_fetch_next_page_message),
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                }
+
+                CoursesUiEvent.ReportCourseSuccess -> {
+                    Toast
+                        .makeText(
+                            this,
+                            getString(R.string.report_course_success_message),
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                }
+
+                CoursesUiEvent.ReportCourseUnauthorizedUser -> {
+                    Toast
+                        .makeText(
+                            this,
+                            getString(R.string.report_course_failure_unauthorized_user_message),
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                }
+
+                CoursesUiEvent.ReportCourseFailureUnknown -> {
+                    Toast
+                        .makeText(
+                            this,
+                            getString(R.string.report_course_failure_unknown_message),
                             Toast.LENGTH_SHORT,
                         ).show()
                 }
@@ -887,11 +914,11 @@ class CoursesActivity :
                         )
                     }
 
-                    viewModel.reportDialogCourse.collectAsStateWithLifecycle().value?.let { course: CourseItem ->
+                    viewModel.reportCourseDialogTarget.collectAsStateWithLifecycle().value?.let { course: CourseItem ->
                         ReportCourseDialog(
                             course = course,
                             onConfirm = viewModel::submitCourseReport,
-                            onDismiss = viewModel::dismissReportCourse,
+                            onDismiss = viewModel::dismissReportCourseDialog,
                         )
                     }
                 }
