@@ -436,7 +436,7 @@ class CoursesViewModel
                     _state.value = state.value?.copy(status = UiStatus.Failure)
                     _event.value =
                         if (error is NoNetworkException) {
-                            CoursesUiEvent.ReportCourseUnknownFailure
+                            CoursesUiEvent.NoNetworkConnection
                         } else {
                             CoursesUiEvent.FetchRouteToCourseFailure
                         }
