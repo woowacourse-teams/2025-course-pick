@@ -32,6 +32,8 @@ sealed interface CoursesUiEvent {
 
     object ReportCourseSuccess : CoursesUiEvent
 
+    object CourseAlreadyReported : CoursesUiEvent
+
     object ReportCourseUnauthorizedUser : CoursesUiEvent
 
     object ReportCourseUnknownFailure : CoursesUiEvent

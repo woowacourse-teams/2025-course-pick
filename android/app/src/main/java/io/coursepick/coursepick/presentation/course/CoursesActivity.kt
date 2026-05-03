@@ -829,6 +829,15 @@ class CoursesActivity :
                         ).show()
                 }
 
+                CoursesUiEvent.CourseAlreadyReported -> {
+                    Toast
+                        .makeText(
+                            this,
+                            getString(R.string.report_course_failure_already_reported),
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                }
+
                 CoursesUiEvent.ReportCourseUnauthorizedUser -> {
                     Toast
                         .makeText(

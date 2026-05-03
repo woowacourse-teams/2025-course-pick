@@ -585,8 +585,18 @@ class CoursesViewModel
                 } catch (exception: HttpException) {
                     _event.value =
                         when (exception.code()) {
-                            401 -> CoursesUiEvent.ReportCourseUnauthorizedUser
-                            else -> CoursesUiEvent.ReportCourseUnknownFailure
+                            400 -> {
+                                dismissReportCourseDialog()
+                                CoursesUiEvent.CourseAlreadyReported
+                            }
+
+                            401 -> {
+                                CoursesUiEvent.ReportCourseUnauthorizedUser
+                            }
+
+                            else -> {
+                                CoursesUiEvent.ReportCourseUnknownFailure
+                            }
                         }
                 } catch (_: Throwable) {
                     _event.value = CoursesUiEvent.ReportCourseUnknownFailure
