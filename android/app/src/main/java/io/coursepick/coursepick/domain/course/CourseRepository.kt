@@ -21,4 +21,6 @@ interface CourseRepository {
         selected: Course,
         origin: Coordinate,
     ): Coordinate
+
+    suspend fun report(course: Course)
 }
