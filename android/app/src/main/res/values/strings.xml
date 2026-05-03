@@ -58,6 +58,11 @@
     <string name="navigate_fine_location_permission_rationale_negative_button">설정으로 이동</string>
     <string name="navigate_fine_location_permission_rationale_dialog_positive_button">닫기</string>
 
+    <!--  코스 화면: 코스 신고 다이얼로그  -->
+    <string name="report_course_dialog_description">이 코스에 문제가 있다면 알려주세요.</string>
+    <string name="report_course_dialog_cancel_button">취소</string>
+    <string name="report_course_dialog_confirm_button">제보하기</string>
+
     <!--  설정 화면  -->
     <string name="settings_feedback_url">https://docs.google.com/forms/d/e/1FAIpQLSdsJcNUsOcDiKW0FI-M360IUS64IZQmnWtMTbZqJSrx7HQbtg/viewform?usp=pp_url&amp;entry.1079171803=%s</string>
     <string name="settings_privacy_policy_url">https://wary-gopher-277.notion.site/2bcccd64a1cc80c08927cb2dccbc917f?source=copy_link</string>

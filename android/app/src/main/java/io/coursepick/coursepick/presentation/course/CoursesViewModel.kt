@@ -28,8 +28,10 @@ import io.coursepick.coursepick.presentation.ui.SingleLiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -67,6 +69,9 @@ class CoursesViewModel
                 started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = null,
             )
+
+        private val _reportDialogCourse = MutableStateFlow<CourseItem?>(null)
+        val reportDialogCourse: StateFlow<CourseItem?> get() = _reportDialogCourse.asStateFlow()
 
         private val _event: MutableSingleLiveData<CoursesUiEvent> = MutableSingleLiveData()
         val event: SingleLiveData<CoursesUiEvent> get() = _event
@@ -550,6 +555,17 @@ class CoursesViewModel
         }
 
         suspend fun currentLocation(): Location? = locationRepository.currentLocation()
+
+        fun onReportCourse(course: CourseItem) {
+            _reportDialogCourse.value = course
+        }
+
+        fun submitCourseReport(course: CourseItem) {
+        }
+
+        fun dismissReportCourse() {
+            _reportDialogCourse.value = null
+        }
 
         private fun newCoursesListItem(
             oldCourses: List<CourseListItem>,

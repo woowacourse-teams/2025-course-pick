@@ -34,6 +34,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
@@ -151,6 +152,10 @@ class CoursesActivity :
                             ).show()
                     }
                 }
+            }
+
+            override fun report(course: CourseItem) {
+                viewModel.onReportCourse(course)
             }
         }
 
@@ -879,6 +884,14 @@ class CoursesActivity :
                             coursesUiState = state ?: return@CoursePickTheme,
                             onDismissRequest = viewModel::dismissFilterDialog,
                             onFilterAction = viewModel::handleFilterAction,
+                        )
+                    }
+
+                    viewModel.reportDialogCourse.collectAsStateWithLifecycle().value?.let { course: CourseItem ->
+                        ReportCourseDialog(
+                            course = course,
+                            onConfirm = viewModel::submitCourseReport,
+                            onDismiss = viewModel::dismissReportCourse,
                         )
                     }
                 }
