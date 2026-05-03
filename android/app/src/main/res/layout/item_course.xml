@@ -116,7 +116,6 @@
             android:src="@{course.favorite ? @drawable/icon_favorite : @drawable/icon_not_favorite}"
             app:layout_constraintBottom_toBottomOf="@id/courseNavigationButton"
             app:layout_constraintEnd_toStartOf="@id/courseNavigationButton"
-            app:layout_constraintTop_toBottomOf="@id/courseReportButton"
             app:layout_constraintTop_toTopOf="@id/courseNavigationButton" />
 
         <TextView
