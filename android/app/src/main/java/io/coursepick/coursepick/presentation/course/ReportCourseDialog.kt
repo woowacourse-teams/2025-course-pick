@@ -65,7 +65,7 @@ fun ReportCourseDialog(
                     .background(colorResource(R.color.background_primary))
                     .padding(20.dp),
         ) {
-            Text(text = course.name, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Text(text = course.name, color = colorResource(R.color.item_primary), fontSize = 18.sp, fontWeight = FontWeight.Bold)
 
             Spacer(Modifier.height(10.dp))
 
@@ -92,7 +92,7 @@ private fun ReportReasonDescription(
     reasons: List<String>,
     modifier: Modifier = Modifier,
 ) {
-    Text(text = stringResource(R.string.report_course_dialog_description), fontSize = 16.sp)
+    Text(text = stringResource(R.string.report_course_dialog_description), color = colorResource(R.color.item_primary), fontSize = 16.sp)
 
     Spacer(Modifier.height(10.dp))
 
@@ -105,6 +105,7 @@ private fun ReportReasonDescription(
                     }
                 }
             },
+        color = colorResource(R.color.item_primary),
         fontSize = 14.sp,
         textAlign = TextAlign.Start,
         modifier =
@@ -132,6 +133,7 @@ private fun ReportConfirmCheckbox(
 
         Text(
             text = stringResource(R.string.report_course_confirm_reason_description),
+            color = colorResource(R.color.item_primary),
             fontSize = 14.sp,
             modifier =
                 Modifier
@@ -181,8 +183,8 @@ private fun ReportCourseDialogButtons(
         ) {
             Text(
                 text = stringResource(R.string.report_course_dialog_confirm_button),
-                fontSize = 16.sp,
                 color = colorResource(if (isConfirmEnabled) R.color.item_primary else R.color.item_tertiary),
+                fontSize = 16.sp,
             )
         }
     }
