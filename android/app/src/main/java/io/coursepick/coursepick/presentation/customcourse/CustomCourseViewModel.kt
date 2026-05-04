@@ -41,14 +41,10 @@ class CustomCourseViewModel
         }
 
         fun onAuthSuccess(feature: AuthFeature) {
-            viewModelScope.launch {
-                when (feature) {
-                    is AuthFeature.CustomCourse -> {
-                        dismissAuthDialog()
-                        _uiEvent.emit(CustomCourseUiEvent.NavigateToCreateCourse)
-                    }
-
-                    else -> {}
+            if (feature is AuthFeature.CustomCourse) {
+                dismissAuthDialog()
+                viewModelScope.launch {
+                    _uiEvent.emit(CustomCourseUiEvent.NavigateToCreateCourse)
                 }
             }
         }

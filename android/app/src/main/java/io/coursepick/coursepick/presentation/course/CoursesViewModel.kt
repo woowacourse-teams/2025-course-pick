@@ -615,13 +615,9 @@ class CoursesViewModel
         }
 
         fun onAuthSuccess(feature: AuthFeature) {
-            when (feature) {
-                is AuthFeature.ReportCourse -> {
-                    dismissAuthDialog()
-                    onReportCourse(feature.course)
-                }
-
-                else -> {}
+            if (feature is AuthFeature.ReportCourse) {
+                dismissAuthDialog()
+                onReportCourse(feature.course)
             }
         }
 
