@@ -1,6 +1,7 @@
 package coursepick.coursepick.domain.course;
 
 import coursepick.coursepick.application.dto.CourseFile;
+import coursepick.coursepick.domain.user.User;
 import coursepick.coursepick.logging.LogContent;
 import lombok.extern.slf4j.Slf4j;
 
@@ -126,7 +127,7 @@ public class Gpx {
         xsw.writeEndElement();
     }
 
-    public List<Course> toCourses() {
-        return List.of(new Course(id, name, coordinates));
+    public List<Course> toCourses(User user) {
+        return List.of(new Course(id, new CourseName(name), coordinates, user));
     }
 }

@@ -15,5 +15,6 @@ public abstract class AbstractIntegrationTest {
     @AfterEach
     void tearDown() {
         dbUtil.deleteCourses();
+        dbUtil.deleteUsers();
     }
 }

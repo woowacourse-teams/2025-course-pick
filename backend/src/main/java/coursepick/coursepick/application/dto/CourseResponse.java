@@ -22,6 +22,7 @@ public class CourseResponse {
     private final Meter distance;
     private final Meter length;
     private final List<Coordinate> coordinates;
+    private final String creatorId;
 
     public static CourseResponse from(Course course) {
         return from(course, null);
@@ -33,7 +34,8 @@ public class CourseResponse {
                 course.name().value(),
                 target != null ? course.distanceFrom(target) : null,
                 course.length(),
-                course.coordinates()
+                course.coordinates(),
+                course.creatorId()
         );
     }
 

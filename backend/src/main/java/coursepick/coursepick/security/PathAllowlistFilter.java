@@ -33,12 +33,13 @@ public class PathAllowlistFilter extends OncePerRequestFilter {
                 Pattern.compile("^/actuator.*$"),
                 Pattern.compile("^/api-docs.html$"),
                 Pattern.compile("^/v3/api-docs.*$"),
-                Pattern.compile("^/v1/login/kakao$"),
-                Pattern.compile("^/v1/courses$"),
-                Pattern.compile("^/v1/courses/[^/]+/route$"),
-                Pattern.compile("^/v1/courses/[^/]+/closest-coordinate$"),
-                Pattern.compile("^/v1/courses/favorites$"),
-                Pattern.compile("^/v1/notices$")
+                Pattern.compile("^/v\\d+/login/kakao$"),
+                Pattern.compile("^/v\\d+/courses$"),
+                Pattern.compile("^/v\\d+/courses/[^/]+/route$"),
+                Pattern.compile("^/v\\d+/courses/[^/]+/closest-coordinate$"),
+                Pattern.compile("^/v\\d+/courses/favorites$"),
+                Pattern.compile("^/v\\d+/courses/draft/route$"),
+                Pattern.compile("^/v\\d+/notices$")
         ));
 
         ALLOW_URI_PATTERNS.addAll(Set.of(

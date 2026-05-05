@@ -1,19 +1,22 @@
 package coursepick.coursepick.infrastructure.mongodb;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import coursepick.coursepick.domain.course.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import coursepick.coursepick.domain.course.Coordinate;
-import coursepick.coursepick.domain.course.Course;
-import coursepick.coursepick.domain.course.CourseName;
-import coursepick.coursepick.domain.course.Meter;
+import coursepick.coursepick.domain.course.*;
 import coursepick.coursepick.infrastructure.compressor.DataCompressor;
 import lombok.RequiredArgsConstructor;
 import org.bson.Document;
 import org.bson.types.Binary;
 import org.springframework.core.convert.converter.Converter;
 
+import java.util.HashSet;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 public class CourseReader implements Converter<Document, Course> {
@@ -25,14 +28,24 @@ public class CourseReader implements Converter<Document, Course> {
     public Course convert(Document source) {
         List<Coordinate> coordinates = parseCoordinatesFromSource(source);
         List<Coordinate> simplifiedCoordinates = parseSimplifiedCoordinates(source);
+        List<Review> reviews = parseReviews(source);
 
         return new Course(
                 source.getObjectId("_id").toHexString(),
                 new CourseName(source.getString("name")),
                 coordinates,
                 simplifiedCoordinates,
-                new Meter(source.getDouble("length"))
+                new Meter(source.getDouble("length")),
+                reviews,
+                source.getString("creatorId"),
+                parseReportUserIds(source)
         );
+    }
+
+    private Set<String> parseReportUserIds(Document source) {
+        List<String> reportUserIds = source.getList("reportUserIds", String.class);
+        if (reportUserIds == null) return new HashSet<>();
+        return new HashSet<>(reportUserIds);
     }
 
     private List<Coordinate> parseCoordinatesFromSource(Document source) {
@@ -49,7 +62,8 @@ public class CourseReader implements Converter<Document, Course> {
         if (json == null || json.isBlank()) return List.of();
 
         try {
-            return objectMapper.readValue(json, new TypeReference<List<Coordinate>>() {});
+            return objectMapper.readValue(json, new TypeReference<>() {
+            });
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("JSON을 좌표 데이터로 변환하는 중 오류 발생", e);
         }
@@ -69,5 +83,31 @@ public class CourseReader implements Converter<Document, Course> {
                         ((Number) coordinateData.get(0)).doubleValue()
                 ))
                 .toList();
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Review> parseReviews(Document source) {
+        List<Document> reviewDocs = (List<Document>) source.get("reviews");
+        if (reviewDocs == null || reviewDocs.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<Review> reviews = new ArrayList<>();
+        for (Document reviewDoc : reviewDocs) {
+            String authorNickname = reviewDoc.getString("authorNickname");
+            String content = reviewDoc.getString("content");
+            Instant createdAt = toInstant(reviewDoc.get("createdAt"));
+            reviews.add(new Review(authorNickname, content, createdAt));
+        }
+        return reviews;
+    }
+
+    private Instant toInstant(Object value) {
+        if (value instanceof Date date) {
+            return date.toInstant();
+        }
+        if (value instanceof Instant instant) {
+            return instant;
+        }
+        return Instant.now();
     }
 }

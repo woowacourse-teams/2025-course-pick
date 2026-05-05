@@ -1,15 +1,15 @@
 package coursepick.coursepick.presentation.api;
 
-import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
-import coursepick.coursepick.presentation.dto.CourseWebResponse;
-import coursepick.coursepick.presentation.dto.CoursesWebResponse;
+import coursepick.coursepick.presentation.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
@@ -94,6 +94,48 @@ public interface CourseWebApi {
             @Parameter(description = "사용자 경도(-180 ~ 180)", example = "127.1040109", required = true) double longitude
     );
 
+    @Operation(summary = "코스 상세 조회 (리뷰 포함)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content(examples = {
+                    @ExampleObject(
+                            name = "코스가 존재하지 않는 경우",
+                            ref = "#/components/examples/NOT_EXIST_COURSE"
+                    )
+            })),
+    })
+    CourseDetailWebResponse findCourseDetail(
+            @Parameter(description = "코스 ID", example = "689c3143182cecc6353cca7b", required = true) String id
+    );
+
+    @Operation(summary = "코스 리뷰 작성")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "400", content = @Content(examples = {
+                    @ExampleObject(
+                            name = "리뷰 내용 길이가 범위 외인 경우",
+                            ref = "#/components/examples/INVALID_REVIEW_CONTENT_LENGTH"
+                    )
+            })),
+            @ApiResponse(responseCode = "401", content = @Content(examples = {
+                    @ExampleObject(
+                            name = "인증에 실패한 경우",
+                            ref = "#/components/examples/AUTHENTICATION_FAIL"
+                    )
+            })),
+            @ApiResponse(responseCode = "404", content = @Content(examples = {
+                    @ExampleObject(
+                            name = "코스가 존재하지 않는 경우",
+                            ref = "#/components/examples/NOT_EXIST_COURSE"
+                    )
+            })),
+    })
+    void addReview(
+            @Parameter(description = "코스 ID", example = "689c3143182cecc6353cca7b", required = true) String id,
+            @Parameter(hidden = true) String userId,
+            CreateReviewWebRequest request
+    );
+
     @Operation(summary = "즐겨찾기 코스 조회")
     @ApiResponse(responseCode = "200")
     List<CourseWebResponse> findFavoriteCourses(
@@ -104,5 +146,43 @@ public interface CourseWebApi {
                     schema = @Schema(type = "array", implementation = String.class)
             )
             List<String> coursesId
+    );
+
+    @Operation(summary = "유저 커스텀 코스 등록", security = {@SecurityRequirement(name = "BearerAuth")})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "코스 등록 성공"),
+            @ApiResponse(responseCode = "400", description = "입력값 검증 실패 (null 등)"),
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
+    })
+    String addCustomCourses(
+            @RequestBody(
+                    description = "커스텀 코스 생성 요청 데이터",
+                    required = true,
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    name = "커스텀 코스 요청 예시",
+                                    value = "{\n  \"name\": \"매일 뛰는 한강변 코스\",\n  \"coordinates\": [\n    [127.1040109, 37.5165004],\n    [127.1050109, 37.5175004]\n  ]\n}"
+                            )
+                    )
+            )
+            CourseCreateWebRequest courseCreateWebRequest,
+
+            @Parameter(hidden = true)
+            String userId
+    );
+
+    @Operation(summary = "코스 생성 시 직전 포인트와 새 포인트 사이의 경로 및 거리 조회 (첫 점인 경우 origin과 destination을 동일하게 전송)")
+    @ApiResponse(responseCode = "200")
+    DraftRouteWebResponse findDraftRoute(FindDraftRouteWebRequest request);
+
+    @Operation(summary = "코스 신고", security = {@SecurityRequirement(name = "BearerAuth")})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "코스 신고 완료"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 코스"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 유저")
+    })
+    void reportCourse(
+            @Parameter(description = "신고할 코스 ID") String id,
+            @Parameter(hidden = true) String userId
     );
 }

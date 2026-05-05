@@ -1,14 +1,18 @@
 package coursepick.coursepick.presentation;
 
 import coursepick.coursepick.application.CourseApplicationService;
+import coursepick.coursepick.application.dto.CourseDetailResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.CourseFindCondition;
+import coursepick.coursepick.domain.course.DraftSegment;
 import coursepick.coursepick.presentation.api.CourseWebApi;
-import coursepick.coursepick.presentation.dto.CoordinateWebResponse;
-import coursepick.coursepick.presentation.dto.CourseWebResponse;
-import coursepick.coursepick.presentation.dto.CoursesWebResponse;
+import coursepick.coursepick.presentation.dto.*;
+import coursepick.coursepick.security.Login;
+import coursepick.coursepick.security.UserId;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -65,5 +69,45 @@ public class CourseV1WebController implements CourseWebApi {
         return courseApplicationService.findFavoriteCourses(ids).stream()
                 .map(CourseWebResponse::from)
                 .toList();
+    }
+
+    @Override
+    @GetMapping("/courses/{id}")
+    public CourseDetailWebResponse findCourseDetail(@PathVariable("id") String id) {
+        CourseDetailResponse response = courseApplicationService.findCourseDetail(id);
+        return CourseDetailWebResponse.from(response);
+    }
+
+    @Override
+    @Login
+    @PostMapping("/courses/{id}/reviews")
+    public void addReview(
+            @PathVariable("id") String id,
+            @UserId String userId,
+            @RequestBody CreateReviewWebRequest request
+    ) {
+        courseApplicationService.addReview(id, userId, request.content());
+    }
+
+    @Override
+    @Login
+    @PostMapping("/courses")
+    public String addCustomCourses(@Valid @RequestBody CourseCreateWebRequest request, @UserId String userId) {
+        courseApplicationService.addCustomCourse(request.name(), request.toCoordinates(), userId);
+        return "코스 추가 성공";
+    }
+
+    @Override
+    @PostMapping("/courses/draft/route")
+    public DraftRouteWebResponse findDraftRoute(@Valid @RequestBody FindDraftRouteWebRequest request) {
+        DraftSegment route = courseApplicationService.findDraftRoute(request.toCoordinates());
+        return DraftRouteWebResponse.of(route.coordinates(), route.length());
+    }
+
+    @Override
+    @Login
+    @PostMapping("/courses/{id}/report")
+    public void reportCourse(@PathVariable("id") String id, @UserId String userId) {
+        courseApplicationService.report(id, userId);
     }
 }

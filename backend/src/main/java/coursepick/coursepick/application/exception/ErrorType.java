@@ -73,7 +73,22 @@ public enum ErrorType {
             "압축 및 해제할 데이터가 없습니다.",
             IllegalArgumentException::new
     ),
-    ;
+    INVALID_REVIEW_CONTENT_LENGTH(
+            "리뷰 내용은 1자 이상 500자 이하여야 합니다. 입력 길이=%s",
+            IllegalArgumentException::new
+    ),
+    NOT_EXIST_USER(
+            "유저가 존재하지 않습니다. 유저id=%s",
+            NoSuchElementException::new
+    ),
+    ALREADY_REPORTED_COURSE(
+            "이미 신고한 코스입니다. 코스id=%s, 유저id=%s",
+            IllegalArgumentException::new
+    ),
+    DUPLICATED_COURSE_NAME(
+            "'%s'은(는) 이미 존재하는 코스 이름입니다.",
+            IllegalStateException::new
+    );
 
     private final String message;
     private final Function<String, ? extends RuntimeException> exceptionConstructor;

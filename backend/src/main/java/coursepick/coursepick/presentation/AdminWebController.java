@@ -1,5 +1,6 @@
 package coursepick.coursepick.presentation;
 
+
 import coursepick.coursepick.application.CourseParserFacade;
 import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.exception.ErrorType;
@@ -33,6 +34,7 @@ public class AdminWebController {
     private final CourseRepository courseRepository;
     private final CourseParserFacade courseParserFacade;
     private final CoordinateSnapper coordinateSnapper;
+
     @Value("${admin.token}")
     private String adminToken;
     @Value("${admin.kakao-map-api-key}")

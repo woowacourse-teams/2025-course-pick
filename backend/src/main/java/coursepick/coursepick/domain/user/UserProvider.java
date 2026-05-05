@@ -6,5 +6,6 @@ package coursepick.coursepick.domain.user;
  */
 public enum UserProvider {
 
+    NONE,
     KAKAO,
 }
