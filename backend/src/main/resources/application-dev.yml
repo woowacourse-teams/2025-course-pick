@@ -1,19 +1,17 @@
 spring:
-  config:
-    activate.on-profile: dev
-    import: classpath:monitoring-config.yml
+  config.activate.on-profile: dev
   data.mongodb:
-    host: ${MONGO_HOST}
-    port: ${MONGO_PORT}
-    database: ${MONGO_DATABASE}
+    host: mongodb
+    port: 27017
+    database: coursepick
     username: ${MONGO_USERNAME}
     password: ${MONGO_PASSWORD}
-    authentication-database: ${MONGO_AUTH_DATABASE}
+    authentication-database: admin
 
 osrm.url: ${OSRM_URL}
 admin:
   token: ${ADMIN_TOKEN}
   kakao-map-api-key: ${ADMIN_KAKAO_MAP_API_KEY}
-notice.base-url: ${BASE_URL}
+notice.base-url: http://dev.coursepick.cloud/images
 jwt.secret-key: ${JWT_SECRET_KEY}
 discord.webhook-url: ${DISCORD_WEBHOOK_URL}

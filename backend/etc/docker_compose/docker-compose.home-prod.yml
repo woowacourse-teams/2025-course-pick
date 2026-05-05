@@ -5,7 +5,7 @@ services:
     image: mongo:8.0.12
     container_name: coursepick-home-prod-mongodb
     environment:
-      - MONGO_INITDB_DATABASE=${MONGO_DATABASE}
+      - MONGO_INITDB_DATABASE=coursepick
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
     volumes:
@@ -24,22 +24,15 @@ services:
     ports:
       - "8090:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=${PROFILE}
-      - MONGO_HOST=${MONGO_HOST}
-      - MONGO_PORT=${MONGO_PORT}
-      - MONGO_DATABASE=${MONGO_DATABASE}
+      - SPRING_PROFILES_ACTIVE=prod
       - MONGO_USERNAME=${MONGO_ROOT_USERNAME}
       - MONGO_PASSWORD=${MONGO_ROOT_PASSWORD}
-      - MONGO_AUTH_DATABASE=${MONGO_AUTH_DATABASE}
       - ADMIN_TOKEN=${ADMIN_TOKEN}
       - ADMIN_KAKAO_MAP_API_KEY=${ADMIN_KAKAO_MAP_API_KEY}
       - OSRM_URL=${OSRM_URL}
-      - BASE_URL=${BASE_URL}
-      - JWT_SECRET_KEY=${JWT_SECRET}
-      - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
     volumes:
       - /var/lib/coursepick/logs/home-prod:/var/lib/coursepick/logs
-      - /var/lib/coursepick/gcp-credentials.json:/var/lib/coursepick/gcp-credentials.json
     depends_on:
       - mongodb
 
