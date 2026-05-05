@@ -19,12 +19,13 @@ import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.course.CourseItem
 import io.coursepick.coursepick.presentation.map.BitmapScaler
 import io.coursepick.coursepick.presentation.map.CoordinateAnimator
+import io.coursepick.coursepick.presentation.map.DiffHandler
 
 class NaverMapOverlayManager(
     private val context: Context,
     private val map: NaverMap,
 ) {
-    private val courses = mutableSetOf<CourseItem>()
+    private val coursesDiffHandler = DiffHandler(onItemAdded = ::addCourseOverlay, onItemRemoved = ::removeCourseOverlay)
     private val courseIdToOverlay = mutableMapOf<String, PathOverlay>()
     private val courseIdToClickableOverlay = mutableMapOf<String, PathOverlay>()
 
@@ -65,22 +66,11 @@ class NaverMapOverlayManager(
     private var courseClickListener: Overlay.OnClickListener? = null
 
     fun updateCourses(newCourses: List<CourseItem>) {
-        val newCourseSet: Set<CourseItem> = newCourses.toSet()
-        val coursesToRemove: Set<CourseItem> = courses.subtract(newCourseSet)
-        val coursesToDraw: Set<CourseItem> = newCourseSet.subtract(courses)
-        coursesToRemove.forEach(::removeCourse)
-        coursesToDraw.forEach(::drawCourse)
+        coursesDiffHandler.updateItems(newCourses.toSet())
     }
 
-    private fun removeCourse(course: CourseItem) {
-        courses.remove(course)
-        courseIdToOverlay.remove(course.id)?.map = null
-        courseIdToClickableOverlay.remove(course.id)?.map = null
-    }
-
-    fun drawCourse(course: CourseItem) {
+    fun addCourseOverlay(course: CourseItem) {
         if (course.coordinates.size < 2) return
-        courses.add(course)
         val latLngs: List<LatLng> = course.coordinates.map(Coordinate::toLatLng)
 
         PathOverlay().apply {
@@ -103,10 +93,10 @@ class NaverMapOverlayManager(
             courseIdToOverlay[course.id] = this
         }
 
-        drawClickableOverlay(latLngs, course)
+        addClickableCourseOverlay(latLngs, course)
     }
 
-    private fun drawClickableOverlay(
+    private fun addClickableCourseOverlay(
         latLngs: List<LatLng>,
         course: CourseItem,
     ) {
@@ -130,6 +120,11 @@ class NaverMapOverlayManager(
         }
     }
 
+    private fun removeCourseOverlay(course: CourseItem) {
+        courseIdToOverlay.remove(course.id)?.map = null
+        courseIdToClickableOverlay.remove(course.id)?.map = null
+    }
+
     fun drawRouteToCourse(
         route: List<Coordinate>,
         course: CourseItem,
@@ -147,11 +142,11 @@ class NaverMapOverlayManager(
             courseIdToClickableOverlay[course.id] = this
         }
 
-        drawCourse(course)
+        addCourseOverlay(course)
     }
 
     fun removeAllRouteLines() {
-        courses.clear()
+        coursesDiffHandler.updateItems(emptySet())
 
         courseIdToOverlay.values.forEach { pathOverlay: PathOverlay -> pathOverlay.map = null }
         courseIdToOverlay.clear()

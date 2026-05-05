@@ -67,7 +67,7 @@ class NaverMapManager(
     }
 
     override fun draw(course: CourseItem) {
-        overlayManager?.drawCourse(course) ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
+        overlayManager?.addCourseOverlay(course) ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
     }
 
     override fun draw(courses: List<CourseItem>) {
