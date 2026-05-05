@@ -27,12 +27,19 @@ import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.course.CourseItem
 import io.coursepick.coursepick.presentation.map.BitmapScaler
+import io.coursepick.coursepick.presentation.map.DiffHandler
 
 class KakaoMapDrawer(
     private val context: Context,
     private val map: KakaoMap,
 ) {
     private val routeLineOptionsFactory = RouteLineOptionsFactory(context, map.mapDpScale)
+
+    private val coursesDiffHandler = DiffHandler(onItemRemoved = ::removeCourseRouteLine, onItemAdded = ::addCourseRouteLine)
+    private var routeRouteLine: RouteLine? = null
+
+    private val waypoints = mutableListOf<Label>()
+    private val segments = mutableListOf<RouteLine>()
 
     private val bitmapScaler = BitmapScaler(context)
     private val searchCoordinateImage: Bitmap =
@@ -53,10 +60,11 @@ class KakaoMapDrawer(
             kakaoAdjustedDimension(R.dimen.waypoint_marker_size),
         )
 
-    private val waypoints = mutableListOf<Label>()
-    private val segments = mutableListOf<RouteLine>()
+    fun updateCourses(courses: List<CourseItem>) {
+        coursesDiffHandler.updateItems(courses.toSet())
+    }
 
-    fun drawCourse(course: CourseItem) {
+    private fun addCourseRouteLine(course: CourseItem) {
         val layer: RouteLineLayer = map.routeLineManager?.layer ?: return
         val options: RouteLineOptions =
             routeLineOptionsFactory.routeLineOptions(course).apply {
@@ -65,26 +73,20 @@ class KakaoMapDrawer(
         layer.addRouteLine(options)
     }
 
-    fun drawCourses(courses: List<CourseItem>) {
-        val layer: RouteLineLayer = map.routeLineManager?.layer ?: return
-        courses.forEach { course: CourseItem ->
-            val options: RouteLineOptions =
-                routeLineOptionsFactory.routeLineOptions(course).apply {
-                    zOrder =
-                        if (course.selected) SELECTED_COURSE_Z_ORDER else UNSELECTED_COURSE_Z_ORDER
-                }
-            layer.addRouteLine(options)
+    private fun removeCourseRouteLine(course: CourseItem) {
+        map.routeLineManager?.layer?.apply {
+            remove(getRouteLine(course.id))
         }
     }
 
-    fun drawRouteToCourse(
-        route: List<Coordinate>,
-        course: CourseItem,
-    ) {
+    fun drawRoute(route: List<Coordinate>) {
         val layer: RouteLineLayer = map.routeLineManager?.layer ?: return
-        val courseOptions = routeLineOptionsFactory.routeLineOptions(course)
-        layer.addRouteLine(routeLineOptionsFactory.routeLineOptions(route))
-        layer.addRouteLine(courseOptions)
+        routeRouteLine = layer.addRouteLine(routeLineOptionsFactory.routeLineOptions(route))
+    }
+
+    fun clearRoute() {
+        routeRouteLine?.remove()
+        routeRouteLine = null
     }
 
     fun drawUserPosition(location: Location) {

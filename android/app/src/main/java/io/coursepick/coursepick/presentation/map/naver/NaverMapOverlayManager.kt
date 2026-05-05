@@ -28,6 +28,7 @@ class NaverMapOverlayManager(
     private val coursesDiffHandler = DiffHandler(onItemAdded = ::addCourseOverlay, onItemRemoved = ::removeCourseOverlay)
     private val courseIdToOverlay = mutableMapOf<String, PathOverlay>()
     private val courseIdToClickableOverlay = mutableMapOf<String, PathOverlay>()
+    private var routeOverlay: PathOverlay? = null
 
     private val waypoints = mutableListOf<Marker>()
     private val segments = mutableListOf<PathOverlay>()
@@ -125,10 +126,7 @@ class NaverMapOverlayManager(
         courseIdToClickableOverlay.remove(course.id)?.map = null
     }
 
-    fun drawRouteToCourse(
-        route: List<Coordinate>,
-        course: CourseItem,
-    ) {
+    fun drawRoute(route: List<Coordinate>) {
         if (route.size < 2) return
 
         PathOverlay().apply {
@@ -138,21 +136,13 @@ class NaverMapOverlayManager(
             outlineWidth = 0
 
             map = this@NaverMapOverlayManager.map
-            courseIdToOverlay[course.id] = this
-            courseIdToClickableOverlay[course.id] = this
+            routeOverlay = this
         }
-
-        addCourseOverlay(course)
     }
 
-    fun removeAllRouteLines() {
-        coursesDiffHandler.updateItems(emptySet())
-
-        courseIdToOverlay.values.forEach { pathOverlay: PathOverlay -> pathOverlay.map = null }
-        courseIdToOverlay.clear()
-
-        courseIdToClickableOverlay.values.forEach { pathOverlay: PathOverlay -> pathOverlay.map = null }
-        courseIdToClickableOverlay.clear()
+    fun clearRoute() {
+        routeOverlay?.map = null
+        routeOverlay = null
     }
 
     fun drawSearchCoordinate(coordinate: Coordinate) {

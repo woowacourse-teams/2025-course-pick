@@ -727,12 +727,12 @@ class CoursesActivity :
     private fun setUpStateObserver() {
         viewModel.state.observe(this) { state: CoursesUiState ->
             courseAdapter.submitList(state.courses)
-            mapManager.removeAllRouteLines()
+            mapManager.clearRoute()
             val courses: List<CourseItem> =
                 state.courses
                     .filterIsInstance<CourseListItem.Course>()
                     .map(CourseListItem.Course::item)
-            mapManager.draw(courses)
+            mapManager.updateCourses(courses)
         }
 
         viewModel.content.observe(this) { content: CoursesContent ->
@@ -769,10 +769,9 @@ class CoursesActivity :
                 }
 
                 is CoursesUiEvent.FetchRouteToCourseSuccess -> {
-                    mapManager.removeAllRouteLines()
+                    mapManager.drawRoute(event.route)
+                    mapManager.updateCourses(listOf(event.course))
                     mapManager.fitTo(event.route)
-                    mapManager.draw(event.course)
-                    mapManager.drawRouteToCourse(event.route, event.course)
                 }
 
                 is CoursesUiEvent.FetchRouteToCourseFailure -> {

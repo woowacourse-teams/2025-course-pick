@@ -55,26 +55,17 @@ class KakaoMapManager(
         }
     }
 
-    override fun draw(course: CourseItem) {
-        eventHandler.updateCourses(listOf(course))
-        drawer?.drawCourse(course) ?: Timber.w("KakaoMapDrawer is null")
-    }
-
-    override fun draw(courses: List<CourseItem>) {
+    override fun updateCourses(courses: List<CourseItem>) {
         eventHandler.updateCourses(courses)
-        drawer?.drawCourses(courses) ?: Timber.w("KakaoMapDrawer is null")
+        drawer?.updateCourses(courses) ?: Timber.w("KakaoMapDrawer is null")
     }
 
-    override fun drawRouteToCourse(
-        route: List<Coordinate>,
-        course: CourseItem,
-    ) {
-        eventHandler.updateCourses(listOf(course))
-        drawer?.drawRouteToCourse(route, course) ?: Timber.w("KakaoMapDrawer is null")
+    override fun drawRoute(route: List<Coordinate>) {
+        drawer?.drawRoute(route) ?: Timber.w("KakaoMapDrawer is null")
     }
 
-    override fun removeAllRouteLines() {
-        drawer?.removeAllLines() ?: Timber.w("KakaoMapDrawer is null")
+    override fun clearRoute() {
+        drawer?.clearRoute() ?: Timber.w("KakaoMapDrawer is null")
     }
 
     override fun drawSearchCoordinate(coordinate: Coordinate) {

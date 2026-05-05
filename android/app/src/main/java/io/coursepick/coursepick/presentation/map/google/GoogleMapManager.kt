@@ -70,25 +70,16 @@ class GoogleMapManager(
         }
     }
 
-    override fun draw(course: CourseItem) {
-        drawer?.drawCourse(course) ?: run { Timber.w(DRAWER_IS_NULL_MESSAGE) }
+    override fun updateCourses(courses: List<CourseItem>) {
+        drawer?.updateCourses(courses) ?: run { Timber.w(DRAWER_IS_NULL_MESSAGE) }
     }
 
-    override fun draw(courses: List<CourseItem>) {
-        drawer?.let { drawer: GoogleMapDrawer ->
-            courses.forEach(drawer::drawCourse)
-        } ?: run { Timber.w(DRAWER_IS_NULL_MESSAGE) }
+    override fun drawRoute(route: List<Coordinate>) {
+        drawer?.drawRoute(route) ?: run { Timber.w(DRAWER_IS_NULL_MESSAGE) }
     }
 
-    override fun drawRouteToCourse(
-        route: List<Coordinate>,
-        course: CourseItem,
-    ) {
-        drawer?.drawRouteToCourse(route, course) ?: run { Timber.w(DRAWER_IS_NULL_MESSAGE) }
-    }
-
-    override fun removeAllRouteLines() {
-        drawer?.removeAllRouteLines() ?: run { Timber.w(DRAWER_IS_NULL_MESSAGE) }
+    override fun clearRoute() {
+        drawer?.clearRoute() ?: run { Timber.w(DRAWER_IS_NULL_MESSAGE) }
     }
 
     override fun drawSearchCoordinate(coordinate: Coordinate) {
