@@ -24,7 +24,10 @@ class NaverMapOverlayManager(
     private val context: Context,
     private val map: NaverMap,
 ) {
-    private val courses = mutableListOf<PathOverlay>()
+    private val courses = mutableSetOf<CourseItem>()
+    private val courseIdToOverlay = mutableMapOf<String, PathOverlay>()
+    private val courseIdToClickableOverlay = mutableMapOf<String, PathOverlay>()
+
     private val waypoints = mutableListOf<Marker>()
     private val segments = mutableListOf<PathOverlay>()
 
@@ -61,8 +64,23 @@ class NaverMapOverlayManager(
 
     private var courseClickListener: Overlay.OnClickListener? = null
 
+    fun updateCourses(newCourses: List<CourseItem>) {
+        val newCourseSet: Set<CourseItem> = newCourses.toSet()
+        val coursesToRemove: Set<CourseItem> = courses.subtract(newCourseSet)
+        val coursesToDraw: Set<CourseItem> = newCourseSet.subtract(courses)
+        coursesToRemove.forEach(::removeCourse)
+        coursesToDraw.forEach(::drawCourse)
+    }
+
+    private fun removeCourse(course: CourseItem) {
+        courses.remove(course)
+        courseIdToOverlay.remove(course.id)?.map = null
+        courseIdToClickableOverlay.remove(course.id)?.map = null
+    }
+
     fun drawCourse(course: CourseItem) {
         if (course.coordinates.size < 2) return
+        courses.add(course)
         val latLngs: List<LatLng> = course.coordinates.map(Coordinate::toLatLng)
 
         PathOverlay().apply {
@@ -82,7 +100,7 @@ class NaverMapOverlayManager(
             }
 
             map = this@NaverMapOverlayManager.map
-            courses.add(this)
+            courseIdToOverlay[course.id] = this
         }
 
         drawClickableOverlay(latLngs, course)
@@ -108,7 +126,7 @@ class NaverMapOverlayManager(
             }
 
             map = this@NaverMapOverlayManager.map
-            courses.add(this)
+            courseIdToClickableOverlay[course.id] = this
         }
     }
 
@@ -123,16 +141,23 @@ class NaverMapOverlayManager(
             color = context.getColor(R.color.course_route)
             width = context.resources.getDimension(R.dimen.course_route_width).toInt()
             outlineWidth = 0
+
             map = this@NaverMapOverlayManager.map
-            courses.add(this)
+            courseIdToOverlay[course.id] = this
+            courseIdToClickableOverlay[course.id] = this
         }
 
         drawCourse(course)
     }
 
     fun removeAllRouteLines() {
-        courses.forEach { pathOverlay: PathOverlay -> pathOverlay.map = null }
         courses.clear()
+
+        courseIdToOverlay.values.forEach { pathOverlay: PathOverlay -> pathOverlay.map = null }
+        courseIdToOverlay.clear()
+
+        courseIdToClickableOverlay.values.forEach { pathOverlay: PathOverlay -> pathOverlay.map = null }
+        courseIdToClickableOverlay.clear()
     }
 
     fun drawSearchCoordinate(coordinate: Coordinate) {
@@ -281,7 +306,7 @@ class NaverMapOverlayManager(
                 false
             }
 
-        courses.forEach { pathOverlay: PathOverlay ->
+        courseIdToClickableOverlay.values.forEach { pathOverlay: PathOverlay ->
             if (pathOverlay.tag is CourseItem) {
                 pathOverlay.onClickListener = courseClickListener
             }
