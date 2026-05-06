@@ -47,7 +47,10 @@ class CustomCoursesFragment : Fragment() {
         binding.customCourses.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                CustomCourseScreen(onGoToCreateCustomCourse = customCourseViewModel::onGoToCreateCustomCourse)
+                CustomCourseScreen(
+                    customCourses = customCourseViewModel.customCourse,
+                    onGoToCreateCustomCourse = customCourseViewModel::onGoToCreateCustomCourse,
+                )
 
                 val showAuthDialog: Boolean = customCourseViewModel.showAuthDialog.collectAsStateWithLifecycle().value
                 if (showAuthDialog) {
