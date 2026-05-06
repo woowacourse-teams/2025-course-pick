@@ -70,7 +70,6 @@ class CourseWriterTest {
 
     @Test
     void Course의_createdAt이_null인_경우_Document에_포함하지_않는다() {
-        // given
         Course course = new Course(
                 "507f1f77bcf86cd799439011",
                 new CourseName("테스트 코스"),
@@ -83,10 +82,8 @@ class CourseWriterTest {
                 null
         );
 
-        // when
         Document document = courseWriter.convert(course);
 
-        // then
         assertThat(document.containsKey("createdAt")).isFalse();
     }
 }

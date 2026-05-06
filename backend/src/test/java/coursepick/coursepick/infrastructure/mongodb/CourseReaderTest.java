@@ -40,7 +40,6 @@ class CourseReaderTest extends AbstractIntegrationTest {
         Course saved = dbUtil.saveCourse(course);
         Course result = dbUtil.findCourseById(saved.id());
 
-        // then
         assertThat(result.id()).isEqualTo(course.id());
         assertThat(result.name()).isEqualTo(course.name());
         assertThat(result.coordinates()).isEqualTo(course.coordinates());

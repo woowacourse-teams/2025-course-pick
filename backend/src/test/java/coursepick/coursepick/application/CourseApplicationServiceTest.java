@@ -1,22 +1,15 @@
 package coursepick.coursepick.application;
 
-import coursepick.coursepick.application.dto.CourseDetailResponse;
 import coursepick.coursepick.application.dto.CourseResponse;
-import coursepick.coursepick.application.dto.ReviewResponse;
-import coursepick.coursepick.domain.course.Coordinate;
-import coursepick.coursepick.domain.course.Course;
-import coursepick.coursepick.domain.course.CourseFindCondition;
-import coursepick.coursepick.domain.course.CourseName;
-import coursepick.coursepick.domain.user.Nickname;
-import coursepick.coursepick.domain.course.*;
 import coursepick.coursepick.application.exception.UnauthorizedException;
+import coursepick.coursepick.domain.course.*;
+import coursepick.coursepick.domain.user.Nickname;
 import coursepick.coursepick.domain.user.User;
 import coursepick.coursepick.domain.user.UserProvider;
 import coursepick.coursepick.test_util.AbstractIntegrationTest;
 import coursepick.coursepick.test_util.CoordinateTestUtil;
 import org.assertj.core.data.Percentage;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -334,7 +327,6 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
             dbUtil.saveCourse(new Course(null, new CourseName("내 코스1"), sampleCoordinates, user));
             dbUtil.saveCourse(new Course(null, new CourseName("내 코스2"), sampleCoordinates, user));
             dbUtil.saveCourse(new Course(null, new CourseName("남의 코스"), sampleCoordinates, otherUser));
-            ;
 
             var result = sut.findCustomCourses(user.id(), null, null);
 
