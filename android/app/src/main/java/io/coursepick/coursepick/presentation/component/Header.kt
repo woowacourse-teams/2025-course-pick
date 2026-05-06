@@ -28,7 +28,7 @@ fun Header(
             fontWeight = FontWeight.Bold,
             modifier =
                 modifier
-                    .padding(start = 20.dp, top = 10.dp, bottom = 10.dp),
+                    .padding(top = 10.dp, bottom = 10.dp),
             color = colorResource(R.color.item_primary),
         )
     }
