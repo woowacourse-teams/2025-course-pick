@@ -27,7 +27,7 @@ import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.course.CourseItem
 import io.coursepick.coursepick.presentation.map.BitmapScaler
-import io.coursepick.coursepick.presentation.map.DiffHandler
+import io.coursepick.coursepick.presentation.map.CourseDiffHandler
 
 class KakaoMapDrawer(
     private val context: Context,
@@ -35,7 +35,7 @@ class KakaoMapDrawer(
 ) {
     private val routeLineOptionsFactory = RouteLineOptionsFactory(context, map.mapDpScale)
 
-    private val coursesDiffHandler = DiffHandler(onItemRemoved = ::removeCourseRouteLine, onItemAdded = ::addCourseRouteLine)
+    private val courseDiffHandler = CourseDiffHandler(onItemRemoved = ::removeCourseRouteLine, onItemAdded = ::addCourseRouteLine)
     private var routeRouteLine: RouteLine? = null
 
     private val waypoints = mutableListOf<Label>()
@@ -61,7 +61,7 @@ class KakaoMapDrawer(
         )
 
     fun updateCourses(courses: List<CourseItem>) {
-        coursesDiffHandler.updateItems(courses.toSet())
+        courseDiffHandler.updateCourses(courses.toSet())
     }
 
     private fun addCourseRouteLine(course: CourseItem) {

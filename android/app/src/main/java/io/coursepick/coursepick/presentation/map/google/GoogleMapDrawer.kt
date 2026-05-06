@@ -21,14 +21,14 @@ import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.course.CourseItem
 import io.coursepick.coursepick.presentation.map.BitmapScaler
 import io.coursepick.coursepick.presentation.map.CoordinateAnimator
-import io.coursepick.coursepick.presentation.map.DiffHandler
+import io.coursepick.coursepick.presentation.map.CourseDiffHandler
 
 class GoogleMapDrawer(
     private val context: Context,
     private val map: GoogleMap,
 ) {
-    private val coursesDiffHandler =
-        DiffHandler(
+    private val courseDiffHandler =
+        CourseDiffHandler(
             onItemAdded = ::addCoursePolyline,
             onItemRemoved = ::removeCoursePolyline,
         )
@@ -73,7 +73,7 @@ class GoogleMapDrawer(
     private var coarseUserLocationAnimator: ValueAnimator? = null
 
     fun updateCourses(courses: List<CourseItem>) {
-        coursesDiffHandler.updateItems(courses.toSet())
+        courseDiffHandler.updateCourses(courses.toSet())
     }
 
     private fun addCoursePolyline(course: CourseItem) {

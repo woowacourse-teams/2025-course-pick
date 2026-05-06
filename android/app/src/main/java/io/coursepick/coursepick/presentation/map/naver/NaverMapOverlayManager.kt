@@ -19,13 +19,13 @@ import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.course.CourseItem
 import io.coursepick.coursepick.presentation.map.BitmapScaler
 import io.coursepick.coursepick.presentation.map.CoordinateAnimator
-import io.coursepick.coursepick.presentation.map.DiffHandler
+import io.coursepick.coursepick.presentation.map.CourseDiffHandler
 
 class NaverMapOverlayManager(
     private val context: Context,
     private val map: NaverMap,
 ) {
-    private val coursesDiffHandler = DiffHandler(onItemAdded = ::addCourseOverlay, onItemRemoved = ::removeCourseOverlay)
+    private val courseDiffHandler = CourseDiffHandler(onItemAdded = ::addCourseOverlay, onItemRemoved = ::removeCourseOverlay)
     private val courseIdToOverlay = mutableMapOf<String, PathOverlay>()
     private val courseIdToClickableOverlay = mutableMapOf<String, PathOverlay>()
     private var routeOverlay: PathOverlay? = null
@@ -67,7 +67,7 @@ class NaverMapOverlayManager(
     private var courseClickListener: Overlay.OnClickListener? = null
 
     fun updateCourses(newCourses: List<CourseItem>) {
-        coursesDiffHandler.updateItems(newCourses.toSet())
+        courseDiffHandler.updateCourses(newCourses.toSet())
     }
 
     fun addCourseOverlay(course: CourseItem) {
