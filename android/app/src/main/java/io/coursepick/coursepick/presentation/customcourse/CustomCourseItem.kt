@@ -47,7 +47,7 @@ fun CustomCourseItem(
     ) {
         Box(
             modifier =
-                modifier
+                Modifier
                     .fillMaxWidth()
                     .background(colorResource(R.color.background_primary))
                     .clickable { onSelect() }
