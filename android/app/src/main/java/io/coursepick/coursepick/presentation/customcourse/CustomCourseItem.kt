@@ -57,7 +57,7 @@ fun CustomCourseItem(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .padding(end = 80.dp),
+                        .padding(end = 70.dp),
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -77,18 +77,13 @@ fun CustomCourseItem(
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    CourseLengthChip(
-                        length = customCourse.length,
-                    )
+                    CourseLengthChip(length = customCourse.length)
 
                     if (customCourse.distance != null) {
                         Spacer(modifier = Modifier.width(10.dp))
 
-                        CourseDistanceChip(
-                            distance = customCourse.distance,
-                        )
+                        CourseDistanceChip(distance = customCourse.distance)
                     }
                 }
             }
@@ -114,7 +109,8 @@ fun CustomCourseItem(
 @Composable
 fun CustomCourseItemPreview() {
     CustomCourseItem(
-        customCourse = Course(
+        customCourse =
+            Course(
                 id = "1",
                 name = CourseName("건대입구-잠실대교-종합운동장"),
                 distance = Distance(500),
@@ -124,7 +120,8 @@ fun CustomCourseItemPreview() {
                         Coordinate(Latitude(37.5400), Longitude(127.0700)),
                         Coordinate(Latitude(37.5450), Longitude(127.0750)),
                         Coordinate(Latitude(37.5500), Longitude(127.0800)),
-                        ),),
+                    ),
+            ),
         onSelect = {},
         onNavigateToCourse = {},
         modifier = Modifier,
