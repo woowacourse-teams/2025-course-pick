@@ -70,7 +70,7 @@ class NaverMapOverlayManager(
         courseDiffHandler.updateCourses(newCourses.toSet())
     }
 
-    fun addCourseOverlay(course: CourseItem) {
+    private fun addCourseOverlay(course: CourseItem) {
         if (course.coordinates.size < 2) return
         val latLngs: List<LatLng> = course.coordinates.map(Coordinate::toLatLng)
 
