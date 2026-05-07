@@ -70,7 +70,7 @@ fun ListView.setOnItemClick(listener: AdapterView.OnItemClickListener) {
     this.onItemClickListener = listener
 }
 
-private fun formattedMeter(
+fun formattedMeter(
     context: Context,
     meter: Meter,
 ): String =
