@@ -769,9 +769,12 @@ class CoursesActivity :
                 }
 
                 is CoursesUiEvent.FetchRouteToCourseSuccess -> {
-                    mapManager.drawRoute(event.route)
-                    mapManager.updateCourses(listOf(event.course))
-                    mapManager.fitTo(event.route)
+                    with(mapManager) {
+                        clearRoute()
+                        drawRoute(event.route)
+                        updateCourses(listOf(event.course))
+                        fitTo(event.route)
+                    }
                 }
 
                 is CoursesUiEvent.FetchRouteToCourseFailure -> {
