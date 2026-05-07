@@ -24,7 +24,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import io.coursepick.coursepick.R
+import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
+import io.coursepick.coursepick.domain.course.CourseName
+import io.coursepick.coursepick.domain.course.Distance
+import io.coursepick.coursepick.domain.course.Latitude
+import io.coursepick.coursepick.domain.course.Length
+import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.presentation.component.EmptyDescription
 import io.coursepick.coursepick.presentation.component.Header
 
@@ -97,9 +103,36 @@ fun CustomCourseScreen(
 
 @PreviewLightDark
 @Composable
-fun CustomCourseScreenPreview() {
+fun CustomCourseScreenPreview1() {
     CustomCourseScreen(
         customCourses = emptyList(),
+        onGoToCreateCustomCourse = { },
+    )
+}
+
+@PreviewLightDark
+@Composable
+fun CustomCourseScreenPreview2() {
+    val customCourse: List<Course> =
+        List(10) { index ->
+            Course(
+                id = index.toString(),
+                name = CourseName("건대입구-잠실대교-종합운동장 ${index + 1}"),
+                distance = Distance(10),
+                length = Length(100),
+                coordinates =
+                    listOf(
+                        Coordinate(Latitude(1.0), Longitude(1.0)),
+                        Coordinate(
+                            Latitude(1.0 + 0.0001),
+                            Longitude(1.0 + 0.0001),
+                        ),
+                    ),
+            )
+        }
+
+    CustomCourseScreen(
+        customCourses = customCourse,
         onGoToCreateCustomCourse = { },
     )
 }
