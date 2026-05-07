@@ -27,11 +27,7 @@ class GoogleMapDrawer(
     private val context: Context,
     private val map: GoogleMap,
 ) {
-    private val courseDiffHandler =
-        CourseDiffHandler(
-            onItemAdded = ::addCoursePolyline,
-            onItemRemoved = ::removeCoursePolyline,
-        )
+    private val courseDiffHandler = CourseDiffHandler(onItemAdded = ::addCoursePolyline, onItemRemoved = ::removeCoursePolyline)
     private val courseIdToPolyline = mutableMapOf<String, Polyline>()
     private var routePolyline: Polyline? = null
 
