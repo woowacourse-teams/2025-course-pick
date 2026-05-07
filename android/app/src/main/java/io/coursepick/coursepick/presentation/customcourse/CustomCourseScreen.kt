@@ -14,7 +14,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -51,10 +50,6 @@ fun CustomCourseScreen(
                         .background(colorResource(R.color.background_primary)),
             ) {
                 Header(stringResource(R.string.custom_courses_header))
-                HorizontalDivider(
-                    thickness = 1.dp,
-                    color = colorResource(R.color.background_border_light),
-                )
             }
             if (customCourses.isEmpty()) {
                 Box(
