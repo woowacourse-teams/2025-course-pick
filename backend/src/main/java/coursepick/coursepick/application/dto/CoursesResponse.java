@@ -18,4 +18,12 @@ public record CoursesResponse(
 
         return new CoursesResponse(courseResponses, courses.hasNext());
     }
+
+    public static CoursesResponse from(List<Course> courses, @Nullable Coordinate target) {
+        List<CourseResponse> courseResponses = courses.stream()
+                .map(course -> CourseResponse.from(course, target))
+                .toList();
+
+        return new CoursesResponse(courseResponses, false);
+    }
 }

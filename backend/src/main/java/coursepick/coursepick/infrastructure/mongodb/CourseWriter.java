@@ -11,6 +11,8 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.core.convert.converter.Converter;
 
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -36,6 +38,9 @@ public class CourseWriter implements Converter<Course, Document> {
         document.put("reviews", convertReviewsToDocuments(source.reviews()));
         document.put("creatorId", source.creatorId());
         document.put("reportUserIds", source.reportUserIds());
+        if (source.createdAt() != null) {
+            document.put("createdAt", Date.from(source.createdAt().atZone(ZoneId.systemDefault()).toInstant()));
+        }
         document.put("schemaVersion", 1);
         return document;
     }

@@ -185,4 +185,21 @@ public interface CourseWebApi {
             @Parameter(description = "신고할 코스 ID") String id,
             @Parameter(hidden = true) String userId
     );
+
+    @Operation(summary = "나의 코스 조회(생성순)", security = {@SecurityRequirement(name = "BearerAuth")})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자"),
+            @ApiResponse(responseCode = "404", content = @Content(examples = {
+                    @ExampleObject(
+                            name = "코스가 존재하지 않는 경우",
+                            ref = "#/components/examples/NOT_EXIST_COURSE"
+                    )
+            })),
+    })
+    CoursesWebResponse findCustomCourse(
+            @Parameter(description = "사용자 위치의 위도(-90 ~ 90)", example = "38.5165004") Double userLatitude,
+            @Parameter(description = "사용자 위치의 경도(-180 ~ 180)", example = "126.1040109") Double userLongitude,
+            @Parameter(hidden = true) String userId
+    );
 }

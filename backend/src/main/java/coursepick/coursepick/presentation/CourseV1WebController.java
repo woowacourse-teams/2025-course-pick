@@ -110,4 +110,16 @@ public class CourseV1WebController implements CourseWebApi {
     public void reportCourse(@PathVariable("id") String id, @UserId String userId) {
         courseApplicationService.report(id, userId);
     }
+
+    @Override
+    @Login
+    @GetMapping("/courses/custom")
+    public CoursesWebResponse findCustomCourse(
+            @RequestParam(value = "userLat", required = false) Double userLatitude,
+            @RequestParam(value = "userLng", required = false) Double userLongitude,
+            @UserId String userId
+    ) {
+        CoursesResponse response = courseApplicationService.findCustomCourses(userId, userLatitude, userLongitude);
+        return CoursesWebResponse.from(response);
+    }
 }

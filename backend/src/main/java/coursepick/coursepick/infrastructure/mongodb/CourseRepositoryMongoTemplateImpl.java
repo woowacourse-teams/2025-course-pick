@@ -9,6 +9,7 @@ import coursepick.coursepick.domain.course.CourseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -49,6 +50,7 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
 
     @Override
     public Slice<Course> findAllHasDistanceWithin(CourseFindCondition condition) {
+
         try {
             Query query = new Query().maxTimeMsec(5000);
 
@@ -67,6 +69,23 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
             throw QUERY_TIMEOUT.create();
         }
     }
+
+    @Override
+    public List<Course> findAllCustomCourses(String creatorId) {
+        try {
+
+            Query query = new Query().maxTimeMsec(5000);
+
+            query.addCriteria(Criteria.where("creatorId").is(creatorId));
+            query.with(Sort.by(Sort.Direction.DESC, "createdAt"));
+
+            return mongoTemplate.find(query, Course.class);
+
+        } catch (MongoTimeoutException | MongoExecutionTimeoutException e) {
+            throw QUERY_TIMEOUT.create();
+        }
+    }
+
 
     private static void addPositionAndScopeCriteria(CourseFindCondition condition, Query query) {
         GeoJsonPoint point = new GeoJsonPoint(condition.mapPosition().longitude(), condition.mapPosition().latitude());

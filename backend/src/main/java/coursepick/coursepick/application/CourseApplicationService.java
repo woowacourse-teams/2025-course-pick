@@ -28,8 +28,6 @@ public class CourseApplicationService {
     private final RouteFinder routeFinder;
     private final CourseReportAlerter courseReportAlerter;
 
-
-
     @Transactional
     public void addCustomCourse(String name, List<Coordinate> coordinates, String userId) {
         CourseName courseName = new CourseName(name);
@@ -42,8 +40,7 @@ public class CourseApplicationService {
 
     @Transactional
     public void report(String courseId, String userId) {
-        Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> NOT_EXIST_COURSE.create(courseId));
+        Course course = getCourse(courseId);
         User user = getUser(userId);
 
         course.addReport(user);
@@ -66,9 +63,10 @@ public class CourseApplicationService {
         return CoursesResponse.from(coursesWithinScope, createUserPositionOrNull(userLatitude, userLongitude));
     }
 
-    private User getUser(String userId) {
-        return userRepository.findById(userId).
-                orElseThrow(() -> NOT_EXIST_USER.create(userId));
+    @Transactional(readOnly = true)
+    public CoursesResponse findCustomCourses(String userId, @Nullable Double userLatitude, @Nullable Double userLongitude) {
+        List<Course> customCourses = courseRepository.findAllCustomCourses(userId);
+        return CoursesResponse.from(customCourses, createUserPositionOrNull(userLatitude, userLongitude));
     }
 
     private static Coordinate createUserPositionOrNull(@Nullable Double userLatitude, @Nullable Double userLongitude) {
@@ -100,8 +98,7 @@ public class CourseApplicationService {
 
     @Transactional(readOnly = true)
     public Coordinate findClosestCoordinate(String id, double latitude, double longitude) {
-        Course course = courseRepository.findById(id)
-                .orElseThrow(() -> NOT_EXIST_COURSE.create(id));
+        Course course = getCourse(id);
 
         return course.closestCoordinateFrom(new Coordinate(latitude, longitude));
     }
@@ -118,17 +115,14 @@ public class CourseApplicationService {
 
     @Transactional(readOnly = true)
     public CourseDetailResponse findCourseDetail(String id) {
-        Course course = courseRepository.findById(id)
-                .orElseThrow(() -> NOT_EXIST_COURSE.create(id));
+        Course course = getCourse(id);
         return CourseDetailResponse.from(course);
     }
 
     @Transactional
     public void addReview(String courseId, String userId, String content) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(AUTHENTICATION_FAIL::create);
-        Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> NOT_EXIST_COURSE.create(courseId));
+        User user = getUser(userId);
+        Course course = getCourse(courseId);
         course.addReview(user, content);
         courseRepository.save(course);
     }
@@ -139,5 +133,15 @@ public class CourseApplicationService {
                 log.warn("존재하지 않는 코스에 대한 조회: {}", course.id());
             }
         }
+    }
+
+    private User getUser(String userId) {
+        return userRepository.findById(userId).
+                orElseThrow(AUTHENTICATION_FAIL::create);
+    }
+
+    private Course getCourse(String courseId) {
+        return courseRepository.findById(courseId)
+                .orElseThrow(() -> NOT_EXIST_COURSE.create(courseId));
     }
 }
