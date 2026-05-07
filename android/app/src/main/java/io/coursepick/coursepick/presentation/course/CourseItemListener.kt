@@ -6,4 +6,6 @@ interface CourseItemListener {
     fun toggleFavorite(course: CourseItem)
 
     fun navigateToCourse(course: CourseItem)
+
+    fun report(course: CourseItem)
 }

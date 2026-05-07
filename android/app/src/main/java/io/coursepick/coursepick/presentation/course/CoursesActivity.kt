@@ -34,6 +34,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
@@ -54,6 +55,11 @@ import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.DataKeys
 import io.coursepick.coursepick.presentation.InstallStateObserver
 import io.coursepick.coursepick.presentation.Logger
+import io.coursepick.coursepick.presentation.auth.AuthDialog
+import io.coursepick.coursepick.presentation.auth.AuthFeature
+import io.coursepick.coursepick.presentation.auth.AuthUiEvent
+import io.coursepick.coursepick.presentation.auth.AuthViewModel
+import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.customcourse.CustomCoursesFragment
@@ -82,6 +88,7 @@ class CoursesActivity :
     private var searchLauncher: ActivityResultLauncher<Intent>? = null
     private val binding by lazy { ActivityCoursesBinding.inflate(layoutInflater) }
     private val viewModel: CoursesViewModel by viewModels()
+    private val authViewModel: AuthViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(courseItemListener) }
     private val doublePressDetector = DoublePressDetector()
 
@@ -151,6 +158,10 @@ class CoursesActivity :
                             ).show()
                     }
                 }
+            }
+
+            override fun report(course: CourseItem) {
+                viewModel.onReportCourse(course)
             }
         }
 
@@ -773,11 +784,11 @@ class CoursesActivity :
                         ).show()
                 }
 
-                is CoursesUiEvent.FetchRouteToCourseNoNetwork -> {
+                is CoursesUiEvent.NoNetworkConnection -> {
                     Toast
                         .makeText(
                             this,
-                            getString(R.string.courses_no_network_connection_for_route_message),
+                            getString(R.string.courses_no_network_message),
                             Toast.LENGTH_SHORT,
                         ).show()
                 }
@@ -808,6 +819,42 @@ class CoursesActivity :
                             Toast.LENGTH_SHORT,
                         ).show()
                 }
+
+                CoursesUiEvent.ReportCourseSuccess -> {
+                    Toast
+                        .makeText(
+                            this,
+                            getString(R.string.report_course_success_message),
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                }
+
+                CoursesUiEvent.CourseAlreadyReported -> {
+                    Toast
+                        .makeText(
+                            this,
+                            getString(R.string.report_course_failure_already_reported),
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                }
+
+                CoursesUiEvent.ReportCourseUnauthorizedUser -> {
+                    Toast
+                        .makeText(
+                            this,
+                            getString(R.string.report_course_failure_unauthorized_user_message),
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                }
+
+                CoursesUiEvent.ReportCourseUnknownFailure -> {
+                    Toast
+                        .makeText(
+                            this,
+                            getString(R.string.report_course_failure_unknown_message),
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                }
             }
         }
     }
@@ -815,8 +862,29 @@ class CoursesActivity :
     private fun setUpFlowCollector() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.locationUpdates.collect { location: Location? ->
-                    location?.let(mapManager::drawUserLocation) ?: run(mapManager::hideUserLocation)
+                launch {
+                    viewModel.locationUpdates.collect { location: Location? ->
+                        location?.let(mapManager::drawUserLocation) ?: run(mapManager::hideUserLocation)
+                    }
+                }
+
+                launch {
+                    authViewModel.uiEvent.collect { event: AuthUiEvent ->
+                        when (event) {
+                            is AuthUiEvent.AuthenticateSuccess -> {
+                                viewModel.onAuthSuccess(event.feature)
+                            }
+
+                            AuthUiEvent.AuthenticateFailure -> {
+                                Toast
+                                    .makeText(
+                                        this@CoursesActivity,
+                                        getString(R.string.authentication_failure_message),
+                                        Toast.LENGTH_SHORT,
+                                    ).show()
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -879,6 +947,22 @@ class CoursesActivity :
                             coursesUiState = state ?: return@CoursePickTheme,
                             onDismissRequest = viewModel::dismissFilterDialog,
                             onFilterAction = viewModel::handleFilterAction,
+                        )
+                    }
+
+                    viewModel.authDialogState.collectAsStateWithLifecycle().value?.let { feature: AuthFeature ->
+                        AuthDialog(
+                            feature = feature,
+                            onDismissRequest = viewModel::dismissAuthDialog,
+                            onKakaoLoginClick = { authViewModel.authenticate(KakaoAuthenticator(this@CoursesActivity), feature) },
+                        )
+                    }
+
+                    viewModel.reportCourseDialogState.collectAsStateWithLifecycle().value?.let { course: CourseItem ->
+                        ReportCourseDialog(
+                            course = course,
+                            onConfirm = viewModel::submitCourseReport,
+                            onDismiss = viewModel::dismissReportCourseDialog,
                         )
                     }
                 }

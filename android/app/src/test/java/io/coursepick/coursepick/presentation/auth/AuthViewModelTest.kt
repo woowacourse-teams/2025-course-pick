@@ -59,6 +59,7 @@ class AuthViewModelTest {
                         onFailure(Throwable("소셜 로그인 실패"))
                     }
                 },
+                AuthFeature.CustomCourse,
             )
 
             // then

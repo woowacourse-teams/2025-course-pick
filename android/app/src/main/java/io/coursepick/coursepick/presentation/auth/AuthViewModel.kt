@@ -21,7 +21,10 @@ class AuthViewModel
         private val _uiEvent = MutableSharedFlow<AuthUiEvent>()
         val uiEvent: SharedFlow<AuthUiEvent> get() = _uiEvent.asSharedFlow()
 
-        fun authenticate(authenticator: SocialAuthenticator) {
+        fun authenticate(
+            authenticator: SocialAuthenticator,
+            feature: AuthFeature,
+        ) {
             authenticator.authenticate(
                 onSuccess = { socialAccessToken: String ->
                     viewModelScope.launch {
@@ -32,7 +35,7 @@ class AuthViewModel
                             )
                         }.onSuccess { token: String ->
                             authRepository.saveAccessToken(token)
-                            _uiEvent.emit(AuthUiEvent.AuthenticateSuccess)
+                            _uiEvent.emit(AuthUiEvent.AuthenticateSuccess(feature))
                         }.onFailure {
                             _uiEvent.emit(AuthUiEvent.AuthenticateFailure)
                         }

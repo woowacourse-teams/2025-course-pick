@@ -16,6 +16,7 @@ import io.coursepick.coursepick.R
 import io.coursepick.coursepick.databinding.FragmentCustomCoursesBinding
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.presentation.auth.AuthDialog
+import io.coursepick.coursepick.presentation.auth.AuthFeature
 import io.coursepick.coursepick.presentation.auth.AuthUiEvent
 import io.coursepick.coursepick.presentation.auth.AuthViewModel
 import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
@@ -52,12 +53,11 @@ class CustomCoursesFragment : Fragment() {
                     onGoToCreateCustomCourse = customCourseViewModel::onGoToCreateCustomCourse,
                 )
 
-                val showAuthDialog: Boolean = customCourseViewModel.showAuthDialog.collectAsStateWithLifecycle().value
-                if (showAuthDialog) {
+                customCourseViewModel.authDialogState.collectAsStateWithLifecycle().value?.let { feature: AuthFeature ->
                     AuthDialog(
-                        featureName = getString(R.string.create_custom_course),
+                        feature = feature,
                         onDismissRequest = customCourseViewModel::dismissAuthDialog,
-                        onKakaoLoginClick = { authViewModel.authenticate(KakaoAuthenticator(requireActivity())) },
+                        onKakaoLoginClick = { authViewModel.authenticate(KakaoAuthenticator(requireActivity()), feature) },
                     )
                 }
             }
@@ -84,9 +84,8 @@ class CustomCoursesFragment : Fragment() {
                 launch {
                     authViewModel.uiEvent.collect { event: AuthUiEvent ->
                         when (event) {
-                            AuthUiEvent.AuthenticateSuccess -> {
-                                customCourseViewModel.dismissAuthDialog()
-                                goToCreateCustomCourse()
+                            is AuthUiEvent.AuthenticateSuccess -> {
+                                customCourseViewModel.onAuthSuccess(event.feature)
                             }
 
                             AuthUiEvent.AuthenticateFailure -> {

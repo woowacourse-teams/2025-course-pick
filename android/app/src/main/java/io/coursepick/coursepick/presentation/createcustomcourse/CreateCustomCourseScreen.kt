@@ -51,7 +51,7 @@ fun CreateCustomCourseScreen(
     ) {
         Column {
             CenterAlignedTopAppBar(
-                title = { Text(text = stringResource(R.string.create_custom_course)) },
+                title = { Text(text = stringResource(R.string.create_custom_course_header)) },
                 navigationIcon = {
                     Icon(
                         imageVector = Icons.Default.Close,
