@@ -75,7 +75,7 @@ class KakaoMapDrawer(
 
     private fun removeCourseRouteLine(course: CourseItem) {
         map.routeLineManager?.layer?.apply {
-            remove(getRouteLine(course.id))
+            getRouteLine(course.id)?.let(::remove)
         }
     }
 
