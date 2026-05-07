@@ -27,7 +27,7 @@ fun CourseNavigationButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(9999.dp)
+    val shape = RoundedCornerShape(50)
 
     Row(
         modifier =
