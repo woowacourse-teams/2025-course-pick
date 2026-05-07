@@ -1,6 +1,5 @@
 package io.coursepick.coursepick.presentation.ui
 
-import android.content.Context
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -11,10 +10,10 @@ import androidx.databinding.BindingAdapter
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.domain.course.Kilometer
 import io.coursepick.coursepick.domain.course.Meter
 import io.coursepick.coursepick.presentation.course.CoursesUiState
 import io.coursepick.coursepick.presentation.course.UiStatus
+import io.coursepick.coursepick.presentation.formattedMeter
 
 @BindingAdapter("isSelected")
 fun View.selected(isSelected: Boolean) {
@@ -69,16 +68,6 @@ fun ListView.setSimpleListItems(
 fun ListView.setOnItemClick(listener: AdapterView.OnItemClickListener) {
     this.onItemClickListener = listener
 }
-
-fun formattedMeter(
-    context: Context,
-    meter: Meter,
-): String =
-    if (meter < Kilometer.METRIC_MULTIPLIER) {
-        context.getString(R.string.course_item_unit_meter, meter.value.toInt())
-    } else {
-        context.getString(R.string.course_item_unit_kilometer, meter.toKilometer().value)
-    }
 
 @BindingAdapter("visibleWhenNoInternet")
 fun View.visibleWhenNoInternet(status: UiStatus?) {

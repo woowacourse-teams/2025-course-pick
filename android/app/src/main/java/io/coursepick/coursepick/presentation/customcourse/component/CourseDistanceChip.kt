@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Distance
-import io.coursepick.coursepick.presentation.ui.formattedMeter
+import io.coursepick.coursepick.presentation.formattedMeter
 
 @Composable
 fun CourseDistanceChip(
