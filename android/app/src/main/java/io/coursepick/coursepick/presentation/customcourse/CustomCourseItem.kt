@@ -29,9 +29,9 @@ import io.coursepick.coursepick.domain.course.Distance
 import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Length
 import io.coursepick.coursepick.domain.course.Longitude
-import io.coursepick.coursepick.presentation.component.CourseDistanceChip
-import io.coursepick.coursepick.presentation.component.CourseLengthChip
-import io.coursepick.coursepick.presentation.component.CourseNavigationButton
+import io.coursepick.coursepick.presentation.customcourse.component.CourseDistanceChip
+import io.coursepick.coursepick.presentation.customcourse.component.CourseLengthChip
+import io.coursepick.coursepick.presentation.customcourse.component.CourseNavigationButton
 
 @Composable
 fun CustomCourseItem(

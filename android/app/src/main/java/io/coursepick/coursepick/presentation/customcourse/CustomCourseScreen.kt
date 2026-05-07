@@ -30,8 +30,8 @@ import io.coursepick.coursepick.domain.course.Distance
 import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Length
 import io.coursepick.coursepick.domain.course.Longitude
-import io.coursepick.coursepick.presentation.component.EmptyDescription
-import io.coursepick.coursepick.presentation.component.Header
+import io.coursepick.coursepick.presentation.customcourse.component.EmptyDescription
+import io.coursepick.coursepick.presentation.customcourse.component.Header
 
 @Composable
 fun CustomCourseScreen(

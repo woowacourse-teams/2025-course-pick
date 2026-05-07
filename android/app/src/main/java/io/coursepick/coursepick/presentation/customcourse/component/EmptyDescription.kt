@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.component
+package io.coursepick.coursepick.presentation.customcourse.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
