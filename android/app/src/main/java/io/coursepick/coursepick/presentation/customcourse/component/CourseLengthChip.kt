@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Length
-import io.coursepick.coursepick.presentation.ui.formattedMeter
+import io.coursepick.coursepick.presentation.formattedMeter
 
 @Composable
 fun CourseLengthChip(
