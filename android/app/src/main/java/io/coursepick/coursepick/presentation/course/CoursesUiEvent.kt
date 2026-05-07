@@ -17,7 +17,7 @@ sealed interface CoursesUiEvent {
 
     object FetchRouteToCourseFailure : CoursesUiEvent
 
-    object FetchRouteToCourseNoNetwork : CoursesUiEvent
+    object NoNetworkConnection : CoursesUiEvent
 
     class FetchNearestCoordinateSuccess(
         val origin: Coordinate,
@@ -29,4 +29,12 @@ sealed interface CoursesUiEvent {
     object FetchNearestCoordinateFailure : CoursesUiEvent
 
     object FetchNextCoursesFailure : CoursesUiEvent
+
+    object ReportCourseSuccess : CoursesUiEvent
+
+    object CourseAlreadyReported : CoursesUiEvent
+
+    object ReportCourseUnauthorizedUser : CoursesUiEvent
+
+    object ReportCourseUnknownFailure : CoursesUiEvent
 }

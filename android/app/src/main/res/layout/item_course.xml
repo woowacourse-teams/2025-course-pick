@@ -30,61 +30,87 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:text="@{course.name}"
             android:textColor="@color/item_primary"
             android:textSize="16sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@id/courseDistance"
+            app:layout_constraintEnd_toStartOf="@id/courseFavoriteButton"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="석촌 호수 뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑뺑이" />
+
+        <LinearLayout
+            android:id="@+id/courseLength"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_course_detail"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            app:layout_constraintBottom_toBottomOf="@id/courseNavigationButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/courseNavigationButton">
+
+            <ImageView
+                android:id="@+id/courseLengthIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_length" />
+
+            <TextView
+                android:id="@+id/courseLengthText"
+                courseLength="@{course.length}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:textColor="@color/item_primary"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                tools:text="5km" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/courseDistance"
             courseDistance="@{course.distance}"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/background_course_detail"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
             android:textColor="@color/point_primary"
             android:textSize="12sp"
             android:textStyle="bold"
             android:visibility="@{course.distance != null ? View.VISIBLE : View.GONE}"
-            app:layout_constraintBottom_toTopOf="@id/courseNavigationButton"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/courseName"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/courseLength"
+            app:layout_constraintStart_toEndOf="@id/courseLength"
+            app:layout_constraintTop_toTopOf="@id/courseLength"
             app:layout_constraintVertical_chainStyle="spread_inside"
             tools:text="10m만큼 떨어짐" />
 
         <ImageView
-            android:id="@+id/courseLengthIcon"
+            android:id="@+id/courseReportButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_length"
-            app:layout_constraintBottom_toBottomOf="@id/courseLength"
-            app:layout_constraintEnd_toStartOf="@id/courseLength"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/courseLength" />
-
-        <TextView
-            android:id="@+id/courseLength"
-            courseLength="@{course.length}"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
-            android:layout_marginTop="10dp"
-            android:textColor="@color/item_primary"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@id/courseLengthIcon"
-            app:layout_constraintTop_toBottomOf="@id/courseName"
-            tools:text="5km" />
+            android:layout_marginBottom="8dp"
+            android:onClick="@{() -> courseItemListener.report(course)}"
+            android:padding="10dp"
+            android:src="@drawable/icon_report_course"
+            app:layout_constraintBottom_toTopOf="@id/courseNavigationButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/item_secondary" />
 
         <ImageView
             android:id="@+id/courseFavoriteButton"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:layout_marginEnd="10dp"
+            android:background="@drawable/background_favorite"
             android:onClick="@{() -> courseItemListener.toggleFavorite(course)}"
+            android:padding="6dp"
             android:src="@{course.favorite ? @drawable/icon_favorite : @drawable/icon_not_favorite}"
             app:layout_constraintBottom_toBottomOf="@id/courseNavigationButton"
             app:layout_constraintEnd_toStartOf="@id/courseNavigationButton"
@@ -93,7 +119,7 @@
         <TextView
             android:id="@+id/courseNavigationButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="36dp"
             android:background="@drawable/background_navigate"
             android:gravity="center"
             android:onClick="@{() -> courseItemListener.navigateToCourse(course)}"
@@ -106,7 +132,7 @@
             app:drawableStartCompat="@drawable/icon_navigate"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/courseDistance" />
+            app:layout_constraintTop_toBottomOf="@id/courseReportButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

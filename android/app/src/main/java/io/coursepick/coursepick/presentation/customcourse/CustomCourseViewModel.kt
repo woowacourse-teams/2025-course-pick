@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.coursepick.coursepick.domain.auth.AuthRepository
+import io.coursepick.coursepick.presentation.auth.AuthFeature
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -22,13 +23,13 @@ class CustomCourseViewModel
         private val _uiEvent = MutableSharedFlow<CustomCourseUiEvent>()
         val uiEvent: SharedFlow<CustomCourseUiEvent> get() = _uiEvent.asSharedFlow()
 
-        private val _showAuthDialog = MutableStateFlow(false)
-        val showAuthDialog: StateFlow<Boolean> get() = _showAuthDialog.asStateFlow()
+        private val _authDialogState = MutableStateFlow<AuthFeature?>(null)
+        val authDialogState: StateFlow<AuthFeature?> get() = _authDialogState.asStateFlow()
 
         fun onGoToCreateCustomCourse() {
             viewModelScope.launch {
                 if (authRepository.accessToken() == null) {
-                    _showAuthDialog.value = true
+                    _authDialogState.value = AuthFeature.CustomCourse
                 } else {
                     _uiEvent.emit(CustomCourseUiEvent.NavigateToCreateCourse)
                 }
@@ -36,6 +37,15 @@ class CustomCourseViewModel
         }
 
         fun dismissAuthDialog() {
-            _showAuthDialog.value = false
+            _authDialogState.value = null
+        }
+
+        fun onAuthSuccess(feature: AuthFeature) {
+            if (feature is AuthFeature.CustomCourse) {
+                dismissAuthDialog()
+                viewModelScope.launch {
+                    _uiEvent.emit(CustomCourseUiEvent.NavigateToCreateCourse)
+                }
+            }
         }
     }

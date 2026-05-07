@@ -1,5 +1,6 @@
 package io.coursepick.coursepick.presentation.auth
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -24,7 +26,7 @@ import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 
 @Composable
 fun AuthDialog(
-    featureName: String,
+    feature: AuthFeature,
     onDismissRequest: () -> Unit,
     onKakaoLoginClick: () -> Unit,
 ) {
@@ -51,7 +53,7 @@ fun AuthDialog(
             )
 
             AuthContent(
-                featureName = featureName,
+                featureName = stringResource(feature.stringResourceId()),
                 onKakaoLoginClick = onKakaoLoginClick,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -59,12 +61,19 @@ fun AuthDialog(
     }
 }
 
+@StringRes
+private fun AuthFeature.stringResourceId(): Int =
+    when (this) {
+        is AuthFeature.ReportCourse -> R.string.report_course_feature_name
+        AuthFeature.CustomCourse -> R.string.create_custom_course_feature_name
+    }
+
 @PreviewLightDark
 @Composable
 private fun AuthDialogPreview() {
     CoursePickTheme {
         AuthDialog(
-            featureName = "즐겨찾기",
+            feature = AuthFeature.CustomCourse,
             onDismissRequest = { },
             onKakaoLoginClick = { },
         )
