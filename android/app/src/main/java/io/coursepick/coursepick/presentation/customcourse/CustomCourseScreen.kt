@@ -19,6 +19,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -40,8 +42,13 @@ fun CustomCourseScreen(
     onGoToCreateCustomCourse: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val nestedScrollInterop = rememberNestedScrollInteropConnection()
+
     Box(
-        modifier = modifier.fillMaxSize(),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .nestedScroll(nestedScrollInterop),
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Column(
@@ -62,7 +69,10 @@ fun CustomCourseScreen(
             } else {
                 LazyColumn(
                     state = rememberLazyListState(),
-                    modifier = Modifier.fillMaxSize(),
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .nestedScroll(nestedScrollInterop),
                     contentPadding = PaddingValues(bottom = 50.dp),
                 ) {
                     items(
