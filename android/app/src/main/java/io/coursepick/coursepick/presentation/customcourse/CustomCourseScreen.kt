@@ -98,7 +98,7 @@ fun CustomCourseScreen(
 
 @PreviewLightDark
 @Composable
-private fun CustomCourseScreenPreview1() {
+private fun CustomCourseScreen_EmptyPreview() {
     CustomCourseScreen(
         customCourses = emptyList(),
         onGoToCreateCustomCourse = { },
@@ -107,7 +107,7 @@ private fun CustomCourseScreenPreview1() {
 
 @PreviewLightDark
 @Composable
-private fun CustomCourseScreenPreview2() {
+private fun CustomCourseScreen_WithCoursesPreview() {
     val customCourse: List<Course> =
         List(10) { index ->
             Course(
