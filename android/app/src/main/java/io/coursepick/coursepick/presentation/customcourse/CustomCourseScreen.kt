@@ -65,8 +65,8 @@ fun CustomCourseScreen(
                 ) {
                     items(
                         items = customCourses,
-                        key = { customCourse -> customCourse.id },
-                    ) { customCourse ->
+                        key = Course::id,
+                    ) { customCourse: Course ->
                         CustomCourseItem(
                             customCourse = customCourse,
                             onSelect = { },
