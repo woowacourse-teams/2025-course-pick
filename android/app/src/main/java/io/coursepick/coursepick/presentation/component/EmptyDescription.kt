@@ -28,6 +28,6 @@ fun EmptyDescription(
 
 @PreviewLightDark
 @Composable
-fun EmptyDescriptionPreview() {
+private fun EmptyDescriptionPreview() {
     EmptyDescription("등록한 코스가 없어요")
 }

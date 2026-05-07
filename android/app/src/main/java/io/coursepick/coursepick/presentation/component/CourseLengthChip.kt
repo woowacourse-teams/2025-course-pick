@@ -65,6 +65,6 @@ fun CourseLengthChip(
 
 @PreviewLightDark
 @Composable
-fun CourseLengthChipPreview() {
+private fun CourseLengthChipPreview() {
     CourseLengthChip(Length(5000))
 }

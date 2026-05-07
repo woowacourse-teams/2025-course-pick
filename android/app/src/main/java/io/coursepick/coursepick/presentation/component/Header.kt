@@ -36,6 +36,6 @@ fun Header(
 
 @PreviewLightDark
 @Composable
-fun HeaderPreview() {
+private fun HeaderPreview() {
     Header("나의 코스")
 }

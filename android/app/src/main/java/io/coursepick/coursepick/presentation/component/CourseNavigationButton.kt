@@ -66,6 +66,6 @@ fun CourseNavigationButton(
 
 @PreviewLightDark
 @Composable
-fun CourseNavigationButtonPreview() {
+private fun CourseNavigationButtonPreview() {
     CourseNavigationButton(onClick = {})
 }

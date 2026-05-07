@@ -53,6 +53,6 @@ fun CourseDistanceChip(
 
 @PreviewLightDark
 @Composable
-fun CourseDistanceChipPreview() {
+private fun CourseDistanceChipPreview() {
     CourseDistanceChip(Distance(5))
 }

@@ -107,7 +107,7 @@ fun CustomCourseItem(
 
 @PreviewLightDark
 @Composable
-fun CustomCourseItemPreview() {
+private fun CustomCourseItemPreview() {
     CustomCourseItem(
         customCourse =
             Course(
