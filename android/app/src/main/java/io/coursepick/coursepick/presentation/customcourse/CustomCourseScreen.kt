@@ -121,7 +121,7 @@ private fun CustomCourseScreen_EmptyPreview() {
 @Composable
 private fun CustomCourseScreen_WithCoursesPreview() {
     val customCourse: List<Course> =
-        List(10) { index ->
+        List(10) { index: Int ->
             Course(
                 id = index.toString(),
                 name = CourseName("건대입구-잠실대교-종합운동장 ${index + 1}"),
