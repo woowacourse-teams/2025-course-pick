@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -47,7 +48,7 @@ fun CourseLengthChip(
         Icon(
             painter = painterResource(R.drawable.icon_length),
             contentDescription = null,
-            tint = colorResource(R.color.item_primary),
+            tint = Color.Unspecified,
         )
 
         Spacer(modifier = Modifier.width(6.dp))
