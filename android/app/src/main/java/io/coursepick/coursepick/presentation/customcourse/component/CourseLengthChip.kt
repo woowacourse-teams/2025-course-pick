@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -43,9 +44,10 @@ fun CourseLengthChip(
                 ).padding(horizontal = 10.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Image(
+        Icon(
             painter = painterResource(R.drawable.icon_length),
             contentDescription = null,
+            tint = colorResource(R.color.item_primary),
         )
 
         Spacer(modifier = Modifier.width(6.dp))
