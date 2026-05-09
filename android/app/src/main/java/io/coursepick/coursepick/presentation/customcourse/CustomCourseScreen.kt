@@ -38,7 +38,7 @@ import io.coursepick.coursepick.presentation.customcourse.component.Header
 
 @Composable
 fun CustomCourseScreen(
-    customCourses: List<Course>,
+    customCourses: List<CustomCourseItem>,
     onGoToCreateCustomCourse: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -77,9 +77,9 @@ fun CustomCourseScreen(
                 ) {
                     items(
                         items = customCourses,
-                        key = Course::id,
-                    ) { customCourse: Course ->
-                        CustomCourseItem(
+                        key = CustomCourseItem::id,
+                    ) { customCourse: CustomCourseItem ->
+                        CustomCourseItemCard(
                             customCourse = customCourse,
                             onSelect = { },
                             onNavigateToCourse = { },
@@ -120,21 +120,25 @@ private fun CustomCourseScreen_EmptyPreview() {
 @PreviewLightDark
 @Composable
 private fun CustomCourseScreen_WithCoursesPreview() {
-    val customCourse: List<Course> =
+    val customCourse: List<CustomCourseItem> =
         List(10) { index: Int ->
-            Course(
-                id = index.toString(),
-                name = CourseName("건대입구-잠실대교-종합운동장 ${index + 1}"),
-                distance = Distance(10),
-                length = Length(100),
-                coordinates =
-                    listOf(
-                        Coordinate(Latitude(1.0), Longitude(1.0)),
-                        Coordinate(
-                            Latitude(1.0 + 0.0001),
-                            Longitude(1.0 + 0.0001),
-                        ),
+            CustomCourseItem(
+                course =
+                    Course(
+                        id = index.toString(),
+                        name = CourseName("건대입구-잠실대교-종합운동장 ${index + 1}"),
+                        distance = Distance(10),
+                        length = Length(100),
+                        coordinates =
+                            listOf(
+                                Coordinate(Latitude(1.0), Longitude(1.0)),
+                                Coordinate(
+                                    Latitude(1.0 + 0.0001),
+                                    Longitude(1.0 + 0.0001),
+                                ),
+                            ),
                     ),
+                selected = false,
             )
         }
 
