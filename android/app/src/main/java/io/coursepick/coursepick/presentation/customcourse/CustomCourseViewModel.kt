@@ -3,14 +3,12 @@ package io.coursepick.coursepick.presentation.customcourse
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.coursepick.coursepick.data.interceptor.NoNetworkException
 import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.course.Coordinate
-import io.coursepick.coursepick.domain.course.Course
-import io.coursepick.coursepick.domain.course.CourseName
-import io.coursepick.coursepick.domain.course.Distance
-import io.coursepick.coursepick.domain.course.Latitude
-import io.coursepick.coursepick.domain.course.Length
-import io.coursepick.coursepick.domain.course.Longitude
+import io.coursepick.coursepick.domain.course.CoursesPage
+import io.coursepick.coursepick.domain.customcourse.CustomCourseRepository
+import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.auth.AuthFeature
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +24,7 @@ class CustomCourseViewModel
     @Inject
     constructor(
         private val authRepository: AuthRepository,
+        private val customCourseRepository: CustomCourseRepository,
     ) : ViewModel() {
         private val _uiEvent = MutableSharedFlow<CustomCourseUiEvent>()
         val uiEvent: SharedFlow<CustomCourseUiEvent> get() = _uiEvent.asSharedFlow()
@@ -33,23 +32,9 @@ class CustomCourseViewModel
         private val _authDialogState = MutableStateFlow<AuthFeature?>(null)
         val authDialogState: StateFlow<AuthFeature?> get() = _authDialogState.asStateFlow()
 
-        val customCourse: List<Course> =
-            List(10) { index: Int ->
-                Course(
-                    id = index.toString(),
-                    name = CourseName("건대입구-잠실대교-종합운동장 ${index + 1}"),
-                    distance = Distance(10),
-                    length = Length(100),
-                    coordinates =
-                        listOf(
-                            Coordinate(Latitude(1.0), Longitude(1.0)),
-                            Coordinate(
-                                Latitude(1.0 + 0.0001),
-                                Longitude(1.0 + 0.0001),
-                            ),
-                        ),
-                )
-            }
+        private val _state = MutableStateFlow(CustomCourseUiState(customCourses = emptyList()))
+
+        val state: StateFlow<CustomCourseUiState> = _state.asStateFlow()
 
         fun onGoToCreateCustomCourse() {
             viewModelScope.launch {
@@ -70,6 +55,45 @@ class CustomCourseViewModel
                 dismissAuthDialog()
                 viewModelScope.launch {
                     _uiEvent.emit(CustomCourseUiEvent.NavigateToCreateCourse)
+                }
+            }
+        }
+
+        fun fetchCustomCourse(userCoordinate: Coordinate?) {
+            viewModelScope.launch {
+                runCatching {
+                    customCourseRepository.customCourse(userCoordinate = userCoordinate)
+                }.onSuccess { coursesPage: CoursesPage ->
+                    Logger.log(Logger.Event.Success("fetch_custom_courses_new"))
+
+                    val customCourseItems: List<CustomCourseItem> =
+                        coursesPage.courses.mapIndexed { index, course ->
+                            CustomCourseItem(
+                                course = course,
+                                selected = index == 0,
+                            )
+                        }
+                    _state.value =
+                        state.value.copy(
+                            customCourses = customCourseItems,
+                        )
+                }.onFailure { exception: Throwable ->
+                    Logger.log(
+                        Logger.Event.Failure("fetch_custom_courses_new"),
+                        "message" to exception.message.toString(),
+                    )
+                    if (exception is NoNetworkException) {
+                        _state.value =
+                            state.value.copy(
+                                customCourses = emptyList(),
+                            )
+                        return@onFailure
+                    }
+                    _state.value =
+                        state.value.copy(
+                            customCourses = emptyList(),
+                        )
+                    _uiEvent.emit(CustomCourseUiEvent.FetchCustomCourseFailure)
                 }
             }
         }
