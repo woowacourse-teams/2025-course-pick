@@ -4,23 +4,27 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,41 +40,108 @@ fun RouteFinderDialog(
 ) {
     Dialog(onDismiss) {
         Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier =
                 modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp))
-                    .background(color = colorResource(R.color.background_primary))
+                    .background(colorResource(R.color.background_primary))
                     .padding(16.dp),
         ) {
-            var rememberChoice by remember { mutableStateOf(false) }
-
             Text(
                 text = stringResource(R.string.selected_route_finder_application_dialog_title),
-                fontSize = 24.sp,
+                color = colorResource(R.color.item_primary),
+                fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
             )
 
-            Text(text = stringResource(R.string.selected_route_finder_application_dialog_description), fontSize = 18.sp)
+            Spacer(Modifier.height(16.dp))
 
-            LazyColumn {
-                items(RouteFinderUiModel.Entries) { routeFinder: RouteFinderUiModel ->
-                    Text(
-                        text = stringResource(routeFinder.nameId),
-                        modifier = Modifier.clickable { onConfirm(routeFinder.routeFinder, rememberChoice) },
-                    )
-                }
-            }
+            Text(
+                text = stringResource(R.string.selected_route_finder_application_dialog_description),
+                color = colorResource(R.color.item_primary),
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center,
+            )
 
-            Row {
-                Checkbox(
-                    checked = rememberChoice,
-                    onCheckedChange = { checked -> rememberChoice = checked },
+            Spacer(Modifier.height(16.dp))
+
+            var rememberChoice by remember { mutableStateOf(false) }
+
+            RouteFinderOptions(
+                onSelectOption = { option: RouteFinderUiModel -> onConfirm(option.routeFinder, rememberChoice) },
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            RememberChoiceCheckbox(
+                checked = rememberChoice,
+                onCheckedChange = { checked: Boolean -> rememberChoice = checked },
+                modifier = Modifier.align(Alignment.Start),
+            )
+        }
+    }
+}
+
+@Composable
+private fun RouteFinderOptions(
+    onSelectOption: (RouteFinderUiModel) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier
+            .clip(RoundedCornerShape(16.dp))
+            .background(colorResource(R.color.background_secondary)),
+    ) {
+        RouteFinderUiModel.Entries.forEachIndexed { index: Int, routeFinder: RouteFinderUiModel ->
+            Text(
+                text = stringResource(routeFinder.nameId),
+                color = colorResource(R.color.item_primary),
+                fontSize = 16.sp,
+                modifier =
+                    Modifier
+                        .clip(RoundedCornerShape(16.dp))
+                        .fillMaxWidth()
+                        .clickable { onSelectOption(routeFinder) }
+                        .padding(horizontal = 24.dp, vertical = 12.dp),
+            )
+
+            if (index != RouteFinderUiModel.Entries.lastIndex) {
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = colorResource(R.color.background_border),
+                    modifier = Modifier.padding(horizontal = 16.dp),
                 )
-
-                Text(text = stringResource(R.string.selected_route_finder_application_dialog_set_default))
             }
         }
+    }
+}
+
+@Composable
+private fun RememberChoiceCheckbox(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier,
+    ) {
+        Checkbox(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            colors = CheckboxDefaults.colors(checkedColor = colorResource(R.color.point_primary)),
+        )
+
+        Text(
+            text = stringResource(R.string.selected_route_finder_application_dialog_set_default),
+            color = colorResource(R.color.item_primary),
+            fontSize = 16.sp,
+            modifier =
+                Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable { onCheckedChange(!checked) }
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+        )
     }
 }
 
