@@ -20,6 +20,8 @@ import io.coursepick.coursepick.presentation.auth.AuthFeature
 import io.coursepick.coursepick.presentation.auth.AuthUiEvent
 import io.coursepick.coursepick.presentation.auth.AuthViewModel
 import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
+import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.course.CoursesActivity
 import io.coursepick.coursepick.presentation.course.CoursesViewModel
 import io.coursepick.coursepick.presentation.createcustomcourse.CreateCustomCourseActivity
 import io.coursepick.coursepick.presentation.createcustomcourse.toUiModel
@@ -60,6 +62,15 @@ class CustomCoursesFragment : Fragment() {
                     onSelect = { customCourse: CustomCourseItem ->
                         customCourseViewModel.select(customCourse)
                         coursesViewModel.selectCourseFromCustomCourse(customCourse)
+                    },
+                    onNavigateToCourse = { customCourse: CustomCourseItem ->
+                        val courseItem =
+                            CourseItem(
+                                course = customCourse.course,
+                                selected = customCourse.selected,
+                            )
+
+                        (activity as? CoursesActivity)?.navigateToCourse(courseItem)
                     },
                 )
 

@@ -41,6 +41,7 @@ fun CustomCourseScreen(
     customCourses: List<CustomCourseItem>,
     onGoToCreateCustomCourse: () -> Unit,
     onSelect: (CustomCourseItem) -> Unit,
+    onNavigateToCourse: (CustomCourseItem) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val nestedScrollInterop = rememberNestedScrollInteropConnection()
@@ -83,7 +84,7 @@ fun CustomCourseScreen(
                         CustomCourseItemCard(
                             customCourse = customCourse,
                             onSelect = { onSelect(customCourse) },
-                            onNavigateToCourse = { },
+                            onNavigateToCourse = { onNavigateToCourse(customCourse) },
                             modifier = Modifier.animateItem(),
                         )
                     }
@@ -116,6 +117,7 @@ private fun CustomCourseScreen_EmptyPreview() {
         customCourses = emptyList(),
         onGoToCreateCustomCourse = { },
         onSelect = { },
+        onNavigateToCourse = { },
     )
 }
 
@@ -148,5 +150,6 @@ private fun CustomCourseScreen_WithCoursesPreview() {
         customCourses = customCourse,
         onGoToCreateCustomCourse = { },
         onSelect = { },
+        onNavigateToCourse = { },
     )
 }

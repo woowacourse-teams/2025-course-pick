@@ -118,46 +118,7 @@ class CoursesActivity :
             }
 
             override fun navigateToCourse(course: CourseItem) {
-                Logger.log(
-                    Logger.Event.Click("navigate"),
-                    "id" to course.id,
-                    "name" to course.name,
-                )
-
-                if (!viewModel.isFineLocationPermissionGranted) {
-                    showFineLocationPermissionRationaleForNavigation()
-                    return
-                }
-
-                lifecycleScope.launch {
-                    viewModel.currentLocation()?.let { location: Location ->
-                        val selectedApp: RouteFinderApplication? =
-                            CoursePickPreferences.selectedRouteFinder
-                        if (selectedApp == null) {
-                            supportFragmentManager.setFragmentResultListener(
-                                DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_REQUEST,
-                                this@CoursesActivity,
-                            ) { _, bundle: Bundle ->
-                                supportFragmentManager.clearFragmentResultListener(DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_REQUEST)
-                                val selectedApp: RouteFinderApplication =
-                                    bundle.getParcelableCompat<RouteFinderApplication>(DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_RESULT)
-                                        ?: return@setFragmentResultListener
-                                handleNavigation(course, location.coordinate, selectedApp)
-                            }
-                            RouteFinderChoiceDialogFragment().show(supportFragmentManager, null)
-                            return@let
-                        }
-                        handleNavigation(course, location.coordinate, selectedApp)
-                    } ?: run {
-                        mapManager.hideUserLocation()
-                        Toast
-                            .makeText(
-                                this@CoursesActivity,
-                                getString(R.string.courses_failed_to_get_current_location_message),
-                                Toast.LENGTH_SHORT,
-                            ).show()
-                    }
-                }
+                this@CoursesActivity.navigateToCourse(course)
             }
 
             override fun report(course: CourseItem) {
@@ -427,6 +388,49 @@ class CoursesActivity :
                 binding.mainCurrentLocationButton.setColorFilter(
                     ContextCompat.getColor(this@CoursesActivity, R.color.gray3),
                 )
+            } ?: run {
+                mapManager.hideUserLocation()
+                Toast
+                    .makeText(
+                        this@CoursesActivity,
+                        getString(R.string.courses_failed_to_get_current_location_message),
+                        Toast.LENGTH_SHORT,
+                    ).show()
+            }
+        }
+    }
+
+    fun navigateToCourse(course: CourseItem) {
+        Logger.log(
+            Logger.Event.Click("navigate"),
+            "id" to course.id,
+            "name" to course.name,
+        )
+
+        if (!viewModel.isFineLocationPermissionGranted) {
+            showFineLocationPermissionRationaleForNavigation()
+            return
+        }
+
+        lifecycleScope.launch {
+            viewModel.currentLocation()?.let { location: Location ->
+                val selectedApp: RouteFinderApplication? =
+                    CoursePickPreferences.selectedRouteFinder
+                if (selectedApp == null) {
+                    supportFragmentManager.setFragmentResultListener(
+                        DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_REQUEST,
+                        this@CoursesActivity,
+                    ) { _, bundle: Bundle ->
+                        supportFragmentManager.clearFragmentResultListener(DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_REQUEST)
+                        val selectedApp: RouteFinderApplication =
+                            bundle.getParcelableCompat<RouteFinderApplication>(DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_RESULT)
+                                ?: return@setFragmentResultListener
+                        handleNavigation(course, location.coordinate, selectedApp)
+                    }
+                    RouteFinderChoiceDialogFragment().show(supportFragmentManager, null)
+                    return@let
+                }
+                handleNavigation(course, location.coordinate, selectedApp)
             } ?: run {
                 mapManager.hideUserLocation()
                 Toast
