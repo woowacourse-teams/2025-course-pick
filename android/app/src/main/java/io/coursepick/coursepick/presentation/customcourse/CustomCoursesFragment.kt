@@ -37,7 +37,10 @@ class CustomCoursesFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setUpCollectors()
-        customCourseViewModel.fetchCustomCourse(coursesViewModel.mapCoordinate)
+
+        customCourseViewModel.fetchCustomCourse(coursesViewModel.mapCoordinate) { customCourse: CustomCourseItem ->
+            coursesViewModel.selectCourseFromCustomCourse(customCourse)
+        }
     }
 
     override fun onCreateView(
@@ -54,7 +57,10 @@ class CustomCoursesFragment : Fragment() {
                 CustomCourseScreen(
                     customCourses = customCourseState.value.customCourses,
                     onGoToCreateCustomCourse = customCourseViewModel::onGoToCreateCustomCourse,
-                    onSelect = customCourseViewModel::select,
+                    onSelect = { customCourse: CustomCourseItem ->
+                        customCourseViewModel.select(customCourse)
+                        coursesViewModel.selectCourseFromCustomCourse(customCourse)
+                    },
                 )
 
                 customCourseViewModel.authDialogState.collectAsStateWithLifecycle().value?.let { feature: AuthFeature ->

@@ -21,6 +21,7 @@ import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.domain.notice.NoticeRepository
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.auth.AuthFeature
+import io.coursepick.coursepick.presentation.customcourse.CustomCourseItem
 import io.coursepick.coursepick.presentation.filter.CourseFilter
 import io.coursepick.coursepick.presentation.filter.CourseFilterAction
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
@@ -619,6 +620,15 @@ class CoursesViewModel
                 dismissAuthDialog()
                 onReportCourse(feature.course)
             }
+        }
+
+        fun selectCourseFromCustomCourse(course: CustomCourseItem) {
+            val courseItem =
+                CourseItem(
+                    course = course.course,
+                    selected = course.selected,
+                )
+            _event.value = CoursesUiEvent.SelectCourseManually(courseItem)
         }
 
         private fun newCoursesListItem(

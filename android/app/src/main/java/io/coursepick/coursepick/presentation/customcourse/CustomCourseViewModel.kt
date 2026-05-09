@@ -60,7 +60,10 @@ class CustomCourseViewModel
             }
         }
 
-        fun fetchCustomCourse(userCoordinate: Coordinate?) {
+        fun fetchCustomCourse(
+            userCoordinate: Coordinate?,
+            onFirstItemLoaded: (CustomCourseItem) -> Unit,
+        ) {
             viewModelScope.launch {
                 runCatching {
                     customCourseRepository.customCourse(userCoordinate = userCoordinate)
@@ -74,6 +77,9 @@ class CustomCourseViewModel
                                 selected = index == 0,
                             )
                         }
+
+                    onFirstItemLoaded(customCourseItems.first())
+
                     _state.value =
                         state.value.copy(
                             customCourses = customCourseItems,
@@ -99,12 +105,12 @@ class CustomCourseViewModel
             }
         }
 
-        fun select(courseId: String) {
+        fun select(customCourse: CustomCourseItem) {
             _state.update { currentState ->
                 currentState.copy(
                     customCourses =
                         currentState.customCourses.map { item ->
-                            val shouldBeSelected = (item.id == courseId)
+                            val shouldBeSelected = (item.id == customCourse.id)
                             if (shouldBeSelected) item.select() else item.deselect()
                         },
                 )
