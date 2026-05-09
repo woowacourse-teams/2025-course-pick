@@ -87,7 +87,8 @@ public class CourseApplicationService {
             List<Coordinate> path = routeFinder.find(routePoints.get(i), routePoints.get(i + 1));
             draftRoute = draftRoute.merge(DraftSegment.of(path));
         }
-        return draftRoute;
+        List<Coordinate> coordinates = draftRoute.coordinates();
+        return DraftSegment.of(coordinates.subList(1, coordinates.size() - 1));
     }
 
     @Transactional(readOnly = true)
