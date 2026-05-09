@@ -37,6 +37,7 @@ class CustomCoursesFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setUpCollectors()
+        customCourseViewModel.fetchCustomCourse(coursesViewModel.mapCoordinate)
     }
 
     override fun onCreateView(
@@ -48,8 +49,10 @@ class CustomCoursesFragment : Fragment() {
         binding.customCourses.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
+                val customCourseState = customCourseViewModel.state.collectAsStateWithLifecycle()
+
                 CustomCourseScreen(
-                    customCourses = customCourseViewModel.customCourse,
+                    customCourses = customCourseState.value.customCourses,
                     onGoToCreateCustomCourse = customCourseViewModel::onGoToCreateCustomCourse,
                 )
 
@@ -76,7 +79,13 @@ class CustomCoursesFragment : Fragment() {
                 launch {
                     customCourseViewModel.uiEvent.collect { event: CustomCourseUiEvent ->
                         when (event) {
-                            CustomCourseUiEvent.NavigateToCreateCourse -> goToCreateCustomCourse()
+                            CustomCourseUiEvent.NavigateToCreateCourse -> {
+                                goToCreateCustomCourse()
+                            }
+
+                            CustomCourseUiEvent.FetchCustomCourseFailure -> {
+                                showToastMessage(R.string.custom_courses_load_failed)
+                            }
                         }
                     }
                 }
@@ -111,4 +120,12 @@ class CustomCoursesFragment : Fragment() {
             ),
         )
     }
+
+    private fun showToastMessage(resId: Int) =
+        Toast
+            .makeText(
+                requireActivity(),
+                getString(resId),
+                Toast.LENGTH_SHORT,
+            ).show()
 }
