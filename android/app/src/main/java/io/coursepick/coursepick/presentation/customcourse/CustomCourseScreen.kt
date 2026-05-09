@@ -40,6 +40,7 @@ import io.coursepick.coursepick.presentation.customcourse.component.Header
 fun CustomCourseScreen(
     customCourses: List<CustomCourseItem>,
     onGoToCreateCustomCourse: () -> Unit,
+    onSelect: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val nestedScrollInterop = rememberNestedScrollInteropConnection()
@@ -81,7 +82,7 @@ fun CustomCourseScreen(
                     ) { customCourse: CustomCourseItem ->
                         CustomCourseItemCard(
                             customCourse = customCourse,
-                            onSelect = { },
+                            onSelect = { onSelect(customCourse.id) },
                             onNavigateToCourse = { },
                             modifier = Modifier.animateItem(),
                         )
@@ -114,6 +115,7 @@ private fun CustomCourseScreen_EmptyPreview() {
     CustomCourseScreen(
         customCourses = emptyList(),
         onGoToCreateCustomCourse = { },
+        onSelect = { },
     )
 }
 
@@ -145,5 +147,6 @@ private fun CustomCourseScreen_WithCoursesPreview() {
     CustomCourseScreen(
         customCourses = customCourse,
         onGoToCreateCustomCourse = { },
+        onSelect = { },
     )
 }

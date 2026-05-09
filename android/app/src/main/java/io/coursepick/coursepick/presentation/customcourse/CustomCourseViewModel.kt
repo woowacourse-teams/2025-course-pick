@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -95,6 +96,18 @@ class CustomCourseViewModel
                         )
                     _uiEvent.emit(CustomCourseUiEvent.FetchCustomCourseFailure)
                 }
+            }
+        }
+
+        fun select(courseId: String) {
+            _state.update { currentState ->
+                currentState.copy(
+                    customCourses =
+                        currentState.customCourses.map { item ->
+                            val shouldBeSelected = (item.id == courseId)
+                            if (shouldBeSelected) item.select() else item.deselect()
+                        },
+                )
             }
         }
     }

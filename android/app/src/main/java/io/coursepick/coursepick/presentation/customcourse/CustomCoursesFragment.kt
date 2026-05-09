@@ -54,6 +54,7 @@ class CustomCoursesFragment : Fragment() {
                 CustomCourseScreen(
                     customCourses = customCourseState.value.customCourses,
                     onGoToCreateCustomCourse = customCourseViewModel::onGoToCreateCustomCourse,
+                    onSelect = customCourseViewModel::select,
                 )
 
                 customCourseViewModel.authDialogState.collectAsStateWithLifecycle().value?.let { feature: AuthFeature ->

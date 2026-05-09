@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -28,7 +29,6 @@ import io.coursepick.coursepick.domain.course.Distance
 import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Length
 import io.coursepick.coursepick.domain.course.Longitude
-import io.coursepick.coursepick.presentation.customcourse.CustomCourseItemCard
 import io.coursepick.coursepick.presentation.customcourse.component.CourseDistanceChip
 import io.coursepick.coursepick.presentation.customcourse.component.CourseLengthChip
 import io.coursepick.coursepick.presentation.customcourse.component.CourseNavigationButton
@@ -40,6 +40,16 @@ fun CustomCourseItemCard(
     onNavigateToCourse: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val backgroundColor: Color =
+        if (customCourse.selected) {
+            colorResource(R.color.background_tertiary)
+        } else {
+            colorResource(R.color.background_primary)
+        }
+
+    val horizontalDividerColor: Color =
+        if (customCourse.selected) backgroundColor else colorResource(R.color.background_border_light)
+
     Column(
         modifier = modifier.fillMaxWidth(),
     ) {
@@ -47,7 +57,7 @@ fun CustomCourseItemCard(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .background(colorResource(R.color.background_primary))
+                    .background(backgroundColor)
                     .clickable { onSelect() }
                     .padding(vertical = 10.dp, horizontal = 20.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -85,7 +95,7 @@ fun CustomCourseItemCard(
                 Modifier
                     .fillMaxWidth(),
             thickness = 1.dp,
-            color = colorResource(R.color.background_border_light),
+            color = horizontalDividerColor,
         )
     }
 }
