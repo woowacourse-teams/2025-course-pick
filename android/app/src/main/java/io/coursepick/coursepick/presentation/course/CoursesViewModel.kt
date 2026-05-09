@@ -425,7 +425,7 @@ class CoursesViewModel
                 if (routeFinder == null) {
                     _routeFinderDialogCourse.value = course
                 } else {
-                    fetchRouteToCourse(course, routeFinder)
+                    navigateToCourse(course, routeFinder)
                 }
             }
         }
@@ -436,42 +436,73 @@ class CoursesViewModel
             rememberSelection: Boolean,
         ) {
             dismissRouteFinderDialog()
+            navigateToCourse(course, routeFinder)
 
             if (rememberSelection) {
                 viewModelScope.launch {
                     userPreferenceRepository.setRouteFinder(routeFinder)
                 }
             }
-
-            fetchRouteToCourse(course, routeFinder)
         }
 
         fun dismissRouteFinderDialog() {
             _routeFinderDialogCourse.value = null
         }
 
-        private fun fetchRouteToCourse(
+        private fun navigateToCourse(
             course: CourseItem,
             routeFinder: RouteFinder,
         ) {
+            val oldCourses: List<CourseListItem> = state.value?.courses ?: return
+            val newCourseItems: List<CourseListItem> = newCoursesListItem(oldCourses, course)
+            _state.value = state.value?.copy(courses = newCourseItems, status = UiStatus.Loading)
+            val selectedCourse: CourseItem = course.copy(selected = true)
+
             viewModelScope.launch {
                 currentLocation()?.let { location: Location ->
                     when (routeFinder) {
                         RouteFinder.Local -> {
-                            val route = courseRepository.routeToCourse(course.course, location.coordinate)
-                            _event.value = CoursesUiEvent.FetchRouteToCourseSuccess(route, course)
+                            fetchRouteToCourse(selectedCourse, location.coordinate)
                         }
 
                         RouteFinder.KakaoMap -> {
-                            launchThirdPartyRouteFinder(course, location.coordinate, RouteFinderUiModel.ThirdParty.KakaoMap)
+                            launchThirdPartyRouteFinder(selectedCourse, location.coordinate, RouteFinderUiModel.ThirdParty.KakaoMap)
                         }
 
                         RouteFinder.NaverMap -> {
-                            launchThirdPartyRouteFinder(course, location.coordinate, RouteFinderUiModel.ThirdParty.NaverMap)
+                            launchThirdPartyRouteFinder(selectedCourse, location.coordinate, RouteFinderUiModel.ThirdParty.NaverMap)
                         }
                     }
                 } ?: run {
+                    _state.value = state.value?.copy(status = UiStatus.Failure)
                     _event.value = CoursesUiEvent.FetchCurrentLocationFailure
+                }
+            }
+        }
+
+        private fun fetchRouteToCourse(
+            course: CourseItem,
+            origin: Coordinate,
+        ) {
+            viewModelScope.launch {
+                runCatching {
+                    courseRepository.routeToCourse(course.course, origin)
+                }.onSuccess { route: List<Coordinate> ->
+                    Logger.log(Logger.Event.Success("fetch_route_to_course"))
+                    _state.value = state.value?.copy(status = UiStatus.Success)
+                    _event.value = CoursesUiEvent.FetchRouteToCourseSuccess(route, course)
+                }.onFailure { exception: Throwable ->
+                    Logger.log(
+                        Logger.Event.Failure("fetch_route_to_course"),
+                        "message" to exception.message.toString(),
+                    )
+                    _state.value = state.value?.copy(status = UiStatus.Failure)
+                    _event.value =
+                        if (exception is NoNetworkException) {
+                            CoursesUiEvent.NoNetworkConnection
+                        } else {
+                            CoursesUiEvent.FetchRouteToCourseFailure
+                        }
                 }
             }
         }
@@ -482,8 +513,23 @@ class CoursesViewModel
             routeFinder: RouteFinderUiModel.ThirdParty,
         ) {
             viewModelScope.launch {
-                val destination: Coordinate = courseRepository.nearestCoordinate(course.course, origin)
-                _event.value = CoursesUiEvent.LaunchThirdPartyRouteFinder(course, origin, destination, routeFinder)
+                runCatching {
+                    courseRepository.nearestCoordinate(course.course, origin)
+                }.onSuccess { destination: Coordinate ->
+                    Logger.log(Logger.Event.Success("fetch_nearest_coordinate"))
+                    _event.value = CoursesUiEvent.LaunchThirdPartyRouteFinder(course, origin, destination, routeFinder)
+                }.onFailure { exception: Throwable ->
+                    Logger.log(
+                        Logger.Event.Failure("fetch_nearest_coordinate"),
+                        "message" to exception.message.toString(),
+                    )
+                    _event.value =
+                        if (exception is NoNetworkException) {
+                            CoursesUiEvent.NoNetworkConnection
+                        } else {
+                            CoursesUiEvent.FetchRouteToCourseFailure
+                        }
+                }
             }
         }
 
