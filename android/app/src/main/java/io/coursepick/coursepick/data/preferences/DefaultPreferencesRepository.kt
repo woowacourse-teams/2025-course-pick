@@ -1,14 +1,14 @@
-package io.coursepick.coursepick.data.preference
+package io.coursepick.coursepick.data.preferences
 
-import io.coursepick.coursepick.domain.preference.UserPreferenceRepository
+import io.coursepick.coursepick.domain.preferences.PreferencesRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class DefaultUserPreferenceRepository
+class DefaultPreferencesRepository
     @Inject
     constructor(
-        private val dataStore: UserPreferenceDataStore,
-    ) : UserPreferenceRepository {
+        private val dataStore: PreferencesDataStore,
+    ) : PreferencesRepository {
         override val routeFinder: Flow<RouteFinder?> = dataStore.routeFinder
 
         override suspend fun setRouteFinder(routeFinder: RouteFinder?) {

@@ -48,7 +48,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.CoursePick" />
         <activity
-            android:name=".presentation.setting.UserPreferenceActivity"
+            android:name=".presentation.preferences.PreferencesActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity

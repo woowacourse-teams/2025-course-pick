@@ -1,19 +1,19 @@
-package io.coursepick.coursepick.data.preference
+package io.coursepick.coursepick.data.preferences
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import io.coursepick.coursepick.di.UserPreference
+import io.coursepick.coursepick.di.PreferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class UserPreferenceDataStore
+class PreferencesDataStore
     @Inject
     constructor(
-        @UserPreference private val dataStore: DataStore<Preferences>,
+        @PreferencesDataStore private val dataStore: DataStore<Preferences>,
     ) {
         val routeFinder: Flow<RouteFinder?> =
             dataStore.data.map { preferences: Preferences ->

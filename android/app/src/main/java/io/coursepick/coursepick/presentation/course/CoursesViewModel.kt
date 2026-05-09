@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.coursepick.coursepick.data.NetworkMonitor
 import io.coursepick.coursepick.data.interceptor.NoNetworkException
-import io.coursepick.coursepick.data.preference.RouteFinder
+import io.coursepick.coursepick.data.preferences.RouteFinder
 import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
@@ -20,12 +20,12 @@ import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.domain.location.LocationRepository
 import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.domain.notice.NoticeRepository
-import io.coursepick.coursepick.domain.preference.UserPreferenceRepository
+import io.coursepick.coursepick.domain.preferences.PreferencesRepository
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.auth.AuthFeature
 import io.coursepick.coursepick.presentation.filter.CourseFilter
 import io.coursepick.coursepick.presentation.filter.CourseFilterAction
-import io.coursepick.coursepick.presentation.setting.CoursePickPreferences
+import io.coursepick.coursepick.presentation.preferences.CoursePickPreferences
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
 import kotlinx.coroutines.CancellationException
@@ -51,7 +51,7 @@ class CoursesViewModel
         private val favoritesRepository: FavoritesRepository,
         private val noticeRepository: NoticeRepository,
         private val locationRepository: LocationRepository,
-        private val userPreferenceRepository: UserPreferenceRepository,
+        private val preferencesRepository: PreferencesRepository,
         private val authRepository: AuthRepository,
         private val networkMonitor: NetworkMonitor,
     ) : ViewModel() {
@@ -421,7 +421,7 @@ class CoursesViewModel
             }
 
             viewModelScope.launch {
-                val routeFinder: RouteFinder? = userPreferenceRepository.routeFinder.first()
+                val routeFinder: RouteFinder? = preferencesRepository.routeFinder.first()
                 if (routeFinder == null) {
                     _routeFinderDialogCourse.value = course
                 } else {
@@ -430,17 +430,17 @@ class CoursesViewModel
             }
         }
 
-        fun onRouteFinderSelected(
+        fun onSelectRouteFinder(
             course: CourseItem,
             routeFinder: RouteFinder,
-            rememberSelection: Boolean,
+            rememberChoice: Boolean,
         ) {
             dismissRouteFinderDialog()
             navigateToCourse(course, routeFinder)
 
-            if (rememberSelection) {
+            if (rememberChoice) {
                 viewModelScope.launch {
-                    userPreferenceRepository.setRouteFinder(routeFinder)
+                    preferencesRepository.setRouteFinder(routeFinder)
                 }
             }
         }
@@ -616,12 +616,12 @@ class CoursesViewModel
                 )
         }
 
-        fun showSettings() {
-            _state.value = state.value?.copy(showSettings = true)
+        fun showPreferences() {
+            _state.value = state.value?.copy(showPreferences = true)
         }
 
         fun showCourses() {
-            _state.value = state.value?.copy(showSettings = false)
+            _state.value = state.value?.copy(showPreferences = false)
         }
 
         suspend fun currentLocation(): Location? = locationRepository.currentLocation()

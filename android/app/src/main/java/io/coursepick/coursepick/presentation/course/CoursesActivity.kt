@@ -43,7 +43,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import io.coursepick.coursepick.BuildConfig
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.data.preference.RouteFinder
+import io.coursepick.coursepick.data.preferences.RouteFinder
 import io.coursepick.coursepick.databinding.ActivityCoursesBinding
 import io.coursepick.coursepick.di.KakaoMap
 import io.coursepick.coursepick.domain.course.Coordinate
@@ -69,11 +69,11 @@ import io.coursepick.coursepick.presentation.map.CameraMoveReason
 import io.coursepick.coursepick.presentation.map.MapManager
 import io.coursepick.coursepick.presentation.map.MapManagerFactory
 import io.coursepick.coursepick.presentation.notice.NoticeDialog
-import io.coursepick.coursepick.presentation.setting.CoursePickPreferences
-import io.coursepick.coursepick.presentation.setting.UserPreferenceActivity
+import io.coursepick.coursepick.presentation.preferences.CoursePickPreferences
+import io.coursepick.coursepick.presentation.preferences.PreferencesActivity
+import io.coursepick.coursepick.presentation.preferences.PreferencesScreen
 import io.coursepick.coursepick.presentation.search.SearchActivity
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
-import io.coursepick.coursepick.presentation.setting.SettingsScreen
 import io.coursepick.coursepick.presentation.ui.DoublePressDetector
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -146,7 +146,7 @@ class CoursesActivity :
             insets
         }
         setUpBottomSheet()
-        setUpSettings()
+        setUpPreferences()
 
         mapManager.startMap {
             setUpObservers()
@@ -355,8 +355,8 @@ class CoursesActivity :
                     true
                 }
 
-                R.id.settingsMenu -> {
-                    viewModel.showSettings()
+                R.id.preferencesMenu -> {
+                    viewModel.showPreferences()
                     true
                 }
 
@@ -367,9 +367,9 @@ class CoursesActivity :
         }
     }
 
-    private fun navigateToPreferences() {
-        Logger.log(Logger.Event.Click("navigate_to_preferences"))
-        startActivity(UserPreferenceActivity.intent(this))
+    private fun navigateToPreferencesDetail() {
+        Logger.log(Logger.Event.Click("navigate_to_preferences_detail"))
+        startActivity(PreferencesActivity.intent(this))
     }
 
     override fun moveToCurrentLocation() {
@@ -464,7 +464,7 @@ class CoursesActivity :
             Intent(
                 Intent.ACTION_VIEW,
                 getString(
-                    R.string.settings_feedback_url,
+                    R.string.preferences_feedback_url,
                     """
                     사용자 ID: ${coursePickApplication.installationId.value}%0A
                     앱 버전: ${BuildConfig.VERSION_NAME}%0A
@@ -480,7 +480,7 @@ class CoursesActivity :
     private fun navigateToPrivacyPolicy() {
         Logger.log(Logger.Event.Click("navigate_to_privacy_policy"))
         val intent =
-            Intent(Intent.ACTION_VIEW, getString(R.string.settings_privacy_policy_url).toUri())
+            Intent(Intent.ACTION_VIEW, getString(R.string.preferences_privacy_policy_url).toUri())
 
         startActivity(intent)
     }
@@ -571,17 +571,17 @@ class CoursesActivity :
         )
     }
 
-    private fun setUpSettings() {
-        binding.mainSettings.apply {
+    private fun setUpPreferences() {
+        binding.mainPreferences.apply {
             setContent {
                 CoursePickTheme {
-                    SettingsScreen(
-                        onNavigateToPreferences = { navigateToPreferences() },
-                        onNavigateToFeedback = { navigateToFeedback() },
-                        onNavigateToPrivacyPolicy = { navigateToPrivacyPolicy() },
-                        onNavigateToOpenSourceNotice = { navigateToOpenSourceNotice() },
+                    PreferencesScreen(
+                        onNavigateToDetail = ::navigateToPreferencesDetail,
+                        onNavigateToFeedback = ::navigateToFeedback,
+                        onNavigateToPrivacyPolicy = ::navigateToPrivacyPolicy,
+                        onNavigateToOpenSourceNotice = ::navigateToOpenSourceNotice,
                         installationId = coursePickApplication.installationId.value,
-                        onCopyInstallationId = { copyClientId() },
+                        onCopyInstallationId = ::copyClientId,
                     )
                 }
             }
@@ -741,7 +741,7 @@ class CoursesActivity :
                 CoursesUiEvent.FetchCurrentLocationFailure -> {
                     Toast
                         .makeText(
-                            this@CoursesActivity,
+                            this,
                             getString(R.string.courses_failed_to_get_current_location_message),
                             Toast.LENGTH_SHORT,
                         ).show()
@@ -894,8 +894,8 @@ class CoursesActivity :
 
                     viewModel.routeFinderDialogCourse.collectAsStateWithLifecycle().value?.let { course: CourseItem ->
                         RouteFinderDialog(
-                            onConfirm = { routeFinder: RouteFinder, rememberSelection: Boolean ->
-                                viewModel.onRouteFinderSelected(course, routeFinder, rememberSelection)
+                            onConfirm = { routeFinder: RouteFinder, rememberChoice: Boolean ->
+                                viewModel.onSelectRouteFinder(course, routeFinder, rememberChoice)
                             },
                             onDismiss = viewModel::dismissRouteFinderDialog,
                         )

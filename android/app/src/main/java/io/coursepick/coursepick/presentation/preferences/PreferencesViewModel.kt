@@ -1,10 +1,10 @@
-package io.coursepick.coursepick.presentation.setting
+package io.coursepick.coursepick.presentation.preferences
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.coursepick.coursepick.data.preference.RouteFinder
-import io.coursepick.coursepick.domain.preference.UserPreferenceRepository
+import io.coursepick.coursepick.data.preferences.RouteFinder
+import io.coursepick.coursepick.domain.preferences.PreferencesRepository
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,10 +12,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class UserPreferenceViewModel
+class PreferencesViewModel
     @Inject
     constructor(
-        private val userPreferenceRepository: UserPreferenceRepository,
+        private val preferencesRepository: PreferencesRepository,
     ) : ViewModel() {
         private val _showRouteFinderPreferenceDialog = MutableStateFlow(false)
         val showRouteFinderPreferenceDialog: StateFlow<Boolean> get() = _showRouteFinderPreferenceDialog.asStateFlow()
@@ -27,7 +27,7 @@ class UserPreferenceViewModel
         fun onSubmitRouteFinderPreference(routeFinder: RouteFinder?) {
             onDismissRouteFinderPreference()
             viewModelScope.launch {
-                userPreferenceRepository.setRouteFinder(routeFinder)
+                preferencesRepository.setRouteFinder(routeFinder)
             }
         }
 

@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.setting
+package io.coursepick.coursepick.presentation.preferences
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.sp
 import io.coursepick.coursepick.R
 
 @Composable
-fun SettingsScreen(
-    onNavigateToPreferences: () -> Unit,
+fun PreferencesScreen(
+    onNavigateToDetail: () -> Unit,
     onNavigateToFeedback: () -> Unit,
     onNavigateToPrivacyPolicy: () -> Unit,
     onNavigateToOpenSourceNotice: () -> Unit,
@@ -51,7 +51,7 @@ fun SettingsScreen(
                 color = colorResource(R.color.item_primary),
                 modifier =
                     Modifier
-                        .clickable { onNavigateToPreferences() }
+                        .clickable { onNavigateToDetail() }
                         .fillMaxWidth()
                         .height(50.dp)
                         .wrapContentHeight(Alignment.CenterVertically)
@@ -114,8 +114,8 @@ fun SettingsScreen(
 @PreviewLightDark
 @Composable
 fun Preview() {
-    SettingsScreen(
-        onNavigateToPreferences = {},
+    PreferencesScreen(
+        onNavigateToDetail = {},
         onNavigateToFeedback = {},
         onNavigateToPrivacyPolicy = {},
         onNavigateToOpenSourceNotice = {},

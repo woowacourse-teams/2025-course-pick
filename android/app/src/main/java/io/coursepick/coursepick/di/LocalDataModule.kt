@@ -14,14 +14,14 @@ import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Qualifier
-annotation class Auth
+annotation class AuthDataStore
 
 @Qualifier
-annotation class UserPreference
+annotation class PreferencesDataStore
 
 private val Context.authDataStore: DataStore<Preferences> by preferencesDataStore(name = "auth")
 
-private val Context.userPreferenceDataStore: DataStore<Preferences> by preferencesDataStore(name = "user_preference")
+private val Context.preferencesDataStore: DataStore<Preferences> by preferencesDataStore(name = "preferences")
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -33,15 +33,15 @@ object LocalDataModule {
 
     @Provides
     @Singleton
-    @Auth
+    @AuthDataStore
     fun provideAuthDataStore(
         @ApplicationContext context: Context,
     ): DataStore<Preferences> = context.authDataStore
 
     @Provides
     @Singleton
-    @UserPreference
-    fun provideUserPreferenceDataStore(
+    @PreferencesDataStore
+    fun providePreferencesDataStore(
         @ApplicationContext context: Context,
-    ): DataStore<Preferences> = context.userPreferenceDataStore
+    ): DataStore<Preferences> = context.preferencesDataStore
 }

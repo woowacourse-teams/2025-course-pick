@@ -8,7 +8,7 @@ import com.kakao.vectormap.KakaoMapSdk
 import dagger.hilt.android.HiltAndroidApp
 import io.coursepick.coursepick.BuildConfig
 import io.coursepick.coursepick.domain.auth.AuthRepository
-import io.coursepick.coursepick.presentation.setting.CoursePickPreferences
+import io.coursepick.coursepick.presentation.preferences.CoursePickPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.data.preference
+package io.coursepick.coursepick.data.preferences
 
 sealed interface RouteFinder {
     data object Local : RouteFinder

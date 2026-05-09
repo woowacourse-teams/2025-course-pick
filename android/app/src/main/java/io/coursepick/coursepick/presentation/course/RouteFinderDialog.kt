@@ -26,11 +26,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.data.preference.RouteFinder
+import io.coursepick.coursepick.data.preferences.RouteFinder
 
 @Composable
 fun RouteFinderDialog(
-    onConfirm: (routeFinder: RouteFinder, rememberSelection: Boolean) -> Unit,
+    onConfirm: (routeFinder: RouteFinder, rememberChoice: Boolean) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -43,7 +43,7 @@ fun RouteFinderDialog(
                     .background(color = colorResource(R.color.background_primary))
                     .padding(16.dp),
         ) {
-            var rememberSelection by remember { mutableStateOf(false) }
+            var rememberChoice by remember { mutableStateOf(false) }
 
             Text(
                 text = stringResource(R.string.selected_route_finder_application_dialog_title),
@@ -57,15 +57,15 @@ fun RouteFinderDialog(
                 items(RouteFinderUiModel.Entries) { routeFinder: RouteFinderUiModel ->
                     Text(
                         text = stringResource(routeFinder.nameId),
-                        modifier = Modifier.clickable { onConfirm(routeFinder.routeFinder, rememberSelection) },
+                        modifier = Modifier.clickable { onConfirm(routeFinder.routeFinder, rememberChoice) },
                     )
                 }
             }
 
             Row {
                 Checkbox(
-                    checked = rememberSelection,
-                    onCheckedChange = { checked -> rememberSelection = checked },
+                    checked = rememberChoice,
+                    onCheckedChange = { checked -> rememberChoice = checked },
                 )
 
                 Text(text = stringResource(R.string.selected_route_finder_application_dialog_set_default))
