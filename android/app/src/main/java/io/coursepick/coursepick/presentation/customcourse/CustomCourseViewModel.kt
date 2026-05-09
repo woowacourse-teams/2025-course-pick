@@ -4,6 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.coursepick.coursepick.domain.auth.AuthRepository
+import io.coursepick.coursepick.domain.course.Coordinate
+import io.coursepick.coursepick.domain.course.Course
+import io.coursepick.coursepick.domain.course.CourseName
+import io.coursepick.coursepick.domain.course.Distance
+import io.coursepick.coursepick.domain.course.Latitude
+import io.coursepick.coursepick.domain.course.Length
+import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.presentation.auth.AuthFeature
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,6 +32,24 @@ class CustomCourseViewModel
 
         private val _authDialogState = MutableStateFlow<AuthFeature?>(null)
         val authDialogState: StateFlow<AuthFeature?> get() = _authDialogState.asStateFlow()
+
+        val customCourse: List<Course> =
+            List(10) { index: Int ->
+                Course(
+                    id = index.toString(),
+                    name = CourseName("건대입구-잠실대교-종합운동장 ${index + 1}"),
+                    distance = Distance(10),
+                    length = Length(100),
+                    coordinates =
+                        listOf(
+                            Coordinate(Latitude(1.0), Longitude(1.0)),
+                            Coordinate(
+                                Latitude(1.0 + 0.0001),
+                                Longitude(1.0 + 0.0001),
+                            ),
+                        ),
+                )
+            }
 
         fun onGoToCreateCustomCourse() {
             viewModelScope.launch {

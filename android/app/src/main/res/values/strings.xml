@@ -44,6 +44,7 @@
 
     <!--  코스 화면: 나의 코스 메뉴  -->
     <string name="custom_courses_header">나의 코스</string>
+    <string name="empty_custom_courses_description">등록한 코스가 없어요</string>
 
     <!--  코스 화면: 현 위치로 이동 권한  -->
     <string name="current_location_location_permission_rationale_message">현 위치 표시를 위해 위치 권한을 허용해주세요.</string>
