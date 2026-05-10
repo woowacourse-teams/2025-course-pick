@@ -1,9 +1,6 @@
 package coursepick.coursepick.application;
 
-import coursepick.coursepick.domain.course.Coordinate;
-import coursepick.coursepick.domain.course.CourseRepository;
-import coursepick.coursepick.domain.course.DraftSegment;
-import coursepick.coursepick.domain.course.RouteFinder;
+import coursepick.coursepick.domain.course.*;
 import coursepick.coursepick.domain.user.UserRepository;
 import org.junit.jupiter.api.Test;
 
