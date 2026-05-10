@@ -49,7 +49,7 @@ fun RouteFinderDialog(
                     .padding(16.dp),
         ) {
             Text(
-                text = stringResource(R.string.selected_route_finder_application_dialog_title),
+                text = stringResource(R.string.route_finder_dialog_title),
                 color = colorResource(R.color.item_primary),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
@@ -58,7 +58,7 @@ fun RouteFinderDialog(
             Spacer(Modifier.height(16.dp))
 
             Text(
-                text = stringResource(R.string.selected_route_finder_application_dialog_description),
+                text = stringResource(R.string.route_finder_dialog_description),
                 color = colorResource(R.color.item_primary),
                 fontSize = 16.sp,
                 textAlign = TextAlign.Center,
@@ -133,7 +133,7 @@ private fun RememberChoiceCheckbox(
         )
 
         Text(
-            text = stringResource(R.string.selected_route_finder_application_dialog_set_default),
+            text = stringResource(R.string.route_finder_dialog_set_default),
             color = colorResource(R.color.item_primary),
             fontSize = 16.sp,
             modifier =

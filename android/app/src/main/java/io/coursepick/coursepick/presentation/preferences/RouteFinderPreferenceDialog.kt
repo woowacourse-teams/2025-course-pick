@@ -52,7 +52,7 @@ fun RouteFinderPreferenceDialog(
                     .padding(16.dp),
         ) {
             Text(
-                text = stringResource(R.string.selected_route_finder_application_preference_title),
+                text = stringResource(R.string.route_finder_preferences_dialog_title),
                 color = colorResource(R.color.item_primary),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
@@ -61,7 +61,7 @@ fun RouteFinderPreferenceDialog(
             Spacer(Modifier.height(16.dp))
 
             Text(
-                text = stringResource(R.string.selected_route_finder_application_summary),
+                text = stringResource(R.string.route_finder_preferences_dialog_summary),
                 color = colorResource(R.color.item_primary),
                 fontSize = 16.sp,
                 textAlign = TextAlign.Center,
@@ -126,7 +126,7 @@ private fun RouteFinderPreferenceOptions(
                 )
 
                 Text(
-                    text = stringResource(routeFinder?.nameId ?: R.string.selected_route_finder_application_entry_none),
+                    text = stringResource(routeFinder?.nameId ?: R.string.route_finder_preferences_dialog_entry_none),
                     color = colorResource(R.color.item_primary),
                     fontSize = 16.sp,
                 )
@@ -165,7 +165,7 @@ private fun RouteFinderPreferenceDialogButtons(
                     .padding(horizontal = 20.dp, vertical = 10.dp),
         ) {
             Text(
-                text = stringResource(R.string.selected_route_finder_application_cancel_button),
+                text = stringResource(R.string.route_finder_preferences_dialog_cancel_button),
                 fontSize = 16.sp,
                 color = colorResource(R.color.item_tertiary),
             )
@@ -182,7 +182,7 @@ private fun RouteFinderPreferenceDialogButtons(
                     .padding(horizontal = 20.dp, vertical = 10.dp),
         ) {
             Text(
-                text = stringResource(R.string.selected_route_finder_application_confirm_button),
+                text = stringResource(R.string.route_finder_preferences_dialog_confirm_button),
                 color = colorResource(R.color.item_primary),
                 fontSize = 16.sp,
             )

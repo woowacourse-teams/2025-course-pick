@@ -32,14 +32,14 @@ fun PreferencesDetailScreen(
                 .padding(horizontal = 20.dp, vertical = 10.dp),
         ) {
             Text(
-                text = stringResource(R.string.selected_route_finder_application_preference_title),
+                text = stringResource(R.string.route_finder_preferences_dialog_title),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
             )
 
             Spacer(Modifier.height(10.dp))
 
-            Text(text = stringResource(R.string.selected_route_finder_application_summary), fontSize = 16.sp)
+            Text(text = stringResource(R.string.route_finder_preferences_dialog_summary), fontSize = 16.sp)
         }
     }
 }

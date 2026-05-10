@@ -17,7 +17,7 @@ sealed interface RouteFinderUiModel {
 
     data object InApp : RouteFinderUiModel {
         override val routeFinder: RouteFinder = RouteFinder.Local
-        override val nameId: Int = R.string.selected_route_finder_application_entry_in_app
+        override val nameId: Int = R.string.route_finder_application_entry_in_app
     }
 
     sealed interface ThirdParty : RouteFinderUiModel {
@@ -30,7 +30,7 @@ sealed interface RouteFinderUiModel {
 
         data object KakaoMap : ThirdParty {
             override val routeFinder: RouteFinder = RouteFinder.KakaoMap
-            override val nameId: Int = R.string.selected_route_finder_application_entry_kakao_map
+            override val nameId: Int = R.string.route_finder_application_entry_kakao_map
 
             override fun intent(
                 origin: Coordinate,
@@ -50,7 +50,7 @@ sealed interface RouteFinderUiModel {
 
         data object NaverMap : ThirdParty {
             override val routeFinder: RouteFinder = RouteFinder.NaverMap
-            override val nameId: Int = R.string.selected_route_finder_application_entry_naver_map
+            override val nameId: Int = R.string.route_finder_application_entry_naver_map
 
             private const val EARTH_RADIUS_METERS = 6_378_137
 
