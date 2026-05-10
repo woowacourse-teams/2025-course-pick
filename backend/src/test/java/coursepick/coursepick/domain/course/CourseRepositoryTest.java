@@ -1,6 +1,6 @@
 package coursepick.coursepick.domain.course;
 
-import coursepick.coursepick.infrastructure.discord.DiscordCourseReportAlerter;
+import coursepick.coursepick.infrastructure.discord.DiscordReportAlerter;
 import coursepick.coursepick.test_util.AbstractIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -24,7 +24,7 @@ class CourseRepositoryTest extends AbstractIntegrationTest {
     CourseRepository sut;
 
     @MockitoBean
-    DiscordCourseReportAlerter discordCourseReportAlerter;
+    DiscordReportAlerter discordCourseReportAlerter;
 
     @BeforeEach
     void setUp() {

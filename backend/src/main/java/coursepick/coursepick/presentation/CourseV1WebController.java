@@ -12,7 +12,6 @@ import coursepick.coursepick.security.Login;
 import coursepick.coursepick.security.UserId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -91,6 +90,17 @@ public class CourseV1WebController implements CourseWebApi {
 
     @Override
     @Login
+    @PostMapping("/courses/{courseId}/reviews/{reviewId}/report")
+    public void reportCourseReview(
+            @PathVariable("courseId") String courseId,
+            @PathVariable("reviewId") String reviewId,
+            @UserId String userId
+    ) {
+        courseApplicationService.reportReview(courseId, reviewId, userId);
+    }
+
+    @Override
+    @Login
     @PostMapping("/courses")
     public String addCustomCourses(@Valid @RequestBody CourseCreateWebRequest request, @UserId String userId) {
         courseApplicationService.addCustomCourse(request.name(), request.toCoordinates(), userId);
@@ -108,7 +118,7 @@ public class CourseV1WebController implements CourseWebApi {
     @Login
     @PostMapping("/courses/{id}/report")
     public void reportCourse(@PathVariable("id") String id, @UserId String userId) {
-        courseApplicationService.report(id, userId);
+        courseApplicationService.reportCourse(id, userId);
     }
 
     @Override
