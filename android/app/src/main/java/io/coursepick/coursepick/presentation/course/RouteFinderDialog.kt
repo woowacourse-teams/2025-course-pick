@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
@@ -71,7 +69,7 @@ fun RouteFinderDialog(
             var rememberChoice by remember { mutableStateOf(false) }
 
             RouteFinderOptions(
-                onSelectOption = { option: RouteFinderUiModel -> onConfirm(option.routeFinder, rememberChoice) },
+                onSelectOption = { option: RouteFinderApplication -> onConfirm(option.routeFinder, rememberChoice) },
                 modifier = Modifier.fillMaxWidth(),
             )
 
@@ -86,7 +84,7 @@ fun RouteFinderDialog(
 
 @Composable
 private fun RouteFinderOptions(
-    onSelectOption: (RouteFinderUiModel) -> Unit,
+    onSelectOption: (RouteFinderApplication) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -94,7 +92,7 @@ private fun RouteFinderOptions(
             .clip(RoundedCornerShape(16.dp))
             .background(colorResource(R.color.background_secondary)),
     ) {
-        RouteFinderUiModel.Entries.forEachIndexed { index: Int, routeFinder: RouteFinderUiModel ->
+        RouteFinderApplication.Entries.forEachIndexed { index: Int, routeFinder: RouteFinderApplication ->
             Text(
                 text = stringResource(routeFinder.nameId),
                 color = colorResource(R.color.item_primary),
@@ -107,7 +105,7 @@ private fun RouteFinderOptions(
                         .padding(horizontal = 24.dp, vertical = 12.dp),
             )
 
-            if (index != RouteFinderUiModel.Entries.lastIndex) {
+            if (index != RouteFinderApplication.Entries.lastIndex) {
                 HorizontalDivider(
                     thickness = 1.dp,
                     color = colorResource(R.color.background_border),

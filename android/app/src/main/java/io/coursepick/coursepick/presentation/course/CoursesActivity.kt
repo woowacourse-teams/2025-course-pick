@@ -781,17 +781,17 @@ class CoursesActivity :
                 CoursesUiEvent.FetchCurrentLocationFailure -> {
                     Toast
                         .makeText(
-                            this@CoursesActivity,
+                            this,
                             getString(R.string.courses_failed_to_get_current_location_message),
                             Toast.LENGTH_SHORT,
                         ).show()
                 }
 
                 is CoursesUiEvent.LaunchThirdPartyRouteFinder -> {
-                    val routeFinder: RouteFinderUiModel.ThirdParty =
+                    val routeFinder: RouteFinderApplication.ThirdParty =
                         when (event.routeFinder) {
-                            RouteFinder.ThirdParty.KakaoMap -> RouteFinderUiModel.ThirdParty.KakaoMap
-                            RouteFinder.ThirdParty.NaverMap -> RouteFinderUiModel.ThirdParty.NaverMap
+                            RouteFinder.ThirdParty.KakaoMap -> RouteFinderApplication.ThirdParty.KakaoMap
+                            RouteFinder.ThirdParty.NaverMap -> RouteFinderApplication.ThirdParty.NaverMap
                         }
                     val intent: Intent =
                         routeFinder.intent(

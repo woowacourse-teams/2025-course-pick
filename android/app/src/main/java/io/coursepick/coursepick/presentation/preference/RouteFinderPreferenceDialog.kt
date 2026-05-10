@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.data.preference.RouteFinder
-import io.coursepick.coursepick.presentation.course.RouteFinderUiModel
+import io.coursepick.coursepick.presentation.course.RouteFinderApplication
 
 @Composable
 fun RouteFinderPreferenceDialog(
