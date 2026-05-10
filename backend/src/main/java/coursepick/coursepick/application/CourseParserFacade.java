@@ -4,6 +4,7 @@ import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.course.Course;
 import coursepick.coursepick.domain.course.CourseParser;
+import coursepick.coursepick.domain.user.UserProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -27,7 +28,7 @@ public class CourseParserFacade {
         CourseParser parser = findParser(file);
         log.debug("코스 파싱을 시작합니다. 선택된 구현체={}", parser.getClass().getSimpleName());
 
-        User adminUser = userRepository.findByProviderAndProviderId(null, "admin")
+        User adminUser = userRepository.findByProviderAndProviderId(UserProvider.NONE, "admin")
                 .orElseThrow(() -> ErrorType.NOT_EXIST_USER.create("admin"));
 
         List<Course> result = parser.parse(file, adminUser);
