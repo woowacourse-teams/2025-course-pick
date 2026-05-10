@@ -50,6 +50,8 @@ public class Course {
 
     private LocalDateTime createdAt;
 
+    private List<CourseTag> tags;
+
     public Course(String id, CourseName courseName, List<Coordinate> rawCoordinates, User user) {
         this.id = id;
         this.name = courseName;
@@ -60,6 +62,7 @@ public class Course {
         this.creatorId = user.id();
         this.reportUserIds = new HashSet<>();
         this.createdAt = LocalDateTime.now();
+        this.tags = new ArrayList<>();
     }
 
     private List<Coordinate> refineCoordinates(List<Coordinate> rawCoordinates) {
@@ -129,5 +132,11 @@ public class Course {
 
     public boolean isReportThreshold() {
         return reportUserIds.size() >= REPORT_ALERT_THRESHOLD;
+    }
+
+    public void updateTags(List<CourseTag> tags) {
+        List<CourseTag> deduplicated = tags.stream().distinct().toList();
+        int limit = Math.min(deduplicated.size(), CourseTag.MAX_TAGS_PER_COURSE);
+        this.tags = new ArrayList<>(deduplicated.subList(0, limit));
     }
 }

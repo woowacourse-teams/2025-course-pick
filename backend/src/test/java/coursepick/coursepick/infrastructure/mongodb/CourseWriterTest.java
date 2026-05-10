@@ -41,7 +41,8 @@ class CourseWriterTest {
                 List.of(new Review(new User(null, "providerId", "reviewer"), "hi")),
                 "creatorId123",
                 Set.of("reportMan1"),
-                now
+                now,
+                null
         );
     }
 
@@ -79,6 +80,7 @@ class CourseWriterTest {
                 List.of(new Review(new User(null, "providerId", "reviewer"), "hi")),
                 "creatorId123",
                 Set.of("reportMan1"),
+                null,
                 null
         );
 

@@ -126,4 +126,41 @@ class CourseTest {
         assertThatThrownBy(() -> course.addReport(user1))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void 신규_코스의_태그는_빈_리스트다() {
+        var course = new Course(null, new CourseName("코스"), of(new Coordinate(0, 0), new Coordinate(2, 2)), ADMIN_USER);
+
+        assertThat(course.tags()).isEmpty();
+    }
+
+    @Test
+    void 태그를_갱신할_수_있다() {
+        var course = new Course(null, new CourseName("코스"), of(new Coordinate(0, 0), new Coordinate(2, 2)), ADMIN_USER);
+
+        course.updateTags(List.of(CourseTag.NIGHT_VIEW, CourseTag.FLAT));
+
+        assertThat(course.tags()).containsExactly(CourseTag.NIGHT_VIEW, CourseTag.FLAT);
+    }
+
+    @Test
+    void 태그_갱신시_5개를_초과하면_5개로_제한된다() {
+        var course = new Course(null, new CourseName("코스"), of(new Coordinate(0, 0), new Coordinate(2, 2)), ADMIN_USER);
+
+        course.updateTags(List.of(
+                CourseTag.NIGHT_VIEW, CourseTag.FLAT, CourseTag.RIVERSIDE,
+                CourseTag.PARK, CourseTag.QUIET, CourseTag.SCENIC, CourseTag.SHADY
+        ));
+
+        assertThat(course.tags()).hasSize(CourseTag.MAX_TAGS_PER_COURSE);
+    }
+
+    @Test
+    void 태그_갱신시_중복은_제거된다() {
+        var course = new Course(null, new CourseName("코스"), of(new Coordinate(0, 0), new Coordinate(2, 2)), ADMIN_USER);
+
+        course.updateTags(List.of(CourseTag.NIGHT_VIEW, CourseTag.NIGHT_VIEW, CourseTag.FLAT));
+
+        assertThat(course.tags()).containsExactly(CourseTag.NIGHT_VIEW, CourseTag.FLAT);
+    }
 }
