@@ -108,7 +108,7 @@ public interface CourseWebApi {
             @Parameter(description = "코스 ID", example = "689c3143182cecc6353cca7b", required = true) String id
     );
 
-    @Operation(summary = "코스 리뷰 작성")
+    @Operation(summary = "코스 리뷰 작성", security = {@SecurityRequirement(name = "BearerAuth")})
     @ApiResponses({
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400", content = @Content(examples = {
