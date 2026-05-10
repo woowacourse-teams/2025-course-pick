@@ -9,29 +9,24 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import kotlin.math.ln
 import kotlin.math.tan
 
-sealed interface RouteFinderUiModel {
-    val routeFinder: RouteFinder
+sealed class RouteFinderApplication(
+    val routeFinder: RouteFinder,
+    @get:StringRes val nameId: Int,
+) {
+    data object InApp : RouteFinderApplication(RouteFinder.Local, R.string.route_finder_application_entry_in_app)
 
-    @get:StringRes
-    val nameId: Int
-
-    data object InApp : RouteFinderUiModel {
-        override val routeFinder: RouteFinder = RouteFinder.Local
-        override val nameId: Int = R.string.route_finder_application_entry_in_app
-    }
-
-    sealed interface ThirdParty : RouteFinderUiModel {
-        fun intent(
+    sealed class ThirdParty(
+        routeFinder: RouteFinder.ThirdParty,
+        nameId: Int,
+    ) : RouteFinderApplication(routeFinder, nameId) {
+        abstract fun intent(
             origin: Coordinate,
             originName: String,
             destination: Coordinate,
             destinationName: String,
         ): Intent
 
-        data object KakaoMap : ThirdParty {
-            override val routeFinder: RouteFinder.ThirdParty = RouteFinder.ThirdParty.KakaoMap
-            override val nameId: Int = R.string.route_finder_application_entry_kakao_map
-
+        data object KakaoMap : ThirdParty(RouteFinder.ThirdParty.KakaoMap, R.string.route_finder_application_entry_kakao_map) {
             override fun intent(
                 origin: Coordinate,
                 originName: String,
@@ -48,10 +43,7 @@ sealed interface RouteFinderUiModel {
             }
         }
 
-        data object NaverMap : ThirdParty {
-            override val routeFinder: RouteFinder.ThirdParty = RouteFinder.ThirdParty.NaverMap
-            override val nameId: Int = R.string.route_finder_application_entry_naver_map
-
+        data object NaverMap : ThirdParty(RouteFinder.ThirdParty.NaverMap, R.string.route_finder_application_entry_naver_map) {
             private const val EARTH_RADIUS_METERS = 6_378_137
 
             override fun intent(
