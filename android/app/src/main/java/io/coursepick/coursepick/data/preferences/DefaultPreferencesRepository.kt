@@ -1,6 +1,7 @@
 package io.coursepick.coursepick.data.preferences
 
 import io.coursepick.coursepick.domain.preferences.PreferencesRepository
+import io.coursepick.coursepick.domain.preferences.RouteFinder
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
