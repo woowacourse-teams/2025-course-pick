@@ -100,10 +100,11 @@ public class CourseReader implements Converter<Document, Course> {
         }
         List<Review> reviews = new ArrayList<>();
         for (Document reviewDoc : reviewDocs) {
+            String userId = reviewDoc.getString("userId");
             String authorNickname = reviewDoc.getString("authorNickname");
             String content = reviewDoc.getString("content");
             Instant createdAt = toInstant(reviewDoc.get("createdAt"));
-            reviews.add(new Review(authorNickname, content, createdAt));
+            reviews.add(new Review(userId, authorNickname, content, createdAt));
         }
         return reviews;
     }

@@ -15,20 +15,22 @@ public class Review {
 
     public static final int MAX_CONTENT_LENGTH = 500;
 
+    private final String userId;
     private final String authorNickname;
     private final String content;
     private final Instant createdAt;
 
     @PersistenceCreator
-    public Review(String authorNickname, String content, Instant createdAt) {
+    public Review(String userId, String authorNickname, String content, Instant createdAt) {
         validateContent(content);
+        this.userId = userId;
         this.authorNickname = authorNickname;
         this.content = content;
         this.createdAt = createdAt;
     }
 
     public Review(User author, String content) {
-        this(author.nickname().value(), content, Instant.now());
+        this(author.id(), author.nickname().value(), content, Instant.now());
     }
 
     private static void validateContent(String content) {
