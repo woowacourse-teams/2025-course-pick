@@ -21,7 +21,7 @@ class FindDraftRouteTest {
     CourseRepository courseRepository = mock(CourseRepository.class);
     UserRepository userRepository = mock(UserRepository.class);
     RouteFinder routeFinder = mock(RouteFinder.class);
-    CourseApplicationService courseService = new CourseApplicationService(courseRepository, userRepository, routeFinder, null);
+    CourseApplicationService courseService = new CourseApplicationService(courseRepository, userRepository, routeFinder, null, null, null);
 
     @Test
     void 경로_좌표가_1개이면_예외가_발생한다() {

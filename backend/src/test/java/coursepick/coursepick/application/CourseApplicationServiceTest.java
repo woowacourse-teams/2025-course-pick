@@ -35,6 +35,9 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
     @MockitoBean
     CourseReportAlerter courseReportAlerter;
 
+    @MockitoBean
+    CourseTagGenerator courseTagGenerator;
+
     @Test
     void 코스는_최소_1KM부터_탐색할_수_있다() {
         var course1 = new Course(null, new CourseName("한강 러닝 코스"), List.of(
@@ -309,6 +312,38 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
     }
 
     @Nested
+    class 태그_재생성 {
+
+        @Test
+        void 리뷰가_있으면_태그를_생성하여_코스에_저장한다() {
+            var course = new Course(null, new CourseName("코스"), List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
+            course.addReview(ADMIN_USER, "야경이 멋집니다");
+            Course saved = dbUtil.saveCourse(course);
+
+            org.mockito.Mockito.when(courseTagGenerator.generate(any(Course.class)))
+                    .thenReturn(List.of(CourseTag.NIGHT_VIEW, CourseTag.FLAT));
+
+            sut.regenerateTags(saved.id());
+
+            Course result = dbUtil.findCourseById(saved.id());
+            assertThat(result.tags()).containsExactly(CourseTag.NIGHT_VIEW, CourseTag.FLAT);
+            verify(courseTagGenerator, times(1)).generate(any(Course.class));
+        }
+
+        @Test
+        void 리뷰가_없으면_태그를_생성하지_않는다() {
+            var course = new Course(null, new CourseName("코스"), List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
+            Course saved = dbUtil.saveCourse(course);
+
+            sut.regenerateTags(saved.id());
+
+            Course result = dbUtil.findCourseById(saved.id());
+            assertThat(result.tags()).isEmpty();
+            verify(courseTagGenerator, times(0)).generate(any(Course.class));
+        }
+    }
+
+    @Nested
     class 나의_코스_조회 {
 
         private User user;
@@ -356,7 +391,8 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
                     List.of(),
                     user.id(),
                     new HashSet<>(),
-                    now
+                    now,
+                    null
             );
             var newCourse = new Course(
                     null,
@@ -367,7 +403,8 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
                     List.of(),
                     user.id(),
                     new HashSet<>(),
-                    now.plusSeconds(1L)
+                    now.plusSeconds(1L),
+                    null
             );
 
             dbUtil.saveCourse(oldCourse);
