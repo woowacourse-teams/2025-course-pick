@@ -15,7 +15,9 @@ public record CourseDetailWebResponse(
         @Schema(description = "코스를 구성하는 좌표 목록")
         List<CoordinateWebResponse> coordinates,
         @Schema(description = "코스 리뷰 목록")
-        List<ReviewWebResponse> reviews
+        List<ReviewWebResponse> reviews,
+        @Schema(description = "코스 태그 목록 (최대 5개)")
+        List<CourseTagWebResponse> aiTags
 ) {
     public static CourseDetailWebResponse from(CourseDetailResponse response) {
         return new CourseDetailWebResponse(
@@ -23,7 +25,8 @@ public record CourseDetailWebResponse(
                 response.name(),
                 response.length().value(),
                 CoordinateWebResponse.from(response.coordinates()),
-                ReviewWebResponse.from(response.reviews())
+                ReviewWebResponse.from(response.reviews()),
+                CourseTagWebResponse.from(response.aiTags())
         );
     }
 }
