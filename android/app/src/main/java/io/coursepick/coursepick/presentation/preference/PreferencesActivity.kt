@@ -39,6 +39,7 @@ class PreferencesActivity : AppCompatActivity() {
 
                     if (viewModel.showRouteFinderPreferenceDialog.collectAsStateWithLifecycle().value) {
                         RouteFinderPreferenceDialog(
+                            selection = viewModel.routeFinderPreference.collectAsStateWithLifecycle().value,
                             onConfirm = viewModel::onSubmitRouteFinderPreference,
                             onDismiss = viewModel::onDismissRouteFinderPreference,
                         )

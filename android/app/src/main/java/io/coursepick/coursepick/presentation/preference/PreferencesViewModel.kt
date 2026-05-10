@@ -6,8 +6,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.coursepick.coursepick.data.preference.RouteFinder
 import io.coursepick.coursepick.domain.preference.PreferencesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,6 +21,13 @@ class PreferencesViewModel
     ) : ViewModel() {
         private val _showRouteFinderPreferenceDialog = MutableStateFlow(false)
         val showRouteFinderPreferenceDialog: StateFlow<Boolean> get() = _showRouteFinderPreferenceDialog.asStateFlow()
+
+        val routeFinderPreference: StateFlow<RouteFinder?> =
+            preferencesRepository.routeFinder.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = null,
+            )
 
         fun onOpenRouteFinderPreference() {
             _showRouteFinderPreferenceDialog.value = true
