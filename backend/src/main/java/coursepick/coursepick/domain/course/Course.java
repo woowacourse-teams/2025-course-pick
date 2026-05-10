@@ -45,6 +45,8 @@ public class Course {
 
     private List<Review> reviews;
 
+    private double averageRating;
+
     private String creatorId;
 
     private Set<String> reportUserIds;
@@ -58,6 +60,7 @@ public class Course {
         this.simplifiedCoordinates = simplifyCoordinates(this.coordinates);
         this.length = calculateLength(coordinates);
         this.reviews = new ArrayList<>();
+        this.averageRating = 0.0;
         this.creatorId = user.id();
         this.reportUserIds = new HashSet<>();
         this.createdAt = LocalDateTime.now();
@@ -117,11 +120,23 @@ public class Course {
         this.name = new CourseName(courseName);
     }
 
-    public void addReview(User author, String content, int rating) {
+    public void addReview(User author, String content, int reviewRating) {
         if (reviews.stream().anyMatch(review -> review.userId().equals(author.id()))) {
             throw ALREADY_REVIEWED_COURSE.create(this.id, author.id());
         }
-        reviews.add(new Review(author, content, rating));
+        reviews.add(new Review(author, content, reviewRating));
+        this.averageRating = calculateAverageRating();
+    }
+
+    public void removeReview(Review review) {
+        reviews.remove(review);
+        this.averageRating = calculateAverageRating();
+    }
+
+    private double calculateAverageRating() {
+        if (reviews.isEmpty()) return 0.0;
+        int total = reviews.stream().mapToInt(Review::rating).sum();
+        return Math.round((double) total / reviews.size() * 10) / 10.0;
     }
 
     public void addReport(User user) {

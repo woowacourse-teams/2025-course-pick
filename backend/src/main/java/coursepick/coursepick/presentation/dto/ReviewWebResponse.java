@@ -9,10 +9,12 @@ public record ReviewWebResponse(
         @Schema(description = "리뷰 작성자 닉네임", example = "피곤한 하마")
         String authorNickname,
         @Schema(description = "리뷰 내용", example = "노을이 예쁜 코스입니다")
-        String content
+        String content,
+        @Schema(description = "코스 별점 (1~5)", example = "4")
+        int rating
 ) {
     public static ReviewWebResponse from(ReviewResponse reviewResponse) {
-        return new ReviewWebResponse(reviewResponse.authorNickname(), reviewResponse.content());
+        return new ReviewWebResponse(reviewResponse.authorNickname(), reviewResponse.content(), reviewResponse.rating());
     }
 
     public static List<ReviewWebResponse> from(List<ReviewResponse> reviewResponses) {

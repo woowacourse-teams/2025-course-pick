@@ -36,6 +36,7 @@ public class CourseWriter implements Converter<Course, Document> {
 
         document.put("length", source.length().value());
         document.put("reviews", convertReviewsToDocuments(source.reviews()));
+        document.put("averageRating", source.averageRating());
         document.put("creatorId", source.creatorId());
         document.put("reportUserIds", source.reportUserIds());
         if (source.createdAt() != null) {
