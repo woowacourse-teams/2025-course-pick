@@ -62,6 +62,7 @@ import io.coursepick.coursepick.presentation.auth.AuthViewModel
 import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.compat.getParcelableCompat
+import io.coursepick.coursepick.presentation.customcourse.CustomCourseViewModel
 import io.coursepick.coursepick.presentation.customcourse.CustomCoursesFragment
 import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
 import io.coursepick.coursepick.presentation.filter.CourseFilterBottomSheet
@@ -91,6 +92,7 @@ class CoursesActivity :
     private val authViewModel: AuthViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(courseItemListener) }
     private val doublePressDetector = DoublePressDetector()
+    private val customCourseViewModel: CustomCourseViewModel by viewModels()
 
     @Inject
     @KakaoMap
@@ -348,6 +350,8 @@ class CoursesActivity :
                 R.id.customCourseMenu -> {
                     viewModel.showCourses()
                     viewModel.switchContent(CoursesContent.CUSTOM_COURSE)
+
+                    customCourseViewModel.checkAuthAndShowDialog()
                     true
                 }
 
