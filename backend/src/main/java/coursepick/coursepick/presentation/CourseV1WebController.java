@@ -85,7 +85,7 @@ public class CourseV1WebController implements CourseWebApi {
             @UserId String userId,
             @RequestBody CreateReviewWebRequest request
     ) {
-        courseApplicationService.addReview(id, userId, request.content());
+        courseApplicationService.addReview(id, userId, request.content(), request.rating());
     }
 
     @Override

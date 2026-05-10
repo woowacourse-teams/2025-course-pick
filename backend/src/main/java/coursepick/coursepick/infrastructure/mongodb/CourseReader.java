@@ -106,6 +106,7 @@ public class CourseReader implements Converter<Document, Course> {
             String userId = reviewDoc.getString("userId");
             String authorNickname = reviewDoc.getString("authorNickname");
             String content = reviewDoc.getString("content");
+            int rating = reviewDoc.getInteger("rating");
             Instant createdAt = toInstant(reviewDoc.get("createdAt"));
             reviews.add(new Review(id, userId, authorNickname, content, reportUserIds, createdAt));
         }

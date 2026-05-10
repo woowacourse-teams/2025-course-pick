@@ -54,6 +54,7 @@ public class CourseWriter implements Converter<Course, Document> {
                     reviewDoc.put("authorNickname", review.authorNickname());
                     reviewDoc.put("content", review.content());
                     reviewDoc.put("createdAt", review.createdAt());
+                    reviewDoc.put("rating", review.rating());
                     reviewDoc.put("reportUserIds", review.reportUserIds());
                     return reviewDoc;
                 })

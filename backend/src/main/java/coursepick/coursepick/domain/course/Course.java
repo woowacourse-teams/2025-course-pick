@@ -19,9 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static coursepick.coursepick.application.exception.ErrorType.ALREADY_REPORTED_COURSE;
-import static coursepick.coursepick.application.exception.ErrorType.ALREADY_REVIEWED_COURSE;
-import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_REVIEW;
+import static coursepick.coursepick.application.exception.ErrorType.*;
 
 @Document
 @CompoundIndex(name = "idx_creatorId_createdAt", def = "{'creatorId': 1, 'createdAt': -1}")
@@ -119,11 +117,11 @@ public class Course {
         this.name = new CourseName(courseName);
     }
 
-    public void addReview(User author, String content) {
+    public void addReview(User author, String content, int rating) {
         if (reviews.stream().anyMatch(review -> review.userId().equals(author.id()))) {
             throw ALREADY_REVIEWED_COURSE.create(this.id, author.id());
         }
-        reviews.add(new Review(author, content));
+        reviews.add(new Review(author, content, rating));
     }
 
     public void addReport(User user) {
