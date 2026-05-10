@@ -513,12 +513,14 @@ class CoursesViewModel
                     courseRepository.nearestCoordinate(course.course, origin)
                 }.onSuccess { destination: Coordinate ->
                     Logger.log(Logger.Event.Success("fetch_nearest_coordinate"))
+                    _state.value = state.value?.copy(status = UiStatus.Success)
                     _event.value = CoursesUiEvent.LaunchThirdPartyRouteFinder(course, origin, destination, routeFinder)
                 }.onFailure { exception: Throwable ->
                     Logger.log(
                         Logger.Event.Failure("fetch_nearest_coordinate"),
                         "message" to exception.message.toString(),
                     )
+                    _state.value = state.value?.copy(status = UiStatus.Failure)
                     _event.value =
                         if (exception is NoNetworkException) {
                             CoursesUiEvent.NoNetworkConnection
