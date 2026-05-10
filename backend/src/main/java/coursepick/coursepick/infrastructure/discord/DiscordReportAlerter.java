@@ -1,7 +1,9 @@
 package coursepick.coursepick.infrastructure.discord;
 
-import coursepick.coursepick.application.CourseReportAlerter;
+import coursepick.coursepick.application.ReportAlerter;
+import coursepick.coursepick.application.ReportMessageType;
 import coursepick.coursepick.domain.course.Course;
+import coursepick.coursepick.domain.course.Review;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +19,7 @@ import java.util.Map;
 @Component
 @Profile({"dev", "prod"})
 @RequiredArgsConstructor
-public class DiscordCourseReportAlerter implements CourseReportAlerter {
+public class DiscordReportAlerter implements ReportAlerter {
 
     private final RestClient discordRestClient;
 
@@ -27,8 +29,18 @@ public class DiscordCourseReportAlerter implements CourseReportAlerter {
     @Async
     @Override
     public void alert(Course course) {
-        String message = generateReportMessage(course);
+        String message = ReportMessageType.COURSE.format(activeProfile, course.id(), course.name().value(), course.reportUserIds().size(), course.reportUserIds());
+        alert(message);
+    }
 
+    @Async
+    @Override
+    public void alert(Course course, Review review) {
+        String message = ReportMessageType.REVIEW.format(activeProfile, course.id(), course.name().value(), review.content(), course.reportUserIds().size(), course.reportUserIds());
+        alert(message);
+    }
+
+    private void alert(String message) {
         try {
             discordRestClient.post()
                     .contentType(MediaType.APPLICATION_JSON)
@@ -38,17 +50,5 @@ public class DiscordCourseReportAlerter implements CourseReportAlerter {
         } catch (Exception e) {
             log.warn("Alerter 알림 전송 실패: {}", e.getMessage());
         }
-    }
-
-    private String generateReportMessage(Course course) {
-
-        String reporterIds = String.join(", ", course.reportUserIds());
-        return """
-                [%s] 코스 신고 알림
-                - 코스 ID: %s
-                - 코스 이름: %s
-                - 신고 수: %d
-                - 신고자 ID: [%s]
-                """.formatted(activeProfile, course.id(), course.name().value(), course.reportUserIds().size(), reporterIds);
     }
 }
