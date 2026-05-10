@@ -14,6 +14,7 @@ import io.coursepick.coursepick.presentation.fixtures.FakeFavoritesRepository
 import io.coursepick.coursepick.presentation.fixtures.FakeLocationRepository
 import io.coursepick.coursepick.presentation.fixtures.FakeNetworkMonitor
 import io.coursepick.coursepick.presentation.fixtures.FakeNoticeRepository
+import io.coursepick.coursepick.presentation.fixtures.FakePreferencesRepository
 import io.coursepick.coursepick.presentation.ui.getOrAwaitValue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions
@@ -29,6 +30,7 @@ class CoursesViewModelTest {
     private val fakeFavoritesRepository = FakeFavoritesRepository()
     private val fakeNoticeRepository = FakeNoticeRepository()
     private val fakeLocationRepository = FakeLocationRepository()
+    private val fakePreferencesRepository = FakePreferencesRepository()
     private val fakeAuthRepository = FakeAuthRepository()
     private val fakeNetworkMonitor = FakeNetworkMonitor()
     private lateinit var mainViewModel: CoursesViewModel
@@ -42,6 +44,7 @@ class CoursesViewModelTest {
                 fakeFavoritesRepository,
                 fakeNoticeRepository,
                 fakeLocationRepository,
+                fakePreferencesRepository,
                 fakeAuthRepository,
                 fakeNetworkMonitor,
             )
@@ -127,6 +130,7 @@ class CoursesViewModelTest {
                 fakeFavoritesRepository,
                 fakeNoticeRepository,
                 fakeLocationRepository,
+                fakePreferencesRepository,
                 fakeAuthRepository,
                 fakeNetworkMonitor,
             )
@@ -173,6 +177,7 @@ class CoursesViewModelTest {
                 fakeFavoritesRepository,
                 fakeNoticeRepository,
                 fakeLocationRepository,
+                fakePreferencesRepository,
                 fakeAuthRepository,
                 fakeNetworkMonitor,
             )
@@ -205,6 +210,7 @@ class CoursesViewModelTest {
                 fakeFavoritesRepository,
                 fakeNoticeRepository,
                 fakeLocationRepository,
+                fakePreferencesRepository,
                 fakeAuthRepository,
                 fakeNetworkMonitor,
             )
