@@ -26,11 +26,12 @@ public class Review {
     private final String userId;
     private final String authorNickname;
     private final String content;
+    private final int rating;
     private final Set<String> reportUserIds;
     private final Instant createdAt;
 
-    public Review(User author, String content) {
-        this(RandomStringUtils.insecure().next(10, true, true), author.id(), author.nickname().value(), content, new HashSet<>(), Instant.now());
+    public Review(User author, String content, int rating) {
+        this(RandomStringUtils.insecure().next(10, true, true), author.id(), author.nickname().value(), content, rating, new HashSet<>(), Instant.now());
         validateContent(content);
     }
 
