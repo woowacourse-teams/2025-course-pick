@@ -34,11 +34,11 @@ sealed class RouteFinderApplication(
                 destinationName: String,
             ): Intent {
                 val uri =
-                    """
-                    https://map.kakao.com/link/by/walk/
-                    $originName,${origin.latitude.value},${origin.longitude.value}/
-                    $destinationName,${destination.latitude.value},${destination.longitude.value}/
-                    """.trimIndent().toUri()
+                    (
+                        "https://map.kakao.com/link/by/walk/" +
+                            "$originName,${origin.latitude.value},${origin.longitude.value}/" +
+                            "$destinationName,${destination.latitude.value},${destination.longitude.value}/"
+                    ).toUri()
                 return Intent(Intent.ACTION_VIEW, uri)
             }
         }
@@ -55,12 +55,12 @@ sealed class RouteFinderApplication(
                 val (originX: Double, originY: Double) = origin.toWebMercator()
                 val (destinationX: Double, destinationY: Double) = destination.toWebMercator()
                 val uri =
-                    """
-                    https://map.naver.com/p/directions/
-                    $originX,$originY,$originName/
-                    $destinationX,$destinationY,$destinationName/
-                    -/walk
-                    """.trimIndent().toUri()
+                    (
+                        "https://map.naver.com/p/directions/" +
+                            "$originX,$originY,$originName/" +
+                            "$destinationX,$destinationY,$destinationName/" +
+                            "-/walk"
+                    ).toUri()
                 return Intent(Intent.ACTION_VIEW, uri)
             }
 
