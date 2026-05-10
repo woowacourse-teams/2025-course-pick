@@ -465,12 +465,8 @@ class CoursesViewModel
                             fetchRouteToCourse(selectedCourse, location.coordinate)
                         }
 
-                        RouteFinder.KakaoMap -> {
-                            launchThirdPartyRouteFinder(selectedCourse, location.coordinate, RouteFinderUiModel.ThirdParty.KakaoMap)
-                        }
-
-                        RouteFinder.NaverMap -> {
-                            launchThirdPartyRouteFinder(selectedCourse, location.coordinate, RouteFinderUiModel.ThirdParty.NaverMap)
+                        is RouteFinder.ThirdParty -> {
+                            launchThirdPartyRouteFinder(selectedCourse, location.coordinate, routeFinder)
                         }
                     }
                 } ?: run {
@@ -510,7 +506,7 @@ class CoursesViewModel
         private fun launchThirdPartyRouteFinder(
             course: CourseItem,
             origin: Coordinate,
-            routeFinder: RouteFinderUiModel.ThirdParty,
+            routeFinder: RouteFinder.ThirdParty,
         ) {
             viewModelScope.launch {
                 runCatching {

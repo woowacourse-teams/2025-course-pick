@@ -1,5 +1,6 @@
 package io.coursepick.coursepick.presentation.course
 
+import io.coursepick.coursepick.data.preferences.RouteFinder
 import io.coursepick.coursepick.domain.course.Coordinate
 
 sealed interface CoursesUiEvent {
@@ -18,7 +19,7 @@ sealed interface CoursesUiEvent {
         val course: CourseItem,
         val origin: Coordinate,
         val destination: Coordinate,
-        val routeFinder: RouteFinderUiModel.ThirdParty,
+        val routeFinder: RouteFinder.ThirdParty,
     ) : CoursesUiEvent
 
     object FetchRouteToCourseFailure : CoursesUiEvent
