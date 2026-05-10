@@ -1,9 +1,7 @@
 package coursepick.coursepick.infrastructure.mongodb;
 
 import coursepick.coursepick.domain.course.*;
-import coursepick.coursepick.domain.user.Nickname;
 import coursepick.coursepick.domain.user.User;
-import coursepick.coursepick.domain.user.UserProvider;
 import coursepick.coursepick.test_util.AbstractIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +27,8 @@ class CourseReaderTest extends AbstractIntegrationTest {
                 List.of(new Coordinate(37.5, 127.0), new Coordinate(37.51, 127.01), new Coordinate(37.52, 127.02)),
                 List.of(new Coordinate(37.5, 127.0), new Coordinate(37.52, 127.02)),
                 new Meter(1500.0),
-                List.of(new Review(new User("userId", UserProvider.NONE, "providerId", new Nickname("노래하는 강아지")), "리뷰 내용")),
+                List.of(new Review(new User(null, "providerId", "reviewer"), "hi", 0)),
+                4.0,
                 "creatorId123",
                 Set.of("reportMan1"),
                 now
@@ -72,7 +71,8 @@ class CourseReaderTest extends AbstractIntegrationTest {
                 List.of(new Coordinate(37.5, 127.0), new Coordinate(37.51, 127.01), new Coordinate(37.52, 127.02)),
                 List.of(new Coordinate(37.5, 127.0), new Coordinate(37.52, 127.02)),
                 new Meter(1500.0),
-                List.of(new Review(new User(null, "providerId", "reviewer"), "hi")),
+                List.of(new Review(new User(null, "providerId", "reviewer"), "hi", 0)),
+                4.0,
                 "creatorId123",
                 Set.of("reportMan1"),
                 null

@@ -11,7 +11,7 @@ class ReviewTest {
     @Test
     void 리뷰_내용이_1자면_생성된다() {
         User author = new User(null, "providerId");
-        Review review = new Review(author, "좋");
+        Review review = new Review(author, "좋", 0);
 
         assertThat(review.content()).isEqualTo("좋");
         assertThat(review.createdAt()).isNotNull();
@@ -22,7 +22,7 @@ class ReviewTest {
         User author = new User(null, "providerId");
         String content = "가".repeat(500);
 
-        Review review = new Review(author, content);
+        Review review = new Review(author, content, 0);
 
         assertThat(review.content()).hasSize(500);
     }
@@ -30,14 +30,14 @@ class ReviewTest {
     @Test
     void 리뷰_내용이_비어있으면_예외가_발생한다() {
         User author = new User(null, "providerId");
-        assertThatThrownBy(() -> new Review(author, ""))
+        assertThatThrownBy(() -> new Review(author, "", 0))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void 리뷰_내용이_null이면_예외가_발생한다() {
         User author = new User(null, "providerId");
-        assertThatThrownBy(() -> new Review(author, null))
+        assertThatThrownBy(() -> new Review(author, null, 0))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -46,7 +46,7 @@ class ReviewTest {
         User author = new User(null, "providerId");
         String content = "가".repeat(501);
 
-        assertThatThrownBy(() -> new Review(author, content))
+        assertThatThrownBy(() -> new Review(author, content, 0))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }
