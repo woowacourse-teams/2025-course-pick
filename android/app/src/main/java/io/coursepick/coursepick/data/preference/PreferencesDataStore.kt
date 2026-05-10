@@ -19,8 +19,8 @@ class PreferencesDataStore
             dataStore.data.map { preferences: Preferences ->
                 when (preferences[ROUTE_FINDER_KEY]) {
                     ROUTE_FINDER_VALUE_LOCAL -> RouteFinder.Local
-                    ROUTE_FINDER_VALUE_KAKAO_MAP -> RouteFinder.KakaoMap
-                    ROUTE_FINDER_VALUE_NAVER_MAP -> RouteFinder.NaverMap
+                    ROUTE_FINDER_VALUE_KAKAO_MAP -> RouteFinder.ThirdParty.KakaoMap
+                    ROUTE_FINDER_VALUE_NAVER_MAP -> RouteFinder.ThirdParty.NaverMap
                     else -> null
                 }
             }
@@ -33,8 +33,8 @@ class PreferencesDataStore
                     preferences[ROUTE_FINDER_KEY] =
                         when (routeFinder) {
                             RouteFinder.Local -> ROUTE_FINDER_VALUE_LOCAL
-                            RouteFinder.KakaoMap -> ROUTE_FINDER_VALUE_KAKAO_MAP
-                            RouteFinder.NaverMap -> ROUTE_FINDER_VALUE_NAVER_MAP
+                            RouteFinder.ThirdParty.KakaoMap -> ROUTE_FINDER_VALUE_KAKAO_MAP
+                            RouteFinder.ThirdParty.NaverMap -> ROUTE_FINDER_VALUE_NAVER_MAP
                         }
                 }
             }

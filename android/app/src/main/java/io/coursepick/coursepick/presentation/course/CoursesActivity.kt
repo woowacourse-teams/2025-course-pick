@@ -788,8 +788,13 @@ class CoursesActivity :
                 }
 
                 is CoursesUiEvent.LaunchThirdPartyRouteFinder -> {
+                    val routeFinder: RouteFinderUiModel.ThirdParty =
+                        when (event.routeFinder) {
+                            RouteFinder.ThirdParty.KakaoMap -> RouteFinderUiModel.ThirdParty.KakaoMap
+                            RouteFinder.ThirdParty.NaverMap -> RouteFinderUiModel.ThirdParty.NaverMap
+                        }
                     val intent: Intent =
-                        event.routeFinder.intent(
+                        routeFinder.intent(
                             origin = event.origin,
                             originName = getString(R.string.course_item_navigate_to_course_origin_name),
                             destination = event.destination,

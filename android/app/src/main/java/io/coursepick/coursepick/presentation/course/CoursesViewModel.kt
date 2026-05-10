@@ -20,7 +20,7 @@ import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.domain.location.LocationRepository
 import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.domain.notice.NoticeRepository
-import io.coursepick.coursepick.domain.preference.SettingsRepository
+import io.coursepick.coursepick.domain.preference.PreferencesRepository
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.auth.AuthFeature
 import io.coursepick.coursepick.presentation.filter.CourseFilter
@@ -51,7 +51,7 @@ class CoursesViewModel
         private val favoritesRepository: FavoritesRepository,
         private val noticeRepository: NoticeRepository,
         private val locationRepository: LocationRepository,
-        private val settingsRepository: SettingsRepository,
+        private val preferencesRepository: PreferencesRepository,
         private val authRepository: AuthRepository,
         private val networkMonitor: NetworkMonitor,
     ) : ViewModel() {
@@ -461,7 +461,7 @@ class CoursesViewModel
             }
 
             viewModelScope.launch {
-                val routeFinder: RouteFinder? = settingsRepository.routeFinder.first()
+                val routeFinder: RouteFinder? = preferencesRepository.routeFinder.first()
                 if (routeFinder == null) {
                     _routeFinderDialogCourse.value = course
                 } else {
@@ -480,7 +480,7 @@ class CoursesViewModel
 
             if (rememberSelection) {
                 viewModelScope.launch {
-                    settingsRepository.setRouteFinder(routeFinder)
+                    preferencesRepository.setRouteFinder(routeFinder)
                 }
             }
         }
@@ -505,12 +505,8 @@ class CoursesViewModel
                             fetchRouteToCourse(selectedCourse, location.coordinate)
                         }
 
-                        RouteFinder.KakaoMap -> {
-                            launchThirdPartyRouteFinder(selectedCourse, location.coordinate, RouteFinderUiModel.ThirdParty.KakaoMap)
-                        }
-
-                        RouteFinder.NaverMap -> {
-                            launchThirdPartyRouteFinder(selectedCourse, location.coordinate, RouteFinderUiModel.ThirdParty.NaverMap)
+                        is RouteFinder.ThirdParty -> {
+                            launchThirdPartyRouteFinder(selectedCourse, location.coordinate, routeFinder)
                         }
                     }
                 } ?: run {
@@ -550,7 +546,7 @@ class CoursesViewModel
         private fun launchThirdPartyRouteFinder(
             course: CourseItem,
             origin: Coordinate,
-            routeFinder: RouteFinderUiModel.ThirdParty,
+            routeFinder: RouteFinder.ThirdParty,
         ) {
             viewModelScope.launch {
                 runCatching {
