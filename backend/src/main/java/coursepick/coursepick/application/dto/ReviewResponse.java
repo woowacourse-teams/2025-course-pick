@@ -6,10 +6,11 @@ import java.util.List;
 
 public record ReviewResponse(
         String authorNickname,
-        String content
+        String content,
+        int rating
 ) {
     public static ReviewResponse from(Review review) {
-        return new ReviewResponse(review.authorNickname(), review.content());
+        return new ReviewResponse(review.authorNickname(), review.content(), review.rating());
     }
 
     public static List<ReviewResponse> from(List<Review> reviews) {
