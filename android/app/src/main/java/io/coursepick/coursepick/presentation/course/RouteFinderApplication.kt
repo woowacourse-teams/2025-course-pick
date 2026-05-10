@@ -1,6 +1,7 @@
 package io.coursepick.coursepick.presentation.course
 
 import android.content.Intent
+import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.core.net.toUri
 import io.coursepick.coursepick.R
@@ -33,11 +34,14 @@ sealed class RouteFinderApplication(
                 destination: Coordinate,
                 destinationName: String,
             ): Intent {
+                val encodedOriginName: String = Uri.encode(originName)
+                val encodedDestinationName: String = Uri.encode(destinationName)
+
                 val uri =
                     (
                         "https://map.kakao.com/link/by/walk/" +
-                            "$originName,${origin.latitude.value},${origin.longitude.value}/" +
-                            "$destinationName,${destination.latitude.value},${destination.longitude.value}/"
+                            "$encodedOriginName,${origin.latitude.value},${origin.longitude.value}/" +
+                            "$encodedDestinationName,${destination.latitude.value},${destination.longitude.value}/"
                     ).toUri()
                 return Intent(Intent.ACTION_VIEW, uri)
             }
@@ -53,12 +57,16 @@ sealed class RouteFinderApplication(
                 destinationName: String,
             ): Intent {
                 val (originX: Double, originY: Double) = origin.toWebMercator()
+                val encodedOriginName: String = Uri.encode(originName)
+
                 val (destinationX: Double, destinationY: Double) = destination.toWebMercator()
+                val encodedDestinationName: String = Uri.encode(destinationName)
+
                 val uri =
                     (
                         "https://map.naver.com/p/directions/" +
-                            "$originX,$originY,$originName/" +
-                            "$destinationX,$destinationY,$destinationName/" +
+                            "$originX,$originY,$encodedOriginName/" +
+                            "$destinationX,$destinationY,$encodedDestinationName/" +
                             "-/walk"
                     ).toUri()
                 return Intent(Intent.ACTION_VIEW, uri)
