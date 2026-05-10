@@ -451,6 +451,32 @@ class CoursesActivity :
             }.show()
     }
 
+    private fun launchRouteFinderApplication(event: CoursesUiEvent.LaunchThirdPartyRouteFinder) {
+        val routeFinder: RouteFinderApplication.ThirdParty =
+            when (event.routeFinder) {
+                RouteFinder.ThirdParty.KakaoMap -> RouteFinderApplication.ThirdParty.KakaoMap
+                RouteFinder.ThirdParty.NaverMap -> RouteFinderApplication.ThirdParty.NaverMap
+            }
+        val intent: Intent =
+            routeFinder.intent(
+                origin = event.origin,
+                originName = getString(R.string.course_item_navigate_to_course_origin_name),
+                destination = event.destination,
+                destinationName = event.course.name,
+            )
+
+        try {
+            startActivity(intent)
+        } catch (_: Throwable) {
+            Toast
+                .makeText(
+                    this,
+                    getString(R.string.selected_route_finder_application_failed_to_launch_route_finder_app_message),
+                    Toast.LENGTH_SHORT,
+                ).show()
+        }
+    }
+
     private fun showFineLocationPermissionRationaleForNavigation() {
         AlertDialog
             .Builder(this)
@@ -788,19 +814,7 @@ class CoursesActivity :
                 }
 
                 is CoursesUiEvent.LaunchThirdPartyRouteFinder -> {
-                    val routeFinder: RouteFinderApplication.ThirdParty =
-                        when (event.routeFinder) {
-                            RouteFinder.ThirdParty.KakaoMap -> RouteFinderApplication.ThirdParty.KakaoMap
-                            RouteFinder.ThirdParty.NaverMap -> RouteFinderApplication.ThirdParty.NaverMap
-                        }
-                    val intent: Intent =
-                        routeFinder.intent(
-                            origin = event.origin,
-                            originName = getString(R.string.course_item_navigate_to_course_origin_name),
-                            destination = event.destination,
-                            destinationName = event.course.name,
-                        )
-                    startActivity(intent)
+                    launchRouteFinderApplication(event)
                 }
 
                 CoursesUiEvent.RequireFineLocationPermission -> {
