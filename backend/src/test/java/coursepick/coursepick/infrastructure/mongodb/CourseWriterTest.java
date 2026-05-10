@@ -38,7 +38,8 @@ class CourseWriterTest {
                 List.of(new Coordinate(37.5, 127.0), new Coordinate(37.51, 127.01), new Coordinate(37.52, 127.02)),
                 List.of(new Coordinate(37.5, 127.0), new Coordinate(37.52, 127.02)),
                 new Meter(1500.0),
-                List.of(new Review(new User(null, "providerId", "reviewer"), "hi", 0)),
+                List.of(new Review(new User(null, "providerId", "reviewer"), "리뷰 내용", 4)),
+                3.5,
                 "creatorId123",
                 Set.of("reportMan1"),
                 now
@@ -80,6 +81,22 @@ class CourseWriterTest {
     }
 
     @Test
+    void averageRating이_Document에_포함된다() {
+        Document document = courseWriter.convert(course);
+
+        assertThat(document.getDouble("averageRating")).isEqualTo(course.averageRating());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void 리뷰의_별점이_Document에_포함된다() {
+        Document document = courseWriter.convert(course);
+
+        List<Document> reviews = (List<Document>) document.get("reviews");
+        assertThat(reviews.getFirst().getInteger("rating")).isEqualTo(course.reviews().getFirst().rating());
+    }
+
+    @Test
     void Course의_createdAt이_null인_경우_Document에_포함하지_않는다() {
         Course course = new Course(
                 "507f1f77bcf86cd799439011",
@@ -87,7 +104,8 @@ class CourseWriterTest {
                 List.of(new Coordinate(37.5, 127.0), new Coordinate(37.51, 127.01), new Coordinate(37.52, 127.02)),
                 List.of(new Coordinate(37.5, 127.0), new Coordinate(37.52, 127.02)),
                 new Meter(1500.0),
-                List.of(new Review(new User(null, "providerId", "reviewer"), "hi", 0)),
+                List.of(new Review(new User(null, "providerId", "reviewer"), "리뷰 내용", 4)),
+                3.5,
                 "creatorId123",
                 Set.of("reportMan1"),
                 null

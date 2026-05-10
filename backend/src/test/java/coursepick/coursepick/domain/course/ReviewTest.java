@@ -49,4 +49,12 @@ class ReviewTest {
         assertThatThrownBy(() -> new Review(author, content, 0))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void 리뷰_별점이_저장된다() {
+        User author = new User(null, "providerId");
+        Review review = new Review(author, "좋은 코스입니다", 4);
+
+        assertThat(review.rating()).isEqualTo(4);
+    }
 }
