@@ -2,19 +2,31 @@ package io.coursepick.coursepick.presentation.preferences
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,6 +43,7 @@ fun RouteFinderPreferenceDialog(
 ) {
     Dialog(onDismiss) {
         Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier =
                 modifier
                     .fillMaxWidth()
@@ -40,27 +53,139 @@ fun RouteFinderPreferenceDialog(
         ) {
             Text(
                 text = stringResource(R.string.selected_route_finder_application_preference_title),
-                fontSize = 24.sp,
+                color = colorResource(R.color.item_primary),
+                fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
             )
 
-            Text(text = stringResource(R.string.selected_route_finder_application_dialog_description), fontSize = 18.sp)
+            Spacer(Modifier.height(16.dp))
 
-            LazyColumn {
-                item {
-                    Text(
-                        text = stringResource(R.string.selected_route_finder_application_entry_none),
-                        modifier = Modifier.clickable { onConfirm(null) },
-                    )
-                }
+            Text(
+                text = stringResource(R.string.selected_route_finder_application_summary),
+                color = colorResource(R.color.item_primary),
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center,
+            )
 
-                items(RouteFinderUiModel.Entries) { routeFinder: RouteFinderUiModel ->
-                    Text(
-                        text = stringResource(routeFinder.nameId),
-                        modifier = Modifier.clickable { onConfirm(routeFinder.routeFinder) },
-                    )
-                }
+            Spacer(Modifier.height(16.dp))
+
+            var selectedOption: RouteFinderUiModel? by remember { mutableStateOf(null) }
+
+            RouteFinderPreferenceOptions(
+                options = listOf(null) + RouteFinderUiModel.Entries,
+                selectedOption = selectedOption,
+                onSelectOption = { option: RouteFinderUiModel? -> selectedOption = option },
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            RouteFinderPreferenceDialogButtons(
+                onCancel = onDismiss,
+                onConfirm = { onConfirm(selectedOption?.routeFinder) },
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+    }
+}
+
+@Composable
+private fun RouteFinderPreferenceOptions(
+    options: List<RouteFinderUiModel?>,
+    selectedOption: RouteFinderUiModel?,
+    onSelectOption: (RouteFinderUiModel?) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier
+            .clip(RoundedCornerShape(16.dp))
+            .background(colorResource(R.color.background_secondary)),
+    ) {
+        options.forEachIndexed { index: Int, routeFinder: RouteFinderUiModel? ->
+            if (index > 0) {
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = colorResource(R.color.background_border),
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                )
             }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier =
+                    Modifier
+                        .clip(RoundedCornerShape(16.dp))
+                        .fillMaxWidth()
+                        .clickable { onSelectOption(routeFinder) }
+                        .padding(horizontal = 12.dp),
+            ) {
+                RadioButton(
+                    selected = routeFinder == selectedOption,
+                    onClick = { onSelectOption(routeFinder) },
+                    colors = RadioButtonDefaults.colors(selectedColor = colorResource(R.color.point_primary)),
+                )
+
+                Text(
+                    text = stringResource(routeFinder?.nameId ?: R.string.selected_route_finder_application_entry_none),
+                    color = colorResource(R.color.item_primary),
+                    fontSize = 16.sp,
+                )
+            }
+
+            if (index != options.lastIndex) {
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = colorResource(R.color.background_border),
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun RouteFinderPreferenceDialogButtons(
+    onCancel: () -> Unit,
+    onConfirm: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier,
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier =
+                Modifier
+                    .weight(1F)
+                    .clip(RoundedCornerShape(50))
+                    .clickable { onCancel() }
+                    .background(colorResource(R.color.background_tertiary))
+                    .padding(horizontal = 20.dp, vertical = 10.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.selected_route_finder_application_cancel_button),
+                fontSize = 16.sp,
+                color = colorResource(R.color.item_tertiary),
+            )
+        }
+
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier =
+                Modifier
+                    .weight(1F)
+                    .clip(RoundedCornerShape(50))
+                    .clickable { onConfirm() }
+                    .background(colorResource(R.color.point_primary))
+                    .padding(horizontal = 20.dp, vertical = 10.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.selected_route_finder_application_confirm_button),
+                color = colorResource(R.color.item_primary),
+                fontSize = 16.sp,
+            )
         }
     }
 }
