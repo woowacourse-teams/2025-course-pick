@@ -38,7 +38,7 @@ class CourseWriterTest {
                 List.of(new Coordinate(37.5, 127.0), new Coordinate(37.51, 127.01), new Coordinate(37.52, 127.02)),
                 List.of(new Coordinate(37.5, 127.0), new Coordinate(37.52, 127.02)),
                 new Meter(1500.0),
-                List.of(new Review(new User(null, "providerId", "reviewer"), "hi")),
+                List.of(new Review(new User(null, "providerId", "reviewer"), "hi", 0)),
                 "creatorId123",
                 Set.of("reportMan1"),
                 now
@@ -87,7 +87,7 @@ class CourseWriterTest {
                 List.of(new Coordinate(37.5, 127.0), new Coordinate(37.51, 127.01), new Coordinate(37.52, 127.02)),
                 List.of(new Coordinate(37.5, 127.0), new Coordinate(37.52, 127.02)),
                 new Meter(1500.0),
-                List.of(new Review(new User(null, "providerId", "reviewer"), "hi")),
+                List.of(new Review(new User(null, "providerId", "reviewer"), "hi", 0)),
                 "creatorId123",
                 Set.of("reportMan1"),
                 null
