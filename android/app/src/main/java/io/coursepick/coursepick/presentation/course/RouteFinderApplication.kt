@@ -5,8 +5,8 @@ import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.core.net.toUri
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.data.preference.RouteFinder
 import io.coursepick.coursepick.domain.course.Coordinate
+import io.coursepick.coursepick.domain.preference.RouteFinder
 import kotlin.math.ln
 import kotlin.math.tan
 

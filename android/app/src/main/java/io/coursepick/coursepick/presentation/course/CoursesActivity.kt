@@ -43,7 +43,6 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import io.coursepick.coursepick.BuildConfig
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.data.preference.RouteFinder
 import io.coursepick.coursepick.databinding.ActivityCoursesBinding
 import io.coursepick.coursepick.di.NaverMap
 import io.coursepick.coursepick.domain.course.Coordinate
@@ -52,6 +51,7 @@ import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.domain.notice.Notice
+import io.coursepick.coursepick.domain.preference.RouteFinder
 import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.DataKeys
 import io.coursepick.coursepick.presentation.InstallStateObserver

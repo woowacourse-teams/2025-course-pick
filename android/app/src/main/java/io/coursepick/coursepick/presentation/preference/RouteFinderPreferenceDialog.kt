@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.data.preference.RouteFinder
+import io.coursepick.coursepick.domain.preference.RouteFinder
 import io.coursepick.coursepick.presentation.course.RouteFinderApplication
 
 @Composable
@@ -73,7 +73,7 @@ fun RouteFinderPreferenceDialog(
             var selectedOption: RouteFinder? by remember(selection) { mutableStateOf(selection) }
 
             RouteFinderPreferenceOptions(
-                options = listOf(null) + RouteFinderUiModel.Entries,
+                options = listOf(null) + RouteFinderApplication.Entries,
                 selection = selectedOption,
                 onSelectOption = { option: RouteFinder? -> selectedOption = option },
                 modifier = Modifier.fillMaxWidth(),
@@ -92,7 +92,7 @@ fun RouteFinderPreferenceDialog(
 
 @Composable
 private fun RouteFinderPreferenceOptions(
-    options: List<RouteFinderUiModel?>,
+    options: List<RouteFinderApplication?>,
     selection: RouteFinder?,
     onSelectOption: (RouteFinder?) -> Unit,
     modifier: Modifier = Modifier,
@@ -102,7 +102,7 @@ private fun RouteFinderPreferenceOptions(
             .clip(RoundedCornerShape(16.dp))
             .background(colorResource(R.color.background_secondary)),
     ) {
-        options.forEachIndexed { index: Int, routeFinder: RouteFinderUiModel? ->
+        options.forEachIndexed { index: Int, routeFinder: RouteFinderApplication? ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier =

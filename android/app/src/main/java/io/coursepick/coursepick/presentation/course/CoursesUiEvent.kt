@@ -1,7 +1,7 @@
 package io.coursepick.coursepick.presentation.course
 
-import io.coursepick.coursepick.data.preference.RouteFinder
 import io.coursepick.coursepick.domain.course.Coordinate
+import io.coursepick.coursepick.domain.preference.RouteFinder
 
 sealed interface CoursesUiEvent {
     object FetchCourseFailure : CoursesUiEvent
