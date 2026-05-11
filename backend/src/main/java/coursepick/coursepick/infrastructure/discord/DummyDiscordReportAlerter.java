@@ -1,7 +1,6 @@
 package coursepick.coursepick.infrastructure.discord;
 
 import coursepick.coursepick.application.ReportAlerter;
-import coursepick.coursepick.application.ReportMessageType;
 import coursepick.coursepick.domain.course.Course;
 import coursepick.coursepick.domain.course.Review;
 

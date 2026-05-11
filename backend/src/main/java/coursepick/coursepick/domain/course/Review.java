@@ -23,11 +23,6 @@ public class Review {
 
     public static final int MAX_CONTENT_LENGTH = 500;
 
-    /**
-     * id를 필드명으로 사용하면 Spring Data MongoDB가 _id로 자동 번역하여 코드 작성이 복잡하다.
-     * 해당 케이스에서는 {@link MongoTemplate} 을 통한 조회도 불가능했기에, iid라는 네이밍을 사용한다.
-     * <a href="https://docs.spring.io/spring-data/mongodb/reference/mongodb/mapping/mapping.html#mapping.conventions.id-field">관련 공식 문서</a>
-     */
     private final String id;
     private final String userId;
     private final String authorNickname;

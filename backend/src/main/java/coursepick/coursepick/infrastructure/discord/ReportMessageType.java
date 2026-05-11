@@ -1,4 +1,4 @@
-package coursepick.coursepick.application;
+package coursepick.coursepick.infrastructure.discord;
 
 public enum ReportMessageType {
 
