@@ -448,6 +448,67 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
     }
 
     @Nested
+    class 리뷰_삭제 {
+
+        private User reviewer;
+        private String courseId;
+        private String reviewId;
+
+        @BeforeEach
+        void setUp() {
+            User courseCreator = dbUtil.saveUser(new User(UserProvider.KAKAO, "creatorProviderId"));
+            reviewer = dbUtil.saveUser(new User(UserProvider.KAKAO, "reviewerProviderId"));
+
+            Course course = new Course(null, new CourseName("테스트 코스"), List.of(
+                    new Coordinate(37.5180, 127.0280),
+                    new Coordinate(37.5175, 127.0270),
+                    new Coordinate(37.5170, 127.0265),
+                    new Coordinate(37.5180, 127.0280)
+            ), courseCreator);
+
+            courseId = dbUtil.saveCourse(course).id();
+            sut.addReview(courseId, reviewer.id(), "좋은 코스입니다", 5);
+            reviewId = dbUtil.findCourseById(courseId).reviews().get(0).id();
+        }
+
+        @Test
+        void 리뷰를_삭제하면_DB에서_제거된다() {
+            sut.deleteReview(courseId, reviewId, reviewer.id());
+
+            Course result = dbUtil.findCourseById(courseId);
+            assertThat(result.reviews()).isEmpty();
+        }
+
+        @Test
+        void 리뷰를_삭제하면_averageRating이_0으로_재계산된다() {
+            sut.deleteReview(courseId, reviewId, reviewer.id());
+
+            Course result = dbUtil.findCourseById(courseId);
+            assertThat(result.averageRating()).isEqualTo(0.0);
+        }
+
+        @Test
+        void 존재하지_않는_코스의_리뷰를_삭제하면_예외가_발생한다() {
+            assertThatThrownBy(() -> sut.deleteReview("notExistCourseId", reviewId, reviewer.id()))
+                    .isInstanceOf(NoSuchElementException.class);
+        }
+
+        @Test
+        void 존재하지_않는_리뷰를_삭제하면_예외가_발생한다() {
+            assertThatThrownBy(() -> sut.deleteReview(courseId, "notExistReviewId", reviewer.id()))
+                    .isInstanceOf(NoSuchElementException.class);
+        }
+
+        @Test
+        void 본인이_작성하지_않은_리뷰를_삭제하면_예외가_발생한다() {
+            User otherUser = dbUtil.saveUser(new User(UserProvider.KAKAO, "otherProviderId"));
+
+            assertThatThrownBy(() -> sut.deleteReview(courseId, reviewId, otherUser.id()))
+                    .isInstanceOf(SecurityException.class);
+        }
+    }
+
+    @Nested
     class 리뷰_신고 {
 
         private User reporter;

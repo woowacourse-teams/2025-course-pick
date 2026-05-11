@@ -90,6 +90,17 @@ public class CourseV1WebController implements CourseWebApi {
 
     @Override
     @Login
+    @DeleteMapping("/courses/{courseId}/reviews/{reviewId}")
+    public void deleteReview(
+            @PathVariable("courseId") String courseId,
+            @PathVariable("reviewId") String reviewId,
+            @UserId String userId
+    ) {
+        courseApplicationService.deleteReview(courseId, reviewId, userId);
+    }
+
+    @Override
+    @Login
     @PostMapping("/courses/{courseId}/reviews/{reviewId}/report")
     public void reportCourseReview(
             @PathVariable("courseId") String courseId,

@@ -136,16 +136,67 @@ public interface CourseWebApi {
             CreateReviewWebRequest request
     );
 
+    @Operation(summary = "코스 리뷰 삭제", security = {@SecurityRequirement(name = "BearerAuth")})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "리뷰 삭제 완료"),
+            @ApiResponse(responseCode = "401", content = @Content(examples = {
+                    @ExampleObject(
+                            name = "인증에 실패한 경우",
+                            ref = "#/components/examples/AUTHENTICATION_FAIL"
+                    )
+            })),
+            @ApiResponse(responseCode = "401", content = @Content(examples = {
+                    @ExampleObject(
+                            name = "본인 리뷰가 아닌 경우",
+                            ref = "#/components/examples/UNAUTHORIZED_REVIEW_DELETE"
+                    )
+            })),
+            @ApiResponse(responseCode = "404", content = @Content(examples = {
+                    @ExampleObject(
+                            name = "코스가 존재하지 않는 경우",
+                            ref = "#/components/examples/NOT_EXIST_COURSE"
+                    ),
+                    @ExampleObject(
+                            name = "리뷰가 존재하지 않는 경우",
+                            ref = "#/components/examples/NOT_EXIST_REVIEW"
+                    )
+            })),
+    })
+    void deleteReview(
+            @Parameter(description = "코스 ID", required = true) String courseId,
+            @Parameter(description = "삭제할 리뷰 ID", required = true) String reviewId,
+            @Parameter(hidden = true) String userId
+    );
+
     @Operation(summary = "리뷰 신고", security = {@SecurityRequirement(name = "BearerAuth")})
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "리뷰 신고 완료"),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 코스"),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 리뷰"),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 유저")
+            @ApiResponse(responseCode = "400", content = @Content(examples = {
+                    @ExampleObject(
+                            name = "이미 신고한 리뷰인 경우",
+                            ref = "#/components/examples/ALREADY_REPORTED_REVIEW"
+                    )
+            })),
+            @ApiResponse(responseCode = "401", content = @Content(examples = {
+                    @ExampleObject(
+                            name = "인증에 실패한 경우",
+                            ref = "#/components/examples/AUTHENTICATION_FAIL"
+                    )
+            })),
+            @ApiResponse(responseCode = "404", content = @Content(examples = {
+                    @ExampleObject(
+                            name = "코스가 존재하지 않는 경우",
+                            ref = "#/components/examples/NOT_EXIST_COURSE"
+                    ),
+                    @ExampleObject(
+                            name = "리뷰가 존재하지 않는 경우",
+                            ref = "#/components/examples/NOT_EXIST_REVIEW"
+                    )
+            })),
     })
     void reportCourseReview(
-            @Parameter(description = "신고할 리뷰의 코스 ID") String courseId,
-            @Parameter(description = "신고할 리뷰 ID") String reviewId,
+            @Parameter(description = "신고할 리뷰의 코스 ID", required = true) String courseId,
+            @Parameter(description = "신고할 리뷰 ID", required = true) String reviewId,
             @Parameter(hidden = true) String userId
     );
 
@@ -164,8 +215,28 @@ public interface CourseWebApi {
     @Operation(summary = "유저 커스텀 코스 등록", security = {@SecurityRequirement(name = "BearerAuth")})
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "코스 등록 성공"),
-            @ApiResponse(responseCode = "400", description = "입력값 검증 실패 (null 등)"),
-            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
+            @ApiResponse(responseCode = "400", content = @Content(examples = {
+                    @ExampleObject(
+                            name = "이름 길이가 범위 외인 경우",
+                            ref = "#/components/examples/INVALID_NAME_LENGTH"
+                    ),
+                    @ExampleObject(
+                            name = "좌표 개수가 부족한 경우",
+                            ref = "#/components/examples/INVALID_COORDINATE_COUNT"
+                    )
+            })),
+            @ApiResponse(responseCode = "401", content = @Content(examples = {
+                    @ExampleObject(
+                            name = "인증에 실패한 경우",
+                            ref = "#/components/examples/AUTHENTICATION_FAIL"
+                    )
+            })),
+            @ApiResponse(responseCode = "409", content = @Content(examples = {
+                    @ExampleObject(
+                            name = "이미 존재하는 코스 이름인 경우",
+                            ref = "#/components/examples/DUPLICATED_COURSE_NAME"
+                    )
+            })),
     })
     String addCustomCourses(
             @RequestBody(
@@ -185,28 +256,51 @@ public interface CourseWebApi {
     );
 
     @Operation(summary = "코스 생성 시 직전 포인트와 새 포인트 사이의 경로 및 거리 조회 (첫 점인 경우 origin과 destination을 동일하게 전송)")
-    @ApiResponse(responseCode = "200")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", content = @Content(examples = {
+                    @ExampleObject(
+                            name = "좌표 개수가 부족한 경우",
+                            ref = "#/components/examples/INVALID_COORDINATE_COUNT"
+                    )
+            })),
+    })
     DraftRouteWebResponse findDraftRoute(FindDraftRouteWebRequest request);
 
     @Operation(summary = "코스 신고", security = {@SecurityRequirement(name = "BearerAuth")})
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "코스 신고 완료"),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 코스"),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 유저")
+            @ApiResponse(responseCode = "400", content = @Content(examples = {
+                    @ExampleObject(
+                            name = "이미 신고한 코스인 경우",
+                            ref = "#/components/examples/ALREADY_REPORTED_COURSE"
+                    )
+            })),
+            @ApiResponse(responseCode = "401", content = @Content(examples = {
+                    @ExampleObject(
+                            name = "인증에 실패한 경우",
+                            ref = "#/components/examples/AUTHENTICATION_FAIL"
+                    )
+            })),
+            @ApiResponse(responseCode = "404", content = @Content(examples = {
+                    @ExampleObject(
+                            name = "코스가 존재하지 않는 경우",
+                            ref = "#/components/examples/NOT_EXIST_COURSE"
+                    )
+            })),
     })
     void reportCourse(
-            @Parameter(description = "신고할 코스 ID") String id,
+            @Parameter(description = "신고할 코스 ID", required = true) String id,
             @Parameter(hidden = true) String userId
     );
 
     @Operation(summary = "나의 코스 조회(생성순)", security = {@SecurityRequirement(name = "BearerAuth")})
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자"),
-            @ApiResponse(responseCode = "404", content = @Content(examples = {
+            @ApiResponse(responseCode = "401", content = @Content(examples = {
                     @ExampleObject(
-                            name = "코스가 존재하지 않는 경우",
-                            ref = "#/components/examples/NOT_EXIST_COURSE"
+                            name = "인증에 실패한 경우",
+                            ref = "#/components/examples/AUTHENTICATION_FAIL"
                     )
             })),
     })
