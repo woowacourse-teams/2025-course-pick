@@ -41,7 +41,7 @@ public class UserApplicationService {
     }
 
     private User register(UserProvider userProvider, String providerId) {
-        User user = new User(userProvider, providerId);
+        User user = User.create(userProvider, providerId);
         return userRepository.save(user);
     }
 }

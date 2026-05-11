@@ -1,6 +1,8 @@
 package coursepick.coursepick.domain.course;
 
-import coursepick.coursepick.domain.user.User;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.PersistenceCreator;
@@ -9,6 +11,8 @@ import java.time.Instant;
 
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_REVIEW_CONTENT_LENGTH;
 
+@AllArgsConstructor(access = AccessLevel.PUBLIC, onConstructor_ = @PersistenceCreator)
+@Builder(builderMethodName = "testBuilder")
 @Getter
 @Accessors(fluent = true)
 public class Review {
@@ -19,16 +23,13 @@ public class Review {
     private final String content;
     private final Instant createdAt;
 
-    @PersistenceCreator
-    public Review(String authorNickname, String content, Instant createdAt) {
+    public static Review create(String authorNickname, String content) {
         validateContent(content);
-        this.authorNickname = authorNickname;
-        this.content = content;
-        this.createdAt = createdAt;
-    }
-
-    public Review(User author, String content) {
-        this(author.nickname().value(), content, Instant.now());
+        return new Review(
+                authorNickname,
+                content,
+                Instant.now()
+        );
     }
 
     private static void validateContent(String content) {

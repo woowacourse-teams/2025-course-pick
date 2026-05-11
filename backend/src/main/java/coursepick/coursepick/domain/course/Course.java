@@ -4,6 +4,7 @@ import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.user.User;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
@@ -14,6 +15,7 @@ import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -23,6 +25,7 @@ import java.util.Set;
 @Document
 @CompoundIndex(name = "idx_creatorId_createdAt", def = "{'creatorId': 1, 'createdAt': -1}")
 @AllArgsConstructor(access = AccessLevel.PUBLIC, onConstructor_ = @PersistenceCreator)
+@Builder(builderMethodName = "testBuilder")
 @Getter
 @Accessors(fluent = true)
 public class Course {
@@ -50,26 +53,35 @@ public class Course {
 
     private LocalDateTime createdAt;
 
-    public Course(String id, CourseName courseName, List<Coordinate> rawCoordinates, User user) {
-        this.id = id;
-        this.name = courseName;
-        this.coordinates = refineCoordinates(rawCoordinates);
-        this.simplifiedCoordinates = simplifyCoordinates(this.coordinates);
-        this.length = calculateLength(coordinates);
-        this.reviews = new ArrayList<>();
-        this.creatorId = user.id();
-        this.reportUserIds = new HashSet<>();
-        this.createdAt = LocalDateTime.now();
+    public static Course create(CourseName courseName, List<Coordinate> rawCoordinates, User user) {
+        return revoke(null, courseName, rawCoordinates, user);
     }
 
-    private List<Coordinate> refineCoordinates(List<Coordinate> rawCoordinates) {
+    public static Course revoke(String id, CourseName courseName, List<Coordinate> rawCoordinates, User user) {
+        List<Coordinate> coordinates = refineCoordinates(rawCoordinates);
+        List<Coordinate> simplifiedCoordinates = simplifyCoordinates(coordinates);
+
+        return new Course(
+                id,
+                courseName,
+                coordinates,
+                simplifiedCoordinates,
+                calculateLength(coordinates),
+                new ArrayList<>(),
+                user.id(),
+                new HashSet<>(),
+                LocalDateTime.now()
+        );
+    }
+
+    private static List<Coordinate> refineCoordinates(List<Coordinate> rawCoordinates) {
         return CoordinateBuilder.fromRawCoordinates(rawCoordinates)
                 .removeSimilar()
                 .smooth()
                 .build();
     }
 
-    private List<Coordinate> simplifyCoordinates(List<Coordinate> coordinates) {
+    private static List<Coordinate> simplifyCoordinates(List<Coordinate> coordinates) {
         return CoordinateBuilder.fromRawCoordinates(coordinates)
                 .simplify(new Meter(10))
                 .build();
@@ -117,7 +129,7 @@ public class Course {
     }
 
     public void addReview(User author, String content) {
-        reviews.add(new Review(author, content));
+        reviews.add(Review.create(author.nickname().value(), content));
     }
 
     public void addReport(User user) {

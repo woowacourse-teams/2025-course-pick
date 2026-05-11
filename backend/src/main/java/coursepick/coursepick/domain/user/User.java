@@ -2,6 +2,7 @@ package coursepick.coursepick.domain.user;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
@@ -12,6 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document
 @CompoundIndex(name = "idx_provider_providerId", def = "{'provider': 1, 'providerId': 1}", unique = true)
 @AllArgsConstructor(access = AccessLevel.PUBLIC, onConstructor_ = @PersistenceCreator)
+@Builder(builderMethodName = "testBuilder")
 @Getter
 @Accessors(fluent = true)
 public class User {
@@ -22,12 +24,16 @@ public class User {
     private final String providerId;
     private Nickname nickname;
 
-    public User(UserProvider provider, String providerId, String nickname) {
-        this(null, provider, providerId, new Nickname(nickname));
-    }
-
-    public User(UserProvider provider, String providerId) {
-        this(null, provider, providerId, Nickname.random());
+    public static User create(
+            UserProvider provider,
+            String providerId
+    ) {
+        return new User(
+                null,
+                provider,
+                providerId,
+                Nickname.random()
+        );
     }
 
     public void assignRandomNickname() {
