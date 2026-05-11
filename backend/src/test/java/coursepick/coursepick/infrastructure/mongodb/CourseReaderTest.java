@@ -48,10 +48,11 @@ class CourseReaderTest extends AbstractIntegrationTest {
         assertThat(result.simplifiedCoordinates()).isEqualTo(course.simplifiedCoordinates());
         assertThat(result.length()).isEqualTo(course.length());
 
-        // review는 nickname, content, createdAt만 직렬화되므로 세부 필드 검증
+        // review 필드 검증
         List<Review> expectedReviews = course.reviews();
         assertThat(result.reviews()).satisfiesExactly(
                 review -> {
+                    assertThat(review.id()).isEqualTo(expectedReviews.getFirst().id());
                     assertThat(review.userId()).isEqualTo(expectedReviews.getFirst().userId());
                     assertThat(review.authorNickname()).isEqualTo(expectedReviews.getFirst().authorNickname());
                     assertThat(review.content()).isEqualTo(expectedReviews.getFirst().content());
