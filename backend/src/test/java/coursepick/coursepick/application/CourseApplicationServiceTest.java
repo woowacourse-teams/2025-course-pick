@@ -470,7 +470,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
             courseId = dbUtil.saveCourse(course).id();
 
-            sut.addReview(courseId, courseCreator.id(), "좋은 코스입니다");
+            sut.addReview(courseId, courseCreator.id(), "좋은 코스입니다", 5);
 
             reviewId = dbUtil.findCourseById(courseId).reviews().get(0).id();
         }
