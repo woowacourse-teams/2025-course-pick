@@ -33,7 +33,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
     CourseApplicationService sut;
 
     @MockitoBean
-    ReportAlerter courseReportAlerter;
+    Alerter courseAlerter;
 
     @Test
     void 코스는_최소_1KM부터_탐색할_수_있다() {
@@ -283,7 +283,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         Course result = dbUtil.findCourseById(targetCourse.id());
         assertThat(result.reportUserIds()).hasSize(2);
-        verify(courseReportAlerter, times(0)).alert(any(Course.class));
+        verify(courseAlerter, times(0)).alert(any(Course.class));
     }
 
     @Test
@@ -305,7 +305,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         Course result = dbUtil.findCourseById(targetCourse.id());
         assertThat(result.reportUserIds()).hasSize(3);
-        verify(courseReportAlerter, times(1)).alert(any(Course.class));
+        verify(courseAlerter, times(1)).alert(any(Course.class));
     }
 
     @Nested
@@ -500,7 +500,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         void 리뷰를_신고하면_알람이_간다() {
             sut.reportReview(courseId, reviewId, reporter.id());
 
-            verify(courseReportAlerter, times(1)).alert(any(Course.class), any(Review.class));
+            verify(courseAlerter, times(1)).alert(any(Course.class), any(Review.class));
         }
 
         @Test
@@ -510,7 +510,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
             sut.reportReview(courseId, reviewId, reporter.id());
             sut.reportReview(courseId, reviewId, reporter2.id());
 
-            verify(courseReportAlerter, times(2)).alert(any(Course.class), any(Review.class));
+            verify(courseAlerter, times(2)).alert(any(Course.class), any(Review.class));
         }
     }
 

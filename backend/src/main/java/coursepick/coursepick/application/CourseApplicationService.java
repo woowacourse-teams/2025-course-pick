@@ -26,7 +26,7 @@ public class CourseApplicationService {
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
     private final RouteFinder routeFinder;
-    private final ReportAlerter reportAlerter;
+    private final Alerter alerter;
 
     @Transactional
     public void addCustomCourse(String name, List<Coordinate> coordinates, String userId) {
@@ -47,7 +47,7 @@ public class CourseApplicationService {
         courseRepository.save(course);
 
         if (course.isReportThreshold()) {
-            reportAlerter.alert(course);
+            alerter.alert(course);
         }
     }
 
@@ -137,7 +137,7 @@ public class CourseApplicationService {
         review.addReport(user);
         courseRepository.save(course);
 
-        reportAlerter.alert(course, review);
+        alerter.alert(course, review);
     }
 
     private void loggingForNotExistsCourse(List<String> ids, List<Course> courses) {

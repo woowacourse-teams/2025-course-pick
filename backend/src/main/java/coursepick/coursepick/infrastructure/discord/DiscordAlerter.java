@@ -1,11 +1,8 @@
 package coursepick.coursepick.infrastructure.discord;
 
-import coursepick.coursepick.application.ReportAlerter;
-import coursepick.coursepick.domain.course.Course;
-import coursepick.coursepick.domain.course.Review;
+import coursepick.coursepick.application.AbstractAlerter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Async;
@@ -18,28 +15,13 @@ import java.util.Map;
 @Component
 @Profile({"dev", "prod"})
 @RequiredArgsConstructor
-public class DiscordReportAlerter implements ReportAlerter {
+public class DiscordAlerter extends AbstractAlerter {
 
     private final RestClient discordRestClient;
 
-    @Value("${spring.profiles.active:local}")
-    private String activeProfile;
-
     @Async
     @Override
-    public void alert(Course course) {
-        String message = ReportMessageType.COURSE.createMessage(activeProfile, course, null);
-        alert(message);
-    }
-
-    @Async
-    @Override
-    public void alert(Course course, Review review) {
-        String message = ReportMessageType.REVIEW.createMessage(activeProfile, course, review);
-        alert(message);
-    }
-
-    private void alert(String message) {
+    protected void sendMessage(String message) {
         try {
             discordRestClient.post()
                     .contentType(MediaType.APPLICATION_JSON)
