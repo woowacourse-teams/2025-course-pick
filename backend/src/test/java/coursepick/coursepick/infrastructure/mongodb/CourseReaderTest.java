@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static coursepick.coursepick.test_util.CoordinateFixture.coordinates;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CourseReaderTest extends AbstractIntegrationTest {
@@ -25,8 +26,8 @@ class CourseReaderTest extends AbstractIntegrationTest {
         course = Course.testBuilder()
                 .id("507f1f77bcf86cd799439011")
                 .name(new CourseName("테스트 코스"))
-                .coordinates(List.of(new Coordinate(37.5, 127.0), new Coordinate(37.51, 127.01), new Coordinate(37.52, 127.02)))
-                .simplifiedCoordinates(List.of(new Coordinate(37.5, 127.0), new Coordinate(37.52, 127.02)))
+                .coordinates(coordinates())
+                .simplifiedCoordinates(coordinates())
                 .length(new Meter(1500.0))
                 .reviews(List.of(Review.testBuilder()
                         .authorNickname("reviewer")
@@ -70,8 +71,8 @@ class CourseReaderTest extends AbstractIntegrationTest {
         Course course = Course.testBuilder()
                 .id("507f1f77bcf86cd799439011")
                 .name(new CourseName("테스트 코스"))
-                .coordinates(List.of(new Coordinate(37.5, 127.0), new Coordinate(37.51, 127.01), new Coordinate(37.52, 127.02)))
-                .simplifiedCoordinates(List.of(new Coordinate(37.5, 127.0), new Coordinate(37.52, 127.02)))
+                .coordinates(coordinates())
+                .simplifiedCoordinates(coordinates())
                 .length(new Meter(1500.0))
                 .reviews(new ArrayList<>())
                 .creatorId("creatorId123")

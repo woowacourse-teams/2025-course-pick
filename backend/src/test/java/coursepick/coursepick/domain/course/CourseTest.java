@@ -11,6 +11,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.HashSet;
 import java.util.stream.Stream;
 
+import static coursepick.coursepick.test_util.CoordinateFixture.coordinates;
 import static coursepick.coursepick.test_util.CoordinateTestUtil.*;
 import static coursepick.coursepick.test_util.UserFixture.ADMIN_USER;
 import static java.util.List.of;
@@ -79,13 +80,13 @@ class CourseTest {
 
         @Test
         void 코스를_생성한다() {
-            assertThatCode(() -> Course.create(new CourseName("코스"), of(new Coordinate(0, 0), new Coordinate(2, 2)), ADMIN_USER))
+            assertThatCode(() -> Course.create(new CourseName("코스"), coordinates(), ADMIN_USER))
                     .doesNotThrowAnyException();
         }
 
         @Test
         void 유저가_만든_코스를_생성한다() {
-            assertThatCode(() -> Course.create(new CourseName("코스"), of(new Coordinate(0, 0), new Coordinate(2, 2)), TEST_USER))
+            assertThatCode(() -> Course.create(new CourseName("코스"), coordinates(), TEST_USER))
                     .doesNotThrowAnyException();
         }
 
@@ -95,7 +96,7 @@ class CourseTest {
                 "짧"
         })
         void 잘못된_길이의_이름으로_코스를_생성하면_예외가_발생한다(String name) {
-            assertThatThrownBy(() -> Course.create(new CourseName(name), of(new Coordinate(0, 0), new Coordinate(2, 2)), ADMIN_USER))
+            assertThatThrownBy(() -> Course.create(new CourseName(name), coordinates(), ADMIN_USER))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
