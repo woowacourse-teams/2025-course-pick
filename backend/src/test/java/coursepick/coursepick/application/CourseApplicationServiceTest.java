@@ -487,8 +487,8 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         void 두_명이_신고하면_두_개의_신고가_DB에_저장된다() {
             User reporter2 = dbUtil.saveUser(new User(UserProvider.KAKAO, "reporter2ProviderId"));
 
-            sut.reportReview(courseId,reviewId, reporter.id());
-            sut.reportReview(courseId,reviewId, reporter2.id());
+            sut.reportReview(courseId, reviewId, reporter.id());
+            sut.reportReview(courseId, reviewId, reporter2.id());
 
             Course result = dbUtil.findCourseById(courseId);
             Review review = result.getReview(reviewId);

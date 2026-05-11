@@ -7,7 +7,7 @@ public enum ReportMessageType {
             - 코스 ID: %s
             - 코스 이름: %s
             - 신고 수: %d
-            - 신고자 ID: [%s]
+            - 신고자 ID: %s
             """
     ),
     REVIEW("""
@@ -16,7 +16,7 @@ public enum ReportMessageType {
             - 코스 이름: %s
             - 리뷰 내용 : %s
             - 신고 수: %d
-            - 신고자 ID: [%s]
+            - 신고자 ID: %s
             """
     ),
     ;

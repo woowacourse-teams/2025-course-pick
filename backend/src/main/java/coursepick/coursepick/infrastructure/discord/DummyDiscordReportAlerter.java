@@ -25,7 +25,7 @@ public class DummyDiscordReportAlerter implements ReportAlerter {
 
     @Override
     public void alert(Course course, Review review) {
-        String message = ReportMessageType.REVIEW.format(activeProfile, course.id(), course.name().value(), review.content(), course.reportUserIds().size(), course.reportUserIds());
+        String message = ReportMessageType.REVIEW.format(activeProfile, course.id(), course.name().value(), review.content(), review.reportUserIds().size(), review.reportUserIds());
         alert(message);
     }
 
