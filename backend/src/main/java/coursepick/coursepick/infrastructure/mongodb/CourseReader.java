@@ -119,7 +119,7 @@ public class CourseReader implements Converter<Document, Course> {
             String content = reviewDoc.getString("content");
             int rating = reviewDoc.getInteger("rating");
             Instant createdAt = toInstant(reviewDoc.get("createdAt"));
-            reviews.add(new Review(id, userId, authorNickname, content, reportUserIds, createdAt));
+            reviews.add(new Review(id, userId, authorNickname, content, rating, reportUserIds, createdAt));
         }
         return reviews;
     }
