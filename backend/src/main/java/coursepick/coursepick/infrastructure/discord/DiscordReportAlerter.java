@@ -28,14 +28,14 @@ public class DiscordReportAlerter implements ReportAlerter {
     @Async
     @Override
     public void alert(Course course) {
-        String message = ReportMessageType.COURSE.format(activeProfile, course.id(), course.name().value(), course.reportUserIds().size(), course.reportUserIds());
+        String message = ReportMessageType.COURSE.createMessage(activeProfile, course, null);
         alert(message);
     }
 
     @Async
     @Override
     public void alert(Course course, Review review) {
-        String message = ReportMessageType.REVIEW.format(activeProfile, course.id(), course.name().value(), review.content(), review.reportUserIds().size(), review.reportUserIds());
+        String message = ReportMessageType.REVIEW.createMessage(activeProfile, course, review);
         alert(message);
     }
 

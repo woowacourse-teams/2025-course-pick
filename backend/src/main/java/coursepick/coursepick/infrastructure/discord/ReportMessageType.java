@@ -1,5 +1,10 @@
 package coursepick.coursepick.infrastructure.discord;
 
+import coursepick.coursepick.domain.course.Course;
+import coursepick.coursepick.domain.course.Review;
+
+import org.jspecify.annotations.Nullable;
+
 public enum ReportMessageType {
 
     COURSE("""
@@ -9,7 +14,18 @@ public enum ReportMessageType {
             - 신고 수: %d
             - 신고자 ID: %s
             """
-    ),
+    ) {
+        @Override
+        public String createMessage(String profile, Course course, @Nullable Review review) {
+            return messageFormat.formatted(
+                    profile,
+                    course.id(),
+                    course.name().value(),
+                    course.reportUserIds().size(),
+                    course.reportUserIds()
+            );
+        }
+    },
     REVIEW("""
             [%s] 리뷰 신고 알림
             - 코스 ID: %s
@@ -18,16 +34,25 @@ public enum ReportMessageType {
             - 신고 수: %d
             - 신고자 ID: %s
             """
-    ),
-    ;
+    ) {
+        @Override
+        public String createMessage(String profile, Course course, @Nullable Review review) {
+            return messageFormat.formatted(
+                    profile,
+                    course.id(),
+                    course.name().value(),
+                    review.content(),
+                    review.reportUserIds().size(),
+                    review.reportUserIds()
+            );
+        }
+    };
 
-    private final String messageFormat;
+    final String messageFormat;
 
     ReportMessageType(String messageFormat) {
         this.messageFormat = messageFormat;
     }
 
-    public String format(Object... args) {
-        return this.messageFormat.formatted(args);
-    }
+    abstract String createMessage(String profile, Course course, @Nullable Review review);
 }
