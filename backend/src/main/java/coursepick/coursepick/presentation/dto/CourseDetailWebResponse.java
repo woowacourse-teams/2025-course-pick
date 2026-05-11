@@ -14,8 +14,8 @@ public record CourseDetailWebResponse(
         double length,
         @Schema(description = "코스를 구성하는 좌표 목록")
         List<CoordinateWebResponse> coordinates,
-        @Schema(description = "코스 별점 정보")
-        RatingWebResponse rating,
+        @Schema(description = "리뷰 평균 몇점 및 리뷰 개수")
+        ReviewOverviewWebResponse reviewOverview,
         @Schema(description = "코스 리뷰 목록")
         List<ReviewWebResponse> reviews
 ) {
@@ -25,7 +25,7 @@ public record CourseDetailWebResponse(
                 response.name(),
                 response.length().value(),
                 CoordinateWebResponse.from(response.coordinates()),
-                RatingWebResponse.from(response.reviewCount(), response.averageRating()),
+                ReviewOverviewWebResponse.from(response.reviewCount(), response.averageRating()),
                 ReviewWebResponse.from(response.reviews())
         );
     }
