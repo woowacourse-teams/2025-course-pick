@@ -124,7 +124,11 @@ public class Course {
         reviews.add(new Review(author, content, reviewRating));
     }
 
-    public void removeReview(Review review) {
+    public void removeReview(Review review, String userId) {
+        if (!review.userId().equals(userId)) {
+            throw UNAUTHORIZED_REVIEW_DELETE.create(review.id(), userId);
+        }
+
         reviews.remove(review);
     }
 

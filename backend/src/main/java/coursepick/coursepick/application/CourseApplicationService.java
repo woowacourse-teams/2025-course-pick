@@ -130,6 +130,15 @@ public class CourseApplicationService {
     }
 
     @Transactional
+    public void deleteReview(String courseId, String reviewId, String userId) {
+        Course course = getCourse(courseId);
+        Review review = course.getReview(reviewId);
+
+        course.removeReview(review, userId);
+        courseRepository.save(course);
+    }
+
+    @Transactional
     public void reportReview(String courseId, String reviewId, String userId) {
         User user = getUser(userId);
         Course course = getCourse(courseId);
