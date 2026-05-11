@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static coursepick.coursepick.test_util.CourseFixture.course;
 import static coursepick.coursepick.test_util.GpxTestUtil.createGpxInputStreamOf;
 import static coursepick.coursepick.test_util.UserFixture.ADMIN_USER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,7 +41,7 @@ class GpxTest {
                 new Coordinate(0.00001, 0.00001),
                 new Coordinate(0, 0)
         );
-		var course = new Course(null, new CourseName("테스트코스"), coordinates, ADMIN_USER);
+        var course = course("테스트코스", coordinates).build();
 
         var sut = Gpx.from(course);
 
@@ -61,7 +62,7 @@ class GpxTest {
                 new Coordinate(0.00001, 0.00001),
                 new Coordinate(0, 0)
         );
-		var course = new Course(null, new CourseName("테스트코스"), coordinates, ADMIN_USER);
+        var course = course("테스트코스", coordinates).build();
         var sut = Gpx.from(course);
 
         var xml = sut.toXmlContent();
@@ -83,7 +84,7 @@ class GpxTest {
                 new Coordinate(0.00001, 0.00001),
                 new Coordinate(0, 0)
         );
-		var course = new Course(null, new CourseName("테스트코스"), coordinates, ADMIN_USER);
+        var course = course("테스트코스", coordinates).build();
         var sut = Gpx.from(course);
 
         var courses = sut.toCourses(ADMIN_USER);

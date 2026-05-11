@@ -1,13 +1,14 @@
 package coursepick.coursepick.infrastructure.mongodb;
 
 import coursepick.coursepick.domain.course.*;
-import coursepick.coursepick.domain.user.User;
 import coursepick.coursepick.test_util.AbstractIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -21,17 +22,21 @@ class CourseReaderTest extends AbstractIntegrationTest {
     void setUp() {
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
 
-        course = new Course(
-                "507f1f77bcf86cd799439011",
-                new CourseName("테스트 코스"),
-                List.of(new Coordinate(37.5, 127.0), new Coordinate(37.51, 127.01), new Coordinate(37.52, 127.02)),
-                List.of(new Coordinate(37.5, 127.0), new Coordinate(37.52, 127.02)),
-                new Meter(1500.0),
-                List.of(new Review(new User(null, "providerId", "reviewer"), "hi")),
-                "creatorId123",
-                Set.of("reportMan1"),
-                now
-        );
+        course = Course.testBuilder()
+                .id("507f1f77bcf86cd799439011")
+                .name(new CourseName("테스트 코스"))
+                .coordinates(List.of(new Coordinate(37.5, 127.0), new Coordinate(37.51, 127.01), new Coordinate(37.52, 127.02)))
+                .simplifiedCoordinates(List.of(new Coordinate(37.5, 127.0), new Coordinate(37.52, 127.02)))
+                .length(new Meter(1500.0))
+                .reviews(List.of(Review.testBuilder()
+                        .authorNickname("reviewer")
+                        .content("hi")
+                        .createdAt(Instant.now())
+                        .build()))
+                .creatorId("creatorId123")
+                .reportUserIds(Set.of("reportMan1"))
+                .createdAt(now)
+                .build();
     }
 
     @Test
@@ -62,17 +67,17 @@ class CourseReaderTest extends AbstractIntegrationTest {
 
     @Test
     void createdAt이_null인_경우_ObjectId에서_추출한다() {
-        Course course = new Course(
-                "507f1f77bcf86cd799439011",
-                new CourseName("테스트 코스"),
-                List.of(new Coordinate(37.5, 127.0), new Coordinate(37.51, 127.01), new Coordinate(37.52, 127.02)),
-                List.of(new Coordinate(37.5, 127.0), new Coordinate(37.52, 127.02)),
-                new Meter(1500.0),
-                List.of(new Review(new User(null, "providerId", "reviewer"), "hi")),
-                "creatorId123",
-                Set.of("reportMan1"),
-                null
-        );
+        Course course = Course.testBuilder()
+                .id("507f1f77bcf86cd799439011")
+                .name(new CourseName("테스트 코스"))
+                .coordinates(List.of(new Coordinate(37.5, 127.0), new Coordinate(37.51, 127.01), new Coordinate(37.52, 127.02)))
+                .simplifiedCoordinates(List.of(new Coordinate(37.5, 127.0), new Coordinate(37.52, 127.02)))
+                .length(new Meter(1500.0))
+                .reviews(new ArrayList<>())
+                .creatorId("creatorId123")
+                .reportUserIds(Set.of("reportMan1"))
+                .createdAt(null)
+                .build();
 
         Course saved = dbUtil.saveCourse(course);
         Course result = dbUtil.findCourseById(saved.id());

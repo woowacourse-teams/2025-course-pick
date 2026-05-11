@@ -1,9 +1,7 @@
 package coursepick.coursepick.test_util;
 
 import coursepick.coursepick.domain.user.Authentication;
-import coursepick.coursepick.domain.user.Nickname;
 import coursepick.coursepick.domain.user.User;
-import coursepick.coursepick.domain.user.UserProvider;
 import coursepick.coursepick.presentation.WebExceptionHandler;
 import coursepick.coursepick.security.AuthorizationFlowTestController;
 import coursepick.coursepick.security.LoginInterceptor;
@@ -45,7 +43,7 @@ public abstract class AbstractSecurityTest {
         userId = UUID.randomUUID().toString();
         accessToken = Authentication.auth(
                 Keys.hmacShaKeyFor(secretKeyString.getBytes(StandardCharsets.UTF_8)),
-                new User(userId, UserProvider.KAKAO, "", new Nickname("테스트 닉네임"))
+                User.testBuilder().id(userId).build()
         ).accessToken();
     }
 }

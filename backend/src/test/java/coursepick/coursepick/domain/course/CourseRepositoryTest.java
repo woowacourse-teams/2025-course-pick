@@ -12,7 +12,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static coursepick.coursepick.test_util.CoordinateTestUtil.square;
 import static coursepick.coursepick.test_util.CoordinateTestUtil.upright;
-import static coursepick.coursepick.test_util.UserFixture.ADMIN_USER;
+import static coursepick.coursepick.test_util.CourseFixture.course;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CourseRepositoryTest extends AbstractIntegrationTest {
@@ -29,10 +29,10 @@ class CourseRepositoryTest extends AbstractIntegrationTest {
     @BeforeEach
     void setUp() {
         var target = new Coordinate(mapLatitude, mapLongitude);
-        var course1 = new Course(null, new CourseName("코스1"), square(upright(target, 1200), 10, 10), ADMIN_USER);
-        var course2 = new Course(null, new CourseName("코스2"), square(upright(target, 1500), 10, 10), ADMIN_USER);
-        var course3 = new Course(null, new CourseName("코스3"), square(upright(target, 1700), 10, 10), ADMIN_USER);
-        var course4 = new Course(null, new CourseName("코스4"), square(upright(target, 2000), 10, 10), ADMIN_USER);
+        var course1 = course("코스1", square(upright(target, 1200), 10, 10)).build();
+        var course2 = course("코스2", square(upright(target, 1500), 10, 10)).build();
+        var course3 = course("코스3", square(upright(target, 1700), 10, 10)).build();
+        var course4 = course("코스4", square(upright(target, 2000), 10, 10)).build();
         dbUtil.saveCourse(course1);
         dbUtil.saveCourse(course2);
         dbUtil.saveCourse(course3);
@@ -74,13 +74,13 @@ class CourseRepositoryTest extends AbstractIntegrationTest {
         @BeforeEach
         void setUp() {
             var target = new Coordinate(mapLatitude, mapLongitude);
-            var shortCourse = new Course(null, new CourseName("짧은코스"), square(target, 50, 50), ADMIN_USER);      // 약 200m
-            var mediumCourse = new Course(null, new CourseName("중간코스"), square(target, 500, 500), ADMIN_USER);    // 약 2000m
-            var longCourse = new Course(null, new CourseName("긴코스"), square(target, 2500, 2500), ADMIN_USER);      // 약 10000m
-            var veryLongCourse = new Course(null, new CourseName("매우긴코스"), square(target, 7500, 7500), ADMIN_USER); // 약 30000m
-            var easyCourse = new Course(null, new CourseName("쉬운코스"), square(target, 100, 100), ADMIN_USER);       // 약 400m, 쉬움
-            var normalCourse = new Course(null, new CourseName("보통코스"), square(target, 2000, 2000), ADMIN_USER); // 약 8000m, 보통
-            var hardCourse = new Course(null, new CourseName("어려운코스"), square(target, 4000, 4000), ADMIN_USER);  // 약 16000m, 어려움
+            var shortCourse = course("짧은코스", square(target, 50, 50)).length(new Meter(200)).build();
+            var mediumCourse = course("중간코스", square(target, 500, 500)).length(new Meter(2000)).build();
+            var longCourse = course("긴코스", square(target, 2500, 2500)).length(new Meter(10000)).build();
+            var veryLongCourse = course("매우긴코스", square(target, 7500, 7500)).length(new Meter(30000)).build();
+            var easyCourse = course("쉬운코스", square(target, 100, 100)).length(new Meter(400)).build();
+            var normalCourse = course("보통코스", square(target, 2000, 2000)).length(new Meter(8000)).build();
+            var hardCourse = course("어려운코스", square(target, 4000, 4000)).length(new Meter(16000)).build();
 
             dbUtil.saveCourse(shortCourse);
             dbUtil.saveCourse(mediumCourse);
