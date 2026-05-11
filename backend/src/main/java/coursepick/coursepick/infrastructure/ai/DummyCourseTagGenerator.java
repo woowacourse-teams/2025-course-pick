@@ -14,6 +14,6 @@ public class DummyCourseTagGenerator implements CourseTagGenerator {
 
     @Override
     public List<CourseTag> generate(Course course) {
-        return List.of();
+        return course.tags();
     }
 }

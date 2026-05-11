@@ -13,7 +13,7 @@ public record CourseDetailResponse(
         Meter length,
         List<Coordinate> coordinates,
         List<ReviewResponse> reviews,
-        List<CourseTag> aiTags
+        List<CourseTag> tags
 ) {
     public static CourseDetailResponse from(Course course) {
         return new CourseDetailResponse(

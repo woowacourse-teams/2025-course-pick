@@ -15,5 +15,4 @@ admin:
 notice.base-url: http://dev.coursepick.cloud/images
 jwt.secret-key: ${JWT_SECRET_KEY}
 discord.webhook-url: ${DISCORD_WEBHOOK_URL}
-gemini:
-  api-key: ${GEMINI_API_KEY}
+gemini.api-key: ${GEMINI_API_KEY}

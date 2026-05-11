@@ -41,19 +41,6 @@ public class CourseReader implements Converter<Document, Course> {
         );
     }
 
-    private List<CourseTag> parseTags(Document source) {
-        List<String> tagNames = source.getList("tags", String.class);
-        if (tagNames == null) return new ArrayList<>();
-        List<CourseTag> tags = new ArrayList<>();
-        for (String name : tagNames) {
-            try {
-                tags.add(CourseTag.valueOf(name));
-            } catch (IllegalArgumentException ignored) {
-            }
-        }
-        return tags;
-    }
-
     private Set<String> parseReportUserIds(Document source) {
         List<String> reportUserIds = source.getList("reportUserIds", String.class);
         if (reportUserIds == null) return new HashSet<>();
@@ -67,6 +54,19 @@ public class CourseReader implements Converter<Document, Course> {
         return date.toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime();
+    }
+
+    private List<CourseTag> parseTags(Document source) {
+        List<String> tagNames = source.getList("tags", String.class);
+        if (tagNames == null) return new ArrayList<>();
+        List<CourseTag> tags = new ArrayList<>();
+        for (String name : tagNames) {
+            try {
+                tags.add(CourseTag.valueOf(name));
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+        return tags;
     }
 
     private List<Coordinate> parseCoordinatesFromSource(Document source) {

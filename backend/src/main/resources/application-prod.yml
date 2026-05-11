@@ -19,6 +19,5 @@ springdoc:
   api-docs.enabled: false
   swagger-ui.enabled: false
 discord.webhook-url: ${DISCORD_WEBHOOK_URL}
-gemini:
-  api-key: ${GEMINI_API_KEY}
+gemini.api-key: ${GEMINI_API_KEY}
 
