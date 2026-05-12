@@ -132,11 +132,11 @@ class CourseTest {
     @Test
     void 다른_유저가_리뷰를_삭제하면_예외가_발생한다() {
         var course = new Course(null, new CourseName("코스"), of(new Coordinate(0, 0), new Coordinate(2, 2)), ADMIN_USER);
-        course.addReview(TEST_USER, "좋아요", 5);
+        course.reviews().add(new Review(TEST_USER, "content", 5));
         Review review = course.reviews().getFirst();
         User otherUser = new User(UserProvider.KAKAO, "otherProviderId");
 
-        assertThatThrownBy(() -> course.removeReview(review, otherUser.id()))
+        assertThatThrownBy(() -> course.verifyRemovableReview(review, otherUser.id()))
                 .isInstanceOf(UnauthorizedException.class);
     }
 
@@ -144,10 +144,9 @@ class CourseTest {
     void 한_유저가_같은_코스에_두_번_리뷰를_남기면_예외가_발생한다() {
         Course course = new Course(null, new CourseName("코스"), List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
         User user1 = new User("user1", UserProvider.KAKAO, "providerId", Nickname.random());
+        course.reviews().add(new Review(user1, "content", 5));
 
-        course.addReview(user1, "첫 번째 리뷰", 5);
-
-        assertThatThrownBy(() -> course.addReview(user1, "두 번째 리뷰", 3))
+        assertThatThrownBy(() -> course.verifyWriteReviewEligibility(user1))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("이미 해당 코스에 리뷰를 작성했습니다");
     }
