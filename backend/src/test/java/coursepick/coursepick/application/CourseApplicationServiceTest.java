@@ -448,6 +448,45 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
     }
 
     @Nested
+    class 리뷰_추가 {
+
+        private User reviewer;
+        private String courseId;
+
+        @BeforeEach
+        void setUp() {
+            User courseCreator = dbUtil.saveUser(new User(UserProvider.KAKAO, "creatorProviderId"));
+            reviewer = dbUtil.saveUser(new User(UserProvider.KAKAO, "reviewerProviderId"));
+
+            Course course = new Course(null, new CourseName("테스트 코스"), List.of(
+                    new Coordinate(37.5180, 127.0280),
+                    new Coordinate(37.5175, 127.0270),
+                    new Coordinate(37.5170, 127.0265),
+                    new Coordinate(37.5180, 127.0280)
+            ), courseCreator);
+
+            courseId = dbUtil.saveCourse(course).id();
+        }
+
+        @Test
+        void 리뷰를_추가하면_DB에_저장된다() {
+            sut.addReview(courseId, reviewer.id(), "좋은 코스입니다", 4);
+
+            Course result = dbUtil.findCourseById(courseId);
+            assertThat(result.reviews()).hasSize(1);
+            assertThat(result.reviews().get(0).userId()).isEqualTo(reviewer.id());
+            assertThat(result.reviews().get(0).content()).isEqualTo("좋은 코스입니다");
+            assertThat(result.reviews().get(0).rating()).isEqualTo(4);
+        }
+
+        @Test
+        void 존재하지_않는_코스에_리뷰를_추가하면_예외가_발생한다() {
+            assertThatThrownBy(() -> sut.addReview("notExistCourseId", reviewer.id(), "좋은 코스입니다", 4))
+                    .isInstanceOf(NoSuchElementException.class);
+        }
+    }
+
+    @Nested
     class 리뷰_삭제 {
 
         private User reviewer;

@@ -124,9 +124,7 @@ public class CourseApplicationService {
     @Transactional
     public void addReview(String courseId, String userId, String content, int rating) {
         User user = getUser(userId);
-        Course course = getCourse(courseId);
-        course.addReview(user, content, rating);
-        courseRepository.save(course);
+        courseRepository.pushReview(courseId, new Review(user, content, rating));
     }
 
     @Transactional
