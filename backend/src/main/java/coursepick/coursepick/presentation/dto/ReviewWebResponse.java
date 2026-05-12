@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
 public record ReviewWebResponse(
-        @Schema(description = "리뷰 ID", example = "f47ac10b-58cc-4372-a567-0e02b2c3d479")
+        @Schema(description = "리뷰 ID", example = "f47ac10b")
         String id,
         @Schema(description = "리뷰 내용", example = "노을이 예쁜 코스입니다")
         String content,
