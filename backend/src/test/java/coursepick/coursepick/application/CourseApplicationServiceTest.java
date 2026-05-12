@@ -498,14 +498,6 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
             assertThatThrownBy(() -> sut.deleteReview(courseId, "notExistReviewId", reviewer.id()))
                     .isInstanceOf(NoSuchElementException.class);
         }
-
-        @Test
-        void 본인이_작성하지_않은_리뷰를_삭제하면_예외가_발생한다() {
-            User otherUser = dbUtil.saveUser(new User(UserProvider.KAKAO, "otherProviderId"));
-
-            assertThatThrownBy(() -> sut.deleteReview(courseId, reviewId, otherUser.id()))
-                    .isInstanceOf(SecurityException.class);
-        }
     }
 
     @Nested

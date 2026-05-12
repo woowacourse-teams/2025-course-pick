@@ -14,7 +14,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static coursepick.coursepick.test_util.CoordinateTestUtil.*;
-import static coursepick.coursepick.test_util.UserFixture.*;
+import static coursepick.coursepick.test_util.UserFixture.ADMIN_USER;
+import static coursepick.coursepick.test_util.UserFixture.TEST_USER;
 import static java.util.List.of;
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.data.Percentage.withPercentage;
