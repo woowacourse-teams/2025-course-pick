@@ -133,7 +133,7 @@ class CreateCustomCourseViewModel
         }
 
         fun dismissExitDialog() {
-            Logger.log(Logger.Event.Success("create_custom_course_show_discard_dialog"))
+            Logger.log(Logger.Event.Success("create_custom_course_dismiss_discard_dialog"))
             _showDiscardDialog.value = false
         }
 
