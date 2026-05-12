@@ -126,7 +126,7 @@ public class Course {
 
     public void removeReview(Review review, String userId) {
         if (!review.userId().equals(userId)) {
-            throw UNAUTHORIZED_REVIEW_DELETE.create(review.id(), userId);
+            throw AUTHENTICATION_FAIL.create();
         }
 
         reviews.remove(review);
