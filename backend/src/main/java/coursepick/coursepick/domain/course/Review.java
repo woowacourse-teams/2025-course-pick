@@ -33,6 +33,7 @@ public class Review {
     public Review(User author, String content, int rating) {
         this(RandomStringUtils.insecure().next(10, true, true), author.id(), author.nickname().value(), content, rating, new HashSet<>(), Instant.now());
         validateContent(content);
+        validateRating(rating);
     }
 
     public void addReport(User user) {
@@ -42,10 +43,16 @@ public class Review {
         reportUserIds.add(user.id());
     }
 
-    private static void validateContent(String content) {
+    private void validateContent(String content) {
         if (content == null || content.isEmpty() || content.length() > MAX_CONTENT_LENGTH) {
             int length = content == null ? 0 : content.length();
             throw INVALID_REVIEW_CONTENT_LENGTH.create(length);
+        }
+    }
+
+    private void validateRating(int rating) {
+        if(rating < 0 || rating > 5){
+            throw ErrorType.INVALID_REVIEW_RATING.create(rating);
         }
     }
 }
