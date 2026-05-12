@@ -148,7 +148,7 @@ public interface CourseWebApi {
             @ApiResponse(responseCode = "401", content = @Content(examples = {
                     @ExampleObject(
                             name = "본인 리뷰가 아닌 경우",
-                            ref = "#/components/examples/UNAUTHORIZED_REVIEW_DELETE"
+                            ref = "#/components/examples/AUTHENTICATION_FAIL"
                     )
             })),
             @ApiResponse(responseCode = "404", content = @Content(examples = {
