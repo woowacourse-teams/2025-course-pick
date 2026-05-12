@@ -19,7 +19,7 @@ public class DiscordAlerter extends AbstractAlerter {
     private final RestClient discordRestClient;
 
     @Async
-    protected void sendMessage(String message) {
+    public void sendMessage(String message) {
         try {
             discordRestClient.post()
                     .contentType(MediaType.APPLICATION_JSON)
