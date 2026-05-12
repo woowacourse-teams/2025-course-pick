@@ -6,13 +6,12 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.annotation.PersistenceCreator;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import static coursepick.coursepick.application.exception.ErrorType.INVALID_REVIEW_CONTENT_LENGTH;
 
@@ -31,7 +30,7 @@ public class Review {
     private final Instant createdAt;
 
     public Review(User author, String content) {
-        this(UUID.randomUUID().toString(), author.id(), author.nickname().value(), content, new HashSet<>(), Instant.now());
+        this(RandomStringUtils.insecure().next(10, true, true), author.id(), author.nickname().value(), content, new HashSet<>(), Instant.now());
         validateContent(content);
     }
 
