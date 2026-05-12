@@ -34,7 +34,7 @@ public class CourseReader implements Converter<Document, Course> {
                 simplifiedCoordinates,
                 new Meter(source.getDouble("length")),
                 reviews,
-                parseAverageRating(source, reviews),
+                parseAverageRating(source),
                 source.getString("creatorId"),
                 parseReportUserIds(source),
                 parseCreatedAt(source)
@@ -93,14 +93,12 @@ public class CourseReader implements Converter<Document, Course> {
                 .toList();
     }
 
-    private double parseAverageRating(Document source, List<Review> reviews) {
-        Double stored = source.getDouble("averageRating");
-        if (stored != null) {
-            return stored;
+    private double parseAverageRating(Document source) {
+        Number averageRating = source.get("averageRating", Number.class);
+        if (averageRating != null) {
+            return averageRating.doubleValue();
         }
-        int count = reviews.size();
-        int total = reviews.stream().mapToInt(Review::rating).sum();
-        return count == 0 ? 0.0 : Math.round((double) total / count * 10) / 10.0;
+        return 0.0;
     }
 
     @SuppressWarnings("unchecked")

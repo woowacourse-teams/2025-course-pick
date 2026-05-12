@@ -28,7 +28,7 @@ class CourseReaderTest extends AbstractIntegrationTest {
                 List.of(new Coordinate(37.5, 127.0), new Coordinate(37.52, 127.02)),
                 new Meter(1500.0),
                 List.of(new Review(new User(null, "providerId", "reviewer"), "리뷰 내용", 4)),
-                3.5,
+                3,
                 "creatorId123",
                 Set.of("reportMan1"),
                 now
