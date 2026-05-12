@@ -1,5 +1,6 @@
 package coursepick.coursepick.application;
 
+import coursepick.coursepick.application.dto.AlertContext;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.exception.UnauthorizedException;
 import coursepick.coursepick.domain.course.*;
@@ -283,7 +284,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         Course result = dbUtil.findCourseById(targetCourse.id());
         assertThat(result.reportUserIds()).hasSize(2);
-        verify(courseAlerter, times(0)).alert(any(Course.class));
+        verify(courseAlerter, times(0)).alert(any(AlertContext.class));
     }
 
     @Test
@@ -305,7 +306,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         Course result = dbUtil.findCourseById(targetCourse.id());
         assertThat(result.reportUserIds()).hasSize(3);
-        verify(courseAlerter, times(1)).alert(any(Course.class));
+        verify(courseAlerter, times(1)).alert(any(AlertContext.class));
     }
 
     @Nested
@@ -500,7 +501,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         void 리뷰를_신고하면_알람이_간다() {
             sut.reportReview(courseId, reviewId, reporter.id());
 
-            verify(courseAlerter, times(1)).alert(any(Course.class), any(Review.class));
+            verify(courseAlerter, times(1)).alert(any(AlertContext.class));
         }
 
         @Test
@@ -510,7 +511,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
             sut.reportReview(courseId, reviewId, reporter.id());
             sut.reportReview(courseId, reviewId, reporter2.id());
 
-            verify(courseAlerter, times(2)).alert(any(Course.class), any(Review.class));
+            verify(courseAlerter, times(2)).alert(any(AlertContext.class));
         }
     }
 

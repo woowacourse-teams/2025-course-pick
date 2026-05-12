@@ -1,7 +1,5 @@
 package coursepick.coursepick.infrastructure.discord;
 
-import coursepick.coursepick.application.AbstractAlerter;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Fallback;
 import org.springframework.stereotype.Component;
@@ -16,3 +14,4 @@ public class DummyDiscordAlerter extends AbstractAlerter {
         log.info("[DummyDiscordCourseReportAlerter] {}", message);
     }
 }
+

@@ -1,6 +1,5 @@
 package coursepick.coursepick.infrastructure.discord;
 
-import coursepick.coursepick.application.AbstractAlerter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -20,7 +19,6 @@ public class DiscordAlerter extends AbstractAlerter {
     private final RestClient discordRestClient;
 
     @Async
-    @Override
     protected void sendMessage(String message) {
         try {
             discordRestClient.post()
