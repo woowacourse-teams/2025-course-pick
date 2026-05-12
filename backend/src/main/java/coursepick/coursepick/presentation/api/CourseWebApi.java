@@ -143,9 +143,7 @@ public interface CourseWebApi {
                     @ExampleObject(
                             name = "인증에 실패한 경우",
                             ref = "#/components/examples/AUTHENTICATION_FAIL"
-                    )
-            })),
-            @ApiResponse(responseCode = "401", content = @Content(examples = {
+                    ),
                     @ExampleObject(
                             name = "본인 리뷰가 아닌 경우",
                             ref = "#/components/examples/AUTHENTICATION_FAIL"
