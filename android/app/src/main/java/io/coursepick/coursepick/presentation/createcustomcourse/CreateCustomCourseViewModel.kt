@@ -72,9 +72,9 @@ class CreateCustomCourseViewModel
                 val origin: Coordinate = waypoints.lastOrNull() ?: waypoint
                 val rawSegment: DraftSegment =
                     runCatching { customCourseRepository.draftSegment(origin, waypoint) }
-                        .onSuccess { Logger.log(Logger.Event.Success("create_custom_course_add_waypoint")) }
+                        .onSuccess { Logger.log(Logger.Event.Add("create_custom_course_waypoint")) }
                         .getOrElse { exception: Throwable ->
-                            Logger.log(Logger.Event.Failure("create_custom_course_add_waypoint"))
+                            Logger.log(Logger.Event.Failure("create_custom_course_waypoint"), "exception" to exception.message.orEmpty())
                             if (exception is NoNetworkException) _event.emit(CreateCustomCourseUiEvent.NoNetwork)
                             return@launch
                         }
@@ -96,7 +96,7 @@ class CreateCustomCourseViewModel
         }
 
         fun removeLastWaypoint() {
-            Logger.log(Logger.Event.Success("create_custom_course_remove_waypoint"))
+            Logger.log(Logger.Event.Remove("create_custom_course_waypoint"))
             viewModelScope.launch {
                 _segments.value = segments.value.dropLast(1)
                 _event.emit(CreateCustomCourseUiEvent.RemoveLastWaypoint)
@@ -109,13 +109,13 @@ class CreateCustomCourseViewModel
                     _event.emit(CreateCustomCourseUiEvent.CourseLengthTooShort)
                 }
             } else {
-                Logger.log(Logger.Event.Success("create_custom_course_show_submit_dialog"))
+                Logger.log(Logger.Event.Enter("create_custom_course_submit_dialog"))
                 _showSubmitDialog.value = true
             }
         }
 
         fun dismissSubmitDialog() {
-            Logger.log(Logger.Event.Success("create_custom_course_dismiss_submit_dialog"))
+            Logger.log(Logger.Event.Exit("create_custom_course_submit_dialog"))
             _showSubmitDialog.value = false
             _courseName.value = ""
             _isCourseNameOutOfBounds.value = false
@@ -127,13 +127,13 @@ class CreateCustomCourseViewModel
                     _event.emit(CreateCustomCourseUiEvent.Exit)
                 }
             } else {
-                Logger.log(Logger.Event.Success("create_custom_course_show_discard_dialog"))
+                Logger.log(Logger.Event.Enter("create_custom_course_discard_dialog"))
                 _showDiscardDialog.value = true
             }
         }
 
         fun dismissExitDialog() {
-            Logger.log(Logger.Event.Success("create_custom_course_dismiss_discard_dialog"))
+            Logger.log(Logger.Event.Exit("create_custom_course_discard_dialog"))
             _showDiscardDialog.value = false
         }
 

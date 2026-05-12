@@ -92,6 +92,18 @@ object Logger {
             override val name: String = "${target}_failure"
         }
 
+        class Add(
+            target: String,
+        ) : Event() {
+            override val name: String = "${target}_add"
+        }
+
+        class Remove(
+            target: String,
+        ) : Event() {
+            override val name: String = "${target}_remove"
+        }
+
         class PreferenceChange(
             target: String,
         ) : Event() {
