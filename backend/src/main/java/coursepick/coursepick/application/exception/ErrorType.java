@@ -100,6 +100,10 @@ public enum ErrorType {
     DUPLICATED_COURSE_NAME(
             "'%s'은(는) 이미 존재하는 코스 이름입니다.",
             IllegalStateException::new
+    ),
+    INVALID_REVIEW_RATING(
+            "%d는 0이상 5이하여야합니다.",
+            IllegalArgumentException::new
     );
 
     private final String message;
