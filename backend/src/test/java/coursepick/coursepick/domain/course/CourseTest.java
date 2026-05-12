@@ -126,60 +126,6 @@ class CourseTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @Nested
-    class 별점_테스트 {
-
-        @Test
-        void 리뷰가_없으면_평균_별점은_0이다() {
-            var course = new Course(null, new CourseName("코스"), of(new Coordinate(0, 0), new Coordinate(2, 2)), ADMIN_USER);
-
-            assertThat(course.averageRating()).isEqualTo(0.0);
-        }
-
-        @Test
-        void 리뷰_추가시_평균_별점이_계산된다() {
-            var course = new Course(null, new CourseName("코스"), of(new Coordinate(0, 0), new Coordinate(2, 2)), ADMIN_USER);
-
-            course.addReview(TEST_USER, "좋아요", 4);
-
-            assertThat(course.averageRating()).isEqualTo(4.0);
-        }
-
-        @Test
-        void 리뷰_여러개_추가시_평균이_소수점_1자리로_반올림된다() {
-            var course = new Course(null, new CourseName("코스"), of(new Coordinate(0, 0), new Coordinate(2, 2)), ADMIN_USER);
-
-            course.addReview(TEST_USER, "최고예요", 5);
-            course.addReview(TEST_USER2, "좋아요", 5);
-            course.addReview(TEST_USER3, "그냥요", 4);
-
-            assertThat(course.averageRating()).isEqualTo(4.7);
-        }
-
-        @Test
-        void 리뷰_삭제시_평균_별점이_재계산된다() {
-            var course = new Course(null, new CourseName("코스"), of(new Coordinate(0, 0), new Coordinate(2, 2)), ADMIN_USER);
-            course.addReview(TEST_USER, "좋아요", 5);
-            course.addReview(TEST_USER2, "별로요", 1);
-            Review reviewToRemove = course.reviews().getFirst();
-
-            course.removeReview(reviewToRemove);
-
-            assertThat(course.averageRating()).isEqualTo(1.0);
-        }
-
-        @Test
-        void 마지막_리뷰_삭제시_평균_별점은_0이다() {
-            var course = new Course(null, new CourseName("코스"), of(new Coordinate(0, 0), new Coordinate(2, 2)), ADMIN_USER);
-            course.addReview(TEST_USER, "좋아요", 5);
-            Review review = course.reviews().getFirst();
-
-            course.removeReview(review);
-
-            assertThat(course.averageRating()).isEqualTo(0.0);
-        }
-    }
-
     @Test
     void 한_유저가_같은_코스에_두_번_리뷰를_남기면_예외가_발생한다() {
         Course course = new Course(null, new CourseName("코스"), List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);

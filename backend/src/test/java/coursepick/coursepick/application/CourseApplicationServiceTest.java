@@ -355,7 +355,6 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
                     sampleCoordinates,
                     new Meter(1000),
                     List.of(),
-                    0.0,
                     user.id(),
                     new HashSet<>(),
                     now
@@ -367,7 +366,6 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
                     sampleCoordinates,
                     new Meter(1000),
                     List.of(),
-                    0.0,
                     user.id(),
                     new HashSet<>(),
                     now.plusSeconds(1L)

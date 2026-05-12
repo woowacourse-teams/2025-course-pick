@@ -11,7 +11,6 @@ public record CourseDetailResponse(
         String name,
         Meter length,
         List<Coordinate> coordinates,
-        double averageRating,
         int reviewCount,
         List<ReviewResponse> reviews
 ) {
@@ -21,7 +20,6 @@ public record CourseDetailResponse(
                 course.name().value(),
                 course.length(),
                 course.coordinates(),
-                course.averageRating(),
                 course.reviews().size(),
                 ReviewResponse.from(course.reviews())
         );
