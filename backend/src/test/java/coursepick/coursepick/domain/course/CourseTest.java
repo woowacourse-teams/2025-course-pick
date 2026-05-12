@@ -14,14 +14,13 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static coursepick.coursepick.test_util.CoordinateTestUtil.*;
-import static coursepick.coursepick.test_util.UserFixture.ADMIN_USER;
+import static coursepick.coursepick.test_util.UserFixture.*;
 import static java.util.List.of;
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.data.Percentage.withPercentage;
 
 class CourseTest {
 
-    private static final User TEST_USER = new User(UserProvider.KAKAO, "userId", "providerId");
 
     public static Stream<Arguments> targetAndDistance() {
         var base = new Coordinate(0, 0);
@@ -151,8 +150,8 @@ class CourseTest {
             var course = new Course(null, new CourseName("코스"), of(new Coordinate(0, 0), new Coordinate(2, 2)), ADMIN_USER);
 
             course.addReview(TEST_USER, "최고예요", 5);
-            course.addReview(TEST_USER, "좋아요", 5);
-            course.addReview(TEST_USER, "그냥요", 4);
+            course.addReview(TEST_USER2, "좋아요", 5);
+            course.addReview(TEST_USER3, "그냥요", 4);
 
             assertThat(course.averageRating()).isEqualTo(4.7);
         }
@@ -161,7 +160,7 @@ class CourseTest {
         void 리뷰_삭제시_평균_별점이_재계산된다() {
             var course = new Course(null, new CourseName("코스"), of(new Coordinate(0, 0), new Coordinate(2, 2)), ADMIN_USER);
             course.addReview(TEST_USER, "좋아요", 5);
-            course.addReview(TEST_USER, "별로요", 1);
+            course.addReview(TEST_USER2, "별로요", 1);
             Review reviewToRemove = course.reviews().getFirst();
 
             course.removeReview(reviewToRemove);
@@ -188,7 +187,7 @@ class CourseTest {
 
         course.addReview(user1, "첫 번째 리뷰", 5);
 
-        assertThatThrownBy(() -> course.addReview(user1, "두 번째 리뷰"))
+        assertThatThrownBy(() -> course.addReview(user1, "두 번째 리뷰", 3))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("이미 해당 코스에 리뷰를 작성했습니다");
     }
