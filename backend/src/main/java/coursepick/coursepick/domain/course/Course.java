@@ -45,6 +45,8 @@ public class Course {
 
     private List<Review> reviews;
 
+    private double averageRating;
+
     private String creatorId;
 
     private Set<String> reportUserIds;
@@ -58,6 +60,7 @@ public class Course {
         this.simplifiedCoordinates = simplifyCoordinates(this.coordinates);
         this.length = calculateLength(coordinates);
         this.reviews = new ArrayList<>();
+        this.averageRating = 0.0;
         this.creatorId = user.id();
         this.reportUserIds = new HashSet<>();
         this.createdAt = LocalDateTime.now();

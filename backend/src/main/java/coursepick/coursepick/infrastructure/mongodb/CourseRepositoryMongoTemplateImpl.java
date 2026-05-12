@@ -2,11 +2,10 @@ package coursepick.coursepick.infrastructure.mongodb;
 
 import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoTimeoutException;
-import coursepick.coursepick.domain.course.Course;
-import coursepick.coursepick.domain.course.CourseFindCondition;
-import coursepick.coursepick.domain.course.CourseName;
-import coursepick.coursepick.domain.course.CourseRepository;
+import com.mongodb.client.result.UpdateResult;
+import coursepick.coursepick.domain.course.*;
 import lombok.RequiredArgsConstructor;
+import org.bson.Document;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.domain.Sort;
@@ -14,12 +13,14 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
 
+import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_COURSE;
 import static coursepick.coursepick.application.exception.ErrorType.QUERY_TIMEOUT;
 
 @Repository
@@ -142,5 +143,31 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
     @Override
     public boolean existByCourseName(CourseName courseName) {
         return mongoTemplate.exists(Query.query(Criteria.where("name").is(courseName.value())), Course.class);
+    }
+
+    @Override
+    public void pushReview(String courseId, Review review) {
+        Query query = new Query(Criteria.where("_id").is(courseId));
+
+        Document reviewDoc = new Document()
+                .append("id", review.id())
+                .append("userId", review.userId())
+                .append("authorNickname", review.authorNickname())
+                .append("content", review.content())
+                .append("rating", review.rating())
+                .append("reportUserIds", review.reportUserIds())
+                .append("createdAt", review.createdAt());
+
+        Update update = new Update().push("reviews", reviewDoc);
+
+        UpdateResult updateResult = mongoTemplate.updateFirst(
+                query,
+                update,
+                Course.class
+        );
+
+        if (updateResult.getModifiedCount() <= 0) {
+            throw NOT_EXIST_COURSE.create(courseId);
+        }
     }
 }

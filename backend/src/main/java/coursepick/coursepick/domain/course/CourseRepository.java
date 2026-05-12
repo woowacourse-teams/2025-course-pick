@@ -24,4 +24,6 @@ public interface CourseRepository {
     void delete(Course course);
 
     boolean existByCourseName(CourseName courseName);
+
+    void pushReview(String courseId, Review review);
 }
