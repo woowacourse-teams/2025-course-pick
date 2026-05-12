@@ -166,11 +166,7 @@ class CreateCustomCourseViewModel
                     val coordinates: List<Coordinate> = segments.value.flatMap(DraftSegment::coordinates)
                     customCourseRepository.submitCourse(DraftCourse(courseName, coordinates))
                 }.onSuccess {
-                    Logger.log(
-                        Logger.Event.Success("create_custom_course_submit"),
-                        "course_name" to courseName,
-                        "waypoints_count" to waypoints.size,
-                    )
+                    Logger.log(Logger.Event.Success("create_custom_course_submit"))
                     _event.emit(CreateCustomCourseUiEvent.CreateCustomCourseSuccess)
                 }.onFailure { exception: Throwable ->
                     Logger.log(Logger.Event.Failure("create_custom_course_submit"), "exception" to exception.message.orEmpty())
