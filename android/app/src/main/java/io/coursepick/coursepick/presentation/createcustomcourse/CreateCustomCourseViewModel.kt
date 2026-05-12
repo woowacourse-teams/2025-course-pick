@@ -75,7 +75,11 @@ class CreateCustomCourseViewModel
                         .onSuccess { Logger.log(Logger.Event.Add("create_custom_course_waypoint")) }
                         .getOrElse { exception: Throwable ->
                             Logger.log(Logger.Event.Failure("create_custom_course_waypoint"), "exception" to exception.message.orEmpty())
-                            if (exception is NoNetworkException) _event.emit(CreateCustomCourseUiEvent.NoNetwork)
+                            when (exception) {
+                                is CancellationException -> throw exception
+                                is NoNetworkException -> _event.emit(CreateCustomCourseUiEvent.NoNetwork)
+                                else -> _event.emit(CreateCustomCourseUiEvent.UnknownError)
+                            }
                             return@launch
                         }
                 val adjustedSegment: DraftSegment =
