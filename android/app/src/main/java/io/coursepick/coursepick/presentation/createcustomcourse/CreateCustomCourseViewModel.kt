@@ -11,6 +11,7 @@ import io.coursepick.coursepick.domain.course.Length
 import io.coursepick.coursepick.domain.customcourse.CustomCourseRepository
 import io.coursepick.coursepick.domain.customcourse.DraftCourse
 import io.coursepick.coursepick.domain.customcourse.DraftSegment
+import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.auth.AuthFeature
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -70,10 +71,13 @@ class CreateCustomCourseViewModel
             viewModelScope.launch {
                 val origin: Coordinate = waypoints.lastOrNull() ?: waypoint
                 val rawSegment: DraftSegment =
-                    runCatching { customCourseRepository.draftSegment(origin, waypoint) }.getOrElse { exception: Throwable ->
-                        if (exception is NoNetworkException) _event.emit(CreateCustomCourseUiEvent.NoNetwork)
-                        return@launch
-                    }
+                    runCatching { customCourseRepository.draftSegment(origin, waypoint) }
+                        .onSuccess { Logger.log(Logger.Event.Success("create_custom_course_add_waypoint")) }
+                        .getOrElse { exception: Throwable ->
+                            Logger.log(Logger.Event.Failure("create_custom_course_add_waypoint"))
+                            if (exception is NoNetworkException) _event.emit(CreateCustomCourseUiEvent.NoNetwork)
+                            return@launch
+                        }
                 val adjustedSegment: DraftSegment =
                     rawSegment
                         .copy(coordinates = rawSegment.coordinates.dropLast(1))
@@ -92,6 +96,7 @@ class CreateCustomCourseViewModel
         }
 
         fun removeLastWaypoint() {
+            Logger.log(Logger.Event.Success("create_custom_course_remove_waypoint"))
             viewModelScope.launch {
                 _segments.value = segments.value.dropLast(1)
                 _event.emit(CreateCustomCourseUiEvent.RemoveLastWaypoint)
@@ -104,11 +109,13 @@ class CreateCustomCourseViewModel
                     _event.emit(CreateCustomCourseUiEvent.CourseLengthTooShort)
                 }
             } else {
+                Logger.log(Logger.Event.Success("create_custom_course_show_submit_dialog"))
                 _showSubmitDialog.value = true
             }
         }
 
         fun dismissSubmitDialog() {
+            Logger.log(Logger.Event.Success("create_custom_course_dismiss_submit_dialog"))
             _showSubmitDialog.value = false
             _courseName.value = ""
             _isCourseNameOutOfBounds.value = false
@@ -120,11 +127,13 @@ class CreateCustomCourseViewModel
                     _event.emit(CreateCustomCourseUiEvent.Exit)
                 }
             } else {
+                Logger.log(Logger.Event.Success("create_custom_course_show_discard_dialog"))
                 _showDiscardDialog.value = true
             }
         }
 
         fun dismissExitDialog() {
+            Logger.log(Logger.Event.Success("create_custom_course_show_discard_dialog"))
             _showDiscardDialog.value = false
         }
 
@@ -150,23 +159,42 @@ class CreateCustomCourseViewModel
                     return@launch
                 }
 
-                try {
+                runCatching {
                     customCourseRepository.submitCourse(DraftCourse(courseName, waypoints))
-                    _event.emit(CreateCustomCourseUiEvent.CreateCustomCourseSuccess)
-                } catch (_: NoNetworkException) {
-                    _event.emit(CreateCustomCourseUiEvent.NoNetwork)
-                } catch (exception: HttpException) {
-                    _event.emit(
-                        when (exception.code()) {
-                            400 -> CreateCustomCourseUiEvent.InvalidCourseName
-                            401 -> CreateCustomCourseUiEvent.UnauthorizedUser
-                            409 -> CreateCustomCourseUiEvent.DuplicateCourseName
-                            else -> CreateCustomCourseUiEvent.UnknownError
-                        },
+                }.onSuccess {
+                    Logger.log(
+                        Logger.Event.Success("create_custom_course_submit"),
+                        "course_name" to courseName,
+                        "waypoints_count" to waypoints.size,
                     )
-                } catch (exception: Throwable) {
-                    if (exception is CancellationException) throw exception
-                    _event.emit(CreateCustomCourseUiEvent.UnknownError)
+                    _event.emit(CreateCustomCourseUiEvent.CreateCustomCourseSuccess)
+                }.onFailure { exception: Throwable ->
+                    Logger.log(Logger.Event.Failure("create_custom_course_submit"), "exception" to exception.message.orEmpty())
+
+                    when (exception) {
+                        is CancellationException -> {
+                            throw exception
+                        }
+
+                        is NoNetworkException -> {
+                            _event.emit(CreateCustomCourseUiEvent.NoNetwork)
+                        }
+
+                        is HttpException -> {
+                            _event.emit(
+                                when (exception.code()) {
+                                    400 -> CreateCustomCourseUiEvent.InvalidCourseName
+                                    401 -> CreateCustomCourseUiEvent.UnauthorizedUser
+                                    409 -> CreateCustomCourseUiEvent.DuplicateCourseName
+                                    else -> CreateCustomCourseUiEvent.UnknownError
+                                },
+                            )
+                        }
+
+                        else -> {
+                            _event.emit(CreateCustomCourseUiEvent.UnknownError)
+                        }
+                    }
                 }
             }
         }
