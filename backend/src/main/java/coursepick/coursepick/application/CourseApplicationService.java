@@ -48,7 +48,6 @@ public class CourseApplicationService {
         courseRepository.save(course);
 
         if (course.isReportThreshold()) {
-//            alerter.alert(course);
             alerter.alert(AlertContext.fromCourseReport(course));
         }
     }
@@ -139,7 +138,6 @@ public class CourseApplicationService {
         review.addReport(user);
         courseRepository.save(course);
 
-//        alerter.alert(course, review);
         alerter.alert(AlertContext.fromReviewReport(course, review));
     }
 

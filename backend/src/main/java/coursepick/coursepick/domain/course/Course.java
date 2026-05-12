@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 import static coursepick.coursepick.application.exception.ErrorType.ALREADY_REPORTED_COURSE;
+import static coursepick.coursepick.application.exception.ErrorType.ALREADY_REVIEWED_COURSE;
 import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_REVIEW;
 
 @Document
@@ -119,6 +120,9 @@ public class Course {
     }
 
     public void addReview(User author, String content) {
+        if (reviews.stream().anyMatch(review -> review.userId().equals(author.id()))) {
+            throw ALREADY_REVIEWED_COURSE.create(this.id, author.id());
+        }
         reviews.add(new Review(author, content));
     }
 

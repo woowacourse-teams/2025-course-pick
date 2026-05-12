@@ -93,6 +93,10 @@ public enum ErrorType {
             "이미 신고한 리뷰입니다. 리뷰id=%s, 유저id=%s",
             IllegalArgumentException::new
     ),
+    ALREADY_REVIEWED_COURSE(
+            "이미 해당 코스에 리뷰를 작성했습니다. 코스id=%s, 유저id=%s",
+            IllegalArgumentException::new
+    ),
     DUPLICATED_COURSE_NAME(
             "'%s'은(는) 이미 존재하는 코스 이름입니다.",
             IllegalStateException::new
