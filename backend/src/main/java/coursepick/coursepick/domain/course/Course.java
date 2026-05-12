@@ -120,19 +120,16 @@ public class Course {
         this.name = new CourseName(courseName);
     }
 
-    public void addReview(User author, String content, int reviewRating) {
+    public void verifyWriteReviewEligibility(User author) {
         if (reviews.stream().anyMatch(review -> review.userId().equals(author.id()))) {
             throw ALREADY_REVIEWED_COURSE.create(this.id, author.id());
         }
-        reviews.add(new Review(author, content, reviewRating));
     }
 
-    public void removeReview(Review review, String userId) {
+    public void verifyRemovableReview(Review review, String userId) {
         if (!review.userId().equals(userId)) {
             throw AUTHENTICATION_FAIL.create();
         }
-
-        reviews.remove(review);
     }
 
     public void addReport(User user) {
