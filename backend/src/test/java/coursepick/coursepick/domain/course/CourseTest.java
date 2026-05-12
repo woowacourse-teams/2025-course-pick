@@ -128,7 +128,6 @@ class CourseTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-
     @Test
     void 다른_유저가_리뷰를_삭제하면_예외가_발생한다() {
         var course = new Course(null, new CourseName("코스"), of(new Coordinate(0, 0), new Coordinate(2, 2)), ADMIN_USER);

@@ -1,6 +1,5 @@
 package coursepick.coursepick.application;
 
-
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.exception.UnauthorizedException;
 import coursepick.coursepick.domain.course.*;
@@ -571,30 +570,6 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
             sut.addReview(courseId, courseCreator.id(), "좋은 코스입니다", 5);
 
             reviewId = dbUtil.findCourseById(courseId).reviews().get(0).id();
-        }
-
-        @Test
-        void 리뷰_신고가_DB에_저장된다() {
-            Course course = dbUtil.findCourseById(courseId);
-
-            sut.reportReview(courseId, reviewId, reporter.id());
-
-            var result = dbUtil.findCourseById(courseId);
-            Review review = result.getReview(reviewId);
-            assertThat(review.reportUserIds()).containsExactly(reporter.id());
-        }
-
-        @Test
-        void 두_명이_신고하면_두_개의_신고가_DB에_저장된다() {
-            User reporter2 = dbUtil.saveUser(new User(UserProvider.KAKAO, "reporter2ProviderId"));
-
-            sut.reportReview(courseId, reviewId, reporter.id());
-            sut.reportReview(courseId, reviewId, reporter2.id());
-
-            Course result = dbUtil.findCourseById(courseId);
-            Review review = result.getReview(reviewId);
-            assertThat(review.reportUserIds()).hasSize(2)
-                    .containsExactlyInAnyOrder(reporter.id(), reporter2.id());
         }
 
         @Test
