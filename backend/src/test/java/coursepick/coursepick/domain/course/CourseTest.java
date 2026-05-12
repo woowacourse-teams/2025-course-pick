@@ -1,5 +1,6 @@
 package coursepick.coursepick.domain.course;
 
+import coursepick.coursepick.application.exception.UnauthorizedException;
 import coursepick.coursepick.domain.user.Nickname;
 import coursepick.coursepick.domain.user.User;
 import coursepick.coursepick.domain.user.UserProvider;
@@ -125,6 +126,18 @@ class CourseTest {
 
         assertThatThrownBy(() -> course.addReport(user1))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+
+    @Test
+    void 다른_유저가_리뷰를_삭제하면_예외가_발생한다() {
+        var course = new Course(null, new CourseName("코스"), of(new Coordinate(0, 0), new Coordinate(2, 2)), ADMIN_USER);
+        course.addReview(TEST_USER, "좋아요", 5);
+        Review review = course.reviews().getFirst();
+        User otherUser = new User(UserProvider.KAKAO, "otherProviderId");
+
+        assertThatThrownBy(() -> course.removeReview(review, otherUser.id()))
+                .isInstanceOf(UnauthorizedException.class);
     }
 
     @Test

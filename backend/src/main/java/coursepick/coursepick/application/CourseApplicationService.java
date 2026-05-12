@@ -124,6 +124,9 @@ public class CourseApplicationService {
     @Transactional
     public void addReview(String courseId, String userId, String content, int rating) {
         User user = getUser(userId);
+        Course course = getCourse(courseId);
+        course.verifyWriteReviewEligibility(user);
+
         courseRepository.pushReview(courseId, new Review(user, content, rating));
     }
 
@@ -131,9 +134,9 @@ public class CourseApplicationService {
     public void deleteReview(String courseId, String reviewId, String userId) {
         Course course = getCourse(courseId);
         Review review = course.getReview(reviewId);
+        course.verifyRemovableReview(review, userId);
 
-        course.removeReview(review, userId);
-        courseRepository.save(course);
+        courseRepository.deleteReview(courseId, reviewId);
     }
 
     @Transactional
