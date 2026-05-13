@@ -110,13 +110,9 @@ class CustomCoursesFragment : Fragment() {
                 launch {
                     customCourseViewModel.uiEvent.collect { event: CustomCourseUiEvent ->
                         when (event) {
-                            CustomCourseUiEvent.NavigateToCreateCourse -> {
-                                goToCreateCustomCourse()
-                            }
-
-                            CustomCourseUiEvent.FetchCustomCourseFailure -> {
-                                showToastMessage(R.string.custom_courses_load_failed)
-                            }
+                            CustomCourseUiEvent.NavigateToCreateCourse -> goToCreateCustomCourse()
+                            CustomCourseUiEvent.FetchCustomCourseFailure -> showToastMessage(R.string.custom_courses_load_failed)
+                            CustomCourseUiEvent.NoNetworkConnection -> showToastMessage(R.string.courses_no_network_message)
                         }
                     }
                 }

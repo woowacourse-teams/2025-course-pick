@@ -118,6 +118,7 @@ class CustomCourseViewModel
                                 customCourses = emptyList(),
                             )
                         }
+                        _uiEvent.emit(CustomCourseUiEvent.NoNetworkConnection)
                         return@onFailure
                     }
                     _state.update { currentState ->
