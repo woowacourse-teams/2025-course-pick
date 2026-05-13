@@ -74,7 +74,7 @@ class CustomCourseViewModel
         ) {
             viewModelScope.launch {
                 runCatching {
-                    customCourseRepository.customCourse(userCoordinate = userCoordinate)
+                    customCourseRepository.customCourses(userCoordinate = userCoordinate)
                 }.onSuccess { coursesPage: CoursesPage ->
                     Logger.log(Logger.Event.Success("fetch_custom_courses_new"))
 

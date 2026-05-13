@@ -29,7 +29,7 @@ class DefaultCustomCourseRepository
             service.submitCourse(DraftCourseDto(course))
         }
 
-        override suspend fun customCourse(userCoordinate: Coordinate?): CoursesPage =
+        override suspend fun customCourses(userCoordinate: Coordinate?): CoursesPage =
             service
                 .customCourses(
                     userLatitude = userCoordinate?.latitude?.value,
