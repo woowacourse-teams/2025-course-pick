@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -32,13 +34,14 @@ import io.coursepick.coursepick.presentation.toDistanceText
 @Composable
 fun CourseDetailScreen(
     courseDetail: CourseDetail,
+    reviews: List<Review>,
     modifier: Modifier = Modifier,
 ) {
     Scaffold { innerPadding: PaddingValues ->
         Column(
             modifier
                 .padding(innerPadding)
-                .padding(10.dp),
+                .padding(horizontal = 20.dp, vertical = 10.dp),
         ) {
             CourseInfo(
                 courseName = courseDetail.courseName,
@@ -46,6 +49,14 @@ fun CourseDetailScreen(
                 isFavorite = courseDetail.isFavorite,
                 averageRating = courseDetail.averageRating,
             )
+
+            Spacer(Modifier.height(10.dp))
+
+            CourseReviewHeader(courseDetail.reviewCount)
+
+            Spacer(Modifier.height(10.dp))
+
+            CourseReviews(reviews = reviews, modifier = Modifier.weight(1F))
         }
     }
 }
@@ -125,6 +136,58 @@ private fun CourseLengthInfo(
     }
 }
 
+@Composable
+private fun CourseReviewHeader(
+    reviewCount: Int,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier,
+    ) {
+        Text(
+            text = "리뷰",
+            color = colorResource(R.color.item_primary),
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+        )
+
+        Spacer(Modifier.width(5.dp))
+
+        Text(
+            text = "(${reviewCount}개)",
+            color = colorResource(R.color.item_primary),
+            fontSize = 16.sp,
+        )
+
+        Spacer(Modifier.width(10.dp))
+
+        HorizontalDivider(
+            thickness = 1.dp,
+            color = colorResource(R.color.background_border),
+        )
+    }
+}
+
+@Composable
+private fun CourseReviews(
+    reviews: List<Review>,
+    modifier: Modifier = Modifier,
+) {
+    LazyColumn(modifier) {
+        itemsIndexed(reviews) { index: Int, review: Review ->
+            ReviewItem(
+                review = review,
+                modifier = Modifier.padding(vertical = 10.dp),
+            )
+
+            if (index != reviews.lastIndex) {
+                HorizontalDivider(thickness = 1.dp, color = colorResource(R.color.background_border_light))
+            }
+        }
+    }
+}
+
 @PreviewLightDark
 @Composable
 private fun CourseDetailScreenPreview() {
@@ -134,9 +197,19 @@ private fun CourseDetailScreenPreview() {
                 id = "",
                 courseName = CourseName("석촌호수 동호"),
                 length = Length(5678),
+                averageRating = 4.32F,
                 isFavorite = false,
                 reviewCount = 99,
-                averageRating = 4.32F,
             ),
+        reviews =
+            List(10) { index: Int ->
+                Review(
+                    id = index.toString(),
+                    username = "달리는 런숭이 $index",
+                    isMine = index == 0,
+                    rating = 4 + index / 10F,
+                    comment = "리뷰 내용 ".repeat(10 + index * 5),
+                )
+            },
     )
 }
