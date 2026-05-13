@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -25,7 +26,7 @@ fun ReviewItem(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier) {
-        ReviewItemHeading(
+        ReviewItemHeader(
             username = review.username,
             isMine = review.isMine,
         )
@@ -38,7 +39,7 @@ fun ReviewItem(
 }
 
 @Composable
-private fun ReviewItemHeading(
+private fun ReviewItemHeader(
     username: String,
     isMine: Boolean,
     modifier: Modifier = Modifier,
@@ -51,6 +52,7 @@ private fun ReviewItemHeading(
             text = username,
             color = colorResource(R.color.item_primary),
             fontSize = 16.sp,
+            fontWeight = FontWeight.SemiBold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(weight = 1F, fill = false),
@@ -65,14 +67,14 @@ private fun ReviewItemHeading(
 }
 
 @Composable
-fun ReviewItemBody(
+private fun ReviewItemBody(
     rating: Float?,
     comment: String?,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier) {
         if (rating != null) {
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(4.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
@@ -88,7 +90,7 @@ fun ReviewItemBody(
         }
 
         if (comment != null) {
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(4.dp))
 
             Text(
                 text = comment,
@@ -108,7 +110,7 @@ private fun MyReviewChip(modifier: Modifier = Modifier) {
         modifier =
             modifier
                 .border(width = 1.dp, color = colorResource(R.color.point_primary), shape = RoundedCornerShape(50))
-                .padding(horizontal = 4.dp, vertical = 2.dp),
+                .padding(horizontal = 4.dp),
     )
 }
 
