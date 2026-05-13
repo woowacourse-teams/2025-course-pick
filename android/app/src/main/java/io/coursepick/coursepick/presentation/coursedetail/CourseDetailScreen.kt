@@ -1,6 +1,12 @@
 package io.coursepick.coursepick.presentation.coursedetail
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -12,13 +18,23 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -37,7 +53,30 @@ fun CourseDetailScreen(
     reviews: List<Review>,
     modifier: Modifier = Modifier,
 ) {
-    Scaffold { innerPadding: PaddingValues ->
+    var isFabVisible by remember { mutableStateOf(true) }
+
+    val nestedScrollConnection =
+        object : NestedScrollConnection {
+            override fun onPreScroll(
+                available: Offset,
+                source: NestedScrollSource,
+            ): Offset {
+                if (available.y < -1) {
+                    isFabVisible = false
+                } else if (available.y > 1) {
+                    isFabVisible = true
+                }
+
+                return super.onPreScroll(available, source)
+            }
+        }
+
+    Scaffold(floatingActionButton = {
+        WriteReviewButton(
+            onClick = { },
+            isVisible = isFabVisible,
+        )
+    }) { innerPadding: PaddingValues ->
         Column(
             modifier
                 .padding(innerPadding)
@@ -56,7 +95,52 @@ fun CourseDetailScreen(
 
             Spacer(Modifier.height(10.dp))
 
-            CourseReviews(reviews = reviews, modifier = Modifier.weight(1F))
+            CourseReviews(
+                reviews = reviews,
+                modifier =
+                    Modifier
+                        .weight(1F)
+                        .nestedScroll(nestedScrollConnection),
+            )
+        }
+    }
+}
+
+@Composable
+private fun WriteReviewButton(
+    onClick: () -> Unit,
+    isVisible: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = slideInVertically(initialOffsetY = { fullHeight: Int -> fullHeight }) + fadeIn(),
+        exit = slideOutVertically(targetOffsetY = { fullHeight: Int -> fullHeight }) + fadeOut(),
+        modifier = modifier,
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier =
+                Modifier
+                    .clip(RoundedCornerShape(50))
+                    .clickable { onClick() }
+                    .background(colorResource(R.color.point_primary))
+                    .padding(horizontal = 18.dp, vertical = 10.dp),
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.icon_write_review),
+                contentDescription = null,
+                tint = colorResource(R.color.item_white),
+            )
+
+            Spacer(Modifier.width(10.dp))
+
+            Text(
+                text = "리뷰 작성",
+                color = colorResource(R.color.item_white),
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+            )
         }
     }
 }
