@@ -6,7 +6,7 @@ import io.coursepick.coursepick.domain.course.Course
 data class CourseItem(
     val course: Course,
     val selected: Boolean,
-    val favorite: Boolean = false,
+    val favorite: Boolean?,
 ) {
     val id: String = course.id
     val name: String = course.name.value
