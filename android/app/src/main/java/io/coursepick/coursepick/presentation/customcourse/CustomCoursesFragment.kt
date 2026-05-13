@@ -44,20 +44,14 @@ class CustomCoursesFragment : Fragment() {
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult(),
         ) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                customCourseViewModel.fetchCustomCourse(coursesViewModel.mapCoordinate) { customCourse: CustomCourseItem ->
-                    coursesViewModel.selectCourseFromCustomCourse(customCourse)
-                }
-            }
+            if (result.resultCode == Activity.RESULT_OK) fetchCustomCourses()
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setUpCollectors()
 
-        customCourseViewModel.fetchCustomCourse(coursesViewModel.mapCoordinate) { customCourse: CustomCourseItem ->
-            coursesViewModel.selectCourseFromCustomCourse(customCourse)
-        }
+        fetchCustomCourses()
     }
 
     override fun onCreateView(
@@ -69,23 +63,20 @@ class CustomCoursesFragment : Fragment() {
         binding.customCourses.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                val customCourseState = customCourseViewModel.state.collectAsStateWithLifecycle()
+                val customCourseState =
+                    customCourseViewModel.state.collectAsStateWithLifecycle().value
 
                 CustomCourseScreen(
-                    customCourses = customCourseState.value.customCourses,
+                    customCourses = customCourseState.customCourses,
                     onGoToCreateCustomCourse = customCourseViewModel::onGoToCreateCustomCourse,
                     onSelect = { customCourse: CustomCourseItem ->
                         customCourseViewModel.select(customCourse)
                         coursesViewModel.selectCourseFromCustomCourse(customCourse)
                     },
                     onNavigateToCourse = { customCourse: CustomCourseItem ->
-                        val courseItem =
-                            CourseItem(
-                                course = customCourse.course,
-                                selected = true,
-                            )
-
-                        (activity as? CoursesActivity)?.navigateToCourse(courseItem)
+                        customCourseViewModel.onNavigateToCourse(customCourse) { courseItem ->
+                            (activity as? CoursesActivity)?.navigateToCourse(courseItem)
+                        }
                     },
                 )
 
@@ -161,6 +152,12 @@ class CustomCoursesFragment : Fragment() {
                 initialCoordinate,
             )
         startForResult.launch(intent)
+    }
+
+    private fun fetchCustomCourses() {
+        customCourseViewModel.fetchCustomCourses(coursesViewModel.mapCoordinate) { customCourse: CustomCourseItem ->
+            coursesViewModel.selectCourseFromCustomCourse(customCourse)
+        }
     }
 
     private fun showToastMessage(resId: Int) =

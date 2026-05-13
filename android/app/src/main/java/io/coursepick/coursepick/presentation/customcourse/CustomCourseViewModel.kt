@@ -10,6 +10,8 @@ import io.coursepick.coursepick.domain.course.CoursesPage
 import io.coursepick.coursepick.domain.customcourse.CustomCourseRepository
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.auth.AuthFeature
+import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.course.UiStatus
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -33,7 +35,13 @@ class CustomCourseViewModel
         private val _authDialogState = MutableStateFlow<AuthFeature?>(null)
         val authDialogState: StateFlow<AuthFeature?> get() = _authDialogState.asStateFlow()
 
-        private val _state = MutableStateFlow(CustomCourseUiState(customCourses = emptyList()))
+        private val _state =
+            MutableStateFlow(
+                CustomCourseUiState(
+                    customCourses = emptyList(),
+                    status = UiStatus.Loading,
+                ),
+            )
 
         val state: StateFlow<CustomCourseUiState> = _state.asStateFlow()
 
@@ -68,10 +76,13 @@ class CustomCourseViewModel
             }
         }
 
-        fun fetchCustomCourse(
+        fun fetchCustomCourses(
             userCoordinate: Coordinate?,
             onFirstItemLoaded: (CustomCourseItem) -> Unit,
         ) {
+            _state.update { currentState ->
+                currentState.copy(status = UiStatus.Loading)
+            }
             viewModelScope.launch {
                 runCatching {
                     customCourseRepository.customCourses(userCoordinate = userCoordinate)
@@ -88,26 +99,33 @@ class CustomCourseViewModel
 
                     onFirstItemLoaded(customCourseItems.first())
 
-                    _state.value =
-                        state.value.copy(
+                    _state.update { currentState ->
+                        currentState.copy(
+                            status = UiStatus.Success,
                             customCourses = customCourseItems,
+                            selectedCustomCourse = customCourseItems.first(),
                         )
+                    }
                 }.onFailure { exception: Throwable ->
                     Logger.log(
                         Logger.Event.Failure("fetch_custom_courses_new"),
                         "message" to exception.message.toString(),
                     )
                     if (exception is NoNetworkException) {
-                        _state.value =
-                            state.value.copy(
+                        _state.update { currentState ->
+                            currentState.copy(
+                                status = UiStatus.Failure,
                                 customCourses = emptyList(),
                             )
+                        }
                         return@onFailure
                     }
-                    _state.value =
-                        state.value.copy(
+                    _state.update { currentState ->
+                        currentState.copy(
+                            status = UiStatus.Failure,
                             customCourses = emptyList(),
                         )
+                    }
                     _uiEvent.emit(CustomCourseUiEvent.FetchCustomCourseFailure)
                 }
             }
@@ -121,7 +139,17 @@ class CustomCourseViewModel
                             val shouldBeSelected = (item.id == customCourse.id)
                             if (shouldBeSelected) item.select() else item.deselect()
                         },
+                    selectedCustomCourse = customCourse.select(),
                 )
             }
+        }
+
+        fun onNavigateToCourse(
+            customCourse: CustomCourseItem,
+            onNavigateTo: (CourseItem) -> Unit,
+        ) {
+            select(customCourse)
+            val courseItem: CourseItem = _state.value.selectedCustomCourse?.toCourseItem() ?: return
+            onNavigateTo(courseItem)
         }
     }

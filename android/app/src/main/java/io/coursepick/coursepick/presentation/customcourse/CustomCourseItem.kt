@@ -4,6 +4,7 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.Distance
 import io.coursepick.coursepick.domain.course.Length
+import io.coursepick.coursepick.presentation.course.CourseItem
 
 data class CustomCourseItem(
     val course: Course,
@@ -19,3 +20,9 @@ data class CustomCourseItem(
 
     fun deselect(): CustomCourseItem = copy(selected = false)
 }
+
+fun CustomCourseItem.toCourseItem(): CourseItem =
+    CourseItem(
+        course = course,
+        selected = selected,
+    )
