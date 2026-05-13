@@ -26,12 +26,12 @@ private val localProperties: Properties =
 
 android {
     namespace = "io.coursepick.coursepick"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "io.coursepick.coursepick"
         minSdk = 28
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 10210
         versionName = "1.2.10"
 
@@ -201,6 +201,8 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
     testImplementation(libs.assertj.core)
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
