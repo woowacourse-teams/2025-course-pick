@@ -106,6 +106,7 @@
     <string name="custom_course_submit_dialog_course_name_prompt_title">코스에 이름을 붙여주세요.</string>
     <string name="custom_course_submit_dialog_course_name_placeholder">이름을 붙여주세요</string>
     <string name="custom_course_submit_dialog_course_name_out_of_bounds_message">코스 이름은 2~30자로 붙여주세요.</string>
+    <string name="custom_course_submit_dialog_warning">등록된 코스는 다른 사용자에게 공개되며, 삭제가 어려울 수 있어요.</string>
     <string name="custom_course_submit_dialog_cancel_button">취소</string>
     <string name="custom_course_submit_dialog_confirm_button">확인</string>
 
