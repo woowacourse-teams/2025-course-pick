@@ -1,5 +1,6 @@
 package io.coursepick.coursepick.presentation.createcustomcourse
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -172,6 +173,7 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                                         getString(R.string.create_custom_course_course_added_message),
                                         Toast.LENGTH_SHORT,
                                     ).show()
+                                setResult(RESULT_OK)
                                 finish()
                             }
 

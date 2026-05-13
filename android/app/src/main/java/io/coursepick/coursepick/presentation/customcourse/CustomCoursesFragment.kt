@@ -1,10 +1,13 @@
 package io.coursepick.coursepick.presentation.customcourse
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -23,6 +26,7 @@ import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
 import io.coursepick.coursepick.presentation.course.CourseItem
 import io.coursepick.coursepick.presentation.course.CoursesActivity
 import io.coursepick.coursepick.presentation.course.CoursesViewModel
+import io.coursepick.coursepick.presentation.createcustomcourse.CoordinateUiModel
 import io.coursepick.coursepick.presentation.createcustomcourse.CreateCustomCourseActivity
 import io.coursepick.coursepick.presentation.createcustomcourse.toUiModel
 import kotlinx.coroutines.launch
@@ -35,6 +39,17 @@ class CustomCoursesFragment : Fragment() {
     private val coursesViewModel: CoursesViewModel by activityViewModels()
     private val customCourseViewModel: CustomCourseViewModel by activityViewModels()
     private val authViewModel: AuthViewModel by activityViewModels()
+
+    private val startForResult =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult(),
+        ) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                customCourseViewModel.fetchCustomCourse(coursesViewModel.mapCoordinate) { customCourse: CustomCourseItem ->
+                    coursesViewModel.selectCourseFromCustomCourse(customCourse)
+                }
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,7 +82,7 @@ class CustomCoursesFragment : Fragment() {
                         val courseItem =
                             CourseItem(
                                 course = customCourse.course,
-                                selected = customCourse.selected,
+                                selected = true,
                             )
 
                         (activity as? CoursesActivity)?.navigateToCourse(courseItem)
@@ -78,7 +93,14 @@ class CustomCoursesFragment : Fragment() {
                     AuthDialog(
                         feature = feature,
                         onDismissRequest = customCourseViewModel::dismissAuthDialog,
-                        onKakaoLoginClick = { authViewModel.authenticate(KakaoAuthenticator(requireActivity()), feature) },
+                        onKakaoLoginClick = {
+                            authViewModel.authenticate(
+                                KakaoAuthenticator(
+                                    requireActivity(),
+                                ),
+                                feature,
+                            )
+                        },
                     )
                 }
             }
@@ -131,12 +153,14 @@ class CustomCoursesFragment : Fragment() {
     }
 
     private fun goToCreateCustomCourse() {
-        startActivity(
+        val initialCoordinate: CoordinateUiModel? =
+            coursesViewModel.mapCoordinate?.let(Coordinate::toUiModel)
+        val intent: Intent =
             CreateCustomCourseActivity.intent(
                 requireContext(),
-                coursesViewModel.mapCoordinate?.let(Coordinate::toUiModel),
-            ),
-        )
+                initialCoordinate,
+            )
+        startForResult.launch(intent)
     }
 
     private fun showToastMessage(resId: Int) =
