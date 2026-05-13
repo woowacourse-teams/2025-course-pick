@@ -11,5 +11,5 @@ interface CustomCourseRepository {
 
     suspend fun submitCourse(course: DraftCourse)
 
-    suspend fun customCourses(userCoordinate: Coordinate? = null): CoursesPage
+    suspend fun customCourses(userCoordinate: Coordinate?): CoursesPage
 }
