@@ -13,16 +13,11 @@ interface MapManager {
 
     fun startMap(onMapReady: () -> Unit)
 
-    fun draw(course: CourseItem)
+    fun updateCourses(courses: List<CourseItem>)
 
-    fun draw(courses: List<CourseItem>)
+    fun drawRoute(route: List<Coordinate>)
 
-    fun drawRouteToCourse(
-        route: List<Coordinate>,
-        course: CourseItem,
-    )
-
-    fun removeAllRouteLines()
+    fun clearRoute()
 
     fun drawSearchCoordinate(coordinate: Coordinate)
 

@@ -21,12 +21,16 @@ import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.course.CourseItem
 import io.coursepick.coursepick.presentation.map.BitmapScaler
 import io.coursepick.coursepick.presentation.map.CoordinateAnimator
+import io.coursepick.coursepick.presentation.map.CourseDiffHandler
 
 class GoogleMapDrawer(
     private val context: Context,
     private val map: GoogleMap,
 ) {
-    private val courses = mutableListOf<Polyline>()
+    private val courseDiffHandler = CourseDiffHandler(onItemAdded = ::addCoursePolyline, onItemRemoved = ::removeCoursePolyline)
+    private val courseIdToPolyline = mutableMapOf<String, Polyline>()
+    private var routePolyline: Polyline? = null
+
     private val waypoints = mutableListOf<Marker>()
     private val segments = mutableListOf<Polyline>()
 
@@ -64,33 +68,19 @@ class GoogleMapDrawer(
     private var fineUserLocationAnimator: ValueAnimator? = null
     private var coarseUserLocationAnimator: ValueAnimator? = null
 
-    fun drawCourse(course: CourseItem) {
+    fun updateCourses(courses: List<CourseItem>) {
+        courseDiffHandler.updateCourses(courses.toSet())
+    }
+
+    private fun addCoursePolyline(course: CourseItem) {
         if (course.selected) {
-            drawSelectedCourse(course)
+            addSelectedCoursePolyline(course)
         } else {
-            drawUnselectedCourse(course)
+            addUnselectedCoursePolyline(course)
         }
     }
 
-    fun drawRouteToCourse(
-        route: List<Coordinate>,
-        course: CourseItem,
-    ) {
-        drawRoute(route)
-        drawCourse(course)
-    }
-
-    private fun drawRoute(route: List<Coordinate>) {
-        val options =
-            PolylineOptions()
-                .addAll(route.map(Coordinate::toLatLng))
-                .width(context.resources.getDimension(R.dimen.course_route_width))
-                .color(context.getColor(R.color.course_route))
-
-        map.addPolyline(options).also(courses::add)
-    }
-
-    private fun drawUnselectedCourse(course: CourseItem) {
+    private fun addUnselectedCoursePolyline(course: CourseItem) {
         val options =
             PolylineOptions()
                 .addAll(course.coordinates.map(Coordinate::toLatLng))
@@ -99,10 +89,10 @@ class GoogleMapDrawer(
                 .zIndex(UNSELECTED_COURSE_Z_INDEX)
                 .clickable(true)
 
-        map.addPolyline(options).apply { tag = course }.also(courses::add)
+        courseIdToPolyline[course.id] = map.addPolyline(options).apply { tag = course }
     }
 
-    private fun drawSelectedCourse(course: CourseItem) {
+    private fun addSelectedCoursePolyline(course: CourseItem) {
         val courseStrokeStyle =
             StrokeStyle
                 .colorBuilder(context.getColor(R.color.course_selected))
@@ -119,12 +109,25 @@ class GoogleMapDrawer(
                 .zIndex(SELECTED_COURSE_Z_INDEX)
                 .clickable(true)
 
-        map.addPolyline(courseOptions).apply { tag = course }.also(courses::add)
+        courseIdToPolyline[course.id] = map.addPolyline(courseOptions).apply { tag = course }
     }
 
-    fun removeAllRouteLines() {
-        courses.forEach(Polyline::remove)
-        courses.clear()
+    private fun removeCoursePolyline(course: CourseItem) {
+        courseIdToPolyline.remove(course.id)?.remove()
+    }
+
+    fun drawRoute(route: List<Coordinate>) {
+        val options =
+            PolylineOptions()
+                .addAll(route.map(Coordinate::toLatLng))
+                .width(context.resources.getDimension(R.dimen.course_route_width))
+                .color(context.getColor(R.color.course_route))
+        routePolyline = map.addPolyline(options)
+    }
+
+    fun clearRoute() {
+        routePolyline?.remove()
+        routePolyline = null
     }
 
     fun drawSearchCoordinate(coordinate: Coordinate) {
