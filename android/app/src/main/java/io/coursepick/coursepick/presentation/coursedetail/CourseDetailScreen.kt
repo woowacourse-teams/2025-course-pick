@@ -295,7 +295,10 @@ private fun CourseReviews(
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(modifier) {
-        itemsIndexed(reviews) { index: Int, review: Review ->
+        itemsIndexed(
+            items = reviews,
+            key = { _, review: Review -> review.id },
+        ) { index: Int, review: Review ->
             ReviewItem(
                 review = review,
                 onDelete = onDelete,
