@@ -202,39 +202,7 @@ private fun ReviewItemBody(
 
 @PreviewLightDark
 @Composable
-private fun ReviewItemPreview_IsMine_RatingOnly() {
-    ReviewItem(
-        review =
-            Review(
-                id = "",
-                username = "달리는 런숭이",
-                isMine = true,
-                rating = 4.32F,
-            ),
-        onDelete = { },
-        onReport = { },
-    )
-}
-
-@PreviewLightDark
-@Composable
-private fun ReviewItemPreview_IsMine_CommentOnly() {
-    ReviewItem(
-        review =
-            Review(
-                id = "",
-                username = "달리는 런숭이",
-                isMine = true,
-                comment = "리뷰 내용 ".repeat(20),
-            ),
-        onDelete = { },
-        onReport = { },
-    )
-}
-
-@PreviewLightDark
-@Composable
-private fun ReviewItemPreview_IsMine_RatingAndComment() {
+private fun ReviewItemPreview_IsMine() {
     ReviewItem(
         review =
             Review(
