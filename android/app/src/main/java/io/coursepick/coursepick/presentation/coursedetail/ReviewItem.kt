@@ -167,36 +167,32 @@ private fun ReviewActionButton(
 
 @Composable
 private fun ReviewItemBody(
-    rating: Float?,
-    comment: String?,
+    rating: Float,
+    comment: String,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier) {
-        if (rating != null) {
-            Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(4.dp))
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = rating.toString(),
-                    color = colorResource(R.color.point_primary),
-                    fontSize = 14.sp,
-                )
-
-                Spacer(Modifier.width(10.dp))
-
-                RatingStars(rating = rating, modifier = Modifier.height(14.dp))
-            }
-        }
-
-        if (comment != null) {
-            Spacer(Modifier.height(4.dp))
-
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = comment,
-                color = colorResource(R.color.item_primary),
+                text = rating.toString(),
+                color = colorResource(R.color.point_primary),
                 fontSize = 14.sp,
             )
+
+            Spacer(Modifier.width(10.dp))
+
+            RatingStars(rating = rating, modifier = Modifier.height(14.dp))
         }
+
+        Spacer(Modifier.height(4.dp))
+
+        Text(
+            text = comment,
+            color = colorResource(R.color.item_primary),
+            fontSize = 14.sp,
+        )
     }
 }
 
