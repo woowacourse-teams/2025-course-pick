@@ -35,12 +35,16 @@ import io.coursepick.coursepick.R
 @Composable
 fun ReviewItem(
     review: Review,
+    onDelete: (Review) -> Unit,
+    onReport: (Review) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier) {
         ReviewItemHeader(
             username = review.username,
             isMine = review.isMine,
+            onDelete = { onDelete(review) },
+            onReport = { onReport(review) }
         )
 
         ReviewItemBody(
@@ -54,6 +58,8 @@ fun ReviewItem(
 private fun ReviewItemHeader(
     username: String,
     isMine: Boolean,
+    onDelete: () -> Unit,
+    onReport: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -81,7 +87,11 @@ private fun ReviewItemHeader(
             }
         }
 
-        ReviewActionButton(isMine)
+        ReviewActionButton(
+            isMine = isMine,
+            onDelete = onDelete,
+            onReport = onReport,
+        )
     }
 }
 
@@ -101,6 +111,8 @@ private fun MyReviewChip(modifier: Modifier = Modifier) {
 @Composable
 private fun ReviewActionButton(
     isMine: Boolean,
+    onDelete: () -> Unit,
+    onReport: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier) {
@@ -126,14 +138,14 @@ private fun ReviewActionButton(
             if (isMine) {
                 DropdownMenuItem(
                     text = { Text(text = "삭제하기", color = colorResource(R.color.item_primary), fontSize = 14.sp) },
-                    onClick = { },
+                    onClick = onDelete,
                 )
             }
 
             if (!isMine) {
                 DropdownMenuItem(
                     text = { Text(text = "신고하기", color = colorResource(R.color.item_primary), fontSize = 14.sp) },
-                    onClick = { },
+                    onClick = onReport,
                 )
             }
         }
@@ -186,6 +198,8 @@ private fun ReviewItemPreview_IsMine_RatingOnly() {
                 isMine = true,
                 rating = 4.32F,
             ),
+        onDelete = { },
+        onReport = { },
     )
 }
 
@@ -200,6 +214,8 @@ private fun ReviewItemPreview_IsMine_CommentOnly() {
                 isMine = true,
                 comment = "리뷰 내용 ".repeat(20),
             ),
+        onDelete = { },
+        onReport = { },
     )
 }
 
@@ -215,6 +231,8 @@ private fun ReviewItemPreview_IsMine_RatingAndComment() {
                 comment = "리뷰 내용 ".repeat(20),
                 rating = 4.32F,
             ),
+        onDelete = { },
+        onReport = { },
     )
 }
 
@@ -230,5 +248,7 @@ private fun ReviewItemPreview_IsNotMine() {
                 comment = "리뷰 내용 ".repeat(20),
                 rating = 4.32F,
             ),
+        onDelete = { },
+        onReport = { },
     )
 }
