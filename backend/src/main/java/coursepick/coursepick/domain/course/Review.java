@@ -43,14 +43,14 @@ public class Review {
         reportUserIds.add(user.id());
     }
 
-    private void validateContent(String content) {
+    private static void validateContent(String content) {
         if (content == null || content.isEmpty() || content.length() > MAX_CONTENT_LENGTH) {
             int length = content == null ? 0 : content.length();
             throw INVALID_REVIEW_CONTENT_LENGTH.create(length);
         }
     }
 
-    private void validateRating(int rating) {
+    private static void validateRating(int rating) {
         if(rating < 0 || rating > 5){
             throw ErrorType.INVALID_REVIEW_RATING.create(rating);
         }
