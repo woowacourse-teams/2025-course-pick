@@ -1,6 +1,6 @@
 package coursepick.coursepick.application;
 
-import coursepick.coursepick.application.dto.AlertContext;
+
 import coursepick.coursepick.application.dto.CourseDetailResponse;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
@@ -48,7 +48,7 @@ public class CourseApplicationService {
         courseRepository.save(course);
 
         if (course.isReportThreshold()) {
-            alerter.alert(AlertContext.fromCourseReport(course));
+            alerter.alertCourse(course);
         }
     }
 
@@ -138,7 +138,7 @@ public class CourseApplicationService {
         review.addReport(user);
         courseRepository.save(course);
 
-        alerter.alert(AlertContext.fromReviewReport(course, review));
+        alerter.alertReview(course, review);
     }
 
     private void loggingForNotExistsCourse(List<String> ids, List<Course> courses) {
