@@ -179,6 +179,7 @@ dependencies {
     implementation(libs.okhttp.logging.interceptor)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.kakao.maps)
     implementation(libs.naver.maps)
