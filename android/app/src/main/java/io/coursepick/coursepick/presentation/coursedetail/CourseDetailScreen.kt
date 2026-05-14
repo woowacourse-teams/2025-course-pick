@@ -42,15 +42,46 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.coursepick.coursepick.R
+import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseName
 import io.coursepick.coursepick.domain.course.Length
 import io.coursepick.coursepick.presentation.toDistanceText
 
 @Composable
 fun CourseDetailScreen(
-    courseDetail: CourseDetail,
+    modifier: Modifier = Modifier,
+    viewModel: CourseDetailViewModel = viewModel(),
+) {
+    val course: Course = viewModel.course.collectAsStateWithLifecycle().value
+
+    CourseDetailScreen(
+        courseName = course.name,
+        length = course.length,
+        averageRating = viewModel.averageRating.collectAsStateWithLifecycle().value,
+        isFavorite = viewModel.isFavorite.collectAsStateWithLifecycle().value,
+        reviewCount = viewModel.reviewCount.collectAsStateWithLifecycle().value,
+        reviews = viewModel.reviews.collectAsStateWithLifecycle().value,
+        onDeleteReview = viewModel::deleteReview,
+        onReportReview = viewModel::reportReview,
+        onWriteReview = viewModel::onWriteReview,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun CourseDetailScreen(
+    courseName: CourseName,
+    length: Length,
+    averageRating: Float,
+    isFavorite: Boolean,
+    reviewCount: Int,
     reviews: List<Review>,
+    onDeleteReview: (Review) -> Unit,
+    onReportReview: (Review) -> Unit,
+    onWriteReview: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var isFabVisible by remember { mutableStateOf(true) }
@@ -73,7 +104,7 @@ fun CourseDetailScreen(
 
     Scaffold(floatingActionButton = {
         WriteReviewButton(
-            onClick = { },
+            onClick = onWriteReview,
             isVisible = isFabVisible,
         )
     }) { innerPadding: PaddingValues ->
@@ -83,20 +114,22 @@ fun CourseDetailScreen(
                 .padding(horizontal = 20.dp, vertical = 10.dp),
         ) {
             CourseInfo(
-                courseName = courseDetail.courseName,
-                length = courseDetail.length,
-                isFavorite = courseDetail.isFavorite,
-                averageRating = courseDetail.averageRating,
+                courseName = courseName,
+                length = length,
+                isFavorite = isFavorite,
+                averageRating = averageRating,
             )
 
             Spacer(Modifier.height(10.dp))
 
-            CourseReviewHeader(courseDetail.reviewCount)
+            CourseReviewHeader(reviewCount)
 
             Spacer(Modifier.height(10.dp))
 
             CourseReviews(
                 reviews = reviews,
+                onDelete = onDeleteReview,
+                onReport = onReportReview,
                 modifier =
                     Modifier
                         .weight(1F)
@@ -256,12 +289,16 @@ private fun CourseReviewHeader(
 @Composable
 private fun CourseReviews(
     reviews: List<Review>,
+    onDelete: (Review) -> Unit,
+    onReport: (Review) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(modifier) {
         itemsIndexed(reviews) { index: Int, review: Review ->
             ReviewItem(
                 review = review,
+                onDelete = onDelete,
+                onReport = onReport,
                 modifier = Modifier.padding(vertical = 10.dp),
             )
 
@@ -276,15 +313,11 @@ private fun CourseReviews(
 @Composable
 private fun CourseDetailScreenPreview() {
     CourseDetailScreen(
-        courseDetail =
-            CourseDetail(
-                id = "",
-                courseName = CourseName("석촌호수 동호"),
-                length = Length(5678),
-                averageRating = 4.32F,
-                isFavorite = false,
-                reviewCount = 99,
-            ),
+        courseName = CourseName("석촌호수 동호"),
+        length = Length(5678),
+        averageRating = 4.32F,
+        isFavorite = false,
+        reviewCount = 99,
         reviews =
             List(10) { index: Int ->
                 Review(
@@ -295,5 +328,8 @@ private fun CourseDetailScreenPreview() {
                     comment = "리뷰 내용 ".repeat(10 + index * 5),
                 )
             },
+        onDeleteReview = { },
+        onReportReview = { },
+        onWriteReview = { },
     )
 }
