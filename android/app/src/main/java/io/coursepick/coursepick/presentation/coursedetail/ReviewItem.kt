@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -44,7 +45,7 @@ fun ReviewItem(
             username = review.username,
             isMine = review.isMine,
             onDelete = { onDelete(review) },
-            onReport = { onReport(review) }
+            onReport = { onReport(review) },
         )
 
         ReviewItemBody(
@@ -98,13 +99,13 @@ private fun ReviewItemHeader(
 @Composable
 private fun MyReviewChip(modifier: Modifier = Modifier) {
     Text(
-        text = "내 리뷰",
+        text = stringResource(R.string.review_item_my_review_chip),
         color = colorResource(R.color.item_primary),
         fontSize = 12.sp,
         modifier =
             modifier
                 .border(width = 1.dp, color = colorResource(R.color.point_primary), shape = RoundedCornerShape(50))
-                .padding(horizontal = 4.dp),
+                .padding(horizontal = 8.dp),
     )
 }
 
@@ -137,14 +138,26 @@ private fun ReviewActionButton(
         ) {
             if (isMine) {
                 DropdownMenuItem(
-                    text = { Text(text = "삭제하기", color = colorResource(R.color.item_primary), fontSize = 14.sp) },
+                    text = {
+                        Text(
+                            text = stringResource(R.string.review_item_action_delete),
+                            color = colorResource(R.color.item_primary),
+                            fontSize = 14.sp,
+                        )
+                    },
                     onClick = onDelete,
                 )
             }
 
             if (!isMine) {
                 DropdownMenuItem(
-                    text = { Text(text = "신고하기", color = colorResource(R.color.item_primary), fontSize = 14.sp) },
+                    text = {
+                        Text(
+                            text = stringResource(R.string.review_item_action_report),
+                            color = colorResource(R.color.item_primary),
+                            fontSize = 14.sp,
+                        )
+                    },
                     onClick = onReport,
                 )
             }

@@ -37,6 +37,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -169,7 +170,7 @@ private fun WriteReviewButton(
             Spacer(Modifier.width(10.dp))
 
             Text(
-                text = "리뷰 작성",
+                text = stringResource(R.string.course_detail_write_review_button),
                 color = colorResource(R.color.item_white),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
@@ -263,7 +264,7 @@ private fun CourseReviewHeader(
         modifier = modifier,
     ) {
         Text(
-            text = "리뷰",
+            text = stringResource(R.string.course_detail_review_header),
             color = colorResource(R.color.item_primary),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
@@ -272,7 +273,7 @@ private fun CourseReviewHeader(
         Spacer(Modifier.width(5.dp))
 
         Text(
-            text = "(${reviewCount}개)",
+            text = stringResource(R.string.course_detail_review_count, reviewCount),
             color = colorResource(R.color.item_primary),
             fontSize = 16.sp,
         )
