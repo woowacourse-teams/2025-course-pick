@@ -3,6 +3,7 @@ package io.coursepick.coursepick.data.auth
 import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.auth.SocialToken
 import javax.inject.Inject
+import kotlin.concurrent.Volatile
 
 class DefaultAuthRepository
     @Inject
