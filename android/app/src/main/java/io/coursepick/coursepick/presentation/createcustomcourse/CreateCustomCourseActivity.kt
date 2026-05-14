@@ -18,7 +18,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.databinding.ActivityCustomCourseBinding
-import io.coursepick.coursepick.di.KakaoMap
+import io.coursepick.coursepick.di.NaverMap
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Longitude
@@ -42,7 +42,7 @@ class CreateCustomCourseActivity : AppCompatActivity() {
     private val authViewModel: AuthViewModel by viewModels()
 
     @Inject
-    @KakaoMap
+    @NaverMap
     lateinit var mapManagerFactory: MapManagerFactory
     private val mapManager: MapManager by lazy { mapManagerFactory.create(binding.mapContainer) }
 

@@ -44,7 +44,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.coursepick.coursepick.BuildConfig
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.databinding.ActivityCoursesBinding
-import io.coursepick.coursepick.di.KakaoMap
+import io.coursepick.coursepick.di.NaverMap
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Longitude
@@ -93,7 +93,7 @@ class CoursesActivity :
     private val doublePressDetector = DoublePressDetector()
 
     @Inject
-    @KakaoMap
+    @NaverMap
     lateinit var mapManagerFactory: MapManagerFactory
     private val mapManager: MapManager by lazy { mapManagerFactory.create(binding.mapContainer) }
 
