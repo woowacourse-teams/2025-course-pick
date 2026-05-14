@@ -50,8 +50,8 @@ class CourseDetailViewModel
                         id = REVIEW_FIXTURE.id + "_$index",
                         username = REVIEW_FIXTURE.username + "_$index",
                         isMine = index == 0,
-                        rating = (REVIEW_FIXTURE.rating ?: 0F) + index / 10F,
-                        comment = REVIEW_FIXTURE.comment.orEmpty().repeat(index + 1),
+                        rating = REVIEW_FIXTURE.rating + index / 10F,
+                        comment = REVIEW_FIXTURE.comment.repeat(index + 1),
                     )
                 },
             )
