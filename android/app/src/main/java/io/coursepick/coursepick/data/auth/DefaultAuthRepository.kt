@@ -2,8 +2,11 @@ package io.coursepick.coursepick.data.auth
 
 import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.auth.SocialToken
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
-import kotlin.concurrent.Volatile
 
 class DefaultAuthRepository
     @Inject
@@ -11,9 +14,9 @@ class DefaultAuthRepository
         private val tokenLocalDataSource: TokenLocalDataSource,
         private val service: SignService,
     ) : AuthRepository {
-        @Volatile
-        override var cachedAccessToken: String? = null
-            private set
+        private val _cachedAccessToken = MutableStateFlow<String?>(null)
+
+        override val cachedAccessToken: Flow<String?> = _cachedAccessToken.asStateFlow()
 
         override suspend fun sign(
             socialType: String,
@@ -24,7 +27,7 @@ class DefaultAuthRepository
         }
 
         override suspend fun saveAccessToken(token: String) {
-            cachedAccessToken = token
+            _cachedAccessToken.update { token }
             tokenLocalDataSource.saveAccessToken(token)
         }
 
@@ -33,14 +36,15 @@ class DefaultAuthRepository
         }
 
         override suspend fun accessToken(): String? {
-            if (cachedAccessToken == null) {
-                cachedAccessToken = tokenLocalDataSource.accessToken()
+            if (_cachedAccessToken.value == null) {
+                val localToken = tokenLocalDataSource.accessToken()
+                _cachedAccessToken.update { localToken }
             }
-            return cachedAccessToken
+            return _cachedAccessToken.value
         }
 
         override suspend fun clearAccessToken() {
+            _cachedAccessToken.update { null }
             tokenLocalDataSource.clearAccessToken()
-            cachedAccessToken = null
         }
     }

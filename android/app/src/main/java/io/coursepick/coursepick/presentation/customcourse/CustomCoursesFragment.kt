@@ -23,7 +23,6 @@ import io.coursepick.coursepick.presentation.auth.AuthFeature
 import io.coursepick.coursepick.presentation.auth.AuthUiEvent
 import io.coursepick.coursepick.presentation.auth.AuthViewModel
 import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
-import io.coursepick.coursepick.presentation.course.CourseItem
 import io.coursepick.coursepick.presentation.course.CoursesActivity
 import io.coursepick.coursepick.presentation.course.CoursesViewModel
 import io.coursepick.coursepick.presentation.createcustomcourse.CoordinateUiModel
@@ -67,6 +66,8 @@ class CustomCoursesFragment : Fragment() {
                     customCourseViewModel.state.collectAsStateWithLifecycle().value
 
                 CustomCourseScreen(
+                    status = customCourseState.status,
+                    onReconnect = ::fetchCustomCourses,
                     customCourses = customCourseState.customCourses,
                     onGoToCreateCustomCourse = customCourseViewModel::onGoToCreateCustomCourse,
                     onSelect = { customCourse: CustomCourseItem ->
@@ -113,6 +114,7 @@ class CustomCoursesFragment : Fragment() {
                             CustomCourseUiEvent.NavigateToCreateCourse -> goToCreateCustomCourse()
                             CustomCourseUiEvent.FetchCustomCourseFailure -> showToastMessage(R.string.custom_courses_load_failed)
                             CustomCourseUiEvent.NoNetworkConnection -> showToastMessage(R.string.courses_no_network_message)
+                            CustomCourseUiEvent.RequestFetch -> fetchCustomCourses()
                         }
                     }
                 }

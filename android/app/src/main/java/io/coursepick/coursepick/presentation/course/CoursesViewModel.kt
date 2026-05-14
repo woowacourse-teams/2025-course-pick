@@ -104,6 +104,45 @@ class CoursesViewModel
             checkNetwork()
         }
 
+        fun selectExternalCourse(courseItem: CourseItem) {
+            val selectedCourse = courseItem.copy(selected = true)
+
+            _state.value =
+                _state.value?.copy(
+                    courses =
+                        _state.value?.courses?.let { oldList ->
+                            val hasCourse =
+                                oldList.any { it is CourseListItem.Course && it.item.id == selectedCourse.id }
+                            if (hasCourse) {
+                                oldList.map { item ->
+                                    if (item is CourseListItem.Course) {
+                                        CourseListItem.Course(item.item.copy(selected = item.item.id == selectedCourse.id))
+                                    } else {
+                                        item
+                                    }
+                                }
+                            } else {
+                                val clearedList =
+                                    oldList.map { item ->
+                                        if (item is CourseListItem.Course) {
+                                            CourseListItem.Course(
+                                                item.item.copy(
+                                                    selected = false,
+                                                ),
+                                            )
+                                        } else {
+                                            item
+                                        }
+                                    }
+                                listOf(CourseListItem.Course(selectedCourse)) + clearedList
+                            }
+                        } ?: listOf(CourseListItem.Course(selectedCourse)),
+                    status = UiStatus.Success,
+                )
+
+            _event.value = CoursesUiEvent.SelectCourseManually(selectedCourse)
+        }
+
         private fun checkNetwork() {
             if (!networkMonitor.isConnected()) {
                 _state.value =
@@ -628,6 +667,7 @@ class CoursesViewModel
                     course = course.course,
                     selected = course.selected,
                 )
+            select(courseItem)
             _event.value = CoursesUiEvent.SelectCourseManually(courseItem)
         }
 

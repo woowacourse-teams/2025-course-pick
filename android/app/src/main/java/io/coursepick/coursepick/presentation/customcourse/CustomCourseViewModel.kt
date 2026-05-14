@@ -35,6 +35,20 @@ class CustomCourseViewModel
         private val _authDialogState = MutableStateFlow<AuthFeature?>(null)
         val authDialogState: StateFlow<AuthFeature?> get() = _authDialogState.asStateFlow()
 
+        init {
+            observeAccessToken()
+        }
+
+        private fun observeAccessToken() {
+            viewModelScope.launch {
+                authRepository.cachedAccessToken.collect { token ->
+                    if (token != null) {
+                        _uiEvent.emit(CustomCourseUiEvent.RequestFetch)
+                    }
+                }
+            }
+        }
+
         private val _state =
             MutableStateFlow(
                 CustomCourseUiState(
@@ -71,7 +85,7 @@ class CustomCourseViewModel
             if (feature is AuthFeature.CustomCourse) {
                 dismissAuthDialog()
                 viewModelScope.launch {
-                    _uiEvent.emit(CustomCourseUiEvent.NavigateToCreateCourse)
+                    _uiEvent.emit(CustomCourseUiEvent.RequestFetch)
                 }
             }
         }
@@ -80,10 +94,18 @@ class CustomCourseViewModel
             userCoordinate: Coordinate?,
             onFirstItemLoaded: (CustomCourseItem) -> Unit,
         ) {
-            _state.update { currentState ->
-                currentState.copy(status = UiStatus.Loading)
-            }
             viewModelScope.launch {
+                if (authRepository.accessToken() == null) {
+                    _state.update { currentState ->
+                        currentState.copy(status = UiStatus.Success, customCourses = emptyList())
+                    }
+                    return@launch
+                }
+
+                _state.update { currentState ->
+                    currentState.copy(status = UiStatus.Loading)
+                }
+
                 runCatching {
                     customCourseRepository.customCourses(userCoordinate = userCoordinate)
                 }.onSuccess { coursesPage: CoursesPage ->

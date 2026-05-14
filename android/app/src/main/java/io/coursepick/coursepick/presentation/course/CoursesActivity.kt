@@ -64,6 +64,7 @@ import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.customcourse.CustomCourseViewModel
 import io.coursepick.coursepick.presentation.customcourse.CustomCoursesFragment
+import io.coursepick.coursepick.presentation.customcourse.toCourseItem
 import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
 import io.coursepick.coursepick.presentation.filter.CourseFilterBottomSheet
 import io.coursepick.coursepick.presentation.map.CameraMoveReason
@@ -415,7 +416,6 @@ class CoursesActivity :
             showFineLocationPermissionRationaleForNavigation()
             return
         }
-
         lifecycleScope.launch {
             viewModel.currentLocation()?.let { location: Location ->
                 val selectedApp: RouteFinderApplication? =
@@ -730,6 +730,22 @@ class CoursesActivity :
     private fun setUpObservers() {
         setUpStateObserver()
         setUpEventObserver()
+        setUpCustomCourseFlowObserver()
+    }
+
+    private fun setUpCustomCourseFlowObserver() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                customCourseViewModel.state.collect { customCourseState ->
+                    customCourseState.selectedCustomCourse?.let { customCourseItem ->
+
+                        val courseItem = customCourseItem.toCourseItem()
+
+                        viewModel.selectExternalCourse(courseItem)
+                    }
+                }
+            }
+        }
     }
 
     private fun setUpStateObserver() {
@@ -872,7 +888,8 @@ class CoursesActivity :
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     viewModel.locationUpdates.collect { location: Location? ->
-                        location?.let(mapManager::drawUserLocation) ?: run(mapManager::hideUserLocation)
+                        location?.let(mapManager::drawUserLocation)
+                            ?: run(mapManager::hideUserLocation)
                     }
                 }
 
@@ -962,7 +979,12 @@ class CoursesActivity :
                         AuthDialog(
                             feature = feature,
                             onDismissRequest = viewModel::dismissAuthDialog,
-                            onKakaoLoginClick = { authViewModel.authenticate(KakaoAuthenticator(this@CoursesActivity), feature) },
+                            onKakaoLoginClick = {
+                                authViewModel.authenticate(
+                                    KakaoAuthenticator(this@CoursesActivity),
+                                    feature,
+                                )
+                            },
                         )
                     }
 

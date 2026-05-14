@@ -6,4 +6,6 @@ sealed interface CustomCourseUiEvent {
     object FetchCustomCourseFailure : CustomCourseUiEvent
 
     object NoNetworkConnection : CustomCourseUiEvent
+
+    object RequestFetch : CustomCourseUiEvent
 }
