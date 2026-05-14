@@ -35,20 +35,6 @@ class CustomCourseViewModel
         private val _authDialogState = MutableStateFlow<AuthFeature?>(null)
         val authDialogState: StateFlow<AuthFeature?> get() = _authDialogState.asStateFlow()
 
-        init {
-            observeAccessToken()
-        }
-
-        private fun observeAccessToken() {
-            viewModelScope.launch {
-                authRepository.cachedAccessToken.collect { token ->
-                    if (token != null) {
-                        _uiEvent.emit(CustomCourseUiEvent.RequestFetch)
-                    }
-                }
-            }
-        }
-
         private val _state =
             MutableStateFlow(
                 CustomCourseUiState(

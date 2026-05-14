@@ -15,7 +15,7 @@ class AccessTokenInterceptor
         override fun intercept(chain: Interceptor.Chain): Response {
             val requestBuilder: Request.Builder = chain.request().newBuilder()
 
-            val accessToken: String? = runBlocking { authRepository.accessToken() }
+            val accessToken: String? = authRepository.cachedAccessToken ?: runBlocking { authRepository.accessToken() }
             if (accessToken != null) {
                 requestBuilder.addHeader("Authorization", "Bearer $accessToken")
             }

@@ -1,9 +1,7 @@
 package io.coursepick.coursepick.domain.auth
 
-import kotlinx.coroutines.flow.Flow
-
 interface AuthRepository {
-    val cachedAccessToken: Flow<String?>
+    val cachedAccessToken: String?
 
     suspend fun sign(
         socialType: String,
