@@ -284,7 +284,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         Course result = dbUtil.findCourseById(targetCourse.id());
         assertThat(result.reportUserIds()).hasSize(2);
-        verify(courseAlerter, times(0)).alertCourse(any());
+        verify(courseAlerter, times(0)).alertCourse(any(Course.class));
     }
 
     @Test
@@ -501,7 +501,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         void 리뷰를_신고하면_알람이_간다() {
             sut.reportReview(courseId, reviewId, reporter.id());
 
-            verify(courseAlerter, times(0)).alertCourse(any());
+            verify(courseAlerter, times(1)).alertReview(any(Course.class), any(Review.class));
         }
 
         @Test
@@ -511,7 +511,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
             sut.reportReview(courseId, reviewId, reporter.id());
             sut.reportReview(courseId, reviewId, reporter2.id());
 
-            verify(courseAlerter, times(0)).alertCourse(any());
+            verify(courseAlerter, times(2)).alertReview(any(Course.class), any(Review.class));
         }
     }
 }
