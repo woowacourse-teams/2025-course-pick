@@ -77,6 +77,16 @@
     <string name="report_course_failure_unauthorized_user_message">코스 신고를 위해 로그인을 해주세요.</string>
     <string name="report_course_failure_unknown_message">알 수 없는 오류로 코스 신고에 실패했습니다.</string>
 
+    <!--  코스 상세 화면  -->
+    <string name="course_detail_review_header">리뷰</string>
+    <string name="course_detail_review_count">(%1$d개)</string>
+    <string name="course_detail_write_review_button">리뷰 작성</string>
+
+    <!--  코스 상세 화면 - 리뷰 목록 아이템  -->
+    <string name="review_item_my_review_chip">내 리뷰</string>
+    <string name="review_item_action_delete">삭제하기</string>
+    <string name="review_item_action_report">신고하기</string>
+
     <!--  설정 화면  -->
     <string name="settings_feedback_url">https://docs.google.com/forms/d/e/1FAIpQLSdsJcNUsOcDiKW0FI-M360IUS64IZQmnWtMTbZqJSrx7HQbtg/viewform?usp=pp_url&amp;entry.1079171803=%s</string>
     <string name="settings_privacy_policy_url">https://wary-gopher-277.notion.site/2bcccd64a1cc80c08927cb2dccbc917f?source=copy_link</string>
