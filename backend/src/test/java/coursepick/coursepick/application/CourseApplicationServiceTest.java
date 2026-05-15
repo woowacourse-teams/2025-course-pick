@@ -545,12 +545,63 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
             assertThatThrownBy(() -> sut.deleteReview(courseId, reviewId, otherUser.id()))
                     .isInstanceOf(UnauthorizedException.class);
         }
+    }
+
+    @Nested
+    class 리뷰_신고 {
+
+        private User reporter;
+        private String courseId;
+        private String reviewId;
+
+        @BeforeEach
+        void setUp() {
+            User courseCreator = dbUtil.saveUser(new User(UserProvider.KAKAO, "creatorProviderId"));
+            reporter = dbUtil.saveUser(new User(UserProvider.KAKAO, "reporterProviderId"));
+
+            Course course = new Course(null, new CourseName("테스트 코스3"), List.of(
+                    new Coordinate(37.5180, 127.0280),
+                    new Coordinate(37.5175, 127.0270),
+                    new Coordinate(37.5170, 127.0265),
+                    new Coordinate(37.5180, 127.0280)
+            ), courseCreator);
+
+            courseId = dbUtil.saveCourse(course).id();
+
+            sut.addReview(courseId, courseCreator.id(), "좋은 코스입니다", 5);
+
+            reviewId = dbUtil.findCourseById(courseId).reviews().get(0).id();
+        }
+
+        @Test
+        void 리뷰_신고가_DB에_저장된다() {
+            Course course = dbUtil.findCourseById(courseId);
+
+            sut.reportReview(courseId, reviewId, reporter.id());
+
+            var result = dbUtil.findCourseById(courseId);
+            Review review = result.getReview(reviewId);
+            assertThat(review.reportUserIds()).containsExactly(reporter.id());
+        }
+
+        @Test
+        void 두_명이_신고하면_두_개의_신고가_DB에_저장된다() {
+            User reporter2 = dbUtil.saveUser(new User(UserProvider.KAKAO, "reporter2ProviderId"));
+
+            sut.reportReview(courseId, reviewId, reporter.id());
+            sut.reportReview(courseId, reviewId, reporter2.id());
+
+            Course result = dbUtil.findCourseById(courseId);
+            Review review = result.getReview(reviewId);
+            assertThat(review.reportUserIds()).hasSize(2)
+                    .containsExactlyInAnyOrder(reporter.id(), reporter2.id());
+        }
 
         @Test
         void 리뷰를_신고하면_알람이_간다() {
             sut.reportReview(courseId, reviewId, reporter.id());
 
-            verify(courseAlerter, times(1)).alertReview(any(Course.class), any(Review.class));
+            verify(courseAlerter, times(0)).alertCourse(any());
         }
 
         @Test
@@ -560,7 +611,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
             sut.reportReview(courseId, reviewId, reporter.id());
             sut.reportReview(courseId, reviewId, reporter2.id());
 
-            verify(courseAlerter, times(2)).alertReview(any(Course.class), any(Review.class));
+            verify(courseAlerter, times(0)).alertCourse(any());
         }
     }
 }
