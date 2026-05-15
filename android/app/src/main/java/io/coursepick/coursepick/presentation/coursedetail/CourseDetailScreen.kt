@@ -159,7 +159,7 @@ private fun WriteReviewButton(
                     .clip(RoundedCornerShape(50))
                     .clickable { onClick() }
                     .background(colorResource(R.color.point_primary))
-                    .padding(horizontal = 18.dp, vertical = 10.dp),
+                    .padding(horizontal = 18.dp, vertical = 16.dp),
         ) {
             Icon(
                 painter = painterResource(R.drawable.icon_write_review),
