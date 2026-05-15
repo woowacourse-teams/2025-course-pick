@@ -145,4 +145,11 @@ public class Course {
                 .findFirst()
                 .orElseThrow(() -> NOT_EXIST_REVIEW.create(reviewId));
     }
+
+    public double calculateAverageRating() {
+        if (reviews.isEmpty()) return 0.0;
+        int total = reviews.stream()
+                .mapToInt(Review::rating).sum();
+        return Math.round((double) total / reviews.size() * 10) / 10.0;
+    }
 }

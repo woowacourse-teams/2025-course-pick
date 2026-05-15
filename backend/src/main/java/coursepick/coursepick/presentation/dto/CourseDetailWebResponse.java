@@ -1,7 +1,6 @@
 package coursepick.coursepick.presentation.dto;
 
 import coursepick.coursepick.application.dto.CourseDetailResponse;
-import coursepick.coursepick.application.dto.ReviewResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
@@ -26,14 +25,8 @@ public record CourseDetailWebResponse(
                 response.name(),
                 response.length().value(),
                 CoordinateWebResponse.from(response.coordinates()),
-                ReviewOverviewWebResponse.from(response.reviewCount(), calculateAverageRating(response.reviews())),
+                ReviewOverviewWebResponse.from(response.reviewCount(), response.averageRating()),
                 ReviewWebResponse.from(response.reviews())
         );
-    }
-
-    private static double calculateAverageRating(List<ReviewResponse> reviews) {
-        if (reviews.isEmpty()) return 0.0;
-        int total = reviews.stream().mapToInt(ReviewResponse::rating).sum();
-        return Math.round((double) total / reviews.size() * 10) / 10.0;
     }
 }

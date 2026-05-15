@@ -12,6 +12,7 @@ public record CourseDetailResponse(
         Meter length,
         List<Coordinate> coordinates,
         int reviewCount,
+        double averageRating,
         List<ReviewResponse> reviews
 ) {
     public static CourseDetailResponse from(Course course) {
@@ -21,6 +22,7 @@ public record CourseDetailResponse(
                 course.length(),
                 course.coordinates(),
                 course.reviews().size(),
+                course.calculateAverageRating(),
                 ReviewResponse.from(course.reviews())
         );
     }
