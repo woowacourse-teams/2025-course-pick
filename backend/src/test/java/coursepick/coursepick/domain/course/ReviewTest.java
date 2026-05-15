@@ -11,7 +11,7 @@ class ReviewTest {
     @Test
     void 리뷰_내용이_1자면_생성된다() {
         User author = new User(null, "providerId");
-        Review review = new Review(author, "좋", 0);
+        Review review = new Review(author, "좋", 1);
 
         assertThat(review.content()).isEqualTo("좋");
         assertThat(review.createdAt()).isNotNull();
@@ -22,7 +22,7 @@ class ReviewTest {
         User author = new User(null, "providerId");
         String content = "가".repeat(500);
 
-        Review review = new Review(author, content, 0);
+        Review review = new Review(author, content, 1);
 
         assertThat(review.content()).hasSize(500);
     }
