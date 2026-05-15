@@ -69,7 +69,7 @@ private fun ReviewItemHeader(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = modifier.weight(1F),
+            modifier = Modifier.weight(1F),
         ) {
             Text(
                 text = username,
