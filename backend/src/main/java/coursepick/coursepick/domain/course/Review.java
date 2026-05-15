@@ -51,7 +51,7 @@ public class Review {
     }
 
     private static void validateRating(int rating) {
-        if(rating < 0 || rating > 5){
+        if (rating < 1 || rating > 5) {
             throw ErrorType.INVALID_REVIEW_RATING.create(rating);
         }
     }

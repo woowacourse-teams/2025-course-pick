@@ -102,7 +102,7 @@ public enum ErrorType {
             IllegalStateException::new
     ),
     INVALID_REVIEW_RATING(
-            "리뷰 평점은 0이상 5이하여야 합니다. 입력값=%d",
+            "리뷰 평점은 1이상 5이하여야 합니다. 입력값=%d",
             IllegalArgumentException::new
     );
 
