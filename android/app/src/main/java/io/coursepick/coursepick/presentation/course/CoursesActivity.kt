@@ -731,10 +731,10 @@ class CoursesActivity :
     private fun setUpObservers() {
         setUpStateObserver()
         setUpEventObserver()
-        setUpCustomCourseFlowObserver()
+        setUpCustomCourseObserver()
     }
 
-    private fun setUpCustomCourseFlowObserver() {
+    private fun setUpCustomCourseObserver() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 customCourseViewModel.state.collect { customCourseState: CustomCourseUiState ->
