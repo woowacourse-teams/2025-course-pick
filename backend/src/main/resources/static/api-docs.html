@@ -27,16 +27,17 @@
 <div class="version-selector">
     <label for="api-version">API Version:</label>
     <select id="api-version" onchange="changeVersion(this.value)">
-        <option value="/v3/api-docs/v1">v1</option>
+        <option value="/docs/openapi3.json">v1</option>
     </select>
 </div>
 
 <div id="docs-container">
     <elements-api
-            apiDescriptionUrl="/v3/api-docs/v1"
+            apiDescriptionUrl="/docs/openapi3.json"
             id="stoplight"
             layout="sidebar"
             router="hash"
+            tryItCredentialsPolicy="omit"
     />
 </div>
 
@@ -52,6 +53,7 @@
                     apiDescriptionUrl="${url}"
                     layout="sidebar"
                     router="hash"
+                   tryItCredentialsPolicy="omit"
                 />
             `;
     }

@@ -60,6 +60,12 @@ dependencies {
     // MockWebServer
     testImplementation("com.squareup.okhttp3:mockwebserver3:5.1.0")
 
+    // Spring REST Docs (MockMvc)
+    testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
+
+    // restdocs-api-spec (OpenAPI 3 스펙 생성)
+    testImplementation("com.epages:restdocs-api-spec-mockmvc:0.19.4")
+
     // Test
     testImplementation("com.tngtech.archunit:archunit:1.1.0")
     testRuntimeOnly("de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring30x:4.21.0")
@@ -70,3 +76,29 @@ dependencies {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+
+val isProdProfile = project.findProperty("profile") == "prod"
+
+if (!isProdProfile) {
+    // openapi3 태스크 + 보안 주입 후, 생성된 스펙 파일을 static 리소스로 복사
+    tasks.register<Copy>("copyOpenApiSpec") {
+        dependsOn("injectOpenApiSecurity")
+        from(layout.buildDirectory.dir("api-spec"))
+        into("src/main/resources/static/docs")
+    }
+
+    tasks.build {
+        dependsOn("copyOpenApiSpec")
+    }
+
+    tasks.bootJar {
+        dependsOn("copyOpenApiSpec")
+    }
+
+    tasks.clean {
+        delete("src/main/resources/static/docs")
+    }
+}
+
+
