@@ -134,6 +134,7 @@ class CustomCourseViewModel
                         when (exception.code()) {
                             401 -> {
                                 _uiEvent.emit(CustomCourseUiEvent.UnauthorizedUser)
+                                return@onFailure
                             }
 
                             else -> {
@@ -143,6 +144,7 @@ class CustomCourseViewModel
                                         customCourses = emptyList(),
                                     )
                                 }
+                                return@onFailure
                             }
                         }
                     }
