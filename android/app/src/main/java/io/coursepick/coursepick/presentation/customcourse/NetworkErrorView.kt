@@ -63,7 +63,7 @@ fun NetworkErrorView(
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                text = "재시도",
+                text = stringResource(R.string.network_retry),
                 fontSize = 16.sp,
                 color = colorResource(R.color.item_primary),
             )
