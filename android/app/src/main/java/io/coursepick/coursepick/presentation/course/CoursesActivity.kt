@@ -62,6 +62,8 @@ import io.coursepick.coursepick.presentation.auth.AuthViewModel
 import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.compat.getParcelableCompat
+import io.coursepick.coursepick.presentation.customcourse.CustomCourseItem
+import io.coursepick.coursepick.presentation.customcourse.CustomCourseUiState
 import io.coursepick.coursepick.presentation.customcourse.CustomCourseViewModel
 import io.coursepick.coursepick.presentation.customcourse.CustomCoursesFragment
 import io.coursepick.coursepick.presentation.customcourse.toCourseItem
@@ -404,7 +406,7 @@ class CoursesActivity :
         }
     }
 
-    private fun navigateToCourse(course: CourseItem) {
+    fun navigateToCourse(course: CourseItem) {
         Logger.log(
             Logger.Event.Click("navigate"),
             "id" to course.id,
@@ -735,11 +737,9 @@ class CoursesActivity :
     private fun setUpCustomCourseFlowObserver() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                customCourseViewModel.state.collect { customCourseState ->
-                    customCourseState.selectedCustomCourse?.let { customCourseItem ->
-
+                customCourseViewModel.state.collect { customCourseState: CustomCourseUiState ->
+                    customCourseState.selectedCustomCourse?.let { customCourseItem: CustomCourseItem ->
                         val courseItem = customCourseItem.toCourseItem()
-
                         viewModel.selectExternalCourse(courseItem)
                     }
                 }
