@@ -16,7 +16,7 @@ import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class UserApiDocumentationTest extends AbstractApiDocsSupport {
+class UserApiDocsTest extends AbstractApiDocsSupport {
 
     @Override
     protected Object initController() {

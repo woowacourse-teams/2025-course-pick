@@ -32,7 +32,7 @@ public class PathAllowlistFilter extends OncePerRequestFilter {
         ALLOW_URI_PATTERNS.addAll(Set.of(
                 Pattern.compile("^/actuator.*$"),
                 Pattern.compile("^/api-docs.html$"),
-                Pattern.compile("^/v3/api-docs.*$"),
+                Pattern.compile("^/docs/.*$"),
                 Pattern.compile("^/v\\d+/login/kakao$"),
                 Pattern.compile("^/v\\d+/courses$"),
                 Pattern.compile("^/v\\d+/courses/[^/]+/route$"),
