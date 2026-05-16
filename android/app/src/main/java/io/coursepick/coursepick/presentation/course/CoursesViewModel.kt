@@ -108,8 +108,8 @@ class CoursesViewModel
             _state.value =
                 _state.value?.copy(
                     courses =
-                        _state.value?.courses?.let { oldList ->
-                            val hasCourse =
+                        _state.value?.courses?.let { oldList: List<CourseListItem> ->
+                            val hasCourse: Boolean =
                                 oldList.any { it is CourseListItem.Course && it.item.id == courseItem.id }
                             if (hasCourse) {
                                 oldList.map { item ->
@@ -120,8 +120,8 @@ class CoursesViewModel
                                     }
                                 }
                             } else {
-                                val clearedList =
-                                    oldList.map { item ->
+                                val clearedList: List<CourseListItem> =
+                                    oldList.map { item: CourseListItem ->
                                         if (item is CourseListItem.Course) {
                                             CourseListItem.Course(
                                                 item.item.copy(

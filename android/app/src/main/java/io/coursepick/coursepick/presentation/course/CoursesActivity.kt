@@ -81,6 +81,8 @@ import io.coursepick.coursepick.presentation.search.SearchActivity
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 import io.coursepick.coursepick.presentation.setting.SettingsScreen
 import io.coursepick.coursepick.presentation.ui.DoublePressDetector
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -737,12 +739,15 @@ class CoursesActivity :
     private fun setUpCustomCourseObserver() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                customCourseViewModel.state.collect { customCourseState: CustomCourseUiState ->
-                    customCourseState.selectedCustomCourse?.let { customCourseItem: CustomCourseItem ->
-                        val courseItem = customCourseItem.toCourseItem()
-                        viewModel.selectExternalCourse(courseItem)
+                customCourseViewModel.state
+                    .map { it.selectedCustomCourse }
+                    .distinctUntilChanged()
+                    .collect { customCourseItem: CustomCourseItem? ->
+                        customCourseItem?.let {
+                            val courseItem = customCourseItem.toCourseItem()
+                            viewModel.selectExternalCourse(courseItem)
+                        }
                     }
-                }
             }
         }
     }
