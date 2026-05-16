@@ -1,6 +1,5 @@
 package coursepick.coursepick.application;
 
-
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.exception.UnauthorizedException;
 import coursepick.coursepick.domain.course.*;
@@ -448,6 +447,106 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
     }
 
     @Nested
+    class 리뷰_추가 {
+
+        private User reviewer;
+        private String courseId;
+
+        @BeforeEach
+        void setUp() {
+            User courseCreator = dbUtil.saveUser(new User(UserProvider.KAKAO, "creatorProviderId"));
+            reviewer = dbUtil.saveUser(new User(UserProvider.KAKAO, "reviewerProviderId"));
+
+            Course course = new Course(null, new CourseName("테스트 코스"), List.of(
+                    new Coordinate(37.5180, 127.0280),
+                    new Coordinate(37.5175, 127.0270),
+                    new Coordinate(37.5170, 127.0265),
+                    new Coordinate(37.5180, 127.0280)
+            ), courseCreator);
+
+            courseId = dbUtil.saveCourse(course).id();
+        }
+
+        @Test
+        void 리뷰를_추가하면_DB에_저장된다() {
+            sut.addReview(courseId, reviewer.id(), "좋은 코스입니다", 4);
+
+            Course result = dbUtil.findCourseById(courseId);
+            assertThat(result.reviews()).hasSize(1);
+            assertThat(result.reviews().get(0).userId()).isEqualTo(reviewer.id());
+            assertThat(result.reviews().get(0).content()).isEqualTo("좋은 코스입니다");
+            assertThat(result.reviews().get(0).rating()).isEqualTo(4);
+        }
+
+        @Test
+        void 존재하지_않는_코스에_리뷰를_추가하면_예외가_발생한다() {
+            assertThatThrownBy(() -> sut.addReview("notExistCourseId", reviewer.id(), "좋은 코스입니다", 4))
+                    .isInstanceOf(NoSuchElementException.class);
+        }
+
+        @Test
+        void 이미_리뷰를_작성한_유저가_추가하면_예외가_발생한다() {
+            sut.addReview(courseId, reviewer.id(), "좋은 코스입니다", 4);
+
+            assertThatThrownBy(() -> sut.addReview(courseId, reviewer.id(), "또 쓰는 리뷰", 3))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+    }
+
+    @Nested
+    class 리뷰_삭제 {
+
+        private User reviewer;
+        private User otherUser;
+        private String courseId;
+        private String reviewId;
+
+        @BeforeEach
+        void setUp() {
+            User courseCreator = dbUtil.saveUser(new User(UserProvider.KAKAO, "creatorProviderId"));
+            reviewer = dbUtil.saveUser(new User(UserProvider.KAKAO, "reviewerProviderId"));
+            otherUser = dbUtil.saveUser(new User(UserProvider.KAKAO, "otherProviderId"));
+
+            Course course = new Course(null, new CourseName("테스트 코스"), List.of(
+                    new Coordinate(37.5180, 127.0280),
+                    new Coordinate(37.5175, 127.0270),
+                    new Coordinate(37.5170, 127.0265),
+                    new Coordinate(37.5180, 127.0280)
+            ), courseCreator);
+
+            courseId = dbUtil.saveCourse(course).id();
+            sut.addReview(courseId, reviewer.id(), "좋은 코스입니다", 5);
+            reviewId = dbUtil.findCourseById(courseId).reviews().getFirst().id();
+        }
+
+        @Test
+        void 리뷰를_삭제하면_DB에서_제거된다() {
+            sut.deleteReview(courseId, reviewId, reviewer.id());
+
+            Course result = dbUtil.findCourseById(courseId);
+            assertThat(result.reviews()).isEmpty();
+        }
+
+        @Test
+        void 존재하지_않는_코스의_리뷰를_삭제하면_예외가_발생한다() {
+            assertThatThrownBy(() -> sut.deleteReview("notExistCourseId", reviewId, reviewer.id()))
+                    .isInstanceOf(NoSuchElementException.class);
+        }
+
+        @Test
+        void 존재하지_않는_리뷰를_삭제하면_예외가_발생한다() {
+            assertThatThrownBy(() -> sut.deleteReview(courseId, "notExistReviewId", reviewer.id()))
+                    .isInstanceOf(NoSuchElementException.class);
+        }
+
+        @Test
+        void 작성자가_아닌_경우_삭제하면_예외가_발생한다() {
+            assertThatThrownBy(() -> sut.deleteReview(courseId, reviewId, otherUser.id()))
+                    .isInstanceOf(UnauthorizedException.class);
+        }
+    }
+
+    @Nested
     class 리뷰_신고 {
 
         private User reporter;
@@ -468,40 +567,16 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
             courseId = dbUtil.saveCourse(course).id();
 
-            sut.addReview(courseId, courseCreator.id(), "좋은 코스입니다");
+            sut.addReview(courseId, courseCreator.id(), "좋은 코스입니다", 5);
 
             reviewId = dbUtil.findCourseById(courseId).reviews().get(0).id();
-        }
-
-        @Test
-        void 리뷰_신고가_DB에_저장된다() {
-            Course course = dbUtil.findCourseById(courseId);
-
-            sut.reportReview(courseId, reviewId, reporter.id());
-
-            var result = dbUtil.findCourseById(courseId);
-            Review review = result.getReview(reviewId);
-            assertThat(review.reportUserIds()).containsExactly(reporter.id());
-        }
-
-        @Test
-        void 두_명이_신고하면_두_개의_신고가_DB에_저장된다() {
-            User reporter2 = dbUtil.saveUser(new User(UserProvider.KAKAO, "reporter2ProviderId"));
-
-            sut.reportReview(courseId, reviewId, reporter.id());
-            sut.reportReview(courseId, reviewId, reporter2.id());
-
-            Course result = dbUtil.findCourseById(courseId);
-            Review review = result.getReview(reviewId);
-            assertThat(review.reportUserIds()).hasSize(2)
-                    .containsExactlyInAnyOrder(reporter.id(), reporter2.id());
         }
 
         @Test
         void 리뷰를_신고하면_알람이_간다() {
             sut.reportReview(courseId, reviewId, reporter.id());
 
-            verify(courseAlerter, times(1)).alertReview(any(Course.class), any(Review.class));
+            verify(courseAlerter, times(0)).alertCourse(any());
         }
 
         @Test
@@ -511,7 +586,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
             sut.reportReview(courseId, reviewId, reporter.id());
             sut.reportReview(courseId, reviewId, reporter2.id());
 
-            verify(courseAlerter, times(2)).alertReview(any(Course.class), any(Review.class));
+            verify(courseAlerter, times(0)).alertCourse(any());
         }
     }
 }

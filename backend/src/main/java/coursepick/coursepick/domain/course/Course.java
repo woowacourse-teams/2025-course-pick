@@ -19,9 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static coursepick.coursepick.application.exception.ErrorType.ALREADY_REPORTED_COURSE;
-import static coursepick.coursepick.application.exception.ErrorType.ALREADY_REVIEWED_COURSE;
-import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_REVIEW;
+import static coursepick.coursepick.application.exception.ErrorType.*;
 
 @Document
 @CompoundIndex(name = "idx_creatorId_createdAt", def = "{'creatorId': 1, 'createdAt': -1}")
@@ -119,11 +117,16 @@ public class Course {
         this.name = new CourseName(courseName);
     }
 
-    public void addReview(User author, String content) {
+    public void verifyWriteReviewEligibility(User author) {
         if (reviews.stream().anyMatch(review -> review.userId().equals(author.id()))) {
             throw ALREADY_REVIEWED_COURSE.create(this.id, author.id());
         }
-        reviews.add(new Review(author, content));
+    }
+
+    public void verifyRemovableReview(Review review, String userId) {
+        if (!review.userId().equals(userId)) {
+            throw AUTHENTICATION_FAIL.create();
+        }
     }
 
     public void addReport(User user) {
@@ -141,5 +144,12 @@ public class Course {
         return reviews.stream().filter(review -> review.id().equals(reviewId))
                 .findFirst()
                 .orElseThrow(() -> NOT_EXIST_REVIEW.create(reviewId));
+    }
+
+    public double calculateAverageRating() {
+        if (reviews.isEmpty()) return 0.0;
+        int total = reviews.stream()
+                .mapToInt(Review::rating).sum();
+        return Math.round((double) total / reviews.size() * 10) / 10.0;
     }
 }

@@ -122,11 +122,21 @@ public class CourseApplicationService {
     }
 
     @Transactional
-    public void addReview(String courseId, String userId, String content) {
+    public void addReview(String courseId, String userId, String content, int rating) {
         User user = getUser(userId);
         Course course = getCourse(courseId);
-        course.addReview(user, content);
-        courseRepository.save(course);
+        course.verifyWriteReviewEligibility(user);
+
+        courseRepository.pushReview(courseId, new Review(user, content, rating));
+    }
+
+    @Transactional
+    public void deleteReview(String courseId, String reviewId, String userId) {
+        Course course = getCourse(courseId);
+        Review review = course.getReview(reviewId);
+        course.verifyRemovableReview(review, userId);
+
+        courseRepository.deleteReview(courseId, reviewId);
     }
 
     @Transactional

@@ -85,7 +85,18 @@ public class CourseV1WebController implements CourseWebApi {
             @UserId String userId,
             @RequestBody CreateReviewWebRequest request
     ) {
-        courseApplicationService.addReview(id, userId, request.content());
+        courseApplicationService.addReview(id, userId, request.content(), request.rating());
+    }
+
+    @Override
+    @Login
+    @DeleteMapping("/courses/{courseId}/reviews/{reviewId}")
+    public void deleteReview(
+            @PathVariable("courseId") String courseId,
+            @PathVariable("reviewId") String reviewId,
+            @UserId String userId
+    ) {
+        courseApplicationService.deleteReview(courseId, reviewId, userId);
     }
 
     @Override

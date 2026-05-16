@@ -26,12 +26,14 @@ public class Review {
     private final String userId;
     private final String authorNickname;
     private final String content;
+    private final int rating;
     private final Set<String> reportUserIds;
     private final Instant createdAt;
 
-    public Review(User author, String content) {
-        this(RandomStringUtils.insecure().next(10, true, true), author.id(), author.nickname().value(), content, new HashSet<>(), Instant.now());
+    public Review(User author, String content, int rating) {
+        this(RandomStringUtils.insecure().next(10, true, true), author.id(), author.nickname().value(), content, rating, new HashSet<>(), Instant.now());
         validateContent(content);
+        validateRating(rating);
     }
 
     public void addReport(User user) {
@@ -45,6 +47,12 @@ public class Review {
         if (content == null || content.isEmpty() || content.length() > MAX_CONTENT_LENGTH) {
             int length = content == null ? 0 : content.length();
             throw INVALID_REVIEW_CONTENT_LENGTH.create(length);
+        }
+    }
+
+    private static void validateRating(int rating) {
+        if (rating < 1 || rating > 5) {
+            throw ErrorType.INVALID_REVIEW_RATING.create(rating);
         }
     }
 }
