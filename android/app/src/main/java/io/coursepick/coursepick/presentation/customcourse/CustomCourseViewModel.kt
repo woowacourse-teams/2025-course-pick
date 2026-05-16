@@ -102,7 +102,7 @@ class CustomCourseViewModel
                         currentState.copy(
                             status = UiStatus.Success,
                             customCourses = customCourseItems,
-                            selectedCustomCourse = customCourseItems.first(),
+                            selectedCustomCourse = customCourseItems.firstOrNull(),
                         )
                     }
                 }.onFailure { exception: Throwable ->
