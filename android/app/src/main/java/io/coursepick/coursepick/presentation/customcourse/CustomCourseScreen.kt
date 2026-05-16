@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.animateItem
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -83,18 +84,23 @@ fun CustomCourseScreen(
                                     customCourse = customCourse,
                                     onSelect = { onSelect(customCourse) },
                                     onNavigateToCourse = { onNavigateToCourse(customCourse) },
-                                    modifier = Modifier.animateItem(),
                                 )
                             }
                         }
                     }
                 }
 
-                UiStatus.NoInternet -> NetworkErrorView(onReconnect = onReconnect)
+                UiStatus.NoInternet -> {
+                    NetworkErrorView(onReconnect = onReconnect)
+                }
 
-                UiStatus.Failure -> EmptyDescription(text = stringResource(R.string.custom_courses_load_failed))
+                UiStatus.Failure -> {
+                    EmptyDescription(text = stringResource(R.string.custom_courses_load_failed))
+                }
 
-                UiStatus.Loading -> LoadingIndicator()
+                UiStatus.Loading -> {
+                    LoadingIndicator()
+                }
             }
         }
         FloatingActionButton(
