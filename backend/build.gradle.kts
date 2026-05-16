@@ -83,7 +83,6 @@ tasks.withType<Test> {
 val isProdProfile = project.findProperty("profile") == "prod"
 
 if (!isProdProfile) {
-
     // openapi3 태스크 실행 후, JWT Bearer 인증 정보와 파라미터 예시를 OpenAPI 스펙에 주입
     openapi3 {
         setServer("http://localhost:8080")
@@ -97,84 +96,30 @@ if (!isProdProfile) {
         dependsOn("openapi3")
         doLast {
             val specFile = layout.buildDirectory.file("api-spec/openapi3.json").get().asFile
-            val json = groovy.json.JsonSlurper().parseText(specFile.readText()) as MutableMap<String, Any?>
-
-            // 1. components.securitySchemes에 bearerAuth 추가
-            val components =
-                json.getOrPut("components") { mutableMapOf<String, Any?>() } as MutableMap<String, Any?>
-            val securitySchemes =
-                components.getOrPut("securitySchemes") { mutableMapOf<String, Any?>() } as MutableMap<String, Any?>
-            securitySchemes["bearerAuth"] = mapOf(
-                "type" to "http",
-                "scheme" to "bearer",
-                "bearerFormat" to "JWT",
-                "description" to "카카오 로그인 후 발급받은 JWT 토큰을 입력해주세요."
-            )
-
-            // 2. 파라미터 예시 값 정의 (파라미터 이름 → 예시 값)
-            val paramExamples = mapOf(
-                "mapLat" to "37.5165",
-                "mapLng" to "127.1040",
-                "scope" to "1000",
-                "userLat" to "37.516",
-                "userLng" to "127.104",
-                "minLength" to "0",
-                "maxLength" to "10000",
-                "page" to "0",
-                "id" to "689c3143182cecc6353cca7b",
-                "lat" to "37.5165",
-                "lng" to "127.1040",
-                "startLat" to "37.5165",
-                "startLng" to "127.1040",
-                "courseIds" to "689c3143182cecc6353cca7b,689c3143182cecc6353cca7c"
-            )
-
-            // 3. 로그인 필요한 API에 security 추가 + 파라미터 example 주입
-            val paths = json["paths"] as? Map<*, *> ?: emptyMap<String, Any>()
-
-
-            val operations = paths.values
-                .filterIsInstance<Map<*, *>>()
-                .flatMap { it.values.filterIsInstance<MutableMap<String, Any?>>() }
-
-            operations.forEach { op ->
-                // Security 추가
-                if ((op["description"] as? String)?.contains("로그인 필요") == true) {
-                    op["security"] = listOf(mapOf("bearerAuth" to emptyList<String>()))
-                }
-                // 파라미터 Example 주입
-                val params = op["parameters"] as? List<*> ?: emptyList<Any>()
-                params.filterIsInstance<MutableMap<String, Any?>>().forEach { param ->
-                    val name = param["name"] as? String
-                    paramExamples[name]?.let { example ->
-                        param["example"] = example
-                    }
-                }
-            }
-
-            specFile.writeText(groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(json)))
-        }
-
-
-        // openapi3 태스크 + 보안 주입 후, 생성된 스펙 파일을 static 리소스로 복사
-        tasks.register<Copy>("copyOpenApiSpec") {
-            dependsOn("injectOpenApiSecurity")
-            from(layout.buildDirectory.dir("api-spec"))
-            into("src/main/resources/static/docs")
-        }
-
-        tasks.build {
-            dependsOn("copyOpenApiSpec")
-        }
-
-        tasks.bootJar {
-            dependsOn("copyOpenApiSpec")
-        }
-
-        tasks.clean {
-            delete("src/main/resources/static/docs")
+            coursepick.OpenApiProcessor.process(specFile)
         }
     }
+
+    // openapi3 태스크 + 보안 주입 후, 생성된 스펙 파일을 static 리소스로 복사
+    tasks.register<Copy>("copyOpenApiSpec") {
+        dependsOn("injectOpenApiSecurity")
+        from(layout.buildDirectory.dir("api-spec"))
+        into("src/main/resources/static/docs")
+    }
+
+    tasks.build {
+        dependsOn("copyOpenApiSpec")
+    }
+
+    tasks.bootJar {
+        dependsOn("copyOpenApiSpec")
+    }
+
+    tasks.bootRun {
+        dependsOn("copyOpenApiSpec")
+    }
+
+    tasks.clean {
+        delete("src/main/resources/static/docs")
+    }
 }
-
-

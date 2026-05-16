@@ -409,6 +409,34 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
     }
 
     @Test
+    void 코스_신고_API_401_에러() throws Exception {
+        org.mockito.Mockito.doThrow(coursepick.coursepick.application.exception.ErrorType.AUTHENTICATION_FAIL.create())
+                .when(courseApplicationService).reportCourse(anyString(), any());
+
+        mockMvc.perform(post("/v1/courses/{id}/report", "689c3143182cecc6353cca7b")
+                        // Authorization 헤더를 누락하여 401 유도
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andDo(MockMvcRestDocumentationWrapper.document("course-report-401",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        resource(ResourceSnippetParameters.builder()
+                                .tag(TAG)
+                                .summary("코스 신고")
+                                .description("로그인 토큰이 없거나 유효하지 않은 경우의 에러 응답입니다.")
+                                .pathParameters(
+                                        parameterWithName("id").description(코스_ID).attributes(key("example").value("689c3143182cecc6353cca7b"))
+                                )
+                                .responseFields(
+                                        fieldWithPath("message").description("에러 상세 메시지"),
+                                        fieldWithPath("timestamp").description("에러 발생 시각")
+                                )
+                                .build()
+                        )
+                ));
+    }
+
+    @Test
     void 내_커스텀_코스_조회_API() throws Exception {
         CourseResponse courseResponse = new CourseResponse(
                 "custom_id_123",

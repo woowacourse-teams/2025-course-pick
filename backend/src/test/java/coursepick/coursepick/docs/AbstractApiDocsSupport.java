@@ -6,6 +6,7 @@ import coursepick.coursepick.application.UserApplicationService;
 import coursepick.coursepick.presentation.CourseV1WebController;
 import coursepick.coursepick.presentation.NoticeV1WebController;
 import coursepick.coursepick.presentation.UserV1WebController;
+import coursepick.coursepick.presentation.WebExceptionHandler;
 import coursepick.coursepick.security.LoginInterceptor;
 import coursepick.coursepick.security.UserIdArgumentResolver;
 import coursepick.coursepick.security.WebConfig;
@@ -46,7 +47,9 @@ public abstract class AbstractApiDocsSupport {
 
     @BeforeEach
     void setUp(RestDocumentationContextProvider restDocumentation) throws Exception {
+
         this.mockMvc = MockMvcBuilders.standaloneSetup(initController())
+                .setControllerAdvice(new WebExceptionHandler())
                 .setCustomArgumentResolvers(new UserIdArgumentResolver())
                 .apply(documentationConfiguration(restDocumentation))
                 .build();
