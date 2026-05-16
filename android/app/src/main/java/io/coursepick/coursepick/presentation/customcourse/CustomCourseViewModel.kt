@@ -72,7 +72,15 @@ class CustomCourseViewModel
 
         fun fetchCustomCourses(userCoordinate: Coordinate?) {
             viewModelScope.launch {
-                checkNetwork()
+                if (!networkMonitor.isConnected()) {
+                    _state.update { currentState ->
+                        currentState.copy(
+                            status = UiStatus.NoInternet,
+                            customCourses = emptyList(),
+                        )
+                    }
+                    return@launch
+                }
 
                 if (authRepository.accessToken() == null) {
                     _state.update { currentState ->
@@ -150,8 +158,5 @@ class CustomCourseViewModel
             select(customCourse)
             val courseItem: CourseItem = _state.value.selectedCustomCourse?.toCourseItem() ?: return
             onNavigateTo(courseItem)
-        }
-
-        private fun checkNetwork() {
         }
     }
