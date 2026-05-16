@@ -351,7 +351,7 @@ class CoursesActivity :
                 R.id.customCourseMenu -> {
                     viewModel.showCourses()
                     viewModel.switchContent(CoursesContent.CUSTOM_COURSE)
-                    viewModel.onCustomCourse()
+                    viewModel.checkAuthForCustomCourse()
                     true
                 }
 

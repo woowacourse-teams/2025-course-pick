@@ -614,7 +614,7 @@ class CoursesViewModel
             }
         }
 
-        fun onCustomCourse() {
+        fun checkAuthForCustomCourse() {
             viewModelScope.launch {
                 if (authRepository.accessToken() == null) {
                     _authDialogState.value = AuthFeature.CustomCourse
