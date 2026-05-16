@@ -105,11 +105,11 @@ class CoursesViewModel
         }
 
         fun selectExternalCourse(courseItem: CourseItem) {
-            updateCourseList(courseItem)
+            syncExternalSelectedCourse(courseItem)
             _event.value = CoursesUiEvent.SelectCourseManually(courseItem)
         }
 
-        private fun updateCourseList(courseItem: CourseItem) {
+        private fun syncExternalSelectedCourse(courseItem: CourseItem) {
             _state.value =
                 _state.value?.copy(
                     courses =
