@@ -1,11 +1,9 @@
 package io.coursepick.coursepick.presentation.customcourse
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,7 +12,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -37,16 +34,16 @@ import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.presentation.course.UiStatus
 import io.coursepick.coursepick.presentation.customcourse.component.EmptyDescription
 import io.coursepick.coursepick.presentation.customcourse.component.Header
+import io.coursepick.coursepick.presentation.customcourse.component.LoadingIndicator
 
 @Composable
 fun CustomCourseScreen(
-    status: UiStatus,
+    modifier: Modifier = Modifier,
+    status: CustomCourseUiState,
     onReconnect: () -> Unit,
-    customCourses: List<CustomCourseItem>,
     onGoToCreateCustomCourse: () -> Unit,
     onSelect: (CustomCourseItem) -> Unit,
     onNavigateToCourse: (CustomCourseItem) -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     val nestedScrollInterop = rememberNestedScrollInteropConnection()
 
@@ -57,28 +54,11 @@ fun CustomCourseScreen(
                 .nestedScroll(nestedScrollInterop),
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .background(colorResource(R.color.background_primary)),
-            ) {
-                Header(stringResource(R.string.custom_courses_header))
-            }
-            when (status) {
-                UiStatus.Loading -> {
-                    CircularProgressIndicator(
-                        modifier =
-                            Modifier
-                                .size(64.dp)
-                                .align(Alignment.CenterHorizontally),
-                        color = colorResource(R.color.item_secondary),
-                        strokeWidth = 6.dp,
-                    )
-                }
+            Header(stringResource(R.string.custom_courses_header))
 
+            when (status.status) {
                 UiStatus.Success -> {
-                    if (customCourses.isEmpty()) {
+                    if (status.customCourses.isEmpty()) {
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.TopCenter,
@@ -95,7 +75,7 @@ fun CustomCourseScreen(
                             contentPadding = PaddingValues(bottom = 50.dp),
                         ) {
                             items(
-                                items = customCourses,
+                                items = status.customCourses,
                                 key = CustomCourseItem::id,
                             ) { customCourse: CustomCourseItem ->
                                 CustomCourseItemCard(
@@ -109,18 +89,11 @@ fun CustomCourseScreen(
                     }
                 }
 
-                UiStatus.NoInternet -> {
-                    NetworkErrorView(onReconnect)
-                }
+                UiStatus.NoInternet -> NetworkErrorView(onReconnect)
 
-                UiStatus.Failure -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.TopCenter,
-                    ) {
-                        EmptyDescription(text = stringResource(R.string.custom_courses_load_failed))
-                    }
-                }
+                UiStatus.Failure -> EmptyDescription(text = stringResource(R.string.custom_courses_load_failed))
+
+                UiStatus.Loading -> LoadingIndicator()
             }
         }
         FloatingActionButton(
@@ -145,10 +118,15 @@ fun CustomCourseScreen(
 @PreviewLightDark
 @Composable
 private fun CustomCourseScreen_EmptyPreview() {
+    val status =
+        CustomCourseUiState(
+            status = UiStatus.Success,
+            customCourses = emptyList(),
+        )
+
     CustomCourseScreen(
-        status = UiStatus.Success,
+        status = status,
         onReconnect = {},
-        customCourses = emptyList(),
         onGoToCreateCustomCourse = { },
         onSelect = { },
         onNavigateToCourse = { },
@@ -180,10 +158,49 @@ private fun CustomCourseScreen_WithCoursesPreview() {
             )
         }
 
+    val status =
+        CustomCourseUiState(
+            status = UiStatus.Success,
+            customCourses = customCourse,
+        )
+
     CustomCourseScreen(
-        status = UiStatus.Success,
+        status = status,
         onReconnect = {},
-        customCourses = customCourse,
+        onGoToCreateCustomCourse = { },
+        onSelect = { },
+        onNavigateToCourse = { },
+    )
+}
+
+@PreviewLightDark
+@Composable
+private fun CustomCourseScreen_LoadingPreview() {
+    val status =
+        CustomCourseUiState(
+            status = UiStatus.Loading,
+            customCourses = emptyList(),
+        )
+    CustomCourseScreen(
+        status = status,
+        onReconnect = {},
+        onGoToCreateCustomCourse = { },
+        onSelect = { },
+        onNavigateToCourse = { },
+    )
+}
+
+@PreviewLightDark
+@Composable
+private fun CustomCourseScreen_NoInternetPreview() {
+    val status =
+        CustomCourseUiState(
+            status = UiStatus.NoInternet,
+            customCourses = emptyList(),
+        )
+    CustomCourseScreen(
+        status = status,
+        onReconnect = {},
         onGoToCreateCustomCourse = { },
         onSelect = { },
         onNavigateToCourse = { },
