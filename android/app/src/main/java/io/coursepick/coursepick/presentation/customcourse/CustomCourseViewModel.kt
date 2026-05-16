@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -118,6 +119,7 @@ class CustomCourseViewModel
                         Logger.Event.Failure("fetch_custom_courses_new"),
                         "message" to exception.message.toString(),
                     )
+
                     if (exception is NoNetworkException) {
                         _state.update { currentState ->
                             currentState.copy(
@@ -127,6 +129,24 @@ class CustomCourseViewModel
                         }
                         return@onFailure
                     }
+
+                    if (exception is HttpException) {
+                        when (exception.code()) {
+                            401 -> {
+                                _uiEvent.emit(CustomCourseUiEvent.UnauthorizedUser)
+                            }
+
+                            else -> {
+                                _state.update { currentState ->
+                                    currentState.copy(
+                                        status = UiStatus.Failure,
+                                        customCourses = emptyList(),
+                                    )
+                                }
+                            }
+                        }
+                    }
+
                     _state.update { currentState ->
                         currentState.copy(
                             status = UiStatus.Failure,

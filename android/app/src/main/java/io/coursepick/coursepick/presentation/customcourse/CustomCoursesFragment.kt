@@ -107,6 +107,7 @@ class CustomCoursesFragment(
                             CustomCourseUiEvent.NavigateToCreateCourse -> goToCreateCustomCourse()
                             CustomCourseUiEvent.FetchCustomCourseFailure -> showToastMessage(R.string.custom_courses_load_failed)
                             CustomCourseUiEvent.RequestFetch -> fetchCustomCourses()
+                            CustomCourseUiEvent.UnauthorizedUser -> showToastMessage(R.string.custom_courses_unauthorized_user_message)
                         }
                     }
                 }

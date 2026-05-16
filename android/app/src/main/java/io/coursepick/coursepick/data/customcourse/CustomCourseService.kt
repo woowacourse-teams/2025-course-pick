@@ -22,5 +22,5 @@ interface CustomCourseService {
     suspend fun customCourses(
         @Query("userLat") userLatitude: Double?,
         @Query("userLng") userLongitude: Double?,
-    ): CoursesPageDto
+    ): Response<CoursesPageDto>
 }
