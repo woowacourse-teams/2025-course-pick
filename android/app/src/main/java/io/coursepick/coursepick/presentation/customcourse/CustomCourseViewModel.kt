@@ -71,9 +71,9 @@ class CustomCourseViewModel
         }
 
         fun fetchCustomCourses(userCoordinate: Coordinate?) {
-            checkNetwork()
-
             viewModelScope.launch {
+                checkNetwork()
+
                 if (authRepository.accessToken() == null) {
                     _state.update { currentState ->
                         currentState.copy(status = UiStatus.Success, customCourses = emptyList())
@@ -153,13 +153,5 @@ class CustomCourseViewModel
         }
 
         private fun checkNetwork() {
-            if (!networkMonitor.isConnected()) {
-                _state.update { currentState ->
-                    currentState.copy(
-                        status = UiStatus.NoInternet,
-                        customCourses = emptyList(),
-                    )
-                }
-            }
         }
     }
