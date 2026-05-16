@@ -61,7 +61,9 @@ fun CustomCourseScreen(
                 UiStatus.Success -> {
                     if (status.customCourses.isEmpty()) {
                         Box(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .weight(1f),
                             contentAlignment = Alignment.TopCenter,
                         ) {
                             EmptyDescription(text = stringResource(R.string.custom_courses_empty_description))
@@ -72,6 +74,7 @@ fun CustomCourseScreen(
                             modifier =
                                 Modifier
                                     .fillMaxSize()
+                                    .weight(1f)
                                     .nestedScroll(nestedScrollInterop),
                             contentPadding = PaddingValues(bottom = 50.dp),
                         ) {
