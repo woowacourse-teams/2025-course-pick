@@ -134,7 +134,7 @@ public class Course {
     }
 
     public void addReview(User author, String content) {
-        reviews.add(new Review(author, content));
+        reviews.add(new Review(author, content, 5));
     }
 
     public void addReport(User user) {
