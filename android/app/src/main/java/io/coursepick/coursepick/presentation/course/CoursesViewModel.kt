@@ -105,18 +105,16 @@ class CoursesViewModel
         }
 
         fun selectExternalCourse(courseItem: CourseItem) {
-            val selectedCourse = courseItem.copy(selected = true)
-
             _state.value =
                 _state.value?.copy(
                     courses =
                         _state.value?.courses?.let { oldList ->
                             val hasCourse =
-                                oldList.any { it is CourseListItem.Course && it.item.id == selectedCourse.id }
+                                oldList.any { it is CourseListItem.Course && it.item.id == courseItem.id }
                             if (hasCourse) {
                                 oldList.map { item ->
                                     if (item is CourseListItem.Course) {
-                                        CourseListItem.Course(item.item.copy(selected = item.item.id == selectedCourse.id))
+                                        CourseListItem.Course(item.item.copy(selected = item.item.id == courseItem.id))
                                     } else {
                                         item
                                     }
@@ -134,13 +132,13 @@ class CoursesViewModel
                                             item
                                         }
                                     }
-                                listOf(CourseListItem.Course(selectedCourse)) + clearedList
+                                listOf(CourseListItem.Course(courseItem)) + clearedList
                             }
-                        } ?: listOf(CourseListItem.Course(selectedCourse)),
+                        } ?: listOf(CourseListItem.Course(courseItem)),
                     status = UiStatus.Success,
                 )
 
-            _event.value = CoursesUiEvent.SelectCourseManually(selectedCourse)
+            _event.value = CoursesUiEvent.SelectCourseManually(courseItem)
         }
 
         private fun checkNetwork() {
@@ -663,20 +661,10 @@ class CoursesViewModel
         }
 
         fun onAuthSuccess(feature: AuthFeature) {
+            dismissAuthDialog()
             if (feature is AuthFeature.ReportCourse) {
-                dismissAuthDialog()
                 onReportCourse(feature.course)
             }
-        }
-
-        fun selectCourseFromCustomCourse(course: CustomCourseItem) {
-            val courseItem =
-                CourseItem(
-                    course = course.course,
-                    selected = course.selected,
-                )
-            select(courseItem)
-            _event.value = CoursesUiEvent.SelectCourseManually(courseItem)
         }
 
         private fun newCoursesListItem(
