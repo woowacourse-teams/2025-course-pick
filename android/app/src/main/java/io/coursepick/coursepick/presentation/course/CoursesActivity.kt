@@ -603,6 +603,12 @@ class CoursesActivity :
                             )
                         }
 
+                        CustomCoursesFragment::class.java.name -> {
+                            CustomCoursesFragment(
+                                onReconnectListener,
+                            )
+                        }
+
                         else -> {
                             super.instantiate(classLoader, className)
                         }

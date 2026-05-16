@@ -23,6 +23,7 @@ import io.coursepick.coursepick.presentation.auth.AuthFeature
 import io.coursepick.coursepick.presentation.auth.AuthUiEvent
 import io.coursepick.coursepick.presentation.auth.AuthViewModel
 import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
+import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.course.CoursesActivity
 import io.coursepick.coursepick.presentation.course.CoursesViewModel
 import io.coursepick.coursepick.presentation.createcustomcourse.CoordinateUiModel
@@ -30,7 +31,9 @@ import io.coursepick.coursepick.presentation.createcustomcourse.CreateCustomCour
 import io.coursepick.coursepick.presentation.createcustomcourse.toUiModel
 import kotlinx.coroutines.launch
 
-class CustomCoursesFragment : Fragment() {
+class CustomCoursesFragment(
+    private val onReconnectListener: OnReconnectListener,
+) : Fragment() {
     @Suppress("ktlint:standard:backing-property-naming")
     private var _binding: FragmentCustomCoursesBinding? = null
     private val binding: FragmentCustomCoursesBinding get() = _binding!!
@@ -66,7 +69,7 @@ class CustomCoursesFragment : Fragment() {
 
                 CustomCourseScreen(
                     status = customCourseState,
-                    onReconnect = ::fetchCustomCourses,
+                    onReconnect = onReconnectListener,
                     onGoToCreateCustomCourse = customCourseViewModel::onGoToCreateCustomCourse,
                     onSelect = { customCourse: CustomCourseItem ->
                         customCourseViewModel.select(customCourse)

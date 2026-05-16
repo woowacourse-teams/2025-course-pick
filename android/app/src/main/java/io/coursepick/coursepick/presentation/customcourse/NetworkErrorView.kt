@@ -22,11 +22,12 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.coursepick.coursepick.R
+import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 
 @Composable
 fun NetworkErrorView(
-    onReconnect: () -> Unit,
     modifier: Modifier = Modifier,
+    onReconnect: OnReconnectListener,
 ) {
     Column(
         modifier =
@@ -50,15 +51,17 @@ fun NetworkErrorView(
         Box(
             modifier =
                 Modifier
-                    .clickable { onReconnect() }
+                    .clickable(onClick = onReconnect::onReconnect)
                     .background(
                         color = colorResource(R.color.background_primary),
                         shape = RoundedCornerShape(8.dp),
-                    ).border(
+                    )
+                    .border(
                         width = 1.dp,
                         color = colorResource(R.color.background_border),
                         shape = RoundedCornerShape(50),
-                    ).padding(horizontal = 20.dp, vertical = 10.dp),
+                    )
+                    .padding(horizontal = 20.dp, vertical = 10.dp),
             contentAlignment = Alignment.Center,
         ) {
             Text(

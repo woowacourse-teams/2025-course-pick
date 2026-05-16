@@ -31,6 +31,7 @@ import io.coursepick.coursepick.domain.course.Distance
 import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Length
 import io.coursepick.coursepick.domain.course.Longitude
+import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.course.UiStatus
 import io.coursepick.coursepick.presentation.customcourse.component.EmptyDescription
 import io.coursepick.coursepick.presentation.customcourse.component.Header
@@ -40,7 +41,7 @@ import io.coursepick.coursepick.presentation.customcourse.component.LoadingIndic
 fun CustomCourseScreen(
     modifier: Modifier = Modifier,
     status: CustomCourseUiState,
-    onReconnect: () -> Unit,
+    onReconnect: OnReconnectListener,
     onGoToCreateCustomCourse: () -> Unit,
     onSelect: (CustomCourseItem) -> Unit,
     onNavigateToCourse: (CustomCourseItem) -> Unit,
@@ -89,7 +90,7 @@ fun CustomCourseScreen(
                     }
                 }
 
-                UiStatus.NoInternet -> NetworkErrorView(onReconnect)
+                UiStatus.NoInternet -> NetworkErrorView(onReconnect = onReconnect)
 
                 UiStatus.Failure -> EmptyDescription(text = stringResource(R.string.custom_courses_load_failed))
 
