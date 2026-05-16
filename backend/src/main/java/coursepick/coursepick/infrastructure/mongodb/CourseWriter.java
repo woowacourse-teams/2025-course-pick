@@ -49,9 +49,12 @@ public class CourseWriter implements Converter<Course, Document> {
         return reviews.stream()
                 .map(review -> {
                     Document reviewDoc = new Document();
+                    reviewDoc.put("id", review.id());
+                    reviewDoc.put("userId", review.userId());
                     reviewDoc.put("authorNickname", review.authorNickname());
                     reviewDoc.put("content", review.content());
                     reviewDoc.put("createdAt", review.createdAt());
+                    reviewDoc.put("reportUserIds", review.reportUserIds());
                     return reviewDoc;
                 })
                 .toList();

@@ -3,6 +3,7 @@ package coursepick.coursepick.domain.course;
 import coursepick.coursepick.domain.user.Nickname;
 import coursepick.coursepick.domain.user.User;
 import coursepick.coursepick.domain.user.UserProvider;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -125,5 +126,17 @@ class CourseTest {
 
         assertThatThrownBy(() -> course.addReport(user1))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 한_유저가_같은_코스에_두_번_리뷰를_남기면_예외가_발생한다() {
+        Course course = new Course(null, new CourseName("코스"), List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
+        User user1 = new User("user1", UserProvider.KAKAO, "providerId", Nickname.random());
+
+        course.addReview(user1, "첫 번째 리뷰");
+
+        assertThatThrownBy(() -> course.addReview(user1, "두 번째 리뷰"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("이미 해당 코스에 리뷰를 작성했습니다");
     }
 }

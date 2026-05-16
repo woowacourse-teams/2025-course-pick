@@ -54,10 +54,21 @@ class CourseWriterTest {
         assertThat(document.getDouble("length")).isEqualTo(course.length().value());
         assertThat(document.get("coordinates")).isInstanceOf(Document.class);
         assertThat(document.get("simplifiedCoordinates")).isInstanceOf(Document.class);
-        assertThat(document.get("reviews")).isInstanceOf(List.class);
+
+        List<Document> reviews = document.getList("reviews", Document.class);
+        assertThat(reviews).hasSize(1);
+        Document reviewDoc = reviews.get(0);
+        Review originalReview = course.reviews().get(0);
+        assertThat(reviewDoc.getString("id")).isEqualTo(originalReview.id());
+        assertThat(reviewDoc.getString("userId")).isEqualTo(originalReview.userId());
+        assertThat(reviewDoc.getString("authorNickname")).isEqualTo(originalReview.authorNickname());
+        assertThat(reviewDoc.getString("content")).isEqualTo(originalReview.content());
+        assertThat(reviewDoc.get("createdAt")).isEqualTo(originalReview.createdAt());
+        // mongodb에서 set 타입을 list 타입으로 변환되는 과정을 거치지 않아서 set 타입으로 검증합니다.
+        assertThat(reviewDoc.get("reportUserIds", Set.class)).isEqualTo(originalReview.reportUserIds());
+
         assertThat(document.getString("creatorId")).isEqualTo(course.creatorId());
 
-        // mongodb에서 set 타입을 list 타입으로 변환되는 과정을 거치지 않아서 set 타입으로 검증합니다.
         assertThat(document.get("reportUserIds", Set.class)).isNotEmpty();
         assertThat(document.getDate("createdAt")).isEqualTo(
                 Date.from(

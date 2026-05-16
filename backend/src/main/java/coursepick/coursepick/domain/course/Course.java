@@ -1,6 +1,5 @@
 package coursepick.coursepick.domain.course;
 
-import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.user.User;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -19,6 +18,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static coursepick.coursepick.application.exception.ErrorType.ALREADY_REPORTED_COURSE;
+import static coursepick.coursepick.application.exception.ErrorType.ALREADY_REVIEWED_COURSE;
+import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_REVIEW;
 
 @Document
 @CompoundIndex(name = "idx_creatorId_createdAt", def = "{'creatorId': 1, 'createdAt': -1}")
@@ -117,17 +120,26 @@ public class Course {
     }
 
     public void addReview(User author, String content) {
+        if (reviews.stream().anyMatch(review -> review.userId().equals(author.id()))) {
+            throw ALREADY_REVIEWED_COURSE.create(this.id, author.id());
+        }
         reviews.add(new Review(author, content));
     }
 
     public void addReport(User user) {
         if (reportUserIds.contains(user.id())) {
-            throw ErrorType.ALREADY_REPORTED_COURSE.create(this.id, user.id());
+            throw ALREADY_REPORTED_COURSE.create(this.id, user.id());
         }
         reportUserIds.add(user.id());
     }
 
     public boolean isReportThreshold() {
         return reportUserIds.size() >= REPORT_ALERT_THRESHOLD;
+    }
+
+    public Review getReview(String reviewId) {
+        return reviews.stream().filter(review -> review.id().equals(reviewId))
+                .findFirst()
+                .orElseThrow(() -> NOT_EXIST_REVIEW.create(reviewId));
     }
 }

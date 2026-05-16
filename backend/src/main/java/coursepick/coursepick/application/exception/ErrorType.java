@@ -29,6 +29,10 @@ public enum ErrorType {
             "코스가 존재하지 않습니다. 코스id=%s",
             NoSuchElementException::new
     ),
+    NOT_EXIST_REVIEW(
+            "리뷰가 존재하지 않습니다. 리뷰id=%s",
+            NoSuchElementException::new
+    ),
     INVALID_FILE_EXTENSION(
             "파싱할 수 없는 파일 확장자입니다.",
             IllegalArgumentException::new
@@ -83,6 +87,14 @@ public enum ErrorType {
     ),
     ALREADY_REPORTED_COURSE(
             "이미 신고한 코스입니다. 코스id=%s, 유저id=%s",
+            IllegalArgumentException::new
+    ),
+    ALREADY_REPORTED_REVIEW(
+            "이미 신고한 리뷰입니다. 리뷰id=%s, 유저id=%s",
+            IllegalArgumentException::new
+    ),
+    ALREADY_REVIEWED_COURSE(
+            "이미 해당 코스에 리뷰를 작성했습니다. 코스id=%s, 유저id=%s",
             IllegalArgumentException::new
     ),
     DUPLICATED_COURSE_NAME(

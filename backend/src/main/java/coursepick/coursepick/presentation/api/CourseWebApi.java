@@ -136,6 +136,19 @@ public interface CourseWebApi {
             CreateReviewWebRequest request
     );
 
+    @Operation(summary = "리뷰 신고", security = {@SecurityRequirement(name = "BearerAuth")})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "리뷰 신고 완료"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 코스"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 리뷰"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 유저")
+    })
+    void reportCourseReview(
+            @Parameter(description = "신고할 리뷰의 코스 ID") String courseId,
+            @Parameter(description = "신고할 리뷰 ID") String reviewId,
+            @Parameter(hidden = true) String userId
+    );
+
     @Operation(summary = "즐겨찾기 코스 조회")
     @ApiResponse(responseCode = "200")
     List<CourseWebResponse> findFavoriteCourses(
