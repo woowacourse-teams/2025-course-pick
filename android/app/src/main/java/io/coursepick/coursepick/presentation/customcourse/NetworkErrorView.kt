@@ -55,13 +55,11 @@ fun NetworkErrorView(
                     .background(
                         color = colorResource(R.color.background_primary),
                         shape = RoundedCornerShape(8.dp),
-                    )
-                    .border(
+                    ).border(
                         width = 1.dp,
                         color = colorResource(R.color.background_border),
                         shape = RoundedCornerShape(50),
-                    )
-                    .padding(horizontal = 20.dp, vertical = 10.dp),
+                    ).padding(horizontal = 20.dp, vertical = 10.dp),
             contentAlignment = Alignment.Center,
         ) {
             Text(
