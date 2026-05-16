@@ -3,6 +3,7 @@ package coursepick.coursepick.infrastructure.mongodb;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.course.*;
 import coursepick.coursepick.infrastructure.compressor.DataCompressor;
 import lombok.RequiredArgsConstructor;
@@ -114,10 +115,19 @@ public class CourseReader implements Converter<Document, Course> {
         }
         List<Review> reviews = new ArrayList<>();
         for (Document reviewDoc : reviewDocs) {
+            Set<String> reportUserIds = new HashSet<>(reviewDoc.getList("reportUserIds", String.class, List.of()));
+
+            String id = reviewDoc.getString("id");
+            String userId = reviewDoc.getString("userId");
             String authorNickname = reviewDoc.getString("authorNickname");
             String content = reviewDoc.getString("content");
+            Integer ratingRaw = reviewDoc.getInteger("rating");
+            if (ratingRaw == null) {
+                throw ErrorType.INVALID_REVIEW_RATING.create(0);
+            }
+            int rating = ratingRaw;
             Instant createdAt = toInstant(reviewDoc.get("createdAt"));
-            reviews.add(new Review(authorNickname, content, createdAt));
+            reviews.add(new Review(id, userId, authorNickname, content, rating, reportUserIds, createdAt));
         }
         return reviews;
     }

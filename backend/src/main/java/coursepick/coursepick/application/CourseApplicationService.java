@@ -1,5 +1,6 @@
 package coursepick.coursepick.application;
 
+
 import coursepick.coursepick.application.dto.CourseDetailResponse;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
@@ -11,6 +12,7 @@ import coursepick.coursepick.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -28,7 +30,7 @@ public class CourseApplicationService {
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
     private final RouteFinder routeFinder;
-    private final CourseReportAlerter courseReportAlerter;
+    private final Alerter alerter;
     private final CourseTagGenerator courseTagGenerator;
     private final ApplicationEventPublisher eventPublisher;
 
@@ -43,7 +45,7 @@ public class CourseApplicationService {
     }
 
     @Transactional
-    public void report(String courseId, String userId) {
+    public void reportCourse(String courseId, String userId) {
         Course course = getCourse(courseId);
         User user = getUser(userId);
 
@@ -51,7 +53,7 @@ public class CourseApplicationService {
         courseRepository.save(course);
 
         if (course.isReportThreshold()) {
-            courseReportAlerter.alert(course);
+            alerter.alertCourse(course);
         }
     }
 
@@ -125,12 +127,34 @@ public class CourseApplicationService {
     }
 
     @Transactional
-    public void addReview(String courseId, String userId, String content) {
+    public void addReview(String courseId, String userId, String content, int rating) {
         User user = getUser(userId);
         Course course = getCourse(courseId);
-        course.addReview(user, content);
-        courseRepository.save(course);
+        course.verifyWriteReviewEligibility(user);
+
+        courseRepository.pushReview(courseId, new Review(user, content, rating));
         eventPublisher.publishEvent(new ReviewAddedEvent(courseId));
+    }
+
+    @Transactional
+    public void deleteReview(String courseId, String reviewId, String userId) {
+        Course course = getCourse(courseId);
+        Review review = course.getReview(reviewId);
+        course.verifyRemovableReview(review, userId);
+
+        courseRepository.deleteReview(courseId, reviewId);
+    }
+
+    @Transactional
+    public void reportReview(String courseId, String reviewId, String userId) {
+        User user = getUser(userId);
+        Course course = getCourse(courseId);
+        Review review = course.getReview(reviewId);
+
+        review.addReport(user);
+        courseRepository.save(course);
+
+        alerter.alertReview(course, review);
     }
 
     @Transactional

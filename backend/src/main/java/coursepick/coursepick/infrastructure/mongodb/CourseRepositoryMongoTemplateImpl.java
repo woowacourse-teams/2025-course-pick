@@ -2,11 +2,9 @@ package coursepick.coursepick.infrastructure.mongodb;
 
 import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoTimeoutException;
-import coursepick.coursepick.domain.course.Course;
-import coursepick.coursepick.domain.course.CourseFindCondition;
-import coursepick.coursepick.domain.course.CourseName;
-import coursepick.coursepick.domain.course.CourseRepository;
+import coursepick.coursepick.domain.course.*;
 import lombok.RequiredArgsConstructor;
+import org.bson.Document;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.domain.Sort;
@@ -14,6 +12,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -38,7 +37,7 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
         /*
         배치 삽입을 통해 성능을 높일 수 있다. 단, 현재 새벽2시에만 호출되는 메서드라, 크게 필요해보이지는 않는다.
         또한, 현재 메모리 문제가 더 크므로 일단은 넘긴다. 필요한 경우 아래 코드를 참고할 것
-        BulkOperations ops = mongoTemplate.bulkOps(BulkMode.UNORDERED, Course.class);
+        BulkOperations ops = mongoTemplate.bulkOps(BulkMode.UNORDERED, mongoTemplate.getCollectionName(Course.class));
         ops.insert(courses);
         ops.execute();
          */
@@ -142,5 +141,41 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
     @Override
     public boolean existByCourseName(CourseName courseName) {
         return mongoTemplate.exists(Query.query(Criteria.where("name").is(courseName.value())), Course.class);
+    }
+
+    @Override
+    public void pushReview(String courseId, Review review) {
+        Query query = new Query(Criteria.where("_id").is(courseId));
+
+        Document reviewDoc = new Document()
+                .append("id", review.id())
+                .append("userId", review.userId())
+                .append("authorNickname", review.authorNickname())
+                .append("content", review.content())
+                .append("rating", review.rating())
+                .append("reportUserIds", review.reportUserIds())
+                .append("createdAt", review.createdAt());
+
+        Update update = new Update().push("reviews", reviewDoc);
+
+        mongoTemplate.updateFirst(
+                query,
+                update,
+                mongoTemplate.getCollectionName(Course.class)
+        );
+    }
+
+    @Override
+    public void deleteReview(String courseId, String reviewId) {
+
+        Query query = new Query(Criteria.where("_id").is(courseId));
+
+        Update update = new Update().pull("reviews", new Document("id", reviewId));
+
+        mongoTemplate.updateFirst(
+                query,
+                update,
+                mongoTemplate.getCollectionName(Course.class)
+        );
     }
 }

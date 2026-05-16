@@ -12,7 +12,6 @@ import coursepick.coursepick.security.Login;
 import coursepick.coursepick.security.UserId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -86,7 +85,29 @@ public class CourseV1WebController implements CourseWebApi {
             @UserId String userId,
             @RequestBody CreateReviewWebRequest request
     ) {
-        courseApplicationService.addReview(id, userId, request.content());
+        courseApplicationService.addReview(id, userId, request.content(), request.rating());
+    }
+
+    @Override
+    @Login
+    @DeleteMapping("/courses/{courseId}/reviews/{reviewId}")
+    public void deleteReview(
+            @PathVariable("courseId") String courseId,
+            @PathVariable("reviewId") String reviewId,
+            @UserId String userId
+    ) {
+        courseApplicationService.deleteReview(courseId, reviewId, userId);
+    }
+
+    @Override
+    @Login
+    @PostMapping("/courses/{courseId}/reviews/{reviewId}/report")
+    public void reportCourseReview(
+            @PathVariable("courseId") String courseId,
+            @PathVariable("reviewId") String reviewId,
+            @UserId String userId
+    ) {
+        courseApplicationService.reportReview(courseId, reviewId, userId);
     }
 
     @Override
@@ -108,7 +129,7 @@ public class CourseV1WebController implements CourseWebApi {
     @Login
     @PostMapping("/courses/{id}/report")
     public void reportCourse(@PathVariable("id") String id, @UserId String userId) {
-        courseApplicationService.report(id, userId);
+        courseApplicationService.reportCourse(id, userId);
     }
 
     @Override
