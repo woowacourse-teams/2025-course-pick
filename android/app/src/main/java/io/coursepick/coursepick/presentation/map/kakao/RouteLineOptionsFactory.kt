@@ -37,6 +37,7 @@ class RouteLineOptionsFactory(
 
     fun routeLineOptions(course: CourseItem): RouteLineOptions =
         RouteLineOptions.from(
+            course.id,
             routeLineSegmentWithStyle(
                 course.coordinates,
                 course.selected,

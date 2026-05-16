@@ -44,7 +44,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.coursepick.coursepick.BuildConfig
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.databinding.ActivityCoursesBinding
-import io.coursepick.coursepick.di.KakaoMap
+import io.coursepick.coursepick.di.NaverMap
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Longitude
@@ -99,7 +99,7 @@ class CoursesActivity :
     private val doublePressDetector = DoublePressDetector()
 
     @Inject
-    @KakaoMap
+    @NaverMap
     lateinit var mapManagerFactory: MapManagerFactory
     private val mapManager: MapManager by lazy { mapManagerFactory.create(binding.mapContainer) }
 
@@ -762,12 +762,12 @@ class CoursesActivity :
     private fun setUpStateObserver() {
         viewModel.state.observe(this) { state: CoursesUiState ->
             courseAdapter.submitList(state.courses)
-            mapManager.removeAllRouteLines()
+            mapManager.clearRoute()
             val courses: List<CourseItem> =
                 state.courses
                     .filterIsInstance<CourseListItem.Course>()
                     .map(CourseListItem.Course::item)
-            mapManager.draw(courses)
+            mapManager.updateCourses(courses)
         }
 
         viewModel.content.observe(this) { content: CoursesContent ->
@@ -804,10 +804,12 @@ class CoursesActivity :
                 }
 
                 is CoursesUiEvent.FetchRouteToCourseSuccess -> {
-                    mapManager.removeAllRouteLines()
-                    mapManager.fitTo(event.route)
-                    mapManager.draw(event.course)
-                    mapManager.drawRouteToCourse(event.route, event.course)
+                    with(mapManager) {
+                        clearRoute()
+                        drawRoute(event.route)
+                        updateCourses(listOf(event.course))
+                        fitTo(event.route)
+                    }
                 }
 
                 is CoursesUiEvent.FetchRouteToCourseFailure -> {

@@ -62,23 +62,16 @@ class NaverMapManager(
         }
     }
 
-    override fun draw(course: CourseItem) {
-        overlayManager?.drawCourse(course) ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
+    override fun updateCourses(courses: List<CourseItem>) {
+        overlayManager?.updateCourses(courses) ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
     }
 
-    override fun draw(courses: List<CourseItem>) {
-        courses.forEach(::draw)
+    override fun drawRoute(route: List<Coordinate>) {
+        overlayManager?.drawRoute(route) ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
     }
 
-    override fun drawRouteToCourse(
-        route: List<Coordinate>,
-        course: CourseItem,
-    ) {
-        overlayManager?.drawRouteToCourse(route, course) ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
-    }
-
-    override fun removeAllRouteLines() {
-        overlayManager?.removeAllRouteLines() ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
+    override fun clearRoute() {
+        overlayManager?.clearRoute() ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
     }
 
     override fun drawSearchCoordinate(coordinate: Coordinate) {

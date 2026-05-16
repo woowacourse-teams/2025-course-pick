@@ -10,7 +10,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -24,6 +27,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -95,9 +99,9 @@ fun SubmitCustomCourseDialog(
                     TextFieldDefaults.colors(
                         focusedTextColor = colorResource(R.color.item_primary),
                         unfocusedTextColor = colorResource(R.color.item_tertiary),
-                        focusedContainerColor = colorResource(R.color.background_primary),
+                        focusedContainerColor = colorResource(R.color.background_secondary),
                         unfocusedContainerColor = colorResource(R.color.background_tertiary),
-                        errorContainerColor = colorResource(R.color.background_primary),
+                        errorContainerColor = colorResource(R.color.background_secondary),
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                         errorIndicatorColor = Color.Transparent,
@@ -105,7 +109,26 @@ fun SubmitCustomCourseDialog(
                 modifier = Modifier.focusRequester(focusRequester),
             )
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(10.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    painter = painterResource(R.drawable.icon_info),
+                    contentDescription = null,
+                    tint = colorResource(R.color.item_secondary),
+                    modifier = Modifier.size(18.dp),
+                )
+
+                Spacer(Modifier.width(10.dp))
+
+                Text(
+                    text = stringResource(R.string.custom_course_submit_dialog_warning),
+                    color = colorResource(R.color.item_secondary),
+                    fontSize = 14.sp,
+                )
+            }
+
+            Spacer(Modifier.height(10.dp))
 
             Row(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
