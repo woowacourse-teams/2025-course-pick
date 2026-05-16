@@ -105,6 +105,11 @@ class CoursesViewModel
         }
 
         fun selectExternalCourse(courseItem: CourseItem) {
+            updateCourseList(courseItem)
+            _event.value = CoursesUiEvent.SelectCourseManually(courseItem)
+        }
+
+        private fun updateCourseList(courseItem: CourseItem) {
             _state.value =
                 _state.value?.copy(
                     courses =
@@ -137,8 +142,6 @@ class CoursesViewModel
                         } ?: listOf(CourseListItem.Course(courseItem)),
                     status = UiStatus.Success,
                 )
-
-            _event.value = CoursesUiEvent.SelectCourseManually(courseItem)
         }
 
         private fun checkNetwork() {
