@@ -62,8 +62,7 @@ class CustomCoursesFragment : Fragment() {
         binding.customCourses.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                val customCourseState =
-                    customCourseViewModel.state.collectAsStateWithLifecycle().value
+                val customCourseState = customCourseViewModel.state.collectAsStateWithLifecycle().value
 
                 CustomCourseScreen(
                     status = customCourseState,
@@ -133,19 +132,12 @@ class CustomCoursesFragment : Fragment() {
     }
 
     private fun goToCreateCustomCourse() {
-        val initialCoordinate: CoordinateUiModel? =
-            coursesViewModel.mapCoordinate?.let(Coordinate::toUiModel)
-        val intent: Intent =
-            CreateCustomCourseActivity.intent(
-                requireContext(),
-                initialCoordinate,
-            )
+        val initialCoordinate: CoordinateUiModel? = coursesViewModel.mapCoordinate?.let(Coordinate::toUiModel)
+        val intent: Intent = CreateCustomCourseActivity.intent(requireContext(), initialCoordinate)
         startForResult.launch(intent)
     }
 
-    private fun fetchCustomCourses() {
-        customCourseViewModel.fetchCustomCourses(coursesViewModel.mapCoordinate)
-    }
+    private fun fetchCustomCourses() = customCourseViewModel.fetchCustomCourses(coursesViewModel.mapCoordinate)
 
     private fun showToastMessage(resId: Int) =
         Toast
