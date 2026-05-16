@@ -206,3 +206,20 @@ private fun CustomCourseScreen_NoInternetPreview() {
         onNavigateToCourse = { },
     )
 }
+
+@PreviewLightDark
+@Composable
+private fun CustomCourseScreen_FailurePreview() {
+    val status =
+        CustomCourseUiState(
+            status = UiStatus.Failure,
+            customCourses = emptyList(),
+        )
+    CustomCourseScreen(
+        status = status,
+        onReconnect = {},
+        onGoToCreateCustomCourse = { },
+        onSelect = { },
+        onNavigateToCourse = { },
+    )
+}
