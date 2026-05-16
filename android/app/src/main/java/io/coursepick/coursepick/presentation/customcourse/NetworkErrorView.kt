@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -37,7 +38,7 @@ fun NetworkErrorView(
         verticalArrangement = Arrangement.Center,
     ) {
         Text(
-            text = "네트워크에 연결되지 않았습니다.\n설정을 확인하고 다시 시도해주세요.",
+            text = stringResource(R.string.network_connection_error_message),
             color = colorResource(R.color.item_primary),
             textAlign = TextAlign.Center,
             fontSize = 18.sp,
