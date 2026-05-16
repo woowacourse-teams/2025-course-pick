@@ -578,7 +578,7 @@ class CoursesActivity :
                         }
 
                         CoursesContent.CUSTOM_COURSE -> {
-                            customCourseViewModel.fetchCustomCourses(mapCoordinateOrNull())
+                            customCourseViewModel.fetchCustomCourses(mapManager.cameraCoordinate)
                         }
                     }
                 }
