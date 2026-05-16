@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -31,83 +32,86 @@ fun SettingsScreen(
     onCopyInstallationId: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .background(colorResource(R.color.background_primary))
-                .padding(20.dp)
-                .statusBarsPadding(),
+    Surface(
+        modifier
+            .fillMaxSize()
+            .background(colorResource(R.color.background_primary)),
     ) {
         Column(
-            modifier =
-                Modifier
-                    .weight(1F)
-                    .verticalScroll(rememberScrollState()),
+            Modifier
+                .padding(horizontal = 20.dp, vertical = 10.dp)
+                .statusBarsPadding(),
         ) {
-            Text(
-                text = "설정",
-                fontSize = 16.sp,
-                color = colorResource(R.color.item_primary),
+            Column(
                 modifier =
                     Modifier
-                        .clickable { onNavigateToPreferences() }
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .wrapContentHeight(Alignment.CenterVertically)
-                        .padding(horizontal = 10.dp),
-            )
+                        .weight(1F)
+                        .verticalScroll(rememberScrollState()),
+            ) {
+                Text(
+                    text = "설정",
+                    fontSize = 16.sp,
+                    color = colorResource(R.color.item_primary),
+                    modifier =
+                        Modifier
+                            .clickable { onNavigateToPreferences() }
+                            .fillMaxWidth()
+                            .height(50.dp)
+                            .wrapContentHeight(Alignment.CenterVertically)
+                            .padding(horizontal = 10.dp),
+                )
+
+                Text(
+                    text = "사용자 피드백 창구",
+                    fontSize = 16.sp,
+                    color = colorResource(R.color.item_primary),
+                    modifier =
+                        Modifier
+                            .clickable { onNavigateToFeedback() }
+                            .fillMaxWidth()
+                            .height(50.dp)
+                            .wrapContentHeight(Alignment.CenterVertically)
+                            .padding(horizontal = 10.dp),
+                )
+
+                Text(
+                    text = "개인정보처리방침",
+                    fontSize = 16.sp,
+                    color = colorResource(R.color.item_primary),
+                    modifier =
+                        Modifier
+                            .clickable { onNavigateToPrivacyPolicy() }
+                            .fillMaxWidth()
+                            .height(50.dp)
+                            .wrapContentHeight(Alignment.CenterVertically)
+                            .padding(horizontal = 10.dp),
+                )
+
+                Text(
+                    text = "오픈소스 라이선스 고지",
+                    fontSize = 16.sp,
+                    color = colorResource(R.color.item_primary),
+                    modifier =
+                        Modifier
+                            .clickable { onNavigateToOpenSourceNotice() }
+                            .fillMaxWidth()
+                            .height(50.dp)
+                            .wrapContentHeight(Alignment.CenterVertically)
+                            .padding(horizontal = 10.dp),
+                )
+            }
 
             Text(
-                text = "사용자 피드백 창구",
-                fontSize = 16.sp,
+                text = "사용자 ID: $installationId",
+                fontSize = 14.sp,
                 color = colorResource(R.color.item_primary),
                 modifier =
                     Modifier
-                        .clickable { onNavigateToFeedback() }
                         .fillMaxWidth()
-                        .height(50.dp)
-                        .wrapContentHeight(Alignment.CenterVertically)
-                        .padding(horizontal = 10.dp),
-            )
-
-            Text(
-                text = "개인정보처리방침",
-                fontSize = 16.sp,
-                color = colorResource(R.color.item_primary),
-                modifier =
-                    Modifier
-                        .clickable { onNavigateToPrivacyPolicy() }
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .wrapContentHeight(Alignment.CenterVertically)
-                        .padding(horizontal = 10.dp),
-            )
-
-            Text(
-                text = "오픈소스 라이선스 고지",
-                fontSize = 16.sp,
-                color = colorResource(R.color.item_primary),
-                modifier =
-                    Modifier
-                        .clickable { onNavigateToOpenSourceNotice() }
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .wrapContentHeight(Alignment.CenterVertically)
-                        .padding(horizontal = 10.dp),
+                        .padding(top = 10.dp)
+                        .clickable { onCopyInstallationId() },
             )
         }
-
-        Text(
-            text = "사용자 ID: $installationId",
-            fontSize = 14.sp,
-            color = colorResource(R.color.item_primary),
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 10.dp)
-                    .clickable { onCopyInstallationId() },
-        )
     }
 }
 
