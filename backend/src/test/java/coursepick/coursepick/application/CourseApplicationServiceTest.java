@@ -317,7 +317,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         @Test
         void 리뷰가_있으면_태그를_생성하여_코스에_저장한다() {
             var course = new Course(null, new CourseName("코스"), List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
-            course.addReview(ADMIN_USER, "야경이 멋집니다");
+            course.reviews().add(new Review(ADMIN_USER, "야경이 멋집니다", 5));
             Course saved = dbUtil.saveCourse(course);
 
             org.mockito.Mockito.when(courseTagGenerator.generate(any(Course.class)))

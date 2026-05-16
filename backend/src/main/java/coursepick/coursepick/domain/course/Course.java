@@ -133,10 +133,6 @@ public class Course {
         }
     }
 
-    public void addReview(User author, String content) {
-        reviews.add(new Review(author, content, 5));
-    }
-
     public void addReport(User user) {
         if (reportUserIds.contains(user.id())) {
             throw ALREADY_REPORTED_COURSE.create(this.id, user.id());
