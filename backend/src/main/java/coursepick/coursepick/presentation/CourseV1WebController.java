@@ -103,9 +103,8 @@ public class CourseV1WebController {
 
     @Login
     @PostMapping("/courses")
-    public String addCustomCourses(@Valid @RequestBody CourseCreateWebRequest request, @UserId String userId) {
+    public void addCustomCourses(@Valid @RequestBody CourseCreateWebRequest request, @UserId String userId) {
         courseApplicationService.addCustomCourse(request.name(), request.toCoordinates(), userId);
-        return "코스 추가 성공";
     }
 
     @PostMapping("/courses/draft/route")

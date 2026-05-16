@@ -51,6 +51,7 @@ public abstract class AbstractApiDocsSupport {
         this.mockMvc = MockMvcBuilders.standaloneSetup(initController())
                 .setControllerAdvice(new WebExceptionHandler())
                 .setCustomArgumentResolvers(new UserIdArgumentResolver())
+                .addInterceptors(loginInterceptor)
                 .apply(documentationConfiguration(restDocumentation))
                 .build();
 

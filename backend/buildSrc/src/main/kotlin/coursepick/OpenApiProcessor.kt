@@ -34,7 +34,9 @@ object OpenApiProcessor {
             "lng" to "127.1040",
             "startLat" to "37.5165",
             "startLng" to "127.1040",
-            "courseIds" to "689c3143182cecc6353cca7b,689c3143182cecc6353cca7c"
+            "courseIds" to "689c3143182cecc6353cca7b,689c3143182cecc6353cca7c",
+            "courseId" to "689c3143182cecc6353cca7b",
+            "reviewId" to "679c1234562cecc6394cca7b"
         )
 
         // 3. 로그인 필요한 API에 security 추가 + 파라미터 example 주입 + 응답/요청 JSON 객체 변환
@@ -62,7 +64,7 @@ object OpenApiProcessor {
             val responses = op["responses"] as? Map<*, *> ?: emptyMap<String, Any>()
             responses.entries.forEach { (statusCode, responseObj) ->
                 val response = responseObj as? MutableMap<String, Any?> ?: return@forEach
-                
+
                 // HTTP 상태 코드에 따른 기본 설명 추가
                 if (response["description"] == statusCode.toString() || response["description"] == "OK") {
                     response["description"] = when (statusCode.toString()) {

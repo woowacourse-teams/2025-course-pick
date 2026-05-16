@@ -18,6 +18,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class UserApiDocsTest extends AbstractApiDocsSupport {
 
+    private static final String TAG = "회원 (User)";
+
     @Override
     protected Object initController() {
         return new UserV1WebController(super.userApplicationService);
@@ -42,7 +44,7 @@ class UserApiDocsTest extends AbstractApiDocsSupport {
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         resource(ResourceSnippetParameters.builder()
-                                .tags("회원 (User)", "POST")
+                                .tag(TAG)
                                 .summary("카카오 소셜 로그인")
                                 .description("카카오 액세스 토큰으로 로그인/회원가입을 수행합니다.")
                                 .requestFields(

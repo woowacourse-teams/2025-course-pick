@@ -14,6 +14,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class NoticeApiDocsTest extends AbstractApiDocsSupport {
 
+    private static final String TAG = "노티스 (Notice)";
+
     @Override
     protected Object initController() {
         return new NoticeV1WebController("http://localhost:8080");
@@ -28,7 +30,7 @@ public class NoticeApiDocsTest extends AbstractApiDocsSupport {
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         resource(ResourceSnippetParameters.builder()
-                                .tags("노티스 (Notice)", "GET")
+                                .tag(TAG)
                                 .summary("공지사항 목록 조회")
                                 .description("사용자에게 필요한 공지사항 목록을 조회하는 API입니다.")
                                 .responseFields(
