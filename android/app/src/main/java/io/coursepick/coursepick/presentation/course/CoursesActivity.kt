@@ -63,7 +63,6 @@ import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.customcourse.CustomCourseItem
-import io.coursepick.coursepick.presentation.customcourse.CustomCourseUiState
 import io.coursepick.coursepick.presentation.customcourse.CustomCourseViewModel
 import io.coursepick.coursepick.presentation.customcourse.CustomCoursesFragment
 import io.coursepick.coursepick.presentation.customcourse.toCourseItem
