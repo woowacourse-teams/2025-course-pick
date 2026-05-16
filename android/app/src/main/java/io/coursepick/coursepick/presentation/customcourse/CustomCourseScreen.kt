@@ -64,7 +64,7 @@ fun CustomCourseScreen(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.TopCenter,
                         ) {
-                            EmptyDescription(text = stringResource(R.string.empty_custom_courses_description))
+                            EmptyDescription(text = stringResource(R.string.custom_courses_empty_description))
                         }
                     } else {
                         LazyColumn(
