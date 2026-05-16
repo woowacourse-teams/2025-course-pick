@@ -977,12 +977,7 @@ class CoursesActivity :
                         AuthDialog(
                             feature = feature,
                             onDismissRequest = viewModel::dismissAuthDialog,
-                            onKakaoLoginClick = {
-                                authViewModel.authenticate(
-                                    KakaoAuthenticator(this@CoursesActivity),
-                                    feature,
-                                )
-                            },
+                            onKakaoLoginClick = { authViewModel.authenticate(KakaoAuthenticator(this@CoursesActivity), feature) },
                         )
                     }
 
