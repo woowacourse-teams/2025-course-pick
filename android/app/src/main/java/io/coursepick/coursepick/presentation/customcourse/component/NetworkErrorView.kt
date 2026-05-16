@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.customcourse
+package io.coursepick.coursepick.presentation.customcourse.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

@@ -36,6 +36,7 @@ import io.coursepick.coursepick.presentation.course.UiStatus
 import io.coursepick.coursepick.presentation.customcourse.component.EmptyDescription
 import io.coursepick.coursepick.presentation.customcourse.component.Header
 import io.coursepick.coursepick.presentation.customcourse.component.LoadingIndicator
+import io.coursepick.coursepick.presentation.customcourse.component.NetworkErrorView
 
 @Composable
 fun CustomCourseScreen(
@@ -61,9 +62,10 @@ fun CustomCourseScreen(
                 UiStatus.Success -> {
                     if (status.customCourses.isEmpty()) {
                         Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .weight(1f),
+                            modifier =
+                                Modifier
+                                    .fillMaxSize()
+                                    .weight(1f),
                             contentAlignment = Alignment.TopCenter,
                         ) {
                             EmptyDescription(text = stringResource(R.string.custom_courses_empty_description))
