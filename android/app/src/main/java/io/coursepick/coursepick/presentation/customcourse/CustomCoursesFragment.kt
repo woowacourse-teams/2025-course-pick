@@ -66,13 +66,11 @@ class CustomCoursesFragment : Fragment() {
                     customCourseViewModel.state.collectAsStateWithLifecycle().value
 
                 CustomCourseScreen(
-                    status = customCourseState.status,
+                    status = customCourseState,
                     onReconnect = ::fetchCustomCourses,
-                    customCourses = customCourseState.customCourses,
                     onGoToCreateCustomCourse = customCourseViewModel::onGoToCreateCustomCourse,
                     onSelect = { customCourse: CustomCourseItem ->
                         customCourseViewModel.select(customCourse)
-                        coursesViewModel.selectCourseFromCustomCourse(customCourse)
                     },
                     onNavigateToCourse = { customCourse: CustomCourseItem ->
                         customCourseViewModel.onNavigateToCourse(customCourse) { courseItem ->
@@ -85,14 +83,7 @@ class CustomCoursesFragment : Fragment() {
                     AuthDialog(
                         feature = feature,
                         onDismissRequest = customCourseViewModel::dismissAuthDialog,
-                        onKakaoLoginClick = {
-                            authViewModel.authenticate(
-                                KakaoAuthenticator(
-                                    requireActivity(),
-                                ),
-                                feature,
-                            )
-                        },
+                        onKakaoLoginClick = { authViewModel.authenticate(KakaoAuthenticator(requireActivity()), feature) },
                     )
                 }
             }
@@ -153,9 +144,7 @@ class CustomCoursesFragment : Fragment() {
     }
 
     private fun fetchCustomCourses() {
-        customCourseViewModel.fetchCustomCourses(coursesViewModel.mapCoordinate) { customCourse: CustomCourseItem ->
-            coursesViewModel.selectCourseFromCustomCourse(customCourse)
-        }
+        customCourseViewModel.fetchCustomCourses(coursesViewModel.mapCoordinate)
     }
 
     private fun showToastMessage(resId: Int) =
