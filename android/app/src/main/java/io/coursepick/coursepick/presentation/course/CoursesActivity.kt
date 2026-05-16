@@ -887,8 +887,7 @@ class CoursesActivity :
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     viewModel.locationUpdates.collect { location: Location? ->
-                        location?.let(mapManager::drawUserLocation)
-                            ?: run(mapManager::hideUserLocation)
+                        location?.let(mapManager::drawUserLocation) ?: run(mapManager::hideUserLocation)
                     }
                 }
 
