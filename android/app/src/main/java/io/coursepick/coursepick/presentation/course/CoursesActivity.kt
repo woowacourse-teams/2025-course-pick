@@ -91,9 +91,9 @@ class CoursesActivity :
     private val binding by lazy { ActivityCoursesBinding.inflate(layoutInflater) }
     private val viewModel: CoursesViewModel by viewModels()
     private val authViewModel: AuthViewModel by viewModels()
+    private val customCourseViewModel: CustomCourseViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(courseItemListener) }
     private val doublePressDetector = DoublePressDetector()
-    private val customCourseViewModel: CustomCourseViewModel by viewModels()
 
     @Inject
     @KakaoMap
@@ -351,8 +351,7 @@ class CoursesActivity :
                 R.id.customCourseMenu -> {
                     viewModel.showCourses()
                     viewModel.switchContent(CoursesContent.CUSTOM_COURSE)
-
-                    customCourseViewModel.checkAuthAndShowDialog()
+                    viewModel.onCustomCourse()
                     true
                 }
 

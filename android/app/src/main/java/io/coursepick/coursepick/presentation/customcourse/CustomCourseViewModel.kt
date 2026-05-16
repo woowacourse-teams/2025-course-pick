@@ -45,14 +45,6 @@ class CustomCourseViewModel
 
         val state: StateFlow<CustomCourseUiState> = _state.asStateFlow()
 
-        fun checkAuthAndShowDialog() {
-            viewModelScope.launch {
-                if (authRepository.accessToken() == null) {
-                    _authDialogState.value = AuthFeature.CustomCourse
-                }
-            }
-        }
-
         fun onGoToCreateCustomCourse() {
             viewModelScope.launch {
                 if (authRepository.accessToken() == null) {

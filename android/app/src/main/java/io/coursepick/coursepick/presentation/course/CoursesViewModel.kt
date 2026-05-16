@@ -614,6 +614,14 @@ class CoursesViewModel
             }
         }
 
+        fun onCustomCourse() {
+            viewModelScope.launch {
+                if (authRepository.accessToken() == null) {
+                    _authDialogState.value = AuthFeature.CustomCourse
+                }
+            }
+        }
+
         fun submitCourseReport(course: CourseItem) {
             viewModelScope.launch {
                 try {
