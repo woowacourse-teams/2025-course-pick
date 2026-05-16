@@ -115,10 +115,6 @@ if (!isProdProfile) {
         dependsOn("copyOpenApiSpec")
     }
 
-    tasks.bootRun {
-        dependsOn("copyOpenApiSpec")
-    }
-
     tasks.clean {
         delete("src/main/resources/static/docs")
     }

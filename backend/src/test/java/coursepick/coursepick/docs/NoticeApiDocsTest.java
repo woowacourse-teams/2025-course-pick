@@ -28,17 +28,18 @@ public class NoticeApiDocsTest extends AbstractApiDocsSupport {
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         resource(ResourceSnippetParameters.builder()
-                                .tag("노티스 (Notice)")
+                                .tags("노티스 (Notice)", "GET")
                                 .summary("공지사항 목록 조회")
                                 .description("사용자에게 필요한 공지사항 목록을 조회하는 API입니다.")
                                 .responseFields(
-                                        fieldWithPath("notices[].id").description("공지사항 ID"),
-                                        fieldWithPath("notices[].imageUrl").description("공지사항 이미지 URL"),
-                                        fieldWithPath("notices[].title").description("공지사항 제목"),
-                                        fieldWithPath("notices[].description").description("공지사항 내용")
-                                )
-                                .build()
-                        )
-                ));
+                                        fieldWithPath("notices[].id")
+                                                .description("공지사항 ID"),
+                                        fieldWithPath("notices[].imageUrl")
+                                                .description("공지사항 이미지 URL"),
+                                        fieldWithPath("notices[].title")
+                                                .description("공지사항 제목"),
+                                        fieldWithPath("notices[].description")
+                                                .description("공지사항 내용"))
+                                .build())));
     }
 }

@@ -28,30 +28,31 @@ class UserApiDocsTest extends AbstractApiDocsSupport {
         given(userApplicationService.registerOrLoginAndGetAuthentication(anyString()))
                 .willReturn(new Authentication("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test.token"));
 
-        String requestBody = objectMapper.writeValueAsString(new java.util.LinkedHashMap<>() {{
-            put("accessToken", "kakao_access_token_example");
-        }});
+        String requestBody = objectMapper.writeValueAsString(new java.util.LinkedHashMap<>() {
+            {
+                put("accessToken", "kakao_access_token_example");
+            }
+        });
 
         mockMvc.perform(post("/v1/login/kakao")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody)
-                )
+                        .content(requestBody))
                 .andExpect(status().isOk())
                 .andDo(MockMvcRestDocumentationWrapper.document("user-sign",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         resource(ResourceSnippetParameters.builder()
-                                .tag("회원 (User)")
+                                .tags("회원 (User)", "POST")
                                 .summary("카카오 소셜 로그인")
                                 .description("카카오 액세스 토큰으로 로그인/회원가입을 수행합니다.")
                                 .requestFields(
-                                        fieldWithPath("accessToken").description("카카오 액세스토큰").attributes(key("example").value("kakao_access_token_example"))
-                                )
+                                        fieldWithPath("accessToken")
+                                                .description("카카오 액세스토큰")
+                                                .attributes(key("example")
+                                                        .value("kakao_access_token_example")))
                                 .responseFields(
-                                        fieldWithPath("accessToken").description("코스픽 엑세스토큰 (JWT)")
-                                )
-                                .build()
-                        )
-                ));
+                                        fieldWithPath("accessToken")
+                                                .description("코스픽 엑세스토큰 (JWT)"))
+                                .build())));
     }
 }
