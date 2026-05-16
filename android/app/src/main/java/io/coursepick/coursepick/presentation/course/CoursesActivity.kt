@@ -404,7 +404,7 @@ class CoursesActivity :
         }
     }
 
-    fun navigateToCourse(course: CourseItem) {
+    private fun navigateToCourse(course: CourseItem) {
         Logger.log(
             Logger.Event.Click("navigate"),
             "id" to course.id,
