@@ -577,7 +577,9 @@ class CoursesActivity :
                             viewModel.fetchFavorites()
                         }
 
-                        CoursesContent.CUSTOM_COURSE -> {}
+                        CoursesContent.CUSTOM_COURSE -> {
+                            customCourseViewModel.fetchCustomCourses(mapCoordinateOrNull())
+                        }
                     }
                 }
             }

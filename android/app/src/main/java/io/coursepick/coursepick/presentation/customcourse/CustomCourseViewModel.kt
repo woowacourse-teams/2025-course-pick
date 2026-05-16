@@ -3,6 +3,7 @@ package io.coursepick.coursepick.presentation.customcourse
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.coursepick.coursepick.data.NetworkMonitor
 import io.coursepick.coursepick.data.interceptor.NoNetworkException
 import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.course.Coordinate
@@ -28,6 +29,7 @@ class CustomCourseViewModel
     constructor(
         private val authRepository: AuthRepository,
         private val customCourseRepository: CustomCourseRepository,
+        private val networkMonitor: NetworkMonitor,
     ) : ViewModel() {
         private val _uiEvent = MutableSharedFlow<CustomCourseUiEvent>()
         val uiEvent: SharedFlow<CustomCourseUiEvent> get() = _uiEvent.asSharedFlow()
@@ -68,10 +70,9 @@ class CustomCourseViewModel
             }
         }
 
-        fun fetchCustomCourses(
-            userCoordinate: Coordinate?,
-            onFirstItemLoaded: (CustomCourseItem) -> Unit,
-        ) {
+        fun fetchCustomCourses(userCoordinate: Coordinate?) {
+            checkNetwork()
+
             viewModelScope.launch {
                 if (authRepository.accessToken() == null) {
                     _state.update { currentState ->
@@ -97,8 +98,6 @@ class CustomCourseViewModel
                             )
                         }
 
-                    onFirstItemLoaded(customCourseItems.first())
-
                     _state.update { currentState ->
                         currentState.copy(
                             status = UiStatus.Success,
@@ -114,11 +113,10 @@ class CustomCourseViewModel
                     if (exception is NoNetworkException) {
                         _state.update { currentState ->
                             currentState.copy(
-                                status = UiStatus.Failure,
+                                status = UiStatus.NoInternet,
                                 customCourses = emptyList(),
                             )
                         }
-                        _uiEvent.emit(CustomCourseUiEvent.NoNetworkConnection)
                         return@onFailure
                     }
                     _state.update { currentState ->
@@ -152,5 +150,16 @@ class CustomCourseViewModel
             select(customCourse)
             val courseItem: CourseItem = _state.value.selectedCustomCourse?.toCourseItem() ?: return
             onNavigateTo(courseItem)
+        }
+
+        private fun checkNetwork() {
+            if (!networkMonitor.isConnected()) {
+                _state.update { currentState ->
+                    currentState.copy(
+                        status = UiStatus.NoInternet,
+                        customCourses = emptyList(),
+                    )
+                }
+            }
         }
     }
