@@ -172,6 +172,7 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                                         getString(R.string.create_custom_course_course_added_message),
                                         Toast.LENGTH_SHORT,
                                     ).show()
+                                setResult(RESULT_OK)
                                 finish()
                             }
 

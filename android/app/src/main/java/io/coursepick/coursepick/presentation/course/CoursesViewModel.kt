@@ -103,6 +103,46 @@ class CoursesViewModel
             checkNetwork()
         }
 
+        fun selectExternalCourse(courseItem: CourseItem) {
+            syncExternalSelectedCourse(courseItem)
+            _event.value = CoursesUiEvent.SelectCourseManually(courseItem)
+        }
+
+        private fun syncExternalSelectedCourse(courseItem: CourseItem) {
+            _state.value =
+                _state.value?.copy(
+                    courses =
+                        _state.value?.courses?.let { oldList: List<CourseListItem> ->
+                            val hasCourse: Boolean =
+                                oldList.any { it is CourseListItem.Course && it.item.id == courseItem.id }
+                            if (hasCourse) {
+                                oldList.map { item ->
+                                    if (item is CourseListItem.Course) {
+                                        CourseListItem.Course(item.item.copy(selected = item.item.id == courseItem.id))
+                                    } else {
+                                        item
+                                    }
+                                }
+                            } else {
+                                val clearedList: List<CourseListItem> =
+                                    oldList.map { item: CourseListItem ->
+                                        if (item is CourseListItem.Course) {
+                                            CourseListItem.Course(
+                                                item.item.copy(
+                                                    selected = false,
+                                                ),
+                                            )
+                                        } else {
+                                            item
+                                        }
+                                    }
+                                listOf(CourseListItem.Course(courseItem)) + clearedList
+                            }
+                        } ?: listOf(CourseListItem.Course(courseItem)),
+                    status = UiStatus.Success,
+                )
+        }
+
         private fun checkNetwork() {
             if (!networkMonitor.isConnected()) {
                 _state.value =
@@ -574,6 +614,16 @@ class CoursesViewModel
             }
         }
 
+        fun checkAuthForCustomCourse(onAuthorized: () -> Unit) {
+            viewModelScope.launch {
+                if (authRepository.accessToken() == null) {
+                    _authDialogState.value = AuthFeature.CustomCourse
+                } else {
+                    onAuthorized()
+                }
+            }
+        }
+
         fun submitCourseReport(course: CourseItem) {
             viewModelScope.launch {
                 try {
@@ -615,8 +665,8 @@ class CoursesViewModel
         }
 
         fun onAuthSuccess(feature: AuthFeature) {
+            dismissAuthDialog()
             if (feature is AuthFeature.ReportCourse) {
-                dismissAuthDialog()
                 onReportCourse(feature.course)
             }
         }

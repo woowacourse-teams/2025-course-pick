@@ -44,7 +44,10 @@
 
     <!--  코스 화면: 나의 코스 메뉴  -->
     <string name="custom_courses_header">나의 코스</string>
-    <string name="empty_custom_courses_description">등록한 코스가 없어요</string>
+    <string name="custom_course_feature_name">나의 코스</string>
+    <string name="custom_courses_empty_description">등록한 코스가 없어요</string>
+    <string name="custom_courses_load_failed">데이터를 불러오는 데 실패했습니다.</string>
+    <string name="custom_courses_unauthorized_user_message">나의 코스 조회를 위해 로그인을 해주세요.</string>
 
     <!--  코스 화면: 현 위치로 이동 권한  -->
     <string name="current_location_location_permission_rationale_message">현 위치 표시를 위해 위치 권한을 허용해주세요.</string>
@@ -144,4 +147,8 @@
     <string name="selected_route_finder_application_value_kakao">kakao map</string>
     <string name="selected_route_finder_application_value_naver">naver map</string>
     <string name="selected_route_finder_application_value_none">none</string>
+
+    <!--  네트워크 문자열  -->
+    <string name="network_connection_error_message">네트워크에 연결되지 않았습니다.\n설정을 확인하고 다시 시도해주세요.</string>
+    <string name="network_retry">재시도</string>
 </resources>

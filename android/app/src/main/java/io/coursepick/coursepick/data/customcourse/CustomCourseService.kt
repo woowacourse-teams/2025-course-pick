@@ -1,7 +1,10 @@
 package io.coursepick.coursepick.data.customcourse
 
+import io.coursepick.coursepick.data.course.CoursesPageDto
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface CustomCourseService {
     @POST("courses/draft/route")
@@ -13,4 +16,10 @@ interface CustomCourseService {
     suspend fun submitCourse(
         @Body course: DraftCourseDto,
     )
+
+    @GET("courses/custom")
+    suspend fun customCourses(
+        @Query("userLat") userLatitude: Double?,
+        @Query("userLng") userLongitude: Double?,
+    ): CoursesPageDto
 }
