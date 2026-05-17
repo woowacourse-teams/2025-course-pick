@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -29,7 +28,7 @@ import io.coursepick.coursepick.R
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 
 @Composable
-fun NetworkErrorView(
+fun NetworkErrorContent(
     onReconnect: OnReconnectListener,
     modifier: Modifier = Modifier,
 ) {
@@ -78,8 +77,8 @@ fun NetworkErrorView(
 
 @PreviewLightDark
 @Composable
-private fun NetworkErrorViewPreview() {
-    NetworkErrorView(
+private fun NetworkErrorContentPreview() {
+    NetworkErrorContent(
         onReconnect = { },
         modifier = Modifier,
     )
