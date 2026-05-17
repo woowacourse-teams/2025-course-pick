@@ -1,6 +1,8 @@
 package io.coursepick.coursepick.presentation.map.kakao
 
 import android.content.Context
+import android.graphics.Bitmap
+import androidx.annotation.DimenRes
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.label.Label
 import com.kakao.vectormap.label.LabelOptions
@@ -9,8 +11,11 @@ import com.kakao.vectormap.label.LabelStyles
 import com.kakao.vectormap.label.LabelTransition
 import com.kakao.vectormap.label.TransformMethod
 import com.kakao.vectormap.label.Transition
+import com.kakao.vectormap.route.RouteLine
 import com.kakao.vectormap.route.RouteLineLayer
 import com.kakao.vectormap.route.RouteLineOptions
+import com.kakao.vectormap.route.RouteLineSegment
+import com.kakao.vectormap.route.RouteLineStyle
 import com.kakao.vectormap.shape.DotPoints
 import com.kakao.vectormap.shape.Polygon
 import com.kakao.vectormap.shape.PolygonOptions
@@ -18,16 +23,48 @@ import com.kakao.vectormap.shape.PolygonStyles
 import com.kakao.vectormap.shape.PolygonStylesSet
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Coordinate
+import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.map.BitmapScaler
+import io.coursepick.coursepick.presentation.map.CourseDiffHandler
 
 class KakaoMapDrawer(
     private val context: Context,
     private val map: KakaoMap,
 ) {
-    private val routeLineOptionsFactory = RouteLineOptionsFactory(context)
+    private val routeLineOptionsFactory = RouteLineOptionsFactory(context, map.mapDpScale)
 
-    fun drawCourse(course: CourseItem) {
+    private val courseDiffHandler = CourseDiffHandler(onItemRemoved = ::removeCourseRouteLine, onItemAdded = ::addCourseRouteLine)
+    private var routeRouteLine: RouteLine? = null
+
+    private val waypoints = mutableListOf<Label>()
+    private val segments = mutableListOf<RouteLine>()
+
+    private val bitmapScaler = BitmapScaler(context)
+    private val searchCoordinateImage: Bitmap =
+        bitmapScaler.scaleDrawableToHeight(
+            R.drawable.image_search_location,
+            kakaoAdjustedDimension(R.dimen.search_coordinate_marker_height),
+        )
+    private val fineUserLocationImage: Bitmap =
+        bitmapScaler.scaleDrawableToSize(
+            R.drawable.image_current_location,
+            kakaoAdjustedDimension(R.dimen.fine_user_location_size),
+            kakaoAdjustedDimension(R.dimen.fine_user_location_size),
+        )
+    private val waypointImage: Bitmap =
+        bitmapScaler.scaleDrawableToSize(
+            R.drawable.icon_waypoint,
+            kakaoAdjustedDimension(R.dimen.waypoint_marker_size),
+            kakaoAdjustedDimension(R.dimen.waypoint_marker_size),
+        )
+
+    fun updateCourses(courses: List<CourseItem>) {
+        courseDiffHandler.updateCourses(courses.toSet())
+    }
+
+    private fun addCourseRouteLine(course: CourseItem) {
         val layer: RouteLineLayer = map.routeLineManager?.layer ?: return
         val options: RouteLineOptions =
             routeLineOptionsFactory.routeLineOptions(course).apply {
@@ -36,26 +73,20 @@ class KakaoMapDrawer(
         layer.addRouteLine(options)
     }
 
-    fun drawCourses(courses: List<CourseItem>) {
-        val layer: RouteLineLayer = map.routeLineManager?.layer ?: return
-        courses.forEach { course: CourseItem ->
-            val options: RouteLineOptions =
-                routeLineOptionsFactory.routeLineOptions(course).apply {
-                    zOrder =
-                        if (course.selected) SELECTED_COURSE_Z_ORDER else UNSELECTED_COURSE_Z_ORDER
-                }
-            layer.addRouteLine(options)
+    private fun removeCourseRouteLine(course: CourseItem) {
+        map.routeLineManager?.layer?.apply {
+            getRouteLine(course.id)?.let(::remove)
         }
     }
 
-    fun drawRouteToCourse(
-        route: List<Coordinate>,
-        course: CourseItem,
-    ) {
+    fun drawRoute(route: List<Coordinate>) {
         val layer: RouteLineLayer = map.routeLineManager?.layer ?: return
-        val courseOptions = routeLineOptionsFactory.routeLineOptions(course)
-        layer.addRouteLine(routeLineOptionsFactory.routeLineOptions(route))
-        layer.addRouteLine(courseOptions)
+        routeRouteLine = layer.addRouteLine(routeLineOptionsFactory.routeLineOptions(route))
+    }
+
+    fun clearRoute() {
+        routeRouteLine?.remove()
+        routeRouteLine = null
     }
 
     fun drawUserPosition(location: Location) {
@@ -74,7 +105,7 @@ class KakaoMapDrawer(
         val latLng = coordinate.toLatLng()
         val style =
             LabelStyle
-                .from(R.drawable.image_search_location)
+                .from(searchCoordinateImage)
                 .setAnchorPoint(0.5F, 0.5F)
                 .setIconTransition(LabelTransition.from(Transition.None, Transition.None))
         val options: LabelOptions =
@@ -93,11 +124,64 @@ class KakaoMapDrawer(
         layer.removeAll()
     }
 
+    fun drawWaypoint(coordinate: Coordinate) {
+        val style =
+            LabelStyle
+                .from(waypointImage)
+                .setAnchorPoint(0.5F, 0.5F)
+                .setIconTransition(LabelTransition.from(Transition.None, Transition.None))
+        val options =
+            LabelOptions
+                .from(coordinate.toLatLng())
+                .setStyles(LabelStyles.from(style))
+                .setTransform(TransformMethod.Decal)
+
+        map.labelManager
+            ?.layer
+            ?.addLabel(options)
+            ?.also(waypoints::add)
+    }
+
+    fun removeLastWaypoint() {
+        waypoints.removeLastOrNull()?.remove()
+        segments.removeLastOrNull()?.remove()
+    }
+
+    fun clearWaypoints() {
+        waypoints.forEach(Label::remove)
+        waypoints.clear()
+    }
+
+    fun drawDraftSegment(segment: DraftSegment) {
+        val style =
+            RouteLineStyle.from(
+                kakaoAdjustedDimension(R.dimen.draft_segment_width),
+                context.getColor(R.color.course_draft),
+            )
+        val options =
+            RouteLineOptions.from(
+                RouteLineSegment.from(
+                    segment.coordinates.map(Coordinate::toLatLng),
+                    style,
+                ),
+            )
+
+        map.routeLineManager
+            ?.layer
+            ?.addRouteLine(options)
+            ?.also(segments::add)
+    }
+
+    fun clearDraftSegments() {
+        segments.forEach(RouteLine::remove)
+        segments.clear()
+    }
+
     private fun drawAccurateUserPosition(location: Location.Fine) {
         hideApproximateUserPosition()
 
         val latLng = location.coordinate.toLatLng()
-        val style = LabelStyle.from(R.drawable.image_current_location).setAnchorPoint(0.5F, 0.5F)
+        val style = LabelStyle.from(fineUserLocationImage).setAnchorPoint(0.5F, 0.5F)
         val options: LabelOptions =
             LabelOptions
                 .from(latLng)
@@ -134,14 +218,14 @@ class KakaoMapDrawer(
         map.labelManager
             ?.layer
             ?.getLabel(ID_ACCURATE_USER_POSITION_MARK)
-            ?.let(Label::remove)
+            ?.remove()
     }
 
     private fun hideApproximateUserPosition() {
         map.shapeManager
             ?.layer
             ?.getPolygon(ID_APPROXIMATE_USER_POSITION_MARK)
-            ?.let(Polygon::remove)
+            ?.remove()
     }
 
     private fun addOrUpdateLabel(
@@ -167,6 +251,10 @@ class KakaoMapDrawer(
         }
         layer.addPolygon(options)
     }
+
+    private fun kakaoAdjustedDimension(
+        @DimenRes id: Int,
+    ): Float = context.resources.getDimension(id) / map.mapDpScale
 
     companion object {
         private const val LABEL_MOVE_ANIMATION_DURATION = 500

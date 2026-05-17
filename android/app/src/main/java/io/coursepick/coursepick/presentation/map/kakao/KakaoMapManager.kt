@@ -8,8 +8,10 @@ import com.kakao.vectormap.MapView
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Scope
+import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.map.CameraMoveReason
 import io.coursepick.coursepick.presentation.map.DistanceCalculator
 import io.coursepick.coursepick.presentation.map.MapManager
 import timber.log.Timber
@@ -53,26 +55,17 @@ class KakaoMapManager(
         }
     }
 
-    override fun draw(course: CourseItem) {
-        eventHandler.updateCourses(listOf(course))
-        drawer?.drawCourse(course) ?: Timber.w("KakaoMapDrawer is null")
-    }
-
-    override fun draw(courses: List<CourseItem>) {
+    override fun updateCourses(courses: List<CourseItem>) {
         eventHandler.updateCourses(courses)
-        drawer?.drawCourses(courses) ?: Timber.w("KakaoMapDrawer is null")
+        drawer?.updateCourses(courses) ?: Timber.w("KakaoMapDrawer is null")
     }
 
-    override fun drawRouteToCourse(
-        route: List<Coordinate>,
-        course: CourseItem,
-    ) {
-        eventHandler.updateCourses(listOf(course))
-        drawer?.drawRouteToCourse(route, course) ?: Timber.w("KakaoMapDrawer is null")
+    override fun drawRoute(route: List<Coordinate>) {
+        drawer?.drawRoute(route) ?: Timber.w("KakaoMapDrawer is null")
     }
 
-    override fun removeAllRouteLines() {
-        drawer?.removeAllLines() ?: Timber.w("KakaoMapDrawer is null")
+    override fun clearRoute() {
+        drawer?.clearRoute() ?: Timber.w("KakaoMapDrawer is null")
     }
 
     override fun drawSearchCoordinate(coordinate: Coordinate) {
@@ -85,6 +78,26 @@ class KakaoMapManager(
 
     override fun hideUserLocation() {
         drawer?.hideUserPosition() ?: Timber.w("KakaoMapDrawer is null")
+    }
+
+    override fun drawWaypoint(coordinate: Coordinate) {
+        drawer?.drawWaypoint(coordinate) ?: Timber.w("KakaoMapDrawer is null")
+    }
+
+    override fun removeLastWaypoint() {
+        drawer?.removeLastWaypoint() ?: Timber.w("KakaoMapDrawer is null")
+    }
+
+    override fun clearWaypoints() {
+        drawer?.clearWaypoints() ?: Timber.w("KakaoMapDrawer is null")
+    }
+
+    override fun drawDraftSegment(segment: DraftSegment) {
+        drawer?.drawDraftSegment(segment) ?: Timber.w("KakaoMapDrawer is null")
+    }
+
+    override fun clearDraftSegments() {
+        drawer?.clearDraftSegments() ?: Timber.w("KakaoMapDrawer is null")
     }
 
     override fun fitTo(coordinates: List<Coordinate>) {
@@ -107,17 +120,18 @@ class KakaoMapManager(
         } ?: Timber.w("kakaoMap is null")
     }
 
-    override fun setOnCameraMoveListener(onCameraMove: () -> Unit) {
+    override fun setOnCameraMoveListener(onCameraMove: (coordinate: Coordinate, reason: CameraMoveReason) -> Unit) {
         kakaoMap?.let { kakaoMap: KakaoMap ->
-            eventHandler.setOnCameraMoveListener(kakaoMap) {
-                onCameraMove()
-            }
+            eventHandler.setOnCameraMoveListener(kakaoMap, onCameraMove)
         } ?: Timber.w("kakaoMap is null")
     }
 
-    override fun moveTo(coordinate: Coordinate) {
+    override fun moveTo(
+        coordinate: Coordinate,
+        animate: Boolean,
+    ) {
         kakaoMap?.let { kakaoMap: KakaoMap ->
-            cameraController.moveTo(kakaoMap, coordinate)
+            cameraController.moveTo(map = kakaoMap, coordinate = coordinate, animate = animate)
         } ?: Timber.w("kakaoMap is null")
     }
 

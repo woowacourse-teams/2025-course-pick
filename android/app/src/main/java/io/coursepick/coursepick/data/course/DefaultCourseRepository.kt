@@ -58,4 +58,8 @@ class DefaultCourseRepository
                     originLatitude = origin.latitude.value,
                     originLongitude = origin.longitude.value,
                 ).toCoordinate()
+
+        override suspend fun report(course: Course) {
+            service.report(course.id)
+        }
     }

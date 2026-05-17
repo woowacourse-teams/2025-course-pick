@@ -24,6 +24,10 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="${GOOGLE_MAPS_API_KEY}" />
 
+        <meta-data
+            android:name="com.naver.maps.map.NCP_KEY_ID"
+            android:value="${NAVER_MAP_CLIENT_ID}" />
+
         <activity
             android:name=".presentation.launcher.LauncherActivity"
             android:exported="true"
@@ -45,6 +49,10 @@
             android:theme="@style/Theme.CoursePick" />
         <activity
             android:name=".presentation.preference.PreferencesActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".presentation.createcustomcourse.CreateCustomCourseActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity

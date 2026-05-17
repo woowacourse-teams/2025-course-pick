@@ -34,6 +34,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
@@ -43,7 +44,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.coursepick.coursepick.BuildConfig
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.databinding.ActivityCoursesBinding
-import io.coursepick.coursepick.di.KakaoMap
+import io.coursepick.coursepick.di.NaverMap
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Longitude
@@ -54,10 +55,20 @@ import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.DataKeys
 import io.coursepick.coursepick.presentation.InstallStateObserver
 import io.coursepick.coursepick.presentation.Logger
+import io.coursepick.coursepick.presentation.auth.AuthDialog
+import io.coursepick.coursepick.presentation.auth.AuthFeature
+import io.coursepick.coursepick.presentation.auth.AuthUiEvent
+import io.coursepick.coursepick.presentation.auth.AuthViewModel
+import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.compat.getParcelableCompat
+import io.coursepick.coursepick.presentation.customcourse.CustomCourseItem
+import io.coursepick.coursepick.presentation.customcourse.CustomCourseViewModel
+import io.coursepick.coursepick.presentation.customcourse.CustomCoursesFragment
+import io.coursepick.coursepick.presentation.customcourse.toCourseItem
 import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
 import io.coursepick.coursepick.presentation.filter.CourseFilterBottomSheet
+import io.coursepick.coursepick.presentation.map.CameraMoveReason
 import io.coursepick.coursepick.presentation.map.MapManager
 import io.coursepick.coursepick.presentation.map.MapManagerFactory
 import io.coursepick.coursepick.presentation.notice.NoticeDialog
@@ -69,6 +80,8 @@ import io.coursepick.coursepick.presentation.search.SearchActivity
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 import io.coursepick.coursepick.presentation.setting.SettingsScreen
 import io.coursepick.coursepick.presentation.ui.DoublePressDetector
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -80,11 +93,13 @@ class CoursesActivity :
     private var searchLauncher: ActivityResultLauncher<Intent>? = null
     private val binding by lazy { ActivityCoursesBinding.inflate(layoutInflater) }
     private val viewModel: CoursesViewModel by viewModels()
+    private val authViewModel: AuthViewModel by viewModels()
+    private val customCourseViewModel: CustomCourseViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(courseItemListener) }
     private val doublePressDetector = DoublePressDetector()
 
     @Inject
-    @KakaoMap
+    @NaverMap
     lateinit var mapManagerFactory: MapManagerFactory
     private val mapManager: MapManager by lazy { mapManagerFactory.create(binding.mapContainer) }
 
@@ -109,46 +124,11 @@ class CoursesActivity :
             }
 
             override fun navigateToCourse(course: CourseItem) {
-                Logger.log(
-                    Logger.Event.Click("navigate"),
-                    "id" to course.id,
-                    "name" to course.name,
-                )
+                this@CoursesActivity.navigateToCourse(course)
+            }
 
-                if (!viewModel.isFineLocationPermissionGranted) {
-                    showFineLocationPermissionRationaleForNavigation()
-                    return
-                }
-
-                lifecycleScope.launch {
-                    viewModel.currentLocation()?.let { location: Location ->
-                        val selectedApp: RouteFinderApplication? =
-                            CoursePickPreferences.selectedRouteFinder
-                        if (selectedApp == null) {
-                            supportFragmentManager.setFragmentResultListener(
-                                DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_REQUEST,
-                                this@CoursesActivity,
-                            ) { _, bundle: Bundle ->
-                                supportFragmentManager.clearFragmentResultListener(DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_REQUEST)
-                                val selectedApp: RouteFinderApplication =
-                                    bundle.getParcelableCompat<RouteFinderApplication>(DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_RESULT)
-                                        ?: return@setFragmentResultListener
-                                handleNavigation(course, location.coordinate, selectedApp)
-                            }
-                            RouteFinderChoiceDialogFragment().show(supportFragmentManager, null)
-                            return@let
-                        }
-                        handleNavigation(course, location.coordinate, selectedApp)
-                    } ?: run {
-                        mapManager.hideUserLocation()
-                        Toast
-                            .makeText(
-                                this@CoursesActivity,
-                                getString(R.string.courses_failed_to_get_current_location_message),
-                                Toast.LENGTH_SHORT,
-                            ).show()
-                    }
-                }
+            override fun report(course: CourseItem) {
+                viewModel.onReportCourse(course)
             }
         }
 
@@ -174,17 +154,33 @@ class CoursesActivity :
             setUpObservers()
             setUpFlowCollector()
             setUpMapPadding()
-            mapManager.setOnCameraMoveListener {
-                if (viewModel.content.value == CoursesContent.EXPLORE) {
-                    binding.mainSearchThisAreaButton.visibility = View.VISIBLE
+
+            mapManager.setOnCameraMoveListener { coordinate: Coordinate, reason: CameraMoveReason ->
+                viewModel.onMapMoved(coordinate)
+
+                if (reason == CameraMoveReason.GESTURE) {
+                    if (viewModel.content.value == CoursesContent.EXPLORE) {
+                        binding.mainSearchThisAreaButton.visibility = View.VISIBLE
+                    }
+                    binding.mainCurrentLocationButton.setColorFilter(
+                        ContextCompat.getColor(this, R.color.item_primary),
+                    )
+
+                    Logger.log(
+                        Logger.Event.MapMove("map"),
+                        "latitude" to coordinate.latitude,
+                        "longitude" to coordinate.longitude,
+                    )
                 }
-                binding.mainCurrentLocationButton.setColorFilter(
-                    ContextCompat.getColor(this, R.color.item_primary),
-                )
             }
+
             mapManager.setOnCourseClickListener { course: CourseItem ->
                 viewModel.select(course)
             }
+
+            mapManager.resetZoom()
+            mapManager.moveTo(coordinate = INITIAL_COORDINATE, animate = false)
+
             fetchInitialCourses()
         }
 
@@ -309,7 +305,7 @@ class CoursesActivity :
 
         mapManager.resetZoom()
         mapManager.drawSearchCoordinate(coordinate)
-        mapManager.moveTo(coordinate)
+        mapManager.moveTo(coordinate = coordinate, animate = true)
         fetchCourses(coordinate)
     }
 
@@ -317,7 +313,10 @@ class CoursesActivity :
         supportFragmentManager.commit {
             setReorderingAllowed(true)
             supportFragmentManager.fragments.forEach { fragment: Fragment ->
-                if (fragment is ExploreCoursesFragment || fragment is FavoriteCoursesFragment) {
+                if (fragment is ExploreCoursesFragment ||
+                    fragment is FavoriteCoursesFragment ||
+                    fragment is CustomCoursesFragment
+                ) {
                     hide(fragment)
                 }
             }
@@ -349,6 +348,15 @@ class CoursesActivity :
                     viewModel.showCourses()
                     viewModel.switchContent(CoursesContent.FAVORITES)
                     viewModel.fetchFavorites()
+                    true
+                }
+
+                R.id.customCourseMenu -> {
+                    viewModel.showCourses()
+                    viewModel.switchContent(CoursesContent.CUSTOM_COURSE)
+                    viewModel.checkAuthForCustomCourse {
+                        customCourseViewModel.fetchCustomCourses()
+                    }
                     true
                 }
 
@@ -385,10 +393,52 @@ class CoursesActivity :
                 }
 
                 mapManager.drawUserLocation(location)
-                mapManager.moveTo(location.coordinate)
+                mapManager.moveTo(coordinate = location.coordinate, animate = true)
                 binding.mainCurrentLocationButton.setColorFilter(
                     ContextCompat.getColor(this@CoursesActivity, R.color.gray3),
                 )
+            } ?: run {
+                mapManager.hideUserLocation()
+                Toast
+                    .makeText(
+                        this@CoursesActivity,
+                        getString(R.string.courses_failed_to_get_current_location_message),
+                        Toast.LENGTH_SHORT,
+                    ).show()
+            }
+        }
+    }
+
+    fun navigateToCourse(course: CourseItem) {
+        Logger.log(
+            Logger.Event.Click("navigate"),
+            "id" to course.id,
+            "name" to course.name,
+        )
+
+        if (!viewModel.isFineLocationPermissionGranted) {
+            showFineLocationPermissionRationaleForNavigation()
+            return
+        }
+        lifecycleScope.launch {
+            viewModel.currentLocation()?.let { location: Location ->
+                val selectedApp: RouteFinderApplication? =
+                    CoursePickPreferences.selectedRouteFinder
+                if (selectedApp == null) {
+                    supportFragmentManager.setFragmentResultListener(
+                        DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_REQUEST,
+                        this@CoursesActivity,
+                    ) { _, bundle: Bundle ->
+                        supportFragmentManager.clearFragmentResultListener(DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_REQUEST)
+                        val selectedApp: RouteFinderApplication =
+                            bundle.getParcelableCompat<RouteFinderApplication>(DataKeys.DATA_KEY_ROUTE_FINDER_CHOICE_RESULT)
+                                ?: return@setFragmentResultListener
+                        handleNavigation(course, location.coordinate, selectedApp)
+                    }
+                    RouteFinderChoiceDialogFragment().show(supportFragmentManager, null)
+                    return@let
+                }
+                handleNavigation(course, location.coordinate, selectedApp)
             } ?: run {
                 mapManager.hideUserLocation()
                 Toast
@@ -521,8 +571,17 @@ class CoursesActivity :
             object : OnReconnectListener {
                 override fun onReconnect() {
                     when (viewModel.content.value) {
-                        CoursesContent.EXPLORE -> mapCoordinateOrNull()?.let(::fetchCourses)
-                        CoursesContent.FAVORITES -> viewModel.fetchFavorites()
+                        CoursesContent.EXPLORE -> {
+                            mapCoordinateOrNull()?.let(::fetchCourses)
+                        }
+
+                        CoursesContent.FAVORITES -> {
+                            viewModel.fetchFavorites()
+                        }
+
+                        CoursesContent.CUSTOM_COURSE -> {
+                            customCourseViewModel.fetchCustomCourses()
+                        }
                     }
                 }
             }
@@ -544,6 +603,12 @@ class CoursesActivity :
                         FavoriteCoursesFragment::class.java.name -> {
                             FavoriteCoursesFragment(
                                 courseItemListener,
+                                onReconnectListener,
+                            )
+                        }
+
+                        CustomCoursesFragment::class.java.name -> {
+                            CustomCoursesFragment(
                                 onReconnectListener,
                             )
                         }
@@ -623,7 +688,7 @@ class CoursesActivity :
                     viewModel.currentLocation()?.let { location: Location ->
                         val userCoordinate = location.coordinate
                         mapManager.drawUserLocation(location)
-                        mapManager.moveTo(location.coordinate)
+                        mapManager.moveTo(coordinate = location.coordinate, animate = true)
                         viewModel.fetchCourses(userCoordinate, userCoordinate, scope)
                     } ?: run {
                         mapManager.hideUserLocation()
@@ -636,6 +701,8 @@ class CoursesActivity :
             CoursesContent.FAVORITES -> {
                 viewModel.fetchFavorites()
             }
+
+            CoursesContent.CUSTOM_COURSE -> {}
         }
     }
 
@@ -675,17 +742,34 @@ class CoursesActivity :
     private fun setUpObservers() {
         setUpStateObserver()
         setUpEventObserver()
+        setUpCustomCourseObserver()
+    }
+
+    private fun setUpCustomCourseObserver() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                customCourseViewModel.state
+                    .map { it.selectedCustomCourse }
+                    .distinctUntilChanged()
+                    .collect { customCourseItem: CustomCourseItem? ->
+                        customCourseItem?.let {
+                            val courseItem = customCourseItem.toCourseItem()
+                            viewModel.selectExternalCourse(courseItem)
+                        }
+                    }
+            }
+        }
     }
 
     private fun setUpStateObserver() {
         viewModel.state.observe(this) { state: CoursesUiState ->
             courseAdapter.submitList(state.courses)
-            mapManager.removeAllRouteLines()
+            mapManager.clearRoute()
             val courses: List<CourseItem> =
                 state.courses
                     .filterIsInstance<CourseListItem.Course>()
                     .map(CourseListItem.Course::item)
-            mapManager.draw(courses)
+            mapManager.updateCourses(courses)
         }
 
         viewModel.content.observe(this) { content: CoursesContent ->
@@ -722,10 +806,12 @@ class CoursesActivity :
                 }
 
                 is CoursesUiEvent.FetchRouteToCourseSuccess -> {
-                    mapManager.removeAllRouteLines()
-                    mapManager.fitTo(event.route)
-                    mapManager.draw(event.course)
-                    mapManager.drawRouteToCourse(event.route, event.course)
+                    with(mapManager) {
+                        clearRoute()
+                        drawRoute(event.route)
+                        updateCourses(listOf(event.course))
+                        fitTo(event.route)
+                    }
                 }
 
                 is CoursesUiEvent.FetchRouteToCourseFailure -> {
@@ -737,11 +823,11 @@ class CoursesActivity :
                         ).show()
                 }
 
-                is CoursesUiEvent.FetchRouteToCourseNoNetwork -> {
+                is CoursesUiEvent.NoNetworkConnection -> {
                     Toast
                         .makeText(
                             this,
-                            getString(R.string.courses_no_network_connection_for_route_message),
+                            getString(R.string.courses_no_network_message),
                             Toast.LENGTH_SHORT,
                         ).show()
                 }
@@ -772,6 +858,42 @@ class CoursesActivity :
                             Toast.LENGTH_SHORT,
                         ).show()
                 }
+
+                CoursesUiEvent.ReportCourseSuccess -> {
+                    Toast
+                        .makeText(
+                            this,
+                            getString(R.string.report_course_success_message),
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                }
+
+                CoursesUiEvent.CourseAlreadyReported -> {
+                    Toast
+                        .makeText(
+                            this,
+                            getString(R.string.report_course_failure_already_reported),
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                }
+
+                CoursesUiEvent.ReportCourseUnauthorizedUser -> {
+                    Toast
+                        .makeText(
+                            this,
+                            getString(R.string.report_course_failure_unauthorized_user_message),
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                }
+
+                CoursesUiEvent.ReportCourseUnknownFailure -> {
+                    Toast
+                        .makeText(
+                            this,
+                            getString(R.string.report_course_failure_unknown_message),
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                }
             }
         }
     }
@@ -779,8 +901,30 @@ class CoursesActivity :
     private fun setUpFlowCollector() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.locationUpdates.collect { location: Location? ->
-                    location?.let(mapManager::drawUserLocation) ?: run(mapManager::hideUserLocation)
+                launch {
+                    viewModel.locationUpdates.collect { location: Location? ->
+                        location?.let(mapManager::drawUserLocation)
+                            ?: run(mapManager::hideUserLocation)
+                    }
+                }
+
+                launch {
+                    authViewModel.uiEvent.collect { event: AuthUiEvent ->
+                        when (event) {
+                            is AuthUiEvent.AuthenticateSuccess -> {
+                                viewModel.onAuthSuccess(event.feature)
+                            }
+
+                            AuthUiEvent.AuthenticateFailure -> {
+                                Toast
+                                    .makeText(
+                                        this@CoursesActivity,
+                                        getString(R.string.authentication_failure_message),
+                                        Toast.LENGTH_SHORT,
+                                    ).show()
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -845,8 +989,33 @@ class CoursesActivity :
                             onFilterAction = viewModel::handleFilterAction,
                         )
                     }
+
+                    viewModel.authDialogState.collectAsStateWithLifecycle().value?.let { feature: AuthFeature ->
+                        AuthDialog(
+                            feature = feature,
+                            onDismissRequest = viewModel::dismissAuthDialog,
+                            onKakaoLoginClick = {
+                                authViewModel.authenticate(
+                                    KakaoAuthenticator(this@CoursesActivity),
+                                    feature,
+                                )
+                            },
+                        )
+                    }
+
+                    viewModel.reportCourseDialogState.collectAsStateWithLifecycle().value?.let { course: CourseItem ->
+                        ReportCourseDialog(
+                            course = course,
+                            onConfirm = viewModel::submitCourseReport,
+                            onDismiss = viewModel::dismissReportCourseDialog,
+                        )
+                    }
                 }
             }
         }
+    }
+
+    companion object {
+        private val INITIAL_COORDINATE = Coordinate(Latitude(37.5100226), Longitude(127.1026170))
     }
 }

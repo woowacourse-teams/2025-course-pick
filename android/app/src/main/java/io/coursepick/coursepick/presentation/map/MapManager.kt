@@ -2,6 +2,7 @@ package io.coursepick.coursepick.presentation.map
 
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Scope
+import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.course.CourseItem
 
@@ -12,16 +13,11 @@ interface MapManager {
 
     fun startMap(onMapReady: () -> Unit)
 
-    fun draw(course: CourseItem)
+    fun updateCourses(courses: List<CourseItem>)
 
-    fun draw(courses: List<CourseItem>)
+    fun drawRoute(route: List<Coordinate>)
 
-    fun drawRouteToCourse(
-        route: List<Coordinate>,
-        course: CourseItem,
-    )
-
-    fun removeAllRouteLines()
+    fun clearRoute()
 
     fun drawSearchCoordinate(coordinate: Coordinate)
 
@@ -29,15 +25,28 @@ interface MapManager {
 
     fun hideUserLocation()
 
+    fun drawWaypoint(coordinate: Coordinate)
+
+    fun removeLastWaypoint()
+
+    fun clearWaypoints()
+
+    fun drawDraftSegment(segment: DraftSegment)
+
+    fun clearDraftSegments()
+
     fun fitTo(coordinates: List<Coordinate>)
 
     fun fitTo(course: CourseItem)
 
     fun setOnCourseClickListener(onClick: (CourseItem) -> Unit)
 
-    fun setOnCameraMoveListener(onCameraMove: () -> Unit)
+    fun setOnCameraMoveListener(onCameraMove: (coordinate: Coordinate, reason: CameraMoveReason) -> Unit)
 
-    fun moveTo(coordinate: Coordinate)
+    fun moveTo(
+        coordinate: Coordinate,
+        animate: Boolean,
+    )
 
     fun resetZoom()
 

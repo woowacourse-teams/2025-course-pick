@@ -5,7 +5,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
-import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
 
@@ -28,8 +27,6 @@ class KakaoMapLifecycleHandler(
                 override fun onMapReady(map: KakaoMap) {
                     onMapReady(map)
                 }
-
-                override fun getPosition(): LatLng = DEFAULT_LATLNG
             },
         )
     }
@@ -47,11 +44,5 @@ class KakaoMapLifecycleHandler(
     override fun onDestroy(owner: LifecycleOwner) {
         super.onDestroy(owner)
         mapView.finish()
-    }
-
-    companion object {
-        private const val DEFAULT_LATITUDE = 37.5100226
-        private const val DEFAULT_LONGITUDE = 127.1026170
-        private val DEFAULT_LATLNG = LatLng.from(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
     }
 }

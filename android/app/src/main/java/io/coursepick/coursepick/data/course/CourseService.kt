@@ -1,6 +1,7 @@
 package io.coursepick.coursepick.data.course
 
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -35,4 +36,9 @@ interface CourseService {
         @Query("lat") originLatitude: Double,
         @Query("lng") originLongitude: Double,
     ): CoordinateDto
+
+    @POST("courses/{id}/report")
+    suspend fun report(
+        @Path("id") courseId: String,
+    )
 }

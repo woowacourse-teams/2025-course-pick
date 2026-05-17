@@ -40,6 +40,7 @@ android {
         manifestPlaceholders +=
             mapOf(
                 "KAKAO_NATIVE_APP_KEY" to localProperties["kakao.native.app.key"].toString(),
+                "NAVER_MAP_CLIENT_ID" to localProperties["naver.map.client.id"].toString(),
             )
     }
 
@@ -165,6 +166,7 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.androidx.core.ktx)
@@ -180,6 +182,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.kakao.maps)
+    implementation(libs.naver.maps)
     implementation(libs.google.maps)
     implementation(libs.kakao.user)
     implementation(libs.play.services.location)

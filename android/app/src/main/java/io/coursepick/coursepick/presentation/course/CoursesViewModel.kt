@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.coursepick.coursepick.data.NetworkMonitor
 import io.coursepick.coursepick.data.interceptor.NoNetworkException
+import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseRepository
@@ -19,20 +20,25 @@ import io.coursepick.coursepick.domain.location.LocationRepository
 import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.domain.notice.NoticeRepository
 import io.coursepick.coursepick.presentation.Logger
+import io.coursepick.coursepick.presentation.auth.AuthFeature
 import io.coursepick.coursepick.presentation.filter.CourseFilter
 import io.coursepick.coursepick.presentation.filter.CourseFilterAction
 import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -43,6 +49,7 @@ class CoursesViewModel
         private val favoritesRepository: FavoritesRepository,
         private val noticeRepository: NoticeRepository,
         private val locationRepository: LocationRepository,
+        private val authRepository: AuthRepository,
         private val networkMonitor: NetworkMonitor,
     ) : ViewModel() {
         private val _state: MutableLiveData<CoursesUiState> =
@@ -68,8 +75,17 @@ class CoursesViewModel
                 initialValue = null,
             )
 
+        private val _reportCourseDialogState = MutableStateFlow<CourseItem?>(null)
+        val reportCourseDialogState: StateFlow<CourseItem?> get() = _reportCourseDialogState.asStateFlow()
+
+        private val _authDialogState = MutableStateFlow<AuthFeature?>(null)
+        val authDialogState: StateFlow<AuthFeature?> get() = _authDialogState.asStateFlow()
+
         private val _event: MutableSingleLiveData<CoursesUiEvent> = MutableSingleLiveData()
         val event: SingleLiveData<CoursesUiEvent> get() = _event
+
+        var mapCoordinate: Coordinate? = null
+            private set
 
         private var writeFavoriteJob: Job? = null
         private val pendingFavoriteWrites: MutableMap<String, Boolean> = mutableMapOf()
@@ -87,6 +103,46 @@ class CoursesViewModel
             checkNetwork()
         }
 
+        fun selectExternalCourse(courseItem: CourseItem) {
+            syncExternalSelectedCourse(courseItem)
+            _event.value = CoursesUiEvent.SelectCourseManually(courseItem)
+        }
+
+        private fun syncExternalSelectedCourse(courseItem: CourseItem) {
+            _state.value =
+                _state.value?.copy(
+                    courses =
+                        _state.value?.courses?.let { oldList: List<CourseListItem> ->
+                            val hasCourse: Boolean =
+                                oldList.any { it is CourseListItem.Course && it.item.id == courseItem.id }
+                            if (hasCourse) {
+                                oldList.map { item ->
+                                    if (item is CourseListItem.Course) {
+                                        CourseListItem.Course(item.item.copy(selected = item.item.id == courseItem.id))
+                                    } else {
+                                        item
+                                    }
+                                }
+                            } else {
+                                val clearedList: List<CourseListItem> =
+                                    oldList.map { item: CourseListItem ->
+                                        if (item is CourseListItem.Course) {
+                                            CourseListItem.Course(
+                                                item.item.copy(
+                                                    selected = false,
+                                                ),
+                                            )
+                                        } else {
+                                            item
+                                        }
+                                    }
+                                listOf(CourseListItem.Course(courseItem)) + clearedList
+                            }
+                        } ?: listOf(CourseListItem.Course(courseItem)),
+                    status = UiStatus.Success,
+                )
+        }
+
         private fun checkNetwork() {
             if (!networkMonitor.isConnected()) {
                 _state.value =
@@ -96,6 +152,10 @@ class CoursesViewModel
 
         fun switchContent(content: CoursesContent) {
             _content.value = content
+        }
+
+        fun onMapMoved(coordinate: Coordinate) {
+            mapCoordinate = coordinate
         }
 
         fun select(course: CourseItem) {
@@ -416,7 +476,7 @@ class CoursesViewModel
                     _state.value = state.value?.copy(status = UiStatus.Failure)
                     _event.value =
                         if (error is NoNetworkException) {
-                            CoursesUiEvent.FetchRouteToCourseNoNetwork
+                            CoursesUiEvent.NoNetworkConnection
                         } else {
                             CoursesUiEvent.FetchRouteToCourseFailure
                         }
@@ -543,6 +603,73 @@ class CoursesViewModel
         }
 
         suspend fun currentLocation(): Location? = locationRepository.currentLocation()
+
+        fun onReportCourse(course: CourseItem) {
+            viewModelScope.launch {
+                if (authRepository.accessToken() == null) {
+                    _authDialogState.value = AuthFeature.ReportCourse(course)
+                } else {
+                    _reportCourseDialogState.value = course
+                }
+            }
+        }
+
+        fun checkAuthForCustomCourse(onAuthorized: () -> Unit) {
+            viewModelScope.launch {
+                if (authRepository.accessToken() == null) {
+                    _authDialogState.value = AuthFeature.CustomCourse
+                } else {
+                    onAuthorized()
+                }
+            }
+        }
+
+        fun submitCourseReport(course: CourseItem) {
+            viewModelScope.launch {
+                try {
+                    courseRepository.report(course.course)
+                    _reportCourseDialogState.value = null
+                    _event.value = CoursesUiEvent.ReportCourseSuccess
+                } catch (exception: CancellationException) {
+                    throw exception
+                } catch (_: NoNetworkException) {
+                    _event.value = CoursesUiEvent.NoNetworkConnection
+                } catch (exception: HttpException) {
+                    _event.value =
+                        when (exception.code()) {
+                            400 -> {
+                                dismissReportCourseDialog()
+                                CoursesUiEvent.CourseAlreadyReported
+                            }
+
+                            401 -> {
+                                CoursesUiEvent.ReportCourseUnauthorizedUser
+                            }
+
+                            else -> {
+                                CoursesUiEvent.ReportCourseUnknownFailure
+                            }
+                        }
+                } catch (_: Throwable) {
+                    _event.value = CoursesUiEvent.ReportCourseUnknownFailure
+                }
+            }
+        }
+
+        fun dismissReportCourseDialog() {
+            _reportCourseDialogState.value = null
+        }
+
+        fun dismissAuthDialog() {
+            _authDialogState.value = null
+        }
+
+        fun onAuthSuccess(feature: AuthFeature) {
+            dismissAuthDialog()
+            if (feature is AuthFeature.ReportCourse) {
+                onReportCourse(feature.course)
+            }
+        }
 
         private fun newCoursesListItem(
             oldCourses: List<CourseListItem>,
