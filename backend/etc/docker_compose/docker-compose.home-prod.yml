@@ -4,10 +4,8 @@ services:
   mongodb:
     image: mongo:8.0.12
     container_name: coursepick-home-prod-mongodb
-    environment:
-      - MONGO_INITDB_DATABASE=coursepick
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+    env_file:
+      - /var/lib/coursepick/env/.env.home-prod
     volumes:
       - mongodb_prod_data:/data/db
     restart: unless-stopped
@@ -23,14 +21,10 @@ services:
     restart: unless-stopped
     ports:
       - "8090:8080"
+    env_file:
+      - /var/lib/coursepick/env/.env.home-prod
     environment:
       - SPRING_PROFILES_ACTIVE=prod
-      - MONGO_USERNAME=${MONGO_ROOT_USERNAME}
-      - MONGO_PASSWORD=${MONGO_ROOT_PASSWORD}
-      - ADMIN_TOKEN=${ADMIN_TOKEN}
-      - ADMIN_KAKAO_MAP_API_KEY=${ADMIN_KAKAO_MAP_API_KEY}
-      - OSRM_URL=${OSRM_URL}
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
     volumes:
       - /var/lib/coursepick/logs/home-prod:/var/lib/coursepick/logs
     depends_on:
