@@ -36,16 +36,16 @@ import io.coursepick.coursepick.presentation.course.UiStatus
 import io.coursepick.coursepick.presentation.customcourse.component.EmptyDescription
 import io.coursepick.coursepick.presentation.customcourse.component.Header
 import io.coursepick.coursepick.presentation.customcourse.component.LoadingIndicator
-import io.coursepick.coursepick.presentation.customcourse.component.NetworkErrorView
+import io.coursepick.coursepick.presentation.customcourse.component.NetworkErrorContent
 
 @Composable
 fun CustomCourseScreen(
-    modifier: Modifier = Modifier,
     status: CustomCourseUiState,
     onReconnect: OnReconnectListener,
     onGoToCreateCustomCourse: () -> Unit,
     onSelect: (CustomCourseItem) -> Unit,
     onNavigateToCourse: (CustomCourseItem) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val nestedScrollInterop = rememberNestedScrollInteropConnection()
 
@@ -95,7 +95,7 @@ fun CustomCourseScreen(
                 }
 
                 UiStatus.NoInternet -> {
-                    NetworkErrorView(onReconnect = onReconnect)
+                    NetworkErrorContent(onReconnect = onReconnect)
                 }
 
                 UiStatus.Failure -> {
