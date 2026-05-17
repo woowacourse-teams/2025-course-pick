@@ -355,7 +355,7 @@ class CoursesActivity :
                     viewModel.showCourses()
                     viewModel.switchContent(CoursesContent.CUSTOM_COURSE)
                     viewModel.checkAuthForCustomCourse {
-                        customCourseViewModel.fetchCustomCourses(viewModel.mapCoordinate)
+                        customCourseViewModel.fetchCustomCourses()
                     }
                     true
                 }
@@ -580,7 +580,7 @@ class CoursesActivity :
                         }
 
                         CoursesContent.CUSTOM_COURSE -> {
-                            customCourseViewModel.fetchCustomCourses(viewModel.mapCoordinate)
+                            customCourseViewModel.fetchCustomCourses()
                         }
                     }
                 }
