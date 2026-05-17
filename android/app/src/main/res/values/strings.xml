@@ -44,6 +44,7 @@
 
     <!--  코스 화면: 나의 코스 메뉴  -->
     <string name="custom_courses_header">나의 코스</string>
+    <string name="custom_course_feature_name">나의 코스</string>
     <string name="custom_courses_empty_description">등록한 코스가 없어요</string>
     <string name="custom_courses_load_failed">데이터를 불러오는 데 실패했습니다.</string>
     <string name="custom_courses_unauthorized_user_message">나의 코스 조회를 위해 로그인을 해주세요.</string>

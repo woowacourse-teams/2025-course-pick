@@ -51,7 +51,7 @@ class CustomCourseViewModel
         fun onGoToCreateCustomCourse() {
             viewModelScope.launch {
                 if (authRepository.accessToken() == null) {
-                    _authDialogState.value = AuthFeature.CustomCourse
+                    _authDialogState.value = AuthFeature.CreateCustomCourse
                 } else {
                     _uiEvent.emit(CustomCourseUiEvent.NavigateToCreateCourse)
                 }
@@ -63,7 +63,7 @@ class CustomCourseViewModel
         }
 
         fun onAuthSuccess(feature: AuthFeature) {
-            if (feature is AuthFeature.CustomCourse) {
+            if (feature is AuthFeature.CreateCustomCourse) {
                 dismissAuthDialog()
                 viewModelScope.launch {
                     _uiEvent.emit(CustomCourseUiEvent.RequestFetch)

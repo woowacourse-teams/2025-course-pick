@@ -7,5 +7,7 @@ sealed interface AuthFeature {
         val course: CourseItem,
     ) : AuthFeature
 
+    data object CreateCustomCourse : AuthFeature
+
     data object CustomCourse : AuthFeature
 }

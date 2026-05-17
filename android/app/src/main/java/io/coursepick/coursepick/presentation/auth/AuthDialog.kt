@@ -65,7 +65,8 @@ fun AuthDialog(
 private fun AuthFeature.stringResourceId(): Int =
     when (this) {
         is AuthFeature.ReportCourse -> R.string.report_course_feature_name
-        AuthFeature.CustomCourse -> R.string.create_custom_course_feature_name
+        AuthFeature.CreateCustomCourse -> R.string.create_custom_course_feature_name
+        AuthFeature.CustomCourse -> R.string.custom_course_feature_name
     }
 
 @PreviewLightDark
@@ -73,7 +74,7 @@ private fun AuthFeature.stringResourceId(): Int =
 private fun AuthDialogPreview() {
     CoursePickTheme {
         AuthDialog(
-            feature = AuthFeature.CustomCourse,
+            feature = AuthFeature.CreateCustomCourse,
             onDismissRequest = { },
             onKakaoLoginClick = { },
         )
