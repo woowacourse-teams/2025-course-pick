@@ -8,11 +8,11 @@ import javax.inject.Inject
 class DefaultPreferencesRepository
     @Inject
     constructor(
-        private val dataStore: PreferencesDataStore,
+        private val dataSource: PreferencesDataSource,
     ) : PreferencesRepository {
-        override val routeFinder: Flow<RouteFinder?> = dataStore.routeFinder
+        override val routeFinder: Flow<RouteFinder?> = dataSource.routeFinder
 
         override suspend fun setRouteFinder(routeFinder: RouteFinder?) {
-            dataStore.setRouteFinder(routeFinder)
+            dataSource.setRouteFinder(routeFinder)
         }
     }
