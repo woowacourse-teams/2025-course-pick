@@ -354,7 +354,10 @@ class CoursesActivity :
                 R.id.customCourseMenu -> {
                     viewModel.showCourses()
                     viewModel.switchContent(CoursesContent.CUSTOM_COURSE)
-                    viewModel.checkAuthForCustomCourse()
+                    viewModel.checkAuthForCustomCourse {
+                        customCourseViewModel.fetchCustomCourses(viewModel.mapCoordinate)
+                    }
+
                     true
                 }
 
@@ -901,7 +904,8 @@ class CoursesActivity :
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     viewModel.locationUpdates.collect { location: Location? ->
-                        location?.let(mapManager::drawUserLocation) ?: run(mapManager::hideUserLocation)
+                        location?.let(mapManager::drawUserLocation)
+                            ?: run(mapManager::hideUserLocation)
                     }
                 }
 
@@ -991,7 +995,12 @@ class CoursesActivity :
                         AuthDialog(
                             feature = feature,
                             onDismissRequest = viewModel::dismissAuthDialog,
-                            onKakaoLoginClick = { authViewModel.authenticate(KakaoAuthenticator(this@CoursesActivity), feature) },
+                            onKakaoLoginClick = {
+                                authViewModel.authenticate(
+                                    KakaoAuthenticator(this@CoursesActivity),
+                                    feature,
+                                )
+                            },
                         )
                     }
 

@@ -614,10 +614,12 @@ class CoursesViewModel
             }
         }
 
-        fun checkAuthForCustomCourse() {
+        fun checkAuthForCustomCourse(onAuthorized: () -> Unit) {
             viewModelScope.launch {
                 if (authRepository.accessToken() == null) {
                     _authDialogState.value = AuthFeature.CustomCourse
+                } else {
+                    onAuthorized()
                 }
             }
         }
