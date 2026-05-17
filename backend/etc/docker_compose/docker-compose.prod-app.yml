@@ -15,6 +15,7 @@ services:
       - OSRM_URL=${OSRM_URL}
       - JWT_SECRET_KEY=${JWT_SECRET}
       - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
     volumes:
       - /var/lib/coursepick/logs:/var/lib/coursepick/logs
       - /var/lib/coursepick/gcp-credentials.json:/var/lib/coursepick/gcp-credentials.json

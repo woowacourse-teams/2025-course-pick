@@ -1,5 +1,6 @@
 package coursepick.coursepick.domain.course;
 
+import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.user.User;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -51,6 +52,8 @@ public class Course {
 
     private LocalDateTime createdAt;
 
+    private List<CourseTag> tags;
+
     public Course(String id, CourseName courseName, List<Coordinate> rawCoordinates, User user) {
         this.id = id;
         this.name = courseName;
@@ -61,6 +64,7 @@ public class Course {
         this.creatorId = user.id();
         this.reportUserIds = new HashSet<>();
         this.createdAt = LocalDateTime.now();
+        this.tags = new ArrayList<>();
     }
 
     private List<Coordinate> refineCoordinates(List<Coordinate> rawCoordinates) {
@@ -151,5 +155,11 @@ public class Course {
         int total = reviews.stream()
                 .mapToInt(Review::rating).sum();
         return Math.round((double) total / reviews.size() * 10) / 10.0;
+    }
+
+    public void updateTags(List<CourseTag> tags) {
+        List<CourseTag> deduplicated = tags.stream().distinct().toList();
+        int limit = Math.min(deduplicated.size(), CourseTag.MAX_TAGS_PER_COURSE);
+        this.tags = new ArrayList<>(deduplicated.subList(0, limit));
     }
 }

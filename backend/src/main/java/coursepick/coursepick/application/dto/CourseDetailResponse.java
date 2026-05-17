@@ -2,6 +2,7 @@ package coursepick.coursepick.application.dto;
 
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.Course;
+import coursepick.coursepick.domain.course.CourseTag;
 import coursepick.coursepick.domain.course.Meter;
 
 import java.util.List;
@@ -13,7 +14,8 @@ public record CourseDetailResponse(
         List<Coordinate> coordinates,
         int reviewCount,
         double averageRating,
-        List<ReviewResponse> reviews
+        List<ReviewResponse> reviews,
+        List<CourseTag> tags
 ) {
     public static CourseDetailResponse from(Course course) {
         return new CourseDetailResponse(
@@ -23,7 +25,8 @@ public record CourseDetailResponse(
                 course.coordinates(),
                 course.reviews().size(),
                 course.calculateAverageRating(),
-                ReviewResponse.from(course.reviews())
+                ReviewResponse.from(course.reviews()),
+                course.tags()
         );
     }
 }

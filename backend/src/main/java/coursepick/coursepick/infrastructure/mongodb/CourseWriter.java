@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.Course;
+import coursepick.coursepick.domain.course.CourseTag;
 import coursepick.coursepick.domain.course.Review;
 import coursepick.coursepick.infrastructure.compressor.DataCompressor;
 import lombok.RequiredArgsConstructor;
@@ -41,8 +42,14 @@ public class CourseWriter implements Converter<Course, Document> {
         if (source.createdAt() != null) {
             document.put("createdAt", Date.from(source.createdAt().atZone(ZoneId.systemDefault()).toInstant()));
         }
+        document.put("tags", convertTagsToNames(source.tags()));
         document.put("schemaVersion", 1);
         return document;
+    }
+
+    private List<String> convertTagsToNames(List<CourseTag> tags) {
+        if (tags == null) return List.of();
+        return tags.stream().map(CourseTag::name).toList();
     }
 
     private List<Document> convertReviewsToDocuments(List<Review> reviews) {

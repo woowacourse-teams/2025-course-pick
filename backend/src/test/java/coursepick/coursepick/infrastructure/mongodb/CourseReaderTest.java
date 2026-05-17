@@ -30,7 +30,8 @@ class CourseReaderTest extends AbstractIntegrationTest {
                 List.of(new Review(new User(null, "providerId", "reviewer"), "리뷰 내용", 4)),
                 "creatorId123",
                 Set.of("reportMan1"),
-                now
+                now,
+                null
         );
     }
 
@@ -74,6 +75,7 @@ class CourseReaderTest extends AbstractIntegrationTest {
                 List.of(new Review(new User(null, "providerId", "reviewer"), "리뷰 내용", 4)),
                 "creatorId123",
                 Set.of("reportMan1"),
+                null,
                 null
         );
 
