@@ -3,6 +3,7 @@ package io.coursepick.coursepick.presentation.customcourse.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,10 +12,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -26,8 +30,8 @@ import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 
 @Composable
 fun NetworkErrorView(
-    modifier: Modifier = Modifier,
     onReconnect: OnReconnectListener,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier =
@@ -51,14 +55,15 @@ fun NetworkErrorView(
         Box(
             modifier =
                 Modifier
-                    .clickable(onClick = onReconnect::onReconnect)
-                    .background(
-                        color = colorResource(R.color.background_primary),
-                        shape = RoundedCornerShape(8.dp),
-                    ).border(
+                    .border(
                         width = 1.dp,
                         color = colorResource(R.color.background_border),
                         shape = RoundedCornerShape(50),
+                    ).clip(RoundedCornerShape(50))
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = onReconnect::onReconnect,
                     ).padding(horizontal = 20.dp, vertical = 10.dp),
             contentAlignment = Alignment.Center,
         ) {
