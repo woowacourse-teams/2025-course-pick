@@ -4,65 +4,12 @@ on:
   workflow_dispatch:
 
 jobs:
-  ci:
-    name: CI 실행
-    uses: ./.github/workflows/backend-ci.yml
-    secrets: inherit
-
   deploy:
-    name: 홈서버 운영 배포
-    needs: ci
-    runs-on: [ self-hosted, home-server ]
-    defaults:
-      run:
-        working-directory: backend
-
-    env:
-      COMPOSE_PROJECT: coursepick-home-prod
-      COMPOSE_FILE: etc/docker_compose/docker-compose.home-prod.yml
-      ENV_FILE: /var/lib/coursepick/env/.env.home-prod
-
-    steps:
-      - name: 레포지토리 불러오기
-        uses: actions/checkout@v4
-
-      - name: JDK 21 설정
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'corretto'
-          cache: 'gradle'
-
-      - name: gradlew 실행 권한 부여
-        run: chmod +x gradlew
-
-      - name: 프로젝트 gradlew 빌드
-        run: ./gradlew clean build -x test
-
-      - name: 🚀 홈서버 운영 배포 시작
-        run: |
-          echo "🏗️ Docker 이미지 빌드..."
-          docker compose -p "$COMPOSE_PROJECT" -f "$COMPOSE_FILE" --env-file "$ENV_FILE" build
-
-          echo "▶️ 새 서버 시작..."
-          docker compose -p "$COMPOSE_PROJECT" -f "$COMPOSE_FILE" --env-file "$ENV_FILE" up -d
-
-          echo "🧹 사용하지 않는 이미지 정리..."
-          docker image prune -f
-
-      - name: ⛑️ 헬스 체크
-        run: |
-          for i in $(seq 1 10); do
-            SERVER_STATUS=$(curl -o /dev/null -w "%{http_code}" http://localhost:8090/actuator/health || echo "000")
-            if [ "$SERVER_STATUS" -eq 200 ]; then
-              echo "✅ 배포 성공! 서버 동작 중..."
-              exit 0
-            else
-              echo "Attempt $i/10: 헬스 체크 실패 (status=$SERVER_STATUS). 5초 후 재시도..."
-              sleep 5
-            fi
-          done
-
-          echo "❌ 배포 실패! 서버가 동작하지 않습니다."
-          docker logs coursepick-home-prod-backend --tail 50
-          exit 1
+    uses: ./.github/workflows/_backend-home-deploy.yml
+    secrets: inherit
+    with:
+      env_label: 운영
+      compose_project: coursepick-home-prod
+      compose_file: etc/docker_compose/docker-compose.home-prod.yml
+      health_port: 8090
+      container_name: coursepick-home-prod-backend
