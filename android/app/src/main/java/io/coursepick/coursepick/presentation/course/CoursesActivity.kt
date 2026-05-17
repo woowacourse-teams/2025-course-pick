@@ -357,7 +357,6 @@ class CoursesActivity :
                     viewModel.checkAuthForCustomCourse {
                         customCourseViewModel.fetchCustomCourses(viewModel.mapCoordinate)
                     }
-
                     true
                 }
 

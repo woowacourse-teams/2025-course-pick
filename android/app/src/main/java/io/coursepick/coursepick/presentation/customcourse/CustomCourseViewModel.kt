@@ -46,7 +46,7 @@ class CustomCourseViewModel
                 ),
             )
 
-        val state: StateFlow<CustomCourseUiState> = _state.asStateFlow()
+        val state: StateFlow<CustomCourseUiState> get() = _state.asStateFlow()
 
         fun onGoToCreateCustomCourse() {
             viewModelScope.launch {
@@ -161,6 +161,15 @@ class CustomCourseViewModel
         }
 
         fun select(customCourse: CustomCourseItem) {
+            val isAlreadySelected = _state.value.selectedCustomCourse?.id == customCourse.id
+
+            if (isAlreadySelected) {
+                viewModelScope.launch {
+                    _uiEvent.emit(CustomCourseUiEvent.SelectCustomCourse(customCourse))
+                }
+                return
+            }
+
             _state.update { currentState ->
                 currentState.copy(
                     customCourses =
