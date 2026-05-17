@@ -68,7 +68,6 @@ class CustomCoursesFragment(
         _binding = FragmentCustomCoursesBinding.inflate(inflater, container, false)
         binding.customCourses.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            isNestedScrollingEnabled = true
             setContent {
                 val nestedScrollInterop = rememberNestedScrollInteropConnection()
                 val customCourseState =

@@ -1,6 +1,8 @@
 package io.coursepick.coursepick.presentation.customcourse
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -59,7 +62,10 @@ fun CustomCourseScreen(
                 ),
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            Header(stringResource(R.string.custom_courses_header))
+            Header(
+                text = stringResource(R.string.custom_courses_header),
+                modifier = Modifier.scrollable(rememberScrollState(), Orientation.Vertical),
+            )
 
             when (status.status) {
                 UiStatus.Success -> {
