@@ -8,4 +8,8 @@ sealed interface CustomCourseUiEvent {
     object RequestFetch : CustomCourseUiEvent
 
     data object UnauthorizedUser : CustomCourseUiEvent
+
+    data class SelectCustomCourse(
+        val customCourse: CustomCourseItem,
+    ) : CustomCourseUiEvent
 }

@@ -9,7 +9,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -65,7 +68,9 @@ class CustomCoursesFragment(
         _binding = FragmentCustomCoursesBinding.inflate(inflater, container, false)
         binding.customCourses.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            isNestedScrollingEnabled = true
             setContent {
+                val nestedScrollInterop = rememberNestedScrollInteropConnection()
                 val customCourseState =
                     customCourseViewModel.state.collectAsStateWithLifecycle().value
 
@@ -81,6 +86,7 @@ class CustomCoursesFragment(
                             (activity as? CoursesActivity)?.navigateToCourse(courseItem)
                         }
                     },
+                    modifier = Modifier.nestedScroll(nestedScrollInterop),
                 )
 
                 customCourseViewModel.authDialogState.collectAsStateWithLifecycle().value?.let { feature: AuthFeature ->
@@ -113,10 +119,25 @@ class CustomCoursesFragment(
                 launch {
                     customCourseViewModel.uiEvent.collect { event: CustomCourseUiEvent ->
                         when (event) {
-                            CustomCourseUiEvent.NavigateToCreateCourse -> goToCreateCustomCourse()
-                            CustomCourseUiEvent.FetchCustomCourseFailure -> showToastMessage(R.string.custom_courses_load_failed)
-                            CustomCourseUiEvent.RequestFetch -> fetchCustomCourses()
-                            CustomCourseUiEvent.UnauthorizedUser -> showToastMessage(R.string.custom_courses_unauthorized_user_message)
+                            CustomCourseUiEvent.NavigateToCreateCourse -> {
+                                goToCreateCustomCourse()
+                            }
+
+                            CustomCourseUiEvent.FetchCustomCourseFailure -> {
+                                showToastMessage(R.string.custom_courses_load_failed)
+                            }
+
+                            CustomCourseUiEvent.RequestFetch -> {
+                                fetchCustomCourses()
+                            }
+
+                            CustomCourseUiEvent.UnauthorizedUser -> {
+                                showToastMessage(R.string.custom_courses_unauthorized_user_message)
+                            }
+
+                            is CustomCourseUiEvent.SelectCustomCourse -> {
+                                coursesViewModel.selectExternalCourse(event.customCourse.toCourseItem())
+                            }
                         }
                     }
                 }
