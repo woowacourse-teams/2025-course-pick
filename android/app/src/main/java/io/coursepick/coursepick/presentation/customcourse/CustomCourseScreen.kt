@@ -1,5 +1,6 @@
 package io.coursepick.coursepick.presentation.customcourse
 
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -53,7 +55,8 @@ fun CustomCourseScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .nestedScroll(nestedScrollInterop),
+                .nestedScroll(nestedScrollInterop)
+                .pointerInput(Unit) { detectTapGestures { } },
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Header(stringResource(R.string.custom_courses_header))

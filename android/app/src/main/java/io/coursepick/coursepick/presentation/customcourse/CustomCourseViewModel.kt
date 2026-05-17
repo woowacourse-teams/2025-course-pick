@@ -63,7 +63,7 @@ class CustomCourseViewModel
         }
 
         fun onAuthSuccess(feature: AuthFeature) {
-            if (feature is AuthFeature.CreateCustomCourse) {
+            if (feature is AuthFeature.CustomCourse) {
                 dismissAuthDialog()
                 viewModelScope.launch {
                     _uiEvent.emit(CustomCourseUiEvent.RequestFetch)
