@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
@@ -42,7 +43,7 @@ class CustomCoursesFragment(
     private val customCourseViewModel: CustomCourseViewModel by activityViewModels()
     private val authViewModel: AuthViewModel by activityViewModels()
 
-    private val startForResult =
+    private val createCustomCourseLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult(),
         ) { result ->
@@ -65,7 +66,8 @@ class CustomCoursesFragment(
         binding.customCourses.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                val customCourseState = customCourseViewModel.state.collectAsStateWithLifecycle().value
+                val customCourseState =
+                    customCourseViewModel.state.collectAsStateWithLifecycle().value
 
                 CustomCourseScreen(
                     status = customCourseState,
@@ -85,7 +87,14 @@ class CustomCoursesFragment(
                     AuthDialog(
                         feature = feature,
                         onDismissRequest = customCourseViewModel::dismissAuthDialog,
-                        onKakaoLoginClick = { authViewModel.authenticate(KakaoAuthenticator(requireActivity()), feature) },
+                        onKakaoLoginClick = {
+                            authViewModel.authenticate(
+                                KakaoAuthenticator(
+                                    requireActivity(),
+                                ),
+                                feature,
+                            )
+                        },
                     )
                 }
             }
@@ -135,9 +144,10 @@ class CustomCoursesFragment(
     }
 
     private fun goToCreateCustomCourse() {
-        val initialCoordinate: CoordinateUiModel? = coursesViewModel.mapCoordinate?.let(Coordinate::toUiModel)
+        val initialCoordinate: CoordinateUiModel? =
+            coursesViewModel.mapCoordinate?.let(Coordinate::toUiModel)
         val intent: Intent = CreateCustomCourseActivity.intent(requireContext(), initialCoordinate)
-        startForResult.launch(intent)
+        createCustomCourseLauncher.launch(intent)
     }
 
     private fun fetchCustomCourses() = customCourseViewModel.fetchCustomCourses(coursesViewModel.mapCoordinate)
