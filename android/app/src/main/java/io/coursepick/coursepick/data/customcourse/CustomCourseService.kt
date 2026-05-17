@@ -16,7 +16,7 @@ interface CustomCourseService {
     @POST("courses")
     suspend fun submitCourse(
         @Body course: DraftCourseDto,
-    ): Response<Unit>
+    )
 
     @GET("courses/custom")
     suspend fun customCourses(
