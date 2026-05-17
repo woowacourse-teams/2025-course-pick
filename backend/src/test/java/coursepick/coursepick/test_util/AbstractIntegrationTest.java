@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
-@Import({GpxTestUtil.class, DatabaseTestUtil.class})
+@Import({GpxTestUtil.class, DatabaseTestUtil.class, SyncAsyncTestConfig.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public abstract class AbstractIntegrationTest {
 

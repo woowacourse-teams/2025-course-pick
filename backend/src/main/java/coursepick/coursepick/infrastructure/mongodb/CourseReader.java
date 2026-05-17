@@ -37,7 +37,8 @@ public class CourseReader implements Converter<Document, Course> {
                 reviews,
                 source.getString("creatorId"),
                 parseReportUserIds(source),
-                parseCreatedAt(source)
+                parseCreatedAt(source),
+                parseTags(source)
         );
     }
 
@@ -54,6 +55,19 @@ public class CourseReader implements Converter<Document, Course> {
         return date.toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime();
+    }
+
+    private List<CourseTag> parseTags(Document source) {
+        List<String> tagNames = source.getList("tags", String.class);
+        if (tagNames == null) return new ArrayList<>();
+        List<CourseTag> tags = new ArrayList<>();
+        for (String name : tagNames) {
+            try {
+                tags.add(CourseTag.valueOf(name));
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+        return tags;
     }
 
     private List<Coordinate> parseCoordinatesFromSource(Document source) {

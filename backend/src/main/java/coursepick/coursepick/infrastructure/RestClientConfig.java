@@ -14,13 +14,10 @@ import java.time.Duration;
 public class RestClientConfig {
 
     @Bean
-    public RestClient kakaoRestClient(
-            @Value("${kakao.connect-timeout:1}") int connectTimeoutSeconds,
-            @Value("${kakao.read-timeout:5}") int readTimeoutSeconds
-    ) {
+    public RestClient kakaoRestClient() {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        requestFactory.setConnectTimeout(Duration.ofSeconds(connectTimeoutSeconds));
-        requestFactory.setReadTimeout(Duration.ofSeconds(readTimeoutSeconds));
+        requestFactory.setConnectTimeout(Duration.ofSeconds(1));
+        requestFactory.setReadTimeout(Duration.ofSeconds(5));
 
         return RestClient.builder()
                 .requestFactory(requestFactory)
@@ -29,14 +26,10 @@ public class RestClientConfig {
     }
 
     @Bean
-    public RestClient discordRestClient(
-            @Value("${discord.webhook-url}") String webhookUrl,
-            @Value("${discord.connect-timeout:1}") int connectTimeoutSeconds,
-            @Value("${discord.read-timeout:5}") int readTimeoutSeconds
-    ) {
+    public RestClient discordRestClient(@Value("${discord.webhook-url}") String webhookUrl) {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        requestFactory.setConnectTimeout(Duration.ofSeconds(connectTimeoutSeconds));
-        requestFactory.setReadTimeout(Duration.ofSeconds(readTimeoutSeconds));
+        requestFactory.setConnectTimeout(Duration.ofSeconds(1));
+        requestFactory.setReadTimeout(Duration.ofSeconds(5));
 
         return RestClient.builder()
                 .requestFactory(requestFactory)
@@ -45,18 +38,26 @@ public class RestClientConfig {
     }
 
     @Bean
-    public RestClient osrmRestClient(
-            @Value("${osrm.url}") String osrmUrl,
-            @Value("${osrm.connect-timeout:1}") int connectTimeoutSeconds,
-            @Value("${osrm.read-timeout:5}") int readTimeoutSeconds
-    ) {
+    public RestClient osrmRestClient(@Value("${osrm.url}") String osrmUrl) {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        requestFactory.setConnectTimeout(Duration.ofSeconds(connectTimeoutSeconds));
-        requestFactory.setReadTimeout(Duration.ofSeconds(readTimeoutSeconds));
+        requestFactory.setConnectTimeout(Duration.ofSeconds(1));
+        requestFactory.setReadTimeout(Duration.ofSeconds(5));
 
         return RestClient.builder()
                 .requestFactory(requestFactory)
                 .baseUrl(osrmUrl)
+                .build();
+    }
+
+    @Bean
+    public RestClient geminiRestClient() {
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(Duration.ofSeconds(1));
+        requestFactory.setReadTimeout(Duration.ofSeconds(10));
+
+        return RestClient.builder()
+                .requestFactory(requestFactory)
+                .baseUrl("https://generativelanguage.googleapis.com")
                 .build();
     }
 }

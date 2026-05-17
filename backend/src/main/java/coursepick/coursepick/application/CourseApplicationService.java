@@ -6,11 +6,14 @@ import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
 import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.course.*;
+import coursepick.coursepick.domain.course.event.ReviewAddedEvent;
 import coursepick.coursepick.domain.user.User;
 import coursepick.coursepick.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +31,8 @@ public class CourseApplicationService {
     private final UserRepository userRepository;
     private final RouteFinder routeFinder;
     private final Alerter alerter;
+    private final CourseTagGenerator courseTagGenerator;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public void addCustomCourse(String name, List<Coordinate> coordinates, String userId) {
@@ -128,6 +133,7 @@ public class CourseApplicationService {
         course.verifyWriteReviewEligibility(user);
 
         courseRepository.pushReview(courseId, new Review(user, content, rating));
+        eventPublisher.publishEvent(new ReviewAddedEvent(courseId));
     }
 
     @Transactional
@@ -149,6 +155,17 @@ public class CourseApplicationService {
         courseRepository.save(course);
 
         alerter.alertReview(course, review);
+    }
+
+    @Transactional
+    public void regenerateTags(String courseId) {
+        Course course = getCourse(courseId);
+        if (course.reviews().isEmpty()) {
+            return;
+        }
+        List<CourseTag> tags = courseTagGenerator.generate(course);
+        course.updateTags(tags);
+        courseRepository.save(course);
     }
 
     private void loggingForNotExistsCourse(List<String> ids, List<Course> courses) {
