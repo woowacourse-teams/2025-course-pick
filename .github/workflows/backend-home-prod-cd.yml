@@ -8,7 +8,6 @@ jobs:
     uses: ./.github/workflows/_backend-home-deploy.yml
     secrets: inherit
     with:
-      env_label: 운영
       compose_project: coursepick-home-prod
       compose_file: etc/docker_compose/docker-compose.home-prod.yml
       health_port: 8090
