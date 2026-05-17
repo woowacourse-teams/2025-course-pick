@@ -9,6 +9,7 @@ import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.CoursesPage
 import io.coursepick.coursepick.domain.customcourse.CustomCourseRepository
+import io.coursepick.coursepick.domain.location.LocationRepository
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.auth.AuthFeature
 import io.coursepick.coursepick.presentation.course.CourseItem
@@ -30,6 +31,7 @@ class CustomCourseViewModel
     constructor(
         private val authRepository: AuthRepository,
         private val customCourseRepository: CustomCourseRepository,
+        private val locationRepository: LocationRepository,
         private val networkMonitor: NetworkMonitor,
     ) : ViewModel() {
         private val _uiEvent = MutableSharedFlow<CustomCourseUiEvent>()
@@ -71,7 +73,7 @@ class CustomCourseViewModel
             }
         }
 
-        fun fetchCustomCourses(userCoordinate: Coordinate?) {
+        fun fetchCustomCourses() {
             viewModelScope.launch {
                 if (!networkMonitor.isConnected()) {
                     _state.update { currentState ->
@@ -95,7 +97,8 @@ class CustomCourseViewModel
                 }
 
                 runCatching {
-                    customCourseRepository.customCourses(userCoordinate = userCoordinate)
+                    val userCoordinate: Coordinate? = locationRepository.currentLocation()?.coordinate
+                    customCourseRepository.customCourses(userCoordinate)
                 }.onSuccess { coursesPage: CoursesPage ->
                     Logger.log(Logger.Event.Success("fetch_custom_courses_new"))
 

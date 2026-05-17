@@ -50,14 +50,14 @@ class CustomCoursesFragment(
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult(),
         ) { result ->
-            if (result.resultCode == Activity.RESULT_OK) fetchCustomCourses()
+            if (result.resultCode == Activity.RESULT_OK) customCourseViewModel.fetchCustomCourses()
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setUpCollectors()
 
-        fetchCustomCourses()
+        customCourseViewModel.fetchCustomCourses()
     }
 
     override fun onCreateView(
@@ -128,7 +128,7 @@ class CustomCoursesFragment(
                             }
 
                             CustomCourseUiEvent.RequestFetch -> {
-                                fetchCustomCourses()
+                                customCourseViewModel.fetchCustomCourses()
                             }
 
                             CustomCourseUiEvent.UnauthorizedUser -> {
@@ -170,8 +170,6 @@ class CustomCoursesFragment(
         val intent: Intent = CreateCustomCourseActivity.intent(requireContext(), initialCoordinate)
         createCustomCourseLauncher.launch(intent)
     }
-
-    private fun fetchCustomCourses() = customCourseViewModel.fetchCustomCourses(coursesViewModel.mapCoordinate)
 
     private fun showToastMessage(resId: Int) =
         Toast
