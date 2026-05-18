@@ -1,0 +1,1579 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "\ucf54\uc2a4\ud53d API",
+        "version": "v1"
+    },
+    "servers": [
+        {
+            "url": "https://dev.coursepick.cloud"
+        }
+    ],
+    "tags": [
+        
+    ],
+    "paths": {
+        "/v1/courses": {
+            "get": {
+                "tags": [
+                    "\ub7ec\ub2dd \ucf54\uc2a4 (Course)"
+                ],
+                "summary": "\uc88c\ud45c \uadfc\ucc98 \ucf54\uc2a4 \uc870\ud68c",
+                "description": "\uc9c0\ub3c4 \uc911\uc2ec \uc88c\ud45c\uc640 \ubc94\uc704\ub97c \uae30\ubc18\uc73c\ub85c \uc8fc\ubcc0 \ucf54\uc2a4\ub97c \uc870\ud68c\ud569\ub2c8\ub2e4.",
+                "operationId": "course-find-nearby",
+                "parameters": [
+                    {
+                        "name": "mapLat",
+                        "in": "query",
+                        "description": "\uc9c0\ub3c4 \uc911\uc2ec\uc758 \uc704\ub3c4(-90 ~ 90)",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "37.5165"
+                    },
+                    {
+                        "name": "mapLng",
+                        "in": "query",
+                        "description": "\uc9c0\ub3c4 \uc911\uc2ec\uc758 \uacbd\ub3c4(-180 ~ 180)",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "127.1040"
+                    },
+                    {
+                        "name": "scope",
+                        "in": "query",
+                        "description": "\uc88c\ud45c \uc911\uc2ec\uc73c\ub85c\ubd80\ud130 \ud0d0\uc0c9\ud558\uace0\uc790 \ud558\ub294 \ubc94\uc704 (\ubbf8\ud130)",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "1000"
+                    },
+                    {
+                        "name": "userLat",
+                        "in": "query",
+                        "description": "\uc0ac\uc6a9\uc790 \uc704\uce58 \uc704\ub3c4(-90 ~ 90)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "37.516"
+                    },
+                    {
+                        "name": "userLng",
+                        "in": "query",
+                        "description": "\uc0ac\uc6a9\uc790 \uc704\uce58 \uacbd\ub3c4(-180 ~ 180)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "127.104"
+                    },
+                    {
+                        "name": "minLength",
+                        "in": "query",
+                        "description": "\ucd5c\uc18c \ucf54\uc2a4 \uae38\uc774",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "0"
+                    },
+                    {
+                        "name": "maxLength",
+                        "in": "query",
+                        "description": "\ucd5c\ub300 \ucf54\uc2a4 \uae38\uc774",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "10000"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "\ud398\uc774\uc9c0 \ubc88\ud638",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "0"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "\uc131\uacf5 (OK)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/v1-courses-custom1555334040"
+                                },
+                                "examples": {
+                                    "course-find-nearby": {
+                                        "value": {
+                                            "courses": [
+                                                {
+                                                    "id": "689c3143182cecc6353cca7b",
+                                                    "name": "\uc11d\ucd0c\ud638\uc218",
+                                                    "distance": 200.123,
+                                                    "length": 2146.123,
+                                                    "coordinates": [
+                                                        {
+                                                            "latitude": 37.514167,
+                                                            "longitude": 127.103611
+                                                        },
+                                                        {
+                                                            "latitude": 37.515167,
+                                                            "longitude": 127.104611
+                                                        }
+                                                    ],
+                                                    "creatorId": "adminId"
+                                                }
+                                            ],
+                                            "hasNext": true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "\ub7ec\ub2dd \ucf54\uc2a4 (Course)"
+                ],
+                "summary": "\ucee4\uc2a4\ud140 \ucf54\uc2a4 \uc0dd\uc131",
+                "description": "\uc911\ubcf5\ub41c \ub370\uc774\ud130\ub85c \uc778\ud574 \ub9ac\uc18c\uc2a4 \uc0dd\uc131\uc5d0 \uc2e4\ud328\ud55c \uacbd\uc6b0\uc758 \uc5d0\ub7ec \uc751\ub2f5\uc785\ub2c8\ub2e4.",
+                "operationId": "course-add-custom",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/v1-courses1778114174"
+                            },
+                            "examples": {
+                                "course-add-custom-409": {
+                                    "value": {
+                                        "name": "\ub098\ub9cc\uc758 \ud55c\uac15 \ub7ec\ub2dd \ucf54\uc2a4",
+                                        "coordinates": [
+                                            {
+                                                "latitude": 37.514167,
+                                                "longitude": 127.103611
+                                            },
+                                            {
+                                                "latitude": 37.515167,
+                                                "longitude": 127.104611
+                                            }
+                                        ]
+                                    }
+                                },
+                                "course-add-custom-401": {
+                                    "value": {
+                                        "name": "\ub098\ub9cc\uc758 \ud55c\uac15 \ub7ec\ub2dd \ucf54\uc2a4",
+                                        "coordinates": [
+                                            {
+                                                "latitude": 37.514167,
+                                                "longitude": 127.103611
+                                            },
+                                            {
+                                                "latitude": 37.515167,
+                                                "longitude": 127.104611
+                                            }
+                                        ]
+                                    }
+                                },
+                                "course-add-custom": {
+                                    "value": {
+                                        "name": "\ub098\ub9cc\uc758 \ud55c\uac15 \ub7ec\ub2dd \ucf54\uc2a4",
+                                        "coordinates": [
+                                            {
+                                                "latitude": 37.514167,
+                                                "longitude": 127.103611
+                                            },
+                                            {
+                                                "latitude": 37.515167,
+                                                "longitude": 127.104611
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "409": {
+                        "description": "\ub9ac\uc18c\uc2a4 \ucda9\ub3cc (Conflict)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/v1-courses-id-report593469975"
+                                },
+                                "examples": {
+                                    "course-add-custom-409": {
+                                        "value": {
+                                            "message": "'\ub098\ub9cc\uc758 \ud55c\uac15 \ub7ec\ub2dd \ucf54\uc2a4'\uc740(\ub294) \uc774\ubbf8 \uc874\uc7ac\ud558\ub294 \ucf54\uc2a4 \uc774\ub984\uc785\ub2c8\ub2e4.",
+                                            "timestamp": "2026-05-18T23:06:27.836454"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d \uc2e4\ud328 (Unauthorized)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/v1-courses-id-report593469975"
+                                },
+                                "examples": {
+                                    "course-add-custom-401": {
+                                        "value": {
+                                            "message": "\uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4.",
+                                            "timestamp": "2026-05-18T23:06:27.800168"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "\uc131\uacf5 (OK)"
+                    }
+                }
+            }
+        },
+        "/v1/notices": {
+            "get": {
+                "tags": [
+                    "\ub178\ud2f0\uc2a4 (Notice)"
+                ],
+                "summary": "\uacf5\uc9c0\uc0ac\ud56d \ubaa9\ub85d \uc870\ud68c",
+                "description": "\uc0ac\uc6a9\uc790\uc5d0\uac8c \ud544\uc694\ud55c \uacf5\uc9c0\uc0ac\ud56d \ubaa9\ub85d\uc744 \uc870\ud68c\ud558\ub294 API\uc785\ub2c8\ub2e4.",
+                "operationId": "notice-list",
+                "responses": {
+                    "200": {
+                        "description": "\uc131\uacf5 (OK)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/v1-notices-1985385709"
+                                },
+                                "examples": {
+                                    "notice-list": {
+                                        "value": {
+                                            "notices": [
+                                                {
+                                                    "id": "verified_location",
+                                                    "imageUrl": "http://localhost:8080/verified_location.png",
+                                                    "title": "\uac15\ub0a8\u00b7\uc1a1\ud30c \ucf54\uc2a4\ub294 \uc800\ud76c\uac00 \uac80\uc99d\ud588\uc5b4\uc694\n \ub2e4\ub978 \uc9c0\uc5ed\uc740 \uc544\uc9c1 \uac80\uc99d \uc911\uc774\uc5d0\uc694 \ud83c\udfc3",
+                                                    "description": "* \uba54\ub274 \ud0ed\uc5d0\uc11c \ub2e4\uc2dc \ud655\uc778\ud560 \uc218 \uc788\uc5b4\uc694."
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/courses/custom": {
+            "get": {
+                "tags": [
+                    "\ub7ec\ub2dd \ucf54\uc2a4 (Course)"
+                ],
+                "summary": "\ub0b4 \ucee4\uc2a4\ud140 \ucf54\uc2a4 \uc870\ud68c",
+                "description": "\ub85c\uadf8\uc778 \ud1a0\ud070\uc774 \uc5c6\uac70\ub098 \uc720\ud6a8\ud558\uc9c0 \uc54a\uc740 \uacbd\uc6b0\uc758 \uc5d0\ub7ec \uc751\ub2f5\uc785\ub2c8\ub2e4.",
+                "operationId": "course-find-custom",
+                "parameters": [
+                    {
+                        "name": "userLat",
+                        "in": "query",
+                        "description": "\uc0ac\uc6a9\uc790 \uc704\uce58 \uc704\ub3c4(-90 ~ 90)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "37.516"
+                    },
+                    {
+                        "name": "userLng",
+                        "in": "query",
+                        "description": "\uc0ac\uc6a9\uc790 \uc704\uce58 \uacbd\ub3c4(-180 ~ 180)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "127.104"
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "\uc778\uc99d \uc2e4\ud328 (Unauthorized)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/v1-courses-id-report593469975"
+                                },
+                                "examples": {
+                                    "course-find-custom-401": {
+                                        "value": {
+                                            "message": "\uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4.",
+                                            "timestamp": "2026-05-18T23:06:27.865060"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "\uc131\uacf5 (OK)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/v1-courses-custom1555334040"
+                                },
+                                "examples": {
+                                    "course-find-custom": {
+                                        "value": {
+                                            "courses": [
+                                                {
+                                                    "id": "custom_id_123",
+                                                    "name": "\ub098\ub9cc\uc758 \ud55c\uac15 \ucf54\uc2a4",
+                                                    "distance": 100.0,
+                                                    "length": 5000.0,
+                                                    "coordinates": [
+                                                        {
+                                                            "latitude": 37.514,
+                                                            "longitude": 127.103
+                                                        }
+                                                    ],
+                                                    "creatorId": "userId"
+                                                }
+                                            ],
+                                            "hasNext": false
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/courses/favorites": {
+            "get": {
+                "tags": [
+                    "\ub7ec\ub2dd \ucf54\uc2a4 (Course)"
+                ],
+                "summary": "\uc990\uaca8\ucc3e\uae30 \ucf54\uc2a4 \uc870\ud68c",
+                "description": "\uc990\uaca8\ucc3e\uae30 \ucf54\uc2a4 \uc870\ud68c",
+                "operationId": "course-favorites",
+                "parameters": [
+                    {
+                        "name": "courseIds",
+                        "in": "query",
+                        "description": "\ucf54\uc2a4 ID \ubaa9\ub85d (\uc27c\ud45c \uad6c\ubd84)",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "689c3143182cecc6353cca7b,689c3143182cecc6353cca7c"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "\uc131\uacf5 (OK)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/v1-courses-favorites-1256262466"
+                                },
+                                "examples": {
+                                    "course-favorites": {
+                                        "value": [
+                                            {
+                                                "id": "689c3143182cecc6353cca7b",
+                                                "name": "\uc11d\ucd0c\ud638\uc218",
+                                                "distance": null,
+                                                "length": 2146.123,
+                                                "coordinates": [
+                                                    {
+                                                        "latitude": 37.514167,
+                                                        "longitude": 127.103611
+                                                    }
+                                                ],
+                                                "creatorId": "adminId"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/courses/{id}": {
+            "get": {
+                "tags": [
+                    "\ub7ec\ub2dd \ucf54\uc2a4 (Course)"
+                ],
+                "summary": "\ucf54\uc2a4 \uc0c1\uc138 \uc870\ud68c",
+                "description": "\uc874\uc7ac\ud558\uc9c0 \uc54a\ub294 \ucf54\uc2a4 ID\ub97c \uc694\uccad\ud560 \uacbd\uc6b0\uc758 \uc5d0\ub7ec \uc751\ub2f5\uc785\ub2c8\ub2e4.",
+                "operationId": "course-detail",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "\ucf54\uc2a4 ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "689c3143182cecc6353cca7b"
+                    }
+                ],
+                "responses": {
+                    "404": {
+                        "description": "\ub9ac\uc18c\uc2a4\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc74c (Not Found)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/v1-courses-id-report593469975"
+                                },
+                                "examples": {
+                                    "course-detail-404": {
+                                        "value": {
+                                            "message": "\ucf54\uc2a4\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=invalid-id",
+                                            "timestamp": "2026-05-18T23:06:27.524429"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "\uc131\uacf5 (OK)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/v1-courses-id-922147155"
+                                },
+                                "examples": {
+                                    "course-detail": {
+                                        "value": {
+                                            "id": "69d8c0b55561463adc32f259",
+                                            "name": "\uc11c\uc6b8\ub458\ub8088\ucf54\uc2a4",
+                                            "length": 2146.123,
+                                            "coordinates": [
+                                                {
+                                                    "latitude": 37.514167,
+                                                    "longitude": 127.103611
+                                                }
+                                            ],
+                                            "reviewOverview": {
+                                                "reviewCount": 1,
+                                                "averageRating": 5.0
+                                            },
+                                            "reviews": [
+                                                {
+                                                    "id": "69d8c0b54561463adc32f259",
+                                                    "content": "\ub178\uc744\uc774 \uc608\ubed0\uc694.",
+                                                    "rating": 5,
+                                                    "authorNickname": "\ucc29\ud55c \uac15\uc544\uc9c0",
+                                                    "authorId": "69d8c0b12361463adc32f259"
+                                                }
+                                            ],
+                                            "tags": [
+                                                {
+                                                    "name": "NIGHT_VIEW",
+                                                    "label": "\uc57c\uacbd\uc774 \uc88b\uc740"
+                                                },
+                                                {
+                                                    "name": "SCENIC",
+                                                    "label": "\uc804\ubc18\uc801\uc73c\ub85c \ud48d\uacbd\uc774 \uc88b\uc740"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/login/kakao": {
+            "post": {
+                "tags": [
+                    "\ud68c\uc6d0 (User)"
+                ],
+                "summary": "\uce74\uce74\uc624 \uc18c\uc15c \ub85c\uadf8\uc778",
+                "description": "\uce74\uce74\uc624 \uc561\uc138\uc2a4 \ud1a0\ud070\uc73c\ub85c \ub85c\uadf8\uc778/\ud68c\uc6d0\uac00\uc785\uc744 \uc218\ud589\ud569\ub2c8\ub2e4.",
+                "operationId": "user-sign",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/v1-login-kakao1468430618"
+                            },
+                            "examples": {
+                                "user-sign": {
+                                    "value": {
+                                        "accessToken": "kakao_access_token_example"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "\uc131\uacf5 (OK)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/v1-login-kakao1873099575"
+                                },
+                                "examples": {
+                                    "user-sign": {
+                                        "value": {
+                                            "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test.token"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/courses/draft/route": {
+            "post": {
+                "tags": [
+                    "\ub7ec\ub2dd \ucf54\uc2a4 (Course)"
+                ],
+                "summary": "\ucf54\uc2a4 \uc0dd\uc131 \uc2dc \uc9c1\uc804 \ud3ec\uc778\ud2b8\uc640 \uc0c8 \ud3ec\uc778\ud2b8 \uc0ac\uc774\uc758 \uacbd\ub85c \ubc0f \uac70\ub9ac \uc870\ud68c",
+                "description": "\ucf54\uc2a4 \uc0dd\uc131 \uc2dc \uc9c1\uc804 \ud3ec\uc778\ud2b8\uc640 \uc0c8 \ud3ec\uc778\ud2b8 \uc0ac\uc774\uc758 \uacbd\ub85c \ubc0f \uac70\ub9ac \uc870\ud68c",
+                "operationId": "course-draft-route",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/v1-courses-draft-route1195589873"
+                            },
+                            "examples": {
+                                "course-draft-route": {
+                                    "value": {
+                                        "origin": {
+                                            "latitude": 37.514167,
+                                            "longitude": 127.103611
+                                        },
+                                        "destination": {
+                                            "latitude": 37.515167,
+                                            "longitude": 127.104611
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "\uc131\uacf5 (OK)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/v1-courses-draft-route1808959665"
+                                },
+                                "examples": {
+                                    "course-draft-route": {
+                                        "value": {
+                                            "coordinates": [
+                                                {
+                                                    "latitude": 37.514167,
+                                                    "longitude": 127.103611
+                                                },
+                                                {
+                                                    "latitude": 37.515167,
+                                                    "longitude": 127.104611
+                                                }
+                                            ],
+                                            "length": 141.92769205457455
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/courses/{id}/closest-coordinate": {
+            "get": {
+                "tags": [
+                    "\ub7ec\ub2dd \ucf54\uc2a4 (Course)"
+                ],
+                "summary": "\uc88c\ud45c\uc5d0\uc11c \uac00\uc7a5 \uac00\uae4c\uc6b4 \ucf54\uc2a4 \uc704 \uc88c\ud45c \uc870\ud68c",
+                "description": "\uc874\uc7ac\ud558\uc9c0 \uc54a\ub294 \ucf54\uc2a4 ID\ub97c \uc694\uccad\ud560 \uacbd\uc6b0\uc758 \uc5d0\ub7ec \uc751\ub2f5\uc785\ub2c8\ub2e4.",
+                "operationId": "course-closest-coordinate",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "\ucf54\uc2a4 ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "689c3143182cecc6353cca7b"
+                    },
+                    {
+                        "name": "lat",
+                        "in": "query",
+                        "description": "\uc0ac\uc6a9\uc790 \uc704\uce58 \uc704\ub3c4(-90 ~ 90)",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "37.5165"
+                    },
+                    {
+                        "name": "lng",
+                        "in": "query",
+                        "description": "\uc0ac\uc6a9\uc790 \uc704\uce58 \uacbd\ub3c4(-180 ~ 180)",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "127.1040"
+                    }
+                ],
+                "responses": {
+                    "404": {
+                        "description": "\ub9ac\uc18c\uc2a4\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc74c (Not Found)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/v1-courses-id-report593469975"
+                                },
+                                "examples": {
+                                    "course-closest-coordinate-404": {
+                                        "value": {
+                                            "message": "\ucf54\uc2a4\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=invalid-id",
+                                            "timestamp": "2026-05-18T23:06:27.893505"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "\uc131\uacf5 (OK)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/v1-courses-id-closest-coordinate555175177"
+                                },
+                                "examples": {
+                                    "course-closest-coordinate": {
+                                        "value": {
+                                            "latitude": 37.514167,
+                                            "longitude": 127.103611
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/courses/{id}/report": {
+            "post": {
+                "tags": [
+                    "\ub7ec\ub2dd \ucf54\uc2a4 (Course)"
+                ],
+                "summary": "\ucf54\uc2a4 \uc2e0\uace0",
+                "description": "\ubd80\uc801\uc808\ud55c \ucf54\uc2a4\ub97c \uc2e0\uace0\ud569\ub2c8\ub2e4. (\ub85c\uadf8\uc778 \ud544\uc694)",
+                "operationId": "course-report",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "\ucf54\uc2a4 ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "689c3143182cecc6353cca7b"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "\uc131\uacf5 (OK)"
+                    },
+                    "404": {
+                        "description": "\ub9ac\uc18c\uc2a4\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc74c (Not Found)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/v1-courses-id-report593469975"
+                                },
+                                "examples": {
+                                    "course-report-404": {
+                                        "value": {
+                                            "message": "\ucf54\uc2a4\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=invalid-id",
+                                            "timestamp": "2026-05-18T23:06:27.594048"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d \uc2e4\ud328 (Unauthorized)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/v1-courses-id-report593469975"
+                                },
+                                "examples": {
+                                    "course-report-401": {
+                                        "value": {
+                                            "message": "\uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4.",
+                                            "timestamp": "2026-05-18T23:06:27.559910"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            
+                        ]
+                    }
+                ]
+            }
+        },
+        "/v1/courses/{id}/reviews": {
+            "post": {
+                "tags": [
+                    "\ub7ec\ub2dd \ucf54\uc2a4 (Course)"
+                ],
+                "summary": "\ucf54\uc2a4 \ub9ac\ubdf0 \uc791\uc131",
+                "description": "\ub85c\uadf8\uc778 \ud1a0\ud070\uc774 \uc5c6\uac70\ub098 \uc720\ud6a8\ud558\uc9c0 \uc54a\uc740 \uacbd\uc6b0\uc758 \uc5d0\ub7ec \uc751\ub2f5\uc785\ub2c8\ub2e4.",
+                "operationId": "course-add-review",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "\ucf54\uc2a4 ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "689c3143182cecc6353cca7b"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/v1-courses-id-reviews1117656623"
+                            },
+                            "examples": {
+                                "course-add-review-401": {
+                                    "value": {
+                                        "content": "\uc815\ub9d0 \uba4b\uc9c4 \ub7ec\ub2dd \ucf54\uc2a4\uc785\ub2c8\ub2e4!",
+                                        "rating": 5
+                                    }
+                                },
+                                "course-add-review-404": {
+                                    "value": {
+                                        "content": "\uc815\ub9d0 \uba4b\uc9c4 \ub7ec\ub2dd \ucf54\uc2a4\uc785\ub2c8\ub2e4!",
+                                        "rating": 5
+                                    }
+                                },
+                                "course-add-review": {
+                                    "value": {
+                                        "content": "\uc815\ub9d0 \uba4b\uc9c4 \ub7ec\ub2dd \ucf54\uc2a4\uc785\ub2c8\ub2e4!",
+                                        "rating": 5
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "\uc778\uc99d \uc2e4\ud328 (Unauthorized)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/v1-courses-id-report593469975"
+                                },
+                                "examples": {
+                                    "course-add-review-401": {
+                                        "value": {
+                                            "message": "\uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4.",
+                                            "timestamp": "2026-05-18T23:06:27.929465"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ub9ac\uc18c\uc2a4\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc74c (Not Found)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/v1-courses-id-report593469975"
+                                },
+                                "examples": {
+                                    "course-add-review-404": {
+                                        "value": {
+                                            "message": "\ucf54\uc2a4\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=invalid-id",
+                                            "timestamp": "2026-05-18T23:06:27.959781"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "\uc131\uacf5 (OK)"
+                    }
+                }
+            }
+        },
+        "/v1/courses/{id}/route": {
+            "get": {
+                "tags": [
+                    "\ub7ec\ub2dd \ucf54\uc2a4 (Course)"
+                ],
+                "summary": "\ud2b9\uc815 \ucf54\uc2a4\uae4c\uc9c0\uc758 \uae38\ucc3e\uae30",
+                "description": "\uc874\uc7ac\ud558\uc9c0 \uc54a\ub294 \ucf54\uc2a4 ID\ub97c \uc694\uccad\ud560 \uacbd\uc6b0\uc758 \uc5d0\ub7ec \uc751\ub2f5\uc785\ub2c8\ub2e4.",
+                "operationId": "course-route",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "\ucf54\uc2a4 ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "689c3143182cecc6353cca7b"
+                    },
+                    {
+                        "name": "startLat",
+                        "in": "query",
+                        "description": "\uc0ac\uc6a9\uc790 \uc704\uce58 \uc704\ub3c4(-90 ~ 90)",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "37.5165"
+                    },
+                    {
+                        "name": "startLng",
+                        "in": "query",
+                        "description": "\uc0ac\uc6a9\uc790 \uc704\uce58 \uacbd\ub3c4(-180 ~ 180)",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "127.1040"
+                    }
+                ],
+                "responses": {
+                    "404": {
+                        "description": "\ub9ac\uc18c\uc2a4\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc74c (Not Found)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/v1-courses-id-report593469975"
+                                },
+                                "examples": {
+                                    "course-route-404": {
+                                        "value": {
+                                            "message": "\ucf54\uc2a4\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=invalid-id",
+                                            "timestamp": "2026-05-18T23:06:27.184642"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "\uc131\uacf5 (OK)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/v1-courses-id-route-800094530"
+                                },
+                                "examples": {
+                                    "course-route": {
+                                        "value": [
+                                            {
+                                                "latitude": 37.514167,
+                                                "longitude": 127.103611
+                                            },
+                                            {
+                                                "latitude": 37.515167,
+                                                "longitude": 127.104611
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/courses/{courseId}/reviews/{reviewId}": {
+            "delete": {
+                "tags": [
+                    "\ub7ec\ub2dd \ucf54\uc2a4 (Course)"
+                ],
+                "summary": "\ucf54\uc2a4 \ub9ac\ubdf0 \uc0ad\uc81c",
+                "description": "\uc791\uc131\ud55c \ub9ac\ubdf0\ub97c \uc0ad\uc81c\ud569\ub2c8\ub2e4. (\ub85c\uadf8\uc778 \ud544\uc694)",
+                "operationId": "course-delete-review",
+                "parameters": [
+                    {
+                        "name": "courseId",
+                        "in": "path",
+                        "description": "\ucf54\uc2a4 ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "689c3143182cecc6353cca7b"
+                    },
+                    {
+                        "name": "reviewId",
+                        "in": "path",
+                        "description": "\ub9ac\ubdf0 ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "679c1234562cecc6394cca7b"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "\uc131\uacf5 (OK)"
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d \uc2e4\ud328 (Unauthorized)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/v1-courses-id-report593469975"
+                                },
+                                "examples": {
+                                    "course-delete-review-401": {
+                                        "value": {
+                                            "message": "\uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4.",
+                                            "timestamp": "2026-05-18T23:06:27.625651"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "\ub9ac\uc18c\uc2a4\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc74c (Not Found)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/v1-courses-id-report593469975"
+                                },
+                                "examples": {
+                                    "course-delete-review-404": {
+                                        "value": {
+                                            "message": "\ub9ac\ubdf0\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ub9ac\ubdf0id=review-id",
+                                            "timestamp": "2026-05-18T23:06:27.655715"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            
+                        ]
+                    }
+                ]
+            }
+        },
+        "/v1/courses/{courseId}/reviews/{reviewId}/report": {
+            "post": {
+                "tags": [
+                    "\ub7ec\ub2dd \ucf54\uc2a4 (Course)"
+                ],
+                "summary": "\ucf54\uc2a4 \ub9ac\ubdf0 \uc2e0\uace0",
+                "description": "\uc874\uc7ac\ud558\uc9c0 \uc54a\ub294 \ub9ac\uc18c\uc2a4\ub97c \uc694\uccad\ud560 \uacbd\uc6b0\uc758 \uc5d0\ub7ec \uc751\ub2f5\uc785\ub2c8\ub2e4.",
+                "operationId": "course-report-review",
+                "parameters": [
+                    {
+                        "name": "courseId",
+                        "in": "path",
+                        "description": "\ucf54\uc2a4 ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "689c3143182cecc6353cca7b"
+                    },
+                    {
+                        "name": "reviewId",
+                        "in": "path",
+                        "description": "\ub9ac\ubdf0 ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "679c1234562cecc6394cca7b"
+                    }
+                ],
+                "responses": {
+                    "404": {
+                        "description": "\ub9ac\uc18c\uc2a4\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc74c (Not Found)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/v1-courses-id-report593469975"
+                                },
+                                "examples": {
+                                    "course-report-review-404": {
+                                        "value": {
+                                            "message": "\ub9ac\ubdf0\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ub9ac\ubdf0id=review-id",
+                                            "timestamp": "2026-05-18T23:06:27.714107"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "\uc131\uacf5 (OK)"
+                    },
+                    "401": {
+                        "description": "\uc778\uc99d \uc2e4\ud328 (Unauthorized)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/v1-courses-id-report593469975"
+                                },
+                                "examples": {
+                                    "course-report-review-401": {
+                                        "value": {
+                                            "message": "\uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4.",
+                                            "timestamp": "2026-05-18T23:06:27.686539"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "v1-courses-favorites-1256262466": {
+                "type": "array",
+                "items": {
+                    "required": [
+                        "creatorId",
+                        "id",
+                        "length",
+                        "name"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "creatorId": {
+                            "type": "string",
+                            "description": "\ucf54\uc2a4 \ub4f1\ub85d \uc8fc\uccb4 ID"
+                        },
+                        "coordinates": {
+                            "type": "array",
+                            "items": {
+                                "required": [
+                                    "latitude",
+                                    "longitude"
+                                ],
+                                "type": "object",
+                                "properties": {
+                                    "latitude": {
+                                        "type": "number",
+                                        "description": "\uc704\ub3c4"
+                                    },
+                                    "longitude": {
+                                        "type": "number",
+                                        "description": "\uacbd\ub3c4"
+                                    }
+                                }
+                            }
+                        },
+                        "length": {
+                            "type": "number",
+                            "description": "\ucf54\uc2a4 \uc804\uccb4 \uae38\uc774 (\ubbf8\ud130)"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "\ucf54\uc2a4 \uc774\ub984"
+                        },
+                        "id": {
+                            "type": "string",
+                            "description": "\ucf54\uc2a4 ID"
+                        }
+                    }
+                }
+            },
+            "v1-courses-draft-route1808959665": {
+                "required": [
+                    "length"
+                ],
+                "type": "object",
+                "properties": {
+                    "length": {
+                        "type": "number",
+                        "description": "\ucf54\uc2a4 \uc804\uccb4 \uae38\uc774 (\ubbf8\ud130)"
+                    },
+                    "coordinates": {
+                        "type": "array",
+                        "items": {
+                            "required": [
+                                "latitude",
+                                "longitude"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "latitude": {
+                                    "type": "number",
+                                    "description": "\uc704\ub3c4"
+                                },
+                                "longitude": {
+                                    "type": "number",
+                                    "description": "\uacbd\ub3c4"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "v1-courses-id-922147155": {
+                "required": [
+                    "id",
+                    "length",
+                    "name"
+                ],
+                "type": "object",
+                "properties": {
+                    "reviewOverview": {
+                        "required": [
+                            "averageRating",
+                            "reviewCount"
+                        ],
+                        "type": "object",
+                        "properties": {
+                            "reviewCount": {
+                                "type": "number",
+                                "description": "\ub9ac\ubdf0 \uac1c\uc218"
+                            },
+                            "averageRating": {
+                                "type": "number",
+                                "description": "\ub9ac\ubdf0 \ud3c9\uade0 \ubcc4\uc810"
+                            }
+                        }
+                    },
+                    "reviews": {
+                        "type": "array",
+                        "items": {
+                            "required": [
+                                "authorId",
+                                "authorNickname",
+                                "content",
+                                "id",
+                                "rating"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "rating": {
+                                    "type": "number",
+                                    "description": "\ub9ac\ubdf0 \ubcc4\uc810"
+                                },
+                                "id": {
+                                    "type": "string",
+                                    "description": "\ub9ac\ubdf0 ID"
+                                },
+                                "authorNickname": {
+                                    "type": "string",
+                                    "description": "\ub9ac\ubdf0 \uc791\uc131\uc790 \ub2c9\ub124\uc784"
+                                },
+                                "authorId": {
+                                    "type": "string",
+                                    "description": "\ub9ac\ubdf0 \uc791\uc131\uc790 ID"
+                                },
+                                "content": {
+                                    "type": "string",
+                                    "description": "\ub9ac\ubdf0 \ub0b4\uc6a9"
+                                }
+                            }
+                        }
+                    },
+                    "coordinates": {
+                        "type": "array",
+                        "items": {
+                            "required": [
+                                "latitude",
+                                "longitude"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "latitude": {
+                                    "type": "number",
+                                    "description": "\uc704\ub3c4"
+                                },
+                                "longitude": {
+                                    "type": "number",
+                                    "description": "\uacbd\ub3c4"
+                                }
+                            }
+                        }
+                    },
+                    "length": {
+                        "type": "number",
+                        "description": "\ucf54\uc2a4 \uc804\uccb4 \uae38\uc774 (\ubbf8\ud130)"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "\ucf54\uc2a4 \uc774\ub984"
+                    },
+                    "id": {
+                        "type": "string",
+                        "description": "\ucf54\uc2a4 ID"
+                    },
+                    "tags": {
+                        "type": "array",
+                        "items": {
+                            "required": [
+                                "label",
+                                "name"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "description": "\ud0dc\uadf8 \uc774\ub984 (enum \uac12)"
+                                },
+                                "label": {
+                                    "type": "string",
+                                    "description": "\ud0dc\uadf8 \ub77c\ubca8 (UI \ud45c\uc2dc\uc6a9)"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "v1-courses1778114174": {
+                "required": [
+                    "name"
+                ],
+                "type": "object",
+                "properties": {
+                    "coordinates": {
+                        "type": "array",
+                        "items": {
+                            "required": [
+                                "latitude",
+                                "longitude"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "latitude": {
+                                    "type": "number",
+                                    "description": "\uc704\ub3c4"
+                                },
+                                "longitude": {
+                                    "type": "number",
+                                    "description": "\uacbd\ub3c4"
+                                }
+                            }
+                        }
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "\ucf54\uc2a4 \uc774\ub984"
+                    }
+                }
+            },
+            "v1-courses-id-report593469975": {
+                "required": [
+                    "message",
+                    "timestamp"
+                ],
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "description": "\uc5d0\ub7ec \uc0c1\uc138 \uba54\uc2dc\uc9c0"
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "description": "\uc5d0\ub7ec \ubc1c\uc0dd \uc2dc\uac01"
+                    }
+                }
+            },
+            "v1-courses-custom1555334040": {
+                "required": [
+                    "hasNext"
+                ],
+                "type": "object",
+                "properties": {
+                    "courses": {
+                        "type": "array",
+                        "items": {
+                            "required": [
+                                "creatorId",
+                                "id",
+                                "length",
+                                "name"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "distance": {
+                                    "type": "number",
+                                    "description": "\uc0ac\uc6a9\uc790 \uc704\uce58\ub85c\ubd80\ud130\uc758 \uac70\ub9ac (\ubbf8\ud130)",
+                                    "nullable": true
+                                },
+                                "creatorId": {
+                                    "type": "string",
+                                    "description": "\ucf54\uc2a4 \ub4f1\ub85d \uc8fc\uccb4 ID"
+                                },
+                                "coordinates": {
+                                    "type": "array",
+                                    "items": {
+                                        "required": [
+                                            "latitude",
+                                            "longitude"
+                                        ],
+                                        "type": "object",
+                                        "properties": {
+                                            "latitude": {
+                                                "type": "number",
+                                                "description": "\uc704\ub3c4"
+                                            },
+                                            "longitude": {
+                                                "type": "number",
+                                                "description": "\uacbd\ub3c4"
+                                            }
+                                        }
+                                    }
+                                },
+                                "length": {
+                                    "type": "number",
+                                    "description": "\ucf54\uc2a4 \uc804\uccb4 \uae38\uc774 (\ubbf8\ud130)"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "description": "\ucf54\uc2a4 \uc774\ub984"
+                                },
+                                "id": {
+                                    "type": "string",
+                                    "description": "\ucf54\uc2a4 ID"
+                                }
+                            }
+                        }
+                    },
+                    "hasNext": {
+                        "type": "boolean",
+                        "description": "\ub2e4\uc74c \ud398\uc774\uc9c0 \uc874\uc7ac \uc5ec\ubd80"
+                    }
+                }
+            },
+            "v1-courses-id-route-800094530": {
+                "type": "array",
+                "items": {
+                    "required": [
+                        "latitude",
+                        "longitude"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "latitude": {
+                            "type": "number",
+                            "description": "\uc704\ub3c4"
+                        },
+                        "longitude": {
+                            "type": "number",
+                            "description": "\uacbd\ub3c4"
+                        }
+                    }
+                }
+            },
+            "v1-courses-id-reviews1117656623": {
+                "required": [
+                    "content",
+                    "rating"
+                ],
+                "type": "object",
+                "properties": {
+                    "rating": {
+                        "type": "number",
+                        "description": "\ub9ac\ubdf0 \ubcc4\uc810"
+                    },
+                    "content": {
+                        "type": "string",
+                        "description": "\ub9ac\ubdf0 \ub0b4\uc6a9"
+                    }
+                }
+            },
+            "v1-login-kakao1873099575": {
+                "required": [
+                    "accessToken"
+                ],
+                "type": "object",
+                "properties": {
+                    "accessToken": {
+                        "type": "string",
+                        "description": "\ucf54\uc2a4\ud53d \uc5d1\uc138\uc2a4\ud1a0\ud070 (JWT)"
+                    }
+                }
+            },
+            "v1-courses-draft-route1195589873": {
+                "type": "object",
+                "properties": {
+                    "origin": {
+                        "required": [
+                            "latitude",
+                            "longitude"
+                        ],
+                        "type": "object",
+                        "properties": {
+                            "latitude": {
+                                "type": "number",
+                                "description": "\uc9c1\uc804 \ud3ec\uc778\ud2b8 \uc704\ub3c4"
+                            },
+                            "longitude": {
+                                "type": "number",
+                                "description": "\uc9c1\uc804 \ud3ec\uc778\ud2b8 \uacbd\ub3c4"
+                            }
+                        }
+                    },
+                    "destination": {
+                        "required": [
+                            "latitude",
+                            "longitude"
+                        ],
+                        "type": "object",
+                        "properties": {
+                            "latitude": {
+                                "type": "number",
+                                "description": "\uc0c8 \ud3ec\uc778\ud2b8 \uc704\ub3c4"
+                            },
+                            "longitude": {
+                                "type": "number",
+                                "description": "\uc0c8 \ud3ec\uc778\ud2b8 \uacbd\ub3c4"
+                            }
+                        }
+                    }
+                }
+            },
+            "v1-notices-1985385709": {
+                "type": "object",
+                "properties": {
+                    "notices": {
+                        "type": "array",
+                        "items": {
+                            "required": [
+                                "description",
+                                "id",
+                                "imageUrl",
+                                "title"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "imageUrl": {
+                                    "type": "string",
+                                    "description": "\uacf5\uc9c0\uc0ac\ud56d \uc774\ubbf8\uc9c0 URL"
+                                },
+                                "description": {
+                                    "type": "string",
+                                    "description": "\uacf5\uc9c0\uc0ac\ud56d \ub0b4\uc6a9"
+                                },
+                                "id": {
+                                    "type": "string",
+                                    "description": "\uacf5\uc9c0\uc0ac\ud56d ID"
+                                },
+                                "title": {
+                                    "type": "string",
+                                    "description": "\uacf5\uc9c0\uc0ac\ud56d \uc81c\ubaa9"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "v1-login-kakao1468430618": {
+                "required": [
+                    "accessToken"
+                ],
+                "type": "object",
+                "properties": {
+                    "accessToken": {
+                        "type": "string",
+                        "description": "\uce74\uce74\uc624 \uc561\uc138\uc2a4\ud1a0\ud070"
+                    }
+                }
+            },
+            "v1-courses-id-closest-coordinate555175177": {
+                "required": [
+                    "latitude",
+                    "longitude"
+                ],
+                "type": "object",
+                "properties": {
+                    "latitude": {
+                        "type": "number",
+                        "description": "\uc704\ub3c4"
+                    },
+                    "longitude": {
+                        "type": "number",
+                        "description": "\uacbd\ub3c4"
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "description": "\uce74\uce74\uc624 \ub85c\uadf8\uc778 \ud6c4 \ubc1c\uae09\ubc1b\uc740 JWT \ud1a0\ud070\uc744 \uc785\ub825\ud574\uc8fc\uc138\uc694."
+            }
+        }
+    }
+}
