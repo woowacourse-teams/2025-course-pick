@@ -7,10 +7,7 @@ import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
 import coursepick.coursepick.application.dto.ReviewResponse;
 import coursepick.coursepick.application.exception.ErrorType;
-import coursepick.coursepick.domain.course.Coordinate;
-import coursepick.coursepick.domain.course.CourseFindCondition;
-import coursepick.coursepick.domain.course.DraftSegment;
-import coursepick.coursepick.domain.course.Meter;
+import coursepick.coursepick.domain.course.*;
 import coursepick.coursepick.presentation.CourseV1WebController;
 import coursepick.coursepick.presentation.dto.CoordinateWebRequest;
 import coursepick.coursepick.presentation.dto.CourseCreateWebRequest;
@@ -243,7 +240,9 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
                     1,
                     5.0,
                     List.of(new ReviewResponse("69d8c0b54561463adc32f259", "착한 강아지",
-                            "69d8c0b12361463adc32f259", "노을이 예뻐요.", 5)));
+                            "69d8c0b12361463adc32f259", "노을이 예뻐요.", 5)),
+                    List.of(CourseTag.NIGHT_VIEW, CourseTag.SCENIC)
+            );
             given(courseApplicationService.findCourseDetail(anyString()))
                     .willReturn(detailResponse);
 
@@ -284,7 +283,10 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
                                             fieldWithPath("reviews[].authorNickname")
                                                     .description("리뷰 작성자 닉네임"),
                                             fieldWithPath("reviews[].content")
-                                                    .description(리뷰_내용))
+                                                    .description(리뷰_내용),
+                                            fieldWithPath("tags[].name").description("태그 이름 (enum 값)"),
+                                            fieldWithPath("tags[].label").description("태그 라벨 (UI 표시용)")
+                                    )
                                     .build())));
         }
 
