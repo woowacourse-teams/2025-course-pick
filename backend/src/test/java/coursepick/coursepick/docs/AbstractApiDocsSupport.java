@@ -13,6 +13,8 @@ import coursepick.coursepick.security.WebConfig;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
@@ -29,40 +31,37 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 
 
 @ActiveProfiles({"dev", "local"})
-@WebMvcTest(controllers = {CourseV1WebController.class, UserV1WebController.class, NoticeV1WebController.class})
-@Import({WebConfig.class, UserIdArgumentResolver.class})
-@ExtendWith(RestDocumentationExtension.class)
+@ExtendWith({RestDocumentationExtension.class, MockitoExtension.class})
 public abstract class AbstractApiDocsSupport {
 
     protected MockMvc mockMvc;
 
-    @Autowired
-    protected ObjectMapper objectMapper;
+    protected ObjectMapper objectMapper = new ObjectMapper();
 
-    @MockitoBean
+    @Mock
     protected CourseApplicationService courseApplicationService;
 
-    @MockitoBean
+    @Mock
     protected UserApplicationService userApplicationService;
 
-    @MockitoBean
+    @Mock
     protected LoginInterceptor loginInterceptor;
 
     @BeforeEach
     void setUp(RestDocumentationContextProvider restDocumentation) throws Exception {
-
-        this.mockMvc = MockMvcBuilders.standaloneSetup(initController())
-                .setControllerAdvice(new WebExceptionHandler())
-                .setCustomArgumentResolvers(new UserIdArgumentResolver())
-                .addInterceptors(loginInterceptor)
-                .apply(documentationConfiguration(restDocumentation))
-                .build();
-
+        // 로그인 인터셉터 모킹 (MockMvc 빌드 전에 설정되어야 함)
         given(loginInterceptor.preHandle(any(), any(), any())).willAnswer(invocation -> {
             HttpServletRequest request = invocation.getArgument(0);
             request.setAttribute("AUTH_USER_ID", "test-user-id");
             return true;
         });
+
+        this.mockMvc = MockMvcBuilders.standaloneSetup(initController())
+                .setControllerAdvice(new WebExceptionHandler())
+                .setCustomArgumentResolvers(new UserIdArgumentResolver())
+                .addInterceptors(loginInterceptor) // 위에서 모킹된 인터셉터 주입
+                .apply(documentationConfiguration(restDocumentation))
+                .build();
     }
 
     protected abstract Object initController();
