@@ -17,14 +17,14 @@ on:
         type: string
 
 jobs:
-  #  ci:
-  #    name: CI 실행
-  #    uses: ./.github/workflows/backend-ci.yml
-  #    secrets: inherit
+  ci:
+    name: CI 실행
+    uses: ./.github/workflows/backend-ci.yml
+    secrets: inherit
 
   deploy:
     name: 홈서버 배포
-    #    needs: ci
+    needs: ci
     runs-on: [ self-hosted, home-server ]
     defaults:
       run:
@@ -49,7 +49,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: 프로젝트 gradlew 빌드
-        run: ./gradlew clean build
+        run: ./gradlew clean build -x test
 
       - name: 🚀 홈서버 배포 시작
         run: |
