@@ -104,24 +104,22 @@ if (!isProdProfile) {
         }
     }
 
-    // 생성된 스펙 파일을 src/main/resources/static/docs 로 복사
+    // 생성된 스펙 파일을 build/generated-docs 로 복사
     val copyOpenApiSpec = tasks.register<Copy>("copyOpenApiSpec") {
         dependsOn("injectOpenApiSecurity")
         from(layout.buildDirectory.dir("api-spec"))
-        into("src/main/resources/static/docs")
+        into(layout.buildDirectory.dir("generated-docs"))
     }
 
-    // processResources 태스크가 copyOpenApiSpec 태스크에 의존하도록 설정
+    // processResources 태스크가 생성된 문서를 포함하도록 설정
     tasks.named<ProcessResources>("processResources") {
-        dependsOn(copyOpenApiSpec)
-    }
-
-    tasks.build {
-        dependsOn("copyOpenApiSpec")
+        from(copyOpenApiSpec) {
+            into("static/docs")
+        }
     }
 
     tasks.clean {
-        delete("src/main/resources/static/docs")
+        delete(layout.buildDirectory.dir("generated-docs"))
     }
 }
 
