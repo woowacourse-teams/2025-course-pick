@@ -105,17 +105,15 @@ if (!isProdProfile) {
     }
 
     // 생성된 스펙 파일을 src/main/resources/static/docs 로 복사
-    tasks.register<Copy>("copyOpenApiSpec") {
+    val copyOpenApiSpec = tasks.register<Copy>("copyOpenApiSpec") {
         dependsOn("injectOpenApiSecurity")
         from(layout.buildDirectory.dir("api-spec"))
         into("src/main/resources/static/docs")
-        // processResources 와의 순환 참조 방지
-        mustRunAfter("processResources")
     }
 
-    // copyOpenApiSpec이 파일을 쓰는 경로를 processResources가 읽지 않도록 제외시켜서 의존성 에러(Gradle 경고) 방지
+    // processResources 태스크가 copyOpenApiSpec 태스크에 의존하도록 설정
     tasks.named<ProcessResources>("processResources") {
-        exclude("static/docs/**")
+        dependsOn(copyOpenApiSpec)
     }
 
     tasks.build {
