@@ -117,7 +117,7 @@ public class CourseReader implements Converter<Document, Course> {
         for (Document reviewDoc : reviewDocs) {
             Set<String> reportUserIds = new HashSet<>(reviewDoc.getList("reportUserIds", String.class, List.of()));
 
-            String id = reviewDoc.getString("id");
+            String id = reviewDoc.getObjectId("id").toHexString();
             String userId = reviewDoc.getString("userId");
             String authorNickname = reviewDoc.getString("authorNickname");
             String content = reviewDoc.getString("content");

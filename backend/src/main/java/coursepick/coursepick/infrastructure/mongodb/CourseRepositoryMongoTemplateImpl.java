@@ -5,6 +5,7 @@ import com.mongodb.MongoTimeoutException;
 import coursepick.coursepick.domain.course.*;
 import lombok.RequiredArgsConstructor;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.domain.Sort;
@@ -148,7 +149,7 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
         Query query = new Query(Criteria.where("_id").is(courseId));
 
         Document reviewDoc = new Document()
-                .append("id", review.id())
+                .append("id", new ObjectId(review.id()))
                 .append("userId", review.userId())
                 .append("authorNickname", review.authorNickname())
                 .append("content", review.content())
@@ -170,7 +171,7 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
 
         Query query = new Query(Criteria.where("_id").is(courseId));
 
-        Update update = new Update().pull("reviews", new Document("id", reviewId));
+        Update update = new Update().pull("reviews", new Document("id", new ObjectId(reviewId)));
 
         mongoTemplate.updateFirst(
                 query,

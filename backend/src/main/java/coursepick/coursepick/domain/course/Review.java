@@ -6,7 +6,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.PersistenceCreator;
 
 import java.time.Instant;
@@ -31,7 +31,7 @@ public class Review {
     private final Instant createdAt;
 
     public Review(User author, String content, int rating) {
-        this(RandomStringUtils.insecure().next(10, true, true), author.id(), author.nickname().value(), content, rating, new HashSet<>(), Instant.now());
+        this(new ObjectId().toHexString(), author.id(), author.nickname().value(), content, rating, new HashSet<>(), Instant.now());
         validateContent(content);
         validateRating(rating);
     }
