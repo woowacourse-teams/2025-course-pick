@@ -23,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -96,23 +95,20 @@ private fun ReportReasonDescription(
 
     Spacer(Modifier.height(10.dp))
 
-    Text(
-        text =
-            buildAnnotatedString {
-                withBulletList {
-                    reasons.forEach { reason: String ->
-                        withBulletListItem { append(reason) }
-                    }
-                }
-            },
-        color = colorResource(R.color.item_primary),
-        fontSize = 14.sp,
-        textAlign = TextAlign.Start,
-        modifier =
-            modifier
-                .background(colorResource(R.color.background_tertiary), RoundedCornerShape(10.dp))
-                .padding(10.dp),
-    )
+    Column(
+        modifier
+            .background(colorResource(R.color.background_tertiary), RoundedCornerShape(10.dp))
+            .padding(10.dp),
+    ) {
+        reasons.forEach { reason: String ->
+            Text(
+                text = reason,
+                color = colorResource(R.color.item_primary),
+                fontSize = 14.sp,
+                textAlign = TextAlign.Start,
+            )
+        }
+    }
 }
 
 @Composable
