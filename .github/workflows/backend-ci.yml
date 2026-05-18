@@ -30,7 +30,7 @@ jobs:
       - name: gradlew 실행 권한 부여
         run: chmod +x gradlew
 
-      - name: 프로젝트 gradlew 빌드
+      - name: 프로젝트 gradlew 빌드 (테스트 & API 문서 생성 포함)
         run: ./gradlew build
 
       - name: 테스트 결과 보고서 작성
@@ -40,3 +40,11 @@ jobs:
           name: 테스트 결과
           path: backend/build/test-results/test/*.xml
           reporter: java-junit
+
+      - name: 📦 빌드 결과물 업로드 (Artifact)
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: backend-build-artifact
+          path: backend/build/libs/*.jar
+          retention-days: 1
