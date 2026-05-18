@@ -6,19 +6,23 @@ import coursepick.coursepick.application.dto.CourseDetailResponse;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
 import coursepick.coursepick.application.dto.ReviewResponse;
+import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.CourseFindCondition;
 import coursepick.coursepick.domain.course.DraftSegment;
 import coursepick.coursepick.domain.course.Meter;
 import coursepick.coursepick.presentation.CourseV1WebController;
+import coursepick.coursepick.presentation.dto.CoordinateWebRequest;
+import coursepick.coursepick.presentation.dto.CourseCreateWebRequest;
+import coursepick.coursepick.presentation.dto.CreateReviewWebRequest;
+import coursepick.coursepick.presentation.dto.FindDraftRouteWebRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import coursepick.coursepick.application.exception.ErrorType;
+import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.web.servlet.ResultHandler;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import static com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName;
@@ -26,19 +30,19 @@ import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.mockito.Mockito.doThrow;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+
 public class CourseApiDocsTest extends AbstractApiDocsSupport {
 
     private static final String TAG = "러닝 코스 (Course)";
     private static final String 다음_페이지_존재_여부 = "다음 페이지 존재 여부";
+    private static final String 리뷰_ID = "리뷰 ID";
     private static final String 사용자_위치로부터의_거리 = "사용자 위치로부터의 거리 (미터)";
     private static final String 코스_ID = "코스 ID";
     private static final String 위도 = "위도";
@@ -272,7 +276,7 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
                                             fieldWithPath("reviewOverview.averageRating")
                                                     .description("리뷰 평균 별점"),
                                             fieldWithPath("reviews[].id")
-                                                    .description("리뷰 ID"),
+                                                    .description(리뷰_ID),
                                             fieldWithPath("reviews[].rating")
                                                     .description(리뷰_별점),
                                             fieldWithPath("reviews[].authorId")
@@ -338,22 +342,11 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
             given(courseApplicationService.findDraftRoute(any()))
                     .willReturn(draftSegment);
 
-            String requestBody = objectMapper.writeValueAsString(new LinkedHashMap<>() {
-                {
-                    put("origin", new LinkedHashMap<>() {
-                        {
-                            put("latitude", 37.514167);
-                            put("longitude", 127.103611);
-                        }
-                    });
-                    put("destination", new LinkedHashMap<>() {
-                        {
-                            put("latitude", 37.515167);
-                            put("longitude", 127.104611);
-                        }
-                    });
-                }
-            });
+            FindDraftRouteWebRequest request = new FindDraftRouteWebRequest(
+                    new CoordinateWebRequest(37.514167, 127.103611),
+                    new CoordinateWebRequest(37.515167, 127.104611)
+            );
+            String requestBody = objectMapper.writeValueAsString(request);
 
             mockMvc.perform(post("/v1/courses/draft/route")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -397,12 +390,8 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
         void 코스_리뷰_작성_API() throws Exception {
             doNothing().when(courseApplicationService).addReview(anyString(), anyString(), anyString(), anyInt());
 
-            String requestBody = objectMapper.writeValueAsString(new LinkedHashMap<>() {
-                {
-                    put("content", "정말 멋진 러닝 코스입니다!");
-                    put("rating", 5);
-                }
-            });
+            CreateReviewWebRequest request = new CreateReviewWebRequest("정말 멋진 러닝 코스입니다!", 5);
+            String requestBody = objectMapper.writeValueAsString(request);
 
             mockMvc.perform(post("/v1/courses/{id}/reviews", "689c3143182cecc6353cca7b")
                             .header("Authorization", "Bearer " + "testToken")
@@ -437,24 +426,14 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
         void 커스텀_코스_생성_API() throws Exception {
             doNothing().when(courseApplicationService).addCustomCourse(anyString(), anyList(), anyString());
 
-            String requestBody = objectMapper.writeValueAsString(new LinkedHashMap<>() {
-                {
-                    put("name", "나만의 한강 러닝 코스");
-                    put("coordinates", List.of(
-                            new LinkedHashMap<>() {
-                                {
-                                    put("latitude", 37.514167);
-                                    put("longitude", 127.103611);
-                                }
-                            },
-                            new LinkedHashMap<>() {
-                                {
-                                    put("latitude", 37.515167);
-                                    put("longitude", 127.104611);
-                                }
-                            }));
-                }
-            });
+            CourseCreateWebRequest request = new CourseCreateWebRequest(
+                    "나만의 한강 러닝 코스",
+                    List.of(
+                            new CoordinateWebRequest(37.514167, 127.103611),
+                            new CoordinateWebRequest(37.515167, 127.104611)
+                    )
+            );
+            String requestBody = objectMapper.writeValueAsString(request);
 
             mockMvc.perform(post("/v1/courses")
                             .header("Authorization", "Bearer " + "test.jwt.token")
@@ -583,10 +562,10 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
                                     .description("작성한 리뷰를 삭제합니다. (로그인 필요)")
                                     .pathParameters(
                                             parameterWithName("courseId")
-                                                    .description("코스 ID")
+                                                    .description(코스_ID)
                                                     .attributes(key("example").value("course-id")),
                                             parameterWithName("reviewId")
-                                                    .description("리뷰 ID")
+                                                    .description(리뷰_ID)
                                                     .attributes(key("example").value("review-id")))
                                     .build())));
         }
@@ -611,7 +590,7 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
                                                     .description("코스 ID")
                                                     .attributes(key("example").value("course-id")),
                                             parameterWithName("reviewId")
-                                                    .description("리뷰 ID")
+                                                    .description(리뷰_ID)
                                                     .attributes(key("example").value("review-id")))
                                     .build())));
         }
@@ -623,79 +602,61 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
 
         @Test
         void 코스_리뷰_작성_API_401_에러() throws Exception {
-            org.mockito.Mockito
-                    .doThrow(ErrorType.AUTHENTICATION_FAIL
-                            .create())
+            doThrow(ErrorType.AUTHENTICATION_FAIL
+                    .create())
                     .when(courseApplicationService).addReview(anyString(), any(), anyString(), anyInt());
 
-            String requestBody = objectMapper.writeValueAsString(new LinkedHashMap<>() {
-                {
-                    put("content", "정말 멋진 러닝 코스입니다!");
-                    put("rating", 5);
-                }
-            });
+            CreateReviewWebRequest request = new CreateReviewWebRequest("정말 멋진 러닝 코스입니다!", 5);
+            String requestBody = objectMapper.writeValueAsString(request);
 
             mockMvc.perform(post("/v1/courses/{id}/reviews", "689c3143182cecc6353cca7b")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestBody)
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isUnauthorized())
-                    .andDo(documentUnauthorized("course-add-review-401", "코스 리뷰 작성", true));
+                    .andDo(documentUnauthorizedWithId("course-add-review-401", "코스 리뷰 작성"));
         }
 
         @Test
         void 커스텀_코스_생성_API_401_에러() throws Exception {
-            org.mockito.Mockito
-                    .doThrow(ErrorType.AUTHENTICATION_FAIL
-                            .create())
+            doThrow(ErrorType.AUTHENTICATION_FAIL
+                    .create())
                     .when(courseApplicationService).addCustomCourse(any(), anyList(), any());
 
-            String requestBody = objectMapper.writeValueAsString(new LinkedHashMap<>() {
-                {
-                    put("name", "나만의 한강 러닝 코스");
-                    put("coordinates", List.of(
-                            new LinkedHashMap<>() {
-                                {
-                                    put("latitude", 37.514167);
-                                    put("longitude", 127.103611);
-                                }
-                            },
-                            new LinkedHashMap<>() {
-                                {
-                                    put("latitude", 37.515167);
-                                    put("longitude", 127.104611);
-                                }
-                            }));
-                }
-            });
+            CourseCreateWebRequest request = new CourseCreateWebRequest(
+                    "나만의 한강 러닝 코스",
+                    List.of(
+                            new CoordinateWebRequest(37.514167, 127.103611),
+                            new CoordinateWebRequest(37.515167, 127.104611)
+                    )
+            );
+            String requestBody = objectMapper.writeValueAsString(request);
 
             mockMvc.perform(post("/v1/courses")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestBody)
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isUnauthorized())
-                    .andDo(documentUnauthorized("course-add-custom-401", "커스텀 코스 생성", false));
+                    .andDo(documentUnauthorized("course-add-custom-401", "커스텀 코스 생성"));
         }
 
         @Test
         void 코스_신고_API_401_에러() throws Exception {
-            org.mockito.Mockito
-                    .doThrow(ErrorType.AUTHENTICATION_FAIL
-                            .create())
+            doThrow(ErrorType.AUTHENTICATION_FAIL
+                    .create())
                     .when(courseApplicationService).reportCourse(anyString(), any());
 
             mockMvc.perform(post("/v1/courses/{id}/report", "689c3143182cecc6353cca7b")
                             // Authorization 헤더를 누락하여 401 유도
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isUnauthorized())
-                    .andDo(documentUnauthorized("course-report-401", "코스 신고", true));
+                    .andDo(documentUnauthorizedWithId("course-report-401", "코스 신고"));
         }
 
         @Test
         void 내_커스텀_코스_조회_API_401_에러() throws Exception {
-            org.mockito.Mockito
-                    .doThrow(ErrorType.AUTHENTICATION_FAIL
-                            .create())
+            doThrow(ErrorType.AUTHENTICATION_FAIL
+                    .create())
                     .when(courseApplicationService).findCustomCourses(any(), any(), any());
 
             mockMvc.perform(get("/v1/courses/custom")
@@ -703,7 +664,7 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
                             .param("userLng", "127.104")
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isUnauthorized())
-                    .andDo(documentUnauthorized("course-find-custom-401", "내 커스텀 코스 조회", false));
+                    .andDo(documentUnauthorized("course-find-custom-401", "내 커스텀 코스 조회"));
         }
 
         @Test
@@ -716,6 +677,7 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
                     .andExpect(status().isNotFound())
                     .andDo(documentNotFound("course-detail-404", "코스 상세 조회"));
         }
+
         @Test
         void 코스_가장_가까운_좌표_조회_API_404_에러() throws Exception {
             given(courseApplicationService.findClosestCoordinate(anyString(), anyDouble(), anyDouble()))
@@ -747,12 +709,8 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
             doThrow(ErrorType.NOT_EXIST_COURSE.create("invalid-id"))
                     .when(courseApplicationService).addReview(anyString(), any(), anyString(), anyInt());
 
-            String requestBody = objectMapper.writeValueAsString(new LinkedHashMap<>() {
-                {
-                    put("content", "정말 멋진 러닝 코스입니다!");
-                    put("rating", 5);
-                }
-            });
+            CreateReviewWebRequest request = new CreateReviewWebRequest("정말 멋진 러닝 코스입니다!", 5);
+            String requestBody = objectMapper.writeValueAsString(request);
 
             mockMvc.perform(post("/v1/courses/{id}/reviews", "invalid-id")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -778,24 +736,14 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
             doThrow(ErrorType.DUPLICATED_COURSE_NAME.create("나만의 한강 러닝 코스"))
                     .when(courseApplicationService).addCustomCourse(any(), anyList(), any());
 
-            String requestBody = objectMapper.writeValueAsString(new LinkedHashMap<>() {
-                {
-                    put("name", "나만의 한강 러닝 코스");
-                    put("coordinates", List.of(
-                            new LinkedHashMap<>() {
-                                {
-                                    put("latitude", 37.514167);
-                                    put("longitude", 127.103611);
-                                }
-                            },
-                            new LinkedHashMap<>() {
-                                {
-                                    put("latitude", 37.515167);
-                                    put("longitude", 127.104611);
-                                }
-                            }));
-                }
-            });
+            CourseCreateWebRequest request = new CourseCreateWebRequest(
+                    "나만의 한강 러닝 코스",
+                    List.of(
+                            new CoordinateWebRequest(37.514167, 127.103611),
+                            new CoordinateWebRequest(37.515167, 127.104611)
+                    )
+            );
+            String requestBody = objectMapper.writeValueAsString(request);
 
             mockMvc.perform(post("/v1/courses")
                             .header("Authorization", "Bearer " + "test.jwt.token")
@@ -851,92 +799,105 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
                     .andExpect(status().isNotFound())
                     .andDo(documentNotFoundForReview("course-report-review-404", "코스 리뷰 신고"));
         }
-    }
 
-    private ResultHandler documentNotFound(String documentId, String summary) {
-        return MockMvcRestDocumentationWrapper.document(documentId,
-                preprocessRequest(prettyPrint()),
-                preprocessResponse(prettyPrint()),
-                resource(ResourceSnippetParameters.builder()
-                        .tag(TAG)
-                        .summary(summary)
-                        .description("존재하지 않는 코스 ID를 요청할 경우의 에러 응답입니다.")
-                        .pathParameters(
-                                parameterWithName("id")
-                                        .description(코스_ID)
-                                        .attributes(key("example")
-                                                .value("invalid-id")))
-                        .responseFields(
-                                fieldWithPath("message").description("에러 상세 메시지"),
-                                fieldWithPath("timestamp").description("에러 발생 시각"))
-                        .build()));
-    }
-
-    private ResultHandler documentUnauthorized(String documentId, String summary, boolean hasPathId) {
-        var builder = ResourceSnippetParameters.builder()
-                .tag(TAG)
-                .summary(summary)
-                .description("로그인 토큰이 없거나 유효하지 않은 경우의 에러 응답입니다.")
-                .responseFields(
-                        fieldWithPath("message").description("에러 상세 메시지"),
-                        fieldWithPath("timestamp").description("에러 발생 시각"));
-        if (hasPathId) {
-            builder.pathParameters(
-                    parameterWithName("id")
-                            .description(코스_ID)
-                            .attributes(key("example").value("689c3143182cecc6353cca7b")));
+        private FieldDescriptor[] errorResponseFields() {
+            return new FieldDescriptor[]{
+                    fieldWithPath("message").description("에러 상세 메시지"),
+                    fieldWithPath("timestamp").description("에러 발생 시각")
+            };
         }
-        return MockMvcRestDocumentationWrapper.document(documentId,
-                preprocessRequest(prettyPrint()),
-                preprocessResponse(prettyPrint()),
-                resource(builder.build()));
+
+        private ResultHandler documentUnauthorized(String documentId, String summary) {
+            return MockMvcRestDocumentationWrapper.document(documentId,
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    resource(ResourceSnippetParameters.builder()
+                            .tag(TAG)
+                            .summary(summary)
+                            .description("로그인 토큰이 없거나 유효하지 않은 경우의 에러 응답입니다.")
+                            .responseFields(errorResponseFields())
+                            .build())
+            );
+        }
+
+        private ResultHandler documentUnauthorizedWithId(String documentId, String summary) {
+            return MockMvcRestDocumentationWrapper.document(documentId,
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    resource(ResourceSnippetParameters.builder()
+                            .tag(TAG)
+                            .summary(summary)
+                            .description("로그인 토큰이 없거나 유효하지 않은 경우의 에러 응답입니다.")
+                            .pathParameters(
+                                    parameterWithName("id")
+                                            .description(코스_ID)
+                                            .attributes(key("example").value("689c3143182cecc6353cca7b")))
+                            .responseFields(errorResponseFields())
+                            .build())
+            );
+        }
+
+        private ResultHandler documentNotFound(String documentId, String summary) {
+            return MockMvcRestDocumentationWrapper.document(documentId,
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    resource(ResourceSnippetParameters.builder()
+                            .tag(TAG)
+                            .summary(summary)
+                            .description("존재하지 않는 코스 ID를 요청할 경우의 에러 응답입니다.")
+                            .pathParameters(
+                                    parameterWithName("id")
+                                            .description(코스_ID)
+                                            .attributes(key("example")
+                                                    .value("invalid-id")))
+                            .responseFields(errorResponseFields())
+                            .build()));
+        }
+
+        private ResultHandler documentConflict(String documentId, String summary) {
+            return MockMvcRestDocumentationWrapper.document(documentId,
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    resource(ResourceSnippetParameters.builder()
+                            .tag(TAG)
+                            .summary(summary)
+                            .description("중복된 데이터로 인해 리소스 생성에 실패한 경우의 에러 응답입니다.")
+                            .responseFields(errorResponseFields())
+                            .build())
+            );
+        }
+
+        private ResultHandler documentNotFoundForReview(String documentId, String summary) {
+            return MockMvcRestDocumentationWrapper.document(documentId,
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    resource(ResourceSnippetParameters.builder()
+                            .tag(TAG)
+                            .summary(summary)
+                            .description("존재하지 않는 리소스를 요청할 경우의 에러 응답입니다.")
+                            .pathParameters(
+                                    parameterWithName("courseId").description(코스_ID).attributes(key("example").value("course-id")),
+                                    parameterWithName("reviewId").description(리뷰_ID).attributes(key("example").value("review-id")))
+                            .responseFields(errorResponseFields())
+                            .build())
+            );
+        }
+
+        private ResultHandler documentUnauthorizedForReview(String documentId, String summary) {
+            return MockMvcRestDocumentationWrapper.document(documentId,
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    resource(ResourceSnippetParameters.builder()
+                            .tag(TAG)
+                            .summary(summary)
+                            .description("로그인 토큰이 없거나 유효하지 않은 경우의 에러 응답입니다.")
+                            .pathParameters(
+                                    parameterWithName("courseId").description(코스_ID).attributes(key("example").value("course-id")),
+                                    parameterWithName("reviewId").description(리뷰_ID).attributes(key("example").value("review-id")))
+                            .responseFields(errorResponseFields())
+                            .build())
+            );
+        }
     }
 
-    private ResultHandler documentConflict(String documentId, String summary) {
-        return MockMvcRestDocumentationWrapper.document(documentId,
-                preprocessRequest(prettyPrint()),
-                preprocessResponse(prettyPrint()),
-                resource(ResourceSnippetParameters.builder()
-                        .tag(TAG)
-                        .summary(summary)
-                        .description("중복된 데이터로 인해 리소스 생성에 실패한 경우의 에러 응답입니다.")
-                        .responseFields(
-                                fieldWithPath("message").description("에러 상세 메시지"),
-                                fieldWithPath("timestamp").description("에러 발생 시각"))
-                        .build()));
-    }
-
-    private ResultHandler documentNotFoundForReview(String documentId, String summary) {
-        return MockMvcRestDocumentationWrapper.document(documentId,
-                preprocessRequest(prettyPrint()),
-                preprocessResponse(prettyPrint()),
-                resource(ResourceSnippetParameters.builder()
-                        .tag(TAG)
-                        .summary(summary)
-                        .description("존재하지 않는 리소스를 요청할 경우의 에러 응답입니다.")
-                        .pathParameters(
-                                parameterWithName("courseId").description("코스 ID").attributes(key("example").value("course-id")),
-                                parameterWithName("reviewId").description("리뷰 ID").attributes(key("example").value("review-id")))
-                        .responseFields(
-                                fieldWithPath("message").description("에러 상세 메시지"),
-                                fieldWithPath("timestamp").description("에러 발생 시각"))
-                        .build()));
-    }
-
-    private ResultHandler documentUnauthorizedForReview(String documentId, String summary) {
-        return MockMvcRestDocumentationWrapper.document(documentId,
-                preprocessRequest(prettyPrint()),
-                preprocessResponse(prettyPrint()),
-                resource(ResourceSnippetParameters.builder()
-                        .tag(TAG)
-                        .summary(summary)
-                        .description("로그인 토큰이 없거나 유효하지 않은 경우의 에러 응답입니다.")
-                        .pathParameters(
-                                parameterWithName("courseId").description("코스 ID").attributes(key("example").value("course-id")),
-                                parameterWithName("reviewId").description("리뷰 ID").attributes(key("example").value("review-id")))
-                        .responseFields(
-                                fieldWithPath("message").description("에러 상세 메시지"),
-                                fieldWithPath("timestamp").description("에러 발생 시각"))
-                        .build()));
-    }
 }
