@@ -85,7 +85,7 @@ val isProdProfile = project.findProperty("profile") == "prod"
 if (!isProdProfile) {
     // openapi3 태스크 실행 후, JWT Bearer 인증 정보와 파라미터 예시를 OpenAPI 스펙에 주입
     openapi3 {
-        setServer("http://localhost:8080")
+        setServer("http://dev.coursepick.cloud")
         title = "코스픽 API"
         version = "v1"
         format = "json"
@@ -100,7 +100,7 @@ if (!isProdProfile) {
         }
     }
 
-    // openapi3 태스크 + 보안 주입 후, 생성된 스펙 파일을 static 리소스로 복사
+    // openapi3 태스크 후, 생성된 스펙 파일을 static 리소스로 복사
     tasks.register<Copy>("copyOpenApiSpec") {
         dependsOn("injectOpenApiSecurity")
         from(layout.buildDirectory.dir("api-spec"))
@@ -108,10 +108,6 @@ if (!isProdProfile) {
     }
 
     tasks.build {
-        dependsOn("copyOpenApiSpec")
-    }
-
-    tasks.bootJar {
         dependsOn("copyOpenApiSpec")
     }
 
