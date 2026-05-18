@@ -1,7 +1,7 @@
 spring:
   config.activate.on-profile: prod
   data.mongodb:
-    host: mongodb
+    host: ${MONGO_HOST}
     port: 27017
     database: coursepick
     username: ${MONGO_USERNAME}
