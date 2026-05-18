@@ -104,11 +104,18 @@ if (!isProdProfile) {
         }
     }
 
-    // openapi3 태스크 후, 생성된 스펙 파일을 static 리소스로 복사
+    // 생성된 스펙 파일을 src/main/resources/static/docs 로 복사
     tasks.register<Copy>("copyOpenApiSpec") {
         dependsOn("injectOpenApiSecurity")
         from(layout.buildDirectory.dir("api-spec"))
         into("src/main/resources/static/docs")
+        // processResources 와의 순환 참조 방지
+        mustRunAfter("processResources")
+    }
+
+    // copyOpenApiSpec이 파일을 쓰는 경로를 processResources가 읽지 않도록 제외시켜서 의존성 에러(Gradle 경고) 방지
+    tasks.named<ProcessResources>("processResources") {
+        exclude("static/docs/**")
     }
 
     tasks.build {
