@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
@@ -38,277 +39,296 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
     @MockitoBean
     CourseTagGenerator courseTagGenerator;
 
-    @Test
-    void 코스는_최소_1KM부터_탐색할_수_있다() {
-        var course1 = new Course(null, new CourseName("한강 러닝 코스"), List.of(
-                new Coordinate(37.5180, 127.0280),
-                new Coordinate(37.5175, 127.0270),
-                new Coordinate(37.5170, 127.0265),
-                new Coordinate(37.5180, 127.0280)
-        ), ADMIN_USER);
-        var course2 = new Course(null, new CourseName("양재천 산책길"), List.of(
-                new Coordinate(37.5165, 127.0285),
-                new Coordinate(37.5160, 127.0278),
-                new Coordinate(37.5155, 127.0265),
-                new Coordinate(37.5165, 127.0285)
-        ), ADMIN_USER);
-        var course3 = new Course(null, new CourseName("북악산 둘레길"), List.of(
-                new Coordinate(37.602500, 126.967000),
-                new Coordinate(37.603000, 126.968000),
-                new Coordinate(37.603500, 126.969000),
-                new Coordinate(37.602500, 126.967000)
-        ), ADMIN_USER);
-        dbUtil.saveCourse(course1);
-        dbUtil.saveCourse(course2);
-        dbUtil.saveCourse(course3);
+    private User user;
+    private User otherUser;
+    private User reporter;
 
-        var latitude = 37.5122;
-        var longitude = 127.0276;
-        var condition = new CourseFindCondition(latitude, longitude, 300, null, null, null);
-
-        var nearbyCourses = sut.findNearbyCourses(condition, null, null);
-
-        assertThat(nearbyCourses.courses()).hasSize(2)
-                .extracting(CourseResponse::name)
-                .containsExactlyInAnyOrder(course1.name().value(), course2.name().value());
-        assertThat(course1.distanceFrom(new Coordinate(latitude, longitude)).value()).isGreaterThan(300);
-        assertThat(course2.distanceFrom(new Coordinate(latitude, longitude)).value()).isGreaterThan(300);
-        assertThat(course3.distanceFrom(new Coordinate(latitude, longitude)).value()).isGreaterThan(1000.0);
+    @BeforeEach
+    void setUp() {
+        user = dbUtil.saveUser(new User(UserProvider.KAKAO, "user-provider-id"));
+        otherUser = dbUtil.saveUser(new User(UserProvider.KAKAO, "other-user-id"));
+        reporter = dbUtil.saveUser(new User(UserProvider.KAKAO, "reporter-id"));
     }
 
-    @Test
-    void 코스는_최대_3KM까지_탐색할_수_있다() {
-        var course1 = new Course(null, new CourseName("한강 러닝 코스"), List.of(
-                new Coordinate(37.5180, 127.0280),
-                new Coordinate(37.5175, 127.0270),
-                new Coordinate(37.5170, 127.0265),
-                new Coordinate(37.5180, 127.0280)
-        ), ADMIN_USER);
-        var course2 = new Course(null, new CourseName("북악산 둘레길"), List.of(
-                new Coordinate(38.602500, 126.967000),
-                new Coordinate(38.603000, 126.968000),
-                new Coordinate(38.603500, 126.969000),
-                new Coordinate(38.602500, 126.967000)
-        ), ADMIN_USER);
-        dbUtil.saveCourse(course1);
-        dbUtil.saveCourse(course2);
+    @Nested
+    class 코스_탐색 {
 
-        var latitude = 37.5122;
-        var longitude = 127.0276;
-        var condition = new CourseFindCondition(latitude, longitude, 15000, null, null, null);
+        @Test
+        void 코스는_최소_1KM부터_탐색할_수_있다() {
+            var course1 = new Course(null, new CourseName("한강 러닝 코스"), List.of(
+                    new Coordinate(37.5180, 127.0280),
+                    new Coordinate(37.5175, 127.0270),
+                    new Coordinate(37.5170, 127.0265),
+                    new Coordinate(37.5180, 127.0280)
+            ), ADMIN_USER);
+            var course2 = new Course(null, new CourseName("양재천 산책길"), List.of(
+                    new Coordinate(37.5165, 127.0285),
+                    new Coordinate(37.5160, 127.0278),
+                    new Coordinate(37.5155, 127.0265),
+                    new Coordinate(37.5165, 127.0285)
+            ), ADMIN_USER);
+            var course3 = new Course(null, new CourseName("북악산 둘레길"), List.of(
+                    new Coordinate(37.602500, 126.967000),
+                    new Coordinate(37.603000, 126.968000),
+                    new Coordinate(37.603500, 126.969000),
+                    new Coordinate(37.602500, 126.967000)
+            ), ADMIN_USER);
+            dbUtil.saveCourse(course1);
+            dbUtil.saveCourse(course2);
+            dbUtil.saveCourse(course3);
 
-        var nearbyCourses = sut.findNearbyCourses(condition, null, null);
+            var latitude = 37.5122;
+            var longitude = 127.0276;
+            var condition = new CourseFindCondition(latitude, longitude, 300, null, null, null);
 
-        assertThat(nearbyCourses.courses()).hasSize(1)
-                .extracting(CourseResponse::name)
-                .containsExactlyInAnyOrder(course1.name().value());
-        assertThat(course1.distanceFrom(new Coordinate(latitude, longitude)).value()).isLessThan(3000);
-        assertThat(course2.distanceFrom(new Coordinate(latitude, longitude)).value()).isGreaterThan(3000);
+            var nearbyCourses = sut.findNearbyCourses(condition, null, null);
+
+            assertThat(nearbyCourses.courses()).hasSize(2)
+                    .extracting(CourseResponse::name)
+                    .containsExactlyInAnyOrder(course1.name().value(), course2.name().value());
+            assertThat(course1.distanceFrom(new Coordinate(latitude, longitude)).value()).isGreaterThan(300);
+            assertThat(course2.distanceFrom(new Coordinate(latitude, longitude)).value()).isGreaterThan(300);
+            assertThat(course3.distanceFrom(new Coordinate(latitude, longitude)).value()).isGreaterThan(1000.0);
+        }
+
+        @Test
+        void 코스는_최대_3KM까지_탐색할_수_있다() {
+            var course1 = new Course(null, new CourseName("한강 러닝 코스"), List.of(
+                    new Coordinate(37.5180, 127.0280),
+                    new Coordinate(37.5175, 127.0270),
+                    new Coordinate(37.5170, 127.0265),
+                    new Coordinate(37.5180, 127.0280)
+            ), ADMIN_USER);
+            var course2 = new Course(null, new CourseName("북악산 둘레길"), List.of(
+                    new Coordinate(38.602500, 126.967000),
+                    new Coordinate(38.603000, 126.968000),
+                    new Coordinate(38.603500, 126.969000),
+                    new Coordinate(38.602500, 126.967000)
+            ), ADMIN_USER);
+            dbUtil.saveCourse(course1);
+            dbUtil.saveCourse(course2);
+
+            var latitude = 37.5122;
+            var longitude = 127.0276;
+            var condition = new CourseFindCondition(latitude, longitude, 15000, null, null, null);
+
+            var nearbyCourses = sut.findNearbyCourses(condition, null, null);
+
+            assertThat(nearbyCourses.courses()).hasSize(1)
+                    .extracting(CourseResponse::name)
+                    .containsExactlyInAnyOrder(course1.name().value());
+            assertThat(course1.distanceFrom(new Coordinate(latitude, longitude)).value()).isLessThan(3000);
+            assertThat(course2.distanceFrom(new Coordinate(latitude, longitude)).value()).isGreaterThan(3000);
+        }
+
+        @Test
+        void 가까운_코스들을_조회한다() {
+            var course1 = new Course(null, new CourseName("한강 러닝 코스"), List.of(
+                    new Coordinate(37.5180, 127.0280),
+                    new Coordinate(37.5175, 127.0270),
+                    new Coordinate(37.5170, 127.0265),
+                    new Coordinate(37.5180, 127.0280)
+            ), ADMIN_USER);
+            var course2 = new Course(null, new CourseName("양재천 산책길"), List.of(
+                    new Coordinate(37.5165, 127.0285),
+                    new Coordinate(37.5160, 127.0278),
+                    new Coordinate(37.5155, 127.0265),
+                    new Coordinate(37.5165, 127.0285)
+            ), ADMIN_USER);
+            var course3 = new Course(null, new CourseName("북악산 둘레길"), List.of(
+                    new Coordinate(37.602500, 126.967000),
+                    new Coordinate(37.603000, 126.968000),
+                    new Coordinate(37.603500, 126.969000),
+                    new Coordinate(37.602500, 126.967000)
+            ), ADMIN_USER);
+            dbUtil.saveCourse(course1);
+            dbUtil.saveCourse(course2);
+            dbUtil.saveCourse(course3);
+
+            var latitude = 37.5172;
+            var longitude = 127.0276;
+            var condition = new CourseFindCondition(latitude, longitude, 1000, null, null, null);
+
+            var courses = sut.findNearbyCourses(condition, null, null);
+
+            assertThat(courses.courses()).hasSize(2)
+                    .extracting(CourseResponse::name)
+                    .containsExactlyInAnyOrder(course1.name().value(), course2.name().value());
+            assertThat(course1.distanceFrom(new Coordinate(latitude, longitude)).value()).isLessThan(1000.0);
+            assertThat(course2.distanceFrom(new Coordinate(latitude, longitude)).value()).isLessThan(1000.0);
+            assertThat(course3.distanceFrom(new Coordinate(latitude, longitude)).value()).isGreaterThan(1000.0);
+        }
+
+        @Test
+        void 가까운_코스들을_조회하고_현위치에서_거리를_계산한다() {
+            var course1 = new Course(null, new CourseName("한강 러닝 코스"), List.of(
+                    new Coordinate(37.5180, 127.0280),
+                    new Coordinate(37.5175, 127.0270),
+                    new Coordinate(37.5170, 127.0265),
+                    new Coordinate(37.5180, 127.0280)
+            ), ADMIN_USER);
+            var course2 = new Course(null, new CourseName("양재천 산책길"), List.of(
+                    new Coordinate(37.5165, 127.0285),
+                    new Coordinate(37.5160, 127.0278),
+                    new Coordinate(37.5155, 127.0265),
+                    new Coordinate(37.5165, 127.0285)
+            ), ADMIN_USER);
+            var course3 = new Course(null, new CourseName("북악산 둘레길"), List.of(
+                    new Coordinate(37.602500, 126.967000),
+                    new Coordinate(37.603000, 126.968000),
+                    new Coordinate(37.603500, 126.969000),
+                    new Coordinate(37.602500, 126.967000)
+            ), ADMIN_USER);
+            dbUtil.saveCourse(course1);
+            dbUtil.saveCourse(course2);
+            dbUtil.saveCourse(course3);
+            var mapLatitude = 37.5172;
+            var mapLongitude = 127.0276;
+            var userLatitude = 37.5153291;
+            var userLongitude = 127.1031347;
+            var condition = new CourseFindCondition(mapLatitude, mapLongitude, 1000, null, null, null);
+
+            var courses = sut.findNearbyCourses(condition, userLatitude, userLongitude);
+
+            assertThat(course1.distanceFrom(new Coordinate(mapLatitude, mapLongitude)).value()).isLessThan(1000.0);
+            assertThat(course2.distanceFrom(new Coordinate(mapLatitude, mapLongitude)).value()).isLessThan(1000.0);
+            assertThat(course3.distanceFrom(new Coordinate(mapLatitude, mapLongitude)).value()).isGreaterThan(1000.0);
+
+            assertThat(courses.courses()).hasSize(2)
+                    .extracting(CourseResponse::name)
+                    .containsExactlyInAnyOrder(course1.name().value(), course2.name().value());
+
+            assertThat(courses.courses()).extracting(CourseResponse::distance).allMatch(Optional::isPresent);
+            assertThat(courses.courses().get(0).distance().get().value()).isCloseTo(6640, Percentage.withPercentage(1));
+            assertThat(courses.courses().get(1).distance().get().value()).isCloseTo(6583, Percentage.withPercentage(1));
+        }
+
+        @Test
+        void 더_보여줄_코스가_없으면_hasNext_false() {
+            List<Coordinate> coordinates = CoordinateTestUtil.square(new Coordinate(37.5180, 127.0280), new Coordinate(37.5175, 127.0270));
+            List<Course> courses = new ArrayList<>();
+            for (int i = 0; i < 5; i++) courses.add(new Course(null, new CourseName("코스" + i), coordinates, ADMIN_USER));
+            dbUtil.saveAllCourses(courses);
+            var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, 0);
+
+            var result = sut.findNearbyCourses(condition, null, null);
+
+            assertThat(result.hasNext()).isFalse();
+        }
+
+        @Test
+        void 더_보여줄_코스가_있으면_hasNext_true() {
+            List<Coordinate> coordinates = CoordinateTestUtil.square(new Coordinate(37.5180, 127.0280), new Coordinate(37.5175, 127.0270));
+            List<Course> courses = new ArrayList<>();
+            for (int i = 0; i < 15; i++) courses.add(new Course(null, new CourseName("코스" + i), coordinates, ADMIN_USER));
+            dbUtil.saveAllCourses(courses);
+            var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, 0);
+
+            var result = sut.findNearbyCourses(condition, null, null);
+
+            assertThat(result.hasNext()).isTrue();
+        }
+
+        @Test
+        void 다음_데이터_존재_여부를_확인하며_코스_목록을_페이징_조회한다() {
+            List<Coordinate> coordinates = CoordinateTestUtil.square(new Coordinate(37.5180, 127.0280), new Coordinate(37.5175, 127.0270));
+            List<Course> courses = new ArrayList<>();
+            for (int i = 0; i < 15; i++) courses.add(new Course(null, new CourseName("코스" + i), coordinates, ADMIN_USER));
+            dbUtil.saveAllCourses(courses);
+            var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, 1);
+
+            var result = sut.findNearbyCourses(condition, null, null);
+
+            assertThat(result.hasNext()).isFalse();
+            assertThat(result.courses().size()).isEqualTo(5);
+        }
+
+        @Test
+        void 코스의_좌표_중에서_가장_가까운_좌표를_계산한다() {
+            var course = new Course(null, new CourseName("한강 러닝 코스"), List.of(
+                    new Coordinate(0, 0),
+                    new Coordinate(0, 0.0001),
+                    new Coordinate(0.0001, 0.0001),
+                    new Coordinate(0.0001, 0),
+                    new Coordinate(0, 0)
+            ), ADMIN_USER);
+            var insertCourse = dbUtil.saveCourse(course);
+
+            var result = sut.findClosestCoordinate(insertCourse.id(), 0.0002, 0.0002);
+
+            assertThat(result).isEqualTo(new Coordinate(0.0001, 0.0001));
+        }
+
+        @Test
+        void 코스가_존재하지_않을_경우_예외가_발생한다() {
+            assertThatThrownBy(() -> sut.findClosestCoordinate("notId", 0, 0))
+                    .isInstanceOf(NoSuchElementException.class);
+        }
     }
 
-    @Test
-    void 가까운_코스들을_조회한다() {
-        var course1 = new Course(null, new CourseName("한강 러닝 코스"), List.of(
-                new Coordinate(37.5180, 127.0280),
-                new Coordinate(37.5175, 127.0270),
-                new Coordinate(37.5170, 127.0265),
-                new Coordinate(37.5180, 127.0280)
-        ), ADMIN_USER);
-        var course2 = new Course(null, new CourseName("양재천 산책길"), List.of(
-                new Coordinate(37.5165, 127.0285),
-                new Coordinate(37.5160, 127.0278),
-                new Coordinate(37.5155, 127.0265),
-                new Coordinate(37.5165, 127.0285)
-        ), ADMIN_USER);
-        var course3 = new Course(null, new CourseName("북악산 둘레길"), List.of(
-                new Coordinate(37.602500, 126.967000),
-                new Coordinate(37.603000, 126.968000),
-                new Coordinate(37.603500, 126.969000),
-                new Coordinate(37.602500, 126.967000)
-        ), ADMIN_USER);
-        dbUtil.saveCourse(course1);
-        dbUtil.saveCourse(course2);
-        dbUtil.saveCourse(course3);
+    @Nested
+    class 코스_신고_및_알림_로직 {
 
-        var latitude = 37.5172;
-        var longitude = 127.0276;
-        var condition = new CourseFindCondition(latitude, longitude, 1000, null, null, null);
+        @Test
+        void 동일한_유저는_코스_횟수에_카운트_하지_않는다() {
+            User user = new User("507f1f77bcf86cd799439011", UserProvider.KAKAO, "provierId", Nickname.random());
 
-        var courses = sut.findNearbyCourses(condition, null, null);
+            var course1 = new Course(null, new CourseName("한강 러닝 코스"), List.of(
+                    new Coordinate(37.5180, 127.0280),
+                    new Coordinate(37.5175, 127.0270),
+                    new Coordinate(37.5170, 127.0265),
+                    new Coordinate(37.5180, 127.0280)
+            ), user);
 
-        assertThat(courses.courses()).hasSize(2)
-                .extracting(CourseResponse::name)
-                .containsExactlyInAnyOrder(course1.name().value(), course2.name().value());
-        assertThat(course1.distanceFrom(new Coordinate(latitude, longitude)).value()).isLessThan(1000.0);
-        assertThat(course2.distanceFrom(new Coordinate(latitude, longitude)).value()).isLessThan(1000.0);
-        assertThat(course3.distanceFrom(new Coordinate(latitude, longitude)).value()).isGreaterThan(1000.0);
-    }
+            dbUtil.saveUser(user);
+            Course course = dbUtil.saveCourse(course1);
 
-    @Test
-    void 가까운_코스들을_조회하고_현위치에서_거리를_계산한다() {
-        var course1 = new Course(null, new CourseName("한강 러닝 코스"), List.of(
-                new Coordinate(37.5180, 127.0280),
-                new Coordinate(37.5175, 127.0270),
-                new Coordinate(37.5170, 127.0265),
-                new Coordinate(37.5180, 127.0280)
-        ), ADMIN_USER);
-        var course2 = new Course(null, new CourseName("양재천 산책길"), List.of(
-                new Coordinate(37.5165, 127.0285),
-                new Coordinate(37.5160, 127.0278),
-                new Coordinate(37.5155, 127.0265),
-                new Coordinate(37.5165, 127.0285)
-        ), ADMIN_USER);
-        var course3 = new Course(null, new CourseName("북악산 둘레길"), List.of(
-                new Coordinate(37.602500, 126.967000),
-                new Coordinate(37.603000, 126.968000),
-                new Coordinate(37.603500, 126.969000),
-                new Coordinate(37.602500, 126.967000)
-        ), ADMIN_USER);
-        dbUtil.saveCourse(course1);
-        dbUtil.saveCourse(course2);
-        dbUtil.saveCourse(course3);
-        var mapLatitude = 37.5172;
-        var mapLongitude = 127.0276;
-        var userLatitude = 37.5153291;
-        var userLongitude = 127.1031347;
-        var condition = new CourseFindCondition(mapLatitude, mapLongitude, 1000, null, null, null);
+            sut.reportCourse(course.id(), user.id());
 
-        var courses = sut.findNearbyCourses(condition, userLatitude, userLongitude);
+            Course result = dbUtil.findCourseById(course.id());
+            assertThat(result.reportUserIds()).hasSize(1);
+        }
 
-        assertThat(course1.distanceFrom(new Coordinate(mapLatitude, mapLongitude)).value()).isLessThan(1000.0);
-        assertThat(course2.distanceFrom(new Coordinate(mapLatitude, mapLongitude)).value()).isLessThan(1000.0);
-        assertThat(course3.distanceFrom(new Coordinate(mapLatitude, mapLongitude)).value()).isGreaterThan(1000.0);
-
-        assertThat(courses.courses()).hasSize(2)
-                .extracting(CourseResponse::name)
-                .containsExactlyInAnyOrder(course1.name().value(), course2.name().value());
-
-        assertThat(courses.courses()).extracting(CourseResponse::distance).allMatch(Optional::isPresent);
-        assertThat(courses.courses().get(0).distance().get().value()).isCloseTo(6640, Percentage.withPercentage(1));
-        assertThat(courses.courses().get(1).distance().get().value()).isCloseTo(6583, Percentage.withPercentage(1));
-    }
-
-    @Test
-    void 더_보여줄_코스가_없다() {
-        List<Coordinate> coordinates = CoordinateTestUtil.square(new Coordinate(37.5180, 127.0280), new Coordinate(37.5175, 127.0270));
-        List<Course> courses = new ArrayList<>();
-        for (int i = 0; i < 5; i++) courses.add(new Course(null, new CourseName("코스" + i), coordinates, ADMIN_USER));
-        dbUtil.saveAllCourses(courses);
-        var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, 0);
-
-        var result = sut.findNearbyCourses(condition, null, null);
-
-        assertThat(result.hasNext()).isFalse();
-    }
-
-    @Test
-    void 더_보여줄_코스가_있다() {
-        List<Coordinate> coordinates = CoordinateTestUtil.square(new Coordinate(37.5180, 127.0280), new Coordinate(37.5175, 127.0270));
-        List<Course> courses = new ArrayList<>();
-        for (int i = 0; i < 15; i++) courses.add(new Course(null, new CourseName("코스" + i), coordinates, ADMIN_USER));
-        dbUtil.saveAllCourses(courses);
-        var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, 0);
-
-        var result = sut.findNearbyCourses(condition, null, null);
-
-        assertThat(result.hasNext()).isTrue();
-    }
-
-    @Test
-    void 다음_페이지의_코스를_찾는다() {
-        List<Coordinate> coordinates = CoordinateTestUtil.square(new Coordinate(37.5180, 127.0280), new Coordinate(37.5175, 127.0270));
-        List<Course> courses = new ArrayList<>();
-        for (int i = 0; i < 15; i++) courses.add(new Course(null, new CourseName("코스" + i), coordinates, ADMIN_USER));
-        dbUtil.saveAllCourses(courses);
-        var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, 1);
-
-        var result = sut.findNearbyCourses(condition, null, null);
-
-        assertThat(result.hasNext()).isFalse();
-        assertThat(result.courses().size()).isEqualTo(5);
-    }
-
-    @Test
-    void 코스의_좌표_중에서_가장_가까운_좌표를_계산한다() {
-        var course = new Course(null, new CourseName("한강 러닝 코스"), List.of(
-                new Coordinate(0, 0),
-                new Coordinate(0, 0.0001),
-                new Coordinate(0.0001, 0.0001),
-                new Coordinate(0.0001, 0),
-                new Coordinate(0, 0)
-        ), ADMIN_USER);
-        var insertCourse = dbUtil.saveCourse(course);
-
-        var result = sut.findClosestCoordinate(insertCourse.id(), 0.0002, 0.0002);
-
-        assertThat(result).isEqualTo(new Coordinate(0.0001, 0.0001));
-    }
-
-    @Test
-    void 코스가_존재하지_않을_경우_예외가_발생한다() {
-        assertThatThrownBy(() -> sut.findClosestCoordinate("notId", 0, 0))
-                .isInstanceOf(NoSuchElementException.class);
-    }
-
-    @Test
-    void 동일한_유저는_코스_횟수에_카운트_하지_않는다() {
-        User user = new User("507f1f77bcf86cd799439011", UserProvider.KAKAO, "provierId", Nickname.random());
-
-        var course1 = new Course(null, new CourseName("한강 러닝 코스"), List.of(
-                new Coordinate(37.5180, 127.0280),
-                new Coordinate(37.5175, 127.0270),
-                new Coordinate(37.5170, 127.0265),
-                new Coordinate(37.5180, 127.0280)
-        ), user);
-
-        dbUtil.saveUser(user);
-        Course course = dbUtil.saveCourse(course1);
-
-        sut.reportCourse(course.id(), user.id());
-
-        Course result = dbUtil.findCourseById(course.id());
-        assertThat(result.reportUserIds()).hasSize(1);
-    }
-
-    @Test
-    void 두번_이하로_신고되면_알람이_안간다() {
-        Course course = new Course("507f1f77bcf86cd799439011", new CourseName("코스"), List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
-        User user1 = new User("507f191e810c19729de860ea", UserProvider.KAKAO, "providerId1", Nickname.random());
-        User user2 = new User("507f191e810c19729de860eb", UserProvider.KAKAO, "providerId2", Nickname.random());
+        @Test
+        void 두번_이하로_신고되면_알람이_안간다() {
+            Course course = new Course("507f1f77bcf86cd799439011", new CourseName("코스"), List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
+            User user1 = new User("507f191e810c19729de860ea", UserProvider.KAKAO, "providerId1", Nickname.random());
+            User user2 = new User("507f191e810c19729de860eb", UserProvider.KAKAO, "providerId2", Nickname.random());
 
 
-        Course targetCourse = dbUtil.saveCourse(course);
-        dbUtil.saveUser(user1);
-        dbUtil.saveUser(user2);
+            Course targetCourse = dbUtil.saveCourse(course);
+            dbUtil.saveUser(user1);
+            dbUtil.saveUser(user2);
 
-        sut.reportCourse(targetCourse.id(), user1.id());
-        sut.reportCourse(targetCourse.id(), user2.id());
+            sut.reportCourse(targetCourse.id(), user1.id());
+            sut.reportCourse(targetCourse.id(), user2.id());
 
-        Course result = dbUtil.findCourseById(targetCourse.id());
-        assertThat(result.reportUserIds()).hasSize(2);
-        verify(courseAlerter, times(0)).alertCourse(any(Course.class));
-    }
+            Course result = dbUtil.findCourseById(targetCourse.id());
+            assertThat(result.reportUserIds()).hasSize(2);
+            verify(courseAlerter, times(0)).alertCourse(any(Course.class));
+        }
 
-    @Test
-    void 세번_이상으로_신고되면_알람이_간다() {
-        Course course = new Course(null, new CourseName("코스"), List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
-        User user1 = new User("507f191e810c19729de860ea", UserProvider.KAKAO, "providerId1", Nickname.random());
-        User user2 = new User("507f191e810c19729de860eb", UserProvider.KAKAO, "providerId2", Nickname.random());
-        User user3 = new User("507f191e810c19729de860ec", UserProvider.KAKAO, "providerId3", Nickname.random());
+        @Test
+        void 세번_이상으로_신고되면_알람이_간다() {
+            Course course = new Course(null, new CourseName("코스"), List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
+            User user1 = new User("507f191e810c19729de860ea", UserProvider.KAKAO, "providerId1", Nickname.random());
+            User user2 = new User("507f191e810c19729de860eb", UserProvider.KAKAO, "providerId2", Nickname.random());
+            User user3 = new User("507f191e810c19729de860ec", UserProvider.KAKAO, "providerId3", Nickname.random());
 
 
-        Course targetCourse = dbUtil.saveCourse(course);
-        dbUtil.saveUser(user1);
-        dbUtil.saveUser(user2);
-        dbUtil.saveUser(user3);
+            Course targetCourse = dbUtil.saveCourse(course);
+            dbUtil.saveUser(user1);
+            dbUtil.saveUser(user2);
+            dbUtil.saveUser(user3);
 
-        sut.reportCourse(targetCourse.id(), user1.id());
-        sut.reportCourse(targetCourse.id(), user2.id());
-        sut.reportCourse(targetCourse.id(), user3.id());
+            sut.reportCourse(targetCourse.id(), user1.id());
+            sut.reportCourse(targetCourse.id(), user2.id());
+            sut.reportCourse(targetCourse.id(), user3.id());
 
-        Course result = dbUtil.findCourseById(targetCourse.id());
-        assertThat(result.reportUserIds()).hasSize(3);
-        verify(courseAlerter, times(1)).alertCourse(any());
+            Course result = dbUtil.findCourseById(targetCourse.id());
+            assertThat(result.reportUserIds()).hasSize(3);
+            verify(courseAlerter, times(1)).alertCourse(any());
+        }
     }
 
     @Nested
@@ -320,7 +340,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
             course.reviews().add(new Review(ADMIN_USER, "야경이 멋집니다", 5));
             Course saved = dbUtil.saveCourse(course);
 
-            org.mockito.Mockito.when(courseTagGenerator.generate(any(Course.class)))
+            Mockito.when(courseTagGenerator.generate(any(Course.class)))
                     .thenReturn(List.of(CourseTag.NIGHT_VIEW, CourseTag.FLAT));
 
             sut.regenerateTags(saved.id());
@@ -346,14 +366,10 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
     @Nested
     class 나의_코스_조회 {
 
-        private User user;
-        private User otherUser;
         private List<Coordinate> sampleCoordinates;
 
         @BeforeEach
-        void setUp() {
-            user = dbUtil.saveUser(new User(UserProvider.KAKAO, "myProviderId"));
-            otherUser = dbUtil.saveUser(new User(UserProvider.KAKAO, "otherProviderId"));
+        void setUpNested() {
             sampleCoordinates = CoordinateTestUtil.square(new Coordinate(37.5180, 127.0280), new Coordinate(37.5175, 127.0270));
         }
 
@@ -421,13 +437,6 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
     @Nested
     class 유저_코스_생성 {
 
-        private User user;
-
-        @BeforeEach
-        void setUp() {
-            user = dbUtil.saveUser(new User(UserProvider.KAKAO, "providerId"));
-        }
-
         @Test
         void 유저가_생성한_코스를_저장한다() {
 
@@ -484,81 +493,54 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
     }
 
     @Nested
-    class 리뷰_추가 {
+    class 리뷰_추가_삭제_신고 {
 
-        private User reviewer;
         private String courseId;
+        private String reviewId;
 
         @BeforeEach
-        void setUp() {
-            User courseCreator = dbUtil.saveUser(new User(UserProvider.KAKAO, "creatorProviderId"));
-            reviewer = dbUtil.saveUser(new User(UserProvider.KAKAO, "reviewerProviderId"));
-
+        void setUpNested() {
             Course course = new Course(null, new CourseName("테스트 코스"), List.of(
                     new Coordinate(37.5180, 127.0280),
                     new Coordinate(37.5175, 127.0270),
                     new Coordinate(37.5170, 127.0265),
                     new Coordinate(37.5180, 127.0280)
-            ), courseCreator);
+            ), ADMIN_USER);
 
             courseId = dbUtil.saveCourse(course).id();
         }
 
         @Test
         void 리뷰를_추가하면_DB에_저장된다() {
-            sut.addReview(courseId, reviewer.id(), "좋은 코스입니다", 4);
+            sut.addReview(courseId, user.id(), "좋은 코스입니다", 4);
 
             Course result = dbUtil.findCourseById(courseId);
             assertThat(result.reviews()).hasSize(1);
-            assertThat(result.reviews().get(0).userId()).isEqualTo(reviewer.id());
+            assertThat(result.reviews().get(0).userId()).isEqualTo(user.id());
             assertThat(result.reviews().get(0).content()).isEqualTo("좋은 코스입니다");
             assertThat(result.reviews().get(0).rating()).isEqualTo(4);
         }
 
         @Test
         void 존재하지_않는_코스에_리뷰를_추가하면_예외가_발생한다() {
-            assertThatThrownBy(() -> sut.addReview("notExistCourseId", reviewer.id(), "좋은 코스입니다", 4))
+            assertThatThrownBy(() -> sut.addReview("notExistCourseId", user.id(), "좋은 코스입니다", 4))
                     .isInstanceOf(NoSuchElementException.class);
         }
 
         @Test
         void 이미_리뷰를_작성한_유저가_추가하면_예외가_발생한다() {
-            sut.addReview(courseId, reviewer.id(), "좋은 코스입니다", 4);
+            sut.addReview(courseId, user.id(), "좋은 코스입니다", 4);
 
-            assertThatThrownBy(() -> sut.addReview(courseId, reviewer.id(), "또 쓰는 리뷰", 3))
+            assertThatThrownBy(() -> sut.addReview(courseId, user.id(), "또 쓰는 리뷰", 3))
                     .isInstanceOf(IllegalArgumentException.class);
-        }
-    }
-
-    @Nested
-    class 리뷰_삭제 {
-
-        private User reviewer;
-        private User otherUser;
-        private String courseId;
-        private String reviewId;
-
-        @BeforeEach
-        void setUp() {
-            User courseCreator = dbUtil.saveUser(new User(UserProvider.KAKAO, "creatorProviderId"));
-            reviewer = dbUtil.saveUser(new User(UserProvider.KAKAO, "reviewerProviderId"));
-            otherUser = dbUtil.saveUser(new User(UserProvider.KAKAO, "otherProviderId"));
-
-            Course course = new Course(null, new CourseName("테스트 코스"), List.of(
-                    new Coordinate(37.5180, 127.0280),
-                    new Coordinate(37.5175, 127.0270),
-                    new Coordinate(37.5170, 127.0265),
-                    new Coordinate(37.5180, 127.0280)
-            ), courseCreator);
-
-            courseId = dbUtil.saveCourse(course).id();
-            sut.addReview(courseId, reviewer.id(), "좋은 코스입니다", 5);
-            reviewId = dbUtil.findCourseById(courseId).reviews().getFirst().id();
         }
 
         @Test
         void 리뷰를_삭제하면_DB에서_제거된다() {
-            sut.deleteReview(courseId, reviewId, reviewer.id());
+            sut.addReview(courseId, user.id(), "좋은 코스입니다", 5);
+            reviewId = dbUtil.findCourseById(courseId).reviews().getFirst().id();
+
+            sut.deleteReview(courseId, reviewId, user.id());
 
             Course result = dbUtil.findCourseById(courseId);
             assertThat(result.reviews()).isEmpty();
@@ -566,51 +548,33 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         @Test
         void 존재하지_않는_코스의_리뷰를_삭제하면_예외가_발생한다() {
-            assertThatThrownBy(() -> sut.deleteReview("notExistCourseId", reviewId, reviewer.id()))
+            sut.addReview(courseId, user.id(), "좋은 코스입니다", 5);
+            reviewId = dbUtil.findCourseById(courseId).reviews().getFirst().id();
+
+            assertThatThrownBy(() -> sut.deleteReview("notExistCourseId", reviewId, user.id()))
                     .isInstanceOf(NoSuchElementException.class);
         }
 
         @Test
         void 존재하지_않는_리뷰를_삭제하면_예외가_발생한다() {
-            assertThatThrownBy(() -> sut.deleteReview(courseId, "notExistReviewId", reviewer.id()))
+            assertThatThrownBy(() -> sut.deleteReview(courseId, "notExistReviewId", user.id()))
                     .isInstanceOf(NoSuchElementException.class);
         }
 
         @Test
         void 작성자가_아닌_경우_삭제하면_예외가_발생한다() {
+            sut.addReview(courseId, user.id(), "좋은 코스입니다", 5);
+            reviewId = dbUtil.findCourseById(courseId).reviews().getFirst().id();
+
             assertThatThrownBy(() -> sut.deleteReview(courseId, reviewId, otherUser.id()))
                     .isInstanceOf(UnauthorizedException.class);
-        }
-    }
-
-    @Nested
-    class 리뷰_신고 {
-
-        private User reporter;
-        private String courseId;
-        private String reviewId;
-
-        @BeforeEach
-        void setUp() {
-            User courseCreator = dbUtil.saveUser(new User(UserProvider.KAKAO, "creatorProviderId"));
-            reporter = dbUtil.saveUser(new User(UserProvider.KAKAO, "reporterProviderId"));
-
-            Course course = new Course(null, new CourseName("테스트 코스3"), List.of(
-                    new Coordinate(37.5180, 127.0280),
-                    new Coordinate(37.5175, 127.0270),
-                    new Coordinate(37.5170, 127.0265),
-                    new Coordinate(37.5180, 127.0280)
-            ), courseCreator);
-
-            courseId = dbUtil.saveCourse(course).id();
-
-            sut.addReview(courseId, courseCreator.id(), "좋은 코스입니다", 5);
-
-            reviewId = dbUtil.findCourseById(courseId).reviews().get(0).id();
         }
 
         @Test
         void 리뷰를_신고하면_알람이_간다() {
+            sut.addReview(courseId, user.id(), "좋은 코스입니다", 5);
+            reviewId = dbUtil.findCourseById(courseId).reviews().get(0).id();
+
             sut.reportReview(courseId, reviewId, reporter.id());
 
             verify(courseAlerter, times(0)).alertCourse(any());
@@ -618,6 +582,9 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         @Test
         void 리뷰를_두번_신고하면_알람이_두번_간다() {
+            sut.addReview(courseId, user.id(), "좋은 코스입니다", 5);
+            reviewId = dbUtil.findCourseById(courseId).reviews().get(0).id();
+
             User reporter2 = dbUtil.saveUser(new User(UserProvider.KAKAO, "reporter2ProviderId"));
 
             sut.reportReview(courseId, reviewId, reporter.id());
