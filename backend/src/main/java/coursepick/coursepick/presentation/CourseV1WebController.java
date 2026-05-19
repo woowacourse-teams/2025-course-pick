@@ -116,13 +116,12 @@ public class CourseV1WebController {
 
     @Login
     @PostMapping("/courses/file")
-    public String importFilesToCustomCourse(
+    public void importFilesToCustomCourse(
             @RequestParam("file") MultipartFile multipartFile,
             @RequestParam("name") String name,
             @UserId String userId
     ) {
         courseApplicationService.importCustomCourseFile(multipartFile, name, userId);
-        return "파일 추가 성공";
     }
 
     @Override
