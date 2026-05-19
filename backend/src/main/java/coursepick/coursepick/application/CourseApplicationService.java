@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,12 +38,9 @@ public class CourseApplicationService {
 
     @Transactional
     public void addCustomCourse(String name, List<Coordinate> coordinates, String userId) {
-        User user = getUser(userId);
-        Course newCourse = new Course(null, name, coordinates, user);
         CourseName courseName = new CourseName(name);
         validateDuplicatedCourseName(courseName);
         User user = getUser(userId);
-
         Course newCourse = new Course(null, courseName, coordinates, user);
         courseRepository.save(newCourse);
     }
