@@ -205,9 +205,9 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         @Test
         void 더_보여줄_코스가_없으면_hasNext_false() {
-            List<Coordinate> coordinates = CoordinateTestUtil.square(new Coordinate(37.5180, 127.0280), new Coordinate(37.5175, 127.0270));
-            List<Course> courses = new ArrayList<>();
-            for (int i = 0; i < 5; i++) courses.add(new Course(null, new CourseName("코스" + i), coordinates, ADMIN_USER));
+            var coordinates = CoordinateTestUtil.square(new Coordinate(37.5180, 127.0280), new Coordinate(37.5175, 127.0270));
+            var courses = new ArrayList<Course>();
+            for (var i = 0; i < 5; i++) courses.add(new Course(null, new CourseName("코스" + i), coordinates, ADMIN_USER));
             dbUtil.saveAllCourses(courses);
             var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, 0);
 
@@ -218,9 +218,9 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         @Test
         void 더_보여줄_코스가_있으면_hasNext_true() {
-            List<Coordinate> coordinates = CoordinateTestUtil.square(new Coordinate(37.5180, 127.0280), new Coordinate(37.5175, 127.0270));
-            List<Course> courses = new ArrayList<>();
-            for (int i = 0; i < 15; i++) courses.add(new Course(null, new CourseName("코스" + i), coordinates, ADMIN_USER));
+            var coordinates = CoordinateTestUtil.square(new Coordinate(37.5180, 127.0280), new Coordinate(37.5175, 127.0270));
+            var courses = new ArrayList<Course>();
+            for (var i = 0; i < 15; i++) courses.add(new Course(null, new CourseName("코스" + i), coordinates, ADMIN_USER));
             dbUtil.saveAllCourses(courses);
             var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, 0);
 
@@ -231,9 +231,9 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         @Test
         void 다음_데이터_존재_여부를_확인하며_코스_목록을_페이징_조회한다() {
-            List<Coordinate> coordinates = CoordinateTestUtil.square(new Coordinate(37.5180, 127.0280), new Coordinate(37.5175, 127.0270));
-            List<Course> courses = new ArrayList<>();
-            for (int i = 0; i < 15; i++) courses.add(new Course(null, new CourseName("코스" + i), coordinates, ADMIN_USER));
+            var coordinates = CoordinateTestUtil.square(new Coordinate(37.5180, 127.0280), new Coordinate(37.5175, 127.0270));
+            var courses = new ArrayList<Course>();
+            for (var i = 0; i < 15; i++) courses.add(new Course(null, new CourseName("코스" + i), coordinates, ADMIN_USER));
             dbUtil.saveAllCourses(courses);
             var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, 1);
 
@@ -271,7 +271,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         @Test
         void 동일한_유저는_코스_횟수에_카운트_하지_않는다() {
-            User user = new User("507f1f77bcf86cd799439011", UserProvider.KAKAO, "provierId", Nickname.random());
+            var user = new User("507f1f77bcf86cd799439011", UserProvider.KAKAO, "provierId", Nickname.random());
 
             var course1 = new Course(null, new CourseName("한강 러닝 코스"), List.of(
                     new Coordinate(37.5180, 127.0280),
@@ -281,42 +281,42 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
             ), user);
 
             dbUtil.saveUser(user);
-            Course course = dbUtil.saveCourse(course1);
+            var course = dbUtil.saveCourse(course1);
 
             sut.reportCourse(course.id(), user.id());
 
-            Course result = dbUtil.findCourseById(course.id());
+            var result = dbUtil.findCourseById(course.id());
             assertThat(result.reportUserIds()).hasSize(1);
         }
 
         @Test
         void 두번_이하로_신고되면_알람이_안간다() {
-            Course course = new Course("507f1f77bcf86cd799439011", new CourseName("코스"), List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
-            User user1 = new User("507f191e810c19729de860ea", UserProvider.KAKAO, "providerId1", Nickname.random());
-            User user2 = new User("507f191e810c19729de860eb", UserProvider.KAKAO, "providerId2", Nickname.random());
+            var course = new Course("507f191e810c19729de860ea", new CourseName("코스"), List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
+            var user1 = new User("507f191e810c19729de860eb", UserProvider.KAKAO, "providerId1", Nickname.random());
+            var user2 = new User("507f191e810c19729de860ec", UserProvider.KAKAO, "providerId2", Nickname.random());
 
 
-            Course targetCourse = dbUtil.saveCourse(course);
+            var targetCourse = dbUtil.saveCourse(course);
             dbUtil.saveUser(user1);
             dbUtil.saveUser(user2);
 
             sut.reportCourse(targetCourse.id(), user1.id());
             sut.reportCourse(targetCourse.id(), user2.id());
 
-            Course result = dbUtil.findCourseById(targetCourse.id());
+            var result = dbUtil.findCourseById(targetCourse.id());
             assertThat(result.reportUserIds()).hasSize(2);
             verify(courseAlerter, times(0)).alertCourse(any(Course.class));
         }
 
         @Test
         void 세번_이상으로_신고되면_알람이_간다() {
-            Course course = new Course(null, new CourseName("코스"), List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
-            User user1 = new User("507f191e810c19729de860ea", UserProvider.KAKAO, "providerId1", Nickname.random());
-            User user2 = new User("507f191e810c19729de860eb", UserProvider.KAKAO, "providerId2", Nickname.random());
-            User user3 = new User("507f191e810c19729de860ec", UserProvider.KAKAO, "providerId3", Nickname.random());
+            var course = new Course(null, new CourseName("코스"), List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
+            var user1 = new User("507f191e810c19729de860ed", UserProvider.KAKAO, "providerId1", Nickname.random());
+            var user2 = new User("507f191e810c19729de860ee", UserProvider.KAKAO, "providerId2", Nickname.random());
+            var user3 = new User("507f191e810c19729de860ef", UserProvider.KAKAO, "providerId3", Nickname.random());
 
 
-            Course targetCourse = dbUtil.saveCourse(course);
+            var targetCourse = dbUtil.saveCourse(course);
             dbUtil.saveUser(user1);
             dbUtil.saveUser(user2);
             dbUtil.saveUser(user3);
@@ -325,7 +325,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
             sut.reportCourse(targetCourse.id(), user2.id());
             sut.reportCourse(targetCourse.id(), user3.id());
 
-            Course result = dbUtil.findCourseById(targetCourse.id());
+            var result = dbUtil.findCourseById(targetCourse.id());
             assertThat(result.reportUserIds()).hasSize(3);
             verify(courseAlerter, times(1)).alertCourse(any());
         }
@@ -338,14 +338,14 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         void 리뷰가_있으면_태그를_생성하여_코스에_저장한다() {
             var course = new Course(null, new CourseName("코스"), List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
             course.reviews().add(new Review(ADMIN_USER, "야경이 멋집니다", 5));
-            Course saved = dbUtil.saveCourse(course);
+            var saved = dbUtil.saveCourse(course);
 
             Mockito.when(courseTagGenerator.generate(any(Course.class)))
                     .thenReturn(List.of(CourseTag.NIGHT_VIEW, CourseTag.FLAT));
 
             sut.regenerateTags(saved.id());
 
-            Course result = dbUtil.findCourseById(saved.id());
+            var result = dbUtil.findCourseById(saved.id());
             assertThat(result.tags()).containsExactly(CourseTag.NIGHT_VIEW, CourseTag.FLAT);
             verify(courseTagGenerator, times(1)).generate(any(Course.class));
         }
@@ -353,11 +353,11 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         @Test
         void 리뷰가_없으면_태그를_생성하지_않는다() {
             var course = new Course(null, new CourseName("코스"), List.of(new Coordinate(0, 0), new Coordinate(10, 10)), ADMIN_USER);
-            Course saved = dbUtil.saveCourse(course);
+            var saved = dbUtil.saveCourse(course);
 
             sut.regenerateTags(saved.id());
 
-            Course result = dbUtil.findCourseById(saved.id());
+            var result = dbUtil.findCourseById(saved.id());
             assertThat(result.tags()).isEmpty();
             verify(courseTagGenerator, times(0)).generate(any(Course.class));
         }
@@ -440,8 +440,8 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         @Test
         void 유저가_생성한_코스를_저장한다() {
 
-            String name = "나만의 코스1";
-            List<Coordinate> coordinates = List.of(
+            var name = "나만의 코스1";
+            var coordinates = List.of(
                     new Coordinate(37.602500, 126.967000),
                     new Coordinate(37.603000, 126.968000),
                     new Coordinate(37.603500, 126.969000),
@@ -450,15 +450,15 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
             sut.addCustomCourse(name, coordinates, user.id());
 
-            Course result = dbUtil.findCourseByName(name);
+            var result = dbUtil.findCourseByName(name);
             assertThat(result.name().value()).isEqualTo(name);
         }
 
 
         @Test
         void 유저가_존재하지_않을_경우_예외를_던진다() {
-            String name = "나만의 코스1";
-            List<Coordinate> coordinates = List.of(
+            var name = "나만의 코스1";
+            var coordinates = List.of(
                     new Coordinate(37.602500, 126.967000),
                     new Coordinate(37.603000, 126.968000),
                     new Coordinate(37.603500, 126.969000),
@@ -476,8 +476,8 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
                 " 나만의 코스   "
         })
         void 앞_뒤_공백을_제거하여_코스를_생성한다(String name) {
-            String expectedName = "나만의 코스";
-            List<Coordinate> coordinates = List.of(
+            var expectedName = "나만의 코스";
+            var coordinates = List.of(
                     new Coordinate(37.602500, 126.967000),
                     new Coordinate(37.603000, 126.968000),
                     new Coordinate(37.603500, 126.969000),
@@ -486,7 +486,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
             sut.addCustomCourse(name, coordinates, user.id());
 
-            Course result = dbUtil.findCourseByName(expectedName);
+            var result = dbUtil.findCourseByName(expectedName);
             assertThat(result.name().value()).isEqualTo(expectedName);
         }
 
@@ -500,7 +500,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         @BeforeEach
         void setUpNested() {
-            Course course = new Course(null, new CourseName("테스트 코스"), List.of(
+            var course = new Course(null, new CourseName("테스트 코스"), List.of(
                     new Coordinate(37.5180, 127.0280),
                     new Coordinate(37.5175, 127.0270),
                     new Coordinate(37.5170, 127.0265),
@@ -514,7 +514,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         void 리뷰를_추가하면_DB에_저장된다() {
             sut.addReview(courseId, user.id(), "좋은 코스입니다", 4);
 
-            Course result = dbUtil.findCourseById(courseId);
+            var result = dbUtil.findCourseById(courseId);
             assertThat(result.reviews()).hasSize(1);
             assertThat(result.reviews().get(0).userId()).isEqualTo(user.id());
             assertThat(result.reviews().get(0).content()).isEqualTo("좋은 코스입니다");
@@ -542,7 +542,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
             sut.deleteReview(courseId, reviewId, user.id());
 
-            Course result = dbUtil.findCourseById(courseId);
+            var result = dbUtil.findCourseById(courseId);
             assertThat(result.reviews()).isEmpty();
         }
 
@@ -585,7 +585,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
             sut.addReview(courseId, user.id(), "좋은 코스입니다", 5);
             reviewId = dbUtil.findCourseById(courseId).reviews().get(0).id();
 
-            User reporter2 = dbUtil.saveUser(new User(UserProvider.KAKAO, "reporter2ProviderId"));
+            var reporter2 = dbUtil.saveUser(new User(UserProvider.KAKAO, "reporter2ProviderId"));
 
             sut.reportReview(courseId, reviewId, reporter.id());
             sut.reportReview(courseId, reviewId, reporter2.id());
