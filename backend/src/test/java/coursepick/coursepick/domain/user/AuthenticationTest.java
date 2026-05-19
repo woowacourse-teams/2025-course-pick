@@ -9,13 +9,13 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 
+import static coursepick.coursepick.test_util.UserFixture.TEST_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class AuthenticationTest {
 
     private static final Duration TOKEN_VALIDITY = Duration.ofDays(30);
     private static final SecretKey TEST_KEY = Jwts.SIG.HS256.key().build();
-    private static final User TEST_USER = new User("user123", UserProvider.KAKAO, "kakaoUserId123", new Nickname("테스트 닉네임"));
 
     @Test
     void 생성된_토큰은_사용자_ID를_subject로_포함한다() {
@@ -27,7 +27,7 @@ class AuthenticationTest {
                 .parseSignedClaims(authentication.accessToken())
                 .getPayload();
 
-        assertThat(claims.getSubject()).isEqualTo("user123");
+        assertThat(claims.getSubject()).isEqualTo(TEST_USER.id());
     }
 
     @Test
@@ -78,6 +78,6 @@ class AuthenticationTest {
 
         String userId = authentication.validateAndGetUserId(TEST_KEY);
 
-        assertThat(userId).isEqualTo("user123");
+        assertThat(userId).isEqualTo(TEST_USER.id());
     }
 }
