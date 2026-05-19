@@ -12,7 +12,6 @@ import org.bson.types.Binary;
 import org.springframework.core.convert.converter.Converter;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 
@@ -48,13 +47,11 @@ public class CourseReader implements Converter<Document, Course> {
         return new HashSet<>(reportUserIds);
     }
 
-    private LocalDateTime parseCreatedAt(Document source) {
+    private Instant parseCreatedAt(Document source) {
         Date date = Optional.ofNullable(source.getDate("createdAt"))
                 .orElseGet(() -> source.getObjectId("_id").getDate());
 
-        return date.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime();
+        return date.toInstant();
     }
 
     private List<CourseTag> parseTags(Document source) {
