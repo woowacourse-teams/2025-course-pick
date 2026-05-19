@@ -6,6 +6,7 @@ import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.course.*;
 import coursepick.coursepick.domain.user.User;
+import coursepick.coursepick.domain.user.UserProvider;
 import coursepick.coursepick.domain.user.UserRepository;
 import coursepick.coursepick.presentation.dto.*;
 import jakarta.validation.Valid;
@@ -107,7 +108,7 @@ public class AdminWebController {
 
     @PostMapping("/admin/api/import")
     public void importFiles(@RequestParam("files") List<MultipartFile> files) throws IOException {
-        User user = userRepository.findByProviderAndProviderId(null, "ADMIN")
+        User user = userRepository.findByProviderAndProviderId(UserProvider.NONE, "admin")
             .orElseThrow(() -> ErrorType.NOT_EXIST_USER.create("admin"));
 
         for (MultipartFile file : files) {
