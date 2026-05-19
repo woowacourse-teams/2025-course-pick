@@ -46,12 +46,14 @@ public class CourseApplicationService {
     }
 
     @Transactional
-    public void importCustomCourseFile(MultipartFile file, String courseName, String userId) {
+    public void importCustomCourseFile(MultipartFile file, String name, String userId) {
+        CourseName courseName = new CourseName(name);
+        validateDuplicatedCourseName(courseName);
         User user = getUser(userId);
 
         try (CourseFile courseFile = CourseFile.from(file)) {
             Course course = courseParserFacade.parse(courseFile, user).getFirst();
-            course.changeName(courseName);
+            course.changeName(courseName.value());
 
             courseRepository.save(course);
         } catch (IOException e) {
