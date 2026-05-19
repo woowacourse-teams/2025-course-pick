@@ -11,7 +11,7 @@ class CoordinateBuilderTest {
     @Test
     void Douglas_Peucker_알고리즘을_사용하여_경로를_단순화한다() {
         // 직선상에 있는 점들과 튀는 점 하나
-        List<Coordinate> coordinates = List.of(
+        var coordinates = List.of(
                 new Coordinate(0, 0),
                 new Coordinate(0.00001, 0.00001), // 직선에 가까움
                 new Coordinate(0.00005, 0.00005), // 직선에 가까움
@@ -21,10 +21,10 @@ class CoordinateBuilderTest {
                 new Coordinate(0.0005, 0.0005)    // 마지막 점
         );
 
-        CoordinateBuilder builder = CoordinateBuilder.fromRawCoordinates(coordinates);
+        var builder = CoordinateBuilder.fromRawCoordinates(coordinates);
 
         // 10m 오차로 단순화
-        List<Coordinate> simplified = builder.simplify(new Meter(10)).build();
+        var simplified = builder.simplify(new Meter(10)).build();
 
         // 점의 개수가 줄어들어야 함
         assertThat(simplified.size()).isLessThan(coordinates.size());
@@ -43,10 +43,10 @@ class CoordinateBuilderTest {
                 new Coordinate(37.55, 127.05)
         );
 
-        CoordinateBuilder builder = CoordinateBuilder.fromRawCoordinates(coordinates);
+        var builder = CoordinateBuilder.fromRawCoordinates(coordinates);
 
         // 아주 작은 오차로 단순화해도 직선이면 점이 많이 제거됨
-        List<Coordinate> simplified = builder.simplify(new Meter(1)).build();
+        var simplified = builder.simplify(new Meter(1)).build();
 
         // 첫 점과 끝 점만 남음
         assertThat(simplified).hasSize(2);
