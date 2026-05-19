@@ -194,7 +194,16 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         @Test
         void 코스의_좌표_중에서_가장_가까운_좌표를_계산한다() {
-            var course = createCourse("한강 러닝 코스", 한강_좌표, ADMIN_USER) ;
+            var coordinates =  List.of(
+                    new Coordinate(0, 0),
+                    new Coordinate(0, 0.0001),
+                    new Coordinate(0.0001, 0.0001),
+                    new Coordinate(0.0001, 0),
+                    new Coordinate(0, 0)
+            );
+
+            var course = createCourse("한강 러닝 코스", coordinates, ADMIN_USER);
+
             var insertCourse = dbUtil.saveCourse(course);
 
             var result = sut.findClosestCoordinate(insertCourse.id(), 0.0002, 0.0002);
