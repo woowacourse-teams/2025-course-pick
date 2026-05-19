@@ -1,0 +1,99 @@
+package coursepick.coursepick.application;
+
+import coursepick.coursepick.application.dto.CourseDetailResponse;
+import coursepick.coursepick.application.dto.CourseResponse;
+import coursepick.coursepick.application.dto.CoursesResponse;
+import coursepick.coursepick.domain.course.*;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.Nullable;
+import org.springframework.data.domain.Slice;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+import static coursepick.coursepick.application.exception.ErrorType.INVALID_COORDINATE_COUNT;
+import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_COURSE;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class CourseQueryService {
+
+    private final CourseRepository courseRepository;
+    private final RouteFinder routeFinder;
+
+    public CoursesResponse findNearbyCourses(CourseFindCondition condition, @Nullable Double userLatitude, @Nullable Double userLongitude) {
+        Slice<Course> coursesWithinScope = courseRepository.findAllHasDistanceWithin(condition);
+        return CoursesResponse.from(coursesWithinScope, createUserPositionOrNull(userLatitude, userLongitude));
+    }
+
+    public CoursesResponse findCustomCourses(String userId, @Nullable Double userLatitude, @Nullable Double userLongitude) {
+        List<Course> customCourses = courseRepository.findAllCustomCourses(userId);
+        return CoursesResponse.from(customCourses, createUserPositionOrNull(userLatitude, userLongitude));
+    }
+
+    public DraftSegment findDraftRoute(List<Coordinate> routePoints) {
+        if (routePoints.size() < 2) {
+            throw INVALID_COORDINATE_COUNT.create(routePoints.size());
+        }
+        DraftSegment draftRoute = DraftSegment.empty();
+        for (int i = 0; i < routePoints.size() - 1; i++) {
+            List<Coordinate> path = routeFinder.find(routePoints.get(i), routePoints.get(i + 1));
+            draftRoute = draftRoute.merge(DraftSegment.of(path));
+        }
+        List<Coordinate> coordinates = draftRoute.coordinates();
+        return DraftSegment.of(coordinates.subList(1, coordinates.size() - 1));
+    }
+
+    public List<Coordinate> routesToCourse(String id, double originLatitude, double originLongitude) {
+        Coordinate destination = findClosestCoordinate(id, originLatitude, originLongitude);
+        return routeFinder.find(new Coordinate(originLatitude, originLongitude), destination);
+    }
+
+    public Coordinate findClosestCoordinate(String id, double latitude, double longitude) {
+        Course course = getCourse(id);
+
+        return course.closestCoordinateFrom(new Coordinate(latitude, longitude));
+    }
+
+    public List<CourseResponse> findFavoriteCourses(List<String> ids) {
+        List<Course> courses = courseRepository.findByIdIn(ids);
+        loggingForNotExistsCourse(ids, courses);
+
+        return courses.stream()
+                .map(CourseResponse::from)
+                .toList();
+    }
+
+    public CourseDetailResponse findCourseDetail(String id) {
+        Course course = getCourse(id);
+        return CourseDetailResponse.from(course);
+    }
+
+    private static Coordinate createUserPositionOrNull(@Nullable Double userLatitude, @Nullable Double userLongitude) {
+        Coordinate coordinate = null;
+        if (userLatitude != null && userLongitude != null) {
+            coordinate = new Coordinate(userLatitude, userLongitude);
+        }
+        return coordinate;
+    }
+
+    private void loggingForNotExistsCourse(List<String> ids, List<Course> courses) {
+        List<String> foundIds = courses.stream()
+                .map(Course::id)
+                .toList();
+        for (String id : ids) {
+            if (!foundIds.contains(id)) {
+                log.warn("존재하지 않는 코스에 대한 조회: {}", id);
+            }
+        }
+    }
+
+    private Course getCourse(String courseId) {
+        return courseRepository.findById(courseId)
+                .orElseThrow(() -> NOT_EXIST_COURSE.create(courseId));
+    }
+}
