@@ -5,6 +5,7 @@ import coursepick.coursepick.infrastructure.snapper.OsrmCoordinateSnapper;
 import coursepick.coursepick.test_util.AbstractMockServerTest;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -74,8 +75,8 @@ class OsrmCoordinateSnapperTest extends AbstractMockServerTest {
 
     @Test
     void 응답이_오래걸리면_원본_좌표를_반환한다() {
-        mock(osrmSnapResponse(), 6000);
-        var sut = new OsrmCoordinateSnapper(anyRestClient());
+        mock(osrmSnapResponse(), 500);
+        var sut = new OsrmCoordinateSnapper(anyRestClient(Duration.ofMillis(200)));
 
         List<Coordinate> originals = List.of(
                 new Coordinate(37.5045224, 127.048996),

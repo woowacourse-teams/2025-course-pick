@@ -6,6 +6,7 @@ import coursepick.coursepick.test_util.AbstractMockServerTest;
 import org.junit.jupiter.api.Test;
 
 import java.net.SocketTimeoutException;
+import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -116,8 +117,8 @@ class OsrmRouteFinderTest extends AbstractMockServerTest {
 
     @Test
     void 응답이_오래걸리면_타임아웃이_발생한다() {
-        mock(osrmResponse(), 6000);
-        var sut = new OsrmRouteFinder(anyRestClient());
+        mock(osrmResponse(), 500);
+        var sut = new OsrmRouteFinder(anyRestClient(Duration.ofMillis(200)));
 
         assertThatThrownBy(() -> sut.find(new Coordinate(0, 0), new Coordinate(0, 0)))
                 .hasRootCauseExactlyInstanceOf(SocketTimeoutException.class);

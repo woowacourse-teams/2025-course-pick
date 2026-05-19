@@ -27,9 +27,13 @@ public abstract class AbstractMockServerTest {
     }
 
     protected RestClient anyRestClient() {
+        return anyRestClient(Duration.ofSeconds(5));
+    }
+
+    protected RestClient anyRestClient(Duration readTimeout) {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setConnectTimeout(Duration.ofSeconds(1));
-        requestFactory.setReadTimeout(Duration.ofSeconds(5));
+        requestFactory.setReadTimeout(readTimeout);
 
         return RestClient.builder()
                 .requestFactory(requestFactory)
