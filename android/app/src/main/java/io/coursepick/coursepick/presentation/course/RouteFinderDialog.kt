@@ -93,24 +93,26 @@ private fun RouteFinderOptions(
             .background(colorResource(R.color.background_secondary)),
     ) {
         RouteFinderApplication.Entries.forEachIndexed { index: Int, routeFinder: RouteFinderApplication ->
-            Text(
-                text = stringResource(routeFinder.nameId),
-                color = colorResource(R.color.item_primary),
-                fontSize = 16.sp,
-                modifier =
-                    Modifier
-                        .clip(RoundedCornerShape(16.dp))
-                        .fillMaxWidth()
-                        .clickable { onSelectOption(routeFinder) }
-                        .padding(horizontal = 24.dp, vertical = 12.dp),
-            )
-
-            if (index != RouteFinderApplication.Entries.lastIndex) {
-                HorizontalDivider(
-                    thickness = 1.dp,
-                    color = colorResource(R.color.background_border),
-                    modifier = Modifier.padding(horizontal = 16.dp),
+            if (routeFinder != RouteFinderApplication.None) {
+                Text(
+                    text = stringResource(routeFinder.nameId),
+                    color = colorResource(R.color.item_primary),
+                    fontSize = 16.sp,
+                    modifier =
+                        Modifier
+                            .clip(RoundedCornerShape(16.dp))
+                            .fillMaxWidth()
+                            .clickable { onSelectOption(routeFinder) }
+                            .padding(horizontal = 24.dp, vertical = 12.dp),
                 )
+
+                if (index != RouteFinderApplication.Entries.lastIndex) {
+                    HorizontalDivider(
+                        thickness = 1.dp,
+                        color = colorResource(R.color.background_border),
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                    )
+                }
             }
         }
     }

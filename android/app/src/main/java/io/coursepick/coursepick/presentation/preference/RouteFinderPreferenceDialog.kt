@@ -37,8 +37,8 @@ import io.coursepick.coursepick.presentation.course.RouteFinderApplication
 
 @Composable
 fun RouteFinderPreferenceDialog(
-    selection: RouteFinder?,
-    onConfirm: (RouteFinder?) -> Unit,
+    selection: RouteFinder,
+    onConfirm: (RouteFinder) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -70,12 +70,12 @@ fun RouteFinderPreferenceDialog(
 
             Spacer(Modifier.height(16.dp))
 
-            var selectedOption: RouteFinder? by remember(selection) { mutableStateOf(selection) }
+            var selectedOption: RouteFinder by remember(selection) { mutableStateOf(selection) }
 
             RouteFinderPreferenceOptions(
-                options = listOf(null) + RouteFinderApplication.Entries,
+                options = RouteFinderApplication.Entries,
                 selection = selectedOption,
-                onSelectOption = { option: RouteFinder? -> selectedOption = option },
+                onSelectOption = { option: RouteFinder -> selectedOption = option },
                 modifier = Modifier.fillMaxWidth(),
             )
 
@@ -92,9 +92,9 @@ fun RouteFinderPreferenceDialog(
 
 @Composable
 private fun RouteFinderPreferenceOptions(
-    options: List<RouteFinderApplication?>,
-    selection: RouteFinder?,
-    onSelectOption: (RouteFinder?) -> Unit,
+    options: List<RouteFinderApplication>,
+    selection: RouteFinder,
+    onSelectOption: (RouteFinder) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -102,24 +102,24 @@ private fun RouteFinderPreferenceOptions(
             .clip(RoundedCornerShape(16.dp))
             .background(colorResource(R.color.background_secondary)),
     ) {
-        options.forEachIndexed { index: Int, routeFinder: RouteFinderApplication? ->
+        options.forEachIndexed { index: Int, routeFinder: RouteFinderApplication ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier =
                     Modifier
                         .clip(RoundedCornerShape(16.dp))
                         .fillMaxWidth()
-                        .clickable { onSelectOption(routeFinder?.routeFinder) }
+                        .clickable { onSelectOption(routeFinder.routeFinder) }
                         .padding(horizontal = 12.dp),
             ) {
                 RadioButton(
-                    selected = routeFinder?.routeFinder == selection,
-                    onClick = { onSelectOption(routeFinder?.routeFinder) },
+                    selected = routeFinder.routeFinder == selection,
+                    onClick = { onSelectOption(routeFinder.routeFinder) },
                     colors = RadioButtonDefaults.colors(selectedColor = colorResource(R.color.point_primary)),
                 )
 
                 Text(
-                    text = stringResource(routeFinder?.nameId ?: R.string.selected_route_finder_application_entry_none),
+                    text = stringResource(routeFinder.nameId),
                     color = colorResource(R.color.item_primary),
                     fontSize = 16.sp,
                 )
@@ -187,7 +187,7 @@ private fun RouteFinderPreferenceDialogButtons(
 @Composable
 private fun RouteFinderPreferenceDialogPreview() {
     RouteFinderPreferenceDialog(
-        selection = null,
+        selection = RouteFinder.None,
         onConfirm = { },
         onDismiss = { },
     )

@@ -16,33 +16,31 @@ class PreferencesDataSource
     constructor(
         @Settings private val dataStore: DataStore<Preferences>,
     ) {
-        val routeFinder: Flow<RouteFinder?> =
+        val routeFinder: Flow<RouteFinder> =
             dataStore.data.map { preferences: Preferences ->
                 when (preferences[ROUTE_FINDER_KEY]) {
                     ROUTE_FINDER_VALUE_LOCAL -> RouteFinder.Local
                     ROUTE_FINDER_VALUE_KAKAO_MAP -> RouteFinder.ThirdParty.KakaoMap
                     ROUTE_FINDER_VALUE_NAVER_MAP -> RouteFinder.ThirdParty.NaverMap
-                    else -> null
+                    else -> RouteFinder.None
                 }
             }
 
-        suspend fun setRouteFinder(routeFinder: RouteFinder?) {
+        suspend fun setRouteFinder(routeFinder: RouteFinder) {
             dataStore.edit { preferences: MutablePreferences ->
-                if (routeFinder == null) {
-                    preferences.remove(ROUTE_FINDER_KEY)
-                } else {
-                    preferences[ROUTE_FINDER_KEY] =
-                        when (routeFinder) {
-                            RouteFinder.Local -> ROUTE_FINDER_VALUE_LOCAL
-                            RouteFinder.ThirdParty.KakaoMap -> ROUTE_FINDER_VALUE_KAKAO_MAP
-                            RouteFinder.ThirdParty.NaverMap -> ROUTE_FINDER_VALUE_NAVER_MAP
-                        }
-                }
+                preferences[ROUTE_FINDER_KEY] =
+                    when (routeFinder) {
+                        RouteFinder.None -> ROUTE_FINDER_VALUE_NONE
+                        RouteFinder.Local -> ROUTE_FINDER_VALUE_LOCAL
+                        RouteFinder.ThirdParty.KakaoMap -> ROUTE_FINDER_VALUE_KAKAO_MAP
+                        RouteFinder.ThirdParty.NaverMap -> ROUTE_FINDER_VALUE_NAVER_MAP
+                    }
             }
         }
 
         companion object {
             private val ROUTE_FINDER_KEY: Preferences.Key<String> = stringPreferencesKey("route_finder_key")
+            private const val ROUTE_FINDER_VALUE_NONE = "none"
             private const val ROUTE_FINDER_VALUE_LOCAL = "local"
             private const val ROUTE_FINDER_VALUE_KAKAO_MAP = "kakao_map"
             private const val ROUTE_FINDER_VALUE_NAVER_MAP = "naver_map"

@@ -22,18 +22,18 @@ class PreferencesViewModel
         private val _showRouteFinderPreferenceDialog = MutableStateFlow(false)
         val showRouteFinderPreferenceDialog: StateFlow<Boolean> get() = _showRouteFinderPreferenceDialog.asStateFlow()
 
-        val routeFinderPreference: StateFlow<RouteFinder?> =
+        val routeFinderPreference: StateFlow<RouteFinder> =
             preferencesRepository.routeFinder.stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = null,
+                initialValue = RouteFinder.None,
             )
 
         fun onOpenRouteFinderPreference() {
             _showRouteFinderPreferenceDialog.value = true
         }
 
-        fun onSubmitRouteFinderPreference(routeFinder: RouteFinder?) {
+        fun onSubmitRouteFinderPreference(routeFinder: RouteFinder) {
             onDismissRouteFinderPreference()
             viewModelScope.launch {
                 preferencesRepository.setRouteFinder(routeFinder)

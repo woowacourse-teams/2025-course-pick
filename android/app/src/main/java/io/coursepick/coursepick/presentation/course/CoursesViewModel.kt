@@ -461,12 +461,8 @@ class CoursesViewModel
             }
 
             viewModelScope.launch {
-                val routeFinder: RouteFinder? = preferencesRepository.routeFinder.first()
-                if (routeFinder == null) {
-                    _routeFinderDialogCourse.value = course
-                } else {
-                    navigateToCourse(course, routeFinder)
-                }
+                val routeFinder: RouteFinder = preferencesRepository.routeFinder.first()
+                navigateToCourse(course, routeFinder)
             }
         }
 
@@ -501,6 +497,10 @@ class CoursesViewModel
             viewModelScope.launch {
                 currentLocation()?.let { location: Location ->
                     when (routeFinder) {
+                        RouteFinder.None -> {
+                            _routeFinderDialogCourse.value = selectedCourse
+                        }
+
                         RouteFinder.Local -> {
                             fetchRouteToCourse(selectedCourse, location.coordinate)
                         }

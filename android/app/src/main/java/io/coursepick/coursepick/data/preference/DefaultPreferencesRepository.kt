@@ -10,9 +10,9 @@ class DefaultPreferencesRepository
     constructor(
         private val dataSource: PreferencesDataSource,
     ) : PreferencesRepository {
-        override val routeFinder: Flow<RouteFinder?> = dataSource.routeFinder
+        override val routeFinder: Flow<RouteFinder> = dataSource.routeFinder
 
-        override suspend fun setRouteFinder(routeFinder: RouteFinder?) {
+        override suspend fun setRouteFinder(routeFinder: RouteFinder) {
             dataSource.setRouteFinder(routeFinder)
         }
     }

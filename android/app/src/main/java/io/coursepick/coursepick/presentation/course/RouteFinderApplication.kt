@@ -14,6 +14,8 @@ sealed class RouteFinderApplication(
     val routeFinder: RouteFinder,
     @get:StringRes val nameId: Int,
 ) {
+    data object None : RouteFinderApplication(RouteFinder.None, R.string.selected_route_finder_application_entry_none)
+
     data object InApp : RouteFinderApplication(RouteFinder.Local, R.string.selected_route_finder_application_entry_in_app)
 
     sealed class ThirdParty(
@@ -85,6 +87,6 @@ sealed class RouteFinderApplication(
     }
 
     companion object {
-        val Entries = listOf(InApp, ThirdParty.KakaoMap, ThirdParty.NaverMap)
+        val Entries = listOf(None, InApp, ThirdParty.KakaoMap, ThirdParty.NaverMap)
     }
 }
