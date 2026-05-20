@@ -6,8 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -23,22 +22,24 @@ fun PreferencesScreen(
     onOpenRouteFinderPreference: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier.verticalScroll(rememberScrollState())) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .clickable { onOpenRouteFinderPreference() }
-                .padding(horizontal = 20.dp, vertical = 10.dp),
-        ) {
-            Text(
-                text = stringResource(R.string.selected_route_finder_application_setting_title),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-            )
+    LazyColumn(modifier) {
+        item {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .clickable { onOpenRouteFinderPreference() }
+                    .padding(horizontal = 20.dp, vertical = 10.dp),
+            ) {
+                Text(
+                    text = stringResource(R.string.selected_route_finder_application_setting_title),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                )
 
-            Spacer(Modifier.height(10.dp))
+                Spacer(Modifier.height(10.dp))
 
-            Text(text = stringResource(R.string.selected_route_finder_application_summary), fontSize = 16.sp)
+                Text(text = stringResource(R.string.selected_route_finder_application_summary), fontSize = 16.sp)
+            }
         }
     }
 }
