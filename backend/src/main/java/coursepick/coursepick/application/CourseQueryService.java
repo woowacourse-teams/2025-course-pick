@@ -82,12 +82,9 @@ public class CourseQueryService {
     }
 
     private void loggingForNotExistsCourse(List<String> ids, List<Course> courses) {
-        List<String> foundIds = courses.stream()
-                .map(Course::id)
-                .toList();
-        for (String id : ids) {
-            if (!foundIds.contains(id)) {
-                log.warn("존재하지 않는 코스에 대한 조회: {}", id);
+        for (Course course : courses) {
+            if (!ids.contains(course.id())) {
+                log.warn("존재하지 않는 코스에 대한 조회: {}", course.id());
             }
         }
     }
