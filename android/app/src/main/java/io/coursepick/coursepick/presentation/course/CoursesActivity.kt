@@ -62,6 +62,7 @@ import io.coursepick.coursepick.presentation.auth.AuthUiEvent
 import io.coursepick.coursepick.presentation.auth.AuthViewModel
 import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
+import io.coursepick.coursepick.presentation.coursedetail.CourseDetailActivity
 import io.coursepick.coursepick.presentation.customcourse.CustomCourseItem
 import io.coursepick.coursepick.presentation.customcourse.CustomCourseViewModel
 import io.coursepick.coursepick.presentation.customcourse.CustomCoursesFragment
@@ -127,6 +128,10 @@ class CoursesActivity :
 
             override fun report(course: CourseItem) {
                 viewModel.onReportCourse(course)
+            }
+
+            override fun navigateToDetail(course: CourseItem) {
+                startActivity(CourseDetailActivity.intent(this@CoursesActivity, course.id))
             }
         }
 
