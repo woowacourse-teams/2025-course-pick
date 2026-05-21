@@ -9,10 +9,13 @@ import org.assertj.core.data.Percentage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -30,24 +33,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+@ExtendWith(OutputCaptureExtension.class)
 class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
     @Autowired
     CourseApplicationService sut;
 
     @MockitoBean
-    Alerter courseAlerter;
-
-    @MockitoBean
     CourseTagGenerator courseTagGenerator;
-
-    @BeforeEach
-    void setUp() {
-        dbUtil.saveUser(ADMIN_USER);
-        dbUtil.saveUser(TEST_USER);
-        dbUtil.saveUser(TEST_USER2);
-        dbUtil.saveUser(TEST_USER3);
-    }
 
     @Nested
     class 코스_탐색 {
