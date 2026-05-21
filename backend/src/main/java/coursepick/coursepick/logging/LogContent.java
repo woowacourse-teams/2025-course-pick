@@ -1,9 +1,6 @@
 package coursepick.coursepick.logging;
 
-import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
 import java.nio.charset.StandardCharsets;
@@ -14,12 +11,12 @@ import java.util.regex.Pattern;
 import static net.logstash.logback.argument.StructuredArguments.kv;
 import static org.apache.commons.lang3.StringUtils.left;
 
-@Slf4j
 public class LogContent {
 
     private static final int MAX_BODY_LENGTH = 500;
     private static final Set<Pattern> SENSITIVE_URI_PATTERNS = Set.of(
-            Pattern.compile("^/admin/login$"));
+            Pattern.compile("^/admin/login$")
+    );
 
 
     public static Object[] http(ContentCachingRequestWrapper request, int status, long duration) {
