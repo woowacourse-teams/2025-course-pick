@@ -31,12 +31,4 @@ sealed interface CoursesUiEvent {
     object RequireFineLocationPermission : CoursesUiEvent
 
     object FetchCurrentLocationFailure : CoursesUiEvent
-
-    object ReportCourseSuccess : CoursesUiEvent
-
-    object CourseAlreadyReported : CoursesUiEvent
-
-    object ReportCourseUnauthorizedUser : CoursesUiEvent
-
-    object ReportCourseUnknownFailure : CoursesUiEvent
 }

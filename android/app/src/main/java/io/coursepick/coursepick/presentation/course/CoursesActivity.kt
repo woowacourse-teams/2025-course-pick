@@ -126,10 +126,6 @@ class CoursesActivity :
                 this@CoursesActivity.navigateToCourse(course)
             }
 
-            override fun report(course: CourseItem) {
-                viewModel.onReportCourse(course)
-            }
-
             override fun navigateToDetail(course: CourseItem) {
                 startActivity(CourseDetailActivity.intent(this@CoursesActivity, course.id))
             }
@@ -825,42 +821,6 @@ class CoursesActivity :
                 CoursesUiEvent.RequireFineLocationPermission -> {
                     showFineLocationPermissionRationaleForNavigation()
                 }
-
-                CoursesUiEvent.ReportCourseSuccess -> {
-                    Toast
-                        .makeText(
-                            this,
-                            getString(R.string.report_course_success_message),
-                            Toast.LENGTH_SHORT,
-                        ).show()
-                }
-
-                CoursesUiEvent.CourseAlreadyReported -> {
-                    Toast
-                        .makeText(
-                            this,
-                            getString(R.string.report_course_failure_already_reported),
-                            Toast.LENGTH_SHORT,
-                        ).show()
-                }
-
-                CoursesUiEvent.ReportCourseUnauthorizedUser -> {
-                    Toast
-                        .makeText(
-                            this,
-                            getString(R.string.report_course_failure_unauthorized_user_message),
-                            Toast.LENGTH_SHORT,
-                        ).show()
-                }
-
-                CoursesUiEvent.ReportCourseUnknownFailure -> {
-                    Toast
-                        .makeText(
-                            this,
-                            getString(R.string.report_course_failure_unknown_message),
-                            Toast.LENGTH_SHORT,
-                        ).show()
-                }
             }
         }
     }
@@ -878,7 +838,7 @@ class CoursesActivity :
                     authViewModel.uiEvent.collect { event: AuthUiEvent ->
                         when (event) {
                             is AuthUiEvent.AuthenticateSuccess -> {
-                                viewModel.onAuthSuccess(event.feature)
+                                viewModel.onAuthSuccess()
                             }
 
                             AuthUiEvent.AuthenticateFailure -> {
@@ -970,14 +930,6 @@ class CoursesActivity :
                             feature = feature,
                             onDismissRequest = viewModel::dismissAuthDialog,
                             onKakaoLoginClick = { authViewModel.authenticate(KakaoAuthenticator(this@CoursesActivity), feature) },
-                        )
-                    }
-
-                    viewModel.reportCourseDialogState.collectAsStateWithLifecycle().value?.let { course: CourseItem ->
-                        ReportCourseDialog(
-                            course = course,
-                            onConfirm = viewModel::submitCourseReport,
-                            onDismiss = viewModel::dismissReportCourseDialog,
                         )
                     }
                 }
