@@ -8,15 +8,23 @@ import org.springframework.context.annotation.Import;
 
 import static coursepick.coursepick.test_util.UserFixture.*;
 
-@Import({GpxTestUtil.class, DatabaseTestUtil.class, SyncAsyncTestConfig.class})
+@Import({GpxTestUtil.class, DatabaseTestUtil.class, SyncAsyncTestConfig.class, FakeAlerter.class, FakeCourseTagGenerator.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public abstract class AbstractIntegrationTest {
 
     @Autowired
     protected DatabaseTestUtil dbUtil;
 
+    @Autowired
+    protected FakeAlerter fakeAlerter;
+
+    @Autowired
+    protected FakeCourseTagGenerator fakeCourseTagGenerator;
+
     @BeforeEach
     void setUp() {
+        fakeAlerter.reset();
+        fakeCourseTagGenerator.reset();
         dbUtil.saveUser(ADMIN_USER);
         dbUtil.saveUser(TEST_USER);
         dbUtil.saveUser(TEST_USER2);

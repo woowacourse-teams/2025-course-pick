@@ -9,14 +9,9 @@ import org.assertj.core.data.Percentage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.system.CapturedOutput;
-import org.springframework.boot.test.system.OutputCaptureExtension;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
@@ -29,18 +24,11 @@ import static coursepick.coursepick.test_util.CourseFixture.*;
 import static coursepick.coursepick.test_util.UserFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
-@ExtendWith(OutputCaptureExtension.class)
 class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
     @Autowired
     CourseApplicationService sut;
-
-    @MockitoBean
-    CourseTagGenerator courseTagGenerator;
 
     @Nested
     class 코스_탐색 {
@@ -187,7 +175,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         @Test
         void 코스의_좌표_중에서_가장_가까운_좌표를_계산한다() {
-            var coordinates =  List.of(
+            var coordinates = List.of(
                     new Coordinate(0, 0),
                     new Coordinate(0, 0.0001),
                     new Coordinate(0.0001, 0.0001),
@@ -235,7 +223,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
             var result = dbUtil.findCourseById(targetCourse.id());
             assertThat(result.reportUserIds()).hasSize(2);
-            verify(courseAlerter, times(0)).alertCourse(any(Course.class));
+            assertThat(fakeAlerter.getCourseAlertCount()).isEqualTo(0);
         }
 
         @Test
@@ -249,7 +237,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
             var result = dbUtil.findCourseById(targetCourse.id());
             assertThat(result.reportUserIds()).hasSize(3);
-            verify(courseAlerter, times(1)).alertCourse(any());
+            assertThat(fakeAlerter.getCourseAlertCount()).isEqualTo(1);
         }
     }
 
@@ -262,14 +250,13 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
             course.reviews().add(new Review(ADMIN_USER, "야경이 멋집니다", 5));
             var saved = dbUtil.saveCourse(course);
 
-            Mockito.when(courseTagGenerator.generate(any(Course.class)))
-                    .thenReturn(List.of(CourseTag.NIGHT_VIEW, CourseTag.FLAT));
+            fakeCourseTagGenerator.setTagsToReturn(List.of(CourseTag.NIGHT_VIEW, CourseTag.FLAT));
 
             sut.regenerateTags(saved.id());
 
             var result = dbUtil.findCourseById(saved.id());
             assertThat(result.tags()).containsExactly(CourseTag.NIGHT_VIEW, CourseTag.FLAT);
-            verify(courseTagGenerator, times(1)).generate(any(Course.class));
+            assertThat(fakeCourseTagGenerator.getCallCount()).isEqualTo(1);
         }
 
         @Test
@@ -281,7 +268,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
             var result = dbUtil.findCourseById(saved.id());
             assertThat(result.tags()).isEmpty();
-            verify(courseTagGenerator, times(0)).generate(any(Course.class));
+            assertThat(fakeCourseTagGenerator.getCallCount()).isEqualTo(0);
         }
     }
 
@@ -430,7 +417,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
             sut.reportReview(courseId, reviewId, TEST_USER3.id());
 
-            verify(courseAlerter, times(1)).alertReview(any(), any());
+            assertThat(fakeAlerter.getReviewAlertCount()).isEqualTo(1);
         }
 
         @Test
@@ -441,7 +428,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
             sut.reportReview(courseId, reviewId, TEST_USER3.id());
             sut.reportReview(courseId, reviewId, TEST_USER2.id());
 
-            verify(courseAlerter, times(2)).alertReview(any(), any());
+            assertThat(fakeAlerter.getReviewAlertCount()).isEqualTo(2);
         }
     }
 }
