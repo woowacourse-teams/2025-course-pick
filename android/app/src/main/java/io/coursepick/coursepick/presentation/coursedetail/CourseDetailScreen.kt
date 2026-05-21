@@ -1,5 +1,7 @@
 package io.coursepick.coursepick.presentation.coursedetail
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -14,16 +16,21 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +42,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -46,44 +54,120 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.coursepick.coursepick.R
+import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseName
+import io.coursepick.coursepick.domain.course.Distance
+import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Length
+import io.coursepick.coursepick.domain.course.Longitude
+import io.coursepick.coursepick.presentation.auth.AuthDialog
+import io.coursepick.coursepick.presentation.auth.AuthFeature
+import io.coursepick.coursepick.presentation.auth.AuthUiEvent
+import io.coursepick.coursepick.presentation.auth.AuthViewModel
+import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
 import io.coursepick.coursepick.presentation.toDistanceText
 
 @Composable
 fun CourseDetailScreen(
-    modifier: Modifier = Modifier,
-    viewModel: CourseDetailViewModel = viewModel(),
+    onNavigateBack: () -> Unit,
+    courseDetailViewModel: CourseDetailViewModel = viewModel(),
+    authViewModel: AuthViewModel = viewModel(),
 ) {
-    val course: Course = viewModel.course.collectAsStateWithLifecycle().value
+    val context: Context = LocalContext.current
+    val course: Course = courseDetailViewModel.course.collectAsStateWithLifecycle().value
 
     CourseDetailScreen(
-        courseName = course.name,
-        length = course.length,
-        averageRating = viewModel.averageRating.collectAsStateWithLifecycle().value,
-        isFavorite = viewModel.isFavorite.collectAsStateWithLifecycle().value,
-        reviewCount = viewModel.reviewCount.collectAsStateWithLifecycle().value,
-        reviews = viewModel.reviews.collectAsStateWithLifecycle().value,
-        onDeleteReview = viewModel::deleteReview,
-        onReportReview = viewModel::reportReview,
-        onWriteReview = viewModel::onWriteReview,
-        modifier = modifier,
+        course = course,
+        averageRating = courseDetailViewModel.averageRating.collectAsStateWithLifecycle().value,
+        isFavorite = courseDetailViewModel.isFavorite.collectAsStateWithLifecycle().value,
+        reviewCount = courseDetailViewModel.reviewCount.collectAsStateWithLifecycle().value,
+        reviews = courseDetailViewModel.reviews.collectAsStateWithLifecycle().value,
+        onNavigateBack = onNavigateBack,
+        onReportCourse = courseDetailViewModel::onReportCourse,
+        onDeleteReview = courseDetailViewModel::deleteReview,
+        onReportReview = courseDetailViewModel::reportReview,
+        onWriteReview = courseDetailViewModel::onWriteReview,
     )
+
+    val authDialogState: AuthFeature? = courseDetailViewModel.authDialogState.collectAsStateWithLifecycle().value
+
+    if (authDialogState != null) {
+        LaunchedEffect(Unit) {
+            authViewModel.uiEvent.collect { event: AuthUiEvent -> event.handle(context, courseDetailViewModel) }
+        }
+
+        AuthDialog(
+            feature = authDialogState,
+            onDismissRequest = courseDetailViewModel::dismissAuthDialog,
+            onKakaoLoginClick = { authViewModel.authenticate(KakaoAuthenticator(context), authDialogState) },
+        )
+    }
+
+    if (courseDetailViewModel.showReportCourseDialog.collectAsStateWithLifecycle().value) {
+        LaunchedEffect(Unit) {
+            courseDetailViewModel.event.collect { event: CourseDetailEvent -> event.handle(context) }
+        }
+
+        ReportCourseDialog(
+            course = course,
+            onConfirm = courseDetailViewModel::submitCourseReport,
+            onDismiss = courseDetailViewModel::dismissReportCourseDialog,
+        )
+    }
+}
+
+private fun AuthUiEvent.handle(
+    context: Context,
+    viewModel: CourseDetailViewModel,
+) {
+    when (this) {
+        is AuthUiEvent.AuthenticateSuccess -> {
+            viewModel.onAuthSuccess(feature)
+        }
+
+        AuthUiEvent.AuthenticateFailure -> {
+            Toast.makeText(context, context.getString(R.string.authentication_failure_message), Toast.LENGTH_SHORT).show()
+        }
+    }
+}
+
+private fun CourseDetailEvent.handle(context: Context) {
+    when (this) {
+        CourseDetailEvent.NoNetwork -> {
+            Toast.makeText(context, context.getString(R.string.courses_no_network_message), Toast.LENGTH_SHORT).show()
+        }
+
+        CourseDetailEvent.ReportCourseSuccess -> {
+            Toast.makeText(context, context.getString(R.string.report_course_success_message), Toast.LENGTH_SHORT).show()
+        }
+
+        CourseDetailEvent.CourseAlreadyReported -> {
+            Toast.makeText(context, context.getString(R.string.report_course_failure_already_reported), Toast.LENGTH_SHORT).show()
+        }
+
+        CourseDetailEvent.ReportCourseUnauthorizedUser -> {
+            Toast.makeText(context, context.getString(R.string.report_course_failure_unauthorized_user_message), Toast.LENGTH_SHORT).show()
+        }
+
+        CourseDetailEvent.ReportCourseUnknownFailure -> {
+            Toast.makeText(context, context.getString(R.string.report_course_failure_unknown_message), Toast.LENGTH_SHORT).show()
+        }
+    }
 }
 
 @Composable
 private fun CourseDetailScreen(
-    courseName: CourseName,
-    length: Length,
+    course: Course,
     averageRating: Float,
     isFavorite: Boolean,
     reviewCount: Int,
     reviews: List<Review>,
+    onNavigateBack: () -> Unit,
+    onReportCourse: (Course) -> Unit,
     onDeleteReview: (Review) -> Unit,
     onReportReview: (Review) -> Unit,
     onWriteReview: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     var isFabVisible by remember { mutableStateOf(true) }
 
@@ -103,20 +187,29 @@ private fun CourseDetailScreen(
             }
         }
 
-    Scaffold(floatingActionButton = {
-        WriteReviewButton(
-            onClick = onWriteReview,
-            isVisible = isFabVisible,
-        )
-    }) { innerPadding: PaddingValues ->
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                onNavigateBack = onNavigateBack,
+                onReportCourse = { onReportCourse(course) },
+            )
+        },
+        floatingActionButton = {
+            WriteReviewButton(
+                onClick = onWriteReview,
+                isVisible = isFabVisible,
+            )
+        },
+    ) { innerPadding: PaddingValues ->
         Column(
-            modifier
+            Modifier
+                .background(colorResource(R.color.background_primary))
                 .padding(innerPadding)
                 .padding(horizontal = 20.dp, vertical = 10.dp),
         ) {
             CourseInfo(
-                courseName = courseName,
-                length = length,
+                courseName = course.name,
+                length = course.length,
                 isFavorite = isFavorite,
                 averageRating = averageRating,
             )
@@ -138,6 +231,55 @@ private fun CourseDetailScreen(
             )
         }
     }
+}
+
+@Composable
+fun TopAppBar(
+    onNavigateBack: () -> Unit,
+    onReportCourse: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    @OptIn(ExperimentalMaterial3Api::class)
+    CenterAlignedTopAppBar(
+        title = { Text(text = "코스 정보") },
+        navigationIcon = {
+            Icon(
+                painter = painterResource(R.drawable.icon_arrow_back),
+                contentDescription = null,
+                tint = colorResource(R.color.item_primary),
+                modifier =
+                    Modifier
+                        .padding(end = 10.dp)
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .clickable { onNavigateBack() }
+                        .padding(14.dp),
+            )
+        },
+        actions = {
+            Icon(
+                painter = painterResource(R.drawable.icon_report_course),
+                contentDescription = null,
+                tint = colorResource(R.color.item_primary),
+                modifier =
+                    Modifier
+                        .padding(end = 10.dp)
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .clickable { onReportCourse() }
+                        .padding(8.dp),
+            )
+        },
+        colors =
+            TopAppBarColors(
+                containerColor = colorResource(R.color.background_primary),
+                scrolledContainerColor = colorResource(R.color.background_primary),
+                navigationIconContentColor = colorResource(R.color.item_primary),
+                titleContentColor = colorResource(R.color.item_primary),
+                actionIconContentColor = colorResource(R.color.item_primary),
+            ),
+        modifier = modifier,
+    )
 }
 
 @Composable
@@ -317,8 +459,14 @@ private fun CourseReviews(
 @Composable
 private fun CourseDetailScreenPreview() {
     CourseDetailScreen(
-        courseName = CourseName("석촌호수 동호"),
-        length = Length(5678),
+        course =
+            Course(
+                id = "",
+                name = CourseName("석촌호수 동호 한바퀴"),
+                distance = Distance(0),
+                length = Length(0),
+                coordinates = List(2) { (Coordinate(Latitude(0.0), Longitude(0.0))) },
+            ),
         averageRating = 4.32F,
         isFavorite = false,
         reviewCount = 99,
@@ -332,6 +480,8 @@ private fun CourseDetailScreenPreview() {
                     comment = "리뷰 내용 ".repeat(10 + index * 5),
                 )
             },
+        onNavigateBack = { },
+        onReportCourse = { },
         onDeleteReview = { },
         onReportReview = { },
         onWriteReview = { },
