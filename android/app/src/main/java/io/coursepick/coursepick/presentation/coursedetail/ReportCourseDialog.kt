@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.course
+package io.coursepick.coursepick.presentation.coursedetail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -40,8 +40,8 @@ import io.coursepick.coursepick.domain.course.Longitude
 
 @Composable
 fun ReportCourseDialog(
-    course: CourseItem,
-    onConfirm: (CourseItem) -> Unit,
+    course: Course,
+    onConfirm: (Course) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -64,7 +64,7 @@ fun ReportCourseDialog(
                     .background(colorResource(R.color.background_primary))
                     .padding(20.dp),
         ) {
-            Text(text = course.name, color = colorResource(R.color.item_primary), fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Text(text = course.name.value, color = colorResource(R.color.item_primary), fontSize = 18.sp, fontWeight = FontWeight.Bold)
 
             Spacer(Modifier.height(10.dp))
 
@@ -191,17 +191,12 @@ private fun ReportCourseDialogButtons(
 private fun ReportCourseDialogPreview() {
     ReportCourseDialog(
         course =
-            CourseItem(
-                course =
-                    Course(
-                        id = "",
-                        name = CourseName("석촌호수 동호 한바퀴"),
-                        distance = Distance(0),
-                        length = Length(0),
-                        coordinates = List(2) { (Coordinate(Latitude(0.0), Longitude(0.0))) },
-                    ),
-                selected = false,
-                favorite = false,
+            Course(
+                id = "",
+                name = CourseName("석촌호수 동호 한바퀴"),
+                distance = Distance(0),
+                length = Length(0),
+                coordinates = List(2) { (Coordinate(Latitude(0.0), Longitude(0.0))) },
             ),
         onConfirm = { },
         onDismiss = { },

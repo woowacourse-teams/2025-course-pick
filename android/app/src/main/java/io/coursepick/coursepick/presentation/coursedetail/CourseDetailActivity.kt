@@ -24,7 +24,7 @@ class CourseDetailActivity : ComponentActivity() {
 
         setContent {
             CoursePickTheme {
-                CourseDetailScreen()
+                CourseDetailScreen(onNavigateBack = ::finish)
             }
         }
     }
