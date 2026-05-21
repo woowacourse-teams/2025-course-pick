@@ -52,7 +52,7 @@ class CoordinateTest {
 
         @Test
         void 생성하면_위도와_경도가_소수점_이하_7자리까지만_남는다() {
-            Coordinate coordinate = new Coordinate(80.123456789, 100.123456789);
+            var coordinate = new Coordinate(80.123456789, 100.123456789);
 
             assertThat(coordinate.latitude()).isEqualTo(80.1234567);
             assertThat(coordinate.longitude()).isEqualTo(100.1234567);
@@ -67,7 +67,7 @@ class CoordinateTest {
             var coordinate1 = new Coordinate(37.515348, 127.103015);
             var coordinate2 = new Coordinate(37.515348, 127.103015);
 
-            boolean result = coordinate1.equals(coordinate2);
+            var result = coordinate1.equals(coordinate2);
 
             assertThat(result).isTrue();
         }
@@ -77,7 +77,7 @@ class CoordinateTest {
             var coordinate1 = new Coordinate(37.515348, 127.103015);
             var coordinate2 = new Coordinate(37.515348, 127.103016);
 
-            boolean result = coordinate1.equals(coordinate2);
+            var result = coordinate1.equals(coordinate2);
 
             assertThat(result).isFalse();
         }
@@ -87,7 +87,7 @@ class CoordinateTest {
             var coordinate1 = new Coordinate(37.515348123456, 127.103015123456);
             var coordinate2 = new Coordinate(37.515348123999, 127.103015123999);
 
-            boolean result = coordinate1.equals(coordinate2);
+            var result = coordinate1.equals(coordinate2);
 
             assertThat(result).isTrue();
         }
@@ -109,7 +109,7 @@ class CoordinateTest {
             var start = new Coordinate(0.0, 0.0);
             var end = new Coordinate(endLat, endLng);
 
-            double ratio = target.projectionRatioBetween(start, end);
+            var ratio = target.projectionRatioBetween(start, end);
 
             assertThat(ratio).isEqualTo(expectedRatio);
         }
@@ -120,7 +120,7 @@ class CoordinateTest {
             var end = new Coordinate(3.0, 3.0);
             var target = new Coordinate(1.0, 1.0);
 
-            double ratio = target.projectionRatioBetween(start, end);
+            var ratio = target.projectionRatioBetween(start, end);
 
             assertThat(ratio).isEqualTo(0.0);
         }
@@ -131,7 +131,7 @@ class CoordinateTest {
             var end = new Coordinate(3.0, 3.0);
             var target = new Coordinate(3.0, 3.0);
 
-            double ratio = target.projectionRatioBetween(start, end);
+            var ratio = target.projectionRatioBetween(start, end);
 
             assertThat(ratio).isEqualTo(1.0);
         }

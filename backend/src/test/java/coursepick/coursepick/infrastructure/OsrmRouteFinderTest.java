@@ -117,7 +117,7 @@ class OsrmRouteFinderTest extends AbstractMockServerTest {
 
     @Test
     void 응답이_오래걸리면_타임아웃이_발생한다() {
-        mock(osrmResponse(), 500);
+        mock(osrmResponse(), 300);
         var sut = new OsrmRouteFinder(anyRestClient(Duration.ofMillis(200)));
 
         assertThatThrownBy(() -> sut.find(new Coordinate(0, 0), new Coordinate(0, 0)))

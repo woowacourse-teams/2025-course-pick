@@ -22,7 +22,7 @@ class CourseConverterTest extends AbstractIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
+        var now = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
 
         course = createCourse("테스트 코스", List.of(new Coordinate(37.5, 127.0), new Coordinate(37.51, 127.01), new Coordinate(37.52, 127.02)));
         ReflectionTestUtils.setField(course, "id", "507f1f77bcf86cd799439011");
@@ -38,7 +38,7 @@ class CourseConverterTest extends AbstractIntegrationTest {
     @Test
     void 코스_객체를_DB에_쓰고_다시_읽었을_때_데이터가_완전히_일치해야_한다() {
         dbUtil.saveCourse(course);
-        Course result = dbUtil.findCourseById(course.id());
+        var result = dbUtil.findCourseById(course.id());
         assertThat(result)
                 .usingRecursiveComparison()
                 .ignoringFields("createdAt", "reviews.createdAt") // 시간 필드는 별도 검증
@@ -53,7 +53,7 @@ class CourseConverterTest extends AbstractIntegrationTest {
         ReflectionTestUtils.setField(course, "createdAt", null);
 
         dbUtil.saveCourse(course);
-        Course result = dbUtil.findCourseById(course.id());
+        var result = dbUtil.findCourseById(course.id());
 
         assertThat(result.createdAt()).isNotNull();
     }

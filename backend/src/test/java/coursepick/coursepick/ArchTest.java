@@ -14,6 +14,8 @@ import com.tngtech.archunit.library.Architectures.LayeredArchitecture;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestClassOrder;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.params.ParameterizedTest;
 
 import java.io.IOException;
@@ -31,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * 프로젝트 전체의 아키텍처 및 코딩 컨벤션을 검증하는 메타 테스트 클래스입니다.
  * 'test_util' 패키지는 검증 대상에서 제외됩니다.
  */
+@Order(1)
 class ArchTest {
 
     // 분석할 대상 패키지를 지정합니다.
@@ -101,7 +104,8 @@ class ArchTest {
         Path testSourcePath = Paths.get("src/test/java/coursepick/coursepick");
 
         // 지역 변수 선언 시 명시적 타입 사용을 탐지하는 패턴 (메서드 내부를 가정하여 8자 이상의 공백으로 시작)
-        Pattern explicitTypePattern = Pattern.compile("^ {8,}(final\\s+)?([A-Z][a-zA-Z0-9<>._\\[\\]]*|int|long|boolean|double|float|char|byte|short)\\s+([a-z][a-zA-Z0-9_]*)\\s+=\\s+[^;]+;");
+        // 기본형 및 모든 참조형(제네릭 포함) 변수 선언 시 var를 사용하지 않는 경우 탐지 (여러 줄 초기화 고려하여 세미콜론 검사 제거)
+        Pattern explicitTypePattern = Pattern.compile("^ {8,}(final\\s+)?([A-Z][a-zA-Z0-9<>._\\[\\], ]*|int|long|boolean|double|float|char|byte|short)\\s+([a-z][a-zA-Z0-9_]*)\\s*=");
 
         try (Stream<Path> paths = Files.walk(testSourcePath)) {
             List<String> violations = paths

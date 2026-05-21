@@ -1,6 +1,5 @@
 package coursepick.coursepick.domain.course;
 
-import coursepick.coursepick.infrastructure.discord.DiscordAlerter;
 import coursepick.coursepick.test_util.AbstractIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -8,12 +7,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static coursepick.coursepick.test_util.CoordinateTestUtil.square;
 import static coursepick.coursepick.test_util.CoordinateTestUtil.upright;
 import static coursepick.coursepick.test_util.CourseFixture.createCourse;
-import static coursepick.coursepick.test_util.UserFixture.ADMIN_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CourseRepositoryTest extends AbstractIntegrationTest {
@@ -23,9 +20,6 @@ class CourseRepositoryTest extends AbstractIntegrationTest {
 
     @Autowired
     CourseRepository sut;
-
-    @MockitoBean
-    DiscordAlerter discordCourseReportAlerter;
 
     @BeforeEach
     void setUp() {

@@ -3,6 +3,7 @@ package coursepick.coursepick.test_util;
 import coursepick.coursepick.domain.course.Course;
 import coursepick.coursepick.domain.course.CourseTag;
 import coursepick.coursepick.domain.course.CourseTagGenerator;
+import org.springframework.context.annotation.Primary;
 import org.springframework.boot.test.context.TestComponent;
 
 import java.util.ArrayList;

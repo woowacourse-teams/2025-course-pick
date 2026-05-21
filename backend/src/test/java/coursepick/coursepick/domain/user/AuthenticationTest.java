@@ -19,9 +19,9 @@ class AuthenticationTest {
 
     @Test
     void 생성된_토큰은_사용자_ID를_subject로_포함한다() {
-        Authentication authentication = Authentication.auth(TEST_KEY, TEST_USER);
+        var authentication = Authentication.auth(TEST_KEY, TEST_USER);
 
-        Claims claims = Jwts.parser()
+        var claims = Jwts.parser()
                 .verifyWith(TEST_KEY)
                 .build()
                 .parseSignedClaims(authentication.accessToken())
@@ -32,38 +32,38 @@ class AuthenticationTest {
 
     @Test
     void 생성된_토큰은_30일_유효기간을_가진다() {
-        Instant beforeCreation = Instant.now().minusSeconds(1);
+        var beforeCreation = Instant.now().minusSeconds(1);
 
-        Authentication authentication = Authentication.auth(TEST_KEY, TEST_USER);
+        var authentication = Authentication.auth(TEST_KEY, TEST_USER);
 
-        Instant afterCreation = Instant.now().plusSeconds(1);
-        Claims claims = Jwts.parser()
+        var afterCreation = Instant.now().plusSeconds(1);
+        var claims = Jwts.parser()
                 .verifyWith(TEST_KEY)
                 .build()
                 .parseSignedClaims(authentication.accessToken())
                 .getPayload();
 
-        Date issuedAt = claims.getIssuedAt();
-        Date expiration = claims.getExpiration();
+        var issuedAt = claims.getIssuedAt();
+        var expiration = claims.getExpiration();
 
         assertThat(issuedAt).isBetween(
                 Date.from(beforeCreation),
                 Date.from(afterCreation)
         );
 
-        long actualValiditySeconds = (expiration.getTime() - issuedAt.getTime()) / 1000;
-        long expectedValiditySeconds = TOKEN_VALIDITY.toSeconds();
+        var actualValiditySeconds = (expiration.getTime() - issuedAt.getTime()) / 1000;
+        var expectedValiditySeconds = TOKEN_VALIDITY.toSeconds();
 
         assertThat(actualValiditySeconds).isEqualTo(expectedValiditySeconds);
     }
 
     @Test
     void 생성된_토큰은_올바른_키로_서명된다() {
-        Authentication authentication = Authentication.auth(TEST_KEY, TEST_USER);
+        var authentication = Authentication.auth(TEST_KEY, TEST_USER);
 
         assertThat(authentication.accessToken()).isNotNull();
 
-        Claims claims = Jwts.parser()
+        var claims = Jwts.parser()
                 .verifyWith(TEST_KEY)
                 .build()
                 .parseSignedClaims(authentication.accessToken())
@@ -74,9 +74,9 @@ class AuthenticationTest {
 
     @Test
     void 토큰에서_사용자_ID를_추출한다() {
-        Authentication authentication = Authentication.auth(TEST_KEY, TEST_USER);
+        var authentication = Authentication.auth(TEST_KEY, TEST_USER);
 
-        String userId = authentication.validateAndGetUserId(TEST_KEY);
+        var userId = authentication.validateAndGetUserId(TEST_KEY);
 
         assertThat(userId).isEqualTo(TEST_USER.id());
     }

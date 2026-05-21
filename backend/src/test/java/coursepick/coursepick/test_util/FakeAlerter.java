@@ -3,6 +3,7 @@ package coursepick.coursepick.test_util;
 import coursepick.coursepick.application.Alerter;
 import coursepick.coursepick.domain.course.Course;
 import coursepick.coursepick.domain.course.Review;
+import org.springframework.context.annotation.Primary;
 import org.springframework.boot.test.context.TestComponent;
 
 @TestComponent

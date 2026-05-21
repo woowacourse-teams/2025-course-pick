@@ -8,7 +8,7 @@ import coursepick.coursepick.infrastructure.discord.DiscordAlerter;
 
 @SpringBootTest
 @ActiveProfiles("local")
-public class LocalProfileTest {
+class LocalProfileTest {
 
     @Test
     void 로컬_프로필에서_어떤_환경변수_주입도_없이_컨텍스트가_정상적으로_뜬다() {

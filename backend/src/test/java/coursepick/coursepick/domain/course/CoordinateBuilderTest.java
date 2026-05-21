@@ -34,7 +34,7 @@ class CoordinateBuilderTest {
 
     @Test
     void 직선_경로의_경우_첫_점과_끝_점만_남는다() {
-        List<Coordinate> coordinates = List.of(
+        var coordinates = List.of(
                 new Coordinate(37.5, 127.0),
                 new Coordinate(37.51, 127.01),
                 new Coordinate(37.52, 127.02),
