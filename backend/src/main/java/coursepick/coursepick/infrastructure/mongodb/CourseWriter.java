@@ -39,7 +39,7 @@ public class CourseWriter implements Converter<Course, Document> {
         document.put("creatorId", source.creatorId());
         document.put("reportUserIds", source.reportUserIds());
         if (source.createdAt() != null) {
-            document.put("createdAt", Date.from(source.createdAt()));
+            document.put("createdAt", KstTimeConverter.toKstDate(source.createdAt()));
         }
         document.put("tags", convertTagsToNames(source.tags()));
         document.put("schemaVersion", 1);
@@ -59,7 +59,7 @@ public class CourseWriter implements Converter<Course, Document> {
                     reviewDoc.put("userId", review.userId());
                     reviewDoc.put("authorNickname", review.authorNickname());
                     reviewDoc.put("content", review.content());
-                    reviewDoc.put("createdAt", review.createdAt());
+                    reviewDoc.put("createdAt", KstTimeConverter.toKstDate(review.createdAt()));
                     reviewDoc.put("rating", review.rating());
                     reviewDoc.put("reportUserIds", review.reportUserIds());
                     return reviewDoc;
