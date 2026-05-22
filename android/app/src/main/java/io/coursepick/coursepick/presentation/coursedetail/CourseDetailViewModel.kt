@@ -144,10 +144,6 @@ class CourseDetailViewModel
             // TODO: 구현 예정
         }
 
-        fun onWriteReview() {
-            // TODO: 구현 예정
-        }
-
         companion object {
             private val COURSE_FIXTURE =
                 Course(
