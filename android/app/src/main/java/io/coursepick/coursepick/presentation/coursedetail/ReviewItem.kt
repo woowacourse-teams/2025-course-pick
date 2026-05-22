@@ -183,7 +183,7 @@ private fun ReviewItemBody(
 
             Spacer(Modifier.width(10.dp))
 
-            RatingStars(rating = rating, modifier = Modifier.height(14.dp))
+            StarRating(rating = rating, starSize = 14.dp)
         }
 
         Spacer(Modifier.height(4.dp))

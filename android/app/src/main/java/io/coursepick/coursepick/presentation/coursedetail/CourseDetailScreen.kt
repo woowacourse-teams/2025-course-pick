@@ -365,7 +365,7 @@ private fun CourseInfo(
 
             Spacer(Modifier.width(10.dp))
 
-            RatingStars(rating = averageRating, modifier = Modifier.height(18.dp))
+            StarRating(rating = averageRating, starSize = 18.dp)
         }
 
         Spacer(Modifier.height(10.dp))
