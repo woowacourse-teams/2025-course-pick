@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -134,7 +135,7 @@ private fun ReviewTextField(
         onValueChange = onValueChange,
         placeholder = {
             Text(
-                text = "코스에 대한 리뷰를 남겨주세요.",
+                text = stringResource(R.string.write_course_review_review_content_placeholder),
                 color = colorResource(R.color.item_tertiary),
                 fontSize = 16.sp,
             )

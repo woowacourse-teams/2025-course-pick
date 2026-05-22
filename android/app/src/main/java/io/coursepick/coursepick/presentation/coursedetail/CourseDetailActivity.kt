@@ -14,6 +14,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import dagger.hilt.android.AndroidEntryPoint
+import io.coursepick.coursepick.R
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 
 @AndroidEntryPoint
@@ -55,7 +56,7 @@ class CourseDetailActivity : ComponentActivity() {
     }
 
     private fun onLoadFailure() {
-        Toast.makeText(this@CourseDetailActivity, "코스 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this@CourseDetailActivity, getString(R.string.course_detail_load_failure_message), Toast.LENGTH_SHORT).show()
         finish()
     }
 

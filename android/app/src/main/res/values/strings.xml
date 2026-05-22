@@ -80,6 +80,7 @@
 
     <!--  코스 상세 화면  -->
     <string name="course_detail_header">코스 정보</string>
+    <string name="course_detail_load_failure_message">코스 정보를 불러오지 못했습니다.</string>
     <string name="course_detail_report_course_button_description">코스 신고</string>
     <string name="course_detail_navigate_back_description">뒤로 가기</string>
     <string name="course_detail_review_header">리뷰</string>
@@ -91,6 +92,9 @@
     <string name="review_item_my_review_chip">내 리뷰</string>
     <string name="review_item_action_delete">삭제하기</string>
     <string name="review_item_action_report">신고하기</string>
+
+    <!--  코스 리뷰 작성 화면  -->
+    <string name="write_course_review_review_content_placeholder">코스에 대한 리뷰를 남겨주세요.</string>
 
     <!--  메뉴 화면  -->
     <string name="menu_feedback_url">https://docs.google.com/forms/d/e/1FAIpQLSdsJcNUsOcDiKW0FI-M360IUS64IZQmnWtMTbZqJSrx7HQbtg/viewform?usp=pp_url&amp;entry.1079171803=%s</string>
