@@ -38,7 +38,7 @@ fun WriteCourseReviewScreen(viewModel: WriteCourseReviewViewModel = viewModel())
     WriteCourseReviewScreen(
         courseName = viewModel.courseName.collectAsStateWithLifecycle().value,
         length = viewModel.courseLength.collectAsStateWithLifecycle().value,
-        rating = viewModel.rating.collectAsStateWithLifecycle().value,
+        rating = viewModel.rating.collectAsStateWithLifecycle().value ?: 0F,
         onSelectRating = viewModel::setRating,
         reviewContent = viewModel.reviewContent.collectAsStateWithLifecycle().value,
         onReviewContentChange = viewModel::setReviewText,
@@ -176,7 +176,7 @@ private fun SubmitReviewButton(
     modifier: Modifier = Modifier,
 ) {
     Text(
-        text = "작성 완료",
+        text = stringResource(R.string.write_course_review_submit_button),
         color = colorResource(R.color.item_white),
         fontSize = 16.sp,
         textAlign = TextAlign.Center,

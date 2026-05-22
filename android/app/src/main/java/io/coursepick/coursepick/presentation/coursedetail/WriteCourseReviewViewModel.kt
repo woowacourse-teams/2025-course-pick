@@ -26,8 +26,8 @@ class WriteCourseReviewViewModel
         private val _reviewContent = MutableStateFlow("")
         val reviewContent: StateFlow<String> get() = _reviewContent.asStateFlow()
 
-        private val _rating = MutableStateFlow(0F)
-        val rating: StateFlow<Float> get() = _rating.asStateFlow()
+        private val _rating = MutableStateFlow<Float?>(null)
+        val rating: StateFlow<Float?> get() = _rating.asStateFlow()
 
         val canSubmit: StateFlow<Boolean> =
             combine(rating, reviewContent) { rating: Float?, reviewContent: String ->
