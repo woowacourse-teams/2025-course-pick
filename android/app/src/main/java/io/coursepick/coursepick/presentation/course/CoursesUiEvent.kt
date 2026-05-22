@@ -1,7 +1,7 @@
 package io.coursepick.coursepick.presentation.course
 
 import io.coursepick.coursepick.domain.course.Coordinate
-import io.coursepick.coursepick.presentation.routefinder.RouteFinderApplication
+import io.coursepick.coursepick.domain.preference.RouteFinder
 
 sealed interface CoursesUiEvent {
     object FetchCourseFailure : CoursesUiEvent
@@ -15,20 +15,22 @@ sealed interface CoursesUiEvent {
         val course: CourseItem,
     ) : CoursesUiEvent
 
+    class LaunchThirdPartyRouteFinder(
+        val course: CourseItem,
+        val origin: Coordinate,
+        val destination: Coordinate,
+        val routeFinder: RouteFinder.ThirdParty,
+    ) : CoursesUiEvent
+
     object FetchRouteToCourseFailure : CoursesUiEvent
 
     object NoNetworkConnection : CoursesUiEvent
 
-    class FetchNearestCoordinateSuccess(
-        val origin: Coordinate,
-        val destination: Coordinate,
-        val destinationName: String,
-        val routeFinder: RouteFinderApplication.ThirdParty,
-    ) : CoursesUiEvent
-
-    object FetchNearestCoordinateFailure : CoursesUiEvent
-
     object FetchNextCoursesFailure : CoursesUiEvent
+
+    object RequireFineLocationPermission : CoursesUiEvent
+
+    object FetchCurrentLocationFailure : CoursesUiEvent
 
     object ReportCourseSuccess : CoursesUiEvent
 
