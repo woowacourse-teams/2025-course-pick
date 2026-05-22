@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -26,9 +25,26 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.CourseName
 import io.coursepick.coursepick.domain.course.Length
+import io.coursepick.coursepick.presentation.coursedetail.WriteCourseReviewViewModel.Companion.MAX_REVIEW_LENGTH
+
+@Composable
+fun WriteCourseReviewScreen(viewModel: WriteCourseReviewViewModel = viewModel()) {
+    WriteCourseReviewScreen(
+        courseName = viewModel.courseName.collectAsStateWithLifecycle().value,
+        length = viewModel.courseLength.collectAsStateWithLifecycle().value,
+        rating = viewModel.rating.collectAsStateWithLifecycle().value,
+        onSelectRating = viewModel::setRating,
+        reviewContent = viewModel.reviewContent.collectAsStateWithLifecycle().value,
+        onReviewContentChange = viewModel::setReviewText,
+        maxReviewLength = MAX_REVIEW_LENGTH,
+        canSubmit = viewModel.canSubmit.collectAsStateWithLifecycle().value,
+    )
+}
 
 @Composable
 fun WriteCourseReviewScreen(

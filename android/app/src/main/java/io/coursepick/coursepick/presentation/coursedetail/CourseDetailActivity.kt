@@ -14,8 +14,6 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import dagger.hilt.android.AndroidEntryPoint
-import io.coursepick.coursepick.domain.course.CourseName
-import io.coursepick.coursepick.domain.course.Length
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 
 @AndroidEntryPoint
@@ -36,19 +34,14 @@ class CourseDetailActivity : ComponentActivity() {
                 val entryProvider: (NavKey) -> NavEntry<NavKey> =
                     entryProvider {
                         entry<CourseDetailRoute.CourseDetail> {
-                            CourseDetailScreen(onNavigateBack = ::finish)
-                        }
-                        entry<CourseDetailRoute.WriteReview> {
-                            WriteCourseReviewScreen(
-                                courseName = CourseName("석촌호수 동호"),
-                                length = Length(5678),
-                                rating = 0F,
-                                onSelectRating = { },
-                                reviewContent = "",
-                                onReviewContentChange = { },
-                                maxReviewLength = 1_000,
-                                canSubmit = false,
+                            CourseDetailScreen(
+                                onNavigateBack = ::finish,
+                                onWriteReview = { backstack.add(CourseDetailRoute.WriteReview) },
                             )
+                        }
+
+                        entry<CourseDetailRoute.WriteReview> {
+                            WriteCourseReviewScreen()
                         }
                     }
 

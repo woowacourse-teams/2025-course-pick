@@ -70,6 +70,7 @@ import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
 @Composable
 fun CourseDetailScreen(
     onNavigateBack: () -> Unit,
+    onWriteReview: () -> Unit,
     courseDetailViewModel: CourseDetailViewModel = viewModel(),
     authViewModel: AuthViewModel = viewModel(),
 ) {
@@ -94,7 +95,7 @@ fun CourseDetailScreen(
         onReportCourse = courseDetailViewModel::onReportCourse,
         onDeleteReview = courseDetailViewModel::deleteReview,
         onReportReview = courseDetailViewModel::reportReview,
-        onWriteReview = courseDetailViewModel::onWriteReview,
+        onWriteReview = onWriteReview,
     )
 
     val authDialogState: AuthFeature? = courseDetailViewModel.authDialogState.collectAsStateWithLifecycle().value
