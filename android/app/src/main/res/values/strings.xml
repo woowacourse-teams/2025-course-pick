@@ -87,6 +87,7 @@
     <string name="course_detail_review_count">(%1$d개)</string>
     <string name="course_detail_review_menu_description">리뷰 메뉴</string>
     <string name="course_detail_write_review_button">리뷰 작성</string>
+    <string name="star_rating_description">별 %1$d개</string>
 
     <!--  코스 상세 화면 - 리뷰 목록 아이템  -->
     <string name="review_item_my_review_chip">내 리뷰</string>
@@ -95,6 +96,7 @@
 
     <!--  코스 리뷰 작성 화면  -->
     <string name="write_course_review_review_content_placeholder">코스에 대한 리뷰를 남겨주세요.</string>
+    <string name="write_course_review_submit_button">작성 완료</string>
 
     <!--  메뉴 화면  -->
     <string name="menu_feedback_url">https://docs.google.com/forms/d/e/1FAIpQLSdsJcNUsOcDiKW0FI-M360IUS64IZQmnWtMTbZqJSrx7HQbtg/viewform?usp=pp_url&amp;entry.1079171803=%s</string>

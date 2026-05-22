@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -48,7 +49,7 @@ fun StarRating(
             ) {
                 Icon(
                     painter = painterResource(R.drawable.icon_star),
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.star_rating_description, index + 1),
                     tint = colorResource(R.color.item_tertiary),
                     modifier = Modifier.fillMaxSize(),
                 )
