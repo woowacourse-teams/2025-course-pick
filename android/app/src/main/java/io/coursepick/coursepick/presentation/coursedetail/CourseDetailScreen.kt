@@ -77,6 +77,14 @@ fun CourseDetailScreen(
     val context: Context = LocalContext.current
     val course: Course = courseDetailViewModel.course.collectAsStateWithLifecycle().value
 
+    LaunchedEffect(Unit) {
+        authViewModel.uiEvent.collect { event: AuthUiEvent -> event.handle(context, courseDetailViewModel) }
+    }
+
+    LaunchedEffect(Unit) {
+        courseDetailViewModel.event.collect { event: CourseDetailEvent -> event.handle(context) }
+    }
+
     CourseDetailScreen(
         course = course,
         averageRating = courseDetailViewModel.averageRating.collectAsStateWithLifecycle().value,
@@ -93,10 +101,6 @@ fun CourseDetailScreen(
     val authDialogState: AuthFeature? = courseDetailViewModel.authDialogState.collectAsStateWithLifecycle().value
 
     if (authDialogState != null) {
-        LaunchedEffect(Unit) {
-            authViewModel.uiEvent.collect { event: AuthUiEvent -> event.handle(context, courseDetailViewModel) }
-        }
-
         AuthDialog(
             feature = authDialogState,
             onDismissRequest = courseDetailViewModel::dismissAuthDialog,
@@ -105,10 +109,6 @@ fun CourseDetailScreen(
     }
 
     if (courseDetailViewModel.showReportCourseDialog.collectAsStateWithLifecycle().value) {
-        LaunchedEffect(Unit) {
-            courseDetailViewModel.event.collect { event: CourseDetailEvent -> event.handle(context) }
-        }
-
         ReportCourseDialog(
             course = course,
             onConfirm = courseDetailViewModel::submitCourseReport,
