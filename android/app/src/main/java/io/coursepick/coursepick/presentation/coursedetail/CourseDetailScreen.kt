@@ -241,11 +241,11 @@ fun TopAppBar(
 ) {
     @OptIn(ExperimentalMaterial3Api::class)
     CenterAlignedTopAppBar(
-        title = { Text(text = "코스 정보") },
+        title = { Text(text = stringResource(R.string.course_detail_header)) },
         navigationIcon = {
             Icon(
                 painter = painterResource(R.drawable.icon_arrow_back),
-                contentDescription = null,
+                contentDescription = stringResource(R.string.course_detail_navigate_back_description),
                 tint = colorResource(R.color.item_primary),
                 modifier =
                     Modifier
@@ -259,7 +259,7 @@ fun TopAppBar(
         actions = {
             Icon(
                 painter = painterResource(R.drawable.icon_report_course),
-                contentDescription = null,
+                contentDescription = stringResource(R.string.course_detail_report_course_button_description),
                 tint = colorResource(R.color.item_primary),
                 modifier =
                     Modifier

@@ -121,7 +121,7 @@ private fun ReviewActionButton(
 
         Icon(
             painter = painterResource(R.drawable.icon_review_action),
-            contentDescription = null,
+            contentDescription = stringResource(R.string.course_detail_review_menu_description),
             tint = colorResource(R.color.item_primary),
             modifier =
                 Modifier

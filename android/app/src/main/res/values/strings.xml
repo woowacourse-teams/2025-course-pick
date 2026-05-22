@@ -20,6 +20,7 @@
     <string name="course_item_distance_to_course_format">%s만큼 떨어짐</string>
     <string name="course_item_navigate_to_course_button">길찾기</string>
     <string name="course_item_navigate_to_course_origin_name">현 위치</string>
+    <string name="course_item_navigate_to_detail_button_description">코스 상세 정보</string>
 
     <!--  코스 화면 - 코스 탐색 메뉴  -->
     <string name="explore_search_this_area_button">이 지역 검색</string>
@@ -78,8 +79,12 @@
     <string name="report_course_failure_unknown_message">알 수 없는 오류로 코스 신고에 실패했습니다.</string>
 
     <!--  코스 상세 화면  -->
+    <string name="course_detail_header">코스 정보</string>
+    <string name="course_detail_report_course_button_description">코스 신고</string>
+    <string name="course_detail_navigate_back_description">뒤로 가기</string>
     <string name="course_detail_review_header">리뷰</string>
     <string name="course_detail_review_count">(%1$d개)</string>
+    <string name="course_detail_review_menu_description">리뷰 메뉴</string>
     <string name="course_detail_write_review_button">리뷰 작성</string>
 
     <!--  코스 상세 화면 - 리뷰 목록 아이템  -->
