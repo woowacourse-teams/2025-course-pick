@@ -151,7 +151,7 @@ private fun CustomCourseScreen_EmptyPreview() {
         onGoToCreateCustomCourse = { },
         onSelect = { },
         onNavigateToCourse = { },
-        onNavigateToDetail = { }
+        onNavigateToDetail = { },
     )
 }
 
@@ -192,7 +192,7 @@ private fun CustomCourseScreen_WithCoursesPreview() {
         onGoToCreateCustomCourse = { },
         onSelect = { },
         onNavigateToCourse = { },
-        onNavigateToDetail = { }
+        onNavigateToDetail = { },
     )
 }
 
@@ -210,7 +210,7 @@ private fun CustomCourseScreen_LoadingPreview() {
         onGoToCreateCustomCourse = { },
         onSelect = { },
         onNavigateToCourse = { },
-        onNavigateToDetail = { }
+        onNavigateToDetail = { },
     )
 }
 
@@ -228,7 +228,7 @@ private fun CustomCourseScreen_NoInternetPreview() {
         onGoToCreateCustomCourse = { },
         onSelect = { },
         onNavigateToCourse = { },
-        onNavigateToDetail = { }
+        onNavigateToDetail = { },
     )
 }
 
@@ -246,6 +246,6 @@ private fun CustomCourseScreen_FailurePreview() {
         onGoToCreateCustomCourse = { },
         onSelect = { },
         onNavigateToCourse = { },
-        onNavigateToDetail = { }
+        onNavigateToDetail = { },
     )
 }
