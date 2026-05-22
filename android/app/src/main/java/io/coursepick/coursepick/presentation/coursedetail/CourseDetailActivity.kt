@@ -7,6 +7,12 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.ui.NavDisplay
 import dagger.hilt.android.AndroidEntryPoint
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 
@@ -24,7 +30,21 @@ class CourseDetailActivity : ComponentActivity() {
 
         setContent {
             CoursePickTheme {
-                CourseDetailScreen(onNavigateBack = ::finish)
+                val backstack: NavBackStack<NavKey> = rememberNavBackStack(CourseDetailRoute.CourseDetail)
+                val entryProvider: (NavKey) -> NavEntry<NavKey> =
+                    entryProvider {
+                        entry<CourseDetailRoute> {
+                            CourseDetailScreen(onNavigateBack = ::finish)
+                        }
+                        entry<CourseDetailRoute.WriteReview> {
+                        }
+                    }
+
+                NavDisplay(
+                    backStack = backstack,
+                    onBack = backstack::removeLastOrNull,
+                    entryProvider = entryProvider,
+                )
             }
         }
     }
