@@ -66,7 +66,6 @@ import io.coursepick.coursepick.presentation.auth.AuthFeature
 import io.coursepick.coursepick.presentation.auth.AuthUiEvent
 import io.coursepick.coursepick.presentation.auth.AuthViewModel
 import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
-import io.coursepick.coursepick.presentation.toDistanceText
 
 @Composable
 fun CourseDetailScreen(
@@ -371,28 +370,6 @@ private fun CourseInfo(
         Spacer(Modifier.height(10.dp))
 
         CourseLengthInfo(length = length)
-    }
-}
-
-@Composable
-private fun CourseLengthInfo(
-    length: Length,
-    modifier: Modifier = Modifier,
-) {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
-        Icon(
-            painter = painterResource(R.drawable.icon_length),
-            contentDescription = null,
-            tint = colorResource(R.color.item_primary),
-        )
-
-        Spacer(Modifier.width(10.dp))
-
-        Text(
-            text = length.toDistanceText(),
-            color = colorResource(R.color.item_primary),
-            fontSize = 18.sp,
-        )
     }
 }
 
