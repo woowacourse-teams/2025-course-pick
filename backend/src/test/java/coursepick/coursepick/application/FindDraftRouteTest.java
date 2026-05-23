@@ -1,7 +1,9 @@
 package coursepick.coursepick.application;
 
-import coursepick.coursepick.domain.course.*;
-import coursepick.coursepick.domain.user.UserRepository;
+import coursepick.coursepick.domain.course.Coordinate;
+import coursepick.coursepick.domain.course.DraftSegment;
+import coursepick.coursepick.domain.course.RouteFinder;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -15,10 +17,15 @@ import static org.mockito.Mockito.when;
 
 class FindDraftRouteTest {
 
-    CourseRepository courseRepository = mock(CourseRepository.class);
-    UserRepository userRepository = mock(UserRepository.class);
-    RouteFinder routeFinder = mock(RouteFinder.class);
-    CourseApplicationService courseService = new CourseApplicationService(courseRepository, userRepository, routeFinder, null, null, null);
+    private RouteFinder routeFinder;
+    private CourseApplicationService courseService;
+
+    @BeforeEach
+    void setUp() {
+        routeFinder = mock(RouteFinder.class);
+        courseService = new CourseApplicationService(null, null, routeFinder, null, null, null);
+    }
+
 
     @Test
     void 경로_좌표가_1개이면_예외가_발생한다() {
@@ -41,7 +48,7 @@ class FindDraftRouteTest {
         when(routeFinder.find(rawStart, rawEnd))
                 .thenReturn(List.of(rawStart, snappedStart, midPoint, snappedEnd, rawEnd));
 
-        DraftSegment result = courseService.findDraftRoute(List.of(rawStart, rawEnd));
+        var result = courseService.findDraftRoute(List.of(rawStart, rawEnd));
 
         // 원본(raw) 첫/마지막 좌표는 제외되고, 보정된 좌표로 시작/끝난다
         assertThat(result.coordinates()).containsExactly(snappedStart, midPoint, snappedEnd);
@@ -67,7 +74,7 @@ class FindDraftRouteTest {
         when(routeFinder.find(rawMid, rawEnd))
                 .thenReturn(List.of(rawMid, midPoint2, snappedEnd, rawEnd));
 
-        DraftSegment result = courseService.findDraftRoute(List.of(rawStart, rawMid, rawEnd));
+        var result = courseService.findDraftRoute(List.of(rawStart, rawMid, rawEnd));
 
         // 원본 첫/끝 좌표 제외, 중간 웨이포인트(rawMid)는 연결점으로 유지되며 중복 없이 병합된다
         assertThat(result.coordinates()).containsExactly(snappedStart, midPoint1, rawMid, midPoint2, snappedEnd);

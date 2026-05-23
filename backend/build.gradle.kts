@@ -61,6 +61,7 @@ dependencies {
     testImplementation("com.squareup.okhttp3:mockwebserver3:5.1.0")
 
     // Test
+    testImplementation("com.tngtech.archunit:archunit:1.1.0")
     testRuntimeOnly("de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring30x:4.21.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
