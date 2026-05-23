@@ -1,6 +1,7 @@
 package coursepick.coursepick.presentation;
 
-import coursepick.coursepick.application.CourseApplicationService;
+import coursepick.coursepick.application.CourseCommandService;
+import coursepick.coursepick.application.CourseQueryService;
 import coursepick.coursepick.application.dto.CourseDetailResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
 import coursepick.coursepick.domain.course.Coordinate;
@@ -21,7 +22,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CourseV1WebController implements CourseWebApi {
 
-    private final CourseApplicationService courseApplicationService;
+    private final CourseQueryService courseQueryService;
+    private final CourseCommandService courseCommandService;
 
     @Override
     @GetMapping("/courses")
@@ -36,7 +38,7 @@ public class CourseV1WebController implements CourseWebApi {
             @RequestParam(value = "page", required = false) Integer page
     ) {
         CourseFindCondition condition = new CourseFindCondition(mapLatitude, mapLongitude, scope, minLength, maxLength, page);
-        CoursesResponse response = courseApplicationService.findNearbyCourses(condition, userLatitude, userLongitude);
+        CoursesResponse response = courseQueryService.findNearbyCourses(condition, userLatitude, userLongitude);
         return CoursesWebResponse.from(response);
     }
 
@@ -47,7 +49,7 @@ public class CourseV1WebController implements CourseWebApi {
             @RequestParam("lat") double latitude,
             @RequestParam("lng") double longitude
     ) {
-        Coordinate coordinate = courseApplicationService.findClosestCoordinate(id, latitude, longitude);
+        Coordinate coordinate = courseQueryService.findClosestCoordinate(id, latitude, longitude);
         return CoordinateWebResponse.from(coordinate);
     }
 
@@ -58,14 +60,14 @@ public class CourseV1WebController implements CourseWebApi {
             @RequestParam("startLat") double latitude,
             @RequestParam("startLng") double longitude
     ) {
-        List<Coordinate> responses = courseApplicationService.routesToCourse(id, latitude, longitude);
+        List<Coordinate> responses = courseQueryService.routesToCourse(id, latitude, longitude);
         return CoordinateWebResponse.from(responses);
     }
 
     @Override
     @GetMapping("/courses/favorites")
     public List<CourseWebResponse> findFavoriteCourses(@RequestParam("courseIds") List<String> ids) {
-        return courseApplicationService.findFavoriteCourses(ids).stream()
+        return courseQueryService.findFavoriteCourses(ids).stream()
                 .map(CourseWebResponse::from)
                 .toList();
     }
@@ -73,7 +75,7 @@ public class CourseV1WebController implements CourseWebApi {
     @Override
     @GetMapping("/courses/{id}")
     public CourseDetailWebResponse findCourseDetail(@PathVariable("id") String id) {
-        CourseDetailResponse response = courseApplicationService.findCourseDetail(id);
+        CourseDetailResponse response = courseQueryService.findCourseDetail(id);
         return CourseDetailWebResponse.from(response);
     }
 
@@ -85,7 +87,7 @@ public class CourseV1WebController implements CourseWebApi {
             @UserId String userId,
             @RequestBody CreateReviewWebRequest request
     ) {
-        courseApplicationService.addReview(id, userId, request.content(), request.rating());
+        courseCommandService.addReview(id, userId, request.content(), request.rating());
     }
 
     @Override
@@ -96,7 +98,7 @@ public class CourseV1WebController implements CourseWebApi {
             @PathVariable("reviewId") String reviewId,
             @UserId String userId
     ) {
-        courseApplicationService.deleteReview(courseId, reviewId, userId);
+        courseCommandService.deleteReview(courseId, reviewId, userId);
     }
 
     @Override
@@ -107,21 +109,21 @@ public class CourseV1WebController implements CourseWebApi {
             @PathVariable("reviewId") String reviewId,
             @UserId String userId
     ) {
-        courseApplicationService.reportReview(courseId, reviewId, userId);
+        courseCommandService.reportReview(courseId, reviewId, userId);
     }
 
     @Override
     @Login
     @PostMapping("/courses")
     public String addCustomCourses(@Valid @RequestBody CourseCreateWebRequest request, @UserId String userId) {
-        courseApplicationService.addCustomCourse(request.name(), request.toCoordinates(), userId);
+        courseCommandService.addCustomCourse(request.name(), request.toCoordinates(), userId);
         return "코스 추가 성공";
     }
 
     @Override
     @PostMapping("/courses/draft/route")
     public DraftRouteWebResponse findDraftRoute(@Valid @RequestBody FindDraftRouteWebRequest request) {
-        DraftSegment route = courseApplicationService.findDraftRoute(request.toCoordinates());
+        DraftSegment route = courseQueryService.findDraftRoute(request.toCoordinates());
         return DraftRouteWebResponse.of(route.coordinates(), route.length());
     }
 
@@ -129,7 +131,7 @@ public class CourseV1WebController implements CourseWebApi {
     @Login
     @PostMapping("/courses/{id}/report")
     public void reportCourse(@PathVariable("id") String id, @UserId String userId) {
-        courseApplicationService.reportCourse(id, userId);
+        courseCommandService.reportCourse(id, userId);
     }
 
     @Override
@@ -140,7 +142,7 @@ public class CourseV1WebController implements CourseWebApi {
             @RequestParam(value = "userLng", required = false) Double userLongitude,
             @UserId String userId
     ) {
-        CoursesResponse response = courseApplicationService.findCustomCourses(userId, userLatitude, userLongitude);
+        CoursesResponse response = courseQueryService.findCustomCourses(userId, userLatitude, userLongitude);
         return CoursesWebResponse.from(response);
     }
 }

@@ -1,7 +1,6 @@
 package coursepick.coursepick.application;
 
 import coursepick.coursepick.domain.course.*;
-import coursepick.coursepick.domain.user.UserRepository;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -16,9 +15,8 @@ import static org.mockito.Mockito.when;
 class FindDraftRouteTest {
 
     CourseRepository courseRepository = mock(CourseRepository.class);
-    UserRepository userRepository = mock(UserRepository.class);
     RouteFinder routeFinder = mock(RouteFinder.class);
-    CourseApplicationService courseService = new CourseApplicationService(courseRepository, userRepository, routeFinder, null, null, null);
+    CourseQueryService courseService = new CourseQueryService(courseRepository, routeFinder);
 
     @Test
     void 경로_좌표가_1개이면_예외가_발생한다() {

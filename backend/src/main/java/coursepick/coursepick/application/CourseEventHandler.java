@@ -12,13 +12,13 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CourseEventHandler {
 
-    private final CourseApplicationService courseApplicationService;
+    private final CourseCommandService courseCommandService;
 
     @Async
     @EventListener
     public void on(ReviewAddedEvent event) {
         try {
-            courseApplicationService.regenerateTags(event.courseId());
+            courseCommandService.regenerateTags(event.courseId());
         } catch (Exception e) {
             log.warn("AI 태그 갱신 실패 courseId={}", event.courseId(), e);
         }
