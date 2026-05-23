@@ -1,9 +1,11 @@
 package io.coursepick.coursepick.domain.favorites
 
+import kotlinx.coroutines.flow.Flow
+
 interface FavoritesRepository {
-    fun favoriteCourseIds(): Set<String>
+    val favoriteCourseIds: Flow<Set<String>>
 
-    fun addFavoriteCourse(courseId: String)
+    suspend fun addFavorite(courseId: String)
 
-    fun removeFavoriteCourse(courseId: String)
+    suspend fun removeFavorite(courseId: String)
 }

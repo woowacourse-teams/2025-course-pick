@@ -1,17 +1,19 @@
 package io.coursepick.coursepick.presentation.fixtures
 
 import io.coursepick.coursepick.domain.favorites.FavoritesRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class FakeFavoritesRepository : FavoritesRepository {
-    private val favoriteCourseIds: MutableSet<String> = mutableSetOf()
+    private val _favoriteCourseIds = MutableStateFlow<Set<String>>(emptySet())
+    override val favoriteCourseIds: Flow<Set<String>> = _favoriteCourseIds.asStateFlow()
 
-    override fun favoriteCourseIds(): Set<String> = favoriteCourseIds
-
-    override fun addFavoriteCourse(courseId: String) {
-        favoriteCourseIds.add(courseId)
+    override suspend fun addFavorite(courseId: String) {
+        _favoriteCourseIds.value += courseId
     }
 
-    override fun removeFavoriteCourse(courseId: String) {
-        favoriteCourseIds.remove(courseId)
+    override suspend fun removeFavorite(courseId: String) {
+        _favoriteCourseIds.value -= courseId
     }
 }

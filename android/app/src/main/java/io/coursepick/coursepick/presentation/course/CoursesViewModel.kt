@@ -30,8 +30,6 @@ import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -90,11 +88,15 @@ class CoursesViewModel
         private val _event: MutableSingleLiveData<CoursesUiEvent> = MutableSingleLiveData()
         val event: SingleLiveData<CoursesUiEvent> get() = _event
 
+        private val favoriteCourseIds: StateFlow<Set<String>> =
+            favoritesRepository.favoriteCourseIds.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = emptySet(),
+            )
+
         var mapCoordinate: Coordinate? = null
             private set
-
-        private var writeFavoriteJob: Job? = null
-        private val pendingFavoriteWrites: MutableMap<String, Boolean> = mutableMapOf()
 
         private var page: Int = 0
         private var hasNext: Boolean = false
@@ -107,6 +109,7 @@ class CoursesViewModel
 
         init {
             checkNetwork()
+            collectFavorites()
         }
 
         fun selectExternalCourse(courseItem: CourseItem) {
@@ -156,6 +159,26 @@ class CoursesViewModel
             }
         }
 
+        private fun collectFavorites() {
+            viewModelScope.launch {
+                favoriteCourseIds.collect { courseIds: Set<String> ->
+                    _state.value =
+                        state.value?.copy(
+                            courses =
+                                state.value
+                                    ?.courses
+                                    ?.map { item: CourseListItem ->
+                                        if (item is CourseListItem.Course) {
+                                            item.copy(item = item.item.copy(favorite = courseIds.contains(item.item.id)))
+                                        } else {
+                                            item
+                                        }
+                                    }.orEmpty(),
+                        )
+                }
+            }
+        }
+
         fun switchContent(content: CoursesContent) {
             _content.value = content
         }
@@ -181,47 +204,13 @@ class CoursesViewModel
         }
 
         fun toggleFavorite(toggledCourse: CourseItem) {
-            pendingFavoriteWrites[toggledCourse.id] = !toggledCourse.favorite
-
-            state.value?.courses?.let { courses: List<CourseListItem> ->
-                val newCourses =
-                    courses.map { item: CourseListItem ->
-                        when (item) {
-                            is CourseListItem.Course -> {
-                                if (item.item.id == toggledCourse.id) {
-                                    CourseListItem.Course(item.item.copy(favorite = !item.item.favorite))
-                                } else {
-                                    item
-                                }
-                            }
-
-                            is CourseListItem.Loading -> {
-                                item
-                            }
-                        }
-                    }
-                _state.value = state.value?.copy(courses = newCourses)
-            }
-
-            updateFavorites()
-        }
-
-        private fun updateFavorites() {
-            writeFavoriteJob?.cancel()
-
-            writeFavoriteJob =
-                viewModelScope.launch {
-                    delay(DEBOUNCE_LIMIT_TIME)
-
-                    pendingFavoriteWrites.toMap().forEach { (courseId: String, favorite: Boolean) ->
-                        if (favorite) {
-                            favoritesRepository.addFavoriteCourse(courseId)
-                        } else {
-                            favoritesRepository.removeFavoriteCourse(courseId)
-                        }
-                    }
-                    pendingFavoriteWrites.clear()
+            viewModelScope.launch {
+                if (toggledCourse.favorite) {
+                    favoritesRepository.removeFavorite(toggledCourse.id)
+                } else {
+                    favoritesRepository.addFavorite(toggledCourse.id)
                 }
+            }
         }
 
         fun fetchCourses(
@@ -261,8 +250,6 @@ class CoursesViewModel
                 }.onSuccess { coursesPage: CoursesPage ->
                     Logger.log(Logger.Event.Success("fetch_courses_new"))
 
-                    val favoritedCourseIds: Set<String> = favoritesRepository.favoriteCourseIds()
-
                     val courseItems: List<CourseItem> =
                         coursesPage.courses
                             .sortedBy(Course::distance)
@@ -270,7 +257,7 @@ class CoursesViewModel
                                 CourseItem(
                                     course = course,
                                     selected = index == 0,
-                                    favorite = favoritedCourseIds.contains(course.id),
+                                    favorite = favoriteCourseIds.value.contains(course.id),
                                 )
                             }
 
@@ -349,8 +336,6 @@ class CoursesViewModel
                 }.onSuccess { coursesPage: CoursesPage ->
                     Logger.log(Logger.Event.Success("fetch_courses_next"))
 
-                    val favoritedCourseIds: Set<String> = favoritesRepository.favoriteCourseIds()
-
                     val existingCoursesWithoutLoading =
                         (state.value?.courses ?: emptyList())
                             .filterNot { courseListItem: CourseListItem -> courseListItem is CourseListItem.Loading }
@@ -361,7 +346,7 @@ class CoursesViewModel
                                 CourseItem(
                                     course = course,
                                     selected = false,
-                                    favorite = favoritedCourseIds.contains(course.id),
+                                    favorite = favoriteCourseIds.value.contains(course.id),
                                 ),
                             )
                         }
@@ -401,8 +386,7 @@ class CoursesViewModel
                     status = UiStatus.Loading,
                 )
 
-            val favoritedCourseIds: Set<String> = favoritesRepository.favoriteCourseIds()
-            if (favoritedCourseIds.isEmpty()) {
+            if (favoriteCourseIds.value.isEmpty()) {
                 _state.value =
                     state.value?.copy(
                         courses = emptyList(),
@@ -413,7 +397,7 @@ class CoursesViewModel
 
             viewModelScope.launch {
                 runCatching {
-                    courseRepository.courses(favoritedCourseIds.toList())
+                    courseRepository.courses(favoriteCourseIds.value.toList())
                 }.onSuccess { courses: List<Course> ->
                     val courseItems: List<CourseItem> =
                         courses.map { course: Course ->
@@ -746,8 +730,4 @@ class CoursesViewModel
                     courseListItem
                 }
             }
-
-        companion object {
-            private const val DEBOUNCE_LIMIT_TIME = 500L
-        }
     }
