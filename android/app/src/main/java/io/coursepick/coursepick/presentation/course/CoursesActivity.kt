@@ -72,7 +72,6 @@ import io.coursepick.coursepick.presentation.map.CameraMoveReason
 import io.coursepick.coursepick.presentation.map.MapManager
 import io.coursepick.coursepick.presentation.map.MapManagerFactory
 import io.coursepick.coursepick.presentation.notice.NoticeDialog
-import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 import io.coursepick.coursepick.presentation.preference.PreferencesActivity
 import io.coursepick.coursepick.presentation.search.SearchActivity
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
@@ -912,36 +911,27 @@ class CoursesActivity :
                 CoursePickTheme {
                     val state: CoursesUiState? by viewModel.state.observeAsState()
 
-                    state
-                        ?.notices
-                        ?.firstOrNull { notice: Notice ->
-                            CoursePickPreferences.shouldShowNotice(notice.id)
-                        }?.let { notice: Notice ->
-                            key(notice.id) {
-                                NoticeDialog(
-                                    notice = notice,
-                                    onOpenUrl = { noticeUrl: String ->
-                                        runCatching {
-                                            context.startActivity(
-                                                Intent(
-                                                    Intent.ACTION_VIEW,
-                                                    noticeUrl.toUri(),
-                                                ),
-                                            )
-                                        }.onFailure {
-                                            Toast
-                                                .makeText(
-                                                    this@CoursesActivity,
-                                                    "링크를 열지 못했습니다.",
-                                                    Toast.LENGTH_SHORT,
-                                                ).show()
-                                        }
-                                    },
-                                    onDismissRequest = viewModel::dismissNotice,
-                                    onDoNotShowAgain = CoursePickPreferences::setDoNotShowNotice,
-                                )
-                            }
+                    state?.notices?.firstOrNull()?.let { notice: Notice ->
+                        key(notice.id) {
+                            NoticeDialog(
+                                notice = notice,
+                                onOpenUrl = { noticeUrl: String ->
+                                    runCatching {
+                                        context.startActivity(Intent(Intent.ACTION_VIEW, noticeUrl.toUri()))
+                                    }.onFailure {
+                                        Toast
+                                            .makeText(
+                                                this@CoursesActivity,
+                                                context.getString(R.string.notice_open_link_failure_message),
+                                                Toast.LENGTH_SHORT,
+                                            ).show()
+                                    }
+                                },
+                                onDismissRequest = viewModel::dismissNotice,
+                                onDoNotShowAgain = viewModel::muteNotice,
+                            )
                         }
+                    }
 
                     if (state?.showFilterDialog == true) {
                         CourseFilterBottomSheet(

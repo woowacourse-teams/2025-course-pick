@@ -23,6 +23,9 @@ annotation class Settings
 @Qualifier
 annotation class Favorites
 
+@Qualifier
+annotation class Notice
+
 private val Context.authDataStore: DataStore<Preferences> by preferencesDataStore(name = "auth")
 
 private val Context.preferencesDataStore: DataStore<Preferences> by preferencesDataStore(name = "preferences")
@@ -39,6 +42,8 @@ private val Context.favoritesDataStore: DataStore<Preferences> by preferencesDat
         )
     },
 )
+
+private val Context.noticeDataStore: DataStore<Preferences> by preferencesDataStore(name = "notice")
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -68,4 +73,11 @@ object LocalDataModule {
     fun provideFavoriteCourseDataStore(
         @ApplicationContext context: Context,
     ): DataStore<Preferences> = context.favoritesDataStore
+
+    @Provides
+    @Singleton
+    @Notice
+    fun provideNoticeCourseDataStore(
+        @ApplicationContext context: Context,
+    ): DataStore<Preferences> = context.noticeDataStore
 }

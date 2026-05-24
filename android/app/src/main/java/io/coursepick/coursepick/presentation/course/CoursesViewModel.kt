@@ -25,11 +25,9 @@ import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.auth.AuthFeature
 import io.coursepick.coursepick.presentation.filter.CourseFilter
 import io.coursepick.coursepick.presentation.filter.CourseFilterAction
-import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -37,7 +35,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import javax.inject.Inject
 
@@ -619,9 +616,6 @@ class CoursesViewModel
                 runCatching {
                     noticeRepository.notices()
                 }.onSuccess { notices: List<Notice> ->
-                    withContext(Dispatchers.IO) {
-                        CoursePickPreferences.removeInvalidNoticeIds(notices.map(Notice::id).toSet())
-                    }
                     _state.value = state.value?.copy(notices = notices)
                 }
             }
@@ -636,6 +630,12 @@ class CoursesViewModel
                             ?.filterNot { notice: Notice -> notice.id == id }
                             .orEmpty(),
                 )
+        }
+
+        fun muteNotice(id: String) {
+            viewModelScope.launch {
+                noticeRepository.muteNotice(id)
+            }
         }
 
         fun showSettings() {
