@@ -1,6 +1,5 @@
 package io.coursepick.coursepick.data.favorites
 
-import io.coursepick.coursepick.data.preference.FavoritesDataSource
 import io.coursepick.coursepick.domain.favorites.FavoritesRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject

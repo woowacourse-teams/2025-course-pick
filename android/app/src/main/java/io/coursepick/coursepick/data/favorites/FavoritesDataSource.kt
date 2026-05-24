@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.data.preference
+package io.coursepick.coursepick.data.favorites
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
