@@ -22,9 +22,9 @@ class NoticeDataSource
             }
         }
 
-        suspend fun updateMutedNoticeIds(noticeIds: Set<String>) {
+        suspend fun removeStaleNoticeIds(activeNoticeIds: Set<String>) {
             dataStore.edit { preferences: MutablePreferences ->
-                preferences[MUTED_NOTICE_IDS_KEY] = noticeIds
+                preferences[MUTED_NOTICE_IDS_KEY] = preferences[MUTED_NOTICE_IDS_KEY].orEmpty().intersect(activeNoticeIds)
             }
         }
 

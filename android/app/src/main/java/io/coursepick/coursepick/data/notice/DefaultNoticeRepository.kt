@@ -14,9 +14,9 @@ class DefaultNoticeRepository
             val activeNotices: List<NoticeDto> = service.notices()
 
             val activeNoticeIds: Set<String> = activeNotices.map(NoticeDto::id).toSet()
-            val mutedNoticeIds: Set<String> = dataSource.mutedNoticeIds()
-            dataSource.updateMutedNoticeIds(mutedNoticeIds.intersect(activeNoticeIds))
+            dataSource.removeStaleNoticeIds(activeNoticeIds)
 
+            val mutedNoticeIds: Set<String> = dataSource.mutedNoticeIds()
             return activeNotices
                 .filterNot { notice: NoticeDto -> mutedNoticeIds.contains(notice.id) }
                 .map(NoticeDto::toNotice)
