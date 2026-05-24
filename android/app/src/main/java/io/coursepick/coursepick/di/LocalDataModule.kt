@@ -29,7 +29,15 @@ private val Context.preferencesDataStore: DataStore<Preferences> by preferencesD
 
 private val Context.favoritesDataStore: DataStore<Preferences> by preferencesDataStore(
     name = "favorites",
-    produceMigrations = { context: Context -> listOf(SharedPreferencesMigration(context, "${context.packageName}_preferences")) },
+    produceMigrations = { context: Context ->
+        listOf(
+            SharedPreferencesMigration(
+                context = context,
+                sharedPreferencesName = "${context.packageName}_preferences",
+                keysToMigrate = setOf("favorited_courses_key"),
+            ),
+        )
+    },
 )
 
 @Module
