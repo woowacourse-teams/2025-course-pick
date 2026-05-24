@@ -7,16 +7,16 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringSetPreferencesKey
-import io.coursepick.coursepick.di.Favorites
+import io.coursepick.coursepick.di.FavoriteCourseDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class FavoritesDataSource
+class FavoriteCourseDataSource
     @Inject
     constructor(
-        @Favorites private val dataStore: DataStore<Preferences>,
+        @FavoriteCourseDataStore private val dataStore: DataStore<Preferences>,
     ) {
         val courseIds: Flow<Set<String>> =
             dataStore.data

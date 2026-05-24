@@ -51,7 +51,7 @@ import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.domain.notice.Notice
-import io.coursepick.coursepick.domain.preference.RouteFinder
+import io.coursepick.coursepick.domain.preferences.RouteFinder
 import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.DataKeys
 import io.coursepick.coursepick.presentation.InstallStateObserver
@@ -71,11 +71,11 @@ import io.coursepick.coursepick.presentation.filter.CourseFilterBottomSheet
 import io.coursepick.coursepick.presentation.map.CameraMoveReason
 import io.coursepick.coursepick.presentation.map.MapManager
 import io.coursepick.coursepick.presentation.map.MapManagerFactory
+import io.coursepick.coursepick.presentation.menu.MenuScreen
 import io.coursepick.coursepick.presentation.notice.NoticeDialog
-import io.coursepick.coursepick.presentation.preference.PreferencesActivity
+import io.coursepick.coursepick.presentation.preferences.PreferencesActivity
 import io.coursepick.coursepick.presentation.search.SearchActivity
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
-import io.coursepick.coursepick.presentation.setting.SettingsScreen
 import io.coursepick.coursepick.presentation.ui.DoublePressDetector
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -145,7 +145,7 @@ class CoursesActivity :
             insets
         }
         setUpBottomSheet()
-        setUpSettings()
+        setUpMenu()
 
         mapManager.startMap {
             setUpObservers()
@@ -334,21 +334,21 @@ class CoursesActivity :
     private fun setUpBottomNavigation() {
         binding.mainBottomNavigation.setOnItemSelectedListener { item: MenuItem ->
             when (item.itemId) {
-                R.id.coursesMenu -> {
+                R.id.exploreCourseMenuItem -> {
                     viewModel.showCourses()
                     viewModel.switchContent(CoursesContent.EXPLORE)
                     searchThisArea()
                     true
                 }
 
-                R.id.favoritesMenu -> {
+                R.id.favoriteCourseMenuItem -> {
                     viewModel.showCourses()
                     viewModel.switchContent(CoursesContent.FAVORITES)
                     viewModel.fetchFavorites()
                     true
                 }
 
-                R.id.customCourseMenu -> {
+                R.id.customCourseMenuItem -> {
                     viewModel.showCourses()
                     viewModel.switchContent(CoursesContent.CUSTOM_COURSE)
                     viewModel.checkAuthForCustomCourse {
@@ -357,8 +357,8 @@ class CoursesActivity :
                     true
                 }
 
-                R.id.settingsMenu -> {
-                    viewModel.showSettings()
+                R.id.menuMenuItem -> {
+                    viewModel.showMenu()
                     true
                 }
 
@@ -502,7 +502,7 @@ class CoursesActivity :
             Intent(
                 Intent.ACTION_VIEW,
                 getString(
-                    R.string.settings_feedback_url,
+                    R.string.menu_feedback_url,
                     """
                     사용자 ID: ${coursePickApplication.installationId.value}%0A
                     앱 버전: ${BuildConfig.VERSION_NAME}%0A
@@ -518,7 +518,7 @@ class CoursesActivity :
     private fun navigateToPrivacyPolicy() {
         Logger.log(Logger.Event.Click("navigate_to_privacy_policy"))
         val intent =
-            Intent(Intent.ACTION_VIEW, getString(R.string.settings_privacy_policy_url).toUri())
+            Intent(Intent.ACTION_VIEW, getString(R.string.menu_privacy_policy_url).toUri())
 
         startActivity(intent)
     }
@@ -617,11 +617,11 @@ class CoursesActivity :
         )
     }
 
-    private fun setUpSettings() {
-        binding.mainSettings.apply {
+    private fun setUpMenu() {
+        binding.mainMenu.apply {
             setContent {
                 CoursePickTheme {
-                    SettingsScreen(
+                    MenuScreen(
                         onNavigateToPreferences = { navigateToPreferences() },
                         onNavigateToFeedback = { navigateToFeedback() },
                         onNavigateToPrivacyPolicy = { navigateToPrivacyPolicy() },

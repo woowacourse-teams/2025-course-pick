@@ -5,14 +5,14 @@ import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringSetPreferencesKey
-import io.coursepick.coursepick.di.Notice
+import io.coursepick.coursepick.di.NoticeDataStore
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class NoticeDataSource
     @Inject
     constructor(
-        @Notice private val dataStore: DataStore<Preferences>,
+        @NoticeDataStore private val dataStore: DataStore<Preferences>,
     ) {
         suspend fun mutedNoticeIds(): Set<String> = dataStore.data.first()[MUTED_NOTICE_IDS_KEY].orEmpty()
 

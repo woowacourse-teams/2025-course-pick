@@ -1,10 +1,10 @@
-package io.coursepick.coursepick.presentation.preference
+package io.coursepick.coursepick.presentation.preferences
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.coursepick.coursepick.domain.preference.PreferencesRepository
-import io.coursepick.coursepick.domain.preference.RouteFinder
+import io.coursepick.coursepick.domain.preferences.PreferencesRepository
+import io.coursepick.coursepick.domain.preferences.RouteFinder
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

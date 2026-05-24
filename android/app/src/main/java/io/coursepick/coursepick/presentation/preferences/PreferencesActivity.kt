@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.preference
+package io.coursepick.coursepick.presentation.preferences
 
 import android.content.Context
 import android.content.Intent
@@ -34,7 +34,10 @@ class PreferencesActivity : AppCompatActivity() {
                 Scaffold { innerPadding: PaddingValues ->
                     PreferencesScreen(
                         onOpenRouteFinderPreference = viewModel::onOpenRouteFinderPreference,
-                        modifier = Modifier.fillMaxSize().padding(innerPadding),
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .padding(innerPadding),
                     )
 
                     if (viewModel.showRouteFinderPreferenceDialog.collectAsStateWithLifecycle().value) {

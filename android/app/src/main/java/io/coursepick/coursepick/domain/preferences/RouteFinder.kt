@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.domain.preference
+package io.coursepick.coursepick.domain.preferences
 
 sealed interface RouteFinder {
     data object None : RouteFinder

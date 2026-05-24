@@ -7,16 +7,16 @@ import dagger.hilt.components.SingletonComponent
 import io.coursepick.coursepick.data.auth.DefaultAuthRepository
 import io.coursepick.coursepick.data.course.DefaultCourseRepository
 import io.coursepick.coursepick.data.customcourse.DefaultCustomCourseRepository
-import io.coursepick.coursepick.data.favorites.DefaultFavoritesRepository
+import io.coursepick.coursepick.data.favorites.DefaultFavoriteCourseRepository
 import io.coursepick.coursepick.data.notice.DefaultNoticeRepository
 import io.coursepick.coursepick.data.preference.DefaultPreferencesRepository
 import io.coursepick.coursepick.data.search.DefaultSearchRepository
 import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.course.CourseRepository
 import io.coursepick.coursepick.domain.customcourse.CustomCourseRepository
-import io.coursepick.coursepick.domain.favorites.FavoritesRepository
+import io.coursepick.coursepick.domain.favorites.FavoriteCourseRepository
 import io.coursepick.coursepick.domain.notice.NoticeRepository
-import io.coursepick.coursepick.domain.preference.PreferencesRepository
+import io.coursepick.coursepick.domain.preferences.PreferencesRepository
 import io.coursepick.coursepick.domain.search.SearchRepository
 
 @Module
@@ -26,7 +26,7 @@ abstract class RepositoryModule {
     abstract fun bindCourseRepository(implementation: DefaultCourseRepository): CourseRepository
 
     @Binds
-    abstract fun bindFavoritesRepository(implementation: DefaultFavoritesRepository): FavoritesRepository
+    abstract fun bindFavoriteCourseRepository(implementation: DefaultFavoriteCourseRepository): FavoriteCourseRepository
 
     @Binds
     abstract fun bindSearchRepository(implementation: DefaultSearchRepository): SearchRepository

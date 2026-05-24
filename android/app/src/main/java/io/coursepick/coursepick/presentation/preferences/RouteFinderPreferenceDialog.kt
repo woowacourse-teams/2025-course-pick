@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.preference
+package io.coursepick.coursepick.presentation.preferences
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.domain.preference.RouteFinder
+import io.coursepick.coursepick.domain.preferences.RouteFinder
 import io.coursepick.coursepick.presentation.course.RouteFinderApplication
 
 @Composable
@@ -53,7 +53,7 @@ fun RouteFinderPreferenceDialog(
                     .padding(16.dp),
         ) {
             Text(
-                text = stringResource(R.string.selected_route_finder_application_setting_title),
+                text = stringResource(R.string.selected_route_finder_application_preference_title),
                 color = colorResource(R.color.item_primary),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
