@@ -13,7 +13,7 @@ import io.coursepick.coursepick.domain.course.Distance
 import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Length
 import io.coursepick.coursepick.domain.course.Longitude
-import io.coursepick.coursepick.domain.favorites.FavoritesRepository
+import io.coursepick.coursepick.domain.favorites.FavoriteCourseRepository
 import io.coursepick.coursepick.presentation.auth.AuthFeature
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -35,7 +35,7 @@ class CourseDetailViewModel
     constructor(
         private val authRepository: AuthRepository,
         private val courseRepository: CourseRepository,
-        private val favoritesRepository: FavoritesRepository,
+        favoriteCourseRepository: FavoriteCourseRepository,
     ) : ViewModel() {
         private val _course = MutableStateFlow(COURSE_FIXTURE)
         val course: StateFlow<Course> get() = _course.asStateFlow()
@@ -56,13 +56,13 @@ class CourseDetailViewModel
         val event: SharedFlow<CourseDetailEvent> get() = _event.asSharedFlow()
 
         val isFavorite: StateFlow<Boolean> =
-            course
-                .map { course: Course -> favoritesRepository.favoriteCourseIds().contains(course.id) }
-                .stateIn(
-                    scope = viewModelScope,
-                    started = SharingStarted.WhileSubscribed(5_000),
-                    initialValue = false,
-                )
+            combine(course, favoriteCourseRepository.favoriteCourseIds) { course: Course, favoriteCourseIds: Set<String> ->
+                favoriteCourseIds.contains(course.id)
+            }.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = false,
+            )
 
         private val _reviews =
             MutableStateFlow(
