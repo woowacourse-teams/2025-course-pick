@@ -1,19 +1,21 @@
 package io.coursepick.coursepick.data.favorites
 
 import io.coursepick.coursepick.domain.favorites.FavoritesRepository
-import io.coursepick.coursepick.presentation.preference.CoursePickPreferences
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class DefaultFavoritesRepository
     @Inject
-    constructor() : FavoritesRepository {
-        override fun favoriteCourseIds(): Set<String> = CoursePickPreferences.favoritedCourseIds()
+    constructor(
+        private val favoritesDataSource: FavoritesDataSource,
+    ) : FavoritesRepository {
+        override val favoriteCourseIds: Flow<Set<String>> = favoritesDataSource.courseIds
 
-        override fun addFavoriteCourse(courseId: String) {
-            CoursePickPreferences.addFavorite(courseId)
+        override suspend fun addFavorite(courseId: String) {
+            favoritesDataSource.addFavorite(courseId)
         }
 
-        override fun removeFavoriteCourse(courseId: String) {
-            CoursePickPreferences.removeFavorite(courseId)
+        override suspend fun removeFavorite(courseId: String) {
+            favoritesDataSource.removeFavorite(courseId)
         }
     }

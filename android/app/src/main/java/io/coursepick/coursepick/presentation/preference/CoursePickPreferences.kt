@@ -8,27 +8,11 @@ import io.coursepick.coursepick.R
 
 object CoursePickPreferences {
     private lateinit var preferences: SharedPreferences
-    private lateinit var favoritedCoursesKey: String
     private lateinit var doNotShowNoticesKey: String
 
     fun init(context: Context) {
         preferences = PreferenceManager.getDefaultSharedPreferences(context)
-        favoritedCoursesKey = context.getString(R.string.favorited_courses_key)
         doNotShowNoticesKey = context.getString(R.string.do_not_show_notices_key)
-    }
-
-    fun favoritedCourseIds(): Set<String> = preferences.getStringSet(favoritedCoursesKey, emptySet()) ?: emptySet()
-
-    fun addFavorite(courseId: String) {
-        preferences.edit {
-            putStringSet(favoritedCoursesKey, favoritedCourseIds() + courseId)
-        }
-    }
-
-    fun removeFavorite(courseId: String) {
-        preferences.edit {
-            putStringSet(favoritedCoursesKey, favoritedCourseIds() - courseId)
-        }
     }
 
     fun shouldShowNotice(id: String): Boolean {
