@@ -8,6 +8,21 @@ class DefaultNoticeRepository
     @Inject
     constructor(
         private val service: NoticeService,
+        private val dataSource: NoticeDataSource,
     ) : NoticeRepository {
-        override suspend fun notices(): List<Notice> = service.notices().map(NoticeDto::toNotice)
+        override suspend fun notices(): List<Notice> {
+            val activeNotices: List<NoticeDto> = service.notices()
+
+            val activeNoticeIds: Set<String> = activeNotices.map(NoticeDto::id).toSet()
+            val mutedNoticeIds: Set<String> = dataSource.mutedNoticeIds()
+            dataSource.updateMutedNoticeIds(mutedNoticeIds.intersect(activeNoticeIds))
+
+            return activeNotices
+                .filterNot { notice: NoticeDto -> mutedNoticeIds.contains(notice.id) }
+                .map(NoticeDto::toNotice)
+        }
+
+        override suspend fun muteNotice(noticeId: String) {
+            dataSource.addMutedNoticeId(noticeId)
+        }
     }
