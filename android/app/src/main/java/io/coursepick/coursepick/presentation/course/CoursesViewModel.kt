@@ -14,13 +14,13 @@ import io.coursepick.coursepick.domain.course.CourseRepository
 import io.coursepick.coursepick.domain.course.CoursesPage
 import io.coursepick.coursepick.domain.course.Kilometer
 import io.coursepick.coursepick.domain.course.Scope
-import io.coursepick.coursepick.domain.favorites.FavoritesRepository
+import io.coursepick.coursepick.domain.favorites.FavoriteCourseRepository
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.domain.location.LocationRepository
 import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.domain.notice.NoticeRepository
-import io.coursepick.coursepick.domain.preference.PreferencesRepository
-import io.coursepick.coursepick.domain.preference.RouteFinder
+import io.coursepick.coursepick.domain.preferences.PreferencesRepository
+import io.coursepick.coursepick.domain.preferences.RouteFinder
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.auth.AuthFeature
 import io.coursepick.coursepick.presentation.filter.CourseFilter
@@ -43,7 +43,7 @@ class CoursesViewModel
     @Inject
     constructor(
         private val courseRepository: CourseRepository,
-        private val favoritesRepository: FavoritesRepository,
+        private val favoriteCourseRepository: FavoriteCourseRepository,
         private val noticeRepository: NoticeRepository,
         private val locationRepository: LocationRepository,
         private val preferencesRepository: PreferencesRepository,
@@ -86,7 +86,7 @@ class CoursesViewModel
         val event: SingleLiveData<CoursesUiEvent> get() = _event
 
         private val favoriteCourseIds: StateFlow<Set<String>> =
-            favoritesRepository.favoriteCourseIds.stateIn(
+            favoriteCourseRepository.favoriteCourseIds.stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = emptySet(),
@@ -203,9 +203,9 @@ class CoursesViewModel
         fun toggleFavorite(toggledCourse: CourseItem) {
             viewModelScope.launch {
                 if (toggledCourse.favorite) {
-                    favoritesRepository.removeFavorite(toggledCourse.id)
+                    favoriteCourseRepository.removeFavorite(toggledCourse.id)
                 } else {
-                    favoritesRepository.addFavorite(toggledCourse.id)
+                    favoriteCourseRepository.addFavorite(toggledCourse.id)
                 }
             }
         }
@@ -638,12 +638,12 @@ class CoursesViewModel
             }
         }
 
-        fun showSettings() {
-            _state.value = state.value?.copy(showSettings = true)
+        fun showMenu() {
+            _state.value = state.value?.copy(showMenu = true)
         }
 
         fun showCourses() {
-            _state.value = state.value?.copy(showSettings = false)
+            _state.value = state.value?.copy(showMenu = false)
         }
 
         suspend fun currentLocation(): Location? = locationRepository.currentLocation()

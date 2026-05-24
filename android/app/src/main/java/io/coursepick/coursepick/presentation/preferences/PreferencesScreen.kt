@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.preference
+package io.coursepick.coursepick.presentation.preferences
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -31,7 +31,7 @@ fun PreferencesScreen(
                     .padding(horizontal = 20.dp, vertical = 10.dp),
             ) {
                 Text(
-                    text = stringResource(R.string.selected_route_finder_application_setting_title),
+                    text = stringResource(R.string.selected_route_finder_application_preference_title),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                 )

@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.setting
+package io.coursepick.coursepick.presentation.menu
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.sp
 import io.coursepick.coursepick.R
 
 @Composable
-fun SettingsScreen(
+fun MenuScreen(
     onNavigateToPreferences: () -> Unit,
     onNavigateToFeedback: () -> Unit,
     onNavigateToPrivacyPolicy: () -> Unit,
@@ -117,8 +117,8 @@ fun SettingsScreen(
 
 @PreviewLightDark
 @Composable
-fun Preview() {
-    SettingsScreen(
+private fun MenuScreenPreview() {
+    MenuScreen(
         onNavigateToPreferences = {},
         onNavigateToFeedback = {},
         onNavigateToPrivacyPolicy = {},

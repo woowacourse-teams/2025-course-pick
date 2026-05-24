@@ -169,10 +169,10 @@
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
         <androidx.compose.ui.platform.ComposeView
-            android:id="@+id/mainSettings"
+            android:id="@+id/mainMenu"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:visibility="@{viewModel.state.showSettings ? View.VISIBLE : View.GONE}"
+            android:visibility="@{viewModel.state.showMenu ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toTopOf="@id/mainBottomNavigationWrapper"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

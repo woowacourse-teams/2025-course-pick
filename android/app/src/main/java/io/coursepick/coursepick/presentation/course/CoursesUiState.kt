@@ -9,7 +9,7 @@ data class CoursesUiState(
     val status: UiStatus = UiStatus.Loading,
     val courseFilter: CourseFilter = CourseFilter.None,
     val notices: List<Notice> = emptyList(),
-    val showSettings: Boolean = false,
+    val showMenu: Boolean = false,
     val showFilterDialog: Boolean = false,
 ) {
     val isQueryBlank: Boolean = query.isBlank()

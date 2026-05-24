@@ -15,23 +15,23 @@ import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Qualifier
-annotation class Auth
+annotation class AuthDataStore
 
 @Qualifier
-annotation class Settings
+annotation class PreferencesDataStore
 
 @Qualifier
-annotation class Favorites
+annotation class FavoriteCourseDataStore
 
 @Qualifier
-annotation class Notice
+annotation class NoticeDataStore
 
 private val Context.authDataStore: DataStore<Preferences> by preferencesDataStore(name = "auth")
 
 private val Context.preferencesDataStore: DataStore<Preferences> by preferencesDataStore(name = "preferences")
 
-private val Context.favoritesDataStore: DataStore<Preferences> by preferencesDataStore(
-    name = "favorites",
+private val Context.favoriteCourseDataStore: DataStore<Preferences> by preferencesDataStore(
+    name = "favorite_course",
     produceMigrations = { context: Context ->
         listOf(
             SharedPreferencesMigration(
@@ -55,29 +55,29 @@ object LocalDataModule {
 
     @Provides
     @Singleton
-    @Auth
+    @AuthDataStore
     fun provideAuthDataStore(
         @ApplicationContext context: Context,
     ): DataStore<Preferences> = context.authDataStore
 
     @Provides
     @Singleton
-    @Settings
+    @PreferencesDataStore
     fun providePreferencesDataStore(
         @ApplicationContext context: Context,
     ): DataStore<Preferences> = context.preferencesDataStore
 
     @Provides
     @Singleton
-    @Favorites
+    @FavoriteCourseDataStore
     fun provideFavoriteCourseDataStore(
         @ApplicationContext context: Context,
-    ): DataStore<Preferences> = context.favoritesDataStore
+    ): DataStore<Preferences> = context.favoriteCourseDataStore
 
     @Provides
     @Singleton
-    @Notice
-    fun provideNoticeCourseDataStore(
+    @NoticeDataStore
+    fun provideNoticeDataStore(
         @ApplicationContext context: Context,
     ): DataStore<Preferences> = context.noticeDataStore
 }

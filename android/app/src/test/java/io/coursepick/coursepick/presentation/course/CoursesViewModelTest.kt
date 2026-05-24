@@ -10,7 +10,7 @@ import io.coursepick.coursepick.presentation.extension.CoroutinesTestExtension
 import io.coursepick.coursepick.presentation.extension.InstantTaskExecutorExtension
 import io.coursepick.coursepick.presentation.fixtures.FakeAuthRepository
 import io.coursepick.coursepick.presentation.fixtures.FakeCourseRepository
-import io.coursepick.coursepick.presentation.fixtures.FakeFavoritesRepository
+import io.coursepick.coursepick.presentation.fixtures.FakeFavoriteCourseRepository
 import io.coursepick.coursepick.presentation.fixtures.FakeLocationRepository
 import io.coursepick.coursepick.presentation.fixtures.FakeNetworkMonitor
 import io.coursepick.coursepick.presentation.fixtures.FakeNoticeRepository
@@ -27,7 +27,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 @ExtendWith(InstantTaskExecutorExtension::class)
 class CoursesViewModelTest {
     private lateinit var fakeCourseRepository: FakeCourseRepository
-    private val fakeFavoritesRepository = FakeFavoritesRepository()
+    private val fakeFavoritesRepository = FakeFavoriteCourseRepository()
     private val fakeNoticeRepository = FakeNoticeRepository()
     private val fakeLocationRepository = FakeLocationRepository()
     private val fakePreferencesRepository = FakePreferencesRepository()
