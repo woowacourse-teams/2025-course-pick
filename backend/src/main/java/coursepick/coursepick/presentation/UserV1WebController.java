@@ -22,6 +22,6 @@ public class UserV1WebController implements UserWebApi {
     @PostMapping("/login/kakao")
     public SignWebResponse sign(@RequestBody SignWebRequest request) {
         Authentication authentication = userApplicationService.registerOrLoginAndGetAuthentication(request.accessToken());
-        return new SignWebResponse(authentication.accessToken());
+        return new SignWebResponse(authentication.userId(), authentication.accessToken());
     }
 }
