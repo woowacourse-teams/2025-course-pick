@@ -76,7 +76,7 @@ class AuthenticationTest {
     void 토큰에서_사용자_ID를_추출한다() {
         Authentication authentication = Authentication.auth(TEST_KEY, TEST_USER);
 
-        String userId = authentication.validateAndGetUserId(TEST_KEY);
+        String userId = Authentication.validateAndGetUserId(authentication.accessToken(), TEST_KEY);
 
         assertThat(userId).isEqualTo("user123");
     }

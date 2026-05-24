@@ -12,13 +12,14 @@ import java.util.Date;
 import static coursepick.coursepick.application.exception.ErrorType.AUTHENTICATION_FAIL;
 
 public record Authentication(
-        String accessToken
+        String accessToken,
+        String userId
 ) {
     private static final Duration TOKEN_VALIDITY = Duration.ofDays(30);
 
     public static Authentication auth(SecretKey key, User user) {
         String accessToken = createAccessToken(key, user);
-        return new Authentication(accessToken);
+        return new Authentication(accessToken, user.id());
     }
 
     private static String createAccessToken(SecretKey key, User user) {
@@ -33,12 +34,12 @@ public record Authentication(
                 .compact();
     }
 
-    public String validateAndGetUserId(SecretKey key) {
+    public static String validateAndGetUserId(String token, SecretKey key) {
         try {
             Claims claims = Jwts.parser()
                     .verifyWith(key)
                     .build()
-                    .parseSignedClaims(accessToken)
+                    .parseSignedClaims(token)
                     .getPayload();
             return claims.getSubject();
         } catch (JwtException e) {

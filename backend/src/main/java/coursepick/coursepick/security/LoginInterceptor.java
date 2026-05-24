@@ -43,8 +43,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 
         String token = authorizationHeader.substring("Bearer ".length());
 
-        Authentication authentication = new Authentication(token);
-        String userId = authentication.validateAndGetUserId(secretKey);
+        String userId = Authentication.validateAndGetUserId(token, secretKey);
         request.setAttribute(AUTH_USER_ID, userId);
         return true;
     }
