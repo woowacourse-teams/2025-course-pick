@@ -71,4 +71,8 @@
         </activity>
     </application>
 
+    <queries>
+        <package android:name="net.daum.android.map" />
+        <package android:name="com.nhn.android.nmap" />
+    </queries>
 </manifest>
