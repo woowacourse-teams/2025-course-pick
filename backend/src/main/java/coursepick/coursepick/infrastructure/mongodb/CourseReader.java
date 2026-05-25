@@ -51,7 +51,7 @@ public class CourseReader implements Converter<Document, Course> {
         Date date = Optional.ofNullable(source.getDate("createdAt"))
                 .orElseGet(() -> source.getObjectId("_id").getDate());
 
-        return KstTimeConverter.toUtcInstant(date);
+        return date.toInstant();
     }
 
     private List<CourseTag> parseTags(Document source) {
@@ -131,10 +131,10 @@ public class CourseReader implements Converter<Document, Course> {
 
     private Instant toInstant(Object value) {
         if (value instanceof Date date) {
-            return KstTimeConverter.toUtcInstant(date);
+            return date.toInstant();
         }
         if (value instanceof Instant instant) {
-            return instant.minus(9, java.time.temporal.ChronoUnit.HOURS); // 이미 메모리에 있던 인스턴트인 경우
+            return instant; 
         }
         return Instant.now();
     }
