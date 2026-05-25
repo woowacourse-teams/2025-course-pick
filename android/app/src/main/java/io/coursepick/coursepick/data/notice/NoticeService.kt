@@ -4,5 +4,5 @@ import retrofit2.http.GET
 
 interface NoticeService {
     @GET("notices")
-    suspend fun notices(): List<NoticeDto>
+    suspend fun notices(): NoticeResponseDto
 }
