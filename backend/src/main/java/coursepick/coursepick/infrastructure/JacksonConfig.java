@@ -12,9 +12,8 @@ import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.format.DateTimeFormatter;
 import java.time.ZoneId;
-import java.util.TimeZone;
+import java.time.format.DateTimeFormatter;
 
 @Configuration
 public class JacksonConfig {
@@ -25,21 +24,22 @@ public class JacksonConfig {
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
         return builder -> {
-            builder.timeZone(TimeZone.getTimeZone("Asia/Seoul"));
-            
-            builder.serializerByType(Instant.class, new JsonSerializer<Instant>() {
-                @Override
-                public void serialize(Instant instant, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-                    jsonGenerator.writeString(FORMATTER.format(instant));
-                }
-            });
-            
-            builder.deserializerByType(Instant.class, new JsonDeserializer<Instant>() {
-                @Override
-                public Instant deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
-                    return Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse(jsonParser.getText()));
-                }
-            });
+            builder.serializerByType(Instant.class, new InstantToKstSerializer());
+            builder.deserializerByType(Instant.class, new KstToInstantDeserializer());
         };
+    }
+
+    public static class InstantToKstSerializer extends JsonSerializer<Instant> {
+        @Override
+        public void serialize(Instant instant, JsonGenerator jsonGenerator, SerializerProvider provider) throws IOException {
+            jsonGenerator.writeString(FORMATTER.format(instant));
+        }
+    }
+
+    public static class KstToInstantDeserializer extends JsonDeserializer<Instant> {
+        @Override
+        public Instant deserialize(JsonParser jsonParser, DeserializationContext context) throws IOException {
+            return Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse(jsonParser.getText()));
+        }
     }
 }
