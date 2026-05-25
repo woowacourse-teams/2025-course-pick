@@ -458,6 +458,7 @@ class CoursesActivity :
             }
         val intent: Intent =
             routeFinder.intent(
+                context = this,
                 origin = event.origin,
                 originName = getString(R.string.course_item_navigate_to_course_origin_name),
                 destination = event.destination,
