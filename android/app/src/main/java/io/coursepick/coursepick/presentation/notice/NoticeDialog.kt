@@ -45,7 +45,7 @@ fun NoticeDialog(
                 .padding(top = 20.dp, start = 20.dp, end = 20.dp),
         ) {
             Column(
-                Modifier.clickable(notice.targetUrl != null) {
+                Modifier.clickable(enabled = !notice.targetUrl.isNullOrBlank()) {
                     notice.targetUrl?.let { url: String -> onOpenUrl(url) }
                 },
             ) {
