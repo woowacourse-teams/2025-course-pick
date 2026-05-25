@@ -38,25 +38,25 @@ fun NoticeDialog(
 ) {
     Dialog(onDismissRequest = { onDismissRequest(notice.id) }) {
         Column(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(color = colorResource(R.color.background_primary))
-                    .padding(top = 20.dp, start = 20.dp, end = 20.dp),
+            Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp))
+                .background(color = colorResource(R.color.background_primary))
+                .padding(top = 20.dp, start = 20.dp, end = 20.dp),
         ) {
-            Column(modifier = Modifier.clickable { onOpenUrl(notice.targetUrl) }) {
+            Column(
+                Modifier.clickable(notice.targetUrl != null) {
+                    notice.targetUrl?.let { url: String -> onOpenUrl(url) }
+                },
+            ) {
                 AsyncImage(
                     model = notice.imageUrl,
                     contentDescription = null,
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .height(200.dp),
-                    contentScale = ContentScale.Crop,
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(Modifier.height(20.dp))
 
                 Text(
                     text = notice.title,
@@ -67,7 +67,7 @@ fun NoticeDialog(
                     modifier = Modifier.fillMaxWidth(),
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(Modifier.height(12.dp))
 
                 Text(
                     text = notice.description,
@@ -78,13 +78,12 @@ fun NoticeDialog(
                 )
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(Modifier.height(12.dp))
 
             Row(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .height(IntrinsicSize.Min),
+                Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Min),
             ) {
                 TextButton(
                     onClick = {
@@ -113,7 +112,7 @@ fun NoticeDialog(
     }
 }
 
-@PreviewLightDark()
+@PreviewLightDark
 @Composable
 private fun NoticeDialogPreview() {
     CoursePickTheme {
