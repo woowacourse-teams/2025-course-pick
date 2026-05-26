@@ -9,6 +9,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -23,6 +24,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -38,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
@@ -47,6 +50,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -54,13 +58,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.domain.course.Coordinate
-import io.coursepick.coursepick.domain.course.Course
-import io.coursepick.coursepick.domain.course.CourseName
-import io.coursepick.coursepick.domain.course.Distance
-import io.coursepick.coursepick.domain.course.Latitude
-import io.coursepick.coursepick.domain.course.Length
-import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.presentation.auth.AuthDialog
 import io.coursepick.coursepick.presentation.auth.AuthFeature
 import io.coursepick.coursepick.presentation.auth.AuthUiEvent
@@ -69,61 +66,50 @@ import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
 
 @Composable
 fun CourseDetailScreen(
+    courseId: String,
     onNavigateBack: () -> Unit,
-    onWriteReview: () -> Unit,
+    onWriteReview: (CourseDetailUiModel) -> Unit,
     courseDetailViewModel: CourseDetailViewModel = viewModel(),
     authViewModel: AuthViewModel = viewModel(),
 ) {
     val context: Context = LocalContext.current
-    val course: Course = courseDetailViewModel.course.collectAsStateWithLifecycle().value
+
+    LaunchedEffect(Unit) {
+        courseDetailViewModel.load(courseId)
+    }
 
     LaunchedEffect(Unit) {
         authViewModel.uiEvent.collect { event: AuthUiEvent -> event.handle(context, courseDetailViewModel) }
     }
 
     LaunchedEffect(Unit) {
-        courseDetailViewModel.event.collect { event: CourseDetailEvent -> event.handle(context) }
+        courseDetailViewModel.event.collect { event: CourseDetailViewModel.UiEvent -> event.handle(context) }
     }
+
+    val state: CourseDetailViewModel.UiState = courseDetailViewModel.state.collectAsStateWithLifecycle().value
 
     CourseDetailScreen(
-        course = course,
-        averageRating = courseDetailViewModel.averageRating.collectAsStateWithLifecycle().value,
-        isFavorite = courseDetailViewModel.isFavorite.collectAsStateWithLifecycle().value,
-        reviewCount = courseDetailViewModel.reviewCount.collectAsStateWithLifecycle().value,
-        reviews = courseDetailViewModel.reviews.collectAsStateWithLifecycle().value,
+        state = state,
         onNavigateBack = onNavigateBack,
+        onToggleFavorite = courseDetailViewModel::toggleFavorite,
+        authDialog = courseDetailViewModel.authDialog.collectAsStateWithLifecycle().value,
+        onConfirmAuthDialog = { authFeature: AuthFeature -> authViewModel.authenticate(KakaoAuthenticator(context), authFeature) },
+        onDismissAuthDialog = courseDetailViewModel::dismissAuthDialog,
+        showReportCourseDialog = courseDetailViewModel.showReportCourseDialog.collectAsStateWithLifecycle().value,
         onReportCourse = courseDetailViewModel::onReportCourse,
-        onDeleteReview = courseDetailViewModel::deleteReview,
-        onReportReview = courseDetailViewModel::reportReview,
+        onConfirmReportCourseDialog = courseDetailViewModel::submitCourseReport,
+        onDismissReportCourseDialog = courseDetailViewModel::dismissReportCourseDialog,
         onWriteReview = onWriteReview,
     )
-
-    val authDialogState: AuthFeature? = courseDetailViewModel.authDialogState.collectAsStateWithLifecycle().value
-
-    if (authDialogState != null) {
-        AuthDialog(
-            feature = authDialogState,
-            onDismissRequest = courseDetailViewModel::dismissAuthDialog,
-            onKakaoLoginClick = { authViewModel.authenticate(KakaoAuthenticator(context), authDialogState) },
-        )
-    }
-
-    if (courseDetailViewModel.showReportCourseDialog.collectAsStateWithLifecycle().value) {
-        ReportCourseDialog(
-            course = course,
-            onConfirm = courseDetailViewModel::submitCourseReport,
-            onDismiss = courseDetailViewModel::dismissReportCourseDialog,
-        )
-    }
 }
 
 private fun AuthUiEvent.handle(
     context: Context,
-    viewModel: CourseDetailViewModel,
+    courseDetailViewModel: CourseDetailViewModel,
 ) {
     when (this) {
         is AuthUiEvent.AuthenticateSuccess -> {
-            viewModel.onAuthSuccess(feature)
+            courseDetailViewModel.onAuthSuccess(feature)
         }
 
         AuthUiEvent.AuthenticateFailure -> {
@@ -132,25 +118,25 @@ private fun AuthUiEvent.handle(
     }
 }
 
-private fun CourseDetailEvent.handle(context: Context) {
+private fun CourseDetailViewModel.UiEvent.handle(context: Context) {
     when (this) {
-        CourseDetailEvent.NoNetwork -> {
-            Toast.makeText(context, context.getString(R.string.courses_no_network_message), Toast.LENGTH_SHORT).show()
+        CourseDetailViewModel.UiEvent.NoNetwork -> {
+            Toast.makeText(context, context.getString(R.string.failure_no_network_toast_message), Toast.LENGTH_SHORT).show()
         }
 
-        CourseDetailEvent.ReportCourseSuccess -> {
+        CourseDetailViewModel.UiEvent.ReportCourseSuccess -> {
             Toast.makeText(context, context.getString(R.string.report_course_success_message), Toast.LENGTH_SHORT).show()
         }
 
-        CourseDetailEvent.CourseAlreadyReported -> {
+        CourseDetailViewModel.UiEvent.CourseAlreadyReported -> {
             Toast.makeText(context, context.getString(R.string.report_course_failure_already_reported), Toast.LENGTH_SHORT).show()
         }
 
-        CourseDetailEvent.ReportCourseUnauthorizedUser -> {
+        CourseDetailViewModel.UiEvent.ReportCourseUnauthorizedUser -> {
             Toast.makeText(context, context.getString(R.string.report_course_failure_unauthorized_user_message), Toast.LENGTH_SHORT).show()
         }
 
-        CourseDetailEvent.ReportCourseUnknownFailure -> {
+        CourseDetailViewModel.UiEvent.ReportCourseUnknownFailure -> {
             Toast.makeText(context, context.getString(R.string.report_course_failure_unknown_message), Toast.LENGTH_SHORT).show()
         }
     }
@@ -158,32 +144,35 @@ private fun CourseDetailEvent.handle(context: Context) {
 
 @Composable
 private fun CourseDetailScreen(
-    course: Course,
-    averageRating: Float,
-    isFavorite: Boolean,
-    reviewCount: Int,
-    reviews: List<Review>,
+    state: CourseDetailViewModel.UiState,
     onNavigateBack: () -> Unit,
-    onReportCourse: (Course) -> Unit,
-    onDeleteReview: (Review) -> Unit,
-    onReportReview: (Review) -> Unit,
-    onWriteReview: () -> Unit,
+    onToggleFavorite: () -> Unit,
+    authDialog: AuthFeature?,
+    onConfirmAuthDialog: (AuthFeature) -> Unit,
+    onDismissAuthDialog: () -> Unit,
+    showReportCourseDialog: Boolean,
+    onReportCourse: () -> Unit,
+    onConfirmReportCourseDialog: () -> Unit,
+    onDismissReportCourseDialog: () -> Unit,
+    onWriteReview: (CourseDetailUiModel) -> Unit,
 ) {
-    var isFabVisible by remember { mutableStateOf(true) }
+    var isFabVisible: Boolean by remember(state) { mutableStateOf(state is CourseDetailViewModel.UiState.Success) }
 
-    val nestedScrollConnection =
-        object : NestedScrollConnection {
-            override fun onPreScroll(
-                available: Offset,
-                source: NestedScrollSource,
-            ): Offset {
-                if (available.y < -1) {
-                    isFabVisible = false
-                } else if (available.y > 1) {
-                    isFabVisible = true
+    val nestedScrollConnection: NestedScrollConnection =
+        remember {
+            object : NestedScrollConnection {
+                override fun onPreScroll(
+                    available: Offset,
+                    source: NestedScrollSource,
+                ): Offset {
+                    if (available.y < -1) {
+                        isFabVisible = false
+                    } else if (available.y > 1) {
+                        isFabVisible = true
+                    }
+
+                    return super.onPreScroll(available, source)
                 }
-
-                return super.onPreScroll(available, source)
             }
         }
 
@@ -191,51 +180,99 @@ private fun CourseDetailScreen(
         topBar = {
             TopAppBar(
                 onNavigateBack = onNavigateBack,
-                onReportCourse = { onReportCourse(course) },
+                canReportCourse = state is CourseDetailViewModel.UiState.Success,
+                onReportCourse = onReportCourse,
             )
         },
         floatingActionButton = {
             WriteReviewButton(
-                onClick = onWriteReview,
+                onClick = { if (state is CourseDetailViewModel.UiState.Success) onWriteReview(state.data) },
                 isVisible = isFabVisible,
             )
         },
+        containerColor = colorResource(R.color.background_primary),
     ) { innerPadding: PaddingValues ->
-        Column(
-            Modifier
-                .background(colorResource(R.color.background_primary))
-                .padding(innerPadding)
-                .padding(horizontal = 20.dp, vertical = 10.dp),
-        ) {
-            CourseInfo(
-                courseName = course.name,
-                length = course.length,
-                isFavorite = isFavorite,
-                averageRating = averageRating,
-            )
-
-            Spacer(Modifier.height(10.dp))
-
-            CourseReviewHeader(reviewCount)
-
-            Spacer(Modifier.height(10.dp))
-
-            CourseReviews(
-                reviews = reviews,
-                onDelete = onDeleteReview,
-                onReport = onReportReview,
-                modifier =
+        when (state) {
+            CourseDetailViewModel.UiState.Loading -> {
+                Box(
                     Modifier
-                        .weight(1F)
-                        .nestedScroll(nestedScrollConnection),
-            )
+                        .padding(innerPadding)
+                        .fillMaxWidth()
+                        .padding(top = 100.dp),
+                ) {
+                    CircularProgressIndicator(
+                        color = colorResource(R.color.item_primary),
+                        modifier =
+                            Modifier
+                                .align(Alignment.Center)
+                                .size(80.dp),
+                    )
+                }
+            }
+
+            is CourseDetailViewModel.UiState.Success -> {
+                Column(
+                    Modifier
+                        .background(colorResource(R.color.background_primary))
+                        .padding(innerPadding)
+                        .padding(horizontal = 20.dp, vertical = 10.dp),
+                ) {
+                    CourseInfo(
+                        courseName = state.data.name,
+                        length = state.data.length,
+                        isFavorite = state.data.isFavorite,
+                        onToggleFavorite = onToggleFavorite,
+                        averageRating = state.data.averageRating,
+                    )
+
+                    Spacer(Modifier.height(10.dp))
+
+                    CourseReviewHeader(state.data.reviewCount)
+
+                    Spacer(Modifier.height(10.dp))
+
+                    CourseReviews(
+                        reviews = state.data.reviews,
+                        onDelete = { },
+                        onReport = { },
+                        modifier =
+                            Modifier
+                                .weight(1F)
+                                .fillMaxWidth()
+                                .nestedScroll(nestedScrollConnection),
+                    )
+                }
+
+                if (authDialog != null) {
+                    AuthDialog(
+                        feature = authDialog,
+                        onDismissRequest = onDismissAuthDialog,
+                        onKakaoLoginClick = { onConfirmAuthDialog(authDialog) },
+                    )
+                }
+
+                if (showReportCourseDialog) {
+                    ReportCourseDialog(
+                        courseName = state.data.name,
+                        onConfirm = onConfirmReportCourseDialog,
+                        onDismiss = onDismissReportCourseDialog,
+                    )
+                }
+            }
+
+            CourseDetailViewModel.UiState.Failure.NoNetwork -> {
+            }
+
+            CourseDetailViewModel.UiState.Failure.Unknown -> {
+            }
         }
     }
 }
 
 @Composable
-fun TopAppBar(
+private fun TopAppBar(
     onNavigateBack: () -> Unit,
+    canReportCourse: Boolean,
     onReportCourse: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -260,13 +297,13 @@ fun TopAppBar(
             Icon(
                 painter = painterResource(R.drawable.icon_report_course),
                 contentDescription = stringResource(R.string.course_detail_report_course_button_description),
-                tint = colorResource(R.color.item_primary),
+                tint = colorResource(if (canReportCourse) R.color.item_primary else R.color.item_tertiary),
                 modifier =
                     Modifier
                         .padding(end = 10.dp)
                         .size(48.dp)
                         .clip(CircleShape)
-                        .clickable { onReportCourse() }
+                        .clickable(canReportCourse) { onReportCourse() }
                         .padding(8.dp),
             )
         },
@@ -278,7 +315,7 @@ fun TopAppBar(
                 titleContentColor = colorResource(R.color.item_primary),
                 actionIconContentColor = colorResource(R.color.item_primary),
             ),
-        modifier = modifier,
+        modifier = modifier.shadow(elevation = 10.dp),
     )
 }
 
@@ -323,10 +360,11 @@ private fun WriteReviewButton(
 
 @Composable
 private fun CourseInfo(
-    courseName: CourseName,
-    length: Length,
+    courseName: String,
+    length: Double,
     averageRating: Float,
     isFavorite: Boolean,
+    onToggleFavorite: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier) {
@@ -337,14 +375,16 @@ private fun CourseInfo(
                 tint = colorResource(R.color.item_primary),
                 modifier =
                     Modifier
-                        .background(color = colorResource(R.color.background_tertiary), shape = CircleShape)
+                        .clip(CircleShape)
+                        .background(colorResource(R.color.background_tertiary))
+                        .clickable { onToggleFavorite() }
                         .padding(4.dp),
             )
 
             Spacer(Modifier.width(10.dp))
 
             Text(
-                text = courseName.value,
+                text = courseName,
                 color = colorResource(R.color.item_primary),
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
@@ -409,25 +449,41 @@ private fun CourseReviewHeader(
 
 @Composable
 private fun CourseReviews(
-    reviews: List<Review>,
-    onDelete: (Review) -> Unit,
-    onReport: (Review) -> Unit,
+    reviews: List<CourseReviewUiModel>,
+    onDelete: (CourseReviewUiModel) -> Unit,
+    onReport: (CourseReviewUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    LazyColumn(modifier) {
-        itemsIndexed(
-            items = reviews,
-            key = { _, review: Review -> review.id },
-        ) { index: Int, review: Review ->
-            ReviewItem(
-                review = review,
-                onDelete = onDelete,
-                onReport = onReport,
-                modifier = Modifier.padding(vertical = 10.dp),
-            )
+    if (reviews.isEmpty()) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = modifier,
+        ) {
+            Spacer(Modifier.height(50.dp))
 
-            if (index != reviews.lastIndex) {
-                HorizontalDivider(thickness = 1.dp, color = colorResource(R.color.background_border_light))
+            Text(
+                text = stringResource(R.string.course_detail_empty_review_message),
+                color = colorResource(R.color.item_tertiary),
+                fontSize = 18.sp,
+                textAlign = TextAlign.Center,
+            )
+        }
+    } else {
+        LazyColumn(modifier) {
+            itemsIndexed(
+                items = reviews,
+                key = { _, review: CourseReviewUiModel -> review.id },
+            ) { index: Int, review: CourseReviewUiModel ->
+                ReviewItem(
+                    review = review,
+                    onDelete = onDelete,
+                    onReport = onReport,
+                    modifier = Modifier.padding(vertical = 10.dp),
+                )
+
+                if (index != reviews.lastIndex) {
+                    HorizontalDivider(thickness = 1.dp, color = colorResource(R.color.background_border_light))
+                }
             }
         }
     }
@@ -435,33 +491,126 @@ private fun CourseReviews(
 
 @PreviewLightDark
 @Composable
-private fun CourseDetailScreenPreview() {
+private fun CourseDetailScreenPreview_Loading() {
     CourseDetailScreen(
-        course =
-            Course(
-                id = "",
-                name = CourseName("석촌호수 동호 한바퀴"),
-                distance = Distance(0),
-                length = Length(0),
-                coordinates = List(2) { (Coordinate(Latitude(0.0), Longitude(0.0))) },
-            ),
-        averageRating = 4.32F,
-        isFavorite = false,
-        reviewCount = 99,
-        reviews =
-            List(10) { index: Int ->
-                Review(
-                    id = index.toString(),
-                    username = "달리는 런숭이 $index",
-                    isMine = index == 0,
-                    rating = 4 + index / 10F,
-                    comment = "리뷰 내용 ".repeat(10 + index * 5),
-                )
-            },
+        state = CourseDetailViewModel.UiState.Loading,
         onNavigateBack = { },
+        onToggleFavorite = { },
+        authDialog = null,
+        onConfirmAuthDialog = { },
+        onDismissAuthDialog = { },
+        showReportCourseDialog = false,
         onReportCourse = { },
-        onDeleteReview = { },
-        onReportReview = { },
+        onConfirmReportCourseDialog = { },
+        onDismissReportCourseDialog = { },
+        onWriteReview = { },
+    )
+}
+
+@PreviewLightDark
+@Composable
+private fun CourseDetailScreenPreview_Success_EmptyReview() {
+    CourseDetailScreen(
+        state =
+            CourseDetailViewModel.UiState.Success(
+                data =
+                    CourseDetailUiModel(
+                        id = "",
+                        name = "석촌호수 동호 한바퀴",
+                        length = 0.0,
+                        isFavorite = false,
+                        reviewCount = 0,
+                        averageRating = 4.32F,
+                        tags = emptyList(),
+                        reviews = emptyList(),
+                    ),
+            ),
+        onNavigateBack = { },
+        onToggleFavorite = { },
+        authDialog = null,
+        onConfirmAuthDialog = { },
+        onDismissAuthDialog = { },
+        showReportCourseDialog = false,
+        onReportCourse = { },
+        onConfirmReportCourseDialog = { },
+        onDismissReportCourseDialog = { },
+        onWriteReview = { },
+    )
+}
+
+@PreviewLightDark
+@Composable
+private fun CourseDetailScreenPreview_Success_NonEmptyReviews() {
+    CourseDetailScreen(
+        state =
+            CourseDetailViewModel.UiState.Success(
+                data =
+                    CourseDetailUiModel(
+                        id = "",
+                        name = "석촌호수 동호 한바퀴",
+                        length = 0.0,
+                        isFavorite = false,
+                        reviewCount = 99,
+                        averageRating = 4.32F,
+                        tags = emptyList(),
+                        reviews =
+                            List(10) { index: Int ->
+                                CourseReviewUiModel(
+                                    id = "$index",
+                                    authorId = "",
+                                    authorName = "달리는 런숭이 $index",
+                                    isMine = index == 0,
+                                    rating = 4 + index / 10F,
+                                    content = "리뷰 내용 ".repeat(10 + index * 5),
+                                )
+                            },
+                    ),
+            ),
+        onNavigateBack = { },
+        onToggleFavorite = { },
+        authDialog = null,
+        onConfirmAuthDialog = { },
+        onDismissAuthDialog = { },
+        showReportCourseDialog = false,
+        onReportCourse = { },
+        onConfirmReportCourseDialog = { },
+        onDismissReportCourseDialog = { },
+        onWriteReview = { },
+    )
+}
+
+@PreviewLightDark
+@Composable
+private fun CourseDetailScreenPreview_Failure_NoNetwork() {
+    CourseDetailScreen(
+        state = CourseDetailViewModel.UiState.Failure.NoNetwork,
+        onNavigateBack = { },
+        onToggleFavorite = { },
+        authDialog = null,
+        onConfirmAuthDialog = { },
+        onDismissAuthDialog = { },
+        showReportCourseDialog = false,
+        onReportCourse = { },
+        onConfirmReportCourseDialog = { },
+        onDismissReportCourseDialog = { },
+        onWriteReview = { },
+    )
+}
+
+@PreviewLightDark
+@Composable
+private fun CourseDetailScreenPreview_Failure_Unknown() {
+    CourseDetailScreen(
+        state = CourseDetailViewModel.UiState.Failure.Unknown,
+        onNavigateBack = { },
+        onToggleFavorite = { },
+        authDialog = null,
+        onConfirmAuthDialog = { },
+        onDismissAuthDialog = { },
+        showReportCourseDialog = false,
+        onReportCourse = { },
+        onConfirmReportCourseDialog = { },
+        onDismissReportCourseDialog = { },
         onWriteReview = { },
     )
 }

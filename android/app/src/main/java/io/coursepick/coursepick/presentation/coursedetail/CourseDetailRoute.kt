@@ -8,5 +8,7 @@ sealed interface CourseDetailRoute : NavKey {
     data object CourseDetail : CourseDetailRoute
 
     @Serializable
-    data object WriteReview : CourseDetailRoute
+    data class WriteReview(
+        val courseDetail: CourseDetailUiModel,
+    ) : CourseDetailRoute
 }

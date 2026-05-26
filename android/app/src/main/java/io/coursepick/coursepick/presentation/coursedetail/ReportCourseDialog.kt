@@ -30,18 +30,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.domain.course.Coordinate
-import io.coursepick.coursepick.domain.course.Course
-import io.coursepick.coursepick.domain.course.CourseName
-import io.coursepick.coursepick.domain.course.Distance
-import io.coursepick.coursepick.domain.course.Latitude
-import io.coursepick.coursepick.domain.course.Length
-import io.coursepick.coursepick.domain.course.Longitude
 
 @Composable
 fun ReportCourseDialog(
-    course: Course,
-    onConfirm: (Course) -> Unit,
+    courseName: String,
+    onConfirm: () -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -64,7 +57,7 @@ fun ReportCourseDialog(
                     .background(colorResource(R.color.background_primary))
                     .padding(20.dp),
         ) {
-            Text(text = course.name.value, color = colorResource(R.color.item_primary), fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Text(text = courseName, color = colorResource(R.color.item_primary), fontSize = 18.sp, fontWeight = FontWeight.Bold)
 
             Spacer(Modifier.height(10.dp))
 
@@ -78,7 +71,7 @@ fun ReportCourseDialog(
 
             ReportCourseDialogButtons(
                 isConfirmEnabled = isConfirmEnabled,
-                onConfirm = { onConfirm(course) },
+                onConfirm = onConfirm,
                 onDismiss = onDismiss,
                 modifier = Modifier.padding(10.dp),
             )
@@ -190,14 +183,7 @@ private fun ReportCourseDialogButtons(
 @Composable
 private fun ReportCourseDialogPreview() {
     ReportCourseDialog(
-        course =
-            Course(
-                id = "",
-                name = CourseName("석촌호수 동호 한바퀴"),
-                distance = Distance(0),
-                length = Length(0),
-                coordinates = List(2) { (Coordinate(Latitude(0.0), Longitude(0.0))) },
-            ),
+        courseName = "석촌호수 동호 한바퀴",
         onConfirm = { },
         onDismiss = { },
     )

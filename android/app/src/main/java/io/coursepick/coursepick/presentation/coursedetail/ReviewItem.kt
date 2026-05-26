@@ -35,14 +35,14 @@ import io.coursepick.coursepick.R
 
 @Composable
 fun ReviewItem(
-    review: Review,
-    onDelete: (Review) -> Unit,
-    onReport: (Review) -> Unit,
+    review: CourseReviewUiModel,
+    onDelete: (CourseReviewUiModel) -> Unit,
+    onReport: (CourseReviewUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier) {
         ReviewItemHeader(
-            username = review.username,
+            username = review.authorName,
             isMine = review.isMine,
             onDelete = { onDelete(review) },
             onReport = { onReport(review) },
@@ -50,7 +50,7 @@ fun ReviewItem(
 
         ReviewItemBody(
             rating = review.rating,
-            comment = review.comment,
+            comment = review.content,
         )
     }
 }
@@ -201,12 +201,13 @@ private fun ReviewItemBody(
 private fun ReviewItemPreview_IsMine() {
     ReviewItem(
         review =
-            Review(
+            CourseReviewUiModel(
                 id = "",
-                username = "달리는 런숭이",
+                authorId = "",
+                authorName = "달리는 런숭이",
                 isMine = true,
-                comment = "리뷰 내용 ".repeat(20),
                 rating = 4.32F,
+                content = "리뷰 내용 ".repeat(20),
             ),
         onDelete = { },
         onReport = { },
@@ -218,12 +219,13 @@ private fun ReviewItemPreview_IsMine() {
 private fun ReviewItemPreview_IsNotMine() {
     ReviewItem(
         review =
-            Review(
+            CourseReviewUiModel(
                 id = "",
-                username = "달리는 런숭이",
+                authorId = "",
+                authorName = "달리는 런숭이",
                 isMine = false,
-                comment = "리뷰 내용 ".repeat(20),
                 rating = 4.32F,
+                content = "리뷰 내용 ".repeat(20),
             ),
         onDelete = { },
         onReport = { },

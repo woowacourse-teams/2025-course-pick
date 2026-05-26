@@ -1,10 +1,12 @@
 package io.coursepick.coursepick.presentation.auth
 
-import io.coursepick.coursepick.domain.course.Course
-
 sealed interface AuthFeature {
     data class ReportCourse(
-        val course: Course,
+        val courseId: String,
+    ) : AuthFeature
+
+    data class SubmitReview(
+        val courseId: String,
     ) : AuthFeature
 
     data object CreateCustomCourse : AuthFeature
