@@ -2,6 +2,7 @@ package io.coursepick.coursepick.data.course
 
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
+import io.coursepick.coursepick.domain.course.CourseDetail
 import io.coursepick.coursepick.domain.course.CourseRepository
 import io.coursepick.coursepick.domain.course.CoursesPage
 import io.coursepick.coursepick.domain.course.Meter
@@ -60,6 +61,20 @@ class DefaultCourseRepository
                 ).toCoordinate()
 
         override suspend fun report(course: Course) {
-            service.report(course.id)
+            service.reportCourse(course.id)
+        }
+
+        override suspend fun detail(courseId: String): CourseDetail? = service.courseDetail(courseId).toCourseDetailOrNull()
+
+        override suspend fun reportCourse(courseId: String) {
+            service.reportCourse(courseId)
+        }
+
+        override suspend fun submitReview(
+            courseId: String,
+            rating: Float,
+            content: String,
+        ) {
+            service.submitReview(courseId, ReviewDto(rating, content))
         }
     }
