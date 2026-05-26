@@ -120,10 +120,6 @@ private fun AuthUiEvent.handle(
 
 private fun CourseDetailViewModel.UiEvent.handle(context: Context) {
     when (this) {
-        CourseDetailViewModel.UiEvent.NoNetwork -> {
-            Toast.makeText(context, context.getString(R.string.failure_no_network_toast_message), Toast.LENGTH_SHORT).show()
-        }
-
         CourseDetailViewModel.UiEvent.ReportCourseSuccess -> {
             Toast.makeText(context, context.getString(R.string.report_course_success_message), Toast.LENGTH_SHORT).show()
         }
