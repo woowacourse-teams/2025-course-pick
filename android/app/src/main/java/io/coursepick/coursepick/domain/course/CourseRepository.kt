@@ -23,4 +23,14 @@ interface CourseRepository {
     ): Coordinate
 
     suspend fun report(course: Course)
+
+    suspend fun detail(courseId: String): CourseDetail?
+
+    suspend fun reportCourse(courseId: String)
+
+    suspend fun submitReview(
+        courseId: String,
+        rating: Float,
+        content: String,
+    )
 }

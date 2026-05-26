@@ -1,5 +1,6 @@
 package io.coursepick.coursepick.data.course
 
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -37,8 +38,19 @@ interface CourseService {
         @Query("lng") originLongitude: Double,
     ): CoordinateDto
 
-    @POST("courses/{id}/report")
-    suspend fun report(
+    @GET("courses/{id}")
+    suspend fun courseDetail(
         @Path("id") courseId: String,
+    ): CourseDetailDto
+
+    @POST("courses/{id}/report")
+    suspend fun reportCourse(
+        @Path("id") courseId: String,
+    )
+
+    @POST("courses/{id}/reviews")
+    suspend fun submitReview(
+        @Path("id") courseId: String,
+        @Body review: ReviewDto,
     )
 }
