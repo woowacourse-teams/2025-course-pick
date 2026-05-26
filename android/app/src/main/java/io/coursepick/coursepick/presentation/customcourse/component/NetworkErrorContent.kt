@@ -42,7 +42,7 @@ fun NetworkErrorContent(
         verticalArrangement = Arrangement.Center,
     ) {
         Text(
-            text = stringResource(R.string.network_connection_error_message),
+            text = stringResource(R.string.failure_no_network_message),
             color = colorResource(R.color.item_primary),
             textAlign = TextAlign.Center,
             fontSize = 18.sp,
@@ -67,7 +67,7 @@ fun NetworkErrorContent(
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                text = stringResource(R.string.network_retry),
+                text = stringResource(R.string.failure_retry_button),
                 fontSize = 16.sp,
                 color = colorResource(R.color.item_primary),
             )

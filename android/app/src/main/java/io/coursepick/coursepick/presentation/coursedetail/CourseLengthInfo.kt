@@ -13,12 +13,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.domain.course.Length
 import io.coursepick.coursepick.presentation.toDistanceText
 
 @Composable
 fun CourseLengthInfo(
-    length: Length,
+    length: Double,
     modifier: Modifier = Modifier,
 ) {
     Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {

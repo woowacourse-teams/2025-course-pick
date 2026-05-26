@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
@@ -19,6 +20,8 @@ import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 
 @AndroidEntryPoint
 class CourseDetailActivity : ComponentActivity() {
+    private val courseDetailViewModel: CourseDetailViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -36,13 +39,23 @@ class CourseDetailActivity : ComponentActivity() {
                     entryProvider {
                         entry<CourseDetailRoute.CourseDetail> {
                             CourseDetailScreen(
+                                courseId = courseId,
                                 onNavigateBack = ::finish,
-                                onWriteReview = { backstack.add(CourseDetailRoute.WriteReview) },
+                                onWriteReview = { courseDetail: CourseDetailUiModel ->
+                                    backstack.add(CourseDetailRoute.WriteReview(courseDetail))
+                                },
+                                courseDetailViewModel = courseDetailViewModel,
                             )
                         }
 
-                        entry<CourseDetailRoute.WriteReview> {
-                            WriteCourseReviewScreen()
+                        entry<CourseDetailRoute.WriteReview> { key: CourseDetailRoute.WriteReview ->
+                            WriteCourseReviewScreen(
+                                courseDetail = key.courseDetail,
+                                onComplete = {
+                                    backstack.removeLastOrNull()
+                                    courseDetailViewModel.load(courseId)
+                                },
+                            )
                         }
                     }
 

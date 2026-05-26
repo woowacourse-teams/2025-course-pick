@@ -791,7 +791,7 @@ class CoursesActivity :
                     Toast
                         .makeText(
                             this,
-                            getString(R.string.courses_no_network_message),
+                            getString(R.string.failure_no_network_toast_message),
                             Toast.LENGTH_SHORT,
                         ).show()
                 }
