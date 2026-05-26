@@ -15,17 +15,15 @@ data class CourseDetailDto(
     val tags: List<TagDto>,
     val reviews: List<CourseReviewDto>,
 ) {
-    fun toCourseDetailOrNull(): CourseDetail? =
-        runCatching {
-            CourseDetail(
-                id = id,
-                name = CourseName(name),
-                length = Length(length),
-                coordinates = coordinates.map(CoordinateDto::toCoordinate),
-                reviewCount = reviewOverview.reviewCount,
-                averageRating = reviewOverview.averageRating,
-                tags = tags.map(TagDto::name),
-                reviews = reviews.map(CourseReviewDto::toCourseReview),
-            )
-        }.getOrNull()
+    fun toCourseDetail(): CourseDetail =
+        CourseDetail(
+            id = id,
+            name = CourseName(name),
+            length = Length(length),
+            coordinates = coordinates.map(CoordinateDto::toCoordinate),
+            reviewCount = reviewOverview.reviewCount,
+            averageRating = reviewOverview.averageRating,
+            tags = tags.map(TagDto::name),
+            reviews = reviews.map(CourseReviewDto::toCourseReview),
+        )
 }

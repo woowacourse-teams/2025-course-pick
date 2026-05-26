@@ -24,7 +24,7 @@ interface CourseRepository {
 
     suspend fun report(course: Course)
 
-    suspend fun detail(courseId: String): CourseDetail?
+    suspend fun detail(courseId: String): CourseDetail
 
     suspend fun reportCourse(courseId: String)
 

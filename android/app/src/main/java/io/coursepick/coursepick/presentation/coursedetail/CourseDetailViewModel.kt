@@ -37,7 +37,7 @@ class CourseDetailViewModel
         private val _event = MutableSharedFlow<UiEvent>()
         val event: SharedFlow<UiEvent> get() = _event.asSharedFlow()
 
-        private val courseId = MutableStateFlow<String?>(null)
+        private val courseId = MutableSharedFlow<String?>(1)
 
         private val isConnected = MutableStateFlow(networkMonitor.isConnected())
 
@@ -49,21 +49,23 @@ class CourseDetailViewModel
             ) { isConnected: Boolean, courseId: String?, favoriteCourseIds: Set<String> ->
                 if (!isConnected) return@combine UiState.Failure.NoNetwork
 
-                val courseDetail: CourseDetail? = courseId?.let { courseRepository.detail(it) }
+                val courseDetail: CourseDetail? =
+                    courseId?.let { courseId: String ->
+                        runCatching { courseRepository.detail(courseId) }.getOrNull()
+                    }
                 if (courseDetail == null) return@combine UiState.Failure.Unknown
 
                 UiState.Success(
-                    data =
-                        CourseDetailUiModel(
-                            id = courseDetail.id,
-                            name = courseDetail.name.value,
-                            length = courseDetail.length.meter.value,
-                            isFavorite = favoriteCourseIds.contains(courseDetail.id),
-                            reviewCount = courseDetail.reviewCount,
-                            averageRating = courseDetail.averageRating,
-                            tags = courseDetail.tags,
-                            reviews = courseDetail.reviews.map { review: CourseReview -> review.toUiModel() },
-                        ),
+                    CourseDetailUiModel(
+                        id = courseDetail.id,
+                        name = courseDetail.name.value,
+                        length = courseDetail.length.meter.value,
+                        isFavorite = favoriteCourseIds.contains(courseDetail.id),
+                        reviewCount = courseDetail.reviewCount,
+                        averageRating = courseDetail.averageRating,
+                        tags = courseDetail.tags,
+                        reviews = courseDetail.reviews.map { review: CourseReview -> review.toUiModel() },
+                    ),
                 )
             }.stateIn(
                 scope = viewModelScope,
@@ -83,9 +85,13 @@ class CourseDetailViewModel
                 return
             }
 
-            this.courseId.value = courseId
-            isConnected.value = true
+            viewModelScope.launch {
+                this@CourseDetailViewModel.courseId.emit(courseId)
+                isConnected.value = true
+            }
         }
+
+        private suspend fun detail(courseId: String): CourseDetail? = runCatching { courseRepository.detail(courseId) }.getOrNull()
 
         private fun CourseReview.toUiModel(): CourseReviewUiModel =
             CourseReviewUiModel(
@@ -146,7 +152,6 @@ class CourseDetailViewModel
                 } catch (exception: CancellationException) {
                     throw exception
                 } catch (_: NoNetworkException) {
-                    _event.emit(UiEvent.NoNetwork)
                     isConnected.value = false
                 } catch (exception: HttpException) {
                     _event.emit(
@@ -176,8 +181,6 @@ class CourseDetailViewModel
         }
 
         sealed interface UiEvent {
-            object NoNetwork : UiEvent
-
             object ReportCourseSuccess : UiEvent
 
             object CourseAlreadyReported : UiEvent

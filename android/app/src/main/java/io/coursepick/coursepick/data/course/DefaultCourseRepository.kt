@@ -64,7 +64,7 @@ class DefaultCourseRepository
             service.reportCourse(course.id)
         }
 
-        override suspend fun detail(courseId: String): CourseDetail? = service.courseDetail(courseId).toCourseDetailOrNull()
+        override suspend fun detail(courseId: String): CourseDetail = service.courseDetail(courseId).toCourseDetail()
 
         override suspend fun reportCourse(courseId: String) {
             service.reportCourse(courseId)
