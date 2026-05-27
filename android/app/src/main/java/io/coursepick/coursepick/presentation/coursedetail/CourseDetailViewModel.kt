@@ -41,16 +41,13 @@ class CourseDetailViewModel
 
         private val courseId = MutableStateFlow<String?>(null)
 
-        private val isConnected = MutableStateFlow(networkMonitor.isConnected())
-
         val state: StateFlow<UiState> =
             combine(
                 loadTrigger,
-                isConnected,
                 courseId,
                 favoriteCourseRepository.favoriteCourseIds,
-            ) { _, isConnected: Boolean, courseId: String?, favoriteCourseIds: Set<String> ->
-                if (!isConnected) return@combine UiState.Failure.NoNetwork
+            ) { _, courseId: String?, favoriteCourseIds: Set<String> ->
+                if (!networkMonitor.isConnected()) return@combine UiState.Failure.NoNetwork
 
                 val courseDetail: CourseDetail? =
                     courseId?.let { courseId: String -> runCatching { courseRepository.detail(courseId) }.getOrNull() }
@@ -81,14 +78,8 @@ class CourseDetailViewModel
         val showReportCourseDialog: StateFlow<Boolean> get() = _showReportCourseDialog.asStateFlow()
 
         fun load(courseId: String) {
-            if (!networkMonitor.isConnected()) {
-                isConnected.value = false
-                return
-            }
-
             viewModelScope.launch {
                 this@CourseDetailViewModel.courseId.value = courseId
-                isConnected.value = true
                 loadTrigger.emit(Unit)
             }
         }
@@ -152,7 +143,7 @@ class CourseDetailViewModel
                 } catch (exception: CancellationException) {
                     throw exception
                 } catch (_: NoNetworkException) {
-                    isConnected.value = false
+                    _event.emit(UiEvent.NoNetwork)
                 } catch (exception: HttpException) {
                     _event.emit(
                         when (exception.code()) {
@@ -184,6 +175,8 @@ class CourseDetailViewModel
             object ReportCourseSuccess : UiEvent
 
             object CourseAlreadyReported : UiEvent
+
+            object NoNetwork : UiEvent
 
             object ReportCourseUnauthorizedUser : UiEvent
 
