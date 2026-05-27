@@ -95,10 +95,12 @@
     <string name="review_item_action_report">신고하기</string>
 
 
-    <!--  코스 상세 화면 - 리뷰 삭제 다이얼로그  -->
+    <!--  코스 상세 화면 - 리뷰 삭제  -->
+    <string name="delete_review_feature_name">리뷰 삭제</string>
     <string name="delete_review_dialog_title">이 리뷰를 삭제하시겠어요?</string>
     <string name="delete_review_dialog_negative_button">취소</string>
     <string name="delete_review_dialog_positive_button">삭제</string>
+    <string name="delete_review_success_message">리뷰가 삭제됐습니다.</string>
 
     <!--  코스 리뷰 작성 화면  -->
     <string name="write_course_review_feature_name">리뷰 작성</string>

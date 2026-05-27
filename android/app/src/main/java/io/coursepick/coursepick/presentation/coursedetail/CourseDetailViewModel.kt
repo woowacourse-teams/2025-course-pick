@@ -73,17 +73,17 @@ class CourseDetailViewModel
             viewModelScope.launch {
                 isConnected.value = true
                 isLoading.value = true
-
-                courseDetail.value =
-                    runCatching {
-                        courseRepository.detail(courseId).toUiModel()
-                    }.onFailure { exception: Throwable ->
-                        if (exception is CancellationException) throw exception
-                    }.getOrNull()
-
+                courseDetail.value = courseDetail(courseId)
                 isLoading.value = false
             }
         }
+
+        private suspend fun courseDetail(courseId: String): CourseDetailUiModel? =
+            runCatching {
+                courseRepository.detail(courseId).toUiModel()
+            }.onFailure { exception: Throwable ->
+                if (exception is CancellationException) throw exception
+            }.getOrNull()
 
         fun toggleFavorite() {
             viewModelScope.launch {
@@ -105,8 +105,10 @@ class CourseDetailViewModel
         fun onAuthSuccess(feature: AuthFeature) {
             dismissAuthDialog()
 
-            if (feature is AuthFeature.ReportCourse) {
-                onReportCourse()
+            when (feature) {
+                is AuthFeature.ReportCourse -> onReportCourse()
+                is AuthFeature.DeleteReview -> onDeleteReview(feature.review)
+                else -> Unit
             }
         }
 
@@ -159,6 +161,44 @@ class CourseDetailViewModel
             }
         }
 
+        fun onDeleteReview(review: CourseReviewUiModel) {
+            viewModelScope.launch {
+                if (authRepository.accessToken() == null) {
+                    _dialogState.value = dialogState.value.copy(authDialog = AuthFeature.DeleteReview(review))
+                } else {
+                    _dialogState.value = dialogState.value.copy(deleteReviewDialog = review)
+                }
+            }
+        }
+
+        fun dismissDeleteReviewDialog() {
+            _dialogState.value = dialogState.value.copy(deleteReviewDialog = null)
+        }
+
+        fun confirmDeleteReview(review: CourseReviewUiModel) {
+            viewModelScope.launch {
+                (uiState.value as? UiState.Success)?.let { uiState: UiState.Success ->
+                    try {
+                        courseRepository.deleteReview(uiState.detail.id, review.id)
+                        dismissDeleteReviewDialog()
+                        courseDetail.value = courseDetail(uiState.detail.id)
+                    } catch (exception: CancellationException) {
+                        throw exception
+                    } catch (exception: HttpException) {
+                        _uiEvent.emit(
+                            when (exception.code()) {
+                                401 -> UiEvent.UnauthorizedUser
+                                else -> UiEvent.UnknownFailure
+                            },
+                        )
+                    } catch (_: Throwable) {
+                        _uiEvent.emit(UiEvent.UnknownFailure)
+                    }
+                    dismissDeleteReviewDialog()
+                }
+            }
+        }
+
         fun onWriteReview() {
             viewModelScope.launch {
                 (uiState.value as? UiState.Success)?.let { uiState: UiState.Success ->
@@ -180,11 +220,15 @@ class CourseDetailViewModel
         sealed interface UiEvent {
             data object NoNetwork : UiEvent
 
+            data object UnauthorizedUser : UiEvent
+
             data object UnknownFailure : UiEvent
 
             data object ReportCourseSuccess : UiEvent
 
             data object CourseAlreadyReported : UiEvent
+
+            data object DeleteReviewSuccess : UiEvent
 
             data class NavigateToWriteCourseReview(
                 val courseDetail: CourseDetailUiModel,
@@ -211,5 +255,6 @@ class CourseDetailViewModel
         data class DialogState(
             val authDialog: AuthFeature? = null,
             val reportCourseDialog: String? = null,
+            val deleteReviewDialog: CourseReviewUiModel? = null,
         )
     }
