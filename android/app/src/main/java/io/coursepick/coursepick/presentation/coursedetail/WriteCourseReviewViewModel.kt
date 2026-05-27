@@ -165,6 +165,6 @@ class WriteCourseReviewViewModel
         }
 
         companion object {
-            const val MAX_REVIEW_LENGTH = 1_000
+            const val MAX_REVIEW_LENGTH = 500
         }
     }
