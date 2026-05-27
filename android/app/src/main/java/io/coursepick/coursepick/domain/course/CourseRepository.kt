@@ -26,6 +26,11 @@ interface CourseRepository {
 
     suspend fun reportCourse(courseId: String)
 
+    suspend fun deleteReview(
+        courseId: String,
+        reviewId: String,
+    )
+
     suspend fun submitReview(
         courseId: String,
         rating: Float,
