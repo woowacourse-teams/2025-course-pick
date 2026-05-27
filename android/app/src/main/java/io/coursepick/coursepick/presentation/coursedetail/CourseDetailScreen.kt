@@ -8,6 +8,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -94,6 +96,7 @@ fun CourseDetailScreen(
         onToggleFavorite = courseDetailViewModel::toggleFavorite,
         onReportCourse = courseDetailViewModel::onReportCourse,
         onWriteReview = courseDetailViewModel::onWriteReview,
+        onRetry = { courseDetailViewModel.load(courseId) },
     )
 
     CourseDetailScreenDialogs(
@@ -158,6 +161,7 @@ private fun CourseDetailScreen(
     onToggleFavorite: () -> Unit,
     onReportCourse: () -> Unit,
     onWriteReview: () -> Unit,
+    onRetry: () -> Unit,
 ) {
     var isFabVisible: Boolean by remember(uiState) { mutableStateOf(uiState is CourseDetailViewModel.UiState.Success) }
 
@@ -248,9 +252,29 @@ private fun CourseDetailScreen(
             }
 
             CourseDetailViewModel.UiState.Failure.NoNetwork -> {
+                FailureComponent(
+                    icon = painterResource(R.drawable.icon_no_network),
+                    message = stringResource(R.string.failure_no_network_message),
+                    onRetry = onRetry,
+                    modifier =
+                        Modifier
+                            .padding(innerPadding)
+                            .fillMaxWidth()
+                            .padding(top = 100.dp),
+                )
             }
 
             CourseDetailViewModel.UiState.Failure.Unknown -> {
+                FailureComponent(
+                    icon = painterResource(R.drawable.icon_unknown_failure),
+                    message = stringResource(R.string.failure_unknown_message),
+                    onRetry = onRetry,
+                    modifier =
+                        Modifier
+                            .padding(innerPadding)
+                            .fillMaxWidth()
+                            .padding(top = 100.dp),
+                )
             }
         }
     }
@@ -477,6 +501,50 @@ private fun CourseReviews(
 }
 
 @Composable
+private fun FailureComponent(
+    icon: Painter,
+    message: String,
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier,
+    ) {
+        Icon(
+            painter = icon,
+            contentDescription = null,
+            tint = colorResource(R.color.item_primary),
+            modifier = Modifier.size(48.dp),
+        )
+
+        Spacer(Modifier.height(20.dp))
+
+        Text(
+            text = message,
+            color = colorResource(R.color.item_primary),
+            fontSize = 18.sp,
+            textAlign = TextAlign.Center,
+        )
+
+        Spacer(Modifier.height(20.dp))
+
+        Text(
+            text = stringResource(R.string.failure_retry_button),
+            color = colorResource(R.color.item_primary),
+            fontSize = 16.sp,
+            textAlign = TextAlign.Center,
+            modifier =
+                Modifier
+                    .border(width = 1.dp, color = colorResource(R.color.background_border), shape = RoundedCornerShape(50))
+                    .clip(RoundedCornerShape(50))
+                    .clickable { onRetry() }
+                    .padding(horizontal = 20.dp, vertical = 10.dp),
+        )
+    }
+}
+
+@Composable
 private fun CourseDetailScreenDialogs(
     dialogState: CourseDetailViewModel.DialogState,
     onDismissAuthDialog: () -> Unit,
@@ -510,6 +578,7 @@ private fun CourseDetailScreenPreview_Loading() {
         onToggleFavorite = { },
         onReportCourse = { },
         onWriteReview = { },
+        onRetry = { },
     )
 }
 
@@ -535,6 +604,7 @@ private fun CourseDetailScreenPreview_Success_EmptyReview() {
         onToggleFavorite = { },
         onReportCourse = { },
         onWriteReview = { },
+        onRetry = { },
     )
 }
 
@@ -570,6 +640,7 @@ private fun CourseDetailScreenPreview_Success_NonEmptyReviews() {
         onToggleFavorite = { },
         onReportCourse = { },
         onWriteReview = { },
+        onRetry = { },
     )
 }
 
@@ -582,6 +653,7 @@ private fun CourseDetailScreenPreview_Failure_NoNetwork() {
         onToggleFavorite = { },
         onReportCourse = { },
         onWriteReview = { },
+        onRetry = { },
     )
 }
 
@@ -594,5 +666,6 @@ private fun CourseDetailScreenPreview_Failure_Unknown() {
         onToggleFavorite = { },
         onReportCourse = { },
         onWriteReview = { },
+        onRetry = { },
     )
 }
