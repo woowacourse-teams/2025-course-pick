@@ -128,6 +128,10 @@ private fun CourseDetailViewModel.UiEvent.handle(context: Context) {
             Toast.makeText(context, context.getString(R.string.report_course_failure_already_reported), Toast.LENGTH_SHORT).show()
         }
 
+        CourseDetailViewModel.UiEvent.NoNetwork -> {
+            Toast.makeText(context, context.getString(R.string.failure_no_network_toast_message), Toast.LENGTH_SHORT).show()
+        }
+
         CourseDetailViewModel.UiEvent.ReportCourseUnauthorizedUser -> {
             Toast.makeText(context, context.getString(R.string.report_course_failure_unauthorized_user_message), Toast.LENGTH_SHORT).show()
         }
