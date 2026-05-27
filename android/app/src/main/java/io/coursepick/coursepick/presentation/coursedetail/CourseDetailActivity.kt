@@ -54,7 +54,8 @@ class CourseDetailActivity : ComponentActivity() {
                         entry<CourseDetailRoute.WriteReview> { key: CourseDetailRoute.WriteReview ->
                             WriteCourseReviewScreen(
                                 courseDetail = key.courseDetail,
-                                onComplete = {
+                                exit = backstack::removeLastOrNull,
+                                complete = {
                                     backstack.removeLastOrNull()
                                     courseDetailViewModel.load(courseId)
                                 },

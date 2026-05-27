@@ -46,6 +46,9 @@ class WriteCourseReviewViewModel
                 initialValue = false,
             )
 
+        private val _showExitDialog = MutableStateFlow(false)
+        val showExitDialog: StateFlow<Boolean> get() = _showExitDialog.asStateFlow()
+
         private val _authDialog = MutableStateFlow<AuthFeature?>(null)
         val authDialog: StateFlow<AuthFeature?> get() = _authDialog.asStateFlow()
 
@@ -111,7 +114,30 @@ class WriteCourseReviewViewModel
             _authDialog.value = null
         }
 
+        fun onExit() {
+            viewModelScope.launch {
+                if (reviewContent.value.isBlank()) {
+                    confirmExit()
+                } else {
+                    _showExitDialog.value = true
+                }
+            }
+        }
+
+        fun confirmExit() {
+            viewModelScope.launch {
+                _showExitDialog.value = false
+                _event.emit(UiEvent.Exit)
+            }
+        }
+
+        fun dismissExitDialog() {
+            _showExitDialog.value = false
+        }
+
         sealed interface UiEvent {
+            data object Exit : UiEvent
+
             data object SubmitReviewSuccess : UiEvent
 
             data object NoNetwork : UiEvent
