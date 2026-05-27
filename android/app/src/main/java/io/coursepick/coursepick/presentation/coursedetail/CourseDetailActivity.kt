@@ -8,6 +8,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
@@ -63,6 +66,14 @@ class CourseDetailActivity : ComponentActivity() {
                     backStack = backstack,
                     onBack = backstack::removeLastOrNull,
                     entryProvider = entryProvider,
+                    transitionSpec = {
+                        slideInHorizontally(initialOffsetX = { fullWidth: Int -> fullWidth }) togetherWith
+                            slideOutHorizontally(targetOffsetX = { fullWidth: Int -> -fullWidth })
+                    },
+                    popTransitionSpec = {
+                        slideInHorizontally(initialOffsetX = { fullWidth: Int -> -fullWidth }) togetherWith
+                            slideOutHorizontally(targetOffsetX = { fullWidth: Int -> fullWidth })
+                    },
                 )
             }
         }
