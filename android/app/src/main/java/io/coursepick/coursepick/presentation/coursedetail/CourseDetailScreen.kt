@@ -8,6 +8,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -67,8 +69,8 @@ import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
 @Composable
 fun CourseDetailScreen(
     courseId: String,
-    onNavigateBack: () -> Unit,
-    onWriteReview: (CourseDetailUiModel) -> Unit,
+    navigateBack: () -> Unit,
+    navigateToWriteCourseReview: (CourseDetailUiModel) -> Unit,
     courseDetailViewModel: CourseDetailViewModel = viewModel(),
     authViewModel: AuthViewModel = viewModel(),
 ) {
@@ -83,23 +85,26 @@ fun CourseDetailScreen(
     }
 
     LaunchedEffect(Unit) {
-        courseDetailViewModel.event.collect { event: CourseDetailViewModel.UiEvent -> event.handle(context) }
+        courseDetailViewModel.uiEvent.collect { event: CourseDetailViewModel.UiEvent -> event.handle(context, navigateToWriteCourseReview) }
     }
 
-    val state: CourseDetailViewModel.UiState = courseDetailViewModel.state.collectAsStateWithLifecycle().value
+    val state: CourseDetailViewModel.UiState = courseDetailViewModel.uiState.collectAsStateWithLifecycle().value
 
     CourseDetailScreen(
-        state = state,
-        onNavigateBack = onNavigateBack,
+        uiState = state,
+        onNavigateBack = navigateBack,
         onToggleFavorite = courseDetailViewModel::toggleFavorite,
-        authDialog = courseDetailViewModel.authDialog.collectAsStateWithLifecycle().value,
-        onConfirmAuthDialog = { authFeature: AuthFeature -> authViewModel.authenticate(KakaoAuthenticator(context), authFeature) },
-        onDismissAuthDialog = courseDetailViewModel::dismissAuthDialog,
-        showReportCourseDialog = courseDetailViewModel.showReportCourseDialog.collectAsStateWithLifecycle().value,
         onReportCourse = courseDetailViewModel::onReportCourse,
-        onConfirmReportCourseDialog = courseDetailViewModel::submitCourseReport,
+        onWriteReview = courseDetailViewModel::onWriteReview,
+        onRetry = { courseDetailViewModel.load(courseId) },
+    )
+
+    CourseDetailScreenDialogs(
+        dialogState = courseDetailViewModel.dialogState.collectAsStateWithLifecycle().value,
+        onDismissAuthDialog = courseDetailViewModel::dismissAuthDialog,
+        onConfirmAuthDialog = { authFeature: AuthFeature -> authViewModel.authenticate(KakaoAuthenticator(context), authFeature) },
         onDismissReportCourseDialog = courseDetailViewModel::dismissReportCourseDialog,
-        onWriteReview = onWriteReview,
+        onConfirmReportCourseDialog = courseDetailViewModel::submitCourseReport,
     )
 }
 
@@ -118,8 +123,19 @@ private fun AuthUiEvent.handle(
     }
 }
 
-private fun CourseDetailViewModel.UiEvent.handle(context: Context) {
+private fun CourseDetailViewModel.UiEvent.handle(
+    context: Context,
+    navigateToWriteCourseReview: (CourseDetailUiModel) -> Unit,
+) {
     when (this) {
+        CourseDetailViewModel.UiEvent.NoNetwork -> {
+            Toast.makeText(context, context.getString(R.string.failure_no_network_toast_message), Toast.LENGTH_SHORT).show()
+        }
+
+        CourseDetailViewModel.UiEvent.UnknownFailure -> {
+            Toast.makeText(context, context.getString(R.string.failure_unknown_toast_message), Toast.LENGTH_SHORT).show()
+        }
+
         CourseDetailViewModel.UiEvent.ReportCourseSuccess -> {
             Toast.makeText(context, context.getString(R.string.report_course_success_message), Toast.LENGTH_SHORT).show()
         }
@@ -128,31 +144,26 @@ private fun CourseDetailViewModel.UiEvent.handle(context: Context) {
             Toast.makeText(context, context.getString(R.string.report_course_failure_already_reported), Toast.LENGTH_SHORT).show()
         }
 
-        CourseDetailViewModel.UiEvent.ReportCourseUnauthorizedUser -> {
-            Toast.makeText(context, context.getString(R.string.report_course_failure_unauthorized_user_message), Toast.LENGTH_SHORT).show()
+        is CourseDetailViewModel.UiEvent.NavigateToWriteCourseReview -> {
+            navigateToWriteCourseReview(courseDetail)
         }
 
-        CourseDetailViewModel.UiEvent.ReportCourseUnknownFailure -> {
-            Toast.makeText(context, context.getString(R.string.report_course_failure_unknown_message), Toast.LENGTH_SHORT).show()
+        CourseDetailViewModel.UiEvent.CourseAlreadyReviewed -> {
+            Toast.makeText(context, context.getString(R.string.write_course_review_already_reviewed_message), Toast.LENGTH_SHORT).show()
         }
     }
 }
 
 @Composable
 private fun CourseDetailScreen(
-    state: CourseDetailViewModel.UiState,
+    uiState: CourseDetailViewModel.UiState,
     onNavigateBack: () -> Unit,
     onToggleFavorite: () -> Unit,
-    authDialog: AuthFeature?,
-    onConfirmAuthDialog: (AuthFeature) -> Unit,
-    onDismissAuthDialog: () -> Unit,
-    showReportCourseDialog: Boolean,
     onReportCourse: () -> Unit,
-    onConfirmReportCourseDialog: () -> Unit,
-    onDismissReportCourseDialog: () -> Unit,
-    onWriteReview: (CourseDetailUiModel) -> Unit,
+    onWriteReview: () -> Unit,
+    onRetry: () -> Unit,
 ) {
-    var isFabVisible: Boolean by remember(state) { mutableStateOf(state is CourseDetailViewModel.UiState.Success) }
+    var isFabVisible: Boolean by remember(uiState) { mutableStateOf(uiState is CourseDetailViewModel.UiState.Success) }
 
     val nestedScrollConnection: NestedScrollConnection =
         remember {
@@ -175,20 +186,20 @@ private fun CourseDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                onNavigateBack = onNavigateBack,
-                canReportCourse = state is CourseDetailViewModel.UiState.Success,
+                navigateBack = onNavigateBack,
+                canReportCourse = uiState is CourseDetailViewModel.UiState.Success,
                 onReportCourse = onReportCourse,
             )
         },
         floatingActionButton = {
             WriteReviewButton(
-                onClick = { if (state is CourseDetailViewModel.UiState.Success) onWriteReview(state.data) },
+                onClick = onWriteReview,
                 isVisible = isFabVisible,
             )
         },
         containerColor = colorResource(R.color.background_primary),
     ) { innerPadding: PaddingValues ->
-        when (state) {
+        when (uiState) {
             CourseDetailViewModel.UiState.Loading -> {
                 Box(
                     Modifier
@@ -214,21 +225,21 @@ private fun CourseDetailScreen(
                         .padding(horizontal = 20.dp, vertical = 10.dp),
                 ) {
                     CourseInfo(
-                        courseName = state.data.name,
-                        length = state.data.length,
-                        isFavorite = state.data.isFavorite,
+                        courseName = uiState.detail.name,
+                        length = uiState.detail.length,
+                        isFavorite = uiState.isFavorite,
                         onToggleFavorite = onToggleFavorite,
-                        averageRating = state.data.averageRating,
+                        averageRating = uiState.detail.averageRating,
                     )
 
                     Spacer(Modifier.height(10.dp))
 
-                    CourseReviewHeader(state.data.reviewCount)
+                    CourseReviewHeader(uiState.detail.reviewCount)
 
                     Spacer(Modifier.height(10.dp))
 
                     CourseReviews(
-                        reviews = state.data.reviews,
+                        reviews = uiState.detail.reviews,
                         onDelete = { },
                         onReport = { },
                         modifier =
@@ -238,28 +249,32 @@ private fun CourseDetailScreen(
                                 .nestedScroll(nestedScrollConnection),
                     )
                 }
-
-                if (authDialog != null) {
-                    AuthDialog(
-                        feature = authDialog,
-                        onDismissRequest = onDismissAuthDialog,
-                        onKakaoLoginClick = { onConfirmAuthDialog(authDialog) },
-                    )
-                }
-
-                if (showReportCourseDialog) {
-                    ReportCourseDialog(
-                        courseName = state.data.name,
-                        onConfirm = onConfirmReportCourseDialog,
-                        onDismiss = onDismissReportCourseDialog,
-                    )
-                }
             }
 
             CourseDetailViewModel.UiState.Failure.NoNetwork -> {
+                FailureComponent(
+                    icon = painterResource(R.drawable.icon_no_network),
+                    message = stringResource(R.string.failure_no_network_message),
+                    onRetry = onRetry,
+                    modifier =
+                        Modifier
+                            .padding(innerPadding)
+                            .fillMaxWidth()
+                            .padding(top = 100.dp),
+                )
             }
 
             CourseDetailViewModel.UiState.Failure.Unknown -> {
+                FailureComponent(
+                    icon = painterResource(R.drawable.icon_unknown_failure),
+                    message = stringResource(R.string.failure_unknown_message),
+                    onRetry = onRetry,
+                    modifier =
+                        Modifier
+                            .padding(innerPadding)
+                            .fillMaxWidth()
+                            .padding(top = 100.dp),
+                )
             }
         }
     }
@@ -267,7 +282,7 @@ private fun CourseDetailScreen(
 
 @Composable
 private fun TopAppBar(
-    onNavigateBack: () -> Unit,
+    navigateBack: () -> Unit,
     canReportCourse: Boolean,
     onReportCourse: () -> Unit,
     modifier: Modifier = Modifier,
@@ -285,7 +300,7 @@ private fun TopAppBar(
                         .padding(end = 10.dp)
                         .size(48.dp)
                         .clip(CircleShape)
-                        .clickable { onNavigateBack() }
+                        .clickable { navigateBack() }
                         .padding(14.dp),
             )
         },
@@ -485,21 +500,85 @@ private fun CourseReviews(
     }
 }
 
+@Composable
+private fun FailureComponent(
+    icon: Painter,
+    message: String,
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier,
+    ) {
+        Icon(
+            painter = icon,
+            contentDescription = null,
+            tint = colorResource(R.color.item_primary),
+            modifier = Modifier.size(48.dp),
+        )
+
+        Spacer(Modifier.height(20.dp))
+
+        Text(
+            text = message,
+            color = colorResource(R.color.item_primary),
+            fontSize = 18.sp,
+            textAlign = TextAlign.Center,
+        )
+
+        Spacer(Modifier.height(20.dp))
+
+        Text(
+            text = stringResource(R.string.failure_retry_button),
+            color = colorResource(R.color.item_primary),
+            fontSize = 16.sp,
+            textAlign = TextAlign.Center,
+            modifier =
+                Modifier
+                    .border(width = 1.dp, color = colorResource(R.color.background_border), shape = RoundedCornerShape(50))
+                    .clip(RoundedCornerShape(50))
+                    .clickable { onRetry() }
+                    .padding(horizontal = 20.dp, vertical = 10.dp),
+        )
+    }
+}
+
+@Composable
+private fun CourseDetailScreenDialogs(
+    dialogState: CourseDetailViewModel.DialogState,
+    onDismissAuthDialog: () -> Unit,
+    onConfirmAuthDialog: (AuthFeature) -> Unit,
+    onDismissReportCourseDialog: () -> Unit,
+    onConfirmReportCourseDialog: () -> Unit,
+) {
+    if (dialogState.authDialog != null) {
+        AuthDialog(
+            feature = dialogState.authDialog,
+            onDismissRequest = onDismissAuthDialog,
+            onKakaoLoginClick = { onConfirmAuthDialog(dialogState.authDialog) },
+        )
+    }
+
+    if (dialogState.reportCourseDialog != null) {
+        ReportCourseDialog(
+            courseName = dialogState.reportCourseDialog,
+            onDismiss = onDismissReportCourseDialog,
+            onConfirm = onConfirmReportCourseDialog,
+        )
+    }
+}
+
 @PreviewLightDark
 @Composable
 private fun CourseDetailScreenPreview_Loading() {
     CourseDetailScreen(
-        state = CourseDetailViewModel.UiState.Loading,
+        uiState = CourseDetailViewModel.UiState.Loading,
         onNavigateBack = { },
         onToggleFavorite = { },
-        authDialog = null,
-        onConfirmAuthDialog = { },
-        onDismissAuthDialog = { },
-        showReportCourseDialog = false,
         onReportCourse = { },
-        onConfirmReportCourseDialog = { },
-        onDismissReportCourseDialog = { },
         onWriteReview = { },
+        onRetry = { },
     )
 }
 
@@ -507,30 +586,25 @@ private fun CourseDetailScreenPreview_Loading() {
 @Composable
 private fun CourseDetailScreenPreview_Success_EmptyReview() {
     CourseDetailScreen(
-        state =
+        uiState =
             CourseDetailViewModel.UiState.Success(
-                data =
+                detail =
                     CourseDetailUiModel(
                         id = "",
                         name = "석촌호수 동호 한바퀴",
                         length = 0.0,
-                        isFavorite = false,
                         reviewCount = 0,
                         averageRating = 4.32F,
                         tags = emptyList(),
                         reviews = emptyList(),
                     ),
+                isFavorite = false,
             ),
         onNavigateBack = { },
         onToggleFavorite = { },
-        authDialog = null,
-        onConfirmAuthDialog = { },
-        onDismissAuthDialog = { },
-        showReportCourseDialog = false,
         onReportCourse = { },
-        onConfirmReportCourseDialog = { },
-        onDismissReportCourseDialog = { },
         onWriteReview = { },
+        onRetry = { },
     )
 }
 
@@ -538,14 +612,13 @@ private fun CourseDetailScreenPreview_Success_EmptyReview() {
 @Composable
 private fun CourseDetailScreenPreview_Success_NonEmptyReviews() {
     CourseDetailScreen(
-        state =
+        uiState =
             CourseDetailViewModel.UiState.Success(
-                data =
+                detail =
                     CourseDetailUiModel(
                         id = "",
                         name = "석촌호수 동호 한바퀴",
                         length = 0.0,
-                        isFavorite = false,
                         reviewCount = 99,
                         averageRating = 4.32F,
                         tags = emptyList(),
@@ -561,17 +634,13 @@ private fun CourseDetailScreenPreview_Success_NonEmptyReviews() {
                                 )
                             },
                     ),
+                isFavorite = false,
             ),
         onNavigateBack = { },
         onToggleFavorite = { },
-        authDialog = null,
-        onConfirmAuthDialog = { },
-        onDismissAuthDialog = { },
-        showReportCourseDialog = false,
         onReportCourse = { },
-        onConfirmReportCourseDialog = { },
-        onDismissReportCourseDialog = { },
         onWriteReview = { },
+        onRetry = { },
     )
 }
 
@@ -579,17 +648,12 @@ private fun CourseDetailScreenPreview_Success_NonEmptyReviews() {
 @Composable
 private fun CourseDetailScreenPreview_Failure_NoNetwork() {
     CourseDetailScreen(
-        state = CourseDetailViewModel.UiState.Failure.NoNetwork,
+        uiState = CourseDetailViewModel.UiState.Failure.NoNetwork,
         onNavigateBack = { },
         onToggleFavorite = { },
-        authDialog = null,
-        onConfirmAuthDialog = { },
-        onDismissAuthDialog = { },
-        showReportCourseDialog = false,
         onReportCourse = { },
-        onConfirmReportCourseDialog = { },
-        onDismissReportCourseDialog = { },
         onWriteReview = { },
+        onRetry = { },
     )
 }
 
@@ -597,16 +661,11 @@ private fun CourseDetailScreenPreview_Failure_NoNetwork() {
 @Composable
 private fun CourseDetailScreenPreview_Failure_Unknown() {
     CourseDetailScreen(
-        state = CourseDetailViewModel.UiState.Failure.Unknown,
+        uiState = CourseDetailViewModel.UiState.Failure.Unknown,
         onNavigateBack = { },
         onToggleFavorite = { },
-        authDialog = null,
-        onConfirmAuthDialog = { },
-        onDismissAuthDialog = { },
-        showReportCourseDialog = false,
         onReportCourse = { },
-        onConfirmReportCourseDialog = { },
-        onDismissReportCourseDialog = { },
         onWriteReview = { },
+        onRetry = { },
     )
 }

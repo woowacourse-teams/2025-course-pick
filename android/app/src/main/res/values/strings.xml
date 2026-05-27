@@ -74,8 +74,6 @@
     <string name="report_course_dialog_confirm_button">신고하기</string>
     <string name="report_course_success_message">신고가 접수됐습니다.</string>
     <string name="report_course_failure_already_reported">이미 신고하셨습니다.</string>
-    <string name="report_course_failure_unauthorized_user_message">코스 신고를 위해 로그인을 해주세요.</string>
-    <string name="report_course_failure_unknown_message">알 수 없는 오류로 코스 신고에 실패했습니다.</string>
 
     <!--  코스 상세 화면  -->
     <string name="course_detail_header">코스 정보</string>
@@ -87,6 +85,7 @@
     <string name="course_detail_empty_review_message">이 코스는 아직 리뷰가 없어요.\n첫 리뷰를 작성해보세요!</string>
     <string name="course_detail_review_menu_description">리뷰 메뉴</string>
     <string name="course_detail_write_review_button">리뷰 작성</string>
+    <string name="course_detail_already_reviewed_message">이 코스는 이미 리뷰하셨어요.</string>
     <string name="star_rating_description">별 %1$d개</string>
     <string name="course_detail_delete_review_feature_name">리뷰 삭제</string>
 
@@ -99,8 +98,11 @@
     <string name="write_course_review_feature_name">리뷰 작성</string>
     <string name="write_course_review_review_content_placeholder">코스에 대한 리뷰를 남겨주세요.</string>
     <string name="write_course_review_submit_button">작성 완료</string>
+    <string name="write_course_review_submit_success_message">리뷰가 등록됐습니다.</string>
     <string name="write_course_review_already_reviewed_message">이 코스는 이미 리뷰하셨어요.</string>
-    <string name="write_course_review_invalid_content">별점과 리뷰 내용을 다시 확인해주세요.</string>
+    <string name="write_course_review_no_rating_message">별점을 선택해주세요.</string>
+    <string name="write_course_review_empty_content_message">리뷰 내용을 작성해주세요.</string>
+    <string name="write_course_review_discard_dialog_title">리뷰 작성이 완료되지 않았어요.\n정말로 나가시겠어요?</string>
 
     <!--  메뉴 화면  -->
     <string name="menu_feedback_url">https://docs.google.com/forms/d/e/1FAIpQLSdsJcNUsOcDiKW0FI-M360IUS64IZQmnWtMTbZqJSrx7HQbtg/viewform?usp=pp_url&amp;entry.1079171803=%s</string>

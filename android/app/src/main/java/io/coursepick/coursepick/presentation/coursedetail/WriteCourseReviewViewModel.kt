@@ -25,67 +25,78 @@ import javax.inject.Inject
 class WriteCourseReviewViewModel
     @Inject
     constructor(
-        private val authRepository: AuthRepository,
         private val courseRepository: CourseRepository,
+        private val authRepository: AuthRepository,
     ) : ViewModel() {
-        private val _event = MutableSharedFlow<UiEvent>()
-        val event: SharedFlow<UiEvent> get() = _event.asSharedFlow()
+        private val _uiEvent = MutableSharedFlow<UiEvent>()
+        val uiEvent: SharedFlow<UiEvent> get() = _uiEvent.asSharedFlow()
 
-        private val _reviewContent = MutableStateFlow("")
-        val reviewContent: StateFlow<String> get() = _reviewContent.asStateFlow()
+        private val rating = MutableStateFlow<Float?>(null)
+        private val reviewContent = MutableStateFlow("")
+        private val isSubmitting = MutableStateFlow(false)
 
-        private val _rating = MutableStateFlow<Float?>(null)
-        val rating: StateFlow<Float?> get() = _rating.asStateFlow()
-
-        val canSubmit: StateFlow<Boolean> =
-            combine(rating, reviewContent) { rating: Float?, reviewContent: String ->
-                rating != null && reviewContent.isNotBlank()
+        val uiState: StateFlow<UiState> =
+            combine(rating, reviewContent, isSubmitting) { rating: Float?, reviewContent: String, isSubmitting: Boolean ->
+                UiState(
+                    rating = rating,
+                    reviewContent = reviewContent,
+                    canSubmit = rating != null && reviewContent.isNotBlank(),
+                    isSubmitting = isSubmitting,
+                )
             }.stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = false,
+                initialValue = UiState(),
             )
 
-        private val _authDialog = MutableStateFlow<AuthFeature?>(null)
-        val authDialog: StateFlow<AuthFeature?> get() = _authDialog.asStateFlow()
+        private val _dialogState = MutableStateFlow(DialogState())
+        val dialogState: StateFlow<DialogState> get() = _dialogState.asStateFlow()
 
         fun setRating(rating: Float) {
-            _rating.value = rating
+            this.rating.value = rating
         }
 
-        fun setReviewText(text: String) {
-            _reviewContent.value = text.take(MAX_REVIEW_LENGTH)
+        fun setReviewContent(text: String) {
+            reviewContent.value = text.take(MAX_REVIEW_LENGTH)
         }
 
         fun submitReview(courseId: String) {
+            if (isSubmitting.value) return
+
             viewModelScope.launch {
                 if (authRepository.accessToken() == null) {
-                    _authDialog.value = AuthFeature.SubmitReview(courseId)
+                    _dialogState.value = dialogState.value.copy(authDialog = AuthFeature.SubmitReview(courseId))
                     return@launch
                 }
 
                 val rating: Float? = rating.value
                 if (rating == null) {
-                    _event.emit(UiEvent.InvalidReviewContent)
+                    _uiEvent.emit(UiEvent.NoRating)
+                    return@launch
+                }
+
+                if (reviewContent.value.isBlank()) {
+                    _uiEvent.emit(UiEvent.EmptyContent)
                     return@launch
                 }
 
                 try {
+                    isSubmitting.value = true
                     courseRepository.submitReview(courseId, rating, reviewContent.value)
-                    _event.emit(UiEvent.SubmitReviewSuccess)
+                    _uiEvent.emit(UiEvent.SubmitReviewSuccess)
                 } catch (exception: CancellationException) {
                     throw exception
                 } catch (_: NoNetworkException) {
-                    _event.emit(UiEvent.NoNetwork)
+                    _uiEvent.emit(UiEvent.NoNetwork)
                 } catch (exception: HttpException) {
-                    _event.emit(
+                    _uiEvent.emit(
                         when (exception.code()) {
                             400 -> {
                                 UiEvent.CourseAlreadyReviewed
                             }
 
                             401 -> {
-                                _authDialog.value = AuthFeature.SubmitReview(courseId)
+                                _dialogState.value = dialogState.value.copy(authDialog = AuthFeature.SubmitReview(courseId))
                                 return@launch
                             }
 
@@ -95,9 +106,15 @@ class WriteCourseReviewViewModel
                         },
                     )
                 } catch (_: Throwable) {
-                    _event.emit(UiEvent.UnknownFailure)
+                    _uiEvent.emit(UiEvent.UnknownFailure)
+                } finally {
+                    isSubmitting.value = false
                 }
             }
+        }
+
+        fun dismissAuthDialog() {
+            _dialogState.value = dialogState.value.copy(authDialog = null)
         }
 
         fun onAuthSuccess(authFeature: AuthFeature) {
@@ -107,23 +124,56 @@ class WriteCourseReviewViewModel
             }
         }
 
-        fun dismissAuthDialog() {
-            _authDialog.value = null
+        fun onExit() {
+            viewModelScope.launch {
+                if (reviewContent.value.isBlank()) {
+                    confirmExit()
+                } else {
+                    _dialogState.value = dialogState.value.copy(showExitDialog = true)
+                }
+            }
+        }
+
+        fun confirmExit() {
+            viewModelScope.launch {
+                dismissExitDialog()
+                _uiEvent.emit(UiEvent.Exit)
+            }
+        }
+
+        fun dismissExitDialog() {
+            _dialogState.value = dialogState.value.copy(showExitDialog = false)
         }
 
         sealed interface UiEvent {
+            data object Exit : UiEvent
+
             data object SubmitReviewSuccess : UiEvent
 
             data object NoNetwork : UiEvent
 
             data object CourseAlreadyReviewed : UiEvent
 
-            data object InvalidReviewContent : UiEvent
+            data object NoRating : UiEvent
+
+            data object EmptyContent : UiEvent
 
             data object UnknownFailure : UiEvent
         }
 
+        data class UiState(
+            val rating: Float? = null,
+            val reviewContent: String = "",
+            val canSubmit: Boolean = false,
+            val isSubmitting: Boolean = false,
+        )
+
+        data class DialogState(
+            val authDialog: AuthFeature? = null,
+            val showExitDialog: Boolean = false,
+        )
+
         companion object {
-            const val MAX_REVIEW_LENGTH = 1_000
+            const val MAX_REVIEW_LENGTH = 500
         }
     }
