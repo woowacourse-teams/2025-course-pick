@@ -69,7 +69,12 @@ class WriteCourseReviewViewModel
 
                 val rating: Float? = rating.value
                 if (rating == null) {
-                    _event.emit(UiEvent.InvalidReviewContent)
+                    _event.emit(UiEvent.NoRating)
+                    return@launch
+                }
+
+                if (reviewContent.value.isBlank()) {
+                    _event.emit(UiEvent.EmptyContent)
                     return@launch
                 }
 
@@ -144,7 +149,9 @@ class WriteCourseReviewViewModel
 
             data object CourseAlreadyReviewed : UiEvent
 
-            data object InvalidReviewContent : UiEvent
+            data object NoRating : UiEvent
+
+            data object EmptyContent : UiEvent
 
             data object UnknownFailure : UiEvent
         }

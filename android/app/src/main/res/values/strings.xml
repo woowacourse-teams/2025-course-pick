@@ -100,7 +100,8 @@
     <string name="write_course_review_review_content_placeholder">코스에 대한 리뷰를 남겨주세요.</string>
     <string name="write_course_review_submit_button">작성 완료</string>
     <string name="write_course_review_already_reviewed_message">이 코스는 이미 리뷰하셨어요.</string>
-    <string name="write_course_review_invalid_content">별점과 리뷰 내용을 다시 확인해주세요.</string>
+    <string name="write_course_review_no_rating_message">별점을 선택해주세요.</string>
+    <string name="write_course_review_empty_content_message">리뷰 내용을 작성해주세요.</string>
     <string name="write_course_review_discard_dialog_title">리뷰 작성이 완료되지 않았어요.\n정말로 나가시겠어요?</string>
 
     <!--  메뉴 화면  -->
