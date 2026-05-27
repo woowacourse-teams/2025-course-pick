@@ -298,6 +298,30 @@ private fun SubmitReviewButton(
 }
 
 @Composable
+private fun WriteCourseReviewScreenDialogs(
+    dialogState: WriteCourseReviewViewModel.DialogState,
+    onDismissAuthDialog: () -> Unit,
+    onConfirmAuthDialog: (AuthFeature) -> Unit,
+    onDismissExitDialog: () -> Unit,
+    onConfirmExitDialog: () -> Unit,
+) {
+    if (dialogState.authDialog != null) {
+        AuthDialog(
+            feature = dialogState.authDialog,
+            onDismissRequest = onDismissAuthDialog,
+            onKakaoLoginClick = { onConfirmAuthDialog(dialogState.authDialog) },
+        )
+    }
+
+    if (dialogState.showExitDialog) {
+        DiscardReviewDialog(
+            onDismiss = onDismissExitDialog,
+            onConfirm = onConfirmExitDialog,
+        )
+    }
+}
+
+@Composable
 private fun DiscardReviewDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
@@ -366,30 +390,6 @@ private fun DiscardReviewDialog(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun WriteCourseReviewScreenDialogs(
-    dialogState: WriteCourseReviewViewModel.DialogState,
-    onDismissAuthDialog: () -> Unit,
-    onConfirmAuthDialog: (AuthFeature) -> Unit,
-    onDismissExitDialog: () -> Unit,
-    onConfirmExitDialog: () -> Unit,
-) {
-    if (dialogState.authDialog != null) {
-        AuthDialog(
-            feature = dialogState.authDialog,
-            onDismissRequest = onDismissAuthDialog,
-            onKakaoLoginClick = { onConfirmAuthDialog(dialogState.authDialog) },
-        )
-    }
-
-    if (dialogState.showExitDialog) {
-        DiscardReviewDialog(
-            onDismiss = onDismissExitDialog,
-            onConfirm = onConfirmExitDialog,
-        )
     }
 }
 
