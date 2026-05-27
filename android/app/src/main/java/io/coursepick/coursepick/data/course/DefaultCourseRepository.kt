@@ -60,10 +60,6 @@ class DefaultCourseRepository
                     originLongitude = origin.longitude.value,
                 ).toCoordinate()
 
-        override suspend fun report(course: Course) {
-            service.reportCourse(course.id)
-        }
-
         override suspend fun detail(courseId: String): CourseDetail = service.courseDetail(courseId).toCourseDetail()
 
         override suspend fun reportCourse(courseId: String) {
