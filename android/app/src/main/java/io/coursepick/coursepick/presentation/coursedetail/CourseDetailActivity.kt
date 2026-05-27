@@ -43,8 +43,8 @@ class CourseDetailActivity : ComponentActivity() {
                         entry<CourseDetailRoute.CourseDetail> {
                             CourseDetailScreen(
                                 courseId = courseId,
-                                onNavigateBack = ::finish,
-                                onWriteReview = { courseDetail: CourseDetailUiModel ->
+                                navigateBack = ::finish,
+                                navigateToWriteCourseReview = { courseDetail: CourseDetailUiModel ->
                                     backstack.add(CourseDetailRoute.WriteReview(courseDetail))
                                 },
                                 courseDetailViewModel = courseDetailViewModel,
