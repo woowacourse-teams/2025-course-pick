@@ -141,31 +141,49 @@ class CourseDetailViewModel
                                 UiEvent.CourseAlreadyReported
                             }
 
-                            401 -> {
-                                UiEvent.ReportCourseUnauthorizedUser
-                            }
-
                             else -> {
-                                UiEvent.ReportCourseUnknownFailure
+                                UiEvent.UnknownFailure
                             }
                         },
                     )
                 } catch (_: Throwable) {
-                    _uiEvent.emit(UiEvent.ReportCourseUnknownFailure)
+                    _uiEvent.emit(UiEvent.UnknownFailure)
+                }
+            }
+        }
+
+        fun onWriteReview() {
+            viewModelScope.launch {
+                (uiState.value as? UiState.Success)?.let { uiState: UiState.Success ->
+                    val alreadyReviewed: Boolean =
+                        uiState.detail.reviews.any { review: CourseReviewUiModel ->
+                            review.authorName == "current_user_id" // TODO: API 업데이트될 시 사용자 ID 기반으로 확인하도록 변경
+                        }
+                    _uiEvent.emit(
+                        if (alreadyReviewed) {
+                            UiEvent.CourseAlreadyReviewed
+                        } else {
+                            UiEvent.NavigateToWriteCourseReview(uiState.detail)
+                        },
+                    )
                 }
             }
         }
 
         sealed interface UiEvent {
-            object ReportCourseSuccess : UiEvent
+            data object NoNetwork : UiEvent
 
-            object CourseAlreadyReported : UiEvent
+            data object UnknownFailure : UiEvent
 
-            object NoNetwork : UiEvent
+            data object ReportCourseSuccess : UiEvent
 
-            object ReportCourseUnauthorizedUser : UiEvent
+            data object CourseAlreadyReported : UiEvent
 
-            object ReportCourseUnknownFailure : UiEvent
+            data class NavigateToWriteCourseReview(
+                val courseDetail: CourseDetailUiModel,
+            ) : UiEvent
+
+            data object CourseAlreadyReviewed : UiEvent
         }
 
         sealed interface UiState {

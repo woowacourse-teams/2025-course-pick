@@ -67,8 +67,8 @@ import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
 @Composable
 fun CourseDetailScreen(
     courseId: String,
-    onNavigateBack: () -> Unit,
-    onWriteReview: (CourseDetailUiModel) -> Unit,
+    navigateBack: () -> Unit,
+    navigateToWriteCourseReview: (CourseDetailUiModel) -> Unit,
     courseDetailViewModel: CourseDetailViewModel = viewModel(),
     authViewModel: AuthViewModel = viewModel(),
 ) {
@@ -83,17 +83,17 @@ fun CourseDetailScreen(
     }
 
     LaunchedEffect(Unit) {
-        courseDetailViewModel.uiEvent.collect { event: CourseDetailViewModel.UiEvent -> event.handle(context) }
+        courseDetailViewModel.uiEvent.collect { event: CourseDetailViewModel.UiEvent -> event.handle(context, navigateToWriteCourseReview) }
     }
 
     val state: CourseDetailViewModel.UiState = courseDetailViewModel.uiState.collectAsStateWithLifecycle().value
 
     CourseDetailScreen(
         uiState = state,
-        onNavigateBack = onNavigateBack,
+        onNavigateBack = navigateBack,
         onToggleFavorite = courseDetailViewModel::toggleFavorite,
         onReportCourse = courseDetailViewModel::onReportCourse,
-        onWriteReview = onWriteReview,
+        onWriteReview = courseDetailViewModel::onWriteReview,
     )
 
     CourseDetailScreenDialogs(
@@ -120,8 +120,19 @@ private fun AuthUiEvent.handle(
     }
 }
 
-private fun CourseDetailViewModel.UiEvent.handle(context: Context) {
+private fun CourseDetailViewModel.UiEvent.handle(
+    context: Context,
+    navigateToWriteCourseReview: (CourseDetailUiModel) -> Unit,
+) {
     when (this) {
+        CourseDetailViewModel.UiEvent.NoNetwork -> {
+            Toast.makeText(context, context.getString(R.string.failure_no_network_toast_message), Toast.LENGTH_SHORT).show()
+        }
+
+        CourseDetailViewModel.UiEvent.UnknownFailure -> {
+            Toast.makeText(context, context.getString(R.string.failure_unknown_toast_message), Toast.LENGTH_SHORT).show()
+        }
+
         CourseDetailViewModel.UiEvent.ReportCourseSuccess -> {
             Toast.makeText(context, context.getString(R.string.report_course_success_message), Toast.LENGTH_SHORT).show()
         }
@@ -130,16 +141,12 @@ private fun CourseDetailViewModel.UiEvent.handle(context: Context) {
             Toast.makeText(context, context.getString(R.string.report_course_failure_already_reported), Toast.LENGTH_SHORT).show()
         }
 
-        CourseDetailViewModel.UiEvent.NoNetwork -> {
-            Toast.makeText(context, context.getString(R.string.failure_no_network_toast_message), Toast.LENGTH_SHORT).show()
+        is CourseDetailViewModel.UiEvent.NavigateToWriteCourseReview -> {
+            navigateToWriteCourseReview(courseDetail)
         }
 
-        CourseDetailViewModel.UiEvent.ReportCourseUnauthorizedUser -> {
-            Toast.makeText(context, context.getString(R.string.report_course_failure_unauthorized_user_message), Toast.LENGTH_SHORT).show()
-        }
-
-        CourseDetailViewModel.UiEvent.ReportCourseUnknownFailure -> {
-            Toast.makeText(context, context.getString(R.string.report_course_failure_unknown_message), Toast.LENGTH_SHORT).show()
+        CourseDetailViewModel.UiEvent.CourseAlreadyReviewed -> {
+            Toast.makeText(context, context.getString(R.string.write_course_review_already_reviewed_message), Toast.LENGTH_SHORT).show()
         }
     }
 }
@@ -150,7 +157,7 @@ private fun CourseDetailScreen(
     onNavigateBack: () -> Unit,
     onToggleFavorite: () -> Unit,
     onReportCourse: () -> Unit,
-    onWriteReview: (CourseDetailUiModel) -> Unit,
+    onWriteReview: () -> Unit,
 ) {
     var isFabVisible: Boolean by remember(uiState) { mutableStateOf(uiState is CourseDetailViewModel.UiState.Success) }
 
@@ -175,14 +182,14 @@ private fun CourseDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                onNavigateBack = onNavigateBack,
+                navigateBack = onNavigateBack,
                 canReportCourse = uiState is CourseDetailViewModel.UiState.Success,
                 onReportCourse = onReportCourse,
             )
         },
         floatingActionButton = {
             WriteReviewButton(
-                onClick = { if (uiState is CourseDetailViewModel.UiState.Success) onWriteReview(uiState.detail) },
+                onClick = onWriteReview,
                 isVisible = isFabVisible,
             )
         },
@@ -251,7 +258,7 @@ private fun CourseDetailScreen(
 
 @Composable
 private fun TopAppBar(
-    onNavigateBack: () -> Unit,
+    navigateBack: () -> Unit,
     canReportCourse: Boolean,
     onReportCourse: () -> Unit,
     modifier: Modifier = Modifier,
@@ -269,7 +276,7 @@ private fun TopAppBar(
                         .padding(end = 10.dp)
                         .size(48.dp)
                         .clip(CircleShape)
-                        .clickable { onNavigateBack() }
+                        .clickable { navigateBack() }
                         .padding(14.dp),
             )
         },
