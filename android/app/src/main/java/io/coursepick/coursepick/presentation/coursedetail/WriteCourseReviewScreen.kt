@@ -123,8 +123,12 @@ private fun WriteCourseReviewViewModel.UiEvent.handle(
             Toast.makeText(context, context.getString(R.string.write_course_review_already_reviewed_message), Toast.LENGTH_SHORT).show()
         }
 
-        WriteCourseReviewViewModel.UiEvent.InvalidReviewContent -> {
-            Toast.makeText(context, context.getString(R.string.write_course_review_invalid_content), Toast.LENGTH_SHORT).show()
+        WriteCourseReviewViewModel.UiEvent.NoRating -> {
+            Toast.makeText(context, context.getString(R.string.write_course_review_no_rating_message), Toast.LENGTH_SHORT).show()
+        }
+
+        WriteCourseReviewViewModel.UiEvent.EmptyContent -> {
+            Toast.makeText(context, context.getString(R.string.write_course_review_empty_content_message), Toast.LENGTH_SHORT).show()
         }
 
         WriteCourseReviewViewModel.UiEvent.UnknownFailure -> {
@@ -151,6 +155,8 @@ fun WriteCourseReviewScreen(
     onConfirmExitDialog: () -> Unit,
     onDismissExitDialog: () -> Unit,
 ) {
+    val focusManager: FocusManager = LocalFocusManager.current
+
     Scaffold { innerPadding: PaddingValues ->
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -190,6 +196,7 @@ fun WriteCourseReviewScreen(
             SubmitReviewButton(
                 isEnabled = canSubmit,
                 onClick = onSubmit,
+                canSubmit = canSubmit,
                 modifier = Modifier.fillMaxWidth(),
             )
         }
@@ -279,7 +286,7 @@ private fun ReviewTextField(
 
 @Composable
 private fun SubmitReviewButton(
-    isEnabled: Boolean,
+    canSubmit: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -291,8 +298,8 @@ private fun SubmitReviewButton(
         modifier =
             modifier
                 .clip(RoundedCornerShape(8.dp))
-                .clickable(isEnabled) { onClick() }
-                .background(colorResource(if (isEnabled) R.color.point_primary else R.color.item_tertiary))
+                .clickable { onClick() }
+                .background(colorResource(if (canSubmit) R.color.point_primary else R.color.item_tertiary))
                 .padding(10.dp),
     )
 }
