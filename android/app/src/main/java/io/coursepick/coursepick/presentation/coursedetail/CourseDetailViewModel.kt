@@ -37,22 +37,23 @@ class CourseDetailViewModel
         private val _event = MutableSharedFlow<UiEvent>()
         val event: SharedFlow<UiEvent> get() = _event.asSharedFlow()
 
-        private val courseId = MutableSharedFlow<String?>(1)
+        private val loadTrigger = MutableSharedFlow<Unit>(1)
+
+        private val courseId = MutableStateFlow<String?>(null)
 
         private val isConnected = MutableStateFlow(networkMonitor.isConnected())
 
         val state: StateFlow<UiState> =
             combine(
+                loadTrigger,
                 isConnected,
                 courseId,
                 favoriteCourseRepository.favoriteCourseIds,
-            ) { isConnected: Boolean, courseId: String?, favoriteCourseIds: Set<String> ->
+            ) { _, isConnected: Boolean, courseId: String?, favoriteCourseIds: Set<String> ->
                 if (!isConnected) return@combine UiState.Failure.NoNetwork
 
                 val courseDetail: CourseDetail? =
-                    courseId?.let { courseId: String ->
-                        runCatching { courseRepository.detail(courseId) }.getOrNull()
-                    }
+                    courseId?.let { courseId: String -> runCatching { courseRepository.detail(courseId) }.getOrNull() }
                 if (courseDetail == null) return@combine UiState.Failure.Unknown
 
                 UiState.Success(
@@ -86,12 +87,11 @@ class CourseDetailViewModel
             }
 
             viewModelScope.launch {
-                this@CourseDetailViewModel.courseId.emit(courseId)
+                this@CourseDetailViewModel.courseId.value = courseId
                 isConnected.value = true
+                loadTrigger.emit(Unit)
             }
         }
-
-        private suspend fun detail(courseId: String): CourseDetail? = runCatching { courseRepository.detail(courseId) }.getOrNull()
 
         private fun CourseReview.toUiModel(): CourseReviewUiModel =
             CourseReviewUiModel(
