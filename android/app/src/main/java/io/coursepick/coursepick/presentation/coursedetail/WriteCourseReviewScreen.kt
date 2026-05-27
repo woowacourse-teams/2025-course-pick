@@ -2,11 +2,15 @@ package io.coursepick.coursepick.presentation.coursedetail
 
 import android.content.Context
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -30,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.coursepick.coursepick.R
@@ -43,18 +48,23 @@ import io.coursepick.coursepick.presentation.coursedetail.WriteCourseReviewViewM
 @Composable
 fun WriteCourseReviewScreen(
     courseDetail: CourseDetailUiModel,
-    onComplete: () -> Unit,
+    exit: () -> Unit,
+    complete: () -> Unit,
     authViewModel: AuthViewModel = viewModel(),
     writeCourseReviewViewModel: WriteCourseReviewViewModel = viewModel(),
 ) {
     val context: Context = LocalContext.current
+
+    BackHandler {
+        writeCourseReviewViewModel.onExit()
+    }
 
     LaunchedEffect(Unit) {
         authViewModel.uiEvent.collect { event: AuthUiEvent -> event.handle(context, writeCourseReviewViewModel) }
     }
 
     LaunchedEffect(Unit) {
-        writeCourseReviewViewModel.event.collect { event: WriteCourseReviewViewModel.UiEvent -> event.handle(context, onComplete) }
+        writeCourseReviewViewModel.event.collect { event: WriteCourseReviewViewModel.UiEvent -> event.handle(context, exit, complete) }
     }
 
     WriteCourseReviewScreen(
@@ -70,6 +80,9 @@ fun WriteCourseReviewScreen(
         authDialog = writeCourseReviewViewModel.authDialog.collectAsStateWithLifecycle().value,
         onConfirmAuthDialog = { authViewModel.authenticate(KakaoAuthenticator(context), AuthFeature.SubmitReview(courseDetail.id)) },
         onDismissAuthDialog = writeCourseReviewViewModel::dismissAuthDialog,
+        showExitDialog = writeCourseReviewViewModel.showExitDialog.collectAsStateWithLifecycle().value,
+        onConfirmExitDialog = writeCourseReviewViewModel::confirmExit,
+        onDismissExitDialog = writeCourseReviewViewModel::dismissExitDialog,
     )
 }
 
@@ -90,11 +103,16 @@ private fun AuthUiEvent.handle(
 
 private fun WriteCourseReviewViewModel.UiEvent.handle(
     context: Context,
-    onComplete: () -> Unit,
+    exit: () -> Unit,
+    complete: () -> Unit,
 ) {
     when (this) {
+        WriteCourseReviewViewModel.UiEvent.Exit -> {
+            exit()
+        }
+
         WriteCourseReviewViewModel.UiEvent.SubmitReviewSuccess -> {
-            onComplete()
+            complete()
         }
 
         WriteCourseReviewViewModel.UiEvent.NoNetwork -> {
@@ -129,6 +147,9 @@ fun WriteCourseReviewScreen(
     authDialog: AuthFeature?,
     onConfirmAuthDialog: () -> Unit,
     onDismissAuthDialog: () -> Unit,
+    showExitDialog: Boolean,
+    onConfirmExitDialog: () -> Unit,
+    onDismissExitDialog: () -> Unit,
 ) {
     Scaffold { innerPadding: PaddingValues ->
         Column(
@@ -171,14 +192,21 @@ fun WriteCourseReviewScreen(
                 onClick = onSubmit,
                 modifier = Modifier.fillMaxWidth(),
             )
+        }
 
-            if (authDialog != null) {
-                AuthDialog(
-                    feature = authDialog,
-                    onDismissRequest = onDismissAuthDialog,
-                    onKakaoLoginClick = onConfirmAuthDialog,
-                )
-            }
+        if (authDialog != null) {
+            AuthDialog(
+                feature = authDialog,
+                onDismissRequest = onDismissAuthDialog,
+                onKakaoLoginClick = onConfirmAuthDialog,
+            )
+        }
+
+        if (showExitDialog) {
+            DiscardReviewDialog(
+                onDismiss = onDismissExitDialog,
+                onConfirm = onConfirmExitDialog,
+            )
         }
     }
 }
@@ -269,6 +297,78 @@ private fun SubmitReviewButton(
     )
 }
 
+@Composable
+private fun DiscardReviewDialog(
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Dialog(
+        onDismissRequest = onDismiss,
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier =
+                modifier
+                    .clip(RoundedCornerShape(10))
+                    .background(colorResource(R.color.background_primary))
+                    .padding(20.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.write_course_review_discard_dialog_title),
+                fontSize = 18.sp,
+                textAlign = TextAlign.Center,
+                color = colorResource(R.color.item_primary),
+            )
+
+            Spacer(Modifier.height(24.dp))
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp),
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier =
+                        Modifier
+                            .weight(1F)
+                            .clip(RoundedCornerShape(50))
+                            .clickable { onDismiss() }
+                            .background(colorResource(R.color.background_tertiary))
+                            .padding(horizontal = 20.dp, vertical = 10.dp),
+                ) {
+                    Text(
+                        text = stringResource(R.string.custom_course_discard_dialog_cancel_button),
+                        fontSize = 16.sp,
+                        color = colorResource(R.color.item_tertiary),
+                    )
+                }
+
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier =
+                        Modifier
+                            .weight(1F)
+                            .clip(RoundedCornerShape(50))
+                            .clickable { onConfirm() }
+                            .background(colorResource(R.color.point_primary))
+                            .padding(horizontal = 20.dp, vertical = 10.dp),
+                ) {
+                    Text(
+                        text = stringResource(R.string.custom_course_discard_dialog_confirm_button),
+                        fontSize = 16.sp,
+                        color = colorResource(R.color.item_primary),
+                    )
+                }
+            }
+        }
+    }
+}
+
 @PreviewLightDark
 @Composable
 private fun WriteCourseReviewPreview_CanSubmit() {
@@ -285,6 +385,9 @@ private fun WriteCourseReviewPreview_CanSubmit() {
         authDialog = null,
         onConfirmAuthDialog = { },
         onDismissAuthDialog = { },
+        showExitDialog = false,
+        onConfirmExitDialog = { },
+        onDismissExitDialog = { },
     )
 }
 
@@ -304,5 +407,8 @@ private fun WriteCourseReviewPreview_CannotSubmit() {
         authDialog = null,
         onConfirmAuthDialog = { },
         onDismissAuthDialog = { },
+        showExitDialog = false,
+        onConfirmExitDialog = { },
+        onDismissExitDialog = { },
     )
 }
