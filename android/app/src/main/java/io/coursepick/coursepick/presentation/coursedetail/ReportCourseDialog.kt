@@ -34,8 +34,8 @@ import io.coursepick.coursepick.R
 @Composable
 fun ReportCourseDialog(
     courseName: String,
-    onConfirm: () -> Unit,
     onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val reportReasons: List<String> =
