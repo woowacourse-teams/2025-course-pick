@@ -8,7 +8,7 @@ import io.coursepick.coursepick.domain.course.Meter
 
 fun Double.toDistanceText(): String =
     if (this < 1000) {
-        "%.0f m".format(this)
+        "${this.toInt()} m"
     } else {
         "%.2f km".format(this / 1000)
     }
