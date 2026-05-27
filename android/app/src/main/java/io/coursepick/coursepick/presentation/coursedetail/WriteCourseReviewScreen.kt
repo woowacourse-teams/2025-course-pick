@@ -12,10 +12,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -24,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
@@ -78,6 +81,7 @@ fun WriteCourseReviewScreen(
         onReviewContentChange = writeCourseReviewViewModel::setReviewText,
         maxReviewLength = MAX_REVIEW_LENGTH,
         canSubmit = writeCourseReviewViewModel.canSubmit.collectAsStateWithLifecycle().value,
+        isSubmitting = writeCourseReviewViewModel.isSubmitting.collectAsStateWithLifecycle().value,
         onSubmit = { writeCourseReviewViewModel.submitReview(courseDetail.id) },
         authDialog = writeCourseReviewViewModel.authDialog.collectAsStateWithLifecycle().value,
         onConfirmAuthDialog = { authViewModel.authenticate(KakaoAuthenticator(context), AuthFeature.SubmitReview(courseDetail.id)) },
@@ -149,6 +153,7 @@ fun WriteCourseReviewScreen(
     onReviewContentChange: (String) -> Unit,
     maxReviewLength: Int,
     canSubmit: Boolean,
+    isSubmitting: Boolean,
     onSubmit: () -> Unit,
     authDialog: AuthFeature?,
     onConfirmAuthDialog: () -> Unit,
@@ -197,6 +202,7 @@ fun WriteCourseReviewScreen(
 
             SubmitReviewButton(
                 canSubmit = canSubmit,
+                isSubmitting = isSubmitting,
                 onClick = {
                     focusManager.clearFocus()
                     onSubmit()
@@ -291,21 +297,30 @@ private fun ReviewTextField(
 @Composable
 private fun SubmitReviewButton(
     canSubmit: Boolean,
+    isSubmitting: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Text(
-        text = stringResource(R.string.write_course_review_submit_button),
-        color = colorResource(R.color.item_white),
-        fontSize = 16.sp,
-        textAlign = TextAlign.Center,
+    Box(
+        contentAlignment = Alignment.Center,
         modifier =
             modifier
                 .clip(RoundedCornerShape(8.dp))
                 .clickable { onClick() }
                 .background(colorResource(if (canSubmit) R.color.point_primary else R.color.item_tertiary))
                 .padding(10.dp),
-    )
+    ) {
+        Text(
+            text = stringResource(R.string.write_course_review_submit_button),
+            color = colorResource(R.color.item_white),
+            fontSize = 18.sp,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.alpha(if (isSubmitting) 0F else 1F),
+        )
+
+        CircularProgressIndicator(Modifier.alpha(if (isSubmitting) 1F else 0F))
+    }
 }
 
 @Composable
@@ -392,6 +407,7 @@ private fun WriteCourseReviewPreview_CanSubmit() {
         onReviewContentChange = { },
         maxReviewLength = 1_000,
         canSubmit = true,
+        isSubmitting = false,
         onSubmit = { },
         authDialog = null,
         onConfirmAuthDialog = { },
@@ -414,6 +430,7 @@ private fun WriteCourseReviewPreview_CannotSubmit() {
         onReviewContentChange = { },
         maxReviewLength = 1_000,
         canSubmit = false,
+        isSubmitting = false,
         onSubmit = { },
         authDialog = null,
         onConfirmAuthDialog = { },

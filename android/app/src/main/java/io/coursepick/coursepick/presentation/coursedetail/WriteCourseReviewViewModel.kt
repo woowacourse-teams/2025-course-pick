@@ -46,6 +46,9 @@ class WriteCourseReviewViewModel
                 initialValue = false,
             )
 
+        private val _isSubmitting = MutableStateFlow(false)
+        val isSubmitting: StateFlow<Boolean> get() = _isSubmitting.asStateFlow()
+
         private val _showExitDialog = MutableStateFlow(false)
         val showExitDialog: StateFlow<Boolean> get() = _showExitDialog.asStateFlow()
 
@@ -61,6 +64,8 @@ class WriteCourseReviewViewModel
         }
 
         fun submitReview(courseId: String) {
+            if (isSubmitting.value) return
+
             viewModelScope.launch {
                 if (authRepository.accessToken() == null) {
                     _authDialog.value = AuthFeature.SubmitReview(courseId)
@@ -79,6 +84,7 @@ class WriteCourseReviewViewModel
                 }
 
                 try {
+                    _isSubmitting.value = true
                     courseRepository.submitReview(courseId, rating, reviewContent.value)
                     _event.emit(UiEvent.SubmitReviewSuccess)
                 } catch (exception: CancellationException) {
@@ -104,6 +110,8 @@ class WriteCourseReviewViewModel
                     )
                 } catch (_: Throwable) {
                     _event.emit(UiEvent.UnknownFailure)
+                } finally {
+                    _isSubmitting.value = false
                 }
             }
         }
