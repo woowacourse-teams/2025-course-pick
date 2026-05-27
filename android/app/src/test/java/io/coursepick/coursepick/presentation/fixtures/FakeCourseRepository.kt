@@ -2,6 +2,7 @@ package io.coursepick.coursepick.presentation.fixtures
 
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
+import io.coursepick.coursepick.domain.course.CourseDetail
 import io.coursepick.coursepick.domain.course.CourseRepository
 import io.coursepick.coursepick.domain.course.CoursesPage
 import io.coursepick.coursepick.domain.course.Meter
@@ -47,6 +48,25 @@ class FakeCourseRepository : CourseRepository {
         origin: Coordinate,
     ): Coordinate = COORDINATE_FIXTURE
 
-    override suspend fun report(course: Course) {
+    override suspend fun detail(courseId: String): CourseDetail =
+        CourseDetail(
+            id = COURSE_FIXTURE_1.id,
+            name = COURSE_FIXTURE_1.name,
+            length = COURSE_FIXTURE_1.length,
+            coordinates = COURSE_FIXTURE_1.coordinates,
+            reviewCount = 99,
+            averageRating = 4.32F,
+            tags = emptyList(),
+            reviews = emptyList(),
+        )
+
+    override suspend fun reportCourse(courseId: String) {
+    }
+
+    override suspend fun submitReview(
+        courseId: String,
+        rating: Float,
+        content: String,
+    ) {
     }
 }

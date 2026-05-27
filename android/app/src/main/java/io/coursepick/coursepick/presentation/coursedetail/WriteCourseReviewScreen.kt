@@ -1,5 +1,7 @@
 package io.coursepick.coursepick.presentation.coursedetail
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,10 +17,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -29,34 +33,102 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.domain.course.CourseName
-import io.coursepick.coursepick.domain.course.Length
+import io.coursepick.coursepick.presentation.auth.AuthDialog
+import io.coursepick.coursepick.presentation.auth.AuthFeature
+import io.coursepick.coursepick.presentation.auth.AuthUiEvent
+import io.coursepick.coursepick.presentation.auth.AuthViewModel
+import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
 import io.coursepick.coursepick.presentation.coursedetail.WriteCourseReviewViewModel.Companion.MAX_REVIEW_LENGTH
 
 @Composable
-fun WriteCourseReviewScreen(viewModel: WriteCourseReviewViewModel = viewModel()) {
+fun WriteCourseReviewScreen(
+    courseDetail: CourseDetailUiModel,
+    onComplete: () -> Unit,
+    authViewModel: AuthViewModel = viewModel(),
+    writeCourseReviewViewModel: WriteCourseReviewViewModel = viewModel(),
+) {
+    val context: Context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        authViewModel.uiEvent.collect { event: AuthUiEvent -> event.handle(context, writeCourseReviewViewModel) }
+    }
+
+    LaunchedEffect(Unit) {
+        writeCourseReviewViewModel.event.collect { event: WriteCourseReviewViewModel.UiEvent -> event.handle(context, onComplete) }
+    }
+
     WriteCourseReviewScreen(
-        courseName = viewModel.courseName.collectAsStateWithLifecycle().value,
-        length = viewModel.courseLength.collectAsStateWithLifecycle().value,
-        rating = viewModel.rating.collectAsStateWithLifecycle().value ?: 0F,
-        onSelectRating = viewModel::setRating,
-        reviewContent = viewModel.reviewContent.collectAsStateWithLifecycle().value,
-        onReviewContentChange = viewModel::setReviewText,
+        courseName = courseDetail.name,
+        length = courseDetail.length,
+        rating = writeCourseReviewViewModel.rating.collectAsStateWithLifecycle().value ?: 0F,
+        onSelectRating = writeCourseReviewViewModel::setRating,
+        reviewContent = writeCourseReviewViewModel.reviewContent.collectAsStateWithLifecycle().value,
+        onReviewContentChange = writeCourseReviewViewModel::setReviewText,
         maxReviewLength = MAX_REVIEW_LENGTH,
-        canSubmit = viewModel.canSubmit.collectAsStateWithLifecycle().value,
+        canSubmit = writeCourseReviewViewModel.canSubmit.collectAsStateWithLifecycle().value,
+        onSubmit = { writeCourseReviewViewModel.submitReview(courseDetail.id) },
+        authDialog = writeCourseReviewViewModel.authDialog.collectAsStateWithLifecycle().value,
+        onConfirmAuthDialog = { authViewModel.authenticate(KakaoAuthenticator(context), AuthFeature.SubmitReview(courseDetail.id)) },
+        onDismissAuthDialog = writeCourseReviewViewModel::dismissAuthDialog,
     )
+}
+
+private fun AuthUiEvent.handle(
+    context: Context,
+    writeCourseReviewViewModel: WriteCourseReviewViewModel,
+) {
+    when (this) {
+        is AuthUiEvent.AuthenticateSuccess -> {
+            writeCourseReviewViewModel.onAuthSuccess(feature)
+        }
+
+        AuthUiEvent.AuthenticateFailure -> {
+            Toast.makeText(context, context.getString(R.string.authentication_failure_message), Toast.LENGTH_SHORT).show()
+        }
+    }
+}
+
+private fun WriteCourseReviewViewModel.UiEvent.handle(
+    context: Context,
+    onComplete: () -> Unit,
+) {
+    when (this) {
+        WriteCourseReviewViewModel.UiEvent.SubmitReviewSuccess -> {
+            onComplete()
+        }
+
+        WriteCourseReviewViewModel.UiEvent.NoNetwork -> {
+            Toast.makeText(context, context.getString(R.string.failure_no_network_toast_message), Toast.LENGTH_SHORT).show()
+        }
+
+        WriteCourseReviewViewModel.UiEvent.CourseAlreadyReviewed -> {
+            Toast.makeText(context, context.getString(R.string.write_course_review_already_reviewed_message), Toast.LENGTH_SHORT).show()
+        }
+
+        WriteCourseReviewViewModel.UiEvent.InvalidReviewContent -> {
+            Toast.makeText(context, context.getString(R.string.write_course_review_invalid_content), Toast.LENGTH_SHORT).show()
+        }
+
+        WriteCourseReviewViewModel.UiEvent.UnknownFailure -> {
+            Toast.makeText(context, context.getString(R.string.failure_unknown_toast_message), Toast.LENGTH_SHORT).show()
+        }
+    }
 }
 
 @Composable
 fun WriteCourseReviewScreen(
-    courseName: CourseName,
-    length: Length,
+    courseName: String,
+    length: Double,
     rating: Float,
     onSelectRating: (Float) -> Unit,
     reviewContent: String,
     onReviewContentChange: (String) -> Unit,
     maxReviewLength: Int,
     canSubmit: Boolean,
+    onSubmit: () -> Unit,
+    authDialog: AuthFeature?,
+    onConfirmAuthDialog: () -> Unit,
+    onDismissAuthDialog: () -> Unit,
 ) {
     Scaffold { innerPadding: PaddingValues ->
         Column(
@@ -96,22 +168,30 @@ fun WriteCourseReviewScreen(
 
             SubmitReviewButton(
                 isEnabled = canSubmit,
-                onClick = { },
+                onClick = onSubmit,
                 modifier = Modifier.fillMaxWidth(),
             )
+
+            if (authDialog != null) {
+                AuthDialog(
+                    feature = authDialog,
+                    onDismissRequest = onDismissAuthDialog,
+                    onKakaoLoginClick = onConfirmAuthDialog,
+                )
+            }
         }
     }
 }
 
 @Composable
 private fun CourseInfo(
-    courseName: CourseName,
-    length: Length,
+    courseName: String,
+    length: Double,
     modifier: Modifier = Modifier,
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
         Text(
-            text = courseName.value,
+            text = courseName,
             color = colorResource(R.color.item_primary),
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
@@ -193,14 +273,18 @@ private fun SubmitReviewButton(
 @Composable
 private fun WriteCourseReviewPreview_CanSubmit() {
     WriteCourseReviewScreen(
-        courseName = CourseName("석촌호수 동호"),
-        length = Length(5678),
+        courseName = "석촌호수 동호",
+        length = 123.4,
         rating = 4F,
         onSelectRating = { },
         reviewContent = "리뷰 내용",
         onReviewContentChange = { },
         maxReviewLength = 1_000,
         canSubmit = true,
+        onSubmit = { },
+        authDialog = null,
+        onConfirmAuthDialog = { },
+        onDismissAuthDialog = { },
     )
 }
 
@@ -208,13 +292,17 @@ private fun WriteCourseReviewPreview_CanSubmit() {
 @Composable
 private fun WriteCourseReviewPreview_CannotSubmit() {
     WriteCourseReviewScreen(
-        courseName = CourseName("석촌호수 동호"),
-        length = Length(5678),
+        courseName = "석촌호수 동호",
+        length = 123.4,
         rating = 0F,
         onSelectRating = { },
         reviewContent = "",
         onReviewContentChange = { },
         maxReviewLength = 1_000,
         canSubmit = false,
+        onSubmit = { },
+        authDialog = null,
+        onConfirmAuthDialog = { },
+        onDismissAuthDialog = { },
     )
 }

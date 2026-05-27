@@ -6,12 +6,14 @@ import io.coursepick.coursepick.domain.course.Kilometer
 import io.coursepick.coursepick.domain.course.Length
 import io.coursepick.coursepick.domain.course.Meter
 
-fun Length.toDistanceText(): String =
-    if (meter.value < 1000) {
-        "%.0f m".format(meter.value)
+fun Double.toDistanceText(): String =
+    if (this < 1000) {
+        "${this.toInt()} m"
     } else {
-        "%.2f km".format(meter.value / 1000)
+        "%.2f km".format(this / 1000)
     }
+
+fun Length.toDistanceText(): String = meter.value.toDistanceText()
 
 fun formattedMeter(
     context: Context,
