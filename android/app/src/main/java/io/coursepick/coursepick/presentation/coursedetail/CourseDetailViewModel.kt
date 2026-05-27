@@ -147,8 +147,8 @@ class CourseDetailViewModel
                     if (currentState is UiState.Success) {
                         courseRepository.reportCourse(currentState.data.id)
                         dismissReportCourseDialog()
+                        _event.emit(UiEvent.ReportCourseSuccess)
                     }
-                    _event.emit(UiEvent.ReportCourseSuccess)
                 } catch (exception: CancellationException) {
                     throw exception
                 } catch (_: NoNetworkException) {
