@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -55,8 +54,8 @@ fun WriteCourseReviewScreen(
     courseDetail: CourseDetailUiModel,
     exit: () -> Unit,
     complete: () -> Unit,
-    authViewModel: AuthViewModel = viewModel(),
     writeCourseReviewViewModel: WriteCourseReviewViewModel = viewModel(),
+    authViewModel: AuthViewModel = viewModel(),
 ) {
     val context: Context = LocalContext.current
 
@@ -69,26 +68,25 @@ fun WriteCourseReviewScreen(
     }
 
     LaunchedEffect(Unit) {
-        writeCourseReviewViewModel.event.collect { event: WriteCourseReviewViewModel.UiEvent -> event.handle(context, exit, complete) }
+        writeCourseReviewViewModel.uiEvent.collect { event: WriteCourseReviewViewModel.UiEvent -> event.handle(context, exit, complete) }
     }
 
     WriteCourseReviewScreen(
+        uiState = writeCourseReviewViewModel.uiState.collectAsStateWithLifecycle().value,
+        maxReviewLength = MAX_REVIEW_LENGTH,
         courseName = courseDetail.name,
         length = courseDetail.length,
-        rating = writeCourseReviewViewModel.rating.collectAsStateWithLifecycle().value ?: 0F,
         onSelectRating = writeCourseReviewViewModel::setRating,
-        reviewContent = writeCourseReviewViewModel.reviewContent.collectAsStateWithLifecycle().value,
-        onReviewContentChange = writeCourseReviewViewModel::setReviewText,
-        maxReviewLength = MAX_REVIEW_LENGTH,
-        canSubmit = writeCourseReviewViewModel.canSubmit.collectAsStateWithLifecycle().value,
-        isSubmitting = writeCourseReviewViewModel.isSubmitting.collectAsStateWithLifecycle().value,
+        onReviewContentChange = writeCourseReviewViewModel::setReviewContent,
         onSubmit = { writeCourseReviewViewModel.submitReview(courseDetail.id) },
-        authDialog = writeCourseReviewViewModel.authDialog.collectAsStateWithLifecycle().value,
-        onConfirmAuthDialog = { authViewModel.authenticate(KakaoAuthenticator(context), AuthFeature.SubmitReview(courseDetail.id)) },
+    )
+
+    WriteCourseReviewScreenDialogs(
+        dialogState = writeCourseReviewViewModel.dialogState.collectAsStateWithLifecycle().value,
         onDismissAuthDialog = writeCourseReviewViewModel::dismissAuthDialog,
-        showExitDialog = writeCourseReviewViewModel.showExitDialog.collectAsStateWithLifecycle().value,
-        onConfirmExitDialog = writeCourseReviewViewModel::confirmExit,
+        onConfirmAuthDialog = { authViewModel.authenticate(KakaoAuthenticator(context), AuthFeature.SubmitReview(courseDetail.id)) },
         onDismissExitDialog = writeCourseReviewViewModel::dismissExitDialog,
+        onConfirmExitDialog = writeCourseReviewViewModel::confirmExit,
     )
 }
 
@@ -145,22 +143,13 @@ private fun WriteCourseReviewViewModel.UiEvent.handle(
 
 @Composable
 fun WriteCourseReviewScreen(
+    uiState: WriteCourseReviewViewModel.UiState,
+    maxReviewLength: Int,
     courseName: String,
     length: Double,
-    rating: Float,
     onSelectRating: (Float) -> Unit,
-    reviewContent: String,
     onReviewContentChange: (String) -> Unit,
-    maxReviewLength: Int,
-    canSubmit: Boolean,
-    isSubmitting: Boolean,
     onSubmit: () -> Unit,
-    authDialog: AuthFeature?,
-    onConfirmAuthDialog: () -> Unit,
-    onDismissAuthDialog: () -> Unit,
-    showExitDialog: Boolean,
-    onConfirmExitDialog: () -> Unit,
-    onDismissExitDialog: () -> Unit,
 ) {
     val focusManager: FocusManager = LocalFocusManager.current
 
@@ -181,7 +170,7 @@ fun WriteCourseReviewScreen(
             Spacer(Modifier.height(24.dp))
 
             StarRating(
-                rating = rating,
+                rating = uiState.rating ?: 0F,
                 starSize = 36.dp,
                 onSelectRating = onSelectRating,
             )
@@ -189,7 +178,7 @@ fun WriteCourseReviewScreen(
             Spacer(Modifier.height(24.dp))
 
             ReviewTextField(
-                value = reviewContent,
+                value = uiState.reviewContent,
                 onValueChange = onReviewContentChange,
                 maxLength = maxReviewLength,
                 modifier =
@@ -201,28 +190,13 @@ fun WriteCourseReviewScreen(
             Spacer(Modifier.height(24.dp))
 
             SubmitReviewButton(
-                canSubmit = canSubmit,
-                isSubmitting = isSubmitting,
+                canSubmit = uiState.canSubmit,
+                isSubmitting = uiState.isSubmitting,
                 onClick = {
                     focusManager.clearFocus()
                     onSubmit()
                 },
                 modifier = Modifier.fillMaxWidth(),
-            )
-        }
-
-        if (authDialog != null) {
-            AuthDialog(
-                feature = authDialog,
-                onDismissRequest = onDismissAuthDialog,
-                onKakaoLoginClick = onConfirmAuthDialog,
-            )
-        }
-
-        if (showExitDialog) {
-            DiscardReviewDialog(
-                onDismiss = onDismissExitDialog,
-                onConfirm = onConfirmExitDialog,
             )
         }
     }
@@ -387,7 +361,7 @@ private fun DiscardReviewDialog(
                     Text(
                         text = stringResource(R.string.custom_course_discard_dialog_confirm_button),
                         fontSize = 16.sp,
-                        color = colorResource(R.color.item_primary),
+                        color = colorResource(R.color.item_white),
                     )
                 }
             }
@@ -395,26 +369,47 @@ private fun DiscardReviewDialog(
     }
 }
 
+@Composable
+private fun WriteCourseReviewScreenDialogs(
+    dialogState: WriteCourseReviewViewModel.DialogState,
+    onDismissAuthDialog: () -> Unit,
+    onConfirmAuthDialog: (AuthFeature) -> Unit,
+    onDismissExitDialog: () -> Unit,
+    onConfirmExitDialog: () -> Unit,
+) {
+    if (dialogState.authDialog != null) {
+        AuthDialog(
+            feature = dialogState.authDialog,
+            onDismissRequest = onDismissAuthDialog,
+            onKakaoLoginClick = { onConfirmAuthDialog(dialogState.authDialog) },
+        )
+    }
+
+    if (dialogState.showExitDialog) {
+        DiscardReviewDialog(
+            onDismiss = onDismissExitDialog,
+            onConfirm = onConfirmExitDialog,
+        )
+    }
+}
+
 @PreviewLightDark
 @Composable
 private fun WriteCourseReviewPreview_CanSubmit() {
     WriteCourseReviewScreen(
+        uiState =
+            WriteCourseReviewViewModel.UiState(
+                rating = 4F,
+                reviewContent = "리뷰 내용".repeat(10),
+                canSubmit = true,
+                isSubmitting = false,
+            ),
+        maxReviewLength = MAX_REVIEW_LENGTH,
         courseName = "석촌호수 동호",
         length = 123.4,
-        rating = 4F,
         onSelectRating = { },
-        reviewContent = "리뷰 내용",
         onReviewContentChange = { },
-        maxReviewLength = MAX_REVIEW_LENGTH,
-        canSubmit = true,
-        isSubmitting = false,
         onSubmit = { },
-        authDialog = null,
-        onConfirmAuthDialog = { },
-        onDismissAuthDialog = { },
-        showExitDialog = false,
-        onConfirmExitDialog = { },
-        onDismissExitDialog = { },
     )
 }
 
@@ -422,21 +417,18 @@ private fun WriteCourseReviewPreview_CanSubmit() {
 @Composable
 private fun WriteCourseReviewPreview_CannotSubmit() {
     WriteCourseReviewScreen(
+        uiState =
+            WriteCourseReviewViewModel.UiState(
+                rating = null,
+                reviewContent = "",
+                canSubmit = false,
+                isSubmitting = false,
+            ),
+        maxReviewLength = MAX_REVIEW_LENGTH,
         courseName = "석촌호수 동호",
         length = 123.4,
-        rating = 0F,
         onSelectRating = { },
-        reviewContent = "",
         onReviewContentChange = { },
-        maxReviewLength = MAX_REVIEW_LENGTH,
-        canSubmit = false,
-        isSubmitting = false,
         onSubmit = { },
-        authDialog = null,
-        onConfirmAuthDialog = { },
-        onDismissAuthDialog = { },
-        showExitDialog = false,
-        onConfirmExitDialog = { },
-        onDismissExitDialog = { },
     )
 }
