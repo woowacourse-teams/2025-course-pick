@@ -84,6 +84,9 @@ class WriteCourseReviewViewModel
                     isSubmitting.value = true
                     courseRepository.submitReview(courseId, rating, reviewContent.value)
                     _uiEvent.emit(UiEvent.SubmitReviewSuccess)
+
+                    this@WriteCourseReviewViewModel.rating.value = null
+                    reviewContent.value = ""
                 } catch (exception: CancellationException) {
                     throw exception
                 } catch (_: NoNetworkException) {
