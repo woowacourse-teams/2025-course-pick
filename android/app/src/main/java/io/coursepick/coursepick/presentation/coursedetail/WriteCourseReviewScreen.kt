@@ -116,6 +116,7 @@ private fun WriteCourseReviewViewModel.UiEvent.handle(
         }
 
         WriteCourseReviewViewModel.UiEvent.SubmitReviewSuccess -> {
+            Toast.makeText(context, context.getString(R.string.write_course_review_submit_success_message), Toast.LENGTH_SHORT).show()
             complete()
         }
 
