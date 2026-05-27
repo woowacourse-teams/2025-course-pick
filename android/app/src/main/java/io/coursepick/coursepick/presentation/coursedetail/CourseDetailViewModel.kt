@@ -73,7 +73,14 @@ class CourseDetailViewModel
             viewModelScope.launch {
                 isConnected.value = true
                 isLoading.value = true
-                courseDetail.value = runCatching { courseRepository.detail(courseId).toUiModel() }.getOrNull()
+
+                courseDetail.value =
+                    runCatching {
+                        courseRepository.detail(courseId).toUiModel()
+                    }.onFailure { exception: Throwable ->
+                        if (exception is CancellationException) throw exception
+                    }.getOrNull()
+
                 isLoading.value = false
             }
         }
