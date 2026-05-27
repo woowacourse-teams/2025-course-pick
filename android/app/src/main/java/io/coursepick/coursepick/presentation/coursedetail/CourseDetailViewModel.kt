@@ -6,9 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.coursepick.coursepick.data.NetworkMonitor
 import io.coursepick.coursepick.data.interceptor.NoNetworkException
 import io.coursepick.coursepick.domain.auth.AuthRepository
-import io.coursepick.coursepick.domain.course.CourseDetail
 import io.coursepick.coursepick.domain.course.CourseRepository
-import io.coursepick.coursepick.domain.course.CourseReview
 import io.coursepick.coursepick.domain.favorites.FavoriteCourseRepository
 import io.coursepick.coursepick.presentation.auth.AuthFeature
 import kotlinx.coroutines.CancellationException
@@ -29,90 +27,77 @@ import javax.inject.Inject
 class CourseDetailViewModel
     @Inject
     constructor(
-        private val authRepository: AuthRepository,
         private val courseRepository: CourseRepository,
         private val favoriteCourseRepository: FavoriteCourseRepository,
+        private val authRepository: AuthRepository,
         private val networkMonitor: NetworkMonitor,
     ) : ViewModel() {
-        private val _event = MutableSharedFlow<UiEvent>()
-        val event: SharedFlow<UiEvent> get() = _event.asSharedFlow()
+        private val _uiEvent = MutableSharedFlow<UiEvent>()
+        val uiEvent: SharedFlow<UiEvent> get() = _uiEvent.asSharedFlow()
 
-        private val loadTrigger = MutableSharedFlow<Unit>(1)
+        private val isConnected = MutableStateFlow(networkMonitor.isConnected())
+        private val isLoading = MutableStateFlow(true)
+        private val courseDetail = MutableStateFlow<CourseDetailUiModel?>(null)
 
-        private val courseId = MutableStateFlow<String?>(null)
-
-        val state: StateFlow<UiState> =
+        val uiState: StateFlow<UiState> =
             combine(
-                loadTrigger,
-                courseId,
+                isConnected,
+                isLoading,
+                courseDetail,
                 favoriteCourseRepository.favoriteCourseIds,
-            ) { _, courseId: String?, favoriteCourseIds: Set<String> ->
-                if (!networkMonitor.isConnected()) return@combine UiState.Failure.NoNetwork
-
-                val courseDetail: CourseDetail? =
-                    courseId?.let { courseId: String -> runCatching { courseRepository.detail(courseId) }.getOrNull() }
-                if (courseDetail == null) return@combine UiState.Failure.Unknown
-
-                UiState.Success(
-                    CourseDetailUiModel(
-                        id = courseDetail.id,
-                        name = courseDetail.name.value,
-                        length = courseDetail.length.meter.value,
-                        isFavorite = favoriteCourseIds.contains(courseDetail.id),
-                        reviewCount = courseDetail.reviewCount,
-                        averageRating = courseDetail.averageRating,
-                        tags = courseDetail.tags,
-                        reviews = courseDetail.reviews.map { review: CourseReview -> review.toUiModel() },
-                    ),
-                )
+            ) { isConnected: Boolean, isLoading: Boolean, courseDetail: CourseDetailUiModel?, favoriteCourseIds: Set<String> ->
+                if (!isConnected) {
+                    UiState.Failure.NoNetwork
+                } else if (isLoading) {
+                    UiState.Loading
+                } else if (courseDetail == null) {
+                    UiState.Failure.Unknown
+                } else {
+                    UiState.Success(detail = courseDetail, isFavorite = favoriteCourseIds.contains(courseDetail.id))
+                }
             }.stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = UiState.Loading,
             )
 
-        private val _authDialog = MutableStateFlow<AuthFeature?>(null)
-        val authDialog: StateFlow<AuthFeature?> get() = _authDialog.asStateFlow()
-
-        private val _showReportCourseDialog = MutableStateFlow(false)
-        val showReportCourseDialog: StateFlow<Boolean> get() = _showReportCourseDialog.asStateFlow()
+        private val _dialogState = MutableStateFlow(DialogState())
+        val dialogState: StateFlow<DialogState> get() = _dialogState.asStateFlow()
 
         fun load(courseId: String) {
+            if (!networkMonitor.isConnected()) {
+                isConnected.value = false
+                return
+            }
+
             viewModelScope.launch {
-                this@CourseDetailViewModel.courseId.value = courseId
-                loadTrigger.emit(Unit)
+                isConnected.value = true
+                isLoading.value = true
+                courseDetail.value = runCatching { courseRepository.detail(courseId).toUiModel() }.getOrNull()
+                isLoading.value = false
             }
         }
 
-        private fun CourseReview.toUiModel(): CourseReviewUiModel =
-            CourseReviewUiModel(
-                id = id,
-                authorId = authorId,
-                authorName = authorName,
-                isMine = false, // TODO: API 업데이트될 시 사용자 ID 기반으로 확인하도록 변경
-                rating = rating.toFloat(),
-                content = content,
-            )
-
         fun toggleFavorite() {
             viewModelScope.launch {
-                val currentState = state.value
+                val currentState = uiState.value
                 if (currentState is UiState.Success) {
-                    if (currentState.data.isFavorite) {
-                        favoriteCourseRepository.removeFavorite(currentState.data.id)
+                    if (currentState.isFavorite) {
+                        favoriteCourseRepository.removeFavorite(currentState.detail.id)
                     } else {
-                        favoriteCourseRepository.addFavorite(currentState.data.id)
+                        favoriteCourseRepository.addFavorite(currentState.detail.id)
                     }
                 }
             }
         }
 
         fun dismissAuthDialog() {
-            _authDialog.value = null
+            _dialogState.value = dialogState.value.copy(authDialog = null)
         }
 
         fun onAuthSuccess(feature: AuthFeature) {
             dismissAuthDialog()
+
             if (feature is AuthFeature.ReportCourse) {
                 onReportCourse()
             }
@@ -120,32 +105,36 @@ class CourseDetailViewModel
 
         fun onReportCourse() {
             viewModelScope.launch {
-                val currentState: UiState = state.value
-                if (currentState is UiState.Success) {
-                    if (authRepository.accessToken() == null) {
-                        _authDialog.value = AuthFeature.ReportCourse(currentState.data.id)
-                    } else {
-                        _showReportCourseDialog.value = true
-                    }
+                (uiState.value as? UiState.Success)?.let { uiState: UiState.Success ->
+                    _dialogState.value =
+                        if (authRepository.accessToken() == null) {
+                            dialogState.value.copy(authDialog = AuthFeature.ReportCourse(uiState.detail.id))
+                        } else {
+                            dialogState.value.copy(reportCourseDialog = uiState.detail.name)
+                        }
                 }
             }
+        }
+
+        fun dismissReportCourseDialog() {
+            _dialogState.value = dialogState.value.copy(reportCourseDialog = null)
         }
 
         fun submitCourseReport() {
             viewModelScope.launch {
                 try {
-                    val currentState: UiState = state.value
+                    val currentState: UiState = uiState.value
                     if (currentState is UiState.Success) {
-                        courseRepository.reportCourse(currentState.data.id)
+                        courseRepository.reportCourse(currentState.detail.id)
                         dismissReportCourseDialog()
-                        _event.emit(UiEvent.ReportCourseSuccess)
+                        _uiEvent.emit(UiEvent.ReportCourseSuccess)
                     }
                 } catch (exception: CancellationException) {
                     throw exception
                 } catch (_: NoNetworkException) {
-                    _event.emit(UiEvent.NoNetwork)
+                    _uiEvent.emit(UiEvent.NoNetwork)
                 } catch (exception: HttpException) {
-                    _event.emit(
+                    _uiEvent.emit(
                         when (exception.code()) {
                             400 -> {
                                 dismissReportCourseDialog()
@@ -162,13 +151,9 @@ class CourseDetailViewModel
                         },
                     )
                 } catch (_: Throwable) {
-                    _event.emit(UiEvent.ReportCourseUnknownFailure)
+                    _uiEvent.emit(UiEvent.ReportCourseUnknownFailure)
                 }
             }
-        }
-
-        fun dismissReportCourseDialog() {
-            _showReportCourseDialog.value = false
         }
 
         sealed interface UiEvent {
@@ -187,7 +172,8 @@ class CourseDetailViewModel
             data object Loading : UiState
 
             data class Success(
-                val data: CourseDetailUiModel,
+                val detail: CourseDetailUiModel,
+                val isFavorite: Boolean,
             ) : UiState
 
             sealed interface Failure : UiState {
@@ -196,4 +182,9 @@ class CourseDetailViewModel
                 data object Unknown : Failure
             }
         }
+
+        data class DialogState(
+            val authDialog: AuthFeature? = null,
+            val reportCourseDialog: String? = null,
+        )
     }

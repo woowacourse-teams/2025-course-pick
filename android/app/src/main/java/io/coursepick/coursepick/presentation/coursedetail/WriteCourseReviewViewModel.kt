@@ -25,8 +25,8 @@ import javax.inject.Inject
 class WriteCourseReviewViewModel
     @Inject
     constructor(
-        private val authRepository: AuthRepository,
         private val courseRepository: CourseRepository,
+        private val authRepository: AuthRepository,
     ) : ViewModel() {
         private val _event = MutableSharedFlow<UiEvent>()
         val event: SharedFlow<UiEvent> get() = _event.asSharedFlow()
