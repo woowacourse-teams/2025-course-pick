@@ -1,8 +1,14 @@
 package io.coursepick.coursepick.presentation.auth
 
+import io.coursepick.coursepick.presentation.coursedetail.CourseReviewUiModel
+
 sealed interface AuthFeature {
     data class ReportCourse(
         val courseId: String,
+    ) : AuthFeature
+
+    data class DeleteReview(
+        val review: CourseReviewUiModel,
     ) : AuthFeature
 
     data class SubmitReview(
