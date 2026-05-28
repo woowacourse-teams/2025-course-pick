@@ -1,5 +1,6 @@
 package coursepick.coursepick.presentation.api;
 
+import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.presentation.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -8,7 +9,6 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -17,20 +17,12 @@ import java.util.List;
 @Tag(name = "러닝 코스 (Course)")
 public interface CourseWebApi {
 
-    @Operation(summary = "좌표 근처 코스 전체 조회")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", content = @Content(examples = {
-                    @ExampleObject(
-                            name = "위도가 범위 외인 경우",
-                            ref = "#/components/examples/INVALID_LATITUDE_RANGE"
-                    ),
-                    @ExampleObject(
-                            name = "경도가 범위 외인 경우",
-                            ref = "#/components/examples/INVALID_LONGITUDE_RANGE"
-                    )
-            })),
+    @ApiErrorExceptionsExample({
+            ErrorType.INVALID_LATITUDE_RANGE,
+            ErrorType.INVALID_LONGITUDE_RANGE
     })
+    @Operation(summary = "좌표 근처 코스 전체 조회")
+    @ApiResponse(responseCode = "200")
     CoursesWebResponse findNearbyCourses(
             @Parameter(description = "지도 중심의 위도(-90 ~ 90)", example = "37.5165004", required = true) double mapLatitude,
             @Parameter(description = "지도 중심의 경도(-180 ~ 180)", example = "127.1040109", required = true) double mapLongitude,
@@ -42,156 +34,76 @@ public interface CourseWebApi {
             @Parameter(description = "페이지 번호", example = "1") Integer page
     );
 
-    @Operation(summary = "좌표에서 가장 가까운 코스 위 좌표 조회")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", content = @Content(examples = {
-                    @ExampleObject(
-                            name = "위도가 범위 외인 경우",
-                            ref = "#/components/examples/INVALID_LATITUDE_RANGE"
-                    ),
-                    @ExampleObject(
-                            name = "경도가 범위 외인 경우",
-                            ref = "#/components/examples/INVALID_LONGITUDE_RANGE"
-                    ),
-            })),
-            @ApiResponse(responseCode = "404", content = @Content(examples = {
-                    @ExampleObject(
-                            name = "코스가 존재하지 않는 경우",
-                            ref = "#/components/examples/NOT_EXIST_COURSE"
-                    )
-            })),
+    @ApiErrorExceptionsExample({
+            ErrorType.INVALID_LATITUDE_RANGE,
+            ErrorType.INVALID_LONGITUDE_RANGE,
+            ErrorType.NOT_EXIST_COURSE
     })
+    @Operation(summary = "좌표에서 가장 가까운 코스 위 좌표 조회")
+    @ApiResponse(responseCode = "200")
     CoordinateWebResponse findClosestCoordinate(
             @Parameter(description = "코스 ID", example = "689c3143182cecc6353cca7b", required = true) String id,
             @Parameter(description = "사용자 위도(-90 ~ 90)", example = "37.5165004", required = true) double latitude,
             @Parameter(description = "사용자 경도(-180 ~ 180)", example = "127.1040109", required = true) double longitude
     );
 
-    @Operation(summary = "특정 코스까지의 길찾기")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", content = @Content(examples = {
-                    @ExampleObject(
-                            name = "위도가 범위 외인 경우",
-                            ref = "#/components/examples/INVALID_LATITUDE_RANGE"
-                    ),
-                    @ExampleObject(
-                            name = "경도가 범위 외인 경우",
-                            ref = "#/components/examples/INVALID_LONGITUDE_RANGE"
-                    ),
-            })),
-            @ApiResponse(responseCode = "404", content = @Content(examples = {
-                    @ExampleObject(
-                            name = "코스가 존재하지 않는 경우",
-                            ref = "#/components/examples/NOT_EXIST_COURSE"
-                    )
-            })),
+    @ApiErrorExceptionsExample({
+            ErrorType.INVALID_LATITUDE_RANGE,
+            ErrorType.INVALID_LONGITUDE_RANGE,
+            ErrorType.NOT_EXIST_COURSE
     })
+    @Operation(summary = "특정 코스까지의 길찾기")
+    @ApiResponse(responseCode = "200")
     List<CoordinateWebResponse> routeToCourse(
             @Parameter(description = "코스 ID", example = "689c3143182cecc6353cca7b", required = true) String id,
             @Parameter(description = "사용자 위도(-90 ~ 90)", example = "37.5165004", required = true) double latitude,
             @Parameter(description = "사용자 경도(-180 ~ 180)", example = "127.1040109", required = true) double longitude
     );
 
-    @Operation(summary = "코스 상세 조회 (리뷰 포함)")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", content = @Content(examples = {
-                    @ExampleObject(
-                            name = "코스가 존재하지 않는 경우",
-                            ref = "#/components/examples/NOT_EXIST_COURSE"
-                    )
-            })),
+    @ApiErrorExceptionsExample({
+            ErrorType.NOT_EXIST_COURSE
     })
+    @Operation(summary = "코스 상세 조회 (리뷰 포함)")
+    @ApiResponse(responseCode = "200")
     CourseDetailWebResponse findCourseDetail(
             @Parameter(description = "코스 ID", example = "689c3143182cecc6353cca7b", required = true) String id
     );
 
-    @Operation(summary = "코스 리뷰 작성", security = {@SecurityRequirement(name = "BearerAuth")})
-    @ApiResponses({
-            @ApiResponse(responseCode = "201"),
-            @ApiResponse(responseCode = "400", content = @Content(examples = {
-                    @ExampleObject(
-                            name = "리뷰 내용 길이가 범위 외인 경우",
-                            ref = "#/components/examples/INVALID_REVIEW_CONTENT_LENGTH"
-                    )
-            })),
-            @ApiResponse(responseCode = "401", content = @Content(examples = {
-                    @ExampleObject(
-                            name = "인증에 실패한 경우",
-                            ref = "#/components/examples/AUTHENTICATION_FAIL"
-                    )
-            })),
-            @ApiResponse(responseCode = "404", content = @Content(examples = {
-                    @ExampleObject(
-                            name = "코스가 존재하지 않는 경우",
-                            ref = "#/components/examples/NOT_EXIST_COURSE"
-                    )
-            })),
+    @ApiErrorExceptionsExample({
+            ErrorType.INVALID_REVIEW_CONTENT_LENGTH,
+            ErrorType.INVALID_REVIEW_RATING,
+            ErrorType.NOT_EXIST_COURSE,
+            ErrorType.AUTHENTICATION_FAIL
     })
+    @Operation(summary = "코스 리뷰 작성", security = {@SecurityRequirement(name = "BearerAuth")})
+    @ApiResponse(responseCode = "201")
     void addReview(
             @Parameter(description = "코스 ID", example = "689c3143182cecc6353cca7b", required = true) String id,
             @Parameter(hidden = true) String userId,
             CreateReviewWebRequest request
     );
 
-    @Operation(summary = "코스 리뷰 삭제", security = {@SecurityRequirement(name = "BearerAuth")})
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "리뷰 삭제 완료"),
-            @ApiResponse(responseCode = "401", content = @Content(examples = {
-                    @ExampleObject(
-                            name = "인증에 실패한 경우",
-                            ref = "#/components/examples/AUTHENTICATION_FAIL"
-                    ),
-                    @ExampleObject(
-                            name = "본인 리뷰가 아닌 경우",
-                            ref = "#/components/examples/AUTHENTICATION_FAIL"
-                    )
-            })),
-            @ApiResponse(responseCode = "404", content = @Content(examples = {
-                    @ExampleObject(
-                            name = "코스가 존재하지 않는 경우",
-                            ref = "#/components/examples/NOT_EXIST_COURSE"
-                    ),
-                    @ExampleObject(
-                            name = "리뷰가 존재하지 않는 경우",
-                            ref = "#/components/examples/NOT_EXIST_REVIEW"
-                    )
-            })),
+    @ApiErrorExceptionsExample({
+            ErrorType.AUTHENTICATION_FAIL,
+            ErrorType.NOT_EXIST_COURSE,
+            ErrorType.NOT_EXIST_REVIEW
     })
+    @Operation(summary = "코스 리뷰 삭제", security = {@SecurityRequirement(name = "BearerAuth")})
+    @ApiResponse(responseCode = "200", description = "리뷰 삭제 완료")
     void deleteReview(
             @Parameter(description = "코스 ID", required = true) String courseId,
             @Parameter(description = "삭제할 리뷰 ID", required = true) String reviewId,
             @Parameter(hidden = true) String userId
     );
 
-    @Operation(summary = "리뷰 신고", security = {@SecurityRequirement(name = "BearerAuth")})
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "리뷰 신고 완료"),
-            @ApiResponse(responseCode = "400", content = @Content(examples = {
-                    @ExampleObject(
-                            name = "이미 신고한 리뷰인 경우",
-                            ref = "#/components/examples/ALREADY_REPORTED_REVIEW"
-                    )
-            })),
-            @ApiResponse(responseCode = "401", content = @Content(examples = {
-                    @ExampleObject(
-                            name = "인증에 실패한 경우",
-                            ref = "#/components/examples/AUTHENTICATION_FAIL"
-                    )
-            })),
-            @ApiResponse(responseCode = "404", content = @Content(examples = {
-                    @ExampleObject(
-                            name = "코스가 존재하지 않는 경우",
-                            ref = "#/components/examples/NOT_EXIST_COURSE"
-                    ),
-                    @ExampleObject(
-                            name = "리뷰가 존재하지 않는 경우",
-                            ref = "#/components/examples/NOT_EXIST_REVIEW"
-                    )
-            })),
+    @ApiErrorExceptionsExample({
+            ErrorType.ALREADY_REPORTED_REVIEW,
+            ErrorType.AUTHENTICATION_FAIL,
+            ErrorType.NOT_EXIST_COURSE,
+            ErrorType.NOT_EXIST_REVIEW
     })
+    @Operation(summary = "리뷰 신고", security = {@SecurityRequirement(name = "BearerAuth")})
+    @ApiResponse(responseCode = "200", description = "리뷰 신고 완료")
     void reportCourseReview(
             @Parameter(description = "신고할 리뷰의 코스 ID", required = true) String courseId,
             @Parameter(description = "신고할 리뷰 ID", required = true) String reviewId,
@@ -210,32 +122,14 @@ public interface CourseWebApi {
             List<String> coursesId
     );
 
-    @Operation(summary = "유저 커스텀 코스 등록", security = {@SecurityRequirement(name = "BearerAuth")})
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "코스 등록 성공"),
-            @ApiResponse(responseCode = "400", content = @Content(examples = {
-                    @ExampleObject(
-                            name = "이름 길이가 범위 외인 경우",
-                            ref = "#/components/examples/INVALID_NAME_LENGTH"
-                    ),
-                    @ExampleObject(
-                            name = "좌표 개수가 부족한 경우",
-                            ref = "#/components/examples/INVALID_COORDINATE_COUNT"
-                    )
-            })),
-            @ApiResponse(responseCode = "401", content = @Content(examples = {
-                    @ExampleObject(
-                            name = "인증에 실패한 경우",
-                            ref = "#/components/examples/AUTHENTICATION_FAIL"
-                    )
-            })),
-            @ApiResponse(responseCode = "409", content = @Content(examples = {
-                    @ExampleObject(
-                            name = "이미 존재하는 코스 이름인 경우",
-                            ref = "#/components/examples/DUPLICATED_COURSE_NAME"
-                    )
-            })),
+    @ApiErrorExceptionsExample({
+            ErrorType.INVALID_NAME_LENGTH,
+            ErrorType.INVALID_COORDINATE_COUNT,
+            ErrorType.AUTHENTICATION_FAIL,
+            ErrorType.DUPLICATED_COURSE_NAME
     })
+    @Operation(summary = "유저 커스텀 코스 등록", security = {@SecurityRequirement(name = "BearerAuth")})
+    @ApiResponse(responseCode = "200", description = "코스 등록 성공")
     String addCustomCourses(
             @RequestBody(
                     description = "커스텀 코스 생성 요청 데이터",
@@ -253,55 +147,30 @@ public interface CourseWebApi {
             String userId
     );
 
-    @Operation(summary = "코스 생성 시 직전 포인트와 새 포인트 사이의 경로 및 거리 조회 (첫 점인 경우 origin과 destination을 동일하게 전송)")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", content = @Content(examples = {
-                    @ExampleObject(
-                            name = "좌표 개수가 부족한 경우",
-                            ref = "#/components/examples/INVALID_COORDINATE_COUNT"
-                    )
-            })),
+    @ApiErrorExceptionsExample({
+            ErrorType.INVALID_COORDINATE_COUNT
     })
+    @Operation(summary = "코스 생성 시 직전 포인트와 새 포인트 사이의 경로 및 거리 조회 (첫 점인 경우 origin과 destination을 동일하게 전송)")
+    @ApiResponse(responseCode = "200")
     DraftRouteWebResponse findDraftRoute(FindDraftRouteWebRequest request);
 
-    @Operation(summary = "코스 신고", security = {@SecurityRequirement(name = "BearerAuth")})
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "코스 신고 완료"),
-            @ApiResponse(responseCode = "400", content = @Content(examples = {
-                    @ExampleObject(
-                            name = "이미 신고한 코스인 경우",
-                            ref = "#/components/examples/ALREADY_REPORTED_COURSE"
-                    )
-            })),
-            @ApiResponse(responseCode = "401", content = @Content(examples = {
-                    @ExampleObject(
-                            name = "인증에 실패한 경우",
-                            ref = "#/components/examples/AUTHENTICATION_FAIL"
-                    )
-            })),
-            @ApiResponse(responseCode = "404", content = @Content(examples = {
-                    @ExampleObject(
-                            name = "코스가 존재하지 않는 경우",
-                            ref = "#/components/examples/NOT_EXIST_COURSE"
-                    )
-            })),
+    @ApiErrorExceptionsExample({
+            ErrorType.ALREADY_REPORTED_COURSE,
+            ErrorType.AUTHENTICATION_FAIL,
+            ErrorType.NOT_EXIST_COURSE
     })
+    @Operation(summary = "코스 신고", security = {@SecurityRequirement(name = "BearerAuth")})
+    @ApiResponse(responseCode = "200", description = "코스 신고 완료")
     void reportCourse(
             @Parameter(description = "신고할 코스 ID", required = true) String id,
             @Parameter(hidden = true) String userId
     );
 
-    @Operation(summary = "나의 코스 조회(생성순)", security = {@SecurityRequirement(name = "BearerAuth")})
-    @ApiResponses({
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "401", content = @Content(examples = {
-                    @ExampleObject(
-                            name = "인증에 실패한 경우",
-                            ref = "#/components/examples/AUTHENTICATION_FAIL"
-                    )
-            })),
+    @ApiErrorExceptionsExample({
+            ErrorType.AUTHENTICATION_FAIL
     })
+    @Operation(summary = "나의 코스 조회(생성순)", security = {@SecurityRequirement(name = "BearerAuth")})
+    @ApiResponse(responseCode = "200")
     CoursesWebResponse findCustomCourse(
             @Parameter(description = "사용자 위치의 위도(-90 ~ 90)", example = "38.5165004") Double userLatitude,
             @Parameter(description = "사용자 위치의 경도(-180 ~ 180)", example = "126.1040109") Double userLongitude,

@@ -102,7 +102,7 @@ public enum ErrorType {
             IllegalStateException::new
     ),
     INVALID_REVIEW_RATING(
-            "리뷰 평점은 1이상 5이하여야 합니다. 입력값=%d",
+            "리뷰 평점은 1이상 5이하여야 합니다. 입력값=%s",
             IllegalArgumentException::new
     );
 
@@ -116,6 +116,10 @@ public enum ErrorType {
 
     public RuntimeException create(Object... messageArgs) {
         return exceptionConstructor.apply(message(messageArgs));
+    }
+
+    public Class<? extends RuntimeException> getExceptionClass() {
+        return create("N", "N", "N").getClass();
     }
 
     public String message(Object... messageArgs) {

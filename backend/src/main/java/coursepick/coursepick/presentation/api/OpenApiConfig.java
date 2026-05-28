@@ -4,21 +4,32 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.examples.Example;
-import org.springdoc.core.customizers.OpenApiCustomizer;
+
+import org.springdoc.core.customizers.OperationCustomizer;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.AnnotatedElementUtils;
+import lombok.extern.slf4j.Slf4j;
 
+import coursepick.coursepick.application.exception.ErrorType;
+import io.swagger.v3.oas.models.responses.ApiResponse;
+import io.swagger.v3.oas.models.responses.ApiResponses;
+
+import coursepick.coursepick.application.exception.QueryTimeoutException;
+import coursepick.coursepick.application.exception.UnauthorizedException;
+
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
-
-import static coursepick.coursepick.application.exception.ErrorType.values;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Profile("!prod")
+@Slf4j
 @OpenAPIDefinition(info = @Info(title = "코스픽 API"))
 @SecurityScheme(
         name = "BearerAuth",
@@ -30,32 +41,85 @@ import static coursepick.coursepick.application.exception.ErrorType.values;
 @Configuration
 public class OpenApiConfig {
 
-    private static final String TIMESTAMP = LocalDateTime.now().toString();
-
     @Bean
     public GroupedOpenApi v1Api() {
         return GroupedOpenApi.builder()
                 .group("v1")
                 .pathsToMatch("/v1/**")
+                .addOperationCustomizer(customizeOperation())
                 .build();
     }
 
-    @Bean
-    public OpenApiCustomizer customize() {
-        return openApi -> {
-            Components components = openApi.getComponents();
+    public OperationCustomizer customizeOperation() {
+        return (operation, handlerMethod) -> {
+            ApiErrorExceptionsExample apiErrorExceptionsExample = AnnotatedElementUtils.findMergedAnnotation(
+                    handlerMethod.getMethod(), ApiErrorExceptionsExample.class);
+            if (apiErrorExceptionsExample == null) {
+                try {
+                    Method interfaceMethod = CourseWebApi.class.getMethod(
+                            handlerMethod.getMethod().getName(), handlerMethod.getMethod().getParameterTypes());
+                    apiErrorExceptionsExample = AnnotatedElementUtils.findMergedAnnotation(interfaceMethod, ApiErrorExceptionsExample.class);
+                    log.info("Found on interface: {}", (apiErrorExceptionsExample != null));
+                } catch (Exception e) {}
+            }
+            if (apiErrorExceptionsExample != null) {
+                generateErrorResponseExample(operation, apiErrorExceptionsExample.value());
+            }
 
-            Arrays.stream(values()).forEach(
-                    errorType -> {
-                        Example example = new Example()
-                                .value(Map.of(
-                                        "message", errorType.message("{}", "{}", "{}"),
-                                        "timestamp", TIMESTAMP
-                                ));
-                        components.addExamples(errorType.name(), example);
+            if ((operation.getParameters() != null && !operation.getParameters().isEmpty()) || operation.getRequestBody() != null) {
+                addDefaultValidationError(operation);
+            }
 
-                    }
-            );
+            return operation;
         };
+    }
+
+    private void addDefaultValidationError(io.swagger.v3.oas.models.Operation operation) {
+        ApiResponses responses = operation.getResponses();
+        ApiResponse apiResponse = responses.getOrDefault("400", new ApiResponse());
+
+        String defaultMessage = "- 잘못된 파라미터 (예: 필수 파라미터 누락, null 값, 형식 오류 등)\n";
+        String existingDescription = apiResponse.getDescription();
+
+        if (existingDescription == null) {
+            existingDescription = "발생 가능한 400 에러:\n";
+        }
+
+        if (!existingDescription.contains("잘못된 파라미터")) {
+            apiResponse.setDescription(existingDescription + defaultMessage);
+            responses.addApiResponse("400", apiResponse);
+        }
+    }
+
+    private String getStatusCode(ErrorType errorType) {
+        Class<? extends RuntimeException> exceptionClass = errorType.getExceptionClass();
+        if (IllegalArgumentException.class.isAssignableFrom(exceptionClass)) return "400";
+        if (NoSuchElementException.class.isAssignableFrom(exceptionClass)) return "404";
+        if (SecurityException.class.isAssignableFrom(exceptionClass) || UnauthorizedException.class.isAssignableFrom(exceptionClass)) return "401";
+        if (IllegalStateException.class.isAssignableFrom(exceptionClass)) return "409";
+        if (QueryTimeoutException.class.isAssignableFrom(exceptionClass)) return "503";
+        return "500";
+    }
+
+    private void generateErrorResponseExample(io.swagger.v3.oas.models.Operation operation, ErrorType[] errorTypes) {
+        ApiResponses responses = operation.getResponses();
+
+        Map<String, List<ErrorType>> statusToErrors = Arrays.stream(errorTypes)
+                .collect(Collectors.groupingBy(this::getStatusCode));
+
+        for (Map.Entry<String, List<ErrorType>> entry : statusToErrors.entrySet()) {
+            String statusCode = entry.getKey();
+            List<ErrorType> errors = entry.getValue();
+
+            ApiResponse apiResponse = responses.getOrDefault(statusCode, new ApiResponse());
+
+            StringBuilder description = new StringBuilder("발생 가능한 " + statusCode + " 에러:\n");
+            for (ErrorType errorType : errors) {
+                description.append("- ").append(errorType.message("N", "N", "N")).append("\n");
+            }
+
+            apiResponse.setDescription(description.toString());
+            responses.addApiResponse(statusCode, apiResponse);
+        }
     }
 }
