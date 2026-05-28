@@ -76,8 +76,8 @@ class AuthenticationTest {
     void 토큰에서_사용자_ID를_추출한다() {
         var authentication = Authentication.auth(TEST_KEY, TEST_USER);
 
-        var userId = authentication.validateAndGetUserId(TEST_KEY);
+        var parsed = Authentication.parse(TEST_KEY, authentication.accessToken());
 
-        assertThat(userId).isEqualTo(TEST_USER.id());
+        assertThat(parsed.userId()).isEqualTo(TEST_USER.id());
     }
 }
