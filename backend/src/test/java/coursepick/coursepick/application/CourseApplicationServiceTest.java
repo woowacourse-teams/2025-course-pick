@@ -14,6 +14,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -300,7 +301,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
         @Test
         void 최신순으로_정렬된다() {
-            var now = LocalDateTime.now();
+            var now = Instant.now();
             var oldCourse = createCourse("오래된 코스", 한강_좌표, TEST_USER);
             var newCourse = createCourse("최신 코스", 한강_좌표, TEST_USER);
 

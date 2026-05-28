@@ -21,9 +21,9 @@ class JacksonConfigTest {
 
     @Test
     void Instant를_직렬화하면_KST_타임존이_적용된다() throws Exception {
-        Instant instant = Instant.parse("2024-05-26T05:30:00Z");
+        var instant = Instant.parse("2024-05-26T05:30:00Z");
 
-        String jsonString = objectMapper.writeValueAsString(instant);
+        var jsonString = objectMapper.writeValueAsString(instant);
 
         // +9시간
         assertThat(jsonString).isEqualTo("\"2024-05-26T14:30:00+09:00\"");
@@ -31,12 +31,12 @@ class JacksonConfigTest {
 
     @Test
     void KST_타임존_문자열을_역직렬화하면_정확한_Instant로_변환된다() throws Exception {
-        String jsonString = "\"2024-05-26T14:30:00+09:00\"";
+        var jsonString = "\"2024-05-26T14:30:00+09:00\"";
 
-        Instant result = objectMapper.readValue(jsonString, Instant.class);
+        var result = objectMapper.readValue(jsonString, Instant.class);
 
         // - 9시간
-        Instant expected = Instant.parse("2024-05-26T05:30:00Z");
+        var expected = Instant.parse("2024-05-26T05:30:00Z");
         assertThat(result).isEqualTo(expected);
     }
 }

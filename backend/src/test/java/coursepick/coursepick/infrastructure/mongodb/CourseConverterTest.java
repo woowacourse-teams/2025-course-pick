@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
@@ -22,7 +22,7 @@ class CourseConverterTest extends AbstractIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        var now = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
+        var now = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
         course = createCourse("테스트 코스", List.of(new Coordinate(37.5, 127.0), new Coordinate(37.51, 127.01), new Coordinate(37.52, 127.02)));
         ReflectionTestUtils.setField(course, "id", "507f1f77bcf86cd799439011");
