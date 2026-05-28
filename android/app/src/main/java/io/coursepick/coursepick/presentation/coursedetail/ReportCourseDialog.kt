@@ -121,7 +121,7 @@ private fun ReportConfirmCheckbox(
         )
 
         Text(
-            text = stringResource(R.string.report_course_confirm_reason_description),
+            text = stringResource(R.string.report_course_confirm_description),
             color = colorResource(R.color.item_primary),
             fontSize = 14.sp,
             modifier =

@@ -69,7 +69,7 @@
     <string name="report_course_reason_incorrect_course_data">• 코스의 경로가 실제와 달라요</string>
     <string name="report_course_reason_cannot_access_course">• 위험하거나 출입이 제한된 곳을 지나가요</string>
     <string name="report_course_reason_incorrect_course_name">• 코스의 이름이 부적절해요</string>
-    <string name="report_course_confirm_reason_description">이 중 해당되는 것이 있어요</string>
+    <string name="report_course_confirm_description">이 중 해당되는 것이 있어요</string>
     <string name="report_course_dialog_negative_button">취소</string>
     <string name="report_course_dialog_positive_button">신고</string>
     <string name="report_course_success_message">신고가 접수됐습니다.</string>
@@ -102,7 +102,7 @@
     <string name="delete_review_success_message">리뷰가 삭제됐습니다.</string>
 
     <!--  코스 상세 화면 - 리뷰 신고  -->
-    <string name="report_review_feature_name">코스 신고</string>
+    <string name="report_review_feature_name">리뷰 신고</string>
     <string name="report_review_dialog_title">%s님의 리뷰</string>
     <string name="report_review_dialog_description">이 리뷰에 문제가 있다면 알려주세요.</string>
     <string name="report_review_reason_promotional_content">• 홍보성·광고성 내용이 있어요</string>

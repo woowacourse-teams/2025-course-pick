@@ -35,16 +35,16 @@ import io.coursepick.coursepick.R
 fun ReportReviewDialog(
     review: CourseReviewUiModel,
     onDismiss: () -> Unit,
-    onConfirm: () -> Unit,
+    onConfirm: (CourseReviewUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Dialog(onDismissRequest = onDismiss) {
         ReportReviewDialogContent(
-        review = review,
-        onDismiss = onDismiss,
-        onConfirm = onConfirm,
-        modifier = modifier,
-    )
+            review = review,
+            onDismiss = onDismiss,
+            onConfirm = onConfirm,
+            modifier = modifier,
+        )
     }
 }
 
@@ -52,7 +52,7 @@ fun ReportReviewDialog(
 private fun ReportReviewDialogContent(
     review: CourseReviewUiModel,
     onDismiss: () -> Unit,
-    onConfirm: () -> Unit,
+    onConfirm: (CourseReviewUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val reportReasons: List<String> =
@@ -92,12 +92,11 @@ private fun ReportReviewDialogContent(
 
         ReportReviewDialogButtons(
             isConfirmEnabled = isConfirmEnabled,
-            onConfirm = onConfirm,
+            onConfirm = { onConfirm(review) },
             onDismiss = onDismiss,
             modifier = Modifier.padding(10.dp),
         )
     }
-
 }
 
 @Composable
@@ -142,7 +141,7 @@ private fun ReportConfirmCheckbox(
         )
 
         Text(
-            text = stringResource(R.string.report_course_confirm_reason_description),
+            text = stringResource(R.string.report_review_confirm_description),
             color = colorResource(R.color.item_primary),
             fontSize = 14.sp,
             modifier =
@@ -175,7 +174,7 @@ private fun ReportReviewDialogButtons(
                     .padding(horizontal = 20.dp, vertical = 10.dp),
         ) {
             Text(
-                text = stringResource(R.string.report_course_dialog_negative_button),
+                text = stringResource(R.string.report_review_dialog_negative_button),
                 fontSize = 16.sp,
                 color = colorResource(R.color.item_tertiary),
             )
@@ -192,7 +191,7 @@ private fun ReportReviewDialogButtons(
                     .padding(horizontal = 20.dp, vertical = 10.dp),
         ) {
             Text(
-                text = stringResource(R.string.report_course_dialog_positive_button),
+                text = stringResource(R.string.report_review_dialog_positive_button),
                 color = colorResource(if (isConfirmEnabled) R.color.item_primary else R.color.item_tertiary),
                 fontSize = 16.sp,
             )

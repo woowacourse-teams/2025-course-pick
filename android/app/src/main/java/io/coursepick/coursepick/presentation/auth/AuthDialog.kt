@@ -66,6 +66,7 @@ private fun AuthFeature.stringResourceId(): Int =
     when (this) {
         is AuthFeature.ReportCourse -> R.string.report_course_feature_name
         is AuthFeature.DeleteReview -> R.string.delete_review_feature_name
+        is AuthFeature.ReportReview -> R.string.report_review_feature_name
         is AuthFeature.SubmitReview -> R.string.write_course_review_feature_name
         AuthFeature.CreateCustomCourse -> R.string.create_custom_course_feature_name
         AuthFeature.CustomCourse -> R.string.custom_course_feature_name

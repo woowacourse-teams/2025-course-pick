@@ -96,6 +96,7 @@ fun CourseDetailScreen(
         onToggleFavorite = courseDetailViewModel::toggleFavorite,
         onReportCourse = courseDetailViewModel::onReportCourse,
         onDeleteReview = courseDetailViewModel::onDeleteReview,
+        onReportReview = courseDetailViewModel::onReportReview,
         onWriteReview = courseDetailViewModel::onWriteReview,
         onRetry = { courseDetailViewModel.load(courseId) },
     )
@@ -108,6 +109,8 @@ fun CourseDetailScreen(
         onConfirmReportCourseDialog = courseDetailViewModel::submitCourseReport,
         onDismissDeleteReviewDialog = courseDetailViewModel::dismissDeleteReviewDialog,
         onConfirmDeleteReviewDialog = courseDetailViewModel::confirmDeleteReview,
+        onDismissReportReviewDialog = courseDetailViewModel::dismissReportReviewDialog,
+        onConfirmReportReviewDialog = courseDetailViewModel::confirmReportReview,
     )
 }
 
@@ -154,6 +157,14 @@ private fun CourseDetailViewModel.UiEvent.handle(
             Toast.makeText(context, context.getString(R.string.delete_review_success_message), Toast.LENGTH_SHORT).show()
         }
 
+        CourseDetailViewModel.UiEvent.ReportReviewSuccess -> {
+            Toast.makeText(context, context.getString(R.string.report_review_success_message), Toast.LENGTH_SHORT).show()
+        }
+
+        CourseDetailViewModel.UiEvent.ReviewAlreadyReported -> {
+            Toast.makeText(context, context.getString(R.string.report_review_failure_already_reported_message), Toast.LENGTH_SHORT).show()
+        }
+
         is CourseDetailViewModel.UiEvent.NavigateToWriteCourseReview -> {
             navigateToWriteCourseReview(courseDetail)
         }
@@ -171,6 +182,7 @@ private fun CourseDetailScreen(
     onToggleFavorite: () -> Unit,
     onReportCourse: () -> Unit,
     onDeleteReview: (CourseReviewUiModel) -> Unit,
+    onReportReview: (CourseReviewUiModel) -> Unit,
     onWriteReview: () -> Unit,
     onRetry: () -> Unit,
 ) {
@@ -252,7 +264,7 @@ private fun CourseDetailScreen(
                     CourseReviews(
                         reviews = uiState.detail.reviews,
                         onDelete = onDeleteReview,
-                        onReport = { },
+                        onReport = onReportReview,
                         modifier =
                             Modifier
                                 .weight(1F)
@@ -564,6 +576,8 @@ private fun CourseDetailScreenDialogs(
     onConfirmReportCourseDialog: () -> Unit,
     onDismissDeleteReviewDialog: () -> Unit,
     onConfirmDeleteReviewDialog: (CourseReviewUiModel) -> Unit,
+    onDismissReportReviewDialog: () -> Unit,
+    onConfirmReportReviewDialog: (CourseReviewUiModel) -> Unit,
 ) {
     if (dialogState.authDialog != null) {
         AuthDialog(
@@ -588,6 +602,14 @@ private fun CourseDetailScreenDialogs(
             onConfirm = onConfirmDeleteReviewDialog,
         )
     }
+
+    if (dialogState.reportReviewDialog != null) {
+        ReportReviewDialog(
+            review = dialogState.reportReviewDialog,
+            onDismiss = onDismissReportReviewDialog,
+            onConfirm = onConfirmReportReviewDialog,
+        )
+    }
 }
 
 @PreviewLightDark
@@ -599,6 +621,7 @@ private fun CourseDetailScreenPreview_Loading() {
         onToggleFavorite = { },
         onReportCourse = { },
         onDeleteReview = { },
+        onReportReview = { },
         onWriteReview = { },
         onRetry = { },
     )
@@ -626,6 +649,7 @@ private fun CourseDetailScreenPreview_Success_EmptyReview() {
         onToggleFavorite = { },
         onReportCourse = { },
         onDeleteReview = { },
+        onReportReview = { },
         onWriteReview = { },
         onRetry = { },
     )
@@ -663,6 +687,7 @@ private fun CourseDetailScreenPreview_Success_NonEmptyReviews() {
         onToggleFavorite = { },
         onReportCourse = { },
         onDeleteReview = { },
+        onReportReview = { },
         onWriteReview = { },
         onRetry = { },
     )
@@ -677,6 +702,7 @@ private fun CourseDetailScreenPreview_Failure_NoNetwork() {
         onToggleFavorite = { },
         onReportCourse = { },
         onDeleteReview = { },
+        onReportReview = { },
         onWriteReview = { },
         onRetry = { },
     )
@@ -691,6 +717,7 @@ private fun CourseDetailScreenPreview_Failure_Unknown() {
         onToggleFavorite = { },
         onReportCourse = { },
         onDeleteReview = { },
+        onReportReview = { },
         onWriteReview = { },
         onRetry = { },
     )
