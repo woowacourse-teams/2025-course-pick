@@ -65,7 +65,7 @@ class WriteCourseReviewViewModel
 
             viewModelScope.launch {
                 if (authRepository.accessToken() == null) {
-                    _dialogState.value = dialogState.value.copy(authDialog = AuthFeature.SubmitReview(courseId))
+                    _dialogState.value = dialogState.value.copy(authDialog = AuthFeature.WriteReview(courseId))
                     return@launch
                 }
 
@@ -99,7 +99,7 @@ class WriteCourseReviewViewModel
                             }
 
                             401 -> {
-                                _dialogState.value = dialogState.value.copy(authDialog = AuthFeature.SubmitReview(courseId))
+                                _dialogState.value = dialogState.value.copy(authDialog = AuthFeature.WriteReview(courseId))
                                 return@launch
                             }
 
@@ -122,7 +122,7 @@ class WriteCourseReviewViewModel
 
         fun onAuthSuccess(authFeature: AuthFeature) {
             dismissAuthDialog()
-            if (authFeature is AuthFeature.SubmitReview) {
+            if (authFeature is AuthFeature.WriteReview) {
                 submitReview(authFeature.courseId)
             }
         }

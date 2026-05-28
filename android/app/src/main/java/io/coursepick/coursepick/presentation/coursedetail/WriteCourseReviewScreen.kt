@@ -84,7 +84,7 @@ fun WriteCourseReviewScreen(
     WriteCourseReviewScreenDialogs(
         dialogState = writeCourseReviewViewModel.dialogState.collectAsStateWithLifecycle().value,
         onDismissAuthDialog = writeCourseReviewViewModel::dismissAuthDialog,
-        onConfirmAuthDialog = { authViewModel.authenticate(KakaoAuthenticator(context), AuthFeature.SubmitReview(courseDetail.id)) },
+        onConfirmAuthDialog = { authViewModel.authenticate(KakaoAuthenticator(context), AuthFeature.WriteReview(courseDetail.id)) },
         onDismissExitDialog = writeCourseReviewViewModel::dismissExitDialog,
         onConfirmExitDialog = writeCourseReviewViewModel::confirmExit,
     )
