@@ -15,7 +15,7 @@ sealed interface AuthFeature {
         val review: CourseReviewUiModel,
     ) : AuthFeature
 
-    data class SubmitReview(
+    data class WriteReview(
         val courseId: String,
     ) : AuthFeature
 

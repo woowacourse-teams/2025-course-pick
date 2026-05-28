@@ -109,6 +109,7 @@ class CourseDetailViewModel
                 is AuthFeature.ReportCourse -> onReportCourse()
                 is AuthFeature.DeleteReview -> onDeleteReview(feature.review)
                 is AuthFeature.ReportReview -> onReportReview(feature.review)
+                is AuthFeature.WriteReview -> onWriteReview()
                 else -> Unit
             }
         }
@@ -243,6 +244,11 @@ class CourseDetailViewModel
         fun onWriteReview() {
             viewModelScope.launch {
                 (uiState.value as? UiState.Success)?.let { uiState: UiState.Success ->
+                    if (authRepository.accessToken() == null) {
+                        _dialogState.value = dialogState.value.copy(authDialog = AuthFeature.WriteReview(uiState.detail.id))
+                        return@launch
+                    }
+
                     val alreadyReviewed: Boolean =
                         uiState.detail.reviews.any { review: CourseReviewUiModel ->
                             review.authorName == "current_user_id" // TODO: API 업데이트될 시 사용자 ID 기반으로 확인하도록 변경
