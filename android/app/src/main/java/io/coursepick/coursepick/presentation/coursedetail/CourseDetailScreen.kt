@@ -186,9 +186,9 @@ private fun CourseDetailScreen(
     onWriteReview: () -> Unit,
     onRetry: () -> Unit,
 ) {
-    var isFabVisible: Boolean by remember(uiState) { mutableStateOf(uiState is CourseDetailViewModel.UiState.Success) }
+    var isFabVisible: Boolean by remember { mutableStateOf(false) }
 
-    val nestedScrollConnection: NestedScrollConnection =
+    val nestedScrollConnection =
         remember {
             object : NestedScrollConnection {
                 override fun onPreScroll(
@@ -205,6 +205,10 @@ private fun CourseDetailScreen(
                 }
             }
         }
+
+    LaunchedEffect(uiState) {
+        isFabVisible = uiState is CourseDetailViewModel.UiState.Success
+    }
 
     Scaffold(
         topBar = {
