@@ -118,11 +118,24 @@ public enum ErrorType {
         return exceptionConstructor.apply(message(messageArgs));
     }
 
-    public Class<? extends RuntimeException> getExceptionClass() {
-        return create("N", "N", "N").getClass();
-    }
-
     public String message(Object... messageArgs) {
         return this.message.formatted(messageArgs);
+    }
+
+    /**
+     * API 문서(Swagger) 생성 시, 발생 가능한 에러의 HTTP 상태 코드(400, 404 등)를
+     * 매핑하기 위해 예외 클래스 타입을 가져오는 용도로 사용됩니다.
+     * ({@link coursepick.coursepick.presentation.api.OpenApiConfig} 참조)
+     */
+    public Class<? extends RuntimeException> getExceptionClass() {
+        return exceptionConstructor.apply("").getClass();
+    }
+
+    /**
+     * API 문서(Swagger)에 표시할 에러 메시지를 생성합니다.
+     * %s 파라미터를 "{입력값}"으로 치환하여 사람이 읽기 쉬운 형태로 변환합니다.
+     */
+    public String getMessageForApiDoc() {
+        return this.message.replace("%s", "{입력값}");
     }
 }
