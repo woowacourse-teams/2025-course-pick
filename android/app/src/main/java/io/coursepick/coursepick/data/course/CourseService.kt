@@ -55,6 +55,12 @@ interface CourseService {
         @Path("reviewId") reviewId: String,
     )
 
+    @POST("courses/{courseId}/reviews/{reviewId}/report")
+    suspend fun reportReview(
+        @Path("courseId") courseId: String,
+        @Path("reviewId") reviewId: String,
+    )
+
     @POST("courses/{id}/reviews")
     suspend fun submitReview(
         @Path("id") courseId: String,

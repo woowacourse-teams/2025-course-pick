@@ -69,6 +69,12 @@ class FakeCourseRepository : CourseRepository {
     ) {
     }
 
+    override suspend fun reportReview(
+        courseId: String,
+        reviewId: String,
+    ) {
+    }
+
     override suspend fun submitReview(
         courseId: String,
         rating: Float,
