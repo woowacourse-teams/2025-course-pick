@@ -73,6 +73,13 @@ class DefaultCourseRepository
             service.deleteReview(courseId, reviewId)
         }
 
+        override suspend fun reportReview(
+            courseId: String,
+            reviewId: String,
+        ) {
+            service.reportReview(courseId, reviewId)
+        }
+
         override suspend fun submitReview(
             courseId: String,
             rating: Float,

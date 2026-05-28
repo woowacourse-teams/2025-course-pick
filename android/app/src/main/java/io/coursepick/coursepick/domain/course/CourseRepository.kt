@@ -31,6 +31,11 @@ interface CourseRepository {
         reviewId: String,
     )
 
+    suspend fun reportReview(
+        courseId: String,
+        reviewId: String,
+    )
+
     suspend fun submitReview(
         courseId: String,
         rating: Float,
