@@ -108,6 +108,7 @@ class CourseDetailViewModel
             when (feature) {
                 is AuthFeature.ReportCourse -> onReportCourse()
                 is AuthFeature.DeleteReview -> onDeleteReview(feature.review)
+                is AuthFeature.ReportReview -> onReportReview(feature.review)
                 else -> Unit
             }
         }
@@ -176,11 +177,13 @@ class CourseDetailViewModel
         }
 
         fun confirmDeleteReview(review: CourseReviewUiModel) {
+            dismissDeleteReviewDialog()
+
             viewModelScope.launch {
                 (uiState.value as? UiState.Success)?.let { uiState: UiState.Success ->
                     try {
                         courseRepository.deleteReview(uiState.detail.id, review.id)
-                        dismissDeleteReviewDialog()
+                        _uiEvent.emit(UiEvent.DeleteReviewSuccess)
                         courseDetail.value = courseDetail(uiState.detail.id)
                     } catch (exception: CancellationException) {
                         throw exception
@@ -194,9 +197,47 @@ class CourseDetailViewModel
                     } catch (_: Throwable) {
                         _uiEvent.emit(UiEvent.UnknownFailure)
                     }
-                    dismissDeleteReviewDialog()
                 }
             }
+        }
+
+        fun onReportReview(review: CourseReviewUiModel) {
+            viewModelScope.launch {
+                if (authRepository.accessToken() == null) {
+                    _dialogState.value = dialogState.value.copy(authDialog = AuthFeature.ReportReview(review))
+                } else {
+                    _dialogState.value = dialogState.value.copy(reportReviewDialog = review)
+                }
+            }
+        }
+
+        fun confirmReportReview(review: CourseReviewUiModel) {
+            dismissReportReviewDialog()
+
+            viewModelScope.launch {
+                (uiState.value as? UiState.Success)?.let { uiState: UiState.Success ->
+                    try {
+                        courseRepository.reportReview(uiState.detail.id, review.id)
+                        _uiEvent.emit(UiEvent.ReportReviewSuccess)
+                    } catch (exception: CancellationException) {
+                        throw exception
+                    } catch (exception: HttpException) {
+                        _uiEvent.emit(
+                            when (exception.code()) {
+                                400 -> UiEvent.ReviewAlreadyReported
+                                401 -> UiEvent.UnauthorizedUser
+                                else -> UiEvent.UnknownFailure
+                            },
+                        )
+                    } catch (_: Throwable) {
+                        _uiEvent.emit(UiEvent.UnknownFailure)
+                    }
+                }
+            }
+        }
+
+        fun dismissReportReviewDialog() {
+            _dialogState.value = dialogState.value.copy(reportReviewDialog = null)
         }
 
         fun onWriteReview() {
@@ -230,6 +271,10 @@ class CourseDetailViewModel
 
             data object DeleteReviewSuccess : UiEvent
 
+            data object ReportReviewSuccess : UiEvent
+
+            data object ReviewAlreadyReported : UiEvent
+
             data class NavigateToWriteCourseReview(
                 val courseDetail: CourseDetailUiModel,
             ) : UiEvent
@@ -256,5 +301,6 @@ class CourseDetailViewModel
             val authDialog: AuthFeature? = null,
             val reportCourseDialog: String? = null,
             val deleteReviewDialog: CourseReviewUiModel? = null,
+            val reportReviewDialog: CourseReviewUiModel? = null,
         )
     }
