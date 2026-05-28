@@ -16,16 +16,10 @@ import java.util.Arrays;
 @RequestMapping("/v1")
 public class NoticeV1WebController implements NoticeWebApi {
 
-    private final String noticeBaseUrl;
-
-    public NoticeV1WebController(@Value("${notice.base-url}") String noticeBaseUrl) {
-        this.noticeBaseUrl = noticeBaseUrl;
-    }
-
     @GetMapping("/notices")
     public NoticesWebResponse getNotices() {
         return new NoticesWebResponse(Arrays.stream(Notice.values())
-                .map(notice -> NoticeWebResponse.create(notice, noticeBaseUrl))
+                .map(NoticeWebResponse::create)
                 .toList());
     }
 }

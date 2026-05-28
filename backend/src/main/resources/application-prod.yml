@@ -12,7 +12,6 @@ osrm.url: ${OSRM_URL}
 admin:
   token: ${ADMIN_TOKEN}
   kakao-map-api-key: ${ADMIN_KAKAO_MAP_API_KEY}
-notice.base-url: http://prod.coursepick.cloud/images
 jwt.secret-key: ${JWT_SECRET_KEY}
 # 운영환경에서는 API 문서를 사용하지 않는다.
 springdoc:
