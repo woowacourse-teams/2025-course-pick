@@ -147,7 +147,7 @@ private fun CourseDetailViewModel.UiEvent.handle(
         }
 
         CourseDetailViewModel.UiEvent.CourseAlreadyReported -> {
-            Toast.makeText(context, context.getString(R.string.report_course_failure_already_reported), Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.report_course_failure_already_reported_message), Toast.LENGTH_SHORT).show()
         }
 
         CourseDetailViewModel.UiEvent.DeleteReviewSuccess -> {
