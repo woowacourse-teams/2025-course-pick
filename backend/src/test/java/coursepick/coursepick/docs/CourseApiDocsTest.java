@@ -945,7 +945,6 @@ class CourseApiDocsTest extends AbstractApiDocsSupport {
                     resource(ResourceSnippetParameters.builder()
                             .tag(TAG)
                             .summary(summary)
-                            .description("로그인 토큰이 없거나 유효하지 않은 경우의 에러 응답입니다.")
                             .responseFields(errorResponseFields())
                             .build())
             );
@@ -958,7 +957,6 @@ class CourseApiDocsTest extends AbstractApiDocsSupport {
                     resource(ResourceSnippetParameters.builder()
                             .tag(TAG)
                             .summary(summary)
-                            .description("로그인 토큰이 없거나 유효하지 않은 경우의 에러 응답입니다.")
                             .pathParameters(
                                     parameterWithName("id")
                                             .description(코스_ID)
@@ -975,7 +973,6 @@ class CourseApiDocsTest extends AbstractApiDocsSupport {
                     resource(ResourceSnippetParameters.builder()
                             .tag(TAG)
                             .summary(summary)
-                            .description("존재하지 않는 코스 ID를 요청할 경우의 에러 응답입니다.")
                             .pathParameters(
                                     parameterWithName("id")
                                             .description(코스_ID)
@@ -992,7 +989,6 @@ class CourseApiDocsTest extends AbstractApiDocsSupport {
                     resource(ResourceSnippetParameters.builder()
                             .tag(TAG)
                             .summary(summary)
-                            .description("중복된 데이터로 인해 리소스 생성에 실패한 경우의 에러 응답입니다.")
                             .responseFields(errorResponseFields())
                             .build())
             );
@@ -1005,7 +1001,6 @@ class CourseApiDocsTest extends AbstractApiDocsSupport {
                     resource(ResourceSnippetParameters.builder()
                             .tag(TAG)
                             .summary(summary)
-                            .description("존재하지 않는 리소스를 요청할 경우의 에러 응답입니다.")
                             .pathParameters(
                                     parameterWithName("courseId").description(코스_ID).attributes(key("example").value("course-id")),
                                     parameterWithName("reviewId").description(리뷰_ID).attributes(key("example").value("review-id")))
@@ -1021,7 +1016,6 @@ class CourseApiDocsTest extends AbstractApiDocsSupport {
                     resource(ResourceSnippetParameters.builder()
                             .tag(TAG)
                             .summary(summary)
-                            .description("로그인 토큰이 없거나 유효하지 않은 경우의 에러 응답입니다.")
                             .pathParameters(
                                     parameterWithName("courseId").description(코스_ID).attributes(key("example").value("course-id")),
                                     parameterWithName("reviewId").description(리뷰_ID).attributes(key("example").value("review-id")))
