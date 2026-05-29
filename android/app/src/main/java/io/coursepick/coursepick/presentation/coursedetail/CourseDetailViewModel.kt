@@ -9,6 +9,7 @@ import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.course.CourseDetail
 import io.coursepick.coursepick.domain.course.CourseRepository
 import io.coursepick.coursepick.domain.favorites.FavoriteCourseRepository
+import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.auth.AuthFeature
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -87,7 +88,18 @@ class CourseDetailViewModel
         private suspend fun courseDetail(courseId: String): CourseDetail? =
             runCatching {
                 courseRepository.detail(courseId)
+            }.onSuccess { detail: CourseDetail ->
+                Logger.log(
+                    Logger.Event.Success("fetch_course_detail"),
+                    "courseId" to detail.id,
+                    "courseName" to detail.name.value,
+                )
             }.onFailure { exception: Throwable ->
+                Logger.log(
+                    Logger.Event.Failure("fetch_course_detail"),
+                    "exception" to exception.message.orEmpty(),
+                )
+
                 if (exception is CancellationException) throw exception
             }.getOrNull()
 
@@ -139,32 +151,54 @@ class CourseDetailViewModel
 
         fun submitCourseReport() {
             viewModelScope.launch {
-                try {
-                    val currentState: UiState = uiState.value
-                    if (currentState is UiState.Success) {
-                        courseRepository.reportCourse(currentState.data.id)
+                (uiState.value as? UiState.Success)?.let { uiState: UiState.Success ->
+                    try {
+                        courseRepository.reportCourse(uiState.data.id)
                         dismissReportCourseDialog()
                         _uiEvent.emit(UiEvent.ReportCourseSuccess)
-                    }
-                } catch (exception: CancellationException) {
-                    throw exception
-                } catch (_: NoNetworkException) {
-                    _uiEvent.emit(UiEvent.NoNetwork)
-                } catch (exception: HttpException) {
-                    _uiEvent.emit(
-                        when (exception.code()) {
-                            400 -> {
-                                dismissReportCourseDialog()
-                                UiEvent.CourseAlreadyReported
+
+                        Logger.log(
+                            Logger.Event.Success("submit_course_report"),
+                            "courseId" to uiState.data.id,
+                            "courseName" to uiState.data.name,
+                        )
+                    } catch (exception: Throwable) {
+                        Logger.log(
+                            Logger.Event.Failure("submit_course_report"),
+                            "exception" to exception.message.orEmpty(),
+                            "courseId" to uiState.data.id,
+                            "courseName" to uiState.data.name,
+                        )
+
+                        when (exception) {
+                            is CancellationException -> {
+                                throw exception
+                            }
+
+                            is NoNetworkException -> {
+                                _uiEvent.emit(UiEvent.NoNetwork)
+                            }
+
+                            is HttpException -> {
+                                _uiEvent.emit(
+                                    when (exception.code()) {
+                                        400 -> {
+                                            dismissReportCourseDialog()
+                                            UiEvent.CourseAlreadyReported
+                                        }
+
+                                        else -> {
+                                            UiEvent.UnknownFailure
+                                        }
+                                    },
+                                )
                             }
 
                             else -> {
-                                UiEvent.UnknownFailure
+                                _uiEvent.emit(UiEvent.UnknownFailure)
                             }
-                        },
-                    )
-                } catch (_: Throwable) {
-                    _uiEvent.emit(UiEvent.UnknownFailure)
+                        }
+                    }
                 }
             }
         }
@@ -192,19 +226,44 @@ class CourseDetailViewModel
                         courseRepository.deleteReview(uiState.data.id, review.id)
                         _uiEvent.emit(UiEvent.DeleteReviewSuccess)
                         courseDetail.value = courseDetail(uiState.data.id)
-                    } catch (exception: CancellationException) {
-                        throw exception
-                    } catch (_: NoNetworkException) {
-                        _uiEvent.emit(UiEvent.NoNetwork)
-                    } catch (exception: HttpException) {
-                        _uiEvent.emit(
-                            when (exception.code()) {
-                                401 -> UiEvent.UnauthorizedUser
-                                else -> UiEvent.UnknownFailure
-                            },
+
+                        Logger.log(
+                            Logger.Event.Success("delete_review"),
+                            "courseId" to uiState.data.id,
+                            "reviewId" to review.id,
+                            "reviewContent" to review.content,
                         )
-                    } catch (_: Throwable) {
-                        _uiEvent.emit(UiEvent.UnknownFailure)
+                    } catch (exception: Throwable) {
+                        Logger.log(
+                            Logger.Event.Success("delete_review"),
+                            "exception" to exception.message.orEmpty(),
+                            "courseId" to uiState.data.id,
+                            "reviewId" to review.id,
+                            "reviewContent" to review.content,
+                        )
+
+                        when (exception) {
+                            is CancellationException -> {
+                                throw exception
+                            }
+
+                            is NoNetworkException -> {
+                                _uiEvent.emit(UiEvent.NoNetwork)
+                            }
+
+                            is HttpException -> {
+                                _uiEvent.emit(
+                                    when (exception.code()) {
+                                        401 -> UiEvent.UnauthorizedUser
+                                        else -> UiEvent.UnknownFailure
+                                    },
+                                )
+                            }
+
+                            else -> {
+                                _uiEvent.emit(UiEvent.UnknownFailure)
+                            }
+                        }
                     }
                 }
             }
@@ -228,20 +287,45 @@ class CourseDetailViewModel
                     try {
                         courseRepository.reportReview(uiState.data.id, review.id)
                         _uiEvent.emit(UiEvent.ReportReviewSuccess)
-                    } catch (exception: CancellationException) {
-                        throw exception
-                    } catch (_: NoNetworkException) {
-                        _uiEvent.emit(UiEvent.NoNetwork)
-                    } catch (exception: HttpException) {
-                        _uiEvent.emit(
-                            when (exception.code()) {
-                                400 -> UiEvent.ReviewAlreadyReported
-                                401 -> UiEvent.UnauthorizedUser
-                                else -> UiEvent.UnknownFailure
-                            },
+
+                        Logger.log(
+                            Logger.Event.Success("report_review"),
+                            "courseId" to uiState.data.id,
+                            "reviewId" to review.id,
+                            "reviewContent" to review.content,
                         )
-                    } catch (_: Throwable) {
-                        _uiEvent.emit(UiEvent.UnknownFailure)
+                    } catch (exception: Throwable) {
+                        Logger.log(
+                            Logger.Event.Success("report_review"),
+                            "exception" to exception.message.orEmpty(),
+                            "courseId" to uiState.data.id,
+                            "reviewId" to review.id,
+                            "reviewContent" to review.content,
+                        )
+
+                        when (exception) {
+                            is CancellationException -> {
+                                throw exception
+                            }
+
+                            is NoNetworkException -> {
+                                _uiEvent.emit(UiEvent.NoNetwork)
+                            }
+
+                            is HttpException -> {
+                                _uiEvent.emit(
+                                    when (exception.code()) {
+                                        400 -> UiEvent.ReviewAlreadyReported
+                                        401 -> UiEvent.UnauthorizedUser
+                                        else -> UiEvent.UnknownFailure
+                                    },
+                                )
+                            }
+
+                            else -> {
+                                _uiEvent.emit(UiEvent.UnknownFailure)
+                            }
+                        }
                     }
                 }
             }
