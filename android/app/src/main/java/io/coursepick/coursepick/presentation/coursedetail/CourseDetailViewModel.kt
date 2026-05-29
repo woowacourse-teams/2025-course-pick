@@ -188,6 +188,8 @@ class CourseDetailViewModel
                         courseDetail.value = courseDetail(uiState.detail.id)
                     } catch (exception: CancellationException) {
                         throw exception
+                    } catch (_: NoNetworkException) {
+                        _uiEvent.emit(UiEvent.NoNetwork)
                     } catch (exception: HttpException) {
                         _uiEvent.emit(
                             when (exception.code()) {
@@ -222,6 +224,8 @@ class CourseDetailViewModel
                         _uiEvent.emit(UiEvent.ReportReviewSuccess)
                     } catch (exception: CancellationException) {
                         throw exception
+                    } catch (_: NoNetworkException) {
+                        _uiEvent.emit(UiEvent.NoNetwork)
                     } catch (exception: HttpException) {
                         _uiEvent.emit(
                             when (exception.code()) {
