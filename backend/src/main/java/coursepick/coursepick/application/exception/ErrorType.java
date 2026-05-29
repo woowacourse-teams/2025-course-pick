@@ -115,11 +115,12 @@ public enum ErrorType {
     }
 
     public RuntimeException create(Object... messageArgs) {
-        return exceptionConstructor.apply(message(messageArgs));
+        return exceptionConstructor.apply(buildMessage(messageArgs));
     }
 
-    public String message(Object... messageArgs) {
-        return this.message.formatted(messageArgs);
+    private String buildMessage(Object... messageArgs) {
+        String formattedMessage = this.message.formatted(messageArgs);
+        return "%s [ErrorCode = %s]".formatted(formattedMessage, this.name());
     }
 
     public String getRawMessage() {

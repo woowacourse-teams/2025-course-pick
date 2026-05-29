@@ -8,13 +8,15 @@ import java.util.stream.Collectors;
 
 public record ErrorResponse(
         String message,
+        String errorCode,
         String timestamp) {
 
-    private static final Pattern DUP_KEY_PATTERN = Pattern.compile("dup key: \\{\\s*(.*?)\\s*}");
+    private static final Pattern ERROR_CODE_PATTERN = Pattern.compile("\\[ErrorCode = ([^\\]]+)\\]");
 
     public static ErrorResponse from(Exception exception) {
         return new ErrorResponse(
                 exception.getMessage(),
+                ERROR_CODE_PATTERN.matcher(exception.getMessage()).group(1),
                 LocalDateTime.now().toString());
     }
 
@@ -22,6 +24,6 @@ public record ErrorResponse(
         String errorMessage = bindingResult.getFieldErrors().stream()
                 .map(error -> error.getDefaultMessage())
                 .collect(Collectors.joining(", "));
-        return new ErrorResponse(errorMessage, LocalDateTime.now().toString());
+        return new ErrorResponse(errorMessage, "INVALID_INPUT", LocalDateTime.now().toString());
     }
 }
