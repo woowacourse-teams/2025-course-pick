@@ -16,8 +16,14 @@ public record ErrorResponse(
 
     public static ErrorResponse from(Exception exception) {
         String message = exception.getMessage();
+        String errorCode = "UNKNOWN_ERROR";
+
         Matcher matcher = ERROR_CODE_PATTERN.matcher(message);
-        String errorCode = matcher.find() ? matcher.group(1) : "UNKNOWN_ERROR";
+
+        if (matcher.find()) {
+            errorCode = matcher.group(1);
+            message = matcher.replaceFirst("");
+        }
 
         return new ErrorResponse(
                 message,

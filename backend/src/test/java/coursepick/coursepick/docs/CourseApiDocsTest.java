@@ -934,6 +934,7 @@ class CourseApiDocsTest extends AbstractApiDocsSupport {
         private FieldDescriptor[] errorResponseFields() {
             return new FieldDescriptor[]{
                     fieldWithPath("message").description("에러 상세 메시지"),
+                    fieldWithPath("errorCode").description("에러 코드"),
                     fieldWithPath("timestamp").description("에러 발생 시각")
             };
         }
