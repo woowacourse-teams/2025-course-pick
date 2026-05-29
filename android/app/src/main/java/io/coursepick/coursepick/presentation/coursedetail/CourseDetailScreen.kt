@@ -139,6 +139,7 @@ private fun CourseDetailViewModel.UiEvent.handle(
         }
 
         CourseDetailViewModel.UiEvent.UnauthorizedUser -> {
+            Toast.makeText(context, context.getString(R.string.failure_unauthorized_user_toast_message), Toast.LENGTH_SHORT).show()
         }
 
         CourseDetailViewModel.UiEvent.UnknownFailure -> {
