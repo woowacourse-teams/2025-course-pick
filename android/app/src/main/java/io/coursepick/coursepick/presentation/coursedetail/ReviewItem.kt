@@ -111,7 +111,7 @@ private fun MyReviewChip(modifier: Modifier = Modifier) {
 
 @Composable
 private fun ReviewActionButton(
-    isMine: Boolean, // TODO: API 업데이트될 시 isMine 값에 따라 다른 메뉴를 표시하도록 변경
+    isMine: Boolean,
     onDelete: () -> Unit,
     onReport: () -> Unit,
     modifier: Modifier = Modifier,
@@ -136,33 +136,35 @@ private fun ReviewActionButton(
             shape = RoundedCornerShape(10.dp),
             containerColor = colorResource(R.color.background_secondary),
         ) {
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        text = stringResource(R.string.review_item_action_delete),
-                        color = colorResource(R.color.item_primary),
-                        fontSize = 14.sp,
-                    )
-                },
-                onClick = {
-                    expanded = false
-                    onDelete()
-                },
-            )
-
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        text = stringResource(R.string.review_item_action_report),
-                        color = colorResource(R.color.item_primary),
-                        fontSize = 14.sp,
-                    )
-                },
-                onClick = {
-                    expanded = false
-                    onReport()
-                },
-            )
+            if (isMine) {
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stringResource(R.string.review_item_action_delete),
+                            color = colorResource(R.color.item_primary),
+                            fontSize = 14.sp,
+                        )
+                    },
+                    onClick = {
+                        expanded = false
+                        onDelete()
+                    },
+                )
+            } else {
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stringResource(R.string.review_item_action_report),
+                            color = colorResource(R.color.item_primary),
+                            fontSize = 14.sp,
+                        )
+                    },
+                    onClick = {
+                        expanded = false
+                        onReport()
+                    },
+                )
+            }
         }
     }
 }
