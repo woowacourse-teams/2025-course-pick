@@ -26,7 +26,7 @@ class FakeAuthRepository : AuthRepository {
         return cachedAccessToken
     }
 
-    override suspend fun clearAccessToken() {
+    override suspend fun clearCredentials() {
         cachedAccessToken = null
     }
 }

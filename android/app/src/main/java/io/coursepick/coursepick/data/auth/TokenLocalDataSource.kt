@@ -38,8 +38,9 @@ class TokenLocalDataSource
             }
         }
 
-        suspend fun clearAccessToken() {
+        suspend fun clearCredentials() {
             dataStore.edit { preferences: MutablePreferences ->
+                preferences.remove(userIdKey)
                 preferences.remove(accessTokenKey)
             }
         }
