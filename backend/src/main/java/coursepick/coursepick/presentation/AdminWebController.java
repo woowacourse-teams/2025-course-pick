@@ -6,7 +6,6 @@ import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.course.*;
 import coursepick.coursepick.presentation.dto.*;
-import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +25,6 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@Hidden
 public class AdminWebController {
 
     private static final String TOKEN_COOKIE_KEY = "admin-token";

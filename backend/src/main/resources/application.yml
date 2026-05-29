@@ -16,10 +16,6 @@ server:
     mime-types: application/json
     min-response-size: 2KB
 
-springdoc:
-  default-consumes-media-type: application/json
-  default-produces-media-type: application/json
-
 management:
   endpoints.web.exposure.include: health,info,metrics,prometheus
   prometheus.metrics.export.enabled: true

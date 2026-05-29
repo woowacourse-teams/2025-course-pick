@@ -6,7 +6,6 @@ import coursepick.coursepick.application.dto.CoursesResponse;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.CourseFindCondition;
 import coursepick.coursepick.domain.course.DraftSegment;
-import coursepick.coursepick.presentation.api.CourseWebApi;
 import coursepick.coursepick.presentation.dto.*;
 import coursepick.coursepick.security.Login;
 import coursepick.coursepick.security.UserId;
@@ -19,11 +18,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/v1")
 @RequiredArgsConstructor
-public class CourseV1WebController implements CourseWebApi {
+public class CourseV1WebController {
 
     private final CourseApplicationService courseApplicationService;
 
-    @Override
     @GetMapping("/courses")
     public CoursesWebResponse findNearbyCourses(
             @RequestParam("mapLat") double mapLatitude,
@@ -40,7 +38,6 @@ public class CourseV1WebController implements CourseWebApi {
         return CoursesWebResponse.from(response);
     }
 
-    @Override
     @GetMapping("/courses/{id}/closest-coordinate")
     public CoordinateWebResponse findClosestCoordinate(
             @PathVariable("id") String id,
@@ -51,7 +48,6 @@ public class CourseV1WebController implements CourseWebApi {
         return CoordinateWebResponse.from(coordinate);
     }
 
-    @Override
     @GetMapping("/courses/{id}/route")
     public List<CoordinateWebResponse> routeToCourse(
             @PathVariable("id") String id,
@@ -62,7 +58,6 @@ public class CourseV1WebController implements CourseWebApi {
         return CoordinateWebResponse.from(responses);
     }
 
-    @Override
     @GetMapping("/courses/favorites")
     public List<CourseWebResponse> findFavoriteCourses(@RequestParam("courseIds") List<String> ids) {
         return courseApplicationService.findFavoriteCourses(ids).stream()
@@ -70,14 +65,12 @@ public class CourseV1WebController implements CourseWebApi {
                 .toList();
     }
 
-    @Override
     @GetMapping("/courses/{id}")
     public CourseDetailWebResponse findCourseDetail(@PathVariable("id") String id) {
         CourseDetailResponse response = courseApplicationService.findCourseDetail(id);
         return CourseDetailWebResponse.from(response);
     }
 
-    @Override
     @Login
     @PostMapping("/courses/{id}/reviews")
     public void addReview(
@@ -88,7 +81,6 @@ public class CourseV1WebController implements CourseWebApi {
         courseApplicationService.addReview(id, userId, request.content(), request.rating());
     }
 
-    @Override
     @Login
     @DeleteMapping("/courses/{courseId}/reviews/{reviewId}")
     public void deleteReview(
@@ -99,7 +91,6 @@ public class CourseV1WebController implements CourseWebApi {
         courseApplicationService.deleteReview(courseId, reviewId, userId);
     }
 
-    @Override
     @Login
     @PostMapping("/courses/{courseId}/reviews/{reviewId}/report")
     public void reportCourseReview(
@@ -110,29 +101,24 @@ public class CourseV1WebController implements CourseWebApi {
         courseApplicationService.reportReview(courseId, reviewId, userId);
     }
 
-    @Override
     @Login
     @PostMapping("/courses")
-    public String addCustomCourses(@Valid @RequestBody CourseCreateWebRequest request, @UserId String userId) {
+    public void addCustomCourses(@Valid @RequestBody CourseCreateWebRequest request, @UserId String userId) {
         courseApplicationService.addCustomCourse(request.name(), request.toCoordinates(), userId);
-        return "코스 추가 성공";
     }
 
-    @Override
     @PostMapping("/courses/draft/route")
     public DraftRouteWebResponse findDraftRoute(@Valid @RequestBody FindDraftRouteWebRequest request) {
         DraftSegment route = courseApplicationService.findDraftRoute(request.toCoordinates());
         return DraftRouteWebResponse.of(route.coordinates(), route.length());
     }
 
-    @Override
     @Login
     @PostMapping("/courses/{id}/report")
     public void reportCourse(@PathVariable("id") String id, @UserId String userId) {
         courseApplicationService.reportCourse(id, userId);
     }
 
-    @Override
     @Login
     @GetMapping("/courses/custom")
     public CoursesWebResponse findCustomCourse(
