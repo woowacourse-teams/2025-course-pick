@@ -294,7 +294,7 @@ private fun SubmitReviewButton(
             modifier = Modifier.alpha(if (isSubmitting) 0F else 1F),
         )
 
-        CircularProgressIndicator(Modifier.alpha(if (isSubmitting) 1F else 0F))
+        CircularProgressIndicator(color = colorResource(R.color.item_white), modifier = Modifier.alpha(if (isSubmitting) 1F else 0F))
     }
 }
 
