@@ -253,21 +253,21 @@ private fun CourseDetailScreen(
                         .padding(horizontal = 20.dp, vertical = 10.dp),
                 ) {
                     CourseInfo(
-                        courseName = uiState.detail.name,
-                        length = uiState.detail.length,
-                        isFavorite = uiState.isFavorite,
+                        courseName = uiState.data.name,
+                        length = uiState.data.length,
+                        isFavorite = uiState.data.isFavorite,
                         onToggleFavorite = onToggleFavorite,
-                        averageRating = uiState.detail.averageRating,
+                        averageRating = uiState.data.averageRating,
                     )
 
                     Spacer(Modifier.height(10.dp))
 
-                    CourseReviewHeader(uiState.detail.reviewCount)
+                    CourseReviewHeader(uiState.data.reviewCount)
 
                     Spacer(Modifier.height(10.dp))
 
                     CourseReviews(
-                        reviews = uiState.detail.reviews,
+                        reviews = uiState.data.reviews,
                         onDelete = onDeleteReview,
                         onReport = onReportReview,
                         modifier =
@@ -638,7 +638,7 @@ private fun CourseDetailScreenPreview_Success_EmptyReview() {
     CourseDetailScreen(
         uiState =
             CourseDetailViewModel.UiState.Success(
-                detail =
+                data =
                     CourseDetailUiModel(
                         id = "",
                         name = "석촌호수 동호 한바퀴",
@@ -647,8 +647,8 @@ private fun CourseDetailScreenPreview_Success_EmptyReview() {
                         averageRating = 4.32F,
                         tags = emptyList(),
                         reviews = emptyList(),
+                        isFavorite = false,
                     ),
-                isFavorite = false,
             ),
         onNavigateBack = { },
         onToggleFavorite = { },
@@ -666,7 +666,7 @@ private fun CourseDetailScreenPreview_Success_NonEmptyReviews() {
     CourseDetailScreen(
         uiState =
             CourseDetailViewModel.UiState.Success(
-                detail =
+                data =
                     CourseDetailUiModel(
                         id = "",
                         name = "석촌호수 동호 한바퀴",
@@ -685,8 +685,8 @@ private fun CourseDetailScreenPreview_Success_NonEmptyReviews() {
                                     content = "리뷰 내용 ".repeat(10 + index * 5),
                                 )
                             },
+                        isFavorite = false,
                     ),
-                isFavorite = false,
             ),
         onNavigateBack = { },
         onToggleFavorite = { },

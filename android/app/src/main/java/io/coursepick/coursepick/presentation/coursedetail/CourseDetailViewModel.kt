@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.coursepick.coursepick.data.NetworkMonitor
 import io.coursepick.coursepick.data.interceptor.NoNetworkException
 import io.coursepick.coursepick.domain.auth.AuthRepository
+import io.coursepick.coursepick.domain.course.CourseDetail
 import io.coursepick.coursepick.domain.course.CourseRepository
 import io.coursepick.coursepick.domain.favorites.FavoriteCourseRepository
 import io.coursepick.coursepick.presentation.auth.AuthFeature
@@ -37,7 +38,7 @@ class CourseDetailViewModel
 
         private val isConnected = MutableStateFlow(networkMonitor.isConnected())
         private val isLoading = MutableStateFlow(true)
-        private val courseDetail = MutableStateFlow<CourseDetailUiModel?>(null)
+        private val courseDetail = MutableStateFlow<CourseDetail?>(null)
 
         val uiState: StateFlow<UiState> =
             combine(
@@ -45,7 +46,7 @@ class CourseDetailViewModel
                 isLoading,
                 courseDetail,
                 favoriteCourseRepository.favoriteCourseIds,
-            ) { isConnected: Boolean, isLoading: Boolean, courseDetail: CourseDetailUiModel?, favoriteCourseIds: Set<String> ->
+            ) { isConnected: Boolean, isLoading: Boolean, courseDetail: CourseDetail?, favoriteCourseIds: Set<String> ->
                 if (!isConnected) {
                     UiState.Failure.NoNetwork
                 } else if (isLoading) {
@@ -53,7 +54,12 @@ class CourseDetailViewModel
                 } else if (courseDetail == null) {
                     UiState.Failure.Unknown
                 } else {
-                    UiState.Success(detail = courseDetail, isFavorite = favoriteCourseIds.contains(courseDetail.id))
+                    UiState.Success(
+                        courseDetail.toUiModel(
+                            isFavorite = favoriteCourseIds.contains(courseDetail.id),
+                            userId = authRepository.userId(),
+                        ),
+                    )
                 }
             }.stateIn(
                 scope = viewModelScope,
@@ -78,9 +84,9 @@ class CourseDetailViewModel
             }
         }
 
-        private suspend fun courseDetail(courseId: String): CourseDetailUiModel? =
+        private suspend fun courseDetail(courseId: String): CourseDetail? =
             runCatching {
-                courseRepository.detail(courseId).toUiModel()
+                courseRepository.detail(courseId)
             }.onFailure { exception: Throwable ->
                 if (exception is CancellationException) throw exception
             }.getOrNull()
@@ -89,10 +95,10 @@ class CourseDetailViewModel
             viewModelScope.launch {
                 val currentState = uiState.value
                 if (currentState is UiState.Success) {
-                    if (currentState.isFavorite) {
-                        favoriteCourseRepository.removeFavorite(currentState.detail.id)
+                    if (currentState.data.isFavorite) {
+                        favoriteCourseRepository.removeFavorite(currentState.data.id)
                     } else {
-                        favoriteCourseRepository.addFavorite(currentState.detail.id)
+                        favoriteCourseRepository.addFavorite(currentState.data.id)
                     }
                 }
             }
@@ -119,9 +125,9 @@ class CourseDetailViewModel
                 (uiState.value as? UiState.Success)?.let { uiState: UiState.Success ->
                     _dialogState.value =
                         if (authRepository.accessToken() == null) {
-                            dialogState.value.copy(authDialog = AuthFeature.ReportCourse(uiState.detail.id))
+                            dialogState.value.copy(authDialog = AuthFeature.ReportCourse(uiState.data.id))
                         } else {
-                            dialogState.value.copy(reportCourseDialog = uiState.detail.name)
+                            dialogState.value.copy(reportCourseDialog = uiState.data.name)
                         }
                 }
             }
@@ -136,7 +142,7 @@ class CourseDetailViewModel
                 try {
                     val currentState: UiState = uiState.value
                     if (currentState is UiState.Success) {
-                        courseRepository.reportCourse(currentState.detail.id)
+                        courseRepository.reportCourse(currentState.data.id)
                         dismissReportCourseDialog()
                         _uiEvent.emit(UiEvent.ReportCourseSuccess)
                     }
@@ -183,9 +189,9 @@ class CourseDetailViewModel
             viewModelScope.launch {
                 (uiState.value as? UiState.Success)?.let { uiState: UiState.Success ->
                     try {
-                        courseRepository.deleteReview(uiState.detail.id, review.id)
+                        courseRepository.deleteReview(uiState.data.id, review.id)
                         _uiEvent.emit(UiEvent.DeleteReviewSuccess)
-                        courseDetail.value = courseDetail(uiState.detail.id)
+                        courseDetail.value = courseDetail(uiState.data.id)
                     } catch (exception: CancellationException) {
                         throw exception
                     } catch (_: NoNetworkException) {
@@ -220,7 +226,7 @@ class CourseDetailViewModel
             viewModelScope.launch {
                 (uiState.value as? UiState.Success)?.let { uiState: UiState.Success ->
                     try {
-                        courseRepository.reportReview(uiState.detail.id, review.id)
+                        courseRepository.reportReview(uiState.data.id, review.id)
                         _uiEvent.emit(UiEvent.ReportReviewSuccess)
                     } catch (exception: CancellationException) {
                         throw exception
@@ -249,19 +255,17 @@ class CourseDetailViewModel
             viewModelScope.launch {
                 (uiState.value as? UiState.Success)?.let { uiState: UiState.Success ->
                     if (authRepository.accessToken() == null) {
-                        _dialogState.value = dialogState.value.copy(authDialog = AuthFeature.WriteReview(uiState.detail.id))
+                        _dialogState.value = dialogState.value.copy(authDialog = AuthFeature.WriteReview(uiState.data.id))
                         return@launch
                     }
 
                     val alreadyReviewed: Boolean =
-                        uiState.detail.reviews.any { review: CourseReviewUiModel ->
-                            review.authorName == "current_user_id" // TODO: API 업데이트될 시 사용자 ID 기반으로 확인하도록 변경
-                        }
+                        uiState.data.reviews.any { review: CourseReviewUiModel -> review.authorId == authRepository.userId() }
                     _uiEvent.emit(
                         if (alreadyReviewed) {
                             UiEvent.CourseAlreadyReviewed
                         } else {
-                            UiEvent.NavigateToWriteCourseReview(uiState.detail)
+                            UiEvent.NavigateToWriteCourseReview(uiState.data)
                         },
                     )
                 }
@@ -296,8 +300,7 @@ class CourseDetailViewModel
             data object Loading : UiState
 
             data class Success(
-                val detail: CourseDetailUiModel,
-                val isFavorite: Boolean,
+                val data: CourseDetailUiModel,
             ) : UiState
 
             sealed interface Failure : UiState {
