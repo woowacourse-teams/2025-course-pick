@@ -80,7 +80,7 @@ private fun DeleteCourseDialogContent(
             Text(
                 text = review.content,
                 color = colorResource(R.color.item_primary),
-                fontSize = 18.sp,
+                fontSize = 14.sp,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 5,
             )
