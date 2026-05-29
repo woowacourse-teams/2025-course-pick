@@ -39,7 +39,7 @@ class AuthViewModelTest {
 
                             override suspend fun accessToken(): String? = null
 
-                            override suspend fun clearAccessToken() = Unit
+                            override suspend fun clearCredentials() = Unit
                         },
                 )
             val uiEvents: MutableList<AuthUiEvent> = mutableListOf()

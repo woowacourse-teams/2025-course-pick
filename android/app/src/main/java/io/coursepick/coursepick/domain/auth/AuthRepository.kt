@@ -16,5 +16,5 @@ interface AuthRepository {
 
     suspend fun accessToken(): String?
 
-    suspend fun clearAccessToken()
+    suspend fun clearCredentials()
 }

@@ -43,8 +43,8 @@ class DefaultAuthRepository
             return cachedAccessToken
         }
 
-        override suspend fun clearAccessToken() {
-            tokenLocalDataSource.clearAccessToken()
+        override suspend fun clearCredentials() {
+            tokenLocalDataSource.clearCredentials()
             cachedAccessToken = null
         }
     }
