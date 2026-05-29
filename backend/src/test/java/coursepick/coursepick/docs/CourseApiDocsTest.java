@@ -35,7 +35,7 @@ import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-public class CourseApiDocsTest extends AbstractApiDocsSupport {
+class CourseApiDocsTest extends AbstractApiDocsSupport {
 
     private static final String TAG = "러닝 코스 (Course)";
     private static final String 다음_페이지_존재_여부 = "다음 페이지 존재 여부";
@@ -53,7 +53,7 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
     private static final String 리뷰_별점 = "리뷰 별점";
 
     @Override
-    protected Object initController() {
+    Object initController() {
         return new CourseV1WebController(super.courseApplicationService);
     }
 
@@ -63,7 +63,7 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
 
         @Test
         void 좌표_근처_코스_전체_조회_API() throws Exception {
-            CourseResponse courseResponse = new CourseResponse(
+            var courseResponse = new CourseResponse(
                     "689c3143182cecc6353cca7b",
                     "석촌호수",
                     new Meter(200.123),
@@ -73,7 +73,7 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
                             new Coordinate(37.515167, 127.104611)),
                     "adminId");
 
-            CoursesResponse coursesResponse = new CoursesResponse(List.of(courseResponse), true);
+            var coursesResponse = new CoursesResponse(List.of(courseResponse), true);
             given(courseApplicationService.findNearbyCourses(any(CourseFindCondition.class), anyDouble(),
                     anyDouble()))
                     .willReturn(coursesResponse);
@@ -232,7 +232,7 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
 
         @Test
         void 코스_상세_조회_API() throws Exception {
-            CourseDetailResponse detailResponse = new CourseDetailResponse(
+            var detailResponse = new CourseDetailResponse(
                     "69d8c0b55561463adc32f259",
                     "서울둘레8코스",
                     new Meter(2146.123),
@@ -292,7 +292,7 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
 
         @Test
         void 즐겨찾기_코스_조회_API() throws Exception {
-            CourseResponse courseResponse = new CourseResponse(
+            var courseResponse = new CourseResponse(
                     "689c3143182cecc6353cca7b",
                     "석촌호수",
                     null,
@@ -338,17 +338,17 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
 
         @Test
         void 코스_생성_시_직전_포인트와_새_포인트_사이의_경로_조회_API() throws Exception {
-            DraftSegment draftSegment = DraftSegment.of(List.of(
+            var draftSegment = DraftSegment.of(List.of(
                     new Coordinate(37.514167, 127.103611),
                     new Coordinate(37.515167, 127.104611)));
             given(courseApplicationService.findDraftRoute(any()))
                     .willReturn(draftSegment);
 
-            FindDraftRouteWebRequest request = new FindDraftRouteWebRequest(
+            var request = new FindDraftRouteWebRequest(
                     new CoordinateWebRequest(37.514167, 127.103611),
                     new CoordinateWebRequest(37.515167, 127.104611)
             );
-            String requestBody = objectMapper.writeValueAsString(request);
+            var requestBody = objectMapper.writeValueAsString(request);
 
             mockMvc.perform(post("/v1/courses/draft/route")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -392,8 +392,8 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
         void 코스_리뷰_작성_API() throws Exception {
             doNothing().when(courseApplicationService).addReview(anyString(), anyString(), anyString(), anyInt());
 
-            CreateReviewWebRequest request = new CreateReviewWebRequest("정말 멋진 러닝 코스입니다!", 5);
-            String requestBody = objectMapper.writeValueAsString(request);
+            var request = new CreateReviewWebRequest("정말 멋진 러닝 코스입니다!", 5);
+            var requestBody = objectMapper.writeValueAsString(request);
 
             mockMvc.perform(post("/v1/courses/{id}/reviews", "689c3143182cecc6353cca7b")
                             .header("Authorization", "Bearer " + "testToken")
@@ -424,18 +424,20 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
                                     .build())));
         }
 
+
+
         @Test
         void 커스텀_코스_생성_API() throws Exception {
             doNothing().when(courseApplicationService).addCustomCourse(anyString(), anyList(), anyString());
 
-            CourseCreateWebRequest request = new CourseCreateWebRequest(
+            var request = new CourseCreateWebRequest(
                     "나만의 한강 러닝 코스",
                     List.of(
                             new CoordinateWebRequest(37.514167, 127.103611),
                             new CoordinateWebRequest(37.515167, 127.104611)
                     )
             );
-            String requestBody = objectMapper.writeValueAsString(request);
+            var requestBody = objectMapper.writeValueAsString(request);
 
             mockMvc.perform(post("/v1/courses")
                             .header("Authorization", "Bearer " + "test.jwt.token")
@@ -491,14 +493,14 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
 
         @Test
         void 내_커스텀_코스_조회_API() throws Exception {
-            CourseResponse courseResponse = new CourseResponse(
+            var courseResponse = new CourseResponse(
                     "custom_id_123",
                     "나만의 한강 코스",
                     new Meter(100.0),
                     new Meter(5000.0),
                     List.of(new Coordinate(37.514, 127.103)),
                     "userId");
-            CoursesResponse coursesResponse = new CoursesResponse(List.of(courseResponse), false);
+            var coursesResponse = new CoursesResponse(List.of(courseResponse), false);
             given(courseApplicationService.findCustomCourses(any(), nullable(Double.class), nullable(Double.class)))
                     .willReturn(coursesResponse);
 
@@ -603,13 +605,64 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
     class ExceptionCases {
 
         @Test
+        void 코스_리뷰_작성_API_400_에러_별점() throws Exception {
+            doThrow(ErrorType.INVALID_REVIEW_RATING.create(6))
+                    .when(courseApplicationService).addReview(anyString(), any(), anyString(), anyInt());
+
+            var request = new CreateReviewWebRequest("정말 멋진 러닝 코스입니다!", 6);
+            var requestBody = objectMapper.writeValueAsString(request);
+
+            mockMvc.perform(post("/v1/courses/{id}/reviews", "689c3143182cecc6353cca7b")
+                            .header("Authorization", "Bearer " + "test.jwt.token")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestBody)
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isBadRequest())
+                    .andDo(documentBadRequest("course-add-review-400-rating"));
+        }
+
+        @Test
+        void 코스_리뷰_작성_API_400_에러_글자수() throws Exception {
+            doThrow(ErrorType.INVALID_REVIEW_CONTENT_LENGTH.create(0))
+                    .when(courseApplicationService).addReview(anyString(), any(), anyString(), anyInt());
+
+            var request = new CreateReviewWebRequest("", 5);
+            var requestBody = objectMapper.writeValueAsString(request);
+
+            mockMvc.perform(post("/v1/courses/{id}/reviews", "689c3143182cecc6353cca7b")
+                            .header("Authorization", "Bearer " + "test.jwt.token")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestBody)
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isBadRequest())
+                    .andDo(documentBadRequest("course-add-review-400-length"));
+        }
+
+        @Test
+        void 코스_리뷰_작성_API_400_에러_중복() throws Exception {
+            doThrow(ErrorType.ALREADY_REVIEWED_COURSE.create("689c3143182cecc6353cca7b", "user-id"))
+                    .when(courseApplicationService).addReview(anyString(), any(), anyString(), anyInt());
+
+            var request = new CreateReviewWebRequest("정말 멋진 러닝 코스입니다!", 5);
+            var requestBody = objectMapper.writeValueAsString(request);
+
+            mockMvc.perform(post("/v1/courses/{id}/reviews", "689c3143182cecc6353cca7b")
+                            .header("Authorization", "Bearer " + "test.jwt.token")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestBody)
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isBadRequest())
+                    .andDo(documentBadRequest("course-add-review-400-duplicate"));
+        }
+
+        @Test
         void 코스_리뷰_작성_API_401_에러() throws Exception {
             doThrow(ErrorType.AUTHENTICATION_FAIL
                     .create())
                     .when(courseApplicationService).addReview(anyString(), any(), anyString(), anyInt());
 
-            CreateReviewWebRequest request = new CreateReviewWebRequest("정말 멋진 러닝 코스입니다!", 5);
-            String requestBody = objectMapper.writeValueAsString(request);
+            var request = new CreateReviewWebRequest("정말 멋진 러닝 코스입니다!", 5);
+            var requestBody = objectMapper.writeValueAsString(request);
 
             mockMvc.perform(post("/v1/courses/{id}/reviews", "689c3143182cecc6353cca7b")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -625,14 +678,14 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
                     .create())
                     .when(courseApplicationService).addCustomCourse(any(), anyList(), any());
 
-            CourseCreateWebRequest request = new CourseCreateWebRequest(
+            var request = new CourseCreateWebRequest(
                     "나만의 한강 러닝 코스",
                     List.of(
                             new CoordinateWebRequest(37.514167, 127.103611),
                             new CoordinateWebRequest(37.515167, 127.104611)
                     )
             );
-            String requestBody = objectMapper.writeValueAsString(request);
+            var requestBody = objectMapper.writeValueAsString(request);
 
             mockMvc.perform(post("/v1/courses")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -711,8 +764,8 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
             doThrow(ErrorType.NOT_EXIST_COURSE.create("invalid-id"))
                     .when(courseApplicationService).addReview(anyString(), any(), anyString(), anyInt());
 
-            CreateReviewWebRequest request = new CreateReviewWebRequest("정말 멋진 러닝 코스입니다!", 5);
-            String requestBody = objectMapper.writeValueAsString(request);
+            var request = new CreateReviewWebRequest("정말 멋진 러닝 코스입니다!", 5);
+            var requestBody = objectMapper.writeValueAsString(request);
 
             mockMvc.perform(post("/v1/courses/{id}/reviews", "invalid-id")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -738,14 +791,14 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
             doThrow(ErrorType.DUPLICATED_COURSE_NAME.create("나만의 한강 러닝 코스"))
                     .when(courseApplicationService).addCustomCourse(any(), anyList(), any());
 
-            CourseCreateWebRequest request = new CourseCreateWebRequest(
+            var request = new CourseCreateWebRequest(
                     "나만의 한강 러닝 코스",
                     List.of(
                             new CoordinateWebRequest(37.514167, 127.103611),
                             new CoordinateWebRequest(37.515167, 127.104611)
                     )
             );
-            String requestBody = objectMapper.writeValueAsString(request);
+            var requestBody = objectMapper.writeValueAsString(request);
 
             mockMvc.perform(post("/v1/courses")
                             .header("Authorization", "Bearer " + "test.jwt.token")
@@ -899,6 +952,16 @@ public class CourseApiDocsTest extends AbstractApiDocsSupport {
                             .responseFields(errorResponseFields())
                             .build())
             );
+        }
+
+        private ResultHandler documentBadRequest(String documentId) {
+            return MockMvcRestDocumentationWrapper.document(documentId,
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    resource(ResourceSnippetParameters.builder()
+                            .tag(TAG)
+                            .responseFields(errorResponseFields())
+                            .build()));
         }
     }
 

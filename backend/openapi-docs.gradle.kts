@@ -126,7 +126,38 @@ fun processOpenApiSpec(specFile: File) {
                         else -> desc
                     }
                 }
+
+                // 예시 먼저 객체로 파싱 (그래야 message 필드를 읽을 수 있음)
                 parseExamples(response["content"])
+
+                // 400 등 에러 응답에 대해 여러 예시(examples)들의 message를 추출하여 description 덧붙이기
+                if (statusCode.toString() !in listOf("200", "201", "204")) {
+                    val content = response["content"] as? Map<*, *>
+                    val appJson = content?.get("application/json") as? Map<*, *>
+                    val examples = appJson?.get("examples") as? Map<*, *>
+                    
+                    val errorMessages = mutableListOf<String>()
+                    examples?.values?.filterIsInstance<Map<*, *>>()?.forEach { exampleObj ->
+                        val value = exampleObj["value"] as? Map<*, *>
+                        val messageStr = value?.get("message") as? String
+                        if (messageStr != null) {
+                            errorMessages.add(messageStr)
+                        }
+                    }
+
+                    if (statusCode.toString() == "400") {
+                        errorMessages.add("요청 파라미터가 잘못된 경우 (예: 필수값 누락, null 등)")
+                    }
+
+                    if (errorMessages.isNotEmpty()) {
+                        val originalDesc = response["description"] as? String ?: ""
+                        var newDesc = originalDesc + "\n\n**[발생 가능한 예외 상황]**\n"
+                        errorMessages.distinct().forEach { msg ->
+                            newDesc += "- $msg\n"
+                        }
+                        response["description"] = newDesc
+                    }
+                }
             }
 
             // 요청 예시 파싱

@@ -21,16 +21,16 @@ class UserApiDocsTest extends AbstractApiDocsSupport {
     private static final String TAG = "회원 (User)";
 
     @Override
-    protected Object initController() {
+    Object initController() {
         return new UserV1WebController(super.userApplicationService);
     }
 
     @Test
     void 카카오_로그인_API() throws Exception {
         given(userApplicationService.registerOrLoginAndGetAuthentication(anyString()))
-                .willReturn(new Authentication("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test.token"));
+                .willReturn(new Authentication("user_id_example", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test.token"));
 
-        String requestBody = objectMapper.writeValueAsString(new java.util.LinkedHashMap<>() {
+        var requestBody = objectMapper.writeValueAsString(new java.util.LinkedHashMap<>() {
             {
                 put("accessToken", "kakao_access_token_example");
             }
@@ -53,6 +53,8 @@ class UserApiDocsTest extends AbstractApiDocsSupport {
                                                 .attributes(key("example")
                                                         .value("kakao_access_token_example")))
                                 .responseFields(
+                                        fieldWithPath("userId")
+                                                .description("사용자 ID"),
                                         fieldWithPath("accessToken")
                                                 .description("코스픽 엑세스토큰 (JWT)"))
                                 .build())));

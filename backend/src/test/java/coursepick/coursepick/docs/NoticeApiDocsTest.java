@@ -12,12 +12,12 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class NoticeApiDocsTest extends AbstractApiDocsSupport {
+class NoticeApiDocsTest extends AbstractApiDocsSupport {
 
     private static final String TAG = "노티스 (Notice)";
 
     @Override
-    protected Object initController() {
+    Object initController() {
         return new NoticeV1WebController("http://localhost:8080");
     }
 

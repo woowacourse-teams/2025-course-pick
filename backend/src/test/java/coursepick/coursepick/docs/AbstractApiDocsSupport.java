@@ -10,6 +10,7 @@ import coursepick.coursepick.presentation.WebExceptionHandler;
 import coursepick.coursepick.security.LoginInterceptor;
 import coursepick.coursepick.security.UserIdArgumentResolver;
 import coursepick.coursepick.security.WebConfig;
+import coursepick.coursepick.application.exception.ErrorType;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,7 +52,7 @@ public abstract class AbstractApiDocsSupport {
     void setUp(RestDocumentationContextProvider restDocumentation) throws Exception {
         // 로그인 인터셉터 모킹 (MockMvc 빌드 전에 설정되어야 함)
         given(loginInterceptor.preHandle(any(), any(), any())).willAnswer(invocation -> {
-            HttpServletRequest request = invocation.getArgument(0);
+            var request = (HttpServletRequest) invocation.getArgument(0);
             request.setAttribute("AUTH_USER_ID", "test-user-id");
             return true;
         });
@@ -64,5 +65,6 @@ public abstract class AbstractApiDocsSupport {
                 .build();
     }
 
-    protected abstract Object initController();
+    abstract Object initController();
+
 }
