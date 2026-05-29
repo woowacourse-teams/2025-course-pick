@@ -3,30 +3,38 @@ import groovy.json.JsonSlurper
 import org.gradle.api.tasks.Copy
 import java.io.File
 
+/**
+ * OpenAPI(Swagger) 문서 생성을 커스텀하기 위한 스크립트입니다.
+ * RestDocs를 통해 생성된 기본 OpenAPI Spec(JSON)에 보안 설정, 예시 데이터, 에러 메시지 상세화 등을 추가합니다.
+ */
+
+// 운영(prod) 프로필이 아닌 경우에만 OpenAPI 문서 커스텀 로직을 수행합니다.
 val isProdProfile = project.findProperty("profile") == "prod"
 
 if (!isProdProfile) {
+    // 1. OpenAPI Spec에 보안 설정 및 부가 정보를 주입하는 커스텀 태스크 등록
     tasks.register("injectOpenApiSecurity") {
-        dependsOn("openapi3")
+        dependsOn("openapi3") // epages/restdocs-api-spec 플러그인의 openapi3 태스크 이후 실행
         doLast {
             val specFile = layout.buildDirectory.file("api-spec/openapi3.json").get().asFile
             processOpenApiSpec(specFile)
 
-            // src/main/resources/static/docs 에도 복사 (로컬 개발 환경 반영용)
+            // 로컬 개발 시 Swagger UI에서 즉시 확인할 수 있도록 build 폴더뿐만 아니라
+            // src/main/resources/static/docs 에도 생성된 문서를 복사합니다.
             val srcDocsDir = layout.projectDirectory.dir("src/main/resources/static/docs").asFile
             srcDocsDir.mkdirs()
             specFile.copyTo(File(srcDocsDir, "openapi3.json"), overwrite = true)
         }
     }
 
-    // 문서 복사 태스크 (테스트 결과를 기반으로 생성된 문서를 복사)
+    // 2. 생성된 OpenAPI Spec 파일을 정적 리소스 경로로 복사하는 태스크
     val copyOpenApiSpec = tasks.register<Copy>("copyOpenApiSpec") {
         dependsOn("injectOpenApiSecurity")
         from(layout.buildDirectory.dir("api-spec"))
         into(layout.buildDirectory.dir("resources/main/static/docs"))
     }
 
-    // jar를 묶기 직전에(문서를 포함시킴) 실행하도록 의존성 주입
+    // 3. 빌드 시 문서가 포함되도록 jar 및 bootJar 태스크의 의존성을 설정합니다.
     tasks.named("bootJar") {
         dependsOn(copyOpenApiSpec)
     }
@@ -35,23 +43,27 @@ if (!isProdProfile) {
         dependsOn(copyOpenApiSpec)
     }
 
-    // 순서만 보장하기 위해 mustRunAfter 사용
+    // 4. 실행 클래스 확인 태스크 이전에 문서 복사가 완료되도록 순서를 보장합니다.
     tasks.named("resolveMainClassName") {
         mustRunAfter(copyOpenApiSpec)
     }
 
+    // 5. clean 태스크 시 생성된 문서 디렉토리도 함께 삭제하도록 설정합니다.
     tasks.named<org.gradle.api.tasks.Delete>("clean") {
         delete(layout.buildDirectory.dir("generated-docs"))
     }
 }
 
+/**
+ * OpenAPI Spec JSON 파일을 읽어 필요한 내용을 수정/추가하는 핵심 로직입니다.
+ */
 fun processOpenApiSpec(specFile: File) {
     val jsonSlurper = JsonSlurper()
 
     @Suppress("UNCHECKED_CAST")
     val json = jsonSlurper.parseText(specFile.readText()) as MutableMap<String, Any?>
 
-    // 1. components.securitySchemes에 bearerAuth 추가
+    // [1] Security Schemes 설정: bearerAuth(JWT) 방식을 전역 컴포넌트에 추가
     @Suppress("UNCHECKED_CAST")
     val components = json.getOrPut("components") { mutableMapOf<String, Any?>() } as MutableMap<String, Any?>
     
@@ -65,7 +77,8 @@ fun processOpenApiSpec(specFile: File) {
         "description" to "카카오 로그인 후 발급받은 JWT 토큰을 입력해주세요."
     )
 
-    // 2. 파라미터 예시 값 정의
+    // [2] 자주 사용되는 파라미터의 예시 값(Example) 정의
+    // Swagger UI에서 'Try it out' 클릭 시 자동으로 채워질 기본값들입니다.
     val paramExamples = mapOf(
         "mapLat" to "37.5165", "mapLng" to "127.1040", "scope" to "1000",
         "userLat" to "37.516", "userLng" to "127.104", "minLength" to "0",
@@ -75,7 +88,10 @@ fun processOpenApiSpec(specFile: File) {
         "courseId" to "689c3143182cecc6353cca7b", "reviewId" to "679c1234562cecc6394cca7b"
     )
 
-    // 반복되는 예시 문자열 파싱 헬퍼 함수
+    /**
+     * JSON 문자열로 되어 있는 예시 데이터(examples)를 실제 JSON 객체 구조로 변환하는 헬퍼 함수입니다.
+     * 이를 통해 Swagger UI에서 예시 데이터가 문자열이 아닌 구조화된 JSON으로 예쁘게 표시됩니다.
+     */
     fun parseExamples(contentObj: Any?) {
         val content = contentObj as? Map<*, *> ?: return
         @Suppress("UNCHECKED_CAST")
@@ -93,29 +109,30 @@ fun processOpenApiSpec(specFile: File) {
         }
     }
 
-    // 3. 로그인 필요한 API에 security 추가 + 파라미터 example 주입 + 응답/요청 JSON 객체 변환
+    // [3] 모든 API 경로(paths)를 순회하며 추가 정보 주입
     val paths = json["paths"] as? Map<*, *> ?: emptyMap<String, Any>()
     
     paths.values.filterIsInstance<Map<*, *>>()
         .flatMap { it.values.filterIsInstance<MutableMap<String, Any?>>() }
         .forEach { op ->
-            // Security 추가
+            // A. '로그인 필요' 문구가 포함된 API에 보안 요구사항(bearerAuth) 자동 추가
             if ((op["description"] as? String)?.contains("로그인 필요") == true) {
                 op["security"] = listOf(mapOf("bearerAuth" to emptyList<String>()))
             }
             
-            // 파라미터 Example 주입
+            // B. 정의된 파라미터가 있다면 미리 준비한 예시 값을 주입
             val params = op["parameters"] as? List<*> ?: emptyList<Any>()
             params.filterIsInstance<MutableMap<String, Any?>>().forEach { param ->
                 paramExamples[param["name"] as? String]?.let { param["example"] = it }
             }
 
-            // 응답 처리 (상태 코드 설명 + 예시 파싱)
+            // C. 응답(responses) 섹션 처리: 상태 코드별 설명 보완 및 예외 메시지 상세화
             val responses = op["responses"] as? Map<*, *> ?: emptyMap<String, Any>()
             responses.entries.forEach resLoop@{ (statusCode, responseObj) ->
                 @Suppress("UNCHECKED_CAST")
                 val response = responseObj as? MutableMap<String, Any?> ?: return@resLoop
 
+                // HTTP 상태 코드에 맞는 한국어 설명 추가
                 val desc = response["description"]
                 if (desc == statusCode.toString() || desc == "OK") {
                     response["description"] = when (statusCode.toString()) {
@@ -132,10 +149,11 @@ fun processOpenApiSpec(specFile: File) {
                     }
                 }
 
-                // 예시 먼저 객체로 파싱 (그래야 message 필드를 읽을 수 있음)
+                // 응답 본문 예시 파싱 (문자열 -> JSON 객체)
                 parseExamples(response["content"])
 
-                // 400 등 에러 응답에 대해 여러 예시(examples)들의 message를 추출하여 description 덧붙이기
+                // 4xx, 5xx 에러 응답의 경우, RestDocs에서 정의한 여러 예시들의 message 필드를 모아
+                // API 설명(description) 부분에 '발생 가능한 예외 상황'으로 목록화해줍니다.
                 if (statusCode.toString() !in listOf("200", "201", "204")) {
                     val content = response["content"] as? Map<*, *>
                     val appJson = content?.get("application/json") as? Map<*, *>
@@ -150,6 +168,7 @@ fun processOpenApiSpec(specFile: File) {
                         }
                     }
 
+                    // 400 에러에는 기본적으로 파라미터 오류 설명을 추가
                     if (statusCode.toString() == "400") {
                         errorMessages.add("요청 파라미터가 잘못된 경우 (예: 필수값 누락, null 등)")
                     }
@@ -165,10 +184,11 @@ fun processOpenApiSpec(specFile: File) {
                 }
             }
 
-            // 요청 예시 파싱
+            // D. 요청 본문(requestBody)이 있는 경우 예시 파싱
             val requestBody = op["requestBody"] as? Map<*, *> ?: emptyMap<String, Any>()
             parseExamples(requestBody["content"])
         }
 
+    // 최종 수정된 내용을 예쁘게(pretty print) 하여 파일로 저장
     specFile.writeText(JsonOutput.prettyPrint(JsonOutput.toJson(json)))
 }
