@@ -10,15 +10,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -97,12 +100,14 @@ fun CustomCourseItemCard(
 
             Icon(
                 painter = painterResource(R.drawable.icon_course_detail),
-                contentDescription = null,
+                contentDescription = stringResource(R.string.course_item_navigate_to_detail_button_description),
+                tint = colorResource(R.color.item_primary),
                 modifier =
                     Modifier
                         .size(48.dp)
-                        .padding(12.dp)
-                        .clickable { onNavigateToDetail() },
+                        .clip(CircleShape)
+                        .clickable { onNavigateToDetail() }
+                        .padding(12.dp),
             )
         }
 

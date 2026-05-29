@@ -48,7 +48,6 @@
     <string name="custom_course_feature_name">나의 코스</string>
     <string name="custom_courses_empty_description">등록한 코스가 없어요</string>
     <string name="custom_courses_load_failed">데이터를 불러오는 데 실패했습니다.</string>
-    <string name="custom_courses_unauthorized_user_message">나의 코스 조회를 위해 로그인을 해주세요.</string>
 
     <!--  코스 화면: 현 위치로 이동 권한  -->
     <string name="current_location_location_permission_rationale_message">현 위치 표시를 위해 위치 권한을 허용해주세요.</string>
@@ -69,11 +68,11 @@
     <string name="report_course_reason_incorrect_course_data">• 코스의 경로가 실제와 달라요</string>
     <string name="report_course_reason_cannot_access_course">• 위험하거나 출입이 제한된 곳을 지나가요</string>
     <string name="report_course_reason_incorrect_course_name">• 코스의 이름이 부적절해요</string>
-    <string name="report_course_confirm_reason_description">이 중 해당되는 것이 있어요</string>
-    <string name="report_course_dialog_cancel_button">취소</string>
-    <string name="report_course_dialog_confirm_button">신고하기</string>
+    <string name="report_course_confirm_description">이 중 해당되는 것이 있어요</string>
+    <string name="report_course_dialog_negative_button">취소</string>
+    <string name="report_course_dialog_positive_button">신고</string>
     <string name="report_course_success_message">신고가 접수됐습니다.</string>
-    <string name="report_course_failure_already_reported">이미 신고하셨습니다.</string>
+    <string name="report_course_failure_already_reported_message">이미 신고하셨습니다.</string>
 
     <!--  코스 상세 화면  -->
     <string name="course_detail_header">코스 정보</string>
@@ -93,6 +92,27 @@
     <string name="review_item_my_review_chip">내 리뷰</string>
     <string name="review_item_action_delete">삭제하기</string>
     <string name="review_item_action_report">신고하기</string>
+
+    <!--  코스 상세 화면 - 리뷰 삭제  -->
+    <string name="delete_review_feature_name">리뷰 삭제</string>
+    <string name="delete_review_dialog_title">이 리뷰를 삭제하시겠어요?</string>
+    <string name="delete_review_dialog_negative_button">취소</string>
+    <string name="delete_review_dialog_positive_button">삭제</string>
+    <string name="delete_review_success_message">리뷰가 삭제됐습니다.</string>
+
+    <!--  코스 상세 화면 - 리뷰 신고  -->
+    <string name="report_review_feature_name">리뷰 신고</string>
+    <string name="report_review_dialog_title">%s님의 리뷰</string>
+    <string name="report_review_dialog_description">이 리뷰에 문제가 있다면 알려주세요.</string>
+    <string name="report_review_reason_promotional_content">• 홍보성·광고성 내용이 있어요</string>
+    <string name="report_review_reason_offensive_content">• 불쾌감을 주는 내용이 있어요</string>
+    <string name="report_review_reason_irrelevant_content">• 러닝 또는 코스와 관련 없는 내용이에요</string>
+    <string name="report_review_reason_miscellaneous">• 그 외 부적절한 내용이 있어요</string>
+    <string name="report_review_confirm_description">이 중 해당되는 것이 있어요</string>
+    <string name="report_review_dialog_negative_button">취소</string>
+    <string name="report_review_dialog_positive_button">신고</string>
+    <string name="report_review_success_message">신고가 접수됐습니다.</string>
+    <string name="report_review_failure_already_reported_message">이미 신고하셨습니다.</string>
 
     <!--  코스 리뷰 작성 화면  -->
     <string name="write_course_review_feature_name">리뷰 작성</string>
@@ -125,7 +145,6 @@
     <string name="create_custom_course_course_added_message">코스가 추가됐습니다.</string>
     <string name="create_custom_course_invalid_course_name_message">코스 이름을 다시 확인해주세요.</string>
     <string name="create_custom_course_duplicate_course_name_message">이미 같은 이름의 코스가 있어요.</string>
-    <string name="create_custom_course_unauthorized_user_message">코스 추가를 위해 로그인을 해주세요.</string>
     <string name="create_custom_course_unknown_error_message">알 수 없는 오류가 발생했습니다.</string>
 
     <!--  코스 추가 화면 - 취소 다이얼로그  -->
@@ -176,4 +195,5 @@
     <string name="failure_retry_button">재시도</string>
     <string name="failure_no_network_toast_message">네트워크 연결 상태를 확인해주세요.</string>
     <string name="failure_unknown_toast_message">알 수 없는 오류가 발생했습니다.</string>
+    <string name="failure_unauthorized_user_toast_message">인증되지 않은 사용자입니다.</string>
 </resources>

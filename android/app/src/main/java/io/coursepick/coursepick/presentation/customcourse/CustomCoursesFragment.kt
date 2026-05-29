@@ -135,7 +135,7 @@ class CustomCoursesFragment(
                             }
 
                             CustomCourseUiEvent.UnauthorizedUser -> {
-                                showToastMessage(R.string.custom_courses_unauthorized_user_message)
+                                showToastMessage(R.string.failure_unauthorized_user_toast_message)
                             }
 
                             is CustomCourseUiEvent.SelectCustomCourse -> {
