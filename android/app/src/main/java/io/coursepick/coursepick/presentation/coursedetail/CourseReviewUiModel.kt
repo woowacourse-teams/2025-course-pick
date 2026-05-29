@@ -13,12 +13,12 @@ data class CourseReviewUiModel(
     val content: String,
 )
 
-fun CourseReview.toUiModel(): CourseReviewUiModel =
+fun CourseReview.toUiModel(isMine: Boolean) =
     CourseReviewUiModel(
         id = id,
         authorId = authorId,
         authorName = authorName,
-        isMine = false, // TODO: API 업데이트될 시 사용자 ID 기반으로 확인하도록 변경
+        isMine = isMine,
         rating = rating.toFloat(),
         content = content,
     )
