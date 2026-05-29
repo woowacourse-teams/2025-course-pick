@@ -11,6 +11,11 @@ if (!isProdProfile) {
         doLast {
             val specFile = layout.buildDirectory.file("api-spec/openapi3.json").get().asFile
             processOpenApiSpec(specFile)
+
+            // src/main/resources/static/docs 에도 복사 (로컬 개발 환경 반영용)
+            val srcDocsDir = layout.projectDirectory.dir("src/main/resources/static/docs").asFile
+            srcDocsDir.mkdirs()
+            specFile.copyTo(File(srcDocsDir, "openapi3.json"), overwrite = true)
         }
     }
 

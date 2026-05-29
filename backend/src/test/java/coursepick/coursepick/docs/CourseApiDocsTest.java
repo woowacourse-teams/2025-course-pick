@@ -605,6 +605,82 @@ class CourseApiDocsTest extends AbstractApiDocsSupport {
     class ExceptionCases {
 
         @Test
+        void 좌표_근처_코스_조회_API_400_에러() throws Exception {
+            mockMvc.perform(get("/v1/courses")
+                            .param("mapLat", "37.5165")
+                            .param("mapLng", "127.1040")
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isBadRequest())
+                    .andDo(documentBadRequest("course-find-nearby-400"));
+        }
+
+        @Test
+        void 즐겨찾기_코스_조회_API_400_에러() throws Exception {
+            mockMvc.perform(get("/v1/courses/favorites")
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isBadRequest())
+                    .andDo(documentBadRequest("course-favorites-400"));
+        }
+
+        @Test
+        void 코스_생성_시_직전_포인트와_새_포인트_사이의_경로_조회_API_400_에러() throws Exception {
+            var request = new FindDraftRouteWebRequest(
+                    new CoordinateWebRequest(100.0, 127.103611),
+                    new CoordinateWebRequest(37.515167, 127.104611)
+            );
+            var requestBody = objectMapper.writeValueAsString(request);
+
+            mockMvc.perform(post("/v1/courses/draft/route")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestBody)
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isBadRequest())
+                    .andDo(documentBadRequest("course-draft-route-400"));
+        }
+
+        @Test
+        void 커스텀_코스_생성_API_400_에러_이름_길이() throws Exception {
+            doThrow(ErrorType.INVALID_NAME_LENGTH.create("a"))
+                    .when(courseApplicationService).addCustomCourse(any(), anyList(), any());
+
+            var request = new CourseCreateWebRequest(
+                    "a",
+                    List.of(
+                            new CoordinateWebRequest(37.514167, 127.103611),
+                            new CoordinateWebRequest(37.515167, 127.104611)
+                    )
+            );
+            var requestBody = objectMapper.writeValueAsString(request);
+
+            mockMvc.perform(post("/v1/courses")
+                            .header("Authorization", "Bearer " + "test.jwt.token")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestBody)
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isBadRequest())
+                    .andDo(documentBadRequest("course-add-custom-400-name"));
+        }
+
+        @Test
+        void 커스텀_코스_생성_API_400_에러_좌표_개수() throws Exception {
+            var request = new CourseCreateWebRequest(
+                    "나만의 한강 러닝 코스",
+                    List.of(
+                            new CoordinateWebRequest(37.514167, 127.103611)
+                    )
+            );
+            var requestBody = objectMapper.writeValueAsString(request);
+
+            mockMvc.perform(post("/v1/courses")
+                            .header("Authorization", "Bearer " + "test.jwt.token")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestBody)
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isBadRequest())
+                    .andDo(documentBadRequest("course-add-custom-400-count"));
+        }
+
+        @Test
         void 코스_리뷰_작성_API_400_에러_별점() throws Exception {
             doThrow(ErrorType.INVALID_REVIEW_RATING.create(6))
                     .when(courseApplicationService).addReview(anyString(), any(), anyString(), anyInt());

@@ -6,6 +6,8 @@ import coursepick.coursepick.domain.user.Authentication;
 import coursepick.coursepick.presentation.UserV1WebController;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.FieldDescriptor;
+import org.springframework.test.web.servlet.ResultHandler;
 
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -58,5 +60,37 @@ class UserApiDocsTest extends AbstractApiDocsSupport {
                                         fieldWithPath("accessToken")
                                                 .description("코스픽 엑세스토큰 (JWT)"))
                                 .build())));
+    }
+
+    @Test
+    void 카카오_로그인_API_400_에러() throws Exception {
+        var requestBody = objectMapper.writeValueAsString(new java.util.LinkedHashMap<>() {
+            {
+                put("accessToken", "");
+            }
+        });
+
+        mockMvc.perform(post("/v1/login/kakao")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andDo(documentBadRequest("user-sign-400"));
+    }
+
+    private FieldDescriptor[] errorResponseFields() {
+        return new FieldDescriptor[]{
+                fieldWithPath("message").description("에러 상세 메시지"),
+                fieldWithPath("timestamp").description("에러 발생 시각")
+        };
+    }
+
+    private ResultHandler documentBadRequest(String documentId) {
+        return MockMvcRestDocumentationWrapper.document(documentId,
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                resource(ResourceSnippetParameters.builder()
+                        .tag(TAG)
+                        .responseFields(errorResponseFields())
+                        .build()));
     }
 }
