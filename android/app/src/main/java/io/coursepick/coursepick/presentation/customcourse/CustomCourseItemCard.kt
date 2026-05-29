@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -99,7 +100,7 @@ fun CustomCourseItemCard(
 
             Icon(
                 painter = painterResource(R.drawable.icon_course_detail),
-                contentDescription = null,
+                contentDescription = stringResource(R.string.course_item_navigate_to_detail_button_description),
                 tint = colorResource(R.color.item_primary),
                 modifier =
                     Modifier
