@@ -9,5 +9,5 @@ interface SignService {
     suspend fun sign(
         @Path("socialType") socialType: String,
         @Body socialToken: TokenDto,
-    ): TokenDto
+    ): SignResponseDto
 }

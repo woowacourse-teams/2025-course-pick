@@ -8,6 +8,8 @@ interface AuthRepository {
         socialToken: SocialToken,
     ): String
 
+    suspend fun userId(): String?
+
     suspend fun saveAccessToken(token: String)
 
     suspend fun preloadAccessToken()
