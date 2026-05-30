@@ -56,26 +56,30 @@ fun NoticeDialog(
                     modifier = Modifier.fillMaxWidth(),
                 )
 
-                Spacer(Modifier.height(20.dp))
+                if (!notice.title.isNullOrBlank()) {
+                    Spacer(Modifier.height(20.dp))
 
-                Text(
-                    text = notice.title,
-                    fontSize = 16.sp,
-                    color = colorResource(R.color.item_primary),
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth(),
-                )
+                    Text(
+                        text = notice.title,
+                        fontSize = 16.sp,
+                        color = colorResource(R.color.item_primary),
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
 
-                Spacer(Modifier.height(12.dp))
+                if (!notice.description.isNullOrBlank()) {
+                    Spacer(Modifier.height(12.dp))
 
-                Text(
-                    text = notice.description,
-                    fontSize = 14.sp,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth(),
-                    color = colorResource(R.color.item_secondary),
-                )
+                    Text(
+                        text = notice.description,
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                        color = colorResource(R.color.item_secondary),
+                    )
+                }
             }
 
             Spacer(Modifier.height(12.dp))
