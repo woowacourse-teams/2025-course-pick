@@ -24,6 +24,8 @@ import static coursepick.coursepick.test_util.CourseFixture.*;
 import static coursepick.coursepick.test_util.UserFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
@@ -223,7 +225,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
             var result = dbUtil.findCourseById(targetCourse.id());
             assertThat(result.reportUserIds()).hasSize(2);
-            assertThat(fakeAlerter.getCourseAlertCount()).isEqualTo(0);
+            verify(alerter, never()).alertCourse(any());
         }
 
         @Test
@@ -237,7 +239,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
             var result = dbUtil.findCourseById(targetCourse.id());
             assertThat(result.reportUserIds()).hasSize(3);
-            assertThat(fakeAlerter.getCourseAlertCount()).isEqualTo(1);
+            verify(alerter, times(1)).alertCourse(any());
         }
     }
 
@@ -250,13 +252,13 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
             course.reviews().add(new Review(ADMIN_USER, "야경이 멋집니다", 5));
             var saved = dbUtil.saveCourse(course);
 
-            fakeCourseTagGenerator.setTagsToReturn(List.of(CourseTag.NIGHT_VIEW, CourseTag.FLAT));
+            when(courseTagGenerator.generate(any())).thenReturn(List.of(CourseTag.NIGHT_VIEW, CourseTag.FLAT));
 
             sut.regenerateTags(saved.id());
 
             var result = dbUtil.findCourseById(saved.id());
             assertThat(result.tags()).containsExactly(CourseTag.NIGHT_VIEW, CourseTag.FLAT);
-            assertThat(fakeCourseTagGenerator.getCallCount()).isEqualTo(1);
+            verify(courseTagGenerator, times(1)).generate(any());
         }
 
         @Test
@@ -268,7 +270,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
             var result = dbUtil.findCourseById(saved.id());
             assertThat(result.tags()).isEmpty();
-            assertThat(fakeCourseTagGenerator.getCallCount()).isEqualTo(0);
+            verify(courseTagGenerator, never()).generate(any());
         }
     }
 
@@ -417,7 +419,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
             sut.reportReview(courseId, reviewId, TEST_USER3.id());
 
-            assertThat(fakeAlerter.getReviewAlertCount()).isEqualTo(1);
+            verify(alerter, times(1)).alertReview(any(), any());
         }
 
         @Test
@@ -428,7 +430,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
             sut.reportReview(courseId, reviewId, TEST_USER3.id());
             sut.reportReview(courseId, reviewId, TEST_USER2.id());
 
-            assertThat(fakeAlerter.getReviewAlertCount()).isEqualTo(2);
+            verify(alerter, times(2)).alertReview(any(), any());
         }
     }
 }
