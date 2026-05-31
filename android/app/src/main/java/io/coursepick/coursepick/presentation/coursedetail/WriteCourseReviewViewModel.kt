@@ -96,6 +96,14 @@ class WriteCourseReviewViewModel
                     this@WriteCourseReviewViewModel.rating.value = null
                     reviewContent.value = ""
                 } catch (exception: Throwable) {
+                    Logger.log(
+                        Logger.Event.Failure("submit_review"),
+                        "exception" to exception.message.orEmpty(),
+                        "courseId" to courseId,
+                        "rating" to rating,
+                        "content" to reviewContent.value,
+                    )
+
                     when (exception) {
                         is CancellationException -> {
                             throw exception
