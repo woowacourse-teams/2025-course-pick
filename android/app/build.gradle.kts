@@ -26,14 +26,14 @@ private val localProperties: Properties =
 
 android {
     namespace = "io.coursepick.coursepick"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "io.coursepick.coursepick"
         minSdk = 28
-        targetSdk = 35
-        versionCode = 10210
-        versionName = "1.2.10"
+        targetSdk = 36
+        versionCode = 10211
+        versionName = "1.2.11"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -179,6 +179,7 @@ dependencies {
     implementation(libs.okhttp.logging.interceptor)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.kakao.maps)
     implementation(libs.naver.maps)
@@ -192,9 +193,7 @@ dependencies {
     implementation(libs.play.services.oss.licenses)
     implementation(libs.androidx.preference.ktx)
     implementation(libs.amplitude.android)
-    implementation(libs.amplitude.android.session.replay)
     implementation(libs.mixpanel.android)
-    implementation(libs.mixpanel.android.session.replay)
     implementation(libs.app.update)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.fragment.ktx)
@@ -202,6 +201,8 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
     testImplementation(libs.assertj.core)
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)

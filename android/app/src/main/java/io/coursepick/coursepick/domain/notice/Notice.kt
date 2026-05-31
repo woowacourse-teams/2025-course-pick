@@ -5,7 +5,7 @@ import java.io.Serializable
 data class Notice(
     val id: String,
     val imageUrl: String,
-    val title: String,
-    val description: String,
-    val targetUrl: String?,
+    val targetUrl: String? = null,
+    val title: String? = null,
+    val description: String? = null,
 ) : Serializable

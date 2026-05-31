@@ -8,11 +8,13 @@ interface AuthRepository {
         socialToken: SocialToken,
     ): String
 
+    suspend fun userId(): String?
+
     suspend fun saveAccessToken(token: String)
 
     suspend fun preloadAccessToken()
 
     suspend fun accessToken(): String?
 
-    suspend fun clearAccessToken()
+    suspend fun clearCredentials()
 }

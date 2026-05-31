@@ -14,7 +14,7 @@ import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -50,7 +50,7 @@ public class Course {
 
     private Set<String> reportUserIds;
 
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     private List<CourseTag> tags;
 
@@ -63,7 +63,7 @@ public class Course {
         this.reviews = new ArrayList<>();
         this.creatorId = user.id();
         this.reportUserIds = new HashSet<>();
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = Instant.now();
         this.tags = new ArrayList<>();
     }
 

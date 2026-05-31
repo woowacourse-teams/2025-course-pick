@@ -1,4 +1,4 @@
-package io.coursepick.coursepick.presentation.course
+package io.coursepick.coursepick.presentation.coursedetail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,59 +30,72 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.domain.course.Coordinate
-import io.coursepick.coursepick.domain.course.Course
-import io.coursepick.coursepick.domain.course.CourseName
-import io.coursepick.coursepick.domain.course.Distance
-import io.coursepick.coursepick.domain.course.Latitude
-import io.coursepick.coursepick.domain.course.Length
-import io.coursepick.coursepick.domain.course.Longitude
 
 @Composable
-fun ReportCourseDialog(
-    course: CourseItem,
-    onConfirm: (CourseItem) -> Unit,
+fun ReportReviewDialog(
+    review: CourseReviewUiModel,
     onDismiss: () -> Unit,
+    onConfirm: (CourseReviewUiModel) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        ReportReviewDialogContent(
+            review = review,
+            onDismiss = onDismiss,
+            onConfirm = onConfirm,
+            modifier = modifier,
+        )
+    }
+}
+
+@Composable
+private fun ReportReviewDialogContent(
+    review: CourseReviewUiModel,
+    onDismiss: () -> Unit,
+    onConfirm: (CourseReviewUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val reportReasons: List<String> =
         listOf(
-            stringResource(R.string.report_course_reason_duplicate_course),
-            stringResource(R.string.report_course_reason_incorrect_course_data),
-            stringResource(R.string.report_course_reason_cannot_access_course),
-            stringResource(R.string.report_course_reason_incorrect_course_name),
+            stringResource(R.string.report_review_reason_promotional_content),
+            stringResource(R.string.report_review_reason_offensive_content),
+            stringResource(R.string.report_review_reason_irrelevant_content),
+            stringResource(R.string.report_review_reason_miscellaneous),
         )
 
     var isConfirmEnabled by remember { mutableStateOf(false) }
 
-    Dialog(onDismiss) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier =
-                modifier
-                    .clip(RoundedCornerShape(10))
-                    .background(colorResource(R.color.background_primary))
-                    .padding(20.dp),
-        ) {
-            Text(text = course.name, color = colorResource(R.color.item_primary), fontSize = 18.sp, fontWeight = FontWeight.Bold)
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier =
+            modifier
+                .clip(RoundedCornerShape(10))
+                .background(colorResource(R.color.background_primary))
+                .padding(20.dp),
+    ) {
+        Text(
+            text = stringResource(R.string.report_review_dialog_title, review.authorName),
+            color = colorResource(R.color.item_primary),
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+        )
 
-            Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(10.dp))
 
-            ReportReasonDescription(reportReasons)
+        ReportReasonDescription(reportReasons)
 
-            ReportConfirmCheckbox(
-                checked = isConfirmEnabled,
-                onCheckChanged = { checked: Boolean -> isConfirmEnabled = checked },
-                modifier = Modifier.align(Alignment.Start),
-            )
+        ReportConfirmCheckbox(
+            checked = isConfirmEnabled,
+            onCheckChanged = { checked: Boolean -> isConfirmEnabled = checked },
+            modifier = Modifier.align(Alignment.Start),
+        )
 
-            ReportCourseDialogButtons(
-                isConfirmEnabled = isConfirmEnabled,
-                onConfirm = { onConfirm(course) },
-                onDismiss = onDismiss,
-                modifier = Modifier.padding(10.dp),
-            )
-        }
+        ReportReviewDialogButtons(
+            isConfirmEnabled = isConfirmEnabled,
+            onConfirm = { onConfirm(review) },
+            onDismiss = onDismiss,
+            modifier = Modifier.padding(10.dp),
+        )
     }
 }
 
@@ -91,7 +104,7 @@ private fun ReportReasonDescription(
     reasons: List<String>,
     modifier: Modifier = Modifier,
 ) {
-    Text(text = stringResource(R.string.report_course_dialog_description), color = colorResource(R.color.item_primary), fontSize = 16.sp)
+    Text(text = stringResource(R.string.report_review_dialog_description), color = colorResource(R.color.item_primary), fontSize = 16.sp)
 
     Spacer(Modifier.height(10.dp))
 
@@ -128,7 +141,7 @@ private fun ReportConfirmCheckbox(
         )
 
         Text(
-            text = stringResource(R.string.report_course_confirm_reason_description),
+            text = stringResource(R.string.report_review_confirm_description),
             color = colorResource(R.color.item_primary),
             fontSize = 14.sp,
             modifier =
@@ -139,7 +152,7 @@ private fun ReportConfirmCheckbox(
 }
 
 @Composable
-private fun ReportCourseDialogButtons(
+private fun ReportReviewDialogButtons(
     isConfirmEnabled: Boolean,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
@@ -161,7 +174,7 @@ private fun ReportCourseDialogButtons(
                     .padding(horizontal = 20.dp, vertical = 10.dp),
         ) {
             Text(
-                text = stringResource(R.string.report_course_dialog_cancel_button),
+                text = stringResource(R.string.report_review_dialog_negative_button),
                 fontSize = 16.sp,
                 color = colorResource(R.color.item_tertiary),
             )
@@ -178,7 +191,7 @@ private fun ReportCourseDialogButtons(
                     .padding(horizontal = 20.dp, vertical = 10.dp),
         ) {
             Text(
-                text = stringResource(R.string.report_course_dialog_confirm_button),
+                text = stringResource(R.string.report_review_dialog_positive_button),
                 color = colorResource(if (isConfirmEnabled) R.color.item_primary else R.color.item_tertiary),
                 fontSize = 16.sp,
             )
@@ -188,20 +201,16 @@ private fun ReportCourseDialogButtons(
 
 @PreviewLightDark
 @Composable
-private fun ReportCourseDialogPreview() {
-    ReportCourseDialog(
-        course =
-            CourseItem(
-                course =
-                    Course(
-                        id = "",
-                        name = CourseName("석촌호수 동호 한바퀴"),
-                        distance = Distance(0),
-                        length = Length(0),
-                        coordinates = List(2) { (Coordinate(Latitude(0.0), Longitude(0.0))) },
-                    ),
-                selected = false,
-                favorite = false,
+private fun ReportReviewDialogPreview() {
+    ReportReviewDialogContent(
+        review =
+            CourseReviewUiModel(
+                id = "",
+                authorId = "",
+                authorName = "달리는 런숭이",
+                isMine = false,
+                rating = 4.32F,
+                content = "리뷰 내용 ".repeat(20),
             ),
         onConfirm = { },
         onDismiss = { },

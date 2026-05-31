@@ -32,7 +32,7 @@ public class PathAllowlistFilter extends OncePerRequestFilter {
         ALLOW_URI_PATTERNS.addAll(Set.of(
                 Pattern.compile("^/actuator.*$"),
                 Pattern.compile("^/api-docs.html$"),
-                Pattern.compile("^/v3/api-docs.*$"),
+                Pattern.compile("^/docs/.*$"),
                 Pattern.compile("^/v\\d+/login/kakao$"),
                 Pattern.compile("^/v\\d+/courses$"),
                 Pattern.compile("^/v\\d+/courses/[^/]+/route$"),
@@ -66,6 +66,13 @@ public class PathAllowlistFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String uri = request.getRequestURI();
+        
+        // 브라우저의 기본 파비콘 요청 무시 (에러 로그 방지)
+        if ("/favicon.ico".equals(uri)) {
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            return;
+        }
+
         boolean allowed = ALLOW_URI_PATTERNS.stream().anyMatch(pattern -> pattern.matcher(uri).matches());
         if (!allowed) {
             log.warn("[SECURITY] 화이트리스트가 아닌 경로로 요청이 들어왔습니다. uri={}", uri);

@@ -1,7 +1,10 @@
+import java.io.File
+
 plugins {
     java
     id("org.springframework.boot") version "3.5.3"
     id("io.spring.dependency-management") version "1.1.7"
+    id("com.epages.restdocs-api-spec") version "0.19.4"
 }
 
 group = "coursepick"
@@ -24,7 +27,8 @@ configurations.all {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.9")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.apache.commons:commons-lang3")
 
     // Zstandard Compression
     implementation("com.github.luben:zstd-jni:1.5.7-1")
@@ -60,6 +64,12 @@ dependencies {
     // MockWebServer
     testImplementation("com.squareup.okhttp3:mockwebserver3:5.1.0")
 
+    // Spring REST Docs (MockMvc)
+    testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
+
+    // restdocs-api-spec (OpenAPI 3 스펙 생성)
+    testImplementation("com.epages:restdocs-api-spec-mockmvc:0.19.4")
+
     // Test
     testImplementation("com.tngtech.archunit:archunit:1.1.0")
     testRuntimeOnly("de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring30x:4.21.0")
@@ -70,3 +80,18 @@ dependencies {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+
+val isProdProfile = project.findProperty("profile") == "prod"
+
+if (!isProdProfile) {
+    openapi3 {
+        setServer("https://dev.coursepick.cloud")
+        title = "코스픽 API"
+        version = "v1"
+        format = "json"
+        outputDirectory = layout.buildDirectory.dir("api-spec").get().asFile.path
+    }
+}
+
+apply(from = "openapi-docs.gradle.kts")

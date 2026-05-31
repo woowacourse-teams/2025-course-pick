@@ -20,8 +20,12 @@ class DefaultAuthRepository
             socialToken: SocialToken,
         ): String {
             val token = TokenDto(socialToken.accessToken)
-            return service.sign(socialType, token).accessToken
+            val signResponse: SignResponseDto = service.sign(socialType, token)
+            tokenLocalDataSource.saveUserId(signResponse.userId)
+            return signResponse.accessToken
         }
+
+        override suspend fun userId(): String? = tokenLocalDataSource.userId()
 
         override suspend fun saveAccessToken(token: String) {
             cachedAccessToken = token
@@ -39,8 +43,8 @@ class DefaultAuthRepository
             return cachedAccessToken
         }
 
-        override suspend fun clearAccessToken() {
-            tokenLocalDataSource.clearAccessToken()
+        override suspend fun clearCredentials() {
+            tokenLocalDataSource.clearCredentials()
             cachedAccessToken = null
         }
     }

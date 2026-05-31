@@ -6,10 +6,10 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class NoticeDto(
     val id: String,
-    private val imageUrl: String,
-    private val title: String,
-    private val description: String,
-    private val targetUrl: String? = null,
+    val imageUrl: String,
+    val targetUrl: String? = null,
+    val title: String? = null,
+    val description: String? = null,
 ) {
     fun toNotice(): Notice =
         Notice(

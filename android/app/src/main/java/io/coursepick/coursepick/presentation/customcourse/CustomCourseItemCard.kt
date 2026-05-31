@@ -8,14 +8,20 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -38,6 +44,7 @@ fun CustomCourseItemCard(
     customCourse: CustomCourseItem,
     onSelect: () -> Unit,
     onNavigateToCourse: () -> Unit,
+    onNavigateToDetail: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val backgroundColor: Color =
@@ -59,7 +66,8 @@ fun CustomCourseItemCard(
                     .fillMaxWidth()
                     .background(backgroundColor)
                     .clickable { onSelect() }
-                    .padding(vertical = 10.dp, horizontal = 20.dp),
+                    .padding(vertical = 10.dp)
+                    .padding(start = 16.dp, end = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(
@@ -74,7 +82,9 @@ fun CustomCourseItemCard(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
+
                 Spacer(modifier = Modifier.height(10.dp))
+
                 Row {
                     CourseLengthChip(length = customCourse.length)
                     if (customCourse.distance != null) {
@@ -86,10 +96,21 @@ fun CustomCourseItemCard(
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            CourseNavigationButton(
-                onClick = onNavigateToCourse,
+            CourseNavigationButton(onClick = onNavigateToCourse)
+
+            Icon(
+                painter = painterResource(R.drawable.icon_course_detail),
+                contentDescription = stringResource(R.string.course_item_navigate_to_detail_button_description),
+                tint = colorResource(R.color.item_primary),
+                modifier =
+                    Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .clickable { onNavigateToDetail() }
+                        .padding(12.dp),
             )
         }
+
         HorizontalDivider(
             modifier =
                 Modifier
@@ -122,8 +143,9 @@ private fun CustomCourseItemCardPreview() {
                 course = course,
                 selected = false,
             ),
-        onSelect = {},
-        onNavigateToCourse = {},
+        onSelect = { },
+        onNavigateToCourse = { },
+        onNavigateToDetail = { },
         modifier = Modifier,
     )
 }

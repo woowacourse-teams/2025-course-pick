@@ -33,13 +33,15 @@ class AuthViewModelTest {
                                 socialToken: SocialToken,
                             ): String = "token 123456"
 
+                            override suspend fun userId(): String = "user id"
+
                             override suspend fun saveAccessToken(token: String) = Unit
 
                             override suspend fun preloadAccessToken() = Unit
 
                             override suspend fun accessToken(): String? = null
 
-                            override suspend fun clearAccessToken() = Unit
+                            override suspend fun clearCredentials() = Unit
                         },
                 )
             val uiEvents: MutableList<AuthUiEvent> = mutableListOf()

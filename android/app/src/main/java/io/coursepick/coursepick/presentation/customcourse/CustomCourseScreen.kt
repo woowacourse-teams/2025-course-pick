@@ -49,6 +49,7 @@ fun CustomCourseScreen(
     onGoToCreateCustomCourse: () -> Unit,
     onSelect: (CustomCourseItem) -> Unit,
     onNavigateToCourse: (CustomCourseItem) -> Unit,
+    onNavigateToDetail: (CustomCourseItem) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -96,6 +97,7 @@ fun CustomCourseScreen(
                                     customCourse = customCourse,
                                     onSelect = { onSelect(customCourse) },
                                     onNavigateToCourse = { onNavigateToCourse(customCourse) },
+                                    onNavigateToDetail = { onNavigateToDetail(customCourse) },
                                 )
                             }
                         }
@@ -145,10 +147,11 @@ private fun CustomCourseScreen_EmptyPreview() {
 
     CustomCourseScreen(
         status = status,
-        onReconnect = {},
+        onReconnect = { },
         onGoToCreateCustomCourse = { },
         onSelect = { },
         onNavigateToCourse = { },
+        onNavigateToDetail = { },
     )
 }
 
@@ -189,6 +192,7 @@ private fun CustomCourseScreen_WithCoursesPreview() {
         onGoToCreateCustomCourse = { },
         onSelect = { },
         onNavigateToCourse = { },
+        onNavigateToDetail = { },
     )
 }
 
@@ -206,6 +210,7 @@ private fun CustomCourseScreen_LoadingPreview() {
         onGoToCreateCustomCourse = { },
         onSelect = { },
         onNavigateToCourse = { },
+        onNavigateToDetail = { },
     )
 }
 
@@ -223,6 +228,7 @@ private fun CustomCourseScreen_NoInternetPreview() {
         onGoToCreateCustomCourse = { },
         onSelect = { },
         onNavigateToCourse = { },
+        onNavigateToDetail = { },
     )
 }
 
@@ -240,5 +246,6 @@ private fun CustomCourseScreen_FailurePreview() {
         onGoToCreateCustomCourse = { },
         onSelect = { },
         onNavigateToCourse = { },
+        onNavigateToDetail = { },
     )
 }

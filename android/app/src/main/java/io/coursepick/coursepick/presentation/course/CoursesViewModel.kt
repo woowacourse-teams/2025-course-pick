@@ -27,7 +27,6 @@ import io.coursepick.coursepick.presentation.filter.CourseFilter
 import io.coursepick.coursepick.presentation.filter.CourseFilterAction
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
 import io.coursepick.coursepick.presentation.ui.SingleLiveData
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -35,7 +34,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -75,9 +73,6 @@ class CoursesViewModel
 
         private val _routeFinderDialogCourse = MutableStateFlow<CourseItem?>(null)
         val routeFinderDialogCourse: StateFlow<CourseItem?> get() = _routeFinderDialogCourse.asStateFlow()
-
-        private val _reportCourseDialogState = MutableStateFlow<CourseItem?>(null)
-        val reportCourseDialogState: StateFlow<CourseItem?> get() = _reportCourseDialogState.asStateFlow()
 
         private val _authDialogState = MutableStateFlow<AuthFeature?>(null)
         val authDialogState: StateFlow<AuthFeature?> get() = _authDialogState.asStateFlow()
@@ -648,16 +643,6 @@ class CoursesViewModel
 
         suspend fun currentLocation(): Location? = locationRepository.currentLocation()
 
-        fun onReportCourse(course: CourseItem) {
-            viewModelScope.launch {
-                if (authRepository.accessToken() == null) {
-                    _authDialogState.value = AuthFeature.ReportCourse(course)
-                } else {
-                    _reportCourseDialogState.value = course
-                }
-            }
-        }
-
         fun checkAuthForCustomCourse(onAuthorized: () -> Unit) {
             viewModelScope.launch {
                 if (authRepository.accessToken() == null) {
@@ -668,51 +653,12 @@ class CoursesViewModel
             }
         }
 
-        fun submitCourseReport(course: CourseItem) {
-            viewModelScope.launch {
-                try {
-                    courseRepository.report(course.course)
-                    _reportCourseDialogState.value = null
-                    _event.value = CoursesUiEvent.ReportCourseSuccess
-                } catch (exception: CancellationException) {
-                    throw exception
-                } catch (_: NoNetworkException) {
-                    _event.value = CoursesUiEvent.NoNetworkConnection
-                } catch (exception: HttpException) {
-                    _event.value =
-                        when (exception.code()) {
-                            400 -> {
-                                dismissReportCourseDialog()
-                                CoursesUiEvent.CourseAlreadyReported
-                            }
-
-                            401 -> {
-                                CoursesUiEvent.ReportCourseUnauthorizedUser
-                            }
-
-                            else -> {
-                                CoursesUiEvent.ReportCourseUnknownFailure
-                            }
-                        }
-                } catch (_: Throwable) {
-                    _event.value = CoursesUiEvent.ReportCourseUnknownFailure
-                }
-            }
-        }
-
-        fun dismissReportCourseDialog() {
-            _reportCourseDialogState.value = null
-        }
-
         fun dismissAuthDialog() {
             _authDialogState.value = null
         }
 
-        fun onAuthSuccess(feature: AuthFeature) {
+        fun onAuthSuccess() {
             dismissAuthDialog()
-            if (feature is AuthFeature.ReportCourse) {
-                onReportCourse(feature.course)
-            }
         }
 
         private fun newCoursesListItem(

@@ -121,4 +121,8 @@ public enum ErrorType {
     public String message(Object... messageArgs) {
         return this.message.formatted(messageArgs);
     }
+
+    public String getRawMessage() {
+        return this.message;
+    }
 }
