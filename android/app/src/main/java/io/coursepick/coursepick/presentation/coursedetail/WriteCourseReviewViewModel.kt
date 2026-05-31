@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.coursepick.coursepick.data.interceptor.NoNetworkException
 import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.course.CourseRepository
+import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.auth.AuthFeature
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -85,31 +86,54 @@ class WriteCourseReviewViewModel
                     courseRepository.submitReview(courseId, rating, reviewContent.value)
                     _uiEvent.emit(UiEvent.SubmitReviewSuccess)
 
+                    Logger.log(
+                        Logger.Event.Success("submit_review"),
+                        "courseId" to courseId,
+                        "rating" to rating,
+                    )
+
                     this@WriteCourseReviewViewModel.rating.value = null
                     reviewContent.value = ""
-                } catch (exception: CancellationException) {
-                    throw exception
-                } catch (_: NoNetworkException) {
-                    _uiEvent.emit(UiEvent.NoNetwork)
-                } catch (exception: HttpException) {
-                    _uiEvent.emit(
-                        when (exception.code()) {
-                            400 -> {
-                                UiEvent.CourseAlreadyReviewed
-                            }
-
-                            401 -> {
-                                _dialogState.value = dialogState.value.copy(authDialog = AuthFeature.WriteReview(courseId))
-                                return@launch
-                            }
-
-                            else -> {
-                                UiEvent.UnknownFailure
-                            }
-                        },
+                } catch (exception: Throwable) {
+                    Logger.log(
+                        Logger.Event.Failure("submit_review"),
+                        "exception" to exception.message.orEmpty(),
+                        "courseId" to courseId,
+                        "rating" to rating,
                     )
-                } catch (_: Throwable) {
-                    _uiEvent.emit(UiEvent.UnknownFailure)
+
+                    when (exception) {
+                        is CancellationException -> {
+                            throw exception
+                        }
+
+                        is NoNetworkException -> {
+                            _uiEvent.emit(UiEvent.NoNetwork)
+                        }
+
+                        is HttpException -> {
+                            _uiEvent.emit(
+                                when (exception.code()) {
+                                    400 -> {
+                                        UiEvent.CourseAlreadyReviewed
+                                    }
+
+                                    401 -> {
+                                        _dialogState.value = dialogState.value.copy(authDialog = AuthFeature.WriteReview(courseId))
+                                        return@launch
+                                    }
+
+                                    else -> {
+                                        UiEvent.UnknownFailure
+                                    }
+                                },
+                            )
+                        }
+
+                        else -> {
+                            _uiEvent.emit(UiEvent.UnknownFailure)
+                        }
+                    }
                 } finally {
                     isSubmitting.value = false
                 }

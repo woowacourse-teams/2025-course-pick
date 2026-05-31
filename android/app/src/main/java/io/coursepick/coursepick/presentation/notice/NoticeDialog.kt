@@ -2,6 +2,7 @@ package io.coursepick.coursepick.presentation.notice
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -9,10 +10,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -24,7 +28,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import coil3.compose.AsyncImage
+import coil3.compose.SubcomposeAsyncImage
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.notice.Notice
 import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
@@ -49,33 +53,45 @@ fun NoticeDialog(
                     notice.targetUrl?.let { url: String -> onOpenUrl(url) }
                 },
             ) {
-                AsyncImage(
+                SubcomposeAsyncImage(
                     model = notice.imageUrl,
                     contentDescription = null,
                     contentScale = ContentScale.Fit,
+                    loading = {
+                        Box(contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator(
+                                color = colorResource(R.color.item_primary),
+                                modifier = Modifier.size(80.dp),
+                            )
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth(),
                 )
 
-                Spacer(Modifier.height(20.dp))
+                if (!notice.title.isNullOrBlank()) {
+                    Spacer(Modifier.height(20.dp))
 
-                Text(
-                    text = notice.title,
-                    fontSize = 16.sp,
-                    color = colorResource(R.color.item_primary),
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth(),
-                )
+                    Text(
+                        text = notice.title,
+                        fontSize = 16.sp,
+                        color = colorResource(R.color.item_primary),
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
 
-                Spacer(Modifier.height(12.dp))
+                if (!notice.description.isNullOrBlank()) {
+                    Spacer(Modifier.height(12.dp))
 
-                Text(
-                    text = notice.description,
-                    fontSize = 14.sp,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth(),
-                    color = colorResource(R.color.item_secondary),
-                )
+                    Text(
+                        text = notice.description,
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                        color = colorResource(R.color.item_secondary),
+                    )
+                }
             }
 
             Spacer(Modifier.height(12.dp))
