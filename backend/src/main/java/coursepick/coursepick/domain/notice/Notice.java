@@ -4,13 +4,13 @@ import lombok.Getter;
 
 @Getter
 public enum Notice {
-//    VERIFIED_LOCATION(
-//            "verified_location",
-//            "강남·송파 코스는 저희가 검증했어요\n 다른 지역은 아직 검증 중이에요 🏃",
-//            "* 메뉴 탭에서 다시 확인할 수 있어요.",
-//            "/verified_location.png",
-//            null
-//    ),
+    VERIFIED_LOCATION(
+            "feature_courseadd",
+            "\"나의 코스\" 기능이 추가됐어요!",
+            "직접 나만의 코스를 만들고 공유해보세요.",
+            "/feature_courseadd.png",
+            null
+    ),
     ;
     private final String id;
     private final String title;
