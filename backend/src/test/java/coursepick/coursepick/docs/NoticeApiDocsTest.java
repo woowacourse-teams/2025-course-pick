@@ -39,25 +39,15 @@ class NoticeApiDocsTest extends AbstractApiDocsSupport {
                                         fieldWithPath("notices")
                                                 .description("공지사항 리스트"),
                                         fieldWithPath("notices[].id")
-                                                .description("공지사항 ID")
-                                                .type(STRING)
-                                                .optional(),
+                                                .description("공지사항 ID"),
                                         fieldWithPath("notices[].title")
-                                                .description("공지사항 제목")
-                                                .type(STRING)
-                                                .optional(),
+                                                .description("공지사항 제목"),
                                         fieldWithPath("notices[].description")
-                                                .description("공지사항 내용")
-                                                .type(STRING)
-                                                .optional(),
+                                                .description("공지사항 내용"),
                                         fieldWithPath("notices[].imageUrl")
-                                                .description("공지사항 이미지 URL")
-                                                .type(STRING)
-                                                .optional(),
+                                                .description("공지사항 이미지 URL"),
                                         fieldWithPath("notices[].targetUrl")
                                                 .description("공지사항 타겟 URL")
-                                                .type(STRING)
-                                                .optional()
                                 ).build())));
     }
 }
