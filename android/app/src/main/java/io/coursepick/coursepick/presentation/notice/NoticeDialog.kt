@@ -28,7 +28,6 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import coil3.compose.AsyncImage
 import coil3.compose.SubcomposeAsyncImage
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.notice.Notice
