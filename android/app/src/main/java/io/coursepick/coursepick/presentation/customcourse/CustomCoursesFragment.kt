@@ -30,6 +30,7 @@ import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.course.CoursesActivity
 import io.coursepick.coursepick.presentation.course.CoursesViewModel
+import io.coursepick.coursepick.presentation.coursedetail.CourseDetailActivity
 import io.coursepick.coursepick.presentation.createcustomcourse.CoordinateUiModel
 import io.coursepick.coursepick.presentation.createcustomcourse.CreateCustomCourseActivity
 import io.coursepick.coursepick.presentation.createcustomcourse.toUiModel
@@ -85,6 +86,9 @@ class CustomCoursesFragment(
                             (activity as? CoursesActivity)?.navigateToCourse(courseItem)
                         }
                     },
+                    onNavigateToDetail = { customCourse: CustomCourseItem ->
+                        startActivity(CourseDetailActivity.intent(requireActivity(), customCourse.course.id))
+                    },
                     modifier = Modifier.nestedScroll(nestedScrollInterop),
                 )
 
@@ -131,7 +135,7 @@ class CustomCoursesFragment(
                             }
 
                             CustomCourseUiEvent.UnauthorizedUser -> {
-                                showToastMessage(R.string.custom_courses_unauthorized_user_message)
+                                showToastMessage(R.string.failure_unauthorized_user_toast_message)
                             }
 
                             is CustomCourseUiEvent.SelectCustomCourse -> {

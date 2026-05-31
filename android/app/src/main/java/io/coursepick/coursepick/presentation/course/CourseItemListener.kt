@@ -7,5 +7,5 @@ interface CourseItemListener {
 
     fun navigateToCourse(course: CourseItem)
 
-    fun report(course: CourseItem)
+    fun navigateToDetail(course: CourseItem)
 }

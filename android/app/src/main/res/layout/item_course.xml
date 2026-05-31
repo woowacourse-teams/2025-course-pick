@@ -22,20 +22,23 @@
         android:layout_height="wrap_content"
         android:background="@drawable/background_course_item_selector"
         android:onClick="@{() -> courseItemListener.select(course)}"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="10dp">
+        android:paddingVertical="10dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="4dp">
 
         <TextView
             android:id="@+id/courseName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="10dp"
             android:ellipsize="end"
             android:maxLines="1"
             android:text="@{course.name}"
             android:textColor="@color/item_primary"
             android:textSize="16sp"
             android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/courseLength"
             app:layout_constraintEnd_toStartOf="@id/courseFavoriteButton"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -49,9 +52,9 @@
             android:gravity="center_vertical"
             android:paddingHorizontal="10dp"
             android:paddingVertical="4dp"
-            app:layout_constraintBottom_toBottomOf="@id/courseNavigationButton"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/courseNavigationButton">
+            app:layout_constraintTop_toBottomOf="@id/courseName">
 
             <ImageView
                 android:id="@+id/courseLengthIcon"
@@ -91,19 +94,6 @@
             tools:text="10m만큼 떨어짐" />
 
         <ImageView
-            android:id="@+id/courseReportButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:onClick="@{() -> courseItemListener.report(course)}"
-            android:padding="10dp"
-            android:src="@drawable/icon_report_course"
-            app:layout_constraintBottom_toTopOf="@id/courseNavigationButton"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/item_secondary" />
-
-        <ImageView
             android:id="@+id/courseFavoriteButton"
             android:layout_width="36dp"
             android:layout_height="36dp"
@@ -131,8 +121,20 @@
             android:textSize="12sp"
             app:drawableStartCompat="@drawable/icon_navigate"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/courseReportButton" />
+            app:layout_constraintEnd_toStartOf="@+id/courseDetailButton"
+            app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageView
+            android:id="@+id/courseDetailButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="@string/course_item_navigate_to_detail_button_description"
+            android:onClick="@{() -> courseItemListener.navigateToDetail(course)}"
+            android:padding="12dp"
+            android:src="@drawable/icon_course_detail"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/item_primary" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

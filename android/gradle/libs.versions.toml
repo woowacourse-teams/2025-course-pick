@@ -25,7 +25,8 @@ preferenceKtx = "1.2.1"
 retrofit = "3.0.0"
 kotlinx-serialization-json = "1.8.1"
 kotlinx-coroutines-android = "1.8.0"
-lifecycle-viewmodel-ktx = "2.7.0"
+lifecycle-viewmodel-ktx = "2.10.0"
+lifecycle-viewmodel-compose = "2.10.0"
 retrofit2-kotlinx-serialization-converter = "1.0.0"
 kakao-maps = "2.12.8"
 naver-maps = "3.23.2"
@@ -48,6 +49,7 @@ coil = "3.0.4"
 tinkAndroid = "1.20.0"
 coreSplashscreen = "1.2.0"
 mapsplatformSecrets = "2.0.1"
+navigation3 = "1.1.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -78,6 +80,7 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines-android" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle-viewmodel-ktx" }
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle-viewmodel-compose" }
 retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2-kotlinx-serialization-converter" }
 assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj-core" }
 kakao-maps = { module = "com.kakao.maps.open:android", version.ref = "kakao-maps" }
@@ -104,6 +107,8 @@ coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref 
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
 tink-android = { module = "com.google.crypto.tink:tink-android", version.ref = "tinkAndroid" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
+androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigation3" }
+androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

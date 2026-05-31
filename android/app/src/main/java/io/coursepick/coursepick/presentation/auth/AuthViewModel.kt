@@ -29,10 +29,7 @@ class AuthViewModel
                 onSuccess = { socialAccessToken: String ->
                     viewModelScope.launch {
                         runCatching {
-                            authRepository.sign(
-                                authenticator.socialType,
-                                SocialToken(socialAccessToken),
-                            )
+                            authRepository.sign(authenticator.socialType, SocialToken(socialAccessToken))
                         }.onSuccess { token: String ->
                             authRepository.saveAccessToken(token)
                             _uiEvent.emit(AuthUiEvent.AuthenticateSuccess(feature))

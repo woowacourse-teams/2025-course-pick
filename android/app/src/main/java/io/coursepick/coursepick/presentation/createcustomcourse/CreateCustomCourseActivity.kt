@@ -207,7 +207,7 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                                 Toast
                                     .makeText(
                                         this@CreateCustomCourseActivity,
-                                        getString(R.string.create_custom_course_unauthorized_user_message),
+                                        getString(R.string.failure_unauthorized_user_toast_message),
                                         Toast.LENGTH_SHORT,
                                     ).show()
                             }
