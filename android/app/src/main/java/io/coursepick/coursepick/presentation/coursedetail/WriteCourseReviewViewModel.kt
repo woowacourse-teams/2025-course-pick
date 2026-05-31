@@ -90,7 +90,6 @@ class WriteCourseReviewViewModel
                         Logger.Event.Success("submit_review"),
                         "courseId" to courseId,
                         "rating" to rating,
-                        "content" to reviewContent.value,
                     )
 
                     this@WriteCourseReviewViewModel.rating.value = null
@@ -101,7 +100,6 @@ class WriteCourseReviewViewModel
                         "exception" to exception.message.orEmpty(),
                         "courseId" to courseId,
                         "rating" to rating,
-                        "content" to reviewContent.value,
                     )
 
                     when (exception) {

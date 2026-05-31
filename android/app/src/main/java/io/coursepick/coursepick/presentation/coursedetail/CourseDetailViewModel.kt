@@ -231,15 +231,13 @@ class CourseDetailViewModel
                             Logger.Event.Success("delete_review"),
                             "courseId" to uiState.data.id,
                             "reviewId" to review.id,
-                            "reviewContent" to review.content,
                         )
                     } catch (exception: Throwable) {
                         Logger.log(
-                            Logger.Event.Success("delete_review"),
+                            Logger.Event.Failure("delete_review"),
                             "exception" to exception.message.orEmpty(),
                             "courseId" to uiState.data.id,
                             "reviewId" to review.id,
-                            "reviewContent" to review.content,
                         )
 
                         when (exception) {
@@ -292,15 +290,13 @@ class CourseDetailViewModel
                             Logger.Event.Success("report_review"),
                             "courseId" to uiState.data.id,
                             "reviewId" to review.id,
-                            "reviewContent" to review.content,
                         )
                     } catch (exception: Throwable) {
                         Logger.log(
-                            Logger.Event.Success("report_review"),
+                            Logger.Event.Failure("report_review"),
                             "exception" to exception.message.orEmpty(),
                             "courseId" to uiState.data.id,
                             "reviewId" to review.id,
-                            "reviewContent" to review.content,
                         )
 
                         when (exception) {
