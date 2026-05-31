@@ -12,7 +12,6 @@ osrm.url: ${OSRM_URL}
 admin:
   token: ${ADMIN_TOKEN}
   kakao-map-api-key: ${ADMIN_KAKAO_MAP_API_KEY}
-notice.base-url: http://dev.coursepick.cloud/images
 jwt.secret-key: ${JWT_SECRET_KEY}
 discord.webhook-url: ${DISCORD_WEBHOOK_URL}
 gemini.api-key: ${GEMINI_API_KEY}

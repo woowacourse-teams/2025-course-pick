@@ -4,17 +4,18 @@ import coursepick.coursepick.domain.notice.Notice;
 
 public record NoticeWebResponse(
         String id,
-        String imageUrl,
         String title,
-        String description
+        String description,
+        String imageUrl,
+        String targetUrl
 ) {
-    public static NoticeWebResponse create(Notice notice, String baseUrl) {
-        String fullImageUrl = baseUrl + "/" + notice.getImageFileName();
+    public static NoticeWebResponse create(Notice notice) {
         return new NoticeWebResponse(
                 notice.getId(),
-                fullImageUrl,
                 notice.getTitle(),
-                notice.getDescription()
+                notice.getDescription(),
+                notice.getImageUrl(),
+                notice.getTargetUrl()
         );
     }
 }
