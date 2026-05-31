@@ -32,8 +32,8 @@ android {
         applicationId = "io.coursepick.coursepick"
         minSdk = 28
         targetSdk = 36
-        versionCode = 10211
-        versionName = "1.2.11"
+        versionCode = 10212
+        versionName = "1.2.12"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
