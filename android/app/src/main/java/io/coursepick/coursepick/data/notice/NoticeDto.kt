@@ -1,5 +1,6 @@
 package io.coursepick.coursepick.data.notice
 
+import io.coursepick.coursepick.BuildConfig
 import io.coursepick.coursepick.domain.notice.Notice
 import kotlinx.serialization.Serializable
 
@@ -14,7 +15,7 @@ data class NoticeDto(
     fun toNotice(): Notice =
         Notice(
             id = id,
-            imageUrl = imageUrl,
+            imageUrl = "${BuildConfig.BASE_URL}/images$imageUrl",
             title = title,
             description = description,
             targetUrl = targetUrl,
