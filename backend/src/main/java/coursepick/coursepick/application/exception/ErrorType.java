@@ -119,7 +119,8 @@ public enum ErrorType {
     }
 
     public String message(Object... messageArgs) {
-        return this.message.formatted(messageArgs);
+        String formattedMessage = this.message.formatted(messageArgs);
+        return "%s [ErrorCode = %s]".formatted(formattedMessage, this.name());
     }
 
     public String getRawMessage() {

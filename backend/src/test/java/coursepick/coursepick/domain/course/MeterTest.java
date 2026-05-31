@@ -24,7 +24,7 @@ class MeterTest {
 
         Assertions.assertThatThrownBy(() -> meter.getRateOf(other))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("0을 기준으로 비율을 계산할 수 없습니다.");
+                .hasMessageContaining("0을 기준으로 비율을 계산할 수 없습니다.");
 
     }
 }
