@@ -23,10 +23,9 @@ class GpxCourseParserTest {
                 new Coordinate(37.4869515, 126.9230875),
                 new Coordinate(37.4845100, 126.9255380));
 
-        var courses = sut.parse(new CourseFile("테스트코스", CourseFileExtension.GPX, inputStream), ADMIN_USER);
+        var result = sut.parse(new CourseFile("테스트코스", CourseFileExtension.GPX, inputStream), ADMIN_USER);
 
-        assertThat(courses.size()).isEqualTo(1);
-        assertThat(courses).extracting(course -> course.name().value())
-                .contains("테스트코스");
+        assertThat(result.courses().size()).isEqualTo(1);
+        assertThat(result.courses().get(0).name().value()).isEqualTo("test-course");
     }
 }

@@ -23,7 +23,7 @@ class FindDraftRouteTest {
     @BeforeEach
     void setUp() {
         routeFinder = mock(RouteFinder.class);
-        courseService = new CourseApplicationService(null, null, routeFinder, null, null, null);
+        courseService = new CourseApplicationService(null, null, routeFinder, null, null, null, null);
     }
 
 

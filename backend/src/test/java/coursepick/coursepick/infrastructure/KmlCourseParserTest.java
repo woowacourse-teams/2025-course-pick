@@ -40,10 +40,10 @@ class KmlCourseParserTest {
                 """;
         var inputStream = new ByteArrayInputStream(kmlContent.getBytes(StandardCharsets.UTF_8));
 
-        var courses = sut.parse(new CourseFile("테스트코스", CourseFileExtension.KML, inputStream), ADMIN_USER);
+        var result = sut.parse(new CourseFile("테스트코스", CourseFileExtension.KML, inputStream), ADMIN_USER);
 
-        assertThat(courses).hasSize(1);
-        var course = courses.getFirst();
+        assertThat(result.courses()).hasSize(1);
+        var course = result.courses().get(0);
         assertThat(course.name().value()).isEqualTo("테스트코스");
         var firstCoordinate = course.coordinates().getFirst();
         assertThat(firstCoordinate.latitude()).isEqualTo(37.5224898);
@@ -51,7 +51,7 @@ class KmlCourseParserTest {
     }
 
     @Test
-    void 좌표가_없는_Placemark는_무시한다() {
+    void 좌표가_없는_Placemark는_무시하고_사유를_남긴다() {
         var kmlContent = """
                 <?xml version="1.0" encoding="UTF-8"?>
                 <kml xmlns="http://www.opengis.net/kml/2.2">
@@ -64,8 +64,10 @@ class KmlCourseParserTest {
                 """;
         var inputStream = new ByteArrayInputStream(kmlContent.getBytes(StandardCharsets.UTF_8));
 
-        var courses = sut.parse(new CourseFile("테스트코스", CourseFileExtension.KML, inputStream), ADMIN_USER);
+        var result = sut.parse(new CourseFile("테스트코스", CourseFileExtension.KML, inputStream), ADMIN_USER);
 
-        assertThat(courses).isEmpty();
+        assertThat(result.courses()).isEmpty();
+        assertThat(result.skippedReasons()).hasSize(1);
+        assertThat(result.skippedReasons().get(0)).contains("좌표 부족");
     }
 }
