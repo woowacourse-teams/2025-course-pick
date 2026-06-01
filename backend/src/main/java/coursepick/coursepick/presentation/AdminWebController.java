@@ -112,8 +112,8 @@ public class AdminWebController {
         User adminUser = adminHolder.getAdminId();
         for (MultipartFile file : files) {
             try (CourseFile courseFile = CourseFile.from(file)) {
-                List<Course> courses = courseParserFacade.parse(courseFile, adminUser);
-                courseRepository.saveAll(courses);
+                ParsedCourses result = courseParserFacade.parse(courseFile, adminUser);
+                courseRepository.saveAll(result.courses());
             }
         }
     }

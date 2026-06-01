@@ -2,6 +2,7 @@ package coursepick.coursepick.presentation;
 
 import coursepick.coursepick.application.CourseApplicationService;
 import coursepick.coursepick.application.dto.CourseDetailResponse;
+import coursepick.coursepick.application.dto.CourseImportResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.CourseFindCondition;
@@ -116,15 +117,14 @@ public class CourseV1WebController {
 
     @Login
     @PostMapping("/courses/file")
-    public void importFilesToCustomCourse(
+    public CourseImportWebResponse importFilesToCustomCourse(
             @RequestParam("file") MultipartFile multipartFile,
-            @RequestParam("name") String name,
             @UserId String userId
     ) {
-        courseApplicationService.importCustomCourseFile(multipartFile, name, userId);
+        CourseImportResponse response = courseApplicationService.importCustomCourseFile(multipartFile, userId);
+        return CourseImportWebResponse.from(response);
     }
 
-    @Override
     @Login
     @PostMapping("/courses/{id}/report")
     public void reportCourse(@PathVariable("id") String id, @UserId String userId) {
