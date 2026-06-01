@@ -60,7 +60,7 @@ fun CourseLengthChip(
             fontSize = 13.sp,
             fontWeight = FontWeight.Bold,
             overflow = TextOverflow.Ellipsis,
-            maxLines = 1
+            maxLines = 1,
         )
     }
 }

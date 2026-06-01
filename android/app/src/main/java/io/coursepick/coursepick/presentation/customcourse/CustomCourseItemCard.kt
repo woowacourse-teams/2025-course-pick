@@ -68,7 +68,7 @@ fun CustomCourseItemCard(
                     .background(backgroundColor)
                     .clickable { onSelect() }
                     .padding(vertical = 8.dp)
-                    .padding(start = 20.dp)
+                    .padding(start = 20.dp),
         ) {
             Column(Modifier.weight(1f)) {
                 Text(
@@ -85,7 +85,7 @@ fun CustomCourseItemCard(
                 Row(Modifier.height(IntrinsicSize.Min).fillMaxWidth()) {
                     CourseLengthChip(
                         length = customCourse.length,
-                        modifier = Modifier.fillMaxHeight()
+                        modifier = Modifier.fillMaxHeight(),
                     )
 
                     if (customCourse.distance != null) {
@@ -93,7 +93,7 @@ fun CustomCourseItemCard(
 
                         CourseDistanceChip(
                             distance = customCourse.distance,
-                            modifier = Modifier.fillMaxHeight()
+                            modifier = Modifier.fillMaxHeight(),
                         )
                     }
                 }
