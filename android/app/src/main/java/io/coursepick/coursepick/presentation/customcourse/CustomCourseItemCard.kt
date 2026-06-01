@@ -3,8 +3,10 @@ package io.coursepick.coursepick.presentation.customcourse
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -57,23 +59,18 @@ fun CustomCourseItemCard(
     val horizontalDividerColor: Color =
         if (customCourse.selected) backgroundColor else colorResource(R.color.background_border_light)
 
-    Column(
-        modifier = modifier.fillMaxWidth(),
-    ) {
+    Column(modifier.fillMaxWidth()) {
         Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier =
                 Modifier
                     .fillMaxWidth()
                     .background(backgroundColor)
                     .clickable { onSelect() }
-                    .padding(vertical = 10.dp)
-                    .padding(start = 16.dp, end = 4.dp),
-            verticalAlignment = Alignment.CenterVertically,
+                    .padding(vertical = 8.dp)
+                    .padding(start = 20.dp),
         ) {
-            Column(
-                modifier =
-                    Modifier.weight(1f),
-            ) {
+            Column(Modifier.weight(1f)) {
                 Text(
                     text = customCourse.name,
                     color = colorResource(R.color.item_primary),
@@ -85,16 +82,22 @@ fun CustomCourseItemCard(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Row {
-                    CourseLengthChip(length = customCourse.length)
+                Row(Modifier.height(IntrinsicSize.Min).fillMaxWidth()) {
+                    CourseLengthChip(
+                        length = customCourse.length,
+                        modifier = Modifier.fillMaxHeight(),
+                    )
+
                     if (customCourse.distance != null) {
-                        Spacer(modifier = Modifier.width(10.dp))
-                        CourseDistanceChip(distance = customCourse.distance)
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        CourseDistanceChip(
+                            distance = customCourse.distance,
+                            modifier = Modifier.fillMaxHeight(),
+                        )
                     }
                 }
             }
-
-            Spacer(modifier = Modifier.width(12.dp))
 
             CourseNavigationButton(onClick = onNavigateToCourse)
 

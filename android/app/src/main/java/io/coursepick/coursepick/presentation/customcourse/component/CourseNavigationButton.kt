@@ -5,7 +5,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -31,7 +30,6 @@ fun CourseNavigationButton(
     Row(
         modifier =
             modifier
-                .height(36.dp)
                 .background(
                     color = colorResource(R.color.background_secondary),
                     shape = shape,
