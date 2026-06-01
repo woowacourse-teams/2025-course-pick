@@ -3,6 +3,7 @@ package coursepick.coursepick.application;
 import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.domain.course.Course;
 import coursepick.coursepick.domain.course.CourseParser;
+import coursepick.coursepick.domain.course.ParsedCourses;
 import coursepick.coursepick.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,13 +20,13 @@ public class CourseParserFacade {
 
     private final List<CourseParser> parsers;
 
-    public List<Course> parse(CourseFile file, User user) {
+    public ParsedCourses parse(CourseFile file, User user) {
         CourseParser parser = findParser(file);
         log.debug("코스 파싱을 시작합니다. 선택된 구현체={}", parser.getClass().getSimpleName());
 
-        List<Course> result = parser.parse(file, user);
+        ParsedCourses result = parser.parse(file, user);
 
-        log.debug("{}개의 코스를 파싱했습니다.", result.size());
+        log.debug("{}개의 코스를 파싱했습니다. (스킵: {}개)", result.courses().size(), result.skippedReasons().size());
         return result;
     }
 
