@@ -7,6 +7,7 @@ import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.Course;
 import coursepick.coursepick.domain.course.CourseName;
 import coursepick.coursepick.domain.course.CourseParser;
+import coursepick.coursepick.domain.course.ParsedCourses;
 import coursepick.coursepick.domain.user.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -33,8 +34,9 @@ public class KmlCourseParser implements CourseParser {
     }
 
     @Override
-    public List<Course> parse(CourseFile file, User user) {
+    public ParsedCourses parse(CourseFile file, User user) {
         List<Course> courses = new ArrayList<>();
+        List<String> skippedReasons = new ArrayList<>();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         NodeList placemarks;
 
@@ -53,10 +55,15 @@ public class KmlCourseParser implements CourseParser {
                 Course course = parseCourse(placemarkElement, user);
                 if (course != null) {
                     courses.add(course);
+                } else {
+                    String parsedName = parseCourseName(placemarkElement);
+                    String reason = String.format("%d번째 트랙: %s", 
+                            i + 1, (parsedName == null || parsedName.isBlank()) ? "이름 누락" : "좌표 부족");
+                    skippedReasons.add(reason);
                 }
             }
         }
-        return courses;
+        return new ParsedCourses(courses, skippedReasons);
     }
 
     private Course parseCourse(Element placemark, User user) {
