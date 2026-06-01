@@ -33,6 +33,8 @@ import static org.mockito.Mockito.doThrow;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -629,7 +631,7 @@ class CourseApiDocsTest extends AbstractApiDocsSupport {
                             preprocessResponse(prettyPrint()),
                             resource(ResourceSnippetParameters.builder()
                                     .tag(TAG)
-                                    .summary("유저 코스 파일 저장")
+                                    .summary("커스텀 코스 파일 생성")
                                     .description("GPX 또는 KML 파일을 업로드하여 커스텀 코스들을 생성합니다. (로그인 필요)")
                                     .responseFields(
                                             fieldWithPath("successCount").description("성공적으로 저장된 코스 개수"),
@@ -637,7 +639,10 @@ class CourseApiDocsTest extends AbstractApiDocsSupport {
                                             fieldWithPath("skippedCount").description("제외된 코스 개수"),
                                             fieldWithPath("skippedReasons[]").description("코스 제외 사유 리스트")
                                     )
-                                    .build())));
+                                    .build()),
+                            requestParts(
+                                    partWithName("file").description("업로드할 GPX 또는 KML 파일")
+                            )));
         }
     }
 
