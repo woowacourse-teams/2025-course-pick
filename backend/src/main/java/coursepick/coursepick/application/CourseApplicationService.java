@@ -2,6 +2,7 @@ package coursepick.coursepick.application;
 
 import coursepick.coursepick.application.dto.CourseDetailResponse;
 import coursepick.coursepick.application.dto.CourseFile;
+import coursepick.coursepick.application.dto.CourseImportResponse;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
 import coursepick.coursepick.application.exception.ErrorType;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static coursepick.coursepick.application.exception.ErrorType.*;
@@ -46,16 +48,30 @@ public class CourseApplicationService {
     }
 
     @Transactional
-    public void importCustomCourseFile(MultipartFile file, String name, String userId) {
-        CourseName courseName = new CourseName(name);
-        validateDuplicatedCourseName(courseName);
+    public CourseImportResponse importCustomCourseFile(MultipartFile file, String userId) {
         User user = getUser(userId);
 
         try (CourseFile courseFile = CourseFile.from(file)) {
-            Course course = courseParserFacade.parse(courseFile, user).getFirst();
-            course.changeName(courseName.value());
+            ParsedCourses parsedCourses = courseParserFacade.parse(courseFile, user);
+            
+            List<String> successNames = new ArrayList<>();
+            List<String> skippedReasons = new ArrayList<>(parsedCourses.skippedReasons());
 
-            courseRepository.save(course);
+            for (Course course : parsedCourses.courses()) {
+                try {
+                    validateDuplicatedCourseName(course.name());
+                    courseRepository.save(course);
+                    successNames.add(course.name().value());
+                } catch (IllegalStateException e) {
+                    skippedReasons.add(String.format("코스 '%s': 중복된 이름", course.name().value()));
+                }
+            }
+            return new CourseImportResponse(
+                    successNames.size(),
+                    successNames,
+                    skippedReasons.size(),
+                    skippedReasons
+            );
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
