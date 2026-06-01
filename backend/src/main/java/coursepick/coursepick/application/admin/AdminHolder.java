@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class AdminHolder {
+
     private final UserRepository userRepository;
 
     public User getAdminId() {
