@@ -23,13 +23,15 @@
         android:background="@drawable/background_course_item_selector"
         android:onClick="@{() -> courseItemListener.select(course)}"
         android:paddingVertical="8dp"
-        android:paddingStart="10dp">
+        android:paddingStart="20dp"
+        android:paddingEnd="8dp">
 
         <ImageView
             android:id="@+id/courseFavoriteButton"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:background="@drawable/background_favorite"
+            android:contentDescription="@string/course_item_favorite_button_description"
             android:onClick="@{() -> courseItemListener.toggleFavorite(course)}"
             android:padding="6dp"
             android:src="@{course.favorite ? @drawable/icon_favorite : @drawable/icon_not_favorite}"
@@ -91,7 +93,7 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:textColor="@color/item_primary"
-                    android:textSize="12sp"
+                    android:textSize="13sp"
                     android:textStyle="bold"
                     tools:text="5km" />
             </LinearLayout>
@@ -101,14 +103,14 @@
                 courseDistance="@{course.distance}"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="8dp"
                 android:background="@drawable/background_course_detail"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="4dp"
                 android:textColor="@color/point_primary"
-                android:textSize="12sp"
+                android:textSize="13sp"
                 android:textStyle="bold"
                 android:visibility="@{course.distance != null ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toBottomOf="@id/courseLength"

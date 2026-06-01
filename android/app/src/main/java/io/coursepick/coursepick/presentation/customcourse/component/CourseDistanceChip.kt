@@ -47,7 +47,7 @@ fun CourseDistanceChip(
                     formattedMeter(LocalContext.current, distance.meter),
                 ),
             color = colorResource(R.color.point_primary),
-            fontSize = 12.sp,
+            fontSize = 13.sp,
             fontWeight = FontWeight.Bold,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,

@@ -57,7 +57,7 @@ fun CourseLengthChip(
                     meter = length.meter,
                 ),
             color = colorResource(R.color.item_primary),
-            fontSize = 12.sp,
+            fontSize = 13.sp,
             fontWeight = FontWeight.Bold,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1

@@ -31,7 +31,6 @@ fun CourseNavigationButton(
     Row(
         modifier =
             modifier
-                .height(36.dp)
                 .background(
                     color = colorResource(R.color.background_secondary),
                     shape = shape,
