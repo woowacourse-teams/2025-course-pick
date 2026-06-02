@@ -1,10 +1,6 @@
 package coursepick.coursepick.application;
 
-import coursepick.coursepick.application.dto.CourseDetailResponse;
-import coursepick.coursepick.application.dto.CourseFile;
-import coursepick.coursepick.application.dto.CourseImportResponse;
-import coursepick.coursepick.application.dto.CourseResponse;
-import coursepick.coursepick.application.dto.CoursesResponse;
+import coursepick.coursepick.application.dto.*;
 import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.course.*;
 import coursepick.coursepick.domain.course.event.ReviewAddedEvent;
@@ -53,7 +49,7 @@ public class CourseApplicationService {
 
         try (CourseFile courseFile = CourseFile.from(file)) {
             ParsedCourses parsedCourses = courseParserFacade.parse(courseFile, user);
-            
+
             List<String> successNames = new ArrayList<>();
             List<String> skippedReasons = new ArrayList<>(parsedCourses.skippedReasons());
 
@@ -63,9 +59,11 @@ public class CourseApplicationService {
                     courseRepository.save(course);
                     successNames.add(course.name().value());
                 } catch (IllegalStateException e) {
-                    skippedReasons.add(String.format("코스 '%s': 중복된 이름", course.name().value()));
+                    log.info("이미 코스 네임이 존재합니다. : {}", course.name().value());
+                    skippedReasons.add("코스 '%s': 중복된 이름".formatted(course.name().value()));
                 }
             }
+
             return new CourseImportResponse(
                     successNames.size(),
                     successNames,
