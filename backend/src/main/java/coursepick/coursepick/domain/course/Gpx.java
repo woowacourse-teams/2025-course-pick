@@ -32,49 +32,98 @@ public class Gpx {
         return new Gpx(course.id(), course.name().value(), coordinates);
     }
 
-    public static Gpx from(CourseFile file) {
+    public record GpxParseResult(
+            List<Gpx> gpxList,
+            List<String> skippedReasons
+    ) {
+    }
+
+    public static GpxParseResult from(CourseFile file) {
         try {
             XMLInputFactory xif = XMLInputFactory.newInstance();
             XMLStreamReader xsr = xif.createXMLStreamReader(file.inputStream());
-            String id = null;
-            Double lat = null, lon = null;
+            
+            List<Gpx> gpxList = new ArrayList<>();
+            List<String> skippedReasons = new ArrayList<>();
+            String globalName = null;
+            String currentId = null;
+            String currentName = null;
+            List<Coordinate> currentCoordinates = new ArrayList<>();
             boolean hasExtensions = false;
+            boolean inTrack = false;
+            boolean inMetadata = false;
 
-            List<Coordinate> coordinates = new ArrayList<>();
-
+            int trackIndex = 0;
             while (xsr.hasNext()) {
                 int event = xsr.next();
 
                 if (event == XMLStreamConstants.START_ELEMENT) {
                     String localName = xsr.getLocalName();
-                    if ("extensions".equals(localName)) {
+                    if ("metadata".equals(localName)) {
+                        inMetadata = true;
+                    } else if ("trk".equals(localName)) {
+                        inTrack = true;
+                        trackIndex++;
+                        currentId = null;
+                        currentName = null;
+                        currentCoordinates = new ArrayList<>();
+                    } else if ("name".equals(localName)) {
+                        xsr.next();
+                        if (xsr.getEventType() == XMLStreamConstants.CHARACTERS) {
+                            String nameValue = xsr.getText().trim();
+                            if (!nameValue.isEmpty()) {
+                                if (inTrack) {
+                                    currentName = nameValue;
+                                } else if (inMetadata || globalName == null) {
+                                    globalName = nameValue;
+                                }
+                            }
+                        }
+                    } else if ("extensions".equals(localName)) {
                         hasExtensions = true;
                     } else if ("trkpt".equals(localName)) {
-                        lat = Double.parseDouble(xsr.getAttributeValue(null, "lat"));
-                        lon = Double.parseDouble(xsr.getAttributeValue(null, "lon"));
+                        double lat = Double.parseDouble(xsr.getAttributeValue(null, "lat"));
+                        double lon = Double.parseDouble(xsr.getAttributeValue(null, "lon"));
+                        currentCoordinates.add(new Coordinate(lat, lon));
                     } else if ("id".equals(localName) && hasExtensions) {
                         xsr.next();
                         if (xsr.getEventType() == XMLStreamConstants.CHARACTERS) {
-                            id = xsr.getText();
+                            currentId = xsr.getText();
                         }
                     }
                 } else if (event == XMLStreamConstants.END_ELEMENT) {
                     String localName = xsr.getLocalName();
-                    if ("trkpt".equals(localName)) {
-                        if (lat != null && lon != null) {
-                            coordinates.add(new Coordinate(lat, lon));
+                    if ("trk".equals(localName)) {
+                        String finalName = extractFinalName(currentName);
+                        if (finalName != null && !currentCoordinates.isEmpty()) {
+                            gpxList.add(new Gpx(currentId, finalName, currentCoordinates));
+                        } else {
+                            String reason = String.format("%d번째 트랙: %s", 
+                                    trackIndex, (finalName == null) ? "이름 누락" : "좌표 부족");
+                            skippedReasons.add(reason);
+                            log.warn("GPX 파일에서 트랙 정보를 건너뜁니다. 파일명={}, 사유={}", file.name(), reason);
                         }
+                        inTrack = false;
+                    } else if ("metadata".equals(localName)) {
+                        inMetadata = false;
                     } else if ("extensions".equals(localName)) {
                         hasExtensions = false;
                     }
                 }
             }
 
-            return new Gpx(id, file.name(), coordinates);
+            return new GpxParseResult(gpxList, skippedReasons);
         } catch (XMLStreamException e) {
             log.warn("[EXCEPTION] CourseFile -> Gpx 변환에 실패했습니다.", LogContent.exception(e));
             throw new IllegalArgumentException(e);
         }
+    }
+
+    private static String extractFinalName(String trackName) {
+        if (trackName == null || trackName.isBlank()) {
+            return null;
+        }
+        return trackName;
     }
 
     public String toXmlContent() {

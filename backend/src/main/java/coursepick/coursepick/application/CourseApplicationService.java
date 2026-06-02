@@ -1,9 +1,6 @@
 package coursepick.coursepick.application;
 
-
-import coursepick.coursepick.application.dto.CourseDetailResponse;
-import coursepick.coursepick.application.dto.CourseResponse;
-import coursepick.coursepick.application.dto.CoursesResponse;
+import coursepick.coursepick.application.dto.*;
 import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.course.*;
 import coursepick.coursepick.domain.course.event.ReviewAddedEvent;
@@ -13,11 +10,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static coursepick.coursepick.application.exception.ErrorType.*;
@@ -30,6 +29,7 @@ public class CourseApplicationService {
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
     private final RouteFinder routeFinder;
+    private final CourseParserFacade courseParserFacade;
     private final Alerter alerter;
     private final CourseTagGenerator courseTagGenerator;
     private final ApplicationEventPublisher eventPublisher;
@@ -39,9 +39,40 @@ public class CourseApplicationService {
         CourseName courseName = new CourseName(name);
         validateDuplicatedCourseName(courseName);
         User user = getUser(userId);
-
         Course newCourse = new Course(null, courseName, coordinates, user);
         courseRepository.save(newCourse);
+    }
+
+    @Transactional
+    public CourseImportResponse importCustomCourseFile(MultipartFile file, String userId) {
+        User user = getUser(userId);
+
+        try (CourseFile courseFile = CourseFile.from(file)) {
+            ParsedCourses parsedCourses = courseParserFacade.parse(courseFile, user);
+
+            List<String> successNames = new ArrayList<>();
+            List<String> skippedReasons = new ArrayList<>(parsedCourses.skippedReasons());
+
+            for (Course course : parsedCourses.courses()) {
+                try {
+                    validateDuplicatedCourseName(course.name());
+                    courseRepository.save(course);
+                    successNames.add(course.name().value());
+                } catch (IllegalStateException e) {
+                    log.info("이미 코스 네임이 존재합니다. : {}", course.name().value());
+                    skippedReasons.add("코스 '%s': 중복된 이름".formatted(course.name().value()));
+                }
+            }
+
+            return new CourseImportResponse(
+                    successNames.size(),
+                    successNames,
+                    skippedReasons.size(),
+                    skippedReasons
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Transactional

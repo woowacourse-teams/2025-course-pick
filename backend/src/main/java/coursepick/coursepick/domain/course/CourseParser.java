@@ -9,5 +9,5 @@ public interface CourseParser {
 
     boolean canParse(CourseFile file);
 
-    List<Course> parse(CourseFile file, User user);
+    ParsedCourses parse(CourseFile file, User user);
 }

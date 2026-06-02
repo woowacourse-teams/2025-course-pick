@@ -2,6 +2,7 @@ package coursepick.coursepick.presentation;
 
 import coursepick.coursepick.application.CourseApplicationService;
 import coursepick.coursepick.application.dto.CourseDetailResponse;
+import coursepick.coursepick.application.dto.CourseImportResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.CourseFindCondition;
@@ -12,6 +13,7 @@ import coursepick.coursepick.security.UserId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -111,6 +113,16 @@ public class CourseV1WebController {
     public DraftRouteWebResponse findDraftRoute(@Valid @RequestBody FindDraftRouteWebRequest request) {
         DraftSegment route = courseApplicationService.findDraftRoute(request.toCoordinates());
         return DraftRouteWebResponse.of(route.coordinates(), route.length());
+    }
+
+    @Login
+    @PostMapping("/courses/file")
+    public CourseImportWebResponse importFilesToCustomCourse(
+            @RequestParam("file") MultipartFile multipartFile,
+            @UserId String userId
+    ) {
+        CourseImportResponse response = courseApplicationService.importCustomCourseFile(multipartFile, userId);
+        return CourseImportWebResponse.from(response);
     }
 
     @Login
