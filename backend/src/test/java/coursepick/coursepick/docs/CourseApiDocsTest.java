@@ -17,9 +17,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.web.servlet.ResultHandler;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName;
@@ -31,6 +33,8 @@ import static org.mockito.Mockito.doThrow;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -469,6 +473,44 @@ class CourseApiDocsTest extends AbstractApiDocsSupport {
         }
 
         @Test
+        void GPX_파일로_커스텀_코스_생성_API() throws Exception {
+            doNothing().when(courseApplicationService).addGpxCourse(any(), anyString());
+
+            var gpxFile = new MockMultipartFile(
+                    "gpx",
+                    "석촌호수.gpx",
+                    MediaType.APPLICATION_XML_VALUE,
+                    """
+                            <?xml version="1.0" encoding="UTF-8"?>
+                            <gpx version="1.1" creator="coursepick">
+                                <trk>
+                                    <name>석촌호수</name>
+                                    <trkseg>
+                                        <trkpt lat="37.514167" lon="127.103611"/>
+                                        <trkpt lat="37.515167" lon="127.104611"/>
+                                    </trkseg>
+                                </trk>
+                            </gpx>
+                            """.getBytes(StandardCharsets.UTF_8));
+
+            mockMvc.perform(multipart("/v1/courses/file")
+                            .file(gpxFile)
+                            .header("Authorization", "Bearer " + "test.jwt.token")
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andDo(MockMvcRestDocumentationWrapper.document("course-import-file",
+                            preprocessRequest(prettyPrint()),
+                            preprocessResponse(prettyPrint()),
+                            requestParts(
+                                    partWithName("gpx").description("업로드할 GPX 파일")),
+                            resource(ResourceSnippetParameters.builder()
+                                    .tag(TAG)
+                                    .summary("GPX 파일로 커스텀 코스 생성")
+                                    .description("GPX 파일을 업로드하여 커스텀 코스를 생성합니다. (로그인 필요)")
+                                    .build())));
+        }
+
+        @Test
         void 코스_신고_API() throws Exception {
             doNothing().when(courseApplicationService).reportCourse(anyString(), anyString());
 
@@ -883,6 +925,59 @@ class CourseApiDocsTest extends AbstractApiDocsSupport {
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isConflict())
                     .andDo(documentConflict("course-add-custom-409", "커스텀 코스 생성"));
+        }
+
+        @Test
+        void GPX_파일로_커스텀_코스_생성_API_400_에러_확장자() throws Exception {
+            var txtFile = new MockMultipartFile(
+                    "gpx",
+                    "석촌호수.txt",
+                    MediaType.TEXT_PLAIN_VALUE,
+                    "이것은 GPX 파일이 아닙니다.".getBytes(StandardCharsets.UTF_8));
+
+            mockMvc.perform(multipart("/v1/courses/file")
+                            .file(txtFile)
+                            .header("Authorization", "Bearer " + "test.jwt.token")
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isBadRequest())
+                    .andDo(documentBadRequest("course-import-file-400-extension"));
+        }
+
+        @Test
+        void GPX_파일로_커스텀_코스_생성_API_401_에러() throws Exception {
+            doThrow(ErrorType.AUTHENTICATION_FAIL.create())
+                    .when(courseApplicationService).addGpxCourse(any(), any());
+
+            var gpxFile = new MockMultipartFile(
+                    "gpx",
+                    "석촌호수.gpx",
+                    MediaType.APPLICATION_XML_VALUE,
+                    "<gpx></gpx>".getBytes(StandardCharsets.UTF_8));
+
+            mockMvc.perform(multipart("/v1/courses/file")
+                            .file(gpxFile)
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isUnauthorized())
+                    .andDo(documentUnauthorized("course-import-file-401", "GPX 파일로 커스텀 코스 생성"));
+        }
+
+        @Test
+        void GPX_파일로_커스텀_코스_생성_API_409_에러() throws Exception {
+            doThrow(ErrorType.DUPLICATED_COURSE_NAME.create("석촌호수"))
+                    .when(courseApplicationService).addGpxCourse(any(), any());
+
+            var gpxFile = new MockMultipartFile(
+                    "gpx",
+                    "석촌호수.gpx",
+                    MediaType.APPLICATION_XML_VALUE,
+                    "<gpx></gpx>".getBytes(StandardCharsets.UTF_8));
+
+            mockMvc.perform(multipart("/v1/courses/file")
+                            .file(gpxFile)
+                            .header("Authorization", "Bearer " + "test.jwt.token")
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isConflict())
+                    .andDo(documentConflict("course-import-file-409", "GPX 파일로 커스텀 코스 생성"));
         }
 
         @Test
