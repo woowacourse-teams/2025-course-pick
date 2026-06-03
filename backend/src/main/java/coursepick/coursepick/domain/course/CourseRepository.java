@@ -9,8 +9,6 @@ public interface CourseRepository {
 
     void save(Course course);
 
-    void saveAll(Iterable<? extends Course> courses);
-
     Slice<Course> findAllHasDistanceWithin(CourseFindCondition condition);
 
     List<Course> findAllCustomCourses(String creatorId);

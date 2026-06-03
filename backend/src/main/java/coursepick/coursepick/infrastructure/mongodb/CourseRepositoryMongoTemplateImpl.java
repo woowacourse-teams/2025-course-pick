@@ -34,21 +34,6 @@ public class CourseRepositoryMongoTemplateImpl implements CourseRepository {
     }
 
     @Override
-    public void saveAll(Iterable<? extends Course> courses) {
-        /*
-        배치 삽입을 통해 성능을 높일 수 있다. 단, 현재 새벽2시에만 호출되는 메서드라, 크게 필요해보이지는 않는다.
-        또한, 현재 메모리 문제가 더 크므로 일단은 넘긴다. 필요한 경우 아래 코드를 참고할 것
-        BulkOperations ops = mongoTemplate.bulkOps(BulkMode.UNORDERED, mongoTemplate.getCollectionName(Course.class));
-        ops.insert(courses);
-        ops.execute();
-         */
-        List<? extends Course> listCourses = StreamSupport.stream(courses.spliterator(), false)
-                .toList();
-
-        mongoTemplate.insertAll(listCourses);
-    }
-
-    @Override
     public Slice<Course> findAllHasDistanceWithin(CourseFindCondition condition) {
 
         try {
