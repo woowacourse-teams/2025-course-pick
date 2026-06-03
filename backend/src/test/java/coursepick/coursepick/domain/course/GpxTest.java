@@ -87,9 +87,9 @@ class GpxTest {
         var course = createCourse("테스트 코스", coordinates);
         var sut = Gpx.from(course);
 
-        var courses = sut.toCourses(ADMIN_USER);
+        var result = sut.toCourse(ADMIN_USER);
 
-        assertThat(courses.getFirst().coordinates()).containsExactlyInAnyOrder(
+        assertThat(result.coordinates()).containsExactlyInAnyOrder(
                 new Coordinate(0, 0),
                 new Coordinate(0.00001, 0.00001),
                 new Coordinate(0, 0)
