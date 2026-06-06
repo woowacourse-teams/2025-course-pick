@@ -2,6 +2,7 @@ package io.coursepick.coursepick.presentation.customcourse
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -82,7 +84,12 @@ fun CustomCourseItemCard(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Row(Modifier.height(IntrinsicSize.Min).fillMaxWidth()) {
+                Row(
+                    Modifier
+                        .height(IntrinsicSize.Min)
+                        .padding(end = 8.dp)
+                        .horizontalScroll(rememberScrollState()),
+                ) {
                     CourseLengthChip(
                         length = customCourse.length,
                         modifier = Modifier.fillMaxHeight(),
