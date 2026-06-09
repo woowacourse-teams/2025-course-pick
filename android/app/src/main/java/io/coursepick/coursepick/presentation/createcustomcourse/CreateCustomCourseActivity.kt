@@ -17,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import io.coursepick.coursepick.R
+import io.coursepick.coursepick.data.auth.KakaoAuthenticator2
 import io.coursepick.coursepick.databinding.ActivityCustomCourseBinding
 import io.coursepick.coursepick.di.NaverMap
 import io.coursepick.coursepick.domain.course.Coordinate
@@ -25,9 +26,6 @@ import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.presentation.InstallStateObserver
 import io.coursepick.coursepick.presentation.auth.AuthDialog
 import io.coursepick.coursepick.presentation.auth.AuthFeature
-import io.coursepick.coursepick.presentation.auth.AuthUiEvent
-import io.coursepick.coursepick.presentation.auth.AuthViewModel
-import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
 import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.map.MapManager
 import io.coursepick.coursepick.presentation.map.MapManagerFactory
@@ -39,7 +37,6 @@ import javax.inject.Inject
 class CreateCustomCourseActivity : AppCompatActivity() {
     private val binding by lazy { ActivityCustomCourseBinding.inflate(layoutInflater) }
     private val viewModel: CreateCustomCourseViewModel by viewModels()
-    private val authViewModel: AuthViewModel by viewModels()
 
     @Inject
     @NaverMap
@@ -117,7 +114,7 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                     AuthDialog(
                         feature = feature,
                         onDismissRequest = viewModel::dismissAuthDialog,
-                        onKakaoLoginClick = { authViewModel.authenticate(KakaoAuthenticator(this@CreateCustomCourseActivity), feature) },
+                        onKakaoLoginClick = { viewModel.signIn(KakaoAuthenticator2(this), feature) },
                     )
                 }
             }
@@ -138,108 +135,113 @@ class CreateCustomCourseActivity : AppCompatActivity() {
     private fun setUpCollectors() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.event.collect { event: CreateCustomCourseUiEvent ->
-                        when (event) {
-                            is CreateCustomCourseUiEvent.NewSegment -> {
-                                event.segment.coordinates
-                                    .lastOrNull()
-                                    ?.let(mapManager::drawWaypoint)
-                                mapManager.drawDraftSegment(event.segment)
-                            }
-
-                            CreateCustomCourseUiEvent.RemoveLastWaypoint -> {
-                                mapManager.removeLastWaypoint()
-                            }
-
-                            CreateCustomCourseUiEvent.NoNetwork -> {
-                                Toast
-                                    .makeText(
-                                        this@CreateCustomCourseActivity,
-                                        getString(R.string.create_custom_course_no_network_message),
-                                        Toast.LENGTH_SHORT,
-                                    ).show()
-                            }
-
-                            CreateCustomCourseUiEvent.Exit -> {
-                                finish()
-                            }
-
-                            CreateCustomCourseUiEvent.CreateCustomCourseSuccess -> {
-                                Toast
-                                    .makeText(
-                                        this@CreateCustomCourseActivity,
-                                        getString(R.string.create_custom_course_course_added_message),
-                                        Toast.LENGTH_SHORT,
-                                    ).show()
-                                setResult(RESULT_OK)
-                                finish()
-                            }
-
-                            CreateCustomCourseUiEvent.CourseLengthTooShort -> {
-                                Toast
-                                    .makeText(
-                                        this@CreateCustomCourseActivity,
-                                        getString(R.string.create_custom_course_course_length_too_short_message),
-                                        Toast.LENGTH_SHORT,
-                                    ).show()
-                            }
-
-                            CreateCustomCourseUiEvent.InvalidCourseName -> {
-                                Toast
-                                    .makeText(
-                                        this@CreateCustomCourseActivity,
-                                        getString(R.string.create_custom_course_invalid_course_name_message),
-                                        Toast.LENGTH_SHORT,
-                                    ).show()
-                            }
-
-                            CreateCustomCourseUiEvent.DuplicateCourseName -> {
-                                Toast
-                                    .makeText(
-                                        this@CreateCustomCourseActivity,
-                                        getString(R.string.create_custom_course_duplicate_course_name_message),
-                                        Toast.LENGTH_SHORT,
-                                    ).show()
-                            }
-
-                            CreateCustomCourseUiEvent.UnauthorizedUser -> {
-                                Toast
-                                    .makeText(
-                                        this@CreateCustomCourseActivity,
-                                        getString(R.string.failure_unauthorized_user_toast_message),
-                                        Toast.LENGTH_SHORT,
-                                    ).show()
-                            }
-
-                            CreateCustomCourseUiEvent.UnknownError -> {
-                                Toast
-                                    .makeText(
-                                        this@CreateCustomCourseActivity,
-                                        getString(R.string.create_custom_course_unknown_error_message),
-                                        Toast.LENGTH_SHORT,
-                                    ).show()
-                            }
+                viewModel.event.collect { event: CreateCustomCourseUiEvent ->
+                    when (event) {
+                        CreateCustomCourseUiEvent.AuthenticationSuccess -> {
+                            Toast
+                                .makeText(
+                                    this@CreateCustomCourseActivity,
+                                    getString(R.string.authentication_success_message),
+                                    Toast.LENGTH_SHORT,
+                                ).show()
                         }
-                    }
-                }
 
-                launch {
-                    authViewModel.uiEvent.collect { event: AuthUiEvent ->
-                        when (event) {
-                            is AuthUiEvent.AuthenticateSuccess -> {
-                                viewModel.dismissAuthDialog()
-                                viewModel.submitCourse()
-                            }
+                        CreateCustomCourseUiEvent.AuthenticationCancelled -> {
+                            Toast
+                                .makeText(
+                                    this@CreateCustomCourseActivity,
+                                    getString(R.string.authentication_cancelled_message),
+                                    Toast.LENGTH_SHORT,
+                                ).show()
+                        }
 
-                            AuthUiEvent.AuthenticateFailure -> {
-                                Toast
-                                    .makeText(
-                                        this@CreateCustomCourseActivity,
-                                        getString(R.string.authentication_failure_message),
-                                        Toast.LENGTH_SHORT,
-                                    ).show()
-                            }
+                        CreateCustomCourseUiEvent.AuthenticationFailure -> {
+                            Toast
+                                .makeText(
+                                    this@CreateCustomCourseActivity,
+                                    getString(R.string.authentication_failure_message),
+                                    Toast.LENGTH_SHORT,
+                                ).show()
+                        }
+
+                        is CreateCustomCourseUiEvent.NewSegment -> {
+                            event.segment.coordinates
+                                .lastOrNull()
+                                ?.let(mapManager::drawWaypoint)
+                            mapManager.drawDraftSegment(event.segment)
+                        }
+
+                        CreateCustomCourseUiEvent.RemoveLastWaypoint -> {
+                            mapManager.removeLastWaypoint()
+                        }
+
+                        CreateCustomCourseUiEvent.NoNetwork -> {
+                            Toast
+                                .makeText(
+                                    this@CreateCustomCourseActivity,
+                                    getString(R.string.create_custom_course_no_network_message),
+                                    Toast.LENGTH_SHORT,
+                                ).show()
+                        }
+
+                        CreateCustomCourseUiEvent.Exit -> {
+                            finish()
+                        }
+
+                        CreateCustomCourseUiEvent.CreateCustomCourseSuccess -> {
+                            Toast
+                                .makeText(
+                                    this@CreateCustomCourseActivity,
+                                    getString(R.string.create_custom_course_course_added_message),
+                                    Toast.LENGTH_SHORT,
+                                ).show()
+                            setResult(RESULT_OK)
+                            finish()
+                        }
+
+                        CreateCustomCourseUiEvent.CourseLengthTooShort -> {
+                            Toast
+                                .makeText(
+                                    this@CreateCustomCourseActivity,
+                                    getString(R.string.create_custom_course_course_length_too_short_message),
+                                    Toast.LENGTH_SHORT,
+                                ).show()
+                        }
+
+                        CreateCustomCourseUiEvent.InvalidCourseName -> {
+                            Toast
+                                .makeText(
+                                    this@CreateCustomCourseActivity,
+                                    getString(R.string.create_custom_course_invalid_course_name_message),
+                                    Toast.LENGTH_SHORT,
+                                ).show()
+                        }
+
+                        CreateCustomCourseUiEvent.DuplicateCourseName -> {
+                            Toast
+                                .makeText(
+                                    this@CreateCustomCourseActivity,
+                                    getString(R.string.create_custom_course_duplicate_course_name_message),
+                                    Toast.LENGTH_SHORT,
+                                ).show()
+                        }
+
+                        CreateCustomCourseUiEvent.UnauthorizedUser -> {
+                            Toast
+                                .makeText(
+                                    this@CreateCustomCourseActivity,
+                                    getString(R.string.failure_unauthorized_user_toast_message),
+                                    Toast.LENGTH_SHORT,
+                                ).show()
+                        }
+
+                        CreateCustomCourseUiEvent.UnknownError -> {
+                            Toast
+                                .makeText(
+                                    this@CreateCustomCourseActivity,
+                                    getString(R.string.create_custom_course_unknown_error_message),
+                                    Toast.LENGTH_SHORT,
+                                ).show()
                         }
                     }
                 }

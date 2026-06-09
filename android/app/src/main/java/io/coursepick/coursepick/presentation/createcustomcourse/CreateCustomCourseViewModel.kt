@@ -4,7 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.coursepick.coursepick.data.interceptor.NoNetworkException
-import io.coursepick.coursepick.domain.auth.AuthRepository
+import io.coursepick.coursepick.domain.Outcome
+import io.coursepick.coursepick.domain.auth.AuthRepository2
+import io.coursepick.coursepick.domain.auth.AuthenticationError
+import io.coursepick.coursepick.domain.auth.Authenticator
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.CourseName
 import io.coursepick.coursepick.domain.course.Length
@@ -32,13 +35,13 @@ class CreateCustomCourseViewModel
     @Inject
     constructor(
         private val customCourseRepository: CustomCourseRepository,
-        private val authRepository: AuthRepository,
+        private val authRepository: AuthRepository2,
     ) : ViewModel() {
         private val _event = MutableSharedFlow<CreateCustomCourseUiEvent>()
         val event: SharedFlow<CreateCustomCourseUiEvent> get() = _event.asSharedFlow()
 
-        private val _authDialogState = MutableStateFlow<AuthFeature?>(null)
-        val authDialogState: StateFlow<AuthFeature?> get() = _authDialogState.asStateFlow()
+        private val _authDialogState = MutableStateFlow<AuthFeature.CustomCourse?>(null)
+        val authDialogState: StateFlow<AuthFeature.CustomCourse?> get() = _authDialogState.asStateFlow()
 
         private val _showSubmitDialog = MutableStateFlow(false)
         val showSubmitDialog: StateFlow<Boolean> get() = _showSubmitDialog.asStateFlow()
@@ -194,6 +197,27 @@ class CreateCustomCourseViewModel
                         else -> {
                             _event.emit(CreateCustomCourseUiEvent.UnknownError)
                         }
+                    }
+                }
+            }
+        }
+
+        fun signIn(authenticator: Authenticator) {
+            viewModelScope.launch {
+                when (val outcome: Outcome<Unit, AuthenticationError> = authRepository.signIn(authenticator)) {
+                    is Outcome.Success -> {
+                        dismissAuthDialog()
+                        _event.emit(CreateCustomCourseUiEvent.AuthenticationSuccess)
+                        submitCourse()
+                    }
+
+                    is Outcome.Failure -> {
+                        _event.emit(
+                            when (outcome.type) {
+                                AuthenticationError.Cancelled -> CreateCustomCourseUiEvent.AuthenticationCancelled
+                                AuthenticationError.Unknown -> CreateCustomCourseUiEvent.AuthenticationFailure
+                            },
+                        )
                     }
                 }
             }

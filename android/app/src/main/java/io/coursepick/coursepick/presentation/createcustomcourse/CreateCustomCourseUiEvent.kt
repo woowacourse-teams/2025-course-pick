@@ -3,6 +3,12 @@ package io.coursepick.coursepick.presentation.createcustomcourse
 import io.coursepick.coursepick.domain.customcourse.DraftSegment
 
 sealed interface CreateCustomCourseUiEvent {
+    data object AuthenticationSuccess : CreateCustomCourseUiEvent
+
+    data object AuthenticationCancelled : CreateCustomCourseUiEvent
+
+    data object AuthenticationFailure : CreateCustomCourseUiEvent
+
     data class NewSegment(
         val segment: DraftSegment,
     ) : CreateCustomCourseUiEvent
