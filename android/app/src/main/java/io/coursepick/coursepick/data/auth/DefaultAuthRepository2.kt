@@ -36,6 +36,8 @@ class DefaultAuthRepository2
                 }
             }
 
+        override suspend fun userId(): String? = dataSource.userId()
+
         override suspend fun accessToken(): AccessToken? {
             if (cachedAccessToken == null) {
                 cachedAccessToken = dataSource.accessToken()?.let(::AccessToken)

@@ -5,7 +5,10 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.coursepick.coursepick.data.NetworkMonitor
 import io.coursepick.coursepick.data.interceptor.NoNetworkException
-import io.coursepick.coursepick.domain.auth.AuthRepository
+import io.coursepick.coursepick.domain.Outcome
+import io.coursepick.coursepick.domain.auth.AuthRepository2
+import io.coursepick.coursepick.domain.auth.AuthenticationError
+import io.coursepick.coursepick.domain.auth.Authenticator
 import io.coursepick.coursepick.domain.course.CourseDetail
 import io.coursepick.coursepick.domain.course.CourseRepository
 import io.coursepick.coursepick.domain.favorites.FavoriteCourseRepository
@@ -31,7 +34,7 @@ class CourseDetailViewModel
     constructor(
         private val courseRepository: CourseRepository,
         private val favoriteCourseRepository: FavoriteCourseRepository,
-        private val authRepository: AuthRepository,
+        private val authRepository: AuthRepository2,
         private val networkMonitor: NetworkMonitor,
     ) : ViewModel() {
         private val _uiEvent = MutableSharedFlow<UiEvent>()
@@ -116,20 +119,38 @@ class CourseDetailViewModel
             }
         }
 
-        fun dismissAuthDialog() {
-            _dialogState.value = dialogState.value.copy(authDialog = null)
+        fun signIn(
+            authenticator: Authenticator,
+            authFeature: AuthFeature,
+        ) {
+            viewModelScope.launch {
+                when (val outcome: Outcome<Unit, AuthenticationError> = authRepository.signIn(authenticator)) {
+                    is Outcome.Success -> {
+                        dismissAuthDialog()
+                        _uiEvent.emit(UiEvent.AuthenticationSuccess)
+                        when (authFeature) {
+                            is AuthFeature.ReportCourse -> onReportCourse()
+                            is AuthFeature.DeleteReview -> onDeleteReview(authFeature.review)
+                            is AuthFeature.ReportReview -> onReportReview(authFeature.review)
+                            is AuthFeature.WriteReview -> onWriteReview()
+                            else -> Unit
+                        }
+                    }
+
+                    is Outcome.Failure -> {
+                        _uiEvent.emit(
+                            when (outcome.type) {
+                                AuthenticationError.Cancelled -> UiEvent.AuthenticationCancelled
+                                AuthenticationError.Unknown -> UiEvent.AuthenticationFailure
+                            },
+                        )
+                    }
+                }
+            }
         }
 
-        fun onAuthSuccess(feature: AuthFeature) {
-            dismissAuthDialog()
-
-            when (feature) {
-                is AuthFeature.ReportCourse -> onReportCourse()
-                is AuthFeature.DeleteReview -> onDeleteReview(feature.review)
-                is AuthFeature.ReportReview -> onReportReview(feature.review)
-                is AuthFeature.WriteReview -> onWriteReview()
-                else -> Unit
-            }
+        fun dismissAuthDialog() {
+            _dialogState.value = dialogState.value.copy(authDialog = null)
         }
 
         fun onReportCourse() {
@@ -353,6 +374,12 @@ class CourseDetailViewModel
         }
 
         sealed interface UiEvent {
+            data object AuthenticationSuccess : UiEvent
+
+            data object AuthenticationCancelled : UiEvent
+
+            data object AuthenticationFailure : UiEvent
+
             data object NoNetwork : UiEvent
 
             data object UnauthorizedUser : UiEvent

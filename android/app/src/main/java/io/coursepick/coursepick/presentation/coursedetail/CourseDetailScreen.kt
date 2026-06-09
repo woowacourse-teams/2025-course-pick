@@ -60,11 +60,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.coursepick.coursepick.R
+import io.coursepick.coursepick.data.auth.KakaoAuthenticator2
+import io.coursepick.coursepick.domain.auth.Authenticator
 import io.coursepick.coursepick.presentation.auth.AuthDialog
 import io.coursepick.coursepick.presentation.auth.AuthFeature
-import io.coursepick.coursepick.presentation.auth.AuthUiEvent
-import io.coursepick.coursepick.presentation.auth.AuthViewModel
-import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
 
 @Composable
 fun CourseDetailScreen(
@@ -72,16 +71,11 @@ fun CourseDetailScreen(
     navigateBack: () -> Unit,
     navigateToWriteCourseReview: (CourseDetailUiModel) -> Unit,
     courseDetailViewModel: CourseDetailViewModel = viewModel(),
-    authViewModel: AuthViewModel = viewModel(),
 ) {
     val context: Context = LocalContext.current
 
     LaunchedEffect(Unit) {
         courseDetailViewModel.load(courseId)
-    }
-
-    LaunchedEffect(Unit) {
-        authViewModel.uiEvent.collect { event: AuthUiEvent -> event.handle(context, courseDetailViewModel) }
     }
 
     LaunchedEffect(Unit) {
@@ -104,7 +98,7 @@ fun CourseDetailScreen(
     CourseDetailScreenDialogs(
         dialogState = courseDetailViewModel.dialogState.collectAsStateWithLifecycle().value,
         onDismissAuthDialog = courseDetailViewModel::dismissAuthDialog,
-        onConfirmAuthDialog = { authFeature: AuthFeature -> authViewModel.authenticate(KakaoAuthenticator(context), authFeature) },
+        onConfirmAuthDialog = courseDetailViewModel::signIn,
         onDismissReportCourseDialog = courseDetailViewModel::dismissReportCourseDialog,
         onConfirmReportCourseDialog = courseDetailViewModel::submitCourseReport,
         onDismissDeleteReviewDialog = courseDetailViewModel::dismissDeleteReviewDialog,
@@ -114,26 +108,23 @@ fun CourseDetailScreen(
     )
 }
 
-private fun AuthUiEvent.handle(
-    context: Context,
-    courseDetailViewModel: CourseDetailViewModel,
-) {
-    when (this) {
-        is AuthUiEvent.AuthenticateSuccess -> {
-            courseDetailViewModel.onAuthSuccess(feature)
-        }
-
-        AuthUiEvent.AuthenticateFailure -> {
-            Toast.makeText(context, context.getString(R.string.authentication_failure_message), Toast.LENGTH_SHORT).show()
-        }
-    }
-}
-
 private fun CourseDetailViewModel.UiEvent.handle(
     context: Context,
     navigateToWriteCourseReview: (CourseDetailUiModel) -> Unit,
 ) {
     when (this) {
+        CourseDetailViewModel.UiEvent.AuthenticationSuccess -> {
+            Toast.makeText(context, context.getString(R.string.authentication_success_message), Toast.LENGTH_SHORT).show()
+        }
+
+        CourseDetailViewModel.UiEvent.AuthenticationCancelled -> {
+            Toast.makeText(context, context.getString(R.string.authentication_cancelled_message), Toast.LENGTH_SHORT).show()
+        }
+
+        CourseDetailViewModel.UiEvent.AuthenticationFailure -> {
+            Toast.makeText(context, context.getString(R.string.authentication_failure_message), Toast.LENGTH_SHORT).show()
+        }
+
         CourseDetailViewModel.UiEvent.NoNetwork -> {
             Toast.makeText(context, context.getString(R.string.failure_no_network_toast_message), Toast.LENGTH_SHORT).show()
         }
@@ -576,7 +567,7 @@ private fun FailureComponent(
 private fun CourseDetailScreenDialogs(
     dialogState: CourseDetailViewModel.DialogState,
     onDismissAuthDialog: () -> Unit,
-    onConfirmAuthDialog: (AuthFeature) -> Unit,
+    onConfirmAuthDialog: (Authenticator, AuthFeature) -> Unit,
     onDismissReportCourseDialog: () -> Unit,
     onConfirmReportCourseDialog: () -> Unit,
     onDismissDeleteReviewDialog: () -> Unit,
@@ -584,11 +575,13 @@ private fun CourseDetailScreenDialogs(
     onDismissReportReviewDialog: () -> Unit,
     onConfirmReportReviewDialog: (CourseReviewUiModel) -> Unit,
 ) {
+    val context: Context = LocalContext.current
+
     if (dialogState.authDialog != null) {
         AuthDialog(
             feature = dialogState.authDialog,
             onDismissRequest = onDismissAuthDialog,
-            onKakaoLoginClick = { onConfirmAuthDialog(dialogState.authDialog) },
+            onKakaoLoginClick = { onConfirmAuthDialog(KakaoAuthenticator2(context), dialogState.authDialog) },
         )
     }
 

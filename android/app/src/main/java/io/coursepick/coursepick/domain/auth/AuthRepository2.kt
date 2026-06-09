@@ -7,5 +7,7 @@ interface AuthRepository2 {
 
     suspend fun signIn(authenticator: Authenticator): Outcome<Unit, AuthenticationError>
 
+    suspend fun userId(): String?
+
     suspend fun accessToken(): AccessToken?
 }
