@@ -8,7 +8,6 @@ import io.coursepick.coursepick.domain.fixture.COURSE_FIXTURE_20
 import io.coursepick.coursepick.domain.fixture.FAKE_COURSES
 import io.coursepick.coursepick.presentation.extension.CoroutinesTestExtension
 import io.coursepick.coursepick.presentation.extension.InstantTaskExecutorExtension
-import io.coursepick.coursepick.presentation.fixtures.FakeAuthRepository
 import io.coursepick.coursepick.presentation.fixtures.FakeCourseRepository
 import io.coursepick.coursepick.presentation.fixtures.FakeFavoriteCourseRepository
 import io.coursepick.coursepick.presentation.fixtures.FakeLocationRepository
@@ -31,7 +30,6 @@ class CoursesViewModelTest {
     private val fakeNoticeRepository = FakeNoticeRepository()
     private val fakeLocationRepository = FakeLocationRepository()
     private val fakePreferencesRepository = FakePreferencesRepository()
-    private val fakeAuthRepository = FakeAuthRepository()
     private val fakeNetworkMonitor = FakeNetworkMonitor()
     private lateinit var mainViewModel: CoursesViewModel
 
@@ -45,7 +43,6 @@ class CoursesViewModelTest {
                 fakeNoticeRepository,
                 fakeLocationRepository,
                 fakePreferencesRepository,
-                fakeAuthRepository,
                 fakeNetworkMonitor,
             )
         mainViewModel.fetchCourses(COORDINATE_FIXTURE, null, Scope.default())
@@ -131,7 +128,6 @@ class CoursesViewModelTest {
                 fakeNoticeRepository,
                 fakeLocationRepository,
                 fakePreferencesRepository,
-                fakeAuthRepository,
                 fakeNetworkMonitor,
             )
 
@@ -178,7 +174,6 @@ class CoursesViewModelTest {
                 fakeNoticeRepository,
                 fakeLocationRepository,
                 fakePreferencesRepository,
-                fakeAuthRepository,
                 fakeNetworkMonitor,
             )
         viewModel.fetchCourses(COORDINATE_FIXTURE, null, Scope.default())
@@ -211,7 +206,6 @@ class CoursesViewModelTest {
                 fakeNoticeRepository,
                 fakeLocationRepository,
                 fakePreferencesRepository,
-                fakeAuthRepository,
                 fakeNetworkMonitor,
             )
         viewModel.fetchCourses(COORDINATE_FIXTURE, null, Scope.default())
