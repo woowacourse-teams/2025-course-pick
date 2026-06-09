@@ -42,7 +42,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.data.auth.KakaoAuthenticator2
+import io.coursepick.coursepick.data.auth.KakaoAuthenticator
 import io.coursepick.coursepick.domain.auth.Authenticator
 import io.coursepick.coursepick.presentation.auth.AuthDialog
 import io.coursepick.coursepick.presentation.auth.AuthFeature
@@ -303,7 +303,7 @@ private fun WriteCourseReviewScreenDialogs(
         AuthDialog(
             feature = dialogState.authDialog,
             onDismissRequest = onDismissAuthDialog,
-            onKakaoLoginClick = { onConfirmAuthDialog(KakaoAuthenticator2(context), dialogState.authDialog) },
+            onKakaoLoginClick = { onConfirmAuthDialog(KakaoAuthenticator(context), dialogState.authDialog) },
         )
     }
 

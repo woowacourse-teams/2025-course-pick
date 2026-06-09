@@ -6,7 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.coursepick.coursepick.data.NetworkMonitor
 import io.coursepick.coursepick.data.interceptor.NoNetworkException
 import io.coursepick.coursepick.domain.Outcome
-import io.coursepick.coursepick.domain.auth.AuthRepository2
+import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.auth.AuthenticationError
 import io.coursepick.coursepick.domain.auth.Authenticator
 import io.coursepick.coursepick.domain.course.CourseDetail
@@ -34,7 +34,7 @@ class CourseDetailViewModel
     constructor(
         private val courseRepository: CourseRepository,
         private val favoriteCourseRepository: FavoriteCourseRepository,
-        private val authRepository: AuthRepository2,
+        private val authRepository: AuthRepository,
         private val networkMonitor: NetworkMonitor,
     ) : ViewModel() {
         private val _uiEvent = MutableSharedFlow<UiEvent>()

@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.coursepick.coursepick.data.interceptor.NoNetworkException
 import io.coursepick.coursepick.domain.Outcome
-import io.coursepick.coursepick.domain.auth.AuthRepository2
+import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.auth.AuthenticationError
 import io.coursepick.coursepick.domain.auth.Authenticator
 import io.coursepick.coursepick.domain.course.CourseRepository
@@ -30,7 +30,7 @@ class WriteCourseReviewViewModel
     @Inject
     constructor(
         private val courseRepository: CourseRepository,
-        private val authRepository: AuthRepository2,
+        private val authRepository: AuthRepository,
     ) : ViewModel() {
         private val _uiEvent = MutableSharedFlow<UiEvent>()
         val uiEvent: SharedFlow<UiEvent> get() = _uiEvent.asSharedFlow()

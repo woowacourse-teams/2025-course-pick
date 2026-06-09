@@ -6,7 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.coursepick.coursepick.data.NetworkMonitor
 import io.coursepick.coursepick.data.interceptor.NoNetworkException
 import io.coursepick.coursepick.domain.Outcome
-import io.coursepick.coursepick.domain.auth.AuthRepository2
+import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.auth.AuthenticationError
 import io.coursepick.coursepick.domain.auth.Authenticator
 import io.coursepick.coursepick.domain.course.Coordinate
@@ -32,7 +32,7 @@ import javax.inject.Inject
 class CustomCourseViewModel
     @Inject
     constructor(
-        private val authRepository: AuthRepository2,
+        private val authRepository: AuthRepository,
         private val customCourseRepository: CustomCourseRepository,
         private val locationRepository: LocationRepository,
         private val networkMonitor: NetworkMonitor,

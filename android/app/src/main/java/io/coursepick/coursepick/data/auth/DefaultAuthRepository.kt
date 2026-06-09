@@ -3,23 +3,23 @@ package io.coursepick.coursepick.data.auth
 import io.coursepick.coursepick.domain.Outcome
 import io.coursepick.coursepick.domain.auth.AccessToken
 import io.coursepick.coursepick.domain.auth.AccountType
-import io.coursepick.coursepick.domain.auth.AuthRepository2
+import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.auth.AuthenticationError
 import io.coursepick.coursepick.domain.auth.Authenticator
 import javax.inject.Inject
 
-class DefaultAuthRepository2
+class DefaultAuthRepository
     @Inject
     constructor(
         private val dataSource: TokenLocalDataSource,
         private val service: SignService,
-    ) : AuthRepository2 {
+    ) : AuthRepository {
         override var cachedAccessToken: AccessToken? = null
             private set
 
         override suspend fun signIn(authenticator: Authenticator): Outcome<Unit, AuthenticationError> =
             when (val outcome: Outcome<AccessToken, AuthenticationError> = authenticator.authenticate()) {
-                is Outcome.Success<AccessToken> -> {
+                is Outcome.Success -> {
                     runCatching {
                         val signResponse: SignResponseDto = service.sign(authenticator.accountType.endPoint(), TokenDto(outcome.data.data))
                         cachedAccessToken = outcome.data
@@ -31,7 +31,7 @@ class DefaultAuthRepository2
                     }
                 }
 
-                is Outcome.Failure<AuthenticationError> -> {
+                is Outcome.Failure -> {
                     outcome
                 }
             }

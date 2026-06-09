@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.coursepick.coursepick.data.interceptor.NoNetworkException
 import io.coursepick.coursepick.domain.Outcome
-import io.coursepick.coursepick.domain.auth.AuthRepository2
+import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.auth.AuthenticationError
 import io.coursepick.coursepick.domain.auth.Authenticator
 import io.coursepick.coursepick.domain.course.Coordinate
@@ -35,7 +35,7 @@ class CreateCustomCourseViewModel
     @Inject
     constructor(
         private val customCourseRepository: CustomCourseRepository,
-        private val authRepository: AuthRepository2,
+        private val authRepository: AuthRepository,
     ) : ViewModel() {
         private val _event = MutableSharedFlow<CreateCustomCourseUiEvent>()
         val event: SharedFlow<CreateCustomCourseUiEvent> get() = _event.asSharedFlow()

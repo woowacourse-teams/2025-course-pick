@@ -2,7 +2,7 @@ package io.coursepick.coursepick.domain.auth
 
 import io.coursepick.coursepick.domain.Outcome
 
-interface AuthRepository2 {
+interface AuthRepository {
     val cachedAccessToken: AccessToken?
 
     suspend fun signIn(authenticator: Authenticator): Outcome<Unit, AuthenticationError>

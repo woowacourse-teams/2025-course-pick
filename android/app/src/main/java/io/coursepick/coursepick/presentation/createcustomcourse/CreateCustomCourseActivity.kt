@@ -17,7 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.data.auth.KakaoAuthenticator2
+import io.coursepick.coursepick.data.auth.KakaoAuthenticator
 import io.coursepick.coursepick.databinding.ActivityCustomCourseBinding
 import io.coursepick.coursepick.di.NaverMap
 import io.coursepick.coursepick.domain.course.Coordinate
@@ -114,7 +114,7 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                     AuthDialog(
                         feature = feature,
                         onDismissRequest = viewModel::dismissAuthDialog,
-                        onKakaoLoginClick = { viewModel.signIn(KakaoAuthenticator2(this), feature) },
+                        onKakaoLoginClick = { viewModel.signIn(KakaoAuthenticator(this)) },
                     )
                 }
             }

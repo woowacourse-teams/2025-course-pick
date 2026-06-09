@@ -20,7 +20,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import io.coursepick.coursepick.R
-import io.coursepick.coursepick.data.auth.KakaoAuthenticator2
+import io.coursepick.coursepick.data.auth.KakaoAuthenticator
 import io.coursepick.coursepick.databinding.FragmentCustomCoursesBinding
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.presentation.auth.AuthDialog
@@ -93,7 +93,7 @@ class CustomCoursesFragment(
                     AuthDialog(
                         feature = feature,
                         onDismissRequest = customCourseViewModel::dismissAuthDialog,
-                        onKakaoLoginClick = { customCourseViewModel.signIn(KakaoAuthenticator2(requireContext())) },
+                        onKakaoLoginClick = { customCourseViewModel.signIn(KakaoAuthenticator(requireContext())) },
                     )
                 }
             }

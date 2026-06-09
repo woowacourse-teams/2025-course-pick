@@ -15,7 +15,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
-class KakaoAuthenticator2
+class KakaoAuthenticator
     @Inject
     constructor(
         private val context: Context,
