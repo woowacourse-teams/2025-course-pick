@@ -56,11 +56,6 @@ import io.coursepick.coursepick.presentation.CoursePickApplication
 import io.coursepick.coursepick.presentation.DataKeys
 import io.coursepick.coursepick.presentation.InstallStateObserver
 import io.coursepick.coursepick.presentation.Logger
-import io.coursepick.coursepick.presentation.auth.AuthDialog
-import io.coursepick.coursepick.presentation.auth.AuthFeature
-import io.coursepick.coursepick.presentation.auth.AuthUiEvent
-import io.coursepick.coursepick.presentation.auth.AuthViewModel
-import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.coursedetail.CourseDetailActivity
 import io.coursepick.coursepick.presentation.customcourse.CustomCourseItem
@@ -91,7 +86,6 @@ class CoursesActivity :
     private var searchLauncher: ActivityResultLauncher<Intent>? = null
     private val binding by lazy { ActivityCoursesBinding.inflate(layoutInflater) }
     private val viewModel: CoursesViewModel by viewModels()
-    private val authViewModel: AuthViewModel by viewModels()
     private val customCourseViewModel: CustomCourseViewModel by viewModels()
     private val courseAdapter by lazy { CourseAdapter(courseItemListener) }
     private val doublePressDetector = DoublePressDetector()
@@ -352,9 +346,7 @@ class CoursesActivity :
                 R.id.customCourseMenuItem -> {
                     viewModel.showCourses()
                     viewModel.switchContent(CoursesContent.CUSTOM_COURSE)
-                    viewModel.checkAuthForCustomCourse {
-                        customCourseViewModel.fetchCustomCourses()
-                    }
+                    customCourseViewModel.fetchCustomCourses()
                     true
                 }
 
@@ -749,12 +741,7 @@ class CoursesActivity :
             when (event) {
                 CoursesUiEvent.FetchCourseFailure -> {
                     binding.mainSearchThisAreaButton.visibility = View.VISIBLE
-                    Toast
-                        .makeText(
-                            this,
-                            getString(R.string.courses_failed_to_load_course_message),
-                            Toast.LENGTH_SHORT,
-                        ).show()
+                    Toast.makeText(this, getString(R.string.courses_failed_to_load_course_message), Toast.LENGTH_SHORT).show()
                 }
 
                 is CoursesUiEvent.SelectCourseManually -> {
@@ -779,39 +766,19 @@ class CoursesActivity :
                 }
 
                 is CoursesUiEvent.FetchRouteToCourseFailure -> {
-                    Toast
-                        .makeText(
-                            this,
-                            getString(R.string.courses_failed_to_find_route_to_course_message),
-                            Toast.LENGTH_SHORT,
-                        ).show()
+                    Toast.makeText(this, getString(R.string.courses_failed_to_find_route_to_course_message), Toast.LENGTH_SHORT).show()
                 }
 
                 is CoursesUiEvent.NoNetworkConnection -> {
-                    Toast
-                        .makeText(
-                            this,
-                            getString(R.string.failure_no_network_toast_message),
-                            Toast.LENGTH_SHORT,
-                        ).show()
+                    Toast.makeText(this, getString(R.string.failure_no_network_toast_message), Toast.LENGTH_SHORT).show()
                 }
 
                 CoursesUiEvent.FetchNextCoursesFailure -> {
-                    Toast
-                        .makeText(
-                            this,
-                            getString(R.string.explore_failed_to_fetch_next_page_message),
-                            Toast.LENGTH_SHORT,
-                        ).show()
+                    Toast.makeText(this, getString(R.string.explore_failed_to_fetch_next_page_message), Toast.LENGTH_SHORT).show()
                 }
 
                 CoursesUiEvent.FetchCurrentLocationFailure -> {
-                    Toast
-                        .makeText(
-                            this,
-                            getString(R.string.courses_failed_to_get_current_location_message),
-                            Toast.LENGTH_SHORT,
-                        ).show()
+                    Toast.makeText(this, getString(R.string.courses_failed_to_get_current_location_message), Toast.LENGTH_SHORT).show()
                 }
 
                 is CoursesUiEvent.LaunchThirdPartyRouteFinder -> {
@@ -828,29 +795,8 @@ class CoursesActivity :
     private fun setUpFlowCollector() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.locationUpdates.collect { location: Location? ->
-                        location?.let(mapManager::drawUserLocation) ?: run(mapManager::hideUserLocation)
-                    }
-                }
-
-                launch {
-                    authViewModel.uiEvent.collect { event: AuthUiEvent ->
-                        when (event) {
-                            is AuthUiEvent.AuthenticateSuccess -> {
-                                viewModel.onAuthSuccess()
-                            }
-
-                            AuthUiEvent.AuthenticateFailure -> {
-                                Toast
-                                    .makeText(
-                                        this@CoursesActivity,
-                                        getString(R.string.authentication_failure_message),
-                                        Toast.LENGTH_SHORT,
-                                    ).show()
-                            }
-                        }
-                    }
+                viewModel.locationUpdates.collect { location: Location? ->
+                    location?.let(mapManager::drawUserLocation) ?: run(mapManager::hideUserLocation)
                 }
             }
         }
@@ -913,14 +859,6 @@ class CoursesActivity :
                                 viewModel.onRouteFinderSelected(course, routeFinder, rememberSelection)
                             },
                             onDismiss = viewModel::dismissRouteFinderDialog,
-                        )
-                    }
-
-                    viewModel.authDialogState.collectAsStateWithLifecycle().value?.let { feature: AuthFeature ->
-                        AuthDialog(
-                            feature = feature,
-                            onDismissRequest = viewModel::dismissAuthDialog,
-                            onKakaoLoginClick = { authViewModel.authenticate(KakaoAuthenticator(this@CoursesActivity), feature) },
                         )
                     }
                 }
