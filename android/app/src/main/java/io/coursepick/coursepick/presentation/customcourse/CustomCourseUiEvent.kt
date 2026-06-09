@@ -1,11 +1,15 @@
 package io.coursepick.coursepick.presentation.customcourse
 
 sealed interface CustomCourseUiEvent {
+    data object AuthenticationSuccess : CustomCourseUiEvent
+
+    data object AuthenticationCancelled : CustomCourseUiEvent
+
+    data object AuthenticationFailure : CustomCourseUiEvent
+
     data object NavigateToCreateCourse : CustomCourseUiEvent
 
     object FetchCustomCourseFailure : CustomCourseUiEvent
-
-    object RequestFetch : CustomCourseUiEvent
 
     data object UnauthorizedUser : CustomCourseUiEvent
 

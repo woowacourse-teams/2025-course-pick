@@ -20,13 +20,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import io.coursepick.coursepick.R
+import io.coursepick.coursepick.data.auth.KakaoAuthenticator2
 import io.coursepick.coursepick.databinding.FragmentCustomCoursesBinding
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.presentation.auth.AuthDialog
 import io.coursepick.coursepick.presentation.auth.AuthFeature
-import io.coursepick.coursepick.presentation.auth.AuthUiEvent
-import io.coursepick.coursepick.presentation.auth.AuthViewModel
-import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.course.CoursesActivity
 import io.coursepick.coursepick.presentation.course.CoursesViewModel
@@ -45,7 +43,6 @@ class CustomCoursesFragment(
 
     private val coursesViewModel: CoursesViewModel by activityViewModels()
     private val customCourseViewModel: CustomCourseViewModel by activityViewModels()
-    private val authViewModel: AuthViewModel by activityViewModels()
 
     private val createCustomCourseLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(
@@ -96,14 +93,7 @@ class CustomCoursesFragment(
                     AuthDialog(
                         feature = feature,
                         onDismissRequest = customCourseViewModel::dismissAuthDialog,
-                        onKakaoLoginClick = {
-                            authViewModel.authenticate(
-                                KakaoAuthenticator(
-                                    requireActivity(),
-                                ),
-                                feature,
-                            )
-                        },
+                        onKakaoLoginClick = { customCourseViewModel.signIn(KakaoAuthenticator2(requireContext())) },
                     )
                 }
             }
@@ -119,47 +109,44 @@ class CustomCoursesFragment(
     private fun setUpCollectors() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    customCourseViewModel.uiEvent.collect { event: CustomCourseUiEvent ->
-                        when (event) {
-                            CustomCourseUiEvent.NavigateToCreateCourse -> {
-                                goToCreateCustomCourse()
-                            }
-
-                            CustomCourseUiEvent.FetchCustomCourseFailure -> {
-                                showToastMessage(R.string.custom_courses_load_failed)
-                            }
-
-                            CustomCourseUiEvent.RequestFetch -> {
-                                customCourseViewModel.fetchCustomCourses()
-                            }
-
-                            CustomCourseUiEvent.UnauthorizedUser -> {
-                                showToastMessage(R.string.failure_unauthorized_user_toast_message)
-                            }
-
-                            is CustomCourseUiEvent.SelectCustomCourse -> {
-                                coursesViewModel.selectExternalCourse(event.customCourse.toCourseItem())
-                            }
+                customCourseViewModel.uiEvent.collect { event: CustomCourseUiEvent ->
+                    when (event) {
+                        CustomCourseUiEvent.AuthenticationSuccess -> {
+                            Toast
+                                .makeText(requireContext(), getString(R.string.authentication_success_message), Toast.LENGTH_SHORT)
+                                .show()
                         }
-                    }
-                }
 
-                launch {
-                    authViewModel.uiEvent.collect { event: AuthUiEvent ->
-                        when (event) {
-                            is AuthUiEvent.AuthenticateSuccess -> {
-                                customCourseViewModel.onAuthSuccess(event.feature)
-                            }
+                        CustomCourseUiEvent.AuthenticationCancelled -> {
+                            Toast
+                                .makeText(requireContext(), getString(R.string.authentication_cancelled_message), Toast.LENGTH_SHORT)
+                                .show()
+                        }
 
-                            AuthUiEvent.AuthenticateFailure -> {
-                                Toast
-                                    .makeText(
-                                        requireActivity(),
-                                        getString(R.string.authentication_failure_message),
-                                        Toast.LENGTH_SHORT,
-                                    ).show()
-                            }
+                        CustomCourseUiEvent.AuthenticationFailure -> {
+                            Toast
+                                .makeText(requireContext(), getString(R.string.authentication_failure_message), Toast.LENGTH_SHORT)
+                                .show()
+                        }
+
+                        CustomCourseUiEvent.NavigateToCreateCourse -> {
+                            goToCreateCustomCourse()
+                        }
+
+                        CustomCourseUiEvent.FetchCustomCourseFailure -> {
+                            Toast
+                                .makeText(requireContext(), R.string.custom_courses_load_failed, Toast.LENGTH_SHORT)
+                                .show()
+                        }
+
+                        CustomCourseUiEvent.UnauthorizedUser -> {
+                            Toast
+                                .makeText(requireContext(), R.string.failure_unauthorized_user_toast_message, Toast.LENGTH_SHORT)
+                                .show()
+                        }
+
+                        is CustomCourseUiEvent.SelectCustomCourse -> {
+                            coursesViewModel.selectExternalCourse(event.customCourse.toCourseItem())
                         }
                     }
                 }
@@ -168,17 +155,8 @@ class CustomCoursesFragment(
     }
 
     private fun goToCreateCustomCourse() {
-        val initialCoordinate: CoordinateUiModel? =
-            coursesViewModel.mapCoordinate?.let(Coordinate::toUiModel)
+        val initialCoordinate: CoordinateUiModel? = coursesViewModel.mapCoordinate?.let(Coordinate::toUiModel)
         val intent: Intent = CreateCustomCourseActivity.intent(requireContext(), initialCoordinate)
         createCustomCourseLauncher.launch(intent)
     }
-
-    private fun showToastMessage(resId: Int) =
-        Toast
-            .makeText(
-                requireActivity(),
-                getString(resId),
-                Toast.LENGTH_SHORT,
-            ).show()
 }
