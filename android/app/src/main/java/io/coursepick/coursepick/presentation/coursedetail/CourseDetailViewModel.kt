@@ -138,8 +138,14 @@ class CourseDetailViewModel
                     is Outcome.Failure -> {
                         _uiEvent.emit(
                             when (outcome.type) {
-                                AuthenticationError.Cancelled -> UiEvent.AuthenticationCancelled
-                                AuthenticationError.Unknown -> UiEvent.AuthenticationFailure
+                                AuthenticationError.Cancelled -> {
+                                    dismissAuthDialog()
+                                    UiEvent.AuthenticationCancelled
+                                }
+
+                                AuthenticationError.Unknown -> {
+                                    UiEvent.AuthenticationFailure
+                                }
                             },
                         )
                     }

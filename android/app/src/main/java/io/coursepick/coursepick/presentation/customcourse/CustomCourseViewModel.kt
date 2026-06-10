@@ -84,8 +84,14 @@ class CustomCourseViewModel
                     is Outcome.Failure -> {
                         _uiEvent.emit(
                             when (outcome.type) {
-                                AuthenticationError.Cancelled -> CustomCourseUiEvent.AuthenticationCancelled
-                                AuthenticationError.Unknown -> CustomCourseUiEvent.AuthenticationFailure
+                                AuthenticationError.Cancelled -> {
+                                    dismissAuthDialog()
+                                    CustomCourseUiEvent.AuthenticationCancelled
+                                }
+
+                                AuthenticationError.Unknown -> {
+                                    CustomCourseUiEvent.AuthenticationFailure
+                                }
                             },
                         )
                     }
