@@ -45,7 +45,6 @@ import io.coursepick.coursepick.R
 import io.coursepick.coursepick.data.auth.KakaoAuthenticator
 import io.coursepick.coursepick.domain.auth.Authenticator
 import io.coursepick.coursepick.presentation.auth.AuthDialog
-import io.coursepick.coursepick.presentation.auth.AuthFeature
 import io.coursepick.coursepick.presentation.coursedetail.WriteCourseReviewViewModel.Companion.MAX_REVIEW_LENGTH
 
 @Composable
@@ -78,7 +77,7 @@ fun WriteCourseReviewScreen(
     WriteCourseReviewScreenDialogs(
         dialogState = viewModel.dialogState.collectAsStateWithLifecycle().value,
         onDismissAuthDialog = viewModel::dismissAuthDialog,
-        onConfirmAuthDialog = viewModel::signIn,
+        onConfirmAuthDialog = { authenticator: Authenticator -> viewModel.signIn(authenticator, courseDetail.id) },
         onDismissExitDialog = viewModel::dismissExitDialog,
         onConfirmExitDialog = viewModel::confirmExit,
     )
@@ -293,17 +292,17 @@ private fun SubmitReviewButton(
 private fun WriteCourseReviewScreenDialogs(
     dialogState: WriteCourseReviewViewModel.DialogState,
     onDismissAuthDialog: () -> Unit,
-    onConfirmAuthDialog: (Authenticator, AuthFeature.WriteReview) -> Unit,
+    onConfirmAuthDialog: (Authenticator) -> Unit,
     onDismissExitDialog: () -> Unit,
     onConfirmExitDialog: () -> Unit,
 ) {
     val context: Context = LocalContext.current
 
-    if (dialogState.authDialog != null) {
+    if (dialogState.showAuthDialog) {
         AuthDialog(
-            feature = dialogState.authDialog,
+            featureName = stringResource(R.string.write_course_review_feature_name),
             onDismissRequest = onDismissAuthDialog,
-            onKakaoLoginClick = { onConfirmAuthDialog(KakaoAuthenticator(context), dialogState.authDialog) },
+            onKakaoLoginClick = { onConfirmAuthDialog(KakaoAuthenticator(context)) },
         )
     }
 

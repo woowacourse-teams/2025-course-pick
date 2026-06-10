@@ -13,7 +13,6 @@ import io.coursepick.coursepick.domain.course.CourseDetail
 import io.coursepick.coursepick.domain.course.CourseRepository
 import io.coursepick.coursepick.domain.favorites.FavoriteCourseRepository
 import io.coursepick.coursepick.presentation.Logger
-import io.coursepick.coursepick.presentation.auth.AuthFeature
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -133,7 +132,6 @@ class CourseDetailViewModel
                             is AuthFeature.DeleteReview -> onDeleteReview(authFeature.review)
                             is AuthFeature.ReportReview -> onReportReview(authFeature.review)
                             is AuthFeature.WriteReview -> onWriteReview()
-                            else -> Unit
                         }
                     }
 
@@ -423,4 +421,22 @@ class CourseDetailViewModel
             val deleteReviewDialog: CourseReviewUiModel? = null,
             val reportReviewDialog: CourseReviewUiModel? = null,
         )
+
+        sealed interface AuthFeature {
+            data class ReportCourse(
+                val courseId: String,
+            ) : AuthFeature
+
+            data class DeleteReview(
+                val review: CourseReviewUiModel,
+            ) : AuthFeature
+
+            data class ReportReview(
+                val review: CourseReviewUiModel,
+            ) : AuthFeature
+
+            data class WriteReview(
+                val courseId: String,
+            ) : AuthFeature
+        }
     }

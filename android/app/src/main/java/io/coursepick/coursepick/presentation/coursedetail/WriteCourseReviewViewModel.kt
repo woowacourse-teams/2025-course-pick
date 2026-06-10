@@ -10,7 +10,6 @@ import io.coursepick.coursepick.domain.auth.AuthenticationError
 import io.coursepick.coursepick.domain.auth.Authenticator
 import io.coursepick.coursepick.domain.course.CourseRepository
 import io.coursepick.coursepick.presentation.Logger
-import io.coursepick.coursepick.presentation.auth.AuthFeature
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -69,7 +68,7 @@ class WriteCourseReviewViewModel
 
             viewModelScope.launch {
                 if (authRepository.accessToken() == null) {
-                    _dialogState.value = dialogState.value.copy(authDialog = AuthFeature.WriteReview(courseId))
+                    _dialogState.value = dialogState.value.copy(showAuthDialog = true)
                     return@launch
                 }
 
@@ -122,7 +121,7 @@ class WriteCourseReviewViewModel
                                     }
 
                                     401 -> {
-                                        _dialogState.value = dialogState.value.copy(authDialog = AuthFeature.WriteReview(courseId))
+                                        _dialogState.value = dialogState.value.copy(showAuthDialog = true)
                                         return@launch
                                     }
 
@@ -145,14 +144,14 @@ class WriteCourseReviewViewModel
 
         fun signIn(
             authenticator: Authenticator,
-            authFeature: AuthFeature.WriteReview,
+            courseId: String,
         ) {
             viewModelScope.launch {
                 when (val outcome: Outcome<Unit, AuthenticationError> = authRepository.signIn(authenticator)) {
                     is Outcome.Success -> {
                         dismissAuthDialog()
                         _uiEvent.emit(UiEvent.AuthenticationSuccess)
-                        submitReview(authFeature.courseId)
+                        submitReview(courseId)
                     }
 
                     is Outcome.Failure -> {
@@ -168,7 +167,7 @@ class WriteCourseReviewViewModel
         }
 
         fun dismissAuthDialog() {
-            _dialogState.value = dialogState.value.copy(authDialog = null)
+            _dialogState.value = dialogState.value.copy(showAuthDialog = false)
         }
 
         fun onExit() {
@@ -222,7 +221,7 @@ class WriteCourseReviewViewModel
         )
 
         data class DialogState(
-            val authDialog: AuthFeature.WriteReview? = null,
+            val showAuthDialog: Boolean = false,
             val showExitDialog: Boolean = false,
         )
 

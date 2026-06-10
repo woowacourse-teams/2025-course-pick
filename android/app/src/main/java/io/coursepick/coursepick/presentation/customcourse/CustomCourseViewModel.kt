@@ -14,7 +14,6 @@ import io.coursepick.coursepick.domain.course.CoursesPage
 import io.coursepick.coursepick.domain.customcourse.CustomCourseRepository
 import io.coursepick.coursepick.domain.location.LocationRepository
 import io.coursepick.coursepick.presentation.Logger
-import io.coursepick.coursepick.presentation.auth.AuthFeature
 import io.coursepick.coursepick.presentation.course.CourseItem
 import io.coursepick.coursepick.presentation.course.UiStatus
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -67,13 +66,19 @@ class CustomCourseViewModel
             _authDialogState.value = null
         }
 
-        fun signIn(authenticator: Authenticator) {
+        fun signIn(
+            authenticator: Authenticator,
+            authFeature: AuthFeature,
+        ) {
             viewModelScope.launch {
                 when (val outcome: Outcome<Unit, AuthenticationError> = authRepository.signIn(authenticator)) {
                     is Outcome.Success -> {
                         dismissAuthDialog()
                         _uiEvent.emit(CustomCourseUiEvent.AuthenticationSuccess)
-                        fetchCustomCourses()
+                        when (authFeature) {
+                            AuthFeature.FetchCustomCourses -> fetchCustomCourses()
+                            AuthFeature.CreateCustomCourse -> _uiEvent.emit(CustomCourseUiEvent.NavigateToCreateCourse)
+                        }
                     }
 
                     is Outcome.Failure -> {
@@ -101,7 +106,7 @@ class CustomCourseViewModel
                 }
 
                 if (authRepository.accessToken() == null) {
-                    _authDialogState.value = AuthFeature.CustomCourse
+                    _authDialogState.value = AuthFeature.FetchCustomCourses
                     _state.update { currentState ->
                         currentState.copy(status = UiStatus.Success, customCourses = emptyList())
                     }
@@ -208,5 +213,11 @@ class CustomCourseViewModel
             select(customCourse)
             val courseItem: CourseItem = _state.value.selectedCustomCourse?.toCourseItem() ?: return
             onNavigateTo(courseItem)
+        }
+
+        sealed interface AuthFeature {
+            data object FetchCustomCourses : AuthFeature
+
+            data object CreateCustomCourse : AuthFeature
         }
     }

@@ -25,7 +25,6 @@ import io.coursepick.coursepick.domain.course.Latitude
 import io.coursepick.coursepick.domain.course.Longitude
 import io.coursepick.coursepick.presentation.InstallStateObserver
 import io.coursepick.coursepick.presentation.auth.AuthDialog
-import io.coursepick.coursepick.presentation.auth.AuthFeature
 import io.coursepick.coursepick.presentation.compat.getParcelableCompat
 import io.coursepick.coursepick.presentation.map.MapManager
 import io.coursepick.coursepick.presentation.map.MapManagerFactory
@@ -110,9 +109,9 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                     )
                 }
 
-                viewModel.authDialogState.collectAsStateWithLifecycle().value?.let { feature: AuthFeature ->
+                if (viewModel.showAuthDialog.collectAsStateWithLifecycle().value) {
                     AuthDialog(
-                        feature = feature,
+                        featureName = getString(R.string.create_custom_course_feature_name),
                         onDismissRequest = viewModel::dismissAuthDialog,
                         onKakaoLoginClick = { viewModel.signIn(KakaoAuthenticator(this)) },
                     )

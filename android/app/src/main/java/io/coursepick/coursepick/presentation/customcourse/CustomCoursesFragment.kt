@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
@@ -24,8 +25,8 @@ import io.coursepick.coursepick.data.auth.KakaoAuthenticator
 import io.coursepick.coursepick.databinding.FragmentCustomCoursesBinding
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.presentation.auth.AuthDialog
-import io.coursepick.coursepick.presentation.auth.AuthFeature
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
+import io.coursepick.coursepick.presentation.course.CourseItem
 import io.coursepick.coursepick.presentation.course.CoursesActivity
 import io.coursepick.coursepick.presentation.course.CoursesViewModel
 import io.coursepick.coursepick.presentation.coursedetail.CourseDetailActivity
@@ -67,33 +68,37 @@ class CustomCoursesFragment(
         binding.customCourses.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                val nestedScrollInterop = rememberNestedScrollInteropConnection()
-                val customCourseState =
-                    customCourseViewModel.state.collectAsStateWithLifecycle().value
+                val nestedScrollInterop: NestedScrollConnection = rememberNestedScrollInteropConnection()
+                val customCourseState: CustomCourseUiState = customCourseViewModel.state.collectAsStateWithLifecycle().value
 
                 CustomCourseScreen(
                     status = customCourseState,
                     onReconnect = onReconnectListener,
                     onGoToCreateCustomCourse = customCourseViewModel::onGoToCreateCustomCourse,
-                    onSelect = { customCourse: CustomCourseItem ->
-                        customCourseViewModel.select(customCourse)
-                    },
+                    onSelect = { customCourse: CustomCourseItem -> customCourseViewModel.select(customCourse) },
                     onNavigateToCourse = { customCourse: CustomCourseItem ->
-                        customCourseViewModel.onNavigateToCourse(customCourse) { courseItem ->
+                        customCourseViewModel.onNavigateToCourse(customCourse) { courseItem: CourseItem ->
                             (activity as? CoursesActivity)?.navigateToCourse(courseItem)
                         }
                     },
                     onNavigateToDetail = { customCourse: CustomCourseItem ->
-                        startActivity(CourseDetailActivity.intent(requireActivity(), customCourse.course.id))
+                        startActivity(CourseDetailActivity.intent(requireContext(), customCourse.course.id))
                     },
                     modifier = Modifier.nestedScroll(nestedScrollInterop),
                 )
 
-                customCourseViewModel.authDialogState.collectAsStateWithLifecycle().value?.let { feature: AuthFeature ->
+                val authDialogState = customCourseViewModel.authDialogState.collectAsStateWithLifecycle().value
+                if (authDialogState != null) {
+                    val featureName: String =
+                        when (authDialogState) {
+                            CustomCourseViewModel.AuthFeature.FetchCustomCourses -> getString(R.string.custom_course_feature_name)
+                            CustomCourseViewModel.AuthFeature.CreateCustomCourse -> getString(R.string.create_custom_course_feature_name)
+                        }
+
                     AuthDialog(
-                        feature = feature,
+                        featureName = featureName,
                         onDismissRequest = customCourseViewModel::dismissAuthDialog,
-                        onKakaoLoginClick = { customCourseViewModel.signIn(KakaoAuthenticator(requireContext())) },
+                        onKakaoLoginClick = { customCourseViewModel.signIn(KakaoAuthenticator(requireContext()), authDialogState) },
                     )
                 }
             }

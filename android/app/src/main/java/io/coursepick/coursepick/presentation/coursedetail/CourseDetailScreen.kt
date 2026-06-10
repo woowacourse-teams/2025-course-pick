@@ -63,7 +63,6 @@ import io.coursepick.coursepick.R
 import io.coursepick.coursepick.data.auth.KakaoAuthenticator
 import io.coursepick.coursepick.domain.auth.Authenticator
 import io.coursepick.coursepick.presentation.auth.AuthDialog
-import io.coursepick.coursepick.presentation.auth.AuthFeature
 
 @Composable
 fun CourseDetailScreen(
@@ -567,7 +566,7 @@ private fun FailureComponent(
 private fun CourseDetailScreenDialogs(
     dialogState: CourseDetailViewModel.DialogState,
     onDismissAuthDialog: () -> Unit,
-    onConfirmAuthDialog: (Authenticator, AuthFeature) -> Unit,
+    onConfirmAuthDialog: (Authenticator, CourseDetailViewModel.AuthFeature) -> Unit,
     onDismissReportCourseDialog: () -> Unit,
     onConfirmReportCourseDialog: () -> Unit,
     onDismissDeleteReviewDialog: () -> Unit,
@@ -578,8 +577,16 @@ private fun CourseDetailScreenDialogs(
     val context: Context = LocalContext.current
 
     if (dialogState.authDialog != null) {
+        val featureName: String =
+            when (dialogState.authDialog) {
+                is CourseDetailViewModel.AuthFeature.ReportCourse -> stringResource(R.string.report_course_feature_name)
+                is CourseDetailViewModel.AuthFeature.DeleteReview -> stringResource(R.string.delete_review_feature_name)
+                is CourseDetailViewModel.AuthFeature.ReportReview -> stringResource(R.string.report_review_feature_name)
+                is CourseDetailViewModel.AuthFeature.WriteReview -> stringResource(R.string.write_course_review_feature_name)
+            }
+
         AuthDialog(
-            feature = dialogState.authDialog,
+            featureName = featureName,
             onDismissRequest = onDismissAuthDialog,
             onKakaoLoginClick = { onConfirmAuthDialog(KakaoAuthenticator(context), dialogState.authDialog) },
         )
