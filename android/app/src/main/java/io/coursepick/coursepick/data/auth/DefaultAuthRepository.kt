@@ -23,7 +23,7 @@ class DefaultAuthRepository
                 is Outcome.Success -> {
                     runCatching {
                         val signResponse: SignResponseDto = service.sign(authenticator.accountType.endPoint(), TokenDto(outcome.data.data))
-                        cachedAccessToken = outcome.data
+                        cachedAccessToken = AccessToken(signResponse.accessToken)
                         dataSource.saveAccessToken(signResponse.accessToken)
                         dataSource.saveUserId(signResponse.userId)
                         Logger.log(Logger.Event.Success("coursepick_sign_in"))
