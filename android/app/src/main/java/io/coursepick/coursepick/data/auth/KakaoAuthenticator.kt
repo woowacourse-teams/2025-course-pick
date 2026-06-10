@@ -34,11 +34,11 @@ class KakaoAuthenticator
                     throwable != null -> {
                         when {
                             throwable is ClientError && throwable.reason == ClientErrorCause.Cancelled -> {
-                                Outcome.Failure(AuthenticationError.Cancelled)
+                                onResult(Outcome.Failure(AuthenticationError.Cancelled))
                             }
 
                             else -> {
-                                Outcome.Failure(AuthenticationError.Unknown)
+                                onResult(Outcome.Failure(AuthenticationError.Unknown))
                             }
                         }
                     }
