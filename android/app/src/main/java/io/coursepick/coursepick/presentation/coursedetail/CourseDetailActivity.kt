@@ -47,7 +47,7 @@ class CourseDetailActivity : ComponentActivity() {
                                 navigateToWriteCourseReview = { courseDetail: CourseDetailUiModel ->
                                     backstack.add(CourseDetailRoute.WriteReview(courseDetail))
                                 },
-                                courseDetailViewModel = courseDetailViewModel,
+                                viewModel = courseDetailViewModel,
                             )
                         }
 

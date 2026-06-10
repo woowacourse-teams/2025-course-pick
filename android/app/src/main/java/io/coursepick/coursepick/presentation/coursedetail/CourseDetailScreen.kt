@@ -69,41 +69,41 @@ fun CourseDetailScreen(
     courseId: String,
     navigateBack: () -> Unit,
     navigateToWriteCourseReview: (CourseDetailUiModel) -> Unit,
-    courseDetailViewModel: CourseDetailViewModel = viewModel(),
+    viewModel: CourseDetailViewModel = viewModel(),
 ) {
     val context: Context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        courseDetailViewModel.load(courseId)
+        viewModel.load(courseId)
     }
 
     LaunchedEffect(Unit) {
-        courseDetailViewModel.uiEvent.collect { event: CourseDetailViewModel.UiEvent -> event.handle(context, navigateToWriteCourseReview) }
+        viewModel.uiEvent.collect { event: CourseDetailViewModel.UiEvent -> event.handle(context, navigateToWriteCourseReview) }
     }
 
-    val state: CourseDetailViewModel.UiState = courseDetailViewModel.uiState.collectAsStateWithLifecycle().value
+    val state: CourseDetailViewModel.UiState = viewModel.uiState.collectAsStateWithLifecycle().value
 
     CourseDetailScreen(
         uiState = state,
         onNavigateBack = navigateBack,
-        onToggleFavorite = courseDetailViewModel::toggleFavorite,
-        onReportCourse = courseDetailViewModel::onReportCourse,
-        onDeleteReview = courseDetailViewModel::onDeleteReview,
-        onReportReview = courseDetailViewModel::onReportReview,
-        onWriteReview = courseDetailViewModel::onWriteReview,
-        onRetry = { courseDetailViewModel.load(courseId) },
+        onToggleFavorite = viewModel::toggleFavorite,
+        onReportCourse = viewModel::onReportCourse,
+        onDeleteReview = viewModel::onDeleteReview,
+        onReportReview = viewModel::onReportReview,
+        onWriteReview = viewModel::onWriteReview,
+        onRetry = { viewModel.load(courseId) },
     )
 
     CourseDetailScreenDialogs(
-        dialogState = courseDetailViewModel.dialogState.collectAsStateWithLifecycle().value,
-        onDismissAuthDialog = courseDetailViewModel::dismissAuthDialog,
-        onConfirmAuthDialog = courseDetailViewModel::signIn,
-        onDismissReportCourseDialog = courseDetailViewModel::dismissReportCourseDialog,
-        onConfirmReportCourseDialog = courseDetailViewModel::submitCourseReport,
-        onDismissDeleteReviewDialog = courseDetailViewModel::dismissDeleteReviewDialog,
-        onConfirmDeleteReviewDialog = courseDetailViewModel::confirmDeleteReview,
-        onDismissReportReviewDialog = courseDetailViewModel::dismissReportReviewDialog,
-        onConfirmReportReviewDialog = courseDetailViewModel::confirmReportReview,
+        dialogState = viewModel.dialogState.collectAsStateWithLifecycle().value,
+        onDismissAuthDialog = viewModel::dismissAuthDialog,
+        onConfirmAuthDialog = viewModel::signIn,
+        onDismissReportCourseDialog = viewModel::dismissReportCourseDialog,
+        onConfirmReportCourseDialog = viewModel::submitCourseReport,
+        onDismissDeleteReviewDialog = viewModel::dismissDeleteReviewDialog,
+        onConfirmDeleteReviewDialog = viewModel::confirmDeleteReview,
+        onDismissReportReviewDialog = viewModel::dismissReportReviewDialog,
+        onConfirmReportReviewDialog = viewModel::confirmReportReview,
     )
 }
 
