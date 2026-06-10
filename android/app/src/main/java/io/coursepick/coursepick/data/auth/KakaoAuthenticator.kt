@@ -10,6 +10,7 @@ import io.coursepick.coursepick.domain.auth.AccessToken
 import io.coursepick.coursepick.domain.auth.AccountType
 import io.coursepick.coursepick.domain.auth.AuthenticationError
 import io.coursepick.coursepick.domain.auth.Authenticator
+import io.coursepick.coursepick.presentation.Logger
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
@@ -28,10 +29,12 @@ class KakaoAuthenticator
             { accessToken: OAuthToken?, throwable: Throwable? ->
                 when {
                     accessToken != null -> {
+                        Logger.log(Logger.Event.Success("kakao_login"))
                         onResult(Outcome.Success(AccessToken(accessToken.accessToken)))
                     }
 
                     throwable != null -> {
+                        Logger.log(Logger.Event.Failure("kakao_login"), "message" to throwable.message.orEmpty())
                         when {
                             throwable is ClientError && throwable.reason == ClientErrorCause.Cancelled -> {
                                 onResult(Outcome.Failure(AuthenticationError.Cancelled))
@@ -44,6 +47,7 @@ class KakaoAuthenticator
                     }
 
                     else -> {
+                        Logger.log(Logger.Event.Failure("kakao_login"))
                         onResult(Outcome.Failure(AuthenticationError.Unknown))
                     }
                 }

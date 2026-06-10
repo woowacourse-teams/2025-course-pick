@@ -6,6 +6,7 @@ import io.coursepick.coursepick.domain.auth.AccountType
 import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.auth.AuthenticationError
 import io.coursepick.coursepick.domain.auth.Authenticator
+import io.coursepick.coursepick.presentation.Logger
 import javax.inject.Inject
 
 class DefaultAuthRepository
@@ -25,8 +26,10 @@ class DefaultAuthRepository
                         cachedAccessToken = outcome.data
                         dataSource.saveAccessToken(signResponse.accessToken)
                         dataSource.saveUserId(signResponse.userId)
+                        Logger.log(Logger.Event.Success("coursepick_sign_in"))
                         Outcome.Success(Unit)
-                    }.getOrElse {
+                    }.getOrElse { throwable: Throwable ->
+                        Logger.log(Logger.Event.Failure("coursepick_sign_in"), "message" to throwable.message.orEmpty())
                         Outcome.Failure(AuthenticationError.Unknown)
                     }
                 }
