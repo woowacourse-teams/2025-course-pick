@@ -5,13 +5,15 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.coursepick.coursepick.data.NetworkMonitor
 import io.coursepick.coursepick.data.interceptor.NoNetworkException
+import io.coursepick.coursepick.domain.Outcome
 import io.coursepick.coursepick.domain.auth.AuthRepository
+import io.coursepick.coursepick.domain.auth.AuthenticationError
+import io.coursepick.coursepick.domain.auth.Authenticator
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.CoursesPage
 import io.coursepick.coursepick.domain.customcourse.CustomCourseRepository
 import io.coursepick.coursepick.domain.location.LocationRepository
 import io.coursepick.coursepick.presentation.Logger
-import io.coursepick.coursepick.presentation.auth.AuthFeature
 import io.coursepick.coursepick.presentation.course.CourseItem
 import io.coursepick.coursepick.presentation.course.UiStatus
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -64,11 +66,35 @@ class CustomCourseViewModel
             _authDialogState.value = null
         }
 
-        fun onAuthSuccess(feature: AuthFeature) {
-            if (feature is AuthFeature.CustomCourse) {
-                dismissAuthDialog()
-                viewModelScope.launch {
-                    _uiEvent.emit(CustomCourseUiEvent.RequestFetch)
+        fun signIn(
+            authenticator: Authenticator,
+            authFeature: AuthFeature,
+        ) {
+            viewModelScope.launch {
+                when (val outcome: Outcome<Unit, AuthenticationError> = authRepository.signIn(authenticator)) {
+                    is Outcome.Success -> {
+                        dismissAuthDialog()
+                        _uiEvent.emit(CustomCourseUiEvent.AuthenticationSuccess)
+                        when (authFeature) {
+                            AuthFeature.FetchCustomCourses -> fetchCustomCourses()
+                            AuthFeature.CreateCustomCourse -> _uiEvent.emit(CustomCourseUiEvent.NavigateToCreateCourse)
+                        }
+                    }
+
+                    is Outcome.Failure -> {
+                        _uiEvent.emit(
+                            when (outcome.type) {
+                                AuthenticationError.Cancelled -> {
+                                    dismissAuthDialog()
+                                    CustomCourseUiEvent.AuthenticationCancelled
+                                }
+
+                                AuthenticationError.Unknown -> {
+                                    CustomCourseUiEvent.AuthenticationFailure
+                                }
+                            },
+                        )
+                    }
                 }
             }
         }
@@ -86,6 +112,7 @@ class CustomCourseViewModel
                 }
 
                 if (authRepository.accessToken() == null) {
+                    _authDialogState.value = AuthFeature.FetchCustomCourses
                     _state.update { currentState ->
                         currentState.copy(status = UiStatus.Success, customCourses = emptyList())
                     }
@@ -192,5 +219,11 @@ class CustomCourseViewModel
             select(customCourse)
             val courseItem: CourseItem = _state.value.selectedCustomCourse?.toCourseItem() ?: return
             onNavigateTo(courseItem)
+        }
+
+        sealed interface AuthFeature {
+            data object FetchCustomCourses : AuthFeature
+
+            data object CreateCustomCourse : AuthFeature
         }
     }

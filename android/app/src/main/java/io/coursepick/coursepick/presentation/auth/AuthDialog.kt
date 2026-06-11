@@ -1,6 +1,5 @@
 package io.coursepick.coursepick.presentation.auth
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -17,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -26,7 +24,7 @@ import io.coursepick.coursepick.presentation.search.ui.theme.CoursePickTheme
 
 @Composable
 fun AuthDialog(
-    feature: AuthFeature,
+    featureName: String,
     onDismissRequest: () -> Unit,
     onKakaoLoginClick: () -> Unit,
 ) {
@@ -53,7 +51,7 @@ fun AuthDialog(
             )
 
             AuthContent(
-                featureName = stringResource(feature.stringResourceId()),
+                featureName = featureName,
                 onKakaoLoginClick = onKakaoLoginClick,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -61,23 +59,12 @@ fun AuthDialog(
     }
 }
 
-@StringRes
-private fun AuthFeature.stringResourceId(): Int =
-    when (this) {
-        is AuthFeature.ReportCourse -> R.string.report_course_feature_name
-        is AuthFeature.DeleteReview -> R.string.delete_review_feature_name
-        is AuthFeature.ReportReview -> R.string.report_review_feature_name
-        is AuthFeature.WriteReview -> R.string.write_course_review_feature_name
-        AuthFeature.CreateCustomCourse -> R.string.create_custom_course_feature_name
-        AuthFeature.CustomCourse -> R.string.custom_course_feature_name
-    }
-
 @PreviewLightDark
 @Composable
 private fun AuthDialogPreview() {
     CoursePickTheme {
         AuthDialog(
-            feature = AuthFeature.CreateCustomCourse,
+            featureName = "코스 추가",
             onDismissRequest = { },
             onKakaoLoginClick = { },
         )

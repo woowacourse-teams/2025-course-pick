@@ -1,50 +1,55 @@
 package io.coursepick.coursepick.data.auth
 
+import io.coursepick.coursepick.domain.Outcome
+import io.coursepick.coursepick.domain.auth.AccessToken
+import io.coursepick.coursepick.domain.auth.AccountType
 import io.coursepick.coursepick.domain.auth.AuthRepository
-import io.coursepick.coursepick.domain.auth.SocialToken
+import io.coursepick.coursepick.domain.auth.AuthenticationError
+import io.coursepick.coursepick.domain.auth.Authenticator
+import io.coursepick.coursepick.presentation.Logger
 import javax.inject.Inject
-import kotlin.concurrent.Volatile
 
 class DefaultAuthRepository
     @Inject
     constructor(
-        private val tokenLocalDataSource: TokenLocalDataSource,
+        private val dataSource: TokenLocalDataSource,
         private val service: SignService,
     ) : AuthRepository {
-        @Volatile
-        override var cachedAccessToken: String? = null
+        override var cachedAccessToken: AccessToken? = null
             private set
 
-        override suspend fun sign(
-            socialType: String,
-            socialToken: SocialToken,
-        ): String {
-            val token = TokenDto(socialToken.accessToken)
-            val signResponse: SignResponseDto = service.sign(socialType, token)
-            tokenLocalDataSource.saveUserId(signResponse.userId)
-            return signResponse.accessToken
-        }
+        override suspend fun signIn(authenticator: Authenticator): Outcome<Unit, AuthenticationError> =
+            when (val outcome: Outcome<AccessToken, AuthenticationError> = authenticator.authenticate()) {
+                is Outcome.Success -> {
+                    runCatching {
+                        val signResponse: SignResponseDto = service.sign(authenticator.accountType.endPoint(), TokenDto(outcome.data.data))
+                        cachedAccessToken = AccessToken(signResponse.accessToken)
+                        dataSource.saveAccessToken(signResponse.accessToken)
+                        dataSource.saveUserId(signResponse.userId)
+                        Logger.log(Logger.Event.Success("coursepick_sign_in"))
+                        Outcome.Success(Unit)
+                    }.getOrElse { throwable: Throwable ->
+                        Logger.log(Logger.Event.Failure("coursepick_sign_in"), "message" to throwable.message.orEmpty())
+                        Outcome.Failure(AuthenticationError.Unknown)
+                    }
+                }
 
-        override suspend fun userId(): String? = tokenLocalDataSource.userId()
+                is Outcome.Failure -> {
+                    outcome
+                }
+            }
 
-        override suspend fun saveAccessToken(token: String) {
-            cachedAccessToken = token
-            tokenLocalDataSource.saveAccessToken(token)
-        }
+        override suspend fun userId(): String? = dataSource.userId()
 
-        override suspend fun preloadAccessToken() {
-            accessToken()
-        }
-
-        override suspend fun accessToken(): String? {
+        override suspend fun accessToken(): AccessToken? {
             if (cachedAccessToken == null) {
-                cachedAccessToken = tokenLocalDataSource.accessToken()
+                cachedAccessToken = dataSource.accessToken()?.let(::AccessToken)
             }
             return cachedAccessToken
         }
 
-        override suspend fun clearCredentials() {
-            tokenLocalDataSource.clearCredentials()
-            cachedAccessToken = null
-        }
+        private fun AccountType.endPoint(): String =
+            when (this) {
+                AccountType.KAKAO -> "kakao"
+            }
     }

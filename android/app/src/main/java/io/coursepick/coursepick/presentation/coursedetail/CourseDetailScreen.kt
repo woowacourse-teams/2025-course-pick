@@ -60,73 +60,51 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.coursepick.coursepick.R
+import io.coursepick.coursepick.data.auth.KakaoAuthenticator
+import io.coursepick.coursepick.domain.auth.Authenticator
 import io.coursepick.coursepick.presentation.auth.AuthDialog
-import io.coursepick.coursepick.presentation.auth.AuthFeature
-import io.coursepick.coursepick.presentation.auth.AuthUiEvent
-import io.coursepick.coursepick.presentation.auth.AuthViewModel
-import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
 
 @Composable
 fun CourseDetailScreen(
     courseId: String,
     navigateBack: () -> Unit,
     navigateToWriteCourseReview: (CourseDetailUiModel) -> Unit,
-    courseDetailViewModel: CourseDetailViewModel = viewModel(),
-    authViewModel: AuthViewModel = viewModel(),
+    viewModel: CourseDetailViewModel = viewModel(),
 ) {
     val context: Context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        courseDetailViewModel.load(courseId)
+        viewModel.load(courseId)
     }
 
     LaunchedEffect(Unit) {
-        authViewModel.uiEvent.collect { event: AuthUiEvent -> event.handle(context, courseDetailViewModel) }
+        viewModel.uiEvent.collect { event: CourseDetailViewModel.UiEvent -> event.handle(context, navigateToWriteCourseReview) }
     }
 
-    LaunchedEffect(Unit) {
-        courseDetailViewModel.uiEvent.collect { event: CourseDetailViewModel.UiEvent -> event.handle(context, navigateToWriteCourseReview) }
-    }
-
-    val state: CourseDetailViewModel.UiState = courseDetailViewModel.uiState.collectAsStateWithLifecycle().value
+    val state: CourseDetailViewModel.UiState = viewModel.uiState.collectAsStateWithLifecycle().value
 
     CourseDetailScreen(
         uiState = state,
         onNavigateBack = navigateBack,
-        onToggleFavorite = courseDetailViewModel::toggleFavorite,
-        onReportCourse = courseDetailViewModel::onReportCourse,
-        onDeleteReview = courseDetailViewModel::onDeleteReview,
-        onReportReview = courseDetailViewModel::onReportReview,
-        onWriteReview = courseDetailViewModel::onWriteReview,
-        onRetry = { courseDetailViewModel.load(courseId) },
+        onToggleFavorite = viewModel::toggleFavorite,
+        onReportCourse = viewModel::onReportCourse,
+        onDeleteReview = viewModel::onDeleteReview,
+        onReportReview = viewModel::onReportReview,
+        onWriteReview = viewModel::onWriteReview,
+        onRetry = { viewModel.load(courseId) },
     )
 
     CourseDetailScreenDialogs(
-        dialogState = courseDetailViewModel.dialogState.collectAsStateWithLifecycle().value,
-        onDismissAuthDialog = courseDetailViewModel::dismissAuthDialog,
-        onConfirmAuthDialog = { authFeature: AuthFeature -> authViewModel.authenticate(KakaoAuthenticator(context), authFeature) },
-        onDismissReportCourseDialog = courseDetailViewModel::dismissReportCourseDialog,
-        onConfirmReportCourseDialog = courseDetailViewModel::submitCourseReport,
-        onDismissDeleteReviewDialog = courseDetailViewModel::dismissDeleteReviewDialog,
-        onConfirmDeleteReviewDialog = courseDetailViewModel::confirmDeleteReview,
-        onDismissReportReviewDialog = courseDetailViewModel::dismissReportReviewDialog,
-        onConfirmReportReviewDialog = courseDetailViewModel::confirmReportReview,
+        dialogState = viewModel.dialogState.collectAsStateWithLifecycle().value,
+        onDismissAuthDialog = viewModel::dismissAuthDialog,
+        onConfirmAuthDialog = viewModel::signIn,
+        onDismissReportCourseDialog = viewModel::dismissReportCourseDialog,
+        onConfirmReportCourseDialog = viewModel::submitCourseReport,
+        onDismissDeleteReviewDialog = viewModel::dismissDeleteReviewDialog,
+        onConfirmDeleteReviewDialog = viewModel::confirmDeleteReview,
+        onDismissReportReviewDialog = viewModel::dismissReportReviewDialog,
+        onConfirmReportReviewDialog = viewModel::confirmReportReview,
     )
-}
-
-private fun AuthUiEvent.handle(
-    context: Context,
-    courseDetailViewModel: CourseDetailViewModel,
-) {
-    when (this) {
-        is AuthUiEvent.AuthenticateSuccess -> {
-            courseDetailViewModel.onAuthSuccess(feature)
-        }
-
-        AuthUiEvent.AuthenticateFailure -> {
-            Toast.makeText(context, context.getString(R.string.authentication_failure_message), Toast.LENGTH_SHORT).show()
-        }
-    }
 }
 
 private fun CourseDetailViewModel.UiEvent.handle(
@@ -134,6 +112,18 @@ private fun CourseDetailViewModel.UiEvent.handle(
     navigateToWriteCourseReview: (CourseDetailUiModel) -> Unit,
 ) {
     when (this) {
+        CourseDetailViewModel.UiEvent.AuthenticationSuccess -> {
+            Toast.makeText(context, context.getString(R.string.authentication_success_message), Toast.LENGTH_SHORT).show()
+        }
+
+        CourseDetailViewModel.UiEvent.AuthenticationCancelled -> {
+            Toast.makeText(context, context.getString(R.string.authentication_cancelled_message), Toast.LENGTH_SHORT).show()
+        }
+
+        CourseDetailViewModel.UiEvent.AuthenticationFailure -> {
+            Toast.makeText(context, context.getString(R.string.authentication_failure_message), Toast.LENGTH_SHORT).show()
+        }
+
         CourseDetailViewModel.UiEvent.NoNetwork -> {
             Toast.makeText(context, context.getString(R.string.failure_no_network_toast_message), Toast.LENGTH_SHORT).show()
         }
@@ -576,7 +566,7 @@ private fun FailureComponent(
 private fun CourseDetailScreenDialogs(
     dialogState: CourseDetailViewModel.DialogState,
     onDismissAuthDialog: () -> Unit,
-    onConfirmAuthDialog: (AuthFeature) -> Unit,
+    onConfirmAuthDialog: (Authenticator, CourseDetailViewModel.AuthFeature) -> Unit,
     onDismissReportCourseDialog: () -> Unit,
     onConfirmReportCourseDialog: () -> Unit,
     onDismissDeleteReviewDialog: () -> Unit,
@@ -584,11 +574,21 @@ private fun CourseDetailScreenDialogs(
     onDismissReportReviewDialog: () -> Unit,
     onConfirmReportReviewDialog: (CourseReviewUiModel) -> Unit,
 ) {
+    val context: Context = LocalContext.current
+
     if (dialogState.authDialog != null) {
+        val featureName: String =
+            when (dialogState.authDialog) {
+                is CourseDetailViewModel.AuthFeature.ReportCourse -> stringResource(R.string.report_course_feature_name)
+                is CourseDetailViewModel.AuthFeature.DeleteReview -> stringResource(R.string.delete_review_feature_name)
+                is CourseDetailViewModel.AuthFeature.ReportReview -> stringResource(R.string.report_review_feature_name)
+                is CourseDetailViewModel.AuthFeature.WriteReview -> stringResource(R.string.write_course_review_feature_name)
+            }
+
         AuthDialog(
-            feature = dialogState.authDialog,
+            featureName = featureName,
             onDismissRequest = onDismissAuthDialog,
-            onKakaoLoginClick = { onConfirmAuthDialog(dialogState.authDialog) },
+            onKakaoLoginClick = { onConfirmAuthDialog(KakaoAuthenticator(context), dialogState.authDialog) },
         )
     }
 

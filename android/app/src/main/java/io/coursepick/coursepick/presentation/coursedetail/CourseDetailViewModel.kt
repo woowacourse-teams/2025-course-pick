@@ -5,12 +5,14 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.coursepick.coursepick.data.NetworkMonitor
 import io.coursepick.coursepick.data.interceptor.NoNetworkException
+import io.coursepick.coursepick.domain.Outcome
 import io.coursepick.coursepick.domain.auth.AuthRepository
+import io.coursepick.coursepick.domain.auth.AuthenticationError
+import io.coursepick.coursepick.domain.auth.Authenticator
 import io.coursepick.coursepick.domain.course.CourseDetail
 import io.coursepick.coursepick.domain.course.CourseRepository
 import io.coursepick.coursepick.domain.favorites.FavoriteCourseRepository
 import io.coursepick.coursepick.presentation.Logger
-import io.coursepick.coursepick.presentation.auth.AuthFeature
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -116,20 +118,43 @@ class CourseDetailViewModel
             }
         }
 
-        fun dismissAuthDialog() {
-            _dialogState.value = dialogState.value.copy(authDialog = null)
+        fun signIn(
+            authenticator: Authenticator,
+            authFeature: AuthFeature,
+        ) {
+            viewModelScope.launch {
+                when (val outcome: Outcome<Unit, AuthenticationError> = authRepository.signIn(authenticator)) {
+                    is Outcome.Success -> {
+                        dismissAuthDialog()
+                        _uiEvent.emit(UiEvent.AuthenticationSuccess)
+                        when (authFeature) {
+                            is AuthFeature.ReportCourse -> onReportCourse()
+                            is AuthFeature.DeleteReview -> onDeleteReview(authFeature.review)
+                            is AuthFeature.ReportReview -> onReportReview(authFeature.review)
+                            is AuthFeature.WriteReview -> onWriteReview()
+                        }
+                    }
+
+                    is Outcome.Failure -> {
+                        _uiEvent.emit(
+                            when (outcome.type) {
+                                AuthenticationError.Cancelled -> {
+                                    dismissAuthDialog()
+                                    UiEvent.AuthenticationCancelled
+                                }
+
+                                AuthenticationError.Unknown -> {
+                                    UiEvent.AuthenticationFailure
+                                }
+                            },
+                        )
+                    }
+                }
+            }
         }
 
-        fun onAuthSuccess(feature: AuthFeature) {
-            dismissAuthDialog()
-
-            when (feature) {
-                is AuthFeature.ReportCourse -> onReportCourse()
-                is AuthFeature.DeleteReview -> onDeleteReview(feature.review)
-                is AuthFeature.ReportReview -> onReportReview(feature.review)
-                is AuthFeature.WriteReview -> onWriteReview()
-                else -> Unit
-            }
+        fun dismissAuthDialog() {
+            _dialogState.value = dialogState.value.copy(authDialog = null)
         }
 
         fun onReportCourse() {
@@ -353,6 +378,12 @@ class CourseDetailViewModel
         }
 
         sealed interface UiEvent {
+            data object AuthenticationSuccess : UiEvent
+
+            data object AuthenticationCancelled : UiEvent
+
+            data object AuthenticationFailure : UiEvent
+
             data object NoNetwork : UiEvent
 
             data object UnauthorizedUser : UiEvent
@@ -396,4 +427,22 @@ class CourseDetailViewModel
             val deleteReviewDialog: CourseReviewUiModel? = null,
             val reportReviewDialog: CourseReviewUiModel? = null,
         )
+
+        sealed interface AuthFeature {
+            data class ReportCourse(
+                val courseId: String,
+            ) : AuthFeature
+
+            data class DeleteReview(
+                val review: CourseReviewUiModel,
+            ) : AuthFeature
+
+            data class ReportReview(
+                val review: CourseReviewUiModel,
+            ) : AuthFeature
+
+            data class WriteReview(
+                val courseId: String,
+            ) : AuthFeature
+        }
     }

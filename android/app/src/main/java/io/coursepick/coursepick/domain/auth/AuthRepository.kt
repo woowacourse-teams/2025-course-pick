@@ -1,20 +1,13 @@
 package io.coursepick.coursepick.domain.auth
 
-interface AuthRepository {
-    val cachedAccessToken: String?
+import io.coursepick.coursepick.domain.Outcome
 
-    suspend fun sign(
-        socialType: String,
-        socialToken: SocialToken,
-    ): String
+interface AuthRepository {
+    val cachedAccessToken: AccessToken?
+
+    suspend fun signIn(authenticator: Authenticator): Outcome<Unit, AuthenticationError>
 
     suspend fun userId(): String?
 
-    suspend fun saveAccessToken(token: String)
-
-    suspend fun preloadAccessToken()
-
-    suspend fun accessToken(): String?
-
-    suspend fun clearCredentials()
+    suspend fun accessToken(): AccessToken?
 }

@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
@@ -20,14 +21,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import io.coursepick.coursepick.R
+import io.coursepick.coursepick.data.auth.KakaoAuthenticator
 import io.coursepick.coursepick.databinding.FragmentCustomCoursesBinding
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.presentation.auth.AuthDialog
-import io.coursepick.coursepick.presentation.auth.AuthFeature
-import io.coursepick.coursepick.presentation.auth.AuthUiEvent
-import io.coursepick.coursepick.presentation.auth.AuthViewModel
-import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
+import io.coursepick.coursepick.presentation.course.CourseItem
 import io.coursepick.coursepick.presentation.course.CoursesActivity
 import io.coursepick.coursepick.presentation.course.CoursesViewModel
 import io.coursepick.coursepick.presentation.coursedetail.CourseDetailActivity
@@ -45,7 +44,6 @@ class CustomCoursesFragment(
 
     private val coursesViewModel: CoursesViewModel by activityViewModels()
     private val customCourseViewModel: CustomCourseViewModel by activityViewModels()
-    private val authViewModel: AuthViewModel by activityViewModels()
 
     private val createCustomCourseLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(
@@ -70,40 +68,37 @@ class CustomCoursesFragment(
         binding.customCourses.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                val nestedScrollInterop = rememberNestedScrollInteropConnection()
-                val customCourseState =
-                    customCourseViewModel.state.collectAsStateWithLifecycle().value
+                val nestedScrollInterop: NestedScrollConnection = rememberNestedScrollInteropConnection()
+                val customCourseState: CustomCourseUiState = customCourseViewModel.state.collectAsStateWithLifecycle().value
 
                 CustomCourseScreen(
                     status = customCourseState,
                     onReconnect = onReconnectListener,
                     onGoToCreateCustomCourse = customCourseViewModel::onGoToCreateCustomCourse,
-                    onSelect = { customCourse: CustomCourseItem ->
-                        customCourseViewModel.select(customCourse)
-                    },
+                    onSelect = { customCourse: CustomCourseItem -> customCourseViewModel.select(customCourse) },
                     onNavigateToCourse = { customCourse: CustomCourseItem ->
-                        customCourseViewModel.onNavigateToCourse(customCourse) { courseItem ->
+                        customCourseViewModel.onNavigateToCourse(customCourse) { courseItem: CourseItem ->
                             (activity as? CoursesActivity)?.navigateToCourse(courseItem)
                         }
                     },
                     onNavigateToDetail = { customCourse: CustomCourseItem ->
-                        startActivity(CourseDetailActivity.intent(requireActivity(), customCourse.course.id))
+                        startActivity(CourseDetailActivity.intent(requireContext(), customCourse.course.id))
                     },
                     modifier = Modifier.nestedScroll(nestedScrollInterop),
                 )
 
-                customCourseViewModel.authDialogState.collectAsStateWithLifecycle().value?.let { feature: AuthFeature ->
+                val authDialogState = customCourseViewModel.authDialogState.collectAsStateWithLifecycle().value
+                if (authDialogState != null) {
+                    val featureName: String =
+                        when (authDialogState) {
+                            CustomCourseViewModel.AuthFeature.FetchCustomCourses -> getString(R.string.custom_course_feature_name)
+                            CustomCourseViewModel.AuthFeature.CreateCustomCourse -> getString(R.string.create_custom_course_feature_name)
+                        }
+
                     AuthDialog(
-                        feature = feature,
+                        featureName = featureName,
                         onDismissRequest = customCourseViewModel::dismissAuthDialog,
-                        onKakaoLoginClick = {
-                            authViewModel.authenticate(
-                                KakaoAuthenticator(
-                                    requireActivity(),
-                                ),
-                                feature,
-                            )
-                        },
+                        onKakaoLoginClick = { customCourseViewModel.signIn(KakaoAuthenticator(requireContext()), authDialogState) },
                     )
                 }
             }
@@ -119,47 +114,44 @@ class CustomCoursesFragment(
     private fun setUpCollectors() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    customCourseViewModel.uiEvent.collect { event: CustomCourseUiEvent ->
-                        when (event) {
-                            CustomCourseUiEvent.NavigateToCreateCourse -> {
-                                goToCreateCustomCourse()
-                            }
-
-                            CustomCourseUiEvent.FetchCustomCourseFailure -> {
-                                showToastMessage(R.string.custom_courses_load_failed)
-                            }
-
-                            CustomCourseUiEvent.RequestFetch -> {
-                                customCourseViewModel.fetchCustomCourses()
-                            }
-
-                            CustomCourseUiEvent.UnauthorizedUser -> {
-                                showToastMessage(R.string.failure_unauthorized_user_toast_message)
-                            }
-
-                            is CustomCourseUiEvent.SelectCustomCourse -> {
-                                coursesViewModel.selectExternalCourse(event.customCourse.toCourseItem())
-                            }
+                customCourseViewModel.uiEvent.collect { event: CustomCourseUiEvent ->
+                    when (event) {
+                        CustomCourseUiEvent.AuthenticationSuccess -> {
+                            Toast
+                                .makeText(requireContext(), getString(R.string.authentication_success_message), Toast.LENGTH_SHORT)
+                                .show()
                         }
-                    }
-                }
 
-                launch {
-                    authViewModel.uiEvent.collect { event: AuthUiEvent ->
-                        when (event) {
-                            is AuthUiEvent.AuthenticateSuccess -> {
-                                customCourseViewModel.onAuthSuccess(event.feature)
-                            }
+                        CustomCourseUiEvent.AuthenticationCancelled -> {
+                            Toast
+                                .makeText(requireContext(), getString(R.string.authentication_cancelled_message), Toast.LENGTH_SHORT)
+                                .show()
+                        }
 
-                            AuthUiEvent.AuthenticateFailure -> {
-                                Toast
-                                    .makeText(
-                                        requireActivity(),
-                                        getString(R.string.authentication_failure_message),
-                                        Toast.LENGTH_SHORT,
-                                    ).show()
-                            }
+                        CustomCourseUiEvent.AuthenticationFailure -> {
+                            Toast
+                                .makeText(requireContext(), getString(R.string.authentication_failure_message), Toast.LENGTH_SHORT)
+                                .show()
+                        }
+
+                        CustomCourseUiEvent.NavigateToCreateCourse -> {
+                            goToCreateCustomCourse()
+                        }
+
+                        CustomCourseUiEvent.FetchCustomCourseFailure -> {
+                            Toast
+                                .makeText(requireContext(), R.string.custom_courses_load_failed, Toast.LENGTH_SHORT)
+                                .show()
+                        }
+
+                        CustomCourseUiEvent.UnauthorizedUser -> {
+                            Toast
+                                .makeText(requireContext(), R.string.failure_unauthorized_user_toast_message, Toast.LENGTH_SHORT)
+                                .show()
+                        }
+
+                        is CustomCourseUiEvent.SelectCustomCourse -> {
+                            coursesViewModel.selectExternalCourse(event.customCourse.toCourseItem())
                         }
                     }
                 }
@@ -168,17 +160,8 @@ class CustomCoursesFragment(
     }
 
     private fun goToCreateCustomCourse() {
-        val initialCoordinate: CoordinateUiModel? =
-            coursesViewModel.mapCoordinate?.let(Coordinate::toUiModel)
+        val initialCoordinate: CoordinateUiModel? = coursesViewModel.mapCoordinate?.let(Coordinate::toUiModel)
         val intent: Intent = CreateCustomCourseActivity.intent(requireContext(), initialCoordinate)
         createCustomCourseLauncher.launch(intent)
     }
-
-    private fun showToastMessage(resId: Int) =
-        Toast
-            .makeText(
-                requireActivity(),
-                getString(resId),
-                Toast.LENGTH_SHORT,
-            ).show()
 }

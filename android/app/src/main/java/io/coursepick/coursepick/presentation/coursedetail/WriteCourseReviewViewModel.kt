@@ -4,10 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.coursepick.coursepick.data.interceptor.NoNetworkException
+import io.coursepick.coursepick.domain.Outcome
 import io.coursepick.coursepick.domain.auth.AuthRepository
+import io.coursepick.coursepick.domain.auth.AuthenticationError
+import io.coursepick.coursepick.domain.auth.Authenticator
 import io.coursepick.coursepick.domain.course.CourseRepository
 import io.coursepick.coursepick.presentation.Logger
-import io.coursepick.coursepick.presentation.auth.AuthFeature
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -66,7 +68,7 @@ class WriteCourseReviewViewModel
 
             viewModelScope.launch {
                 if (authRepository.accessToken() == null) {
-                    _dialogState.value = dialogState.value.copy(authDialog = AuthFeature.WriteReview(courseId))
+                    _dialogState.value = dialogState.value.copy(showAuthDialog = true)
                     return@launch
                 }
 
@@ -119,7 +121,7 @@ class WriteCourseReviewViewModel
                                     }
 
                                     401 -> {
-                                        _dialogState.value = dialogState.value.copy(authDialog = AuthFeature.WriteReview(courseId))
+                                        _dialogState.value = dialogState.value.copy(showAuthDialog = true)
                                         return@launch
                                     }
 
@@ -140,15 +142,38 @@ class WriteCourseReviewViewModel
             }
         }
 
-        fun dismissAuthDialog() {
-            _dialogState.value = dialogState.value.copy(authDialog = null)
+        fun signIn(
+            authenticator: Authenticator,
+            courseId: String,
+        ) {
+            viewModelScope.launch {
+                when (val outcome: Outcome<Unit, AuthenticationError> = authRepository.signIn(authenticator)) {
+                    is Outcome.Success -> {
+                        dismissAuthDialog()
+                        _uiEvent.emit(UiEvent.AuthenticationSuccess)
+                        submitReview(courseId)
+                    }
+
+                    is Outcome.Failure -> {
+                        _uiEvent.emit(
+                            when (outcome.type) {
+                                AuthenticationError.Cancelled -> {
+                                    dismissAuthDialog()
+                                    UiEvent.AuthenticationCancelled
+                                }
+
+                                AuthenticationError.Unknown -> {
+                                    UiEvent.AuthenticationFailure
+                                }
+                            },
+                        )
+                    }
+                }
+            }
         }
 
-        fun onAuthSuccess(authFeature: AuthFeature) {
-            dismissAuthDialog()
-            if (authFeature is AuthFeature.WriteReview) {
-                submitReview(authFeature.courseId)
-            }
+        fun dismissAuthDialog() {
+            _dialogState.value = dialogState.value.copy(showAuthDialog = false)
         }
 
         fun onExit() {
@@ -173,6 +198,12 @@ class WriteCourseReviewViewModel
         }
 
         sealed interface UiEvent {
+            data object AuthenticationSuccess : UiEvent
+
+            data object AuthenticationCancelled : UiEvent
+
+            data object AuthenticationFailure : UiEvent
+
             data object Exit : UiEvent
 
             data object SubmitReviewSuccess : UiEvent
@@ -196,7 +227,7 @@ class WriteCourseReviewViewModel
         )
 
         data class DialogState(
-            val authDialog: AuthFeature? = null,
+            val showAuthDialog: Boolean = false,
             val showExitDialog: Boolean = false,
         )
 

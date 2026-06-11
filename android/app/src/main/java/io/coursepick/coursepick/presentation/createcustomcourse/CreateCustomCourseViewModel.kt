@@ -4,7 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.coursepick.coursepick.data.interceptor.NoNetworkException
+import io.coursepick.coursepick.domain.Outcome
 import io.coursepick.coursepick.domain.auth.AuthRepository
+import io.coursepick.coursepick.domain.auth.AuthenticationError
+import io.coursepick.coursepick.domain.auth.Authenticator
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.CourseName
 import io.coursepick.coursepick.domain.course.Length
@@ -12,7 +15,6 @@ import io.coursepick.coursepick.domain.customcourse.CustomCourseRepository
 import io.coursepick.coursepick.domain.customcourse.DraftCourse
 import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.presentation.Logger
-import io.coursepick.coursepick.presentation.auth.AuthFeature
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,8 +39,8 @@ class CreateCustomCourseViewModel
         private val _event = MutableSharedFlow<CreateCustomCourseUiEvent>()
         val event: SharedFlow<CreateCustomCourseUiEvent> get() = _event.asSharedFlow()
 
-        private val _authDialogState = MutableStateFlow<AuthFeature?>(null)
-        val authDialogState: StateFlow<AuthFeature?> get() = _authDialogState.asStateFlow()
+        private val _showAuthDialog = MutableStateFlow<Boolean>(false)
+        val showAuthDialog: StateFlow<Boolean> get() = _showAuthDialog.asStateFlow()
 
         private val _showSubmitDialog = MutableStateFlow(false)
         val showSubmitDialog: StateFlow<Boolean> get() = _showSubmitDialog.asStateFlow()
@@ -158,7 +160,7 @@ class CreateCustomCourseViewModel
                     }
 
                 if (authRepository.accessToken() == null) {
-                    _authDialogState.value = AuthFeature.CustomCourse
+                    _showAuthDialog.value = true
                     return@launch
                 }
 
@@ -199,8 +201,35 @@ class CreateCustomCourseViewModel
             }
         }
 
+        fun signIn(authenticator: Authenticator) {
+            viewModelScope.launch {
+                when (val outcome: Outcome<Unit, AuthenticationError> = authRepository.signIn(authenticator)) {
+                    is Outcome.Success -> {
+                        dismissAuthDialog()
+                        _event.emit(CreateCustomCourseUiEvent.AuthenticationSuccess)
+                        submitCourse()
+                    }
+
+                    is Outcome.Failure -> {
+                        _event.emit(
+                            when (outcome.type) {
+                                AuthenticationError.Cancelled -> {
+                                    dismissAuthDialog()
+                                    CreateCustomCourseUiEvent.AuthenticationCancelled
+                                }
+
+                                AuthenticationError.Unknown -> {
+                                    CreateCustomCourseUiEvent.AuthenticationFailure
+                                }
+                            },
+                        )
+                    }
+                }
+            }
+        }
+
         fun dismissAuthDialog() {
-            _authDialogState.value = null
+            _showAuthDialog.value = false
         }
 
         companion object {

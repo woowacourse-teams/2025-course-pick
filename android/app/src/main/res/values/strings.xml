@@ -188,6 +188,8 @@
 
     <!--  로그인 UI  -->
     <string name="auth_restriction_message">%1$s 기능은\n로그인이 필요한 서비스입니다.</string>
+    <string name="authentication_success_message">로그인에 성공했습니다.</string>
+    <string name="authentication_cancelled_message">로그인을 취소하셨습니다.</string>
     <string name="authentication_failure_message">로그인에 실패했습니다.</string>
 
     <!--  오류 문자열  -->

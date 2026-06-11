@@ -42,11 +42,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.coursepick.coursepick.R
+import io.coursepick.coursepick.data.auth.KakaoAuthenticator
+import io.coursepick.coursepick.domain.auth.Authenticator
 import io.coursepick.coursepick.presentation.auth.AuthDialog
-import io.coursepick.coursepick.presentation.auth.AuthFeature
-import io.coursepick.coursepick.presentation.auth.AuthUiEvent
-import io.coursepick.coursepick.presentation.auth.AuthViewModel
-import io.coursepick.coursepick.presentation.auth.KakaoAuthenticator
 import io.coursepick.coursepick.presentation.coursedetail.WriteCourseReviewViewModel.Companion.MAX_REVIEW_LENGTH
 
 @Composable
@@ -54,55 +52,35 @@ fun WriteCourseReviewScreen(
     courseDetail: CourseDetailUiModel,
     exit: () -> Unit,
     complete: () -> Unit,
-    writeCourseReviewViewModel: WriteCourseReviewViewModel = viewModel(),
-    authViewModel: AuthViewModel = viewModel(),
+    viewModel: WriteCourseReviewViewModel = viewModel(),
 ) {
     val context: Context = LocalContext.current
 
     BackHandler {
-        writeCourseReviewViewModel.onExit()
+        viewModel.onExit()
     }
 
     LaunchedEffect(Unit) {
-        authViewModel.uiEvent.collect { event: AuthUiEvent -> event.handle(context, writeCourseReviewViewModel) }
-    }
-
-    LaunchedEffect(Unit) {
-        writeCourseReviewViewModel.uiEvent.collect { event: WriteCourseReviewViewModel.UiEvent -> event.handle(context, exit, complete) }
+        viewModel.uiEvent.collect { event: WriteCourseReviewViewModel.UiEvent -> event.handle(context, exit, complete) }
     }
 
     WriteCourseReviewScreen(
-        uiState = writeCourseReviewViewModel.uiState.collectAsStateWithLifecycle().value,
+        uiState = viewModel.uiState.collectAsStateWithLifecycle().value,
         maxReviewLength = MAX_REVIEW_LENGTH,
         courseName = courseDetail.name,
         length = courseDetail.length,
-        onSelectRating = writeCourseReviewViewModel::setRating,
-        onReviewContentChange = writeCourseReviewViewModel::setReviewContent,
-        onSubmit = { writeCourseReviewViewModel.submitReview(courseDetail.id) },
+        onSelectRating = viewModel::setRating,
+        onReviewContentChange = viewModel::setReviewContent,
+        onSubmit = { viewModel.submitReview(courseDetail.id) },
     )
 
     WriteCourseReviewScreenDialogs(
-        dialogState = writeCourseReviewViewModel.dialogState.collectAsStateWithLifecycle().value,
-        onDismissAuthDialog = writeCourseReviewViewModel::dismissAuthDialog,
-        onConfirmAuthDialog = { authViewModel.authenticate(KakaoAuthenticator(context), AuthFeature.WriteReview(courseDetail.id)) },
-        onDismissExitDialog = writeCourseReviewViewModel::dismissExitDialog,
-        onConfirmExitDialog = writeCourseReviewViewModel::confirmExit,
+        dialogState = viewModel.dialogState.collectAsStateWithLifecycle().value,
+        onDismissAuthDialog = viewModel::dismissAuthDialog,
+        onConfirmAuthDialog = { authenticator: Authenticator -> viewModel.signIn(authenticator, courseDetail.id) },
+        onDismissExitDialog = viewModel::dismissExitDialog,
+        onConfirmExitDialog = viewModel::confirmExit,
     )
-}
-
-private fun AuthUiEvent.handle(
-    context: Context,
-    writeCourseReviewViewModel: WriteCourseReviewViewModel,
-) {
-    when (this) {
-        is AuthUiEvent.AuthenticateSuccess -> {
-            writeCourseReviewViewModel.onAuthSuccess(feature)
-        }
-
-        AuthUiEvent.AuthenticateFailure -> {
-            Toast.makeText(context, context.getString(R.string.authentication_failure_message), Toast.LENGTH_SHORT).show()
-        }
-    }
 }
 
 private fun WriteCourseReviewViewModel.UiEvent.handle(
@@ -111,6 +89,18 @@ private fun WriteCourseReviewViewModel.UiEvent.handle(
     complete: () -> Unit,
 ) {
     when (this) {
+        WriteCourseReviewViewModel.UiEvent.AuthenticationSuccess -> {
+            Toast.makeText(context, context.getString(R.string.authentication_success_message), Toast.LENGTH_SHORT).show()
+        }
+
+        WriteCourseReviewViewModel.UiEvent.AuthenticationCancelled -> {
+            Toast.makeText(context, context.getString(R.string.authentication_cancelled_message), Toast.LENGTH_SHORT).show()
+        }
+
+        WriteCourseReviewViewModel.UiEvent.AuthenticationFailure -> {
+            Toast.makeText(context, context.getString(R.string.authentication_failure_message), Toast.LENGTH_SHORT).show()
+        }
+
         WriteCourseReviewViewModel.UiEvent.Exit -> {
             exit()
         }
@@ -302,15 +292,17 @@ private fun SubmitReviewButton(
 private fun WriteCourseReviewScreenDialogs(
     dialogState: WriteCourseReviewViewModel.DialogState,
     onDismissAuthDialog: () -> Unit,
-    onConfirmAuthDialog: (AuthFeature) -> Unit,
+    onConfirmAuthDialog: (Authenticator) -> Unit,
     onDismissExitDialog: () -> Unit,
     onConfirmExitDialog: () -> Unit,
 ) {
-    if (dialogState.authDialog != null) {
+    val context: Context = LocalContext.current
+
+    if (dialogState.showAuthDialog) {
         AuthDialog(
-            feature = dialogState.authDialog,
+            featureName = stringResource(R.string.write_course_review_feature_name),
             onDismissRequest = onDismissAuthDialog,
-            onKakaoLoginClick = { onConfirmAuthDialog(dialogState.authDialog) },
+            onKakaoLoginClick = { onConfirmAuthDialog(KakaoAuthenticator(context)) },
         )
     }
 

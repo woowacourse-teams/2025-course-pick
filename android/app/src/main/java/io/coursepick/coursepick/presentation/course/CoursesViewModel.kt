@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.coursepick.coursepick.data.NetworkMonitor
 import io.coursepick.coursepick.data.interceptor.NoNetworkException
-import io.coursepick.coursepick.domain.auth.AuthRepository
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
 import io.coursepick.coursepick.domain.course.CourseRepository
@@ -22,7 +21,6 @@ import io.coursepick.coursepick.domain.notice.NoticeRepository
 import io.coursepick.coursepick.domain.preferences.PreferencesRepository
 import io.coursepick.coursepick.domain.preferences.RouteFinder
 import io.coursepick.coursepick.presentation.Logger
-import io.coursepick.coursepick.presentation.auth.AuthFeature
 import io.coursepick.coursepick.presentation.filter.CourseFilter
 import io.coursepick.coursepick.presentation.filter.CourseFilterAction
 import io.coursepick.coursepick.presentation.ui.MutableSingleLiveData
@@ -45,7 +43,6 @@ class CoursesViewModel
         private val noticeRepository: NoticeRepository,
         private val locationRepository: LocationRepository,
         private val preferencesRepository: PreferencesRepository,
-        private val authRepository: AuthRepository,
         private val networkMonitor: NetworkMonitor,
     ) : ViewModel() {
         private val _state: MutableLiveData<CoursesUiState> =
@@ -73,9 +70,6 @@ class CoursesViewModel
 
         private val _routeFinderDialogCourse = MutableStateFlow<CourseItem?>(null)
         val routeFinderDialogCourse: StateFlow<CourseItem?> get() = _routeFinderDialogCourse.asStateFlow()
-
-        private val _authDialogState = MutableStateFlow<AuthFeature?>(null)
-        val authDialogState: StateFlow<AuthFeature?> get() = _authDialogState.asStateFlow()
 
         private val _event: MutableSingleLiveData<CoursesUiEvent> = MutableSingleLiveData()
         val event: SingleLiveData<CoursesUiEvent> get() = _event
@@ -642,24 +636,6 @@ class CoursesViewModel
         }
 
         suspend fun currentLocation(): Location? = locationRepository.currentLocation()
-
-        fun checkAuthForCustomCourse(onAuthorized: () -> Unit) {
-            viewModelScope.launch {
-                if (authRepository.accessToken() == null) {
-                    _authDialogState.value = AuthFeature.CustomCourse
-                } else {
-                    onAuthorized()
-                }
-            }
-        }
-
-        fun dismissAuthDialog() {
-            _authDialogState.value = null
-        }
-
-        fun onAuthSuccess() {
-            dismissAuthDialog()
-        }
 
         private fun newCoursesListItem(
             oldCourses: List<CourseListItem>,
