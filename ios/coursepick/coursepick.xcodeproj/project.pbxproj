@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		967631902FDEF2520067912D /* NMapsMap in Frameworks */ = {isa = PBXBuildFile; productRef = 9676318F2FDEF2520067912D /* NMapsMap */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		967631742FDECCC90067912D /* coursepick.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = coursepick.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				967631902FDEF2520067912D /* NMapsMap in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +70,7 @@
 			);
 			name = coursepick;
 			packageProductDependencies = (
+				9676318F2FDEF2520067912D /* NMapsMap */,
 			);
 			productName = coursepick;
 			productReference = 967631742FDECCC90067912D /* coursepick.app */;
@@ -94,6 +100,9 @@
 			);
 			mainGroup = 9676316B2FDECCC90067912D;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				9676318E2FDEF2520067912D /* XCRemoteSwiftPackageReference "SPM-NMapsMap" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 967631752FDECCC90067912D /* Products */;
 			projectDirPath = "";
@@ -346,6 +355,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		9676318E2FDEF2520067912D /* XCRemoteSwiftPackageReference "SPM-NMapsMap" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/navermaps/SPM-NMapsMap";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.23.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		9676318F2FDEF2520067912D /* NMapsMap */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9676318E2FDEF2520067912D /* XCRemoteSwiftPackageReference "SPM-NMapsMap" */;
+			productName = NMapsMap;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 9676316C2FDECCC90067912D /* Project object */;
 }
