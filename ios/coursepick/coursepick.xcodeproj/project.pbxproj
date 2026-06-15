@@ -14,9 +14,22 @@
 		967631742FDECCC90067912D /* coursepick.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = coursepick.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		967631A22FDFCBC80067912D /* Exceptions for "coursepick" folder in "coursepick" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 967631732FDECCC90067912D /* coursepick */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		967631762FDECCC90067912D /* coursepick */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				967631A22FDFCBC80067912D /* Exceptions for "coursepick" folder in "coursepick" target */,
+			);
 			path = coursepick;
 			sourceTree = "<group>";
 		};
@@ -271,6 +284,7 @@
 				DEVELOPMENT_TEAM = 6246824QY4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = coursepick/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "런세권";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -312,6 +326,7 @@
 				DEVELOPMENT_TEAM = 6246824QY4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = coursepick/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "런세권";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
