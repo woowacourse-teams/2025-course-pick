@@ -1,10 +1,11 @@
 package coursepick.coursepick.presentation;
 
 
-import coursepick.coursepick.application.CourseParserFacade;
 import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.course.*;
+import coursepick.coursepick.domain.user.User;
+import coursepick.coursepick.domain.user.UserRepository;
 import coursepick.coursepick.presentation.dto.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class AdminWebController {
     private static final String TOKEN_COOKIE_KEY = "admin-token";
     private static final String KAKAO_API_KEY_PLACEHOLDER = "KAKAO_API_KEY_PLACEHOLDER";
     private final CourseRepository courseRepository;
-    private final CourseParserFacade courseParserFacade;
+    private final UserRepository userRepository;
     private final CoordinateSnapper coordinateSnapper;
 
     @Value("${admin.token}")
@@ -106,8 +107,9 @@ public class AdminWebController {
     public void importFiles(@RequestParam("files") List<MultipartFile> files) throws IOException {
         for (MultipartFile file : files) {
             try (CourseFile courseFile = CourseFile.from(file)) {
-                List<Course> courses = courseParserFacade.parse(courseFile);
-                courseRepository.saveAll(courses);
+                User admin = userRepository.getAdmin();
+                Course course = Gpx.from(courseFile).toCourse(admin);
+                courseRepository.save(course);
             }
         }
     }

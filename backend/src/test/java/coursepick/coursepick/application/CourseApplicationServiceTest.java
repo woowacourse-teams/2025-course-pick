@@ -1,5 +1,7 @@
 package coursepick.coursepick.application;
 
+import coursepick.coursepick.application.dto.CourseFile;
+import coursepick.coursepick.application.dto.CourseFileExtension;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.exception.UnauthorizedException;
 import coursepick.coursepick.domain.course.*;
@@ -21,6 +23,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static coursepick.coursepick.test_util.CourseFixture.*;
+import static coursepick.coursepick.test_util.GpxTestUtil.createGpxInputStreamOf;
 import static coursepick.coursepick.test_util.UserFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -354,6 +357,48 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
 
             var result = dbUtil.findCourseByName(expectedName);
             assertThat(result.name().value()).isEqualTo(expectedName);
+        }
+    }
+
+    @Nested
+    class GPX_파일_코스_등록 {
+
+        @Test
+        void GPX_파일로_코스를_저장한다() {
+            var courseFile = createGpxCourseFile("나만의 GPX 코스");
+
+            sut.addGpxCourse(courseFile, TEST_USER.id());
+
+            var result = dbUtil.findCourseByName("나만의 GPX 코스");
+            assertThat(result.name().value()).isEqualTo("나만의 GPX 코스");
+            assertThat(result.creatorId()).isEqualTo(TEST_USER.id());
+            assertThat(result.coordinates()).isNotEmpty();
+        }
+
+        @Test
+        void 중복된_코스_이름이면_예외가_발생한다() {
+            dbUtil.saveCourse(createCourse("나만의 GPX 코스", 한강_좌표));
+            var courseFile = createGpxCourseFile("나만의 GPX 코스");
+
+            assertThatThrownBy(() -> sut.addGpxCourse(courseFile, TEST_USER.id()))
+                    .isInstanceOf(IllegalStateException.class);
+        }
+
+        @Test
+        void 유저가_존재하지_않을_경우_예외가_발생한다() {
+            var courseFile = createGpxCourseFile("나만의 GPX 코스");
+
+            assertThatThrownBy(() -> sut.addGpxCourse(courseFile, "notExistUserId"))
+                    .isInstanceOf(UnauthorizedException.class);
+        }
+
+        private CourseFile createGpxCourseFile(String name) {
+            var inputStream = createGpxInputStreamOf(
+                    new Coordinate(37.514167, 127.103611),
+                    new Coordinate(37.515167, 127.104611),
+                    new Coordinate(37.514167, 127.103611)
+            );
+            return new CourseFile(name, CourseFileExtension.GPX, inputStream);
         }
     }
 

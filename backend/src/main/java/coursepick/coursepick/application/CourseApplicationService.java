@@ -2,6 +2,7 @@ package coursepick.coursepick.application;
 
 
 import coursepick.coursepick.application.dto.CourseDetailResponse;
+import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
 import coursepick.coursepick.application.exception.ErrorType;
@@ -12,7 +13,6 @@ import coursepick.coursepick.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -42,6 +42,14 @@ public class CourseApplicationService {
 
         Course newCourse = new Course(null, courseName, coordinates, user);
         courseRepository.save(newCourse);
+    }
+
+    @Transactional
+    public void addGpxCourse(CourseFile file, String userId) {
+        User user = getUser(userId);
+        Course course = Gpx.from(file).toCourse(user);
+        validateDuplicatedCourseName(course.name());
+        courseRepository.save(course);
     }
 
     @Transactional

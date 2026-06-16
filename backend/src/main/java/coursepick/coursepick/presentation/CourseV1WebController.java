@@ -2,6 +2,7 @@ package coursepick.coursepick.presentation;
 
 import coursepick.coursepick.application.CourseApplicationService;
 import coursepick.coursepick.application.dto.CourseDetailResponse;
+import coursepick.coursepick.application.dto.CourseFile;
 import coursepick.coursepick.application.dto.CoursesResponse;
 import coursepick.coursepick.domain.course.Coordinate;
 import coursepick.coursepick.domain.course.CourseFindCondition;
@@ -12,7 +13,9 @@ import coursepick.coursepick.security.UserId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -111,6 +114,17 @@ public class CourseV1WebController {
     public DraftRouteWebResponse findDraftRoute(@Valid @RequestBody FindDraftRouteWebRequest request) {
         DraftSegment route = courseApplicationService.findDraftRoute(request.toCoordinates());
         return DraftRouteWebResponse.of(route.coordinates(), route.length());
+    }
+
+    @Login
+    @PostMapping("/courses/file")
+    public void importFilesToCustomCourse(
+            @RequestParam("gpx") MultipartFile multipartFile,
+            @UserId String userId
+    ) throws IOException {
+        try (CourseFile courseFile = CourseFile.from(multipartFile)){
+            courseApplicationService.addGpxCourse(courseFile, userId);
+        }
     }
 
     @Login
