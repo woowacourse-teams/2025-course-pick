@@ -86,3 +86,4 @@ Service-Info.plist
 *.mobileprovision
 *.provisionprofile
 *.p8
+config/
