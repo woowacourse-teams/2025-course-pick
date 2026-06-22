@@ -37,7 +37,7 @@ public abstract class CourseFixture {
     }
 
     public static Course createHanRiverCourse(User user) {
-        return new Course(null, new CourseName("한강 러닝 코스"), 한강_좌표, user);
+        return Course.imported(null, new CourseName("한강 러닝 코스"), 한강_좌표, user);
     }
 
     public static Course createYangjaeCourse() {
@@ -45,7 +45,7 @@ public abstract class CourseFixture {
     }
 
     public static Course createYangjaeCourse(User user) {
-        return new Course(null, new CourseName("양재천 산책길"), 양재천_좌표, user);
+        return Course.imported(null, new CourseName("양재천 산책길"), 양재천_좌표, user);
     }
 
     public static Course createBukakCourse() {
@@ -53,7 +53,7 @@ public abstract class CourseFixture {
     }
 
     public static Course createBukakCourse(User user) {
-        return new Course(null, new CourseName("북악산 둘레길"), 북악산_좌표, user);
+        return Course.imported(null, new CourseName("북악산 둘레길"), 북악산_좌표, user);
     }
 
     public static Course createCourse(String name, List<Coordinate> coordinates) {
@@ -61,7 +61,7 @@ public abstract class CourseFixture {
     }
 
     public static Course createCourse(String name, List<Coordinate> coordinates, User user) {
-        return new Course(null, new CourseName(name), coordinates, user);
+        return Course.imported(null, new CourseName(name), coordinates, user);
     }
 
     public static Course createSimpleCourse() {
