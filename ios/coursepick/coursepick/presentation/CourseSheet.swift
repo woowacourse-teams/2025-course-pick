@@ -30,7 +30,7 @@ struct CourseSheet<Content: View>: View {
     }
 
     private var dragGesture: some Gesture {
-        DragGesture()
+        DragGesture(coordinateSpace: .global)
             .updating($dragTranslation) { value, state, _ in
                 state = value.translation.height
             }
@@ -38,9 +38,7 @@ struct CourseSheet<Content: View>: View {
                 let predictedHeight = currentHeight - value.predictedEndTranslation.height
                 let midpoint = (collapsedHeight + expandedHeight) / 2
 
-                withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
-                    position = predictedHeight >= midpoint ? .expanded : .collapsed
-                }
+                position = predictedHeight >= midpoint ? .expanded : .collapsed
             }
     }
 
@@ -54,6 +52,7 @@ struct CourseSheet<Content: View>: View {
             content
         }
         .frame(maxWidth: .infinity)
+        .frame(height: expandedHeight, alignment: .top)
         .frame(height: displayedHeight, alignment: .top)
         .background(.backgroundPrimary)
         .clipShape(.rect(topLeadingRadius: 38, topTrailingRadius: 38))
