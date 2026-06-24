@@ -2,13 +2,23 @@ import SwiftUI
 
 struct CourseListSheetView: View {
     var body: some View {
-        VStack {
+        VStack(alignment: .leading, spacing: 0) {
             Text("코스 목록")
                 .font(.system(size: 22, weight: .bold))
+                .foregroundStyle(.textPrimary)
                 .padding(.horizontal, 38)
                 .padding(.top, 28)
+                .padding(.bottom, 17)
 
-            Spacer()
+            
+            CourseItem(courseName: "종로5가역-경복궁-북악산-혜화역", distance: 4.56, length: 7.43)
+            CourseItem(courseName: "종로5가역-경복궁-북악산-혜화역", distance: 4.56, length: 7.43)
+            CourseItem(courseName: "종로5가역-경복궁-북악산-혜화역", distance: 4.56, length: 7.43)
+            CourseItem(courseName: "종로5가역-경복궁-북악산-혜화역", distance: 4.56, length: 7.43)
+            CourseItem(courseName: "종로5가역-경복궁-북악산-혜화역", distance: 4.56, length: 7.43)
+            CourseItem(courseName: "종로5가역-경복궁-북악산-혜화역", distance: 4.56, length: 7.43)
+            CourseItem(courseName: "종로5가역-경복궁-북악산-혜화역", distance: 4.56, length: 7.43)
+            CourseItem(courseName: "종로5가역-경복궁-북악산-혜화역", distance: 4.56, length: 7.43)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
