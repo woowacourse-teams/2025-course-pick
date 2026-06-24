@@ -5,7 +5,7 @@ struct CourseSheet<Content: View>: View {
     @ViewBuilder let content: Content
 
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             Capsule()
                 .fill(.grabber)
                 .frame(width: 36, height: 5)
