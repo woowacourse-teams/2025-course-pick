@@ -7,7 +7,7 @@ struct CourseExploreView: View {
                 NaverMapView()
 
                 CourseSheet(
-                    collapsedHeight: geometry.size.height * 0.15,
+                    collapsedHeight: geometry.size.height * 0.2,
                     expandedHeight: geometry.size.height * 0.5
                 ) {
                     CourseListSheetView()
