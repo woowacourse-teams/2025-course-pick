@@ -6,7 +6,7 @@ struct CourseItemView: View {
     @State var length: Double
     
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 4) {
             if distance != nil {
                 Text("내 위치에서 \(distance!, format: .number.precision(.fractionLength(2)))km만큼 떨어짐")
                     .font(Font.system(size: 12, weight: .regular))

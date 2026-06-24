@@ -5,14 +5,16 @@ struct CourseExploreView: View {
         GeometryReader { geometry in
             ZStack(alignment: .bottom) {
                 NaverMapView()
-                    .ignoresSafeArea()
 
-                CourseSheet(height: geometry.size.height * 0.5) {
+                CourseSheet(
+                    collapsedHeight: geometry.size.height * 0.15,
+                    expandedHeight: geometry.size.height * 0.5
+                ) {
                     CourseListSheetView()
                 }
             }
-            .ignoresSafeArea(edges: .bottom)
         }
+        .ignoresSafeArea()
     }
 }
 
