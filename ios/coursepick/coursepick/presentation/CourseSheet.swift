@@ -1,44 +1,30 @@
 import SwiftUI
 
 struct CourseSheet<Content: View>: View {
-    private enum Position {
-        case collapsed
-        case expanded
-    }
-
     let collapsedHeight: CGFloat
     let expandedHeight: CGFloat
+    @Binding var displayedHeight: CGFloat
     @ViewBuilder let content: Content
 
-    @State private var position: Position = .expanded
-    @GestureState private var dragTranslation: CGFloat = 0
-
-    private var currentHeight: CGFloat {
-        switch position {
-        case .collapsed:
-            collapsedHeight
-        case .expanded:
-            expandedHeight
-        }
-    }
-
-    private var displayedHeight: CGFloat {
-        min(
-            max(currentHeight - dragTranslation, collapsedHeight),
-            expandedHeight
-        )
-    }
+    @State private var dragStartHeight: CGFloat?
 
     private var dragGesture: some Gesture {
         DragGesture(coordinateSpace: .global)
-            .updating($dragTranslation) { value, state, _ in
-                state = value.translation.height
+            .onChanged { value in
+                let startHeight = dragStartHeight ?? displayedHeight
+                dragStartHeight = startHeight
+                displayedHeight = min(
+                    max(startHeight - value.translation.height, collapsedHeight),
+                    expandedHeight
+                )
             }
             .onEnded { value in
-                let predictedHeight = currentHeight - value.predictedEndTranslation.height
+                let startHeight = dragStartHeight ?? displayedHeight
+                let predictedHeight = startHeight - value.predictedEndTranslation.height
                 let midpoint = (collapsedHeight + expandedHeight) / 2
 
-                position = predictedHeight >= midpoint ? .expanded : .collapsed
+                displayedHeight = predictedHeight >= midpoint ? expandedHeight : collapsedHeight
+                dragStartHeight = nil
             }
     }
 
@@ -62,13 +48,19 @@ struct CourseSheet<Content: View>: View {
                 .contentShape(Rectangle())
                 .gesture(dragGesture)
         }
+        .onAppear {
+            if displayedHeight == 0 {
+                displayedHeight = expandedHeight
+            }
+        }
     }
 }
 
 #Preview {
     CourseSheet(
         collapsedHeight: 120,
-        expandedHeight: 360
+        expandedHeight: 360,
+        displayedHeight: .constant(360)
     ) {
         CourseListSheetView()
     }
