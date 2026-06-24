@@ -1,18 +1,22 @@
 import SwiftUI
 
-struct CourseItem: View {
+struct CourseItemView: View {
     @State var courseName: String
-    @State var distance: Double
+    @State var distance: Double?
     @State var length: Double
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text("내 위치에서 \(distance, format: .number.precision(.fractionLength(2)))km만큼 떨어짐")
-                .font(Font.system(size: 12, weight: .regular))
-                .foregroundStyle(.itemTertiary)
+            if distance != nil {
+                Text("내 위치에서 \(distance!, format: .number.precision(.fractionLength(2)))km만큼 떨어짐")
+                    .font(Font.system(size: 12, weight: .regular))
+                    .foregroundStyle(.itemTertiary)
+            }
+            
             Text(courseName)
                 .font(Font.system(size: 17, weight: .bold))
                 .foregroundStyle(.textPrimary)
+            
             Text("\(length, format: .number.precision(.fractionLength(2)))km")
                 .font(Font.system(size: 16, weight: .regular))
                 .foregroundStyle(.textPrimary)
@@ -29,5 +33,5 @@ struct CourseItem: View {
 }
 
 #Preview {
-    CourseItem(courseName: "종로5가역-경복궁-북악산-혜화역", distance: 4.56, length: 7.43)
+    CourseItemView(courseName: "종로5가역-경복궁-북악산-혜화역", distance: 4.56, length: 7.43)
 }
