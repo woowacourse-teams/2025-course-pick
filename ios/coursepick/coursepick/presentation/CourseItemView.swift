@@ -8,7 +8,7 @@ struct CourseItemView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             if let distance {
-                Text("내 위치에서 \(distance, format: .number.precision(.fractionLength(2)))km만큼 떨어짐")
+                Text("내 위치에서 \(distance, format: .number.rounded(rule: .towardZero).precision(.fractionLength(2)))km만큼 떨어짐")
                     .font(Font.system(size: 12, weight: .regular))
                     .foregroundStyle(.itemTertiary)
             }
@@ -17,7 +17,7 @@ struct CourseItemView: View {
                 .font(Font.system(size: 17, weight: .bold))
                 .foregroundStyle(.textPrimary)
             
-            Text("\(length, format: .number.precision(.fractionLength(2)))km")
+            Text("\(length, format: .number.rounded(rule: .towardZero).precision(.fractionLength(2)))km")
                 .font(Font.system(size: 16, weight: .regular))
                 .foregroundStyle(.textPrimary)
         }
