@@ -8,7 +8,7 @@ enum CourseListState {
 
 struct CourseListSheetView: View {
     let state: CourseListState
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text("러닝 코스")
@@ -17,13 +17,13 @@ struct CourseListSheetView: View {
                 .padding(.horizontal, 38)
                 .padding(.top, 28)
                 .padding(.bottom, 17)
-
+            
             content
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
-
+    
     @ViewBuilder
     private var content: some View {
         switch state {
@@ -39,25 +39,33 @@ struct CourseListSheetView: View {
                     }
                 }
             }
-
+            
         case .empty:
-            Text("이 곳엔 코스가 없어요")
-                .font(.system(size: 17, weight: .bold))
-                .foregroundStyle(.textPrimary)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-
+            VStack {
+                Spacer()
+                
+                Text("이 곳엔 코스가 없어요")
+                    .font(.system(size: 18, weight: .regular))
+                    .foregroundStyle(.textPrimary)
+                
+                Spacer()
+            }
+            
         case .networkError:
             VStack(spacing: 8) {
+                Spacer()
+                
                 Text("네트워크에 연결되지 않았습니다.")
                     .font(.system(size: 18, weight: .regular))
                     .foregroundStyle(.textPrimary)
-
+                
                 Text("설정을 확인하고 다시 시도해주세요.")
                     .font(.system(size: 18, weight: .regular))
                     .foregroundStyle(.textPrimary)
+                
+                Spacer()
             }
             .multilineTextAlignment(.center)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 }
