@@ -17,7 +17,7 @@ struct CourseExploreView: View {
                     expandedHeight: expandedHeight,
                     displayedHeight: $sheetHeight
                 ) {
-                    CourseListSheetView()
+                    CourseListSheetView(state: .loaded)
                 }
 
                 Button {

@@ -1,14 +1,14 @@
 import SwiftUI
 
 struct CourseItemView: View {
-    @State var courseName: String
-    @State var distance: Double?
-    @State var length: Double
+    let courseName: String
+    let distance: Double?
+    let length: Double
     
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            if distance != nil {
-                Text("내 위치에서 \(distance!, format: .number.precision(.fractionLength(2)))km만큼 떨어짐")
+            if let distance {
+                Text("내 위치에서 \(distance, format: .number.precision(.fractionLength(2)))km만큼 떨어짐")
                     .font(Font.system(size: 12, weight: .regular))
                     .foregroundStyle(.itemTertiary)
             }
