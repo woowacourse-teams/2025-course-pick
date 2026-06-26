@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +41,14 @@ public class CourseApplicationService {
 
         Course newCourse = new Course(null, courseName, coordinates, user);
         courseRepository.save(newCourse);
+    }
+
+    @Transactional
+    public void deleteCourse(String courseId, String userId) {
+        Course course = getCourse(courseId);
+        course.verifyDeletable(userId);
+
+        courseRepository.delete(course);
     }
 
     @Transactional
