@@ -425,7 +425,6 @@ class CourseApiDocsTest extends AbstractApiDocsSupport {
         }
 
 
-
         @Test
         void 커스텀_코스_생성_API() throws Exception {
             doNothing().when(courseApplicationService).addCustomCourse(anyString(), anyList(), anyString());
@@ -465,6 +464,29 @@ class CourseApiDocsTest extends AbstractApiDocsSupport {
                                                     .description(경도)
                                                     .attributes(key("example")
                                                             .value("127.103611")))
+                                    .build())));
+        }
+
+        @Test
+        void 코스_삭제_API() throws Exception {
+            doNothing().when(courseApplicationService).deleteCourse(anyString(), anyString());
+
+            mockMvc.perform(delete("/v1/courses/{id}", "689c3143182cecc6353cca7b")
+                            .header("Authorization", "Bearer " + "test.jwt.token")
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andDo(MockMvcRestDocumentationWrapper.document("course-delete",
+                            preprocessRequest(prettyPrint()),
+                            preprocessResponse(prettyPrint()),
+                            resource(ResourceSnippetParameters.builder()
+                                    .tag(TAG)
+                                    .summary("코스 삭제")
+                                    .description("내가 생성한 코스를 삭제합니다. (로그인 필요)")
+                                    .pathParameters(
+                                            parameterWithName("id")
+                                                    .description(코스_ID)
+                                                    .attributes(key("example")
+                                                            .value("689c3143182cecc6353cca7b")))
                                     .build())));
         }
 
