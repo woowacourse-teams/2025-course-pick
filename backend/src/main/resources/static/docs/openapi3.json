@@ -145,13 +145,14 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/v1-courses-draft-route593469975"
+                                    "$ref": "#/components/schemas/v1-courses-courseId-reviews-reviewId-report-34979082"
                                 },
                                 "examples": {
                                     "course-find-nearby-400": {
                                         "value": {
                                             "message": "Required request parameter 'scope' for method parameter type int is not present",
-                                            "timestamp": "2026-05-29T23:15:10.873152"
+                                            "errorCode": "UNKNOWN_ERROR",
+                                            "timestamp": "2026-06-26T21:12:22.273385"
                                         }
                                     }
                                 }
@@ -251,17 +252,18 @@
                 },
                 "responses": {
                     "409": {
-                        "description": "\ub9ac\uc18c\uc2a4 \ucda9\ub3cc (Conflict)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- '\ub098\ub9cc\uc758 \ud55c\uac15 \ub7ec\ub2dd \ucf54\uc2a4'\uc740(\ub294) \uc774\ubbf8 \uc874\uc7ac\ud558\ub294 \ucf54\uc2a4 \uc774\ub984\uc785\ub2c8\ub2e4.\n",
+                        "description": "\ub9ac\uc18c\uc2a4 \ucda9\ub3cc (Conflict)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- '\ub098\ub9cc\uc758 \ud55c\uac15 \ub7ec\ub2dd \ucf54\uc2a4'\uc740(\ub294) \uc774\ubbf8 \uc874\uc7ac\ud558\ub294 \ucf54\uc2a4 \uc774\ub984\uc785\ub2c8\ub2e4. \n",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/v1-courses-draft-route593469975"
+                                    "$ref": "#/components/schemas/v1-courses-courseId-reviews-reviewId-report-34979082"
                                 },
                                 "examples": {
                                     "course-add-custom-409": {
                                         "value": {
-                                            "message": "'\ub098\ub9cc\uc758 \ud55c\uac15 \ub7ec\ub2dd \ucf54\uc2a4'\uc740(\ub294) \uc774\ubbf8 \uc874\uc7ac\ud558\ub294 \ucf54\uc2a4 \uc774\ub984\uc785\ub2c8\ub2e4.",
-                                            "timestamp": "2026-05-29T23:15:11.003053"
+                                            "message": "'\ub098\ub9cc\uc758 \ud55c\uac15 \ub7ec\ub2dd \ucf54\uc2a4'\uc740(\ub294) \uc774\ubbf8 \uc874\uc7ac\ud558\ub294 \ucf54\uc2a4 \uc774\ub984\uc785\ub2c8\ub2e4. ",
+                                            "errorCode": "DUPLICATED_COURSE_NAME",
+                                            "timestamp": "2026-06-26T21:12:22.358654"
                                         }
                                     }
                                 }
@@ -269,17 +271,18 @@
                         }
                     },
                     "401": {
-                        "description": "\uc778\uc99d \uc2e4\ud328 (Unauthorized)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4.\n",
+                        "description": "\uc778\uc99d \uc2e4\ud328 (Unauthorized)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4. \n",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/v1-courses-draft-route593469975"
+                                    "$ref": "#/components/schemas/v1-courses-courseId-reviews-reviewId-report-34979082"
                                 },
                                 "examples": {
                                     "course-add-custom-401": {
                                         "value": {
-                                            "message": "\uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4.",
-                                            "timestamp": "2026-05-29T23:15:10.980054"
+                                            "message": "\uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4. ",
+                                            "errorCode": "AUTHENTICATION_FAIL",
+                                            "timestamp": "2026-06-26T21:12:22.343565"
                                         }
                                     }
                                 }
@@ -287,23 +290,25 @@
                         }
                     },
                     "400": {
-                        "description": "\uc798\ubabb\ub41c \uc694\uccad (Bad Request)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \uc774\ub984\uc740 2-30\uc790 \uc0ac\uc774\uc774\uc5b4\uc57c \ud569\ub2c8\ub2e4. \uc785\ub825\uac12=a\n- \ucf54\uc2a4\ub294 \ucd9c\ubc1c\uc9c0\uc640 \ub3c4\ucc29\uc9c0 \ub4f1 \ucd5c\uc18c 2\uac1c \uc774\uc0c1\uc758 \uc88c\ud45c\uac00 \ud544\uc694\ud569\ub2c8\ub2e4.\n- \uc694\uccad \ud30c\ub77c\ubbf8\ud130\uac00 \uc798\ubabb\ub41c \uacbd\uc6b0 (\uc608: \ud544\uc218\uac12 \ub204\ub77d, null \ub4f1)\n",
+                        "description": "\uc798\ubabb\ub41c \uc694\uccad (Bad Request)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \uc774\ub984\uc740 2-30\uc790 \uc0ac\uc774\uc774\uc5b4\uc57c \ud569\ub2c8\ub2e4. \uc785\ub825\uac12=a \n- \ucf54\uc2a4\ub294 \ucd9c\ubc1c\uc9c0\uc640 \ub3c4\ucc29\uc9c0 \ub4f1 \ucd5c\uc18c 2\uac1c \uc774\uc0c1\uc758 \uc88c\ud45c\uac00 \ud544\uc694\ud569\ub2c8\ub2e4.\n- \uc694\uccad \ud30c\ub77c\ubbf8\ud130\uac00 \uc798\ubabb\ub41c \uacbd\uc6b0 (\uc608: \ud544\uc218\uac12 \ub204\ub77d, null \ub4f1)\n",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/v1-courses-draft-route593469975"
+                                    "$ref": "#/components/schemas/v1-courses-courseId-reviews-reviewId-report-34979082"
                                 },
                                 "examples": {
                                     "course-add-custom-400-name": {
                                         "value": {
-                                            "message": "\uc774\ub984\uc740 2-30\uc790 \uc0ac\uc774\uc774\uc5b4\uc57c \ud569\ub2c8\ub2e4. \uc785\ub825\uac12=a",
-                                            "timestamp": "2026-05-29T23:15:11.093711"
+                                            "message": "\uc774\ub984\uc740 2-30\uc790 \uc0ac\uc774\uc774\uc5b4\uc57c \ud569\ub2c8\ub2e4. \uc785\ub825\uac12=a ",
+                                            "errorCode": "INVALID_NAME_LENGTH",
+                                            "timestamp": "2026-06-26T21:12:22.419643"
                                         }
                                     },
                                     "course-add-custom-400-count": {
                                         "value": {
                                             "message": "\ucf54\uc2a4\ub294 \ucd9c\ubc1c\uc9c0\uc640 \ub3c4\ucc29\uc9c0 \ub4f1 \ucd5c\uc18c 2\uac1c \uc774\uc0c1\uc758 \uc88c\ud45c\uac00 \ud544\uc694\ud569\ub2c8\ub2e4.",
-                                            "timestamp": "2026-05-29T23:15:11.116952"
+                                            "errorCode": "INVALID_INPUT",
+                                            "timestamp": "2026-06-26T21:12:22.435831"
                                         }
                                     }
                                 }
@@ -330,17 +335,25 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/v1-notices-1985385709"
+                                    "$ref": "#/components/schemas/v1-notices-945119595"
                                 },
                                 "examples": {
                                     "notice-list": {
                                         "value": {
                                             "notices": [
                                                 {
-                                                    "id": "verified_location",
-                                                    "imageUrl": "http://localhost:8080/verified_location.png",
-                                                    "title": "\uac15\ub0a8\u00b7\uc1a1\ud30c \ucf54\uc2a4\ub294 \uc800\ud76c\uac00 \uac80\uc99d\ud588\uc5b4\uc694\n \ub2e4\ub978 \uc9c0\uc5ed\uc740 \uc544\uc9c1 \uac80\uc99d \uc911\uc774\uc5d0\uc694 \ud83c\udfc3",
-                                                    "description": "* \uba54\ub274 \ud0ed\uc5d0\uc11c \ub2e4\uc2dc \ud655\uc778\ud560 \uc218 \uc788\uc5b4\uc694."
+                                                    "id": "feature_courseadd",
+                                                    "title": "\"\ub098\uc758 \ucf54\uc2a4\" \uae30\ub2a5\uc774 \ucd94\uac00\ub410\uc5b4\uc694!",
+                                                    "description": "\uc9c1\uc811 \ub098\ub9cc\uc758 \ucf54\uc2a4\ub97c \ub9cc\ub4e4\uace0 \uacf5\uc720\ud574\ubcf4\uc138\uc694.",
+                                                    "imageUrl": "/feature_courseadd.png",
+                                                    "targetUrl": null
+                                                },
+                                                {
+                                                    "id": "feature_courseReview",
+                                                    "title": "\"\ucf54\uc2a4 \ub9ac\ubdf0\" \uae30\ub2a5\uc774 \ucd94\uac00\ub410\uc5b4\uc694!",
+                                                    "description": "\ub7ec\ub108\ub4e4\uacfc \ucf54\uc2a4\uc5d0 \ub300\ud55c \ud6c4\uae30\ub97c \ub098\ub220\ubcf4\uc138\uc694  \ud83c\udfc3 \n\ucf54\uc2a4 \ubaa9\ub85d \uc624\ub978\ucabd\uc5d0 \uc788\ub294 \u203a \ubc84\ud2bc\uc744 \ub20c\ub7ec\uc11c \ud655\uc778\ud560 \uc218 \uc788\uc5b4\uc694.",
+                                                    "imageUrl": "/feature_review.png",
+                                                    "targetUrl": null
                                                 }
                                             ]
                                         }
@@ -384,17 +397,18 @@
                 ],
                 "responses": {
                     "401": {
-                        "description": "\uc778\uc99d \uc2e4\ud328 (Unauthorized)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4.\n",
+                        "description": "\uc778\uc99d \uc2e4\ud328 (Unauthorized)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4. \n",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/v1-courses-draft-route593469975"
+                                    "$ref": "#/components/schemas/v1-courses-courseId-reviews-reviewId-report-34979082"
                                 },
                                 "examples": {
                                     "course-find-custom-401": {
                                         "value": {
-                                            "message": "\uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4.",
-                                            "timestamp": "2026-05-29T23:15:11.020786"
+                                            "message": "\uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4. ",
+                                            "errorCode": "AUTHENTICATION_FAIL",
+                                            "timestamp": "2026-06-26T21:12:22.369815"
                                         }
                                     }
                                 }
@@ -462,13 +476,14 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/v1-courses-draft-route593469975"
+                                    "$ref": "#/components/schemas/v1-courses-courseId-reviews-reviewId-report-34979082"
                                 },
                                 "examples": {
                                     "course-favorites-400": {
                                         "value": {
                                             "message": "Required request parameter 'courseIds' for method parameter type List is not present",
-                                            "timestamp": "2026-05-29T23:15:10.809198"
+                                            "errorCode": "UNKNOWN_ERROR",
+                                            "timestamp": "2026-06-26T21:12:22.232852"
                                         }
                                     }
                                 }
@@ -529,17 +544,18 @@
                 ],
                 "responses": {
                     "404": {
-                        "description": "\ub9ac\uc18c\uc2a4\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc74c (Not Found)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \ucf54\uc2a4\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=invalid-id\n",
+                        "description": "\ub9ac\uc18c\uc2a4\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc74c (Not Found)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \ucf54\uc2a4\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=invalid-id \n",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/v1-courses-draft-route593469975"
+                                    "$ref": "#/components/schemas/v1-courses-courseId-reviews-reviewId-report-34979082"
                                 },
                                 "examples": {
                                     "course-detail-404": {
                                         "value": {
-                                            "message": "\ucf54\uc2a4\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=invalid-id",
-                                            "timestamp": "2026-05-29T23:15:10.786205"
+                                            "message": "\ucf54\uc2a4\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=invalid-id ",
+                                            "errorCode": "NOT_EXIST_COURSE",
+                                            "timestamp": "2026-06-26T21:12:22.217724"
                                         }
                                     }
                                 }
@@ -632,13 +648,14 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/v1-courses-draft-route593469975"
+                                    "$ref": "#/components/schemas/v1-courses-courseId-reviews-reviewId-report-34979082"
                                 },
                                 "examples": {
                                     "user-sign-400": {
                                         "value": {
                                             "message": "\uc561\uc138\uc2a4 \ud1a0\ud070\uc740 \ud544\uc218\uc785\ub2c8\ub2e4.",
-                                            "timestamp": "2026-05-29T23:15:11.428400"
+                                            "errorCode": "INVALID_INPUT",
+                                            "timestamp": "2026-06-26T21:12:22.652330"
                                         }
                                     }
                                 }
@@ -738,17 +755,18 @@
                         }
                     },
                     "400": {
-                        "description": "\uc798\ubabb\ub41c \uc694\uccad (Bad Request)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \uc704\ub3c4\ub294 -90 \uc774\uc0c1, 90 \uc774\ud558\uc774\uc5b4\uc57c \ud569\ub2c8\ub2e4. \uc785\ub825\uac12=100.0\n- \uc694\uccad \ud30c\ub77c\ubbf8\ud130\uac00 \uc798\ubabb\ub41c \uacbd\uc6b0 (\uc608: \ud544\uc218\uac12 \ub204\ub77d, null \ub4f1)\n",
+                        "description": "\uc798\ubabb\ub41c \uc694\uccad (Bad Request)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \uc704\ub3c4\ub294 -90 \uc774\uc0c1, 90 \uc774\ud558\uc774\uc5b4\uc57c \ud569\ub2c8\ub2e4. \uc785\ub825\uac12=100.0 \n- \uc694\uccad \ud30c\ub77c\ubbf8\ud130\uac00 \uc798\ubabb\ub41c \uacbd\uc6b0 (\uc608: \ud544\uc218\uac12 \ub204\ub77d, null \ub4f1)\n",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/v1-courses-draft-route593469975"
+                                    "$ref": "#/components/schemas/v1-courses-courseId-reviews-reviewId-report-34979082"
                                 },
                                 "examples": {
                                     "course-draft-route-400": {
                                         "value": {
-                                            "message": "\uc704\ub3c4\ub294 -90 \uc774\uc0c1, 90 \uc774\ud558\uc774\uc5b4\uc57c \ud569\ub2c8\ub2e4. \uc785\ub825\uac12=100.0",
-                                            "timestamp": "2026-05-29T23:15:10.762265"
+                                            "message": "\uc704\ub3c4\ub294 -90 \uc774\uc0c1, 90 \uc774\ud558\uc774\uc5b4\uc57c \ud569\ub2c8\ub2e4. \uc785\ub825\uac12=100.0 ",
+                                            "errorCode": "INVALID_LATITUDE_RANGE",
+                                            "timestamp": "2026-06-26T21:12:22.201561"
                                         }
                                     }
                                 }
@@ -800,17 +818,18 @@
                 ],
                 "responses": {
                     "404": {
-                        "description": "\ub9ac\uc18c\uc2a4\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc74c (Not Found)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \ucf54\uc2a4\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=invalid-id\n",
+                        "description": "\ub9ac\uc18c\uc2a4\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc74c (Not Found)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \ucf54\uc2a4\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=invalid-id \n",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/v1-courses-draft-route593469975"
+                                    "$ref": "#/components/schemas/v1-courses-courseId-reviews-reviewId-report-34979082"
                                 },
                                 "examples": {
                                     "course-closest-coordinate-404": {
                                         "value": {
-                                            "message": "\ucf54\uc2a4\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=invalid-id",
-                                            "timestamp": "2026-05-29T23:15:11.038260"
+                                            "message": "\ucf54\uc2a4\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=invalid-id ",
+                                            "errorCode": "NOT_EXIST_COURSE",
+                                            "timestamp": "2026-06-26T21:12:22.380888"
                                         }
                                     }
                                 }
@@ -863,17 +882,18 @@
                         "description": "\uc131\uacf5 (OK)"
                     },
                     "404": {
-                        "description": "\ub9ac\uc18c\uc2a4\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc74c (Not Found)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \ucf54\uc2a4\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=invalid-id\n",
+                        "description": "\ub9ac\uc18c\uc2a4\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc74c (Not Found)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \ucf54\uc2a4\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=invalid-id \n",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/v1-courses-draft-route593469975"
+                                    "$ref": "#/components/schemas/v1-courses-courseId-reviews-reviewId-report-34979082"
                                 },
                                 "examples": {
                                     "course-report-404": {
                                         "value": {
-                                            "message": "\ucf54\uc2a4\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=invalid-id",
-                                            "timestamp": "2026-05-29T23:15:10.852724"
+                                            "message": "\ucf54\uc2a4\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=invalid-id ",
+                                            "errorCode": "NOT_EXIST_COURSE",
+                                            "timestamp": "2026-06-26T21:12:22.260363"
                                         }
                                     }
                                 }
@@ -881,17 +901,18 @@
                         }
                     },
                     "401": {
-                        "description": "\uc778\uc99d \uc2e4\ud328 (Unauthorized)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4.\n",
+                        "description": "\uc778\uc99d \uc2e4\ud328 (Unauthorized)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4. \n",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/v1-courses-draft-route593469975"
+                                    "$ref": "#/components/schemas/v1-courses-courseId-reviews-reviewId-report-34979082"
                                 },
                                 "examples": {
                                     "course-report-401": {
                                         "value": {
-                                            "message": "\uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4.",
-                                            "timestamp": "2026-05-29T23:15:10.830645"
+                                            "message": "\uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4. ",
+                                            "errorCode": "AUTHENTICATION_FAIL",
+                                            "timestamp": "2026-06-26T21:12:22.247567"
                                         }
                                     }
                                 }
@@ -977,29 +998,32 @@
                 },
                 "responses": {
                     "400": {
-                        "description": "\uc798\ubabb\ub41c \uc694\uccad (Bad Request)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \ub9ac\ubdf0 \ud3c9\uc810\uc740 1\uc774\uc0c1 5\uc774\ud558\uc5ec\uc57c \ud569\ub2c8\ub2e4. \uc785\ub825\uac12=6\n- \ub9ac\ubdf0 \ub0b4\uc6a9\uc740 1\uc790 \uc774\uc0c1 500\uc790 \uc774\ud558\uc5ec\uc57c \ud569\ub2c8\ub2e4. \uc785\ub825 \uae38\uc774=0\n- \uc774\ubbf8 \ud574\ub2f9 \ucf54\uc2a4\uc5d0 \ub9ac\ubdf0\ub97c \uc791\uc131\ud588\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=689c3143182cecc6353cca7b, \uc720\uc800id=user-id\n- \uc694\uccad \ud30c\ub77c\ubbf8\ud130\uac00 \uc798\ubabb\ub41c \uacbd\uc6b0 (\uc608: \ud544\uc218\uac12 \ub204\ub77d, null \ub4f1)\n",
+                        "description": "\uc798\ubabb\ub41c \uc694\uccad (Bad Request)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \ub9ac\ubdf0 \ud3c9\uc810\uc740 1\uc774\uc0c1 5\uc774\ud558\uc5ec\uc57c \ud569\ub2c8\ub2e4. \uc785\ub825\uac12=6 \n- \ub9ac\ubdf0 \ub0b4\uc6a9\uc740 1\uc790 \uc774\uc0c1 500\uc790 \uc774\ud558\uc5ec\uc57c \ud569\ub2c8\ub2e4. \uc785\ub825 \uae38\uc774=0 \n- \uc774\ubbf8 \ud574\ub2f9 \ucf54\uc2a4\uc5d0 \ub9ac\ubdf0\ub97c \uc791\uc131\ud588\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=689c3143182cecc6353cca7b, \uc720\uc800id=user-id \n- \uc694\uccad \ud30c\ub77c\ubbf8\ud130\uac00 \uc798\ubabb\ub41c \uacbd\uc6b0 (\uc608: \ud544\uc218\uac12 \ub204\ub77d, null \ub4f1)\n",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/v1-courses-draft-route593469975"
+                                    "$ref": "#/components/schemas/v1-courses-courseId-reviews-reviewId-report-34979082"
                                 },
                                 "examples": {
                                     "course-add-review-400-rating": {
                                         "value": {
-                                            "message": "\ub9ac\ubdf0 \ud3c9\uc810\uc740 1\uc774\uc0c1 5\uc774\ud558\uc5ec\uc57c \ud569\ub2c8\ub2e4. \uc785\ub825\uac12=6",
-                                            "timestamp": "2026-05-29T23:15:11.135431"
+                                            "message": "\ub9ac\ubdf0 \ud3c9\uc810\uc740 1\uc774\uc0c1 5\uc774\ud558\uc5ec\uc57c \ud569\ub2c8\ub2e4. \uc785\ub825\uac12=6 ",
+                                            "errorCode": "INVALID_REVIEW_RATING",
+                                            "timestamp": "2026-06-26T21:12:22.447417"
                                         }
                                     },
                                     "course-add-review-400-length": {
                                         "value": {
-                                            "message": "\ub9ac\ubdf0 \ub0b4\uc6a9\uc740 1\uc790 \uc774\uc0c1 500\uc790 \uc774\ud558\uc5ec\uc57c \ud569\ub2c8\ub2e4. \uc785\ub825 \uae38\uc774=0",
-                                            "timestamp": "2026-05-29T23:15:10.454282"
+                                            "message": "\ub9ac\ubdf0 \ub0b4\uc6a9\uc740 1\uc790 \uc774\uc0c1 500\uc790 \uc774\ud558\uc5ec\uc57c \ud569\ub2c8\ub2e4. \uc785\ub825 \uae38\uc774=0 ",
+                                            "errorCode": "INVALID_REVIEW_CONTENT_LENGTH",
+                                            "timestamp": "2026-06-26T21:12:21.981104"
                                         }
                                     },
                                     "course-add-review-400-duplicate": {
                                         "value": {
-                                            "message": "\uc774\ubbf8 \ud574\ub2f9 \ucf54\uc2a4\uc5d0 \ub9ac\ubdf0\ub97c \uc791\uc131\ud588\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=689c3143182cecc6353cca7b, \uc720\uc800id=user-id",
-                                            "timestamp": "2026-05-29T23:15:11.151989"
+                                            "message": "\uc774\ubbf8 \ud574\ub2f9 \ucf54\uc2a4\uc5d0 \ub9ac\ubdf0\ub97c \uc791\uc131\ud588\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=689c3143182cecc6353cca7b, \uc720\uc800id=user-id ",
+                                            "errorCode": "ALREADY_REVIEWED_COURSE",
+                                            "timestamp": "2026-06-26T21:12:22.458655"
                                         }
                                     }
                                 }
@@ -1007,17 +1031,18 @@
                         }
                     },
                     "401": {
-                        "description": "\uc778\uc99d \uc2e4\ud328 (Unauthorized)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4.\n",
+                        "description": "\uc778\uc99d \uc2e4\ud328 (Unauthorized)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4. \n",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/v1-courses-draft-route593469975"
+                                    "$ref": "#/components/schemas/v1-courses-courseId-reviews-reviewId-report-34979082"
                                 },
                                 "examples": {
                                     "course-add-review-401": {
                                         "value": {
-                                            "message": "\uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4.",
-                                            "timestamp": "2026-05-29T23:15:11.055909"
+                                            "message": "\uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4. ",
+                                            "errorCode": "AUTHENTICATION_FAIL",
+                                            "timestamp": "2026-06-26T21:12:22.393607"
                                         }
                                     }
                                 }
@@ -1025,17 +1050,18 @@
                         }
                     },
                     "404": {
-                        "description": "\ub9ac\uc18c\uc2a4\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc74c (Not Found)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \ucf54\uc2a4\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=invalid-id\n",
+                        "description": "\ub9ac\uc18c\uc2a4\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc74c (Not Found)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \ucf54\uc2a4\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=invalid-id \n",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/v1-courses-draft-route593469975"
+                                    "$ref": "#/components/schemas/v1-courses-courseId-reviews-reviewId-report-34979082"
                                 },
                                 "examples": {
                                     "course-add-review-404": {
                                         "value": {
-                                            "message": "\ucf54\uc2a4\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=invalid-id",
-                                            "timestamp": "2026-05-29T23:15:11.072267"
+                                            "message": "\ucf54\uc2a4\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=invalid-id ",
+                                            "errorCode": "NOT_EXIST_COURSE",
+                                            "timestamp": "2026-06-26T21:12:22.405142"
                                         }
                                     }
                                 }
@@ -1090,17 +1116,18 @@
                 ],
                 "responses": {
                     "404": {
-                        "description": "\ub9ac\uc18c\uc2a4\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc74c (Not Found)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \ucf54\uc2a4\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=invalid-id\n",
+                        "description": "\ub9ac\uc18c\uc2a4\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc74c (Not Found)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \ucf54\uc2a4\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=invalid-id \n",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/v1-courses-draft-route593469975"
+                                    "$ref": "#/components/schemas/v1-courses-courseId-reviews-reviewId-report-34979082"
                                 },
                                 "examples": {
                                     "course-route-404": {
                                         "value": {
-                                            "message": "\ucf54\uc2a4\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=invalid-id",
-                                            "timestamp": "2026-05-29T23:15:10.709999"
+                                            "message": "\ucf54\uc2a4\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ucf54\uc2a4id=invalid-id ",
+                                            "errorCode": "NOT_EXIST_COURSE",
+                                            "timestamp": "2026-06-26T21:12:22.163804"
                                         }
                                     }
                                 }
@@ -1169,17 +1196,18 @@
                         "description": "\uc131\uacf5 (OK)"
                     },
                     "401": {
-                        "description": "\uc778\uc99d \uc2e4\ud328 (Unauthorized)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4.\n",
+                        "description": "\uc778\uc99d \uc2e4\ud328 (Unauthorized)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4. \n",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/v1-courses-draft-route593469975"
+                                    "$ref": "#/components/schemas/v1-courses-courseId-reviews-reviewId-report-34979082"
                                 },
                                 "examples": {
                                     "course-delete-review-401": {
                                         "value": {
-                                            "message": "\uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4.",
-                                            "timestamp": "2026-05-29T23:15:10.892274"
+                                            "message": "\uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4. ",
+                                            "errorCode": "AUTHENTICATION_FAIL",
+                                            "timestamp": "2026-06-26T21:12:22.286570"
                                         }
                                     }
                                 }
@@ -1187,17 +1215,18 @@
                         }
                     },
                     "404": {
-                        "description": "\ub9ac\uc18c\uc2a4\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc74c (Not Found)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \ub9ac\ubdf0\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ub9ac\ubdf0id=review-id\n",
+                        "description": "\ub9ac\uc18c\uc2a4\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc74c (Not Found)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \ub9ac\ubdf0\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ub9ac\ubdf0id=review-id \n",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/v1-courses-draft-route593469975"
+                                    "$ref": "#/components/schemas/v1-courses-courseId-reviews-reviewId-report-34979082"
                                 },
                                 "examples": {
                                     "course-delete-review-404": {
                                         "value": {
-                                            "message": "\ub9ac\ubdf0\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ub9ac\ubdf0id=review-id",
-                                            "timestamp": "2026-05-29T23:15:10.911341"
+                                            "message": "\ub9ac\ubdf0\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ub9ac\ubdf0id=review-id ",
+                                            "errorCode": "NOT_EXIST_REVIEW",
+                                            "timestamp": "2026-06-26T21:12:22.299988"
                                         }
                                     }
                                 }
@@ -1246,17 +1275,18 @@
                 ],
                 "responses": {
                     "404": {
-                        "description": "\ub9ac\uc18c\uc2a4\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc74c (Not Found)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \ub9ac\ubdf0\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ub9ac\ubdf0id=review-id\n",
+                        "description": "\ub9ac\uc18c\uc2a4\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc74c (Not Found)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \ub9ac\ubdf0\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ub9ac\ubdf0id=review-id \n",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/v1-courses-draft-route593469975"
+                                    "$ref": "#/components/schemas/v1-courses-courseId-reviews-reviewId-report-34979082"
                                 },
                                 "examples": {
                                     "course-report-review-404": {
                                         "value": {
-                                            "message": "\ub9ac\ubdf0\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ub9ac\ubdf0id=review-id",
-                                            "timestamp": "2026-05-29T23:15:10.950650"
+                                            "message": "\ub9ac\ubdf0\uac00 \uc874\uc7ac\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ub9ac\ubdf0id=review-id ",
+                                            "errorCode": "NOT_EXIST_REVIEW",
+                                            "timestamp": "2026-06-26T21:12:22.324530"
                                         }
                                     }
                                 }
@@ -1267,17 +1297,18 @@
                         "description": "\uc131\uacf5 (OK)"
                     },
                     "401": {
-                        "description": "\uc778\uc99d \uc2e4\ud328 (Unauthorized)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4.\n",
+                        "description": "\uc778\uc99d \uc2e4\ud328 (Unauthorized)\n\n**[\ubc1c\uc0dd \uac00\ub2a5\ud55c \uc608\uc678 \uc0c1\ud669]**\n- \uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4. \n",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/v1-courses-draft-route593469975"
+                                    "$ref": "#/components/schemas/v1-courses-courseId-reviews-reviewId-report-34979082"
                                 },
                                 "examples": {
                                     "course-report-review-401": {
                                         "value": {
-                                            "message": "\uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4.",
-                                            "timestamp": "2026-05-29T23:15:10.931483"
+                                            "message": "\uc778\uc99d\uc5d0 \uc2e4\ud328\ud558\uc600\uc2b5\ub2c8\ub2e4. ",
+                                            "errorCode": "AUTHENTICATION_FAIL",
+                                            "timestamp": "2026-06-26T21:12:22.312749"
                                         }
                                     }
                                 }
@@ -1518,23 +1549,6 @@
                     }
                 }
             },
-            "v1-courses-draft-route593469975": {
-                "required": [
-                    "message",
-                    "timestamp"
-                ],
-                "type": "object",
-                "properties": {
-                    "message": {
-                        "type": "string",
-                        "description": "\uc5d0\ub7ec \uc0c1\uc138 \uba54\uc2dc\uc9c0"
-                    },
-                    "timestamp": {
-                        "type": "string",
-                        "description": "\uc5d0\ub7ec \ubc1c\uc0dd \uc2dc\uac01"
-                    }
-                }
-            },
             "v1-login-kakao1901788434": {
                 "required": [
                     "accessToken",
@@ -1619,6 +1633,23 @@
                     }
                 }
             },
+            "v1-courses-id-reviews1117656623": {
+                "required": [
+                    "content",
+                    "rating"
+                ],
+                "type": "object",
+                "properties": {
+                    "rating": {
+                        "type": "number",
+                        "description": "\ub9ac\ubdf0 \ubcc4\uc810"
+                    },
+                    "content": {
+                        "type": "string",
+                        "description": "\ub9ac\ubdf0 \ub0b4\uc6a9"
+                    }
+                }
+            },
             "v1-courses-id-route-800094530": {
                 "type": "array",
                 "items": {
@@ -1636,23 +1667,6 @@
                             "type": "number",
                             "description": "\uacbd\ub3c4"
                         }
-                    }
-                }
-            },
-            "v1-courses-id-reviews1117656623": {
-                "required": [
-                    "content",
-                    "rating"
-                ],
-                "type": "object",
-                "properties": {
-                    "rating": {
-                        "type": "number",
-                        "description": "\ub9ac\ubdf0 \ubcc4\uc810"
-                    },
-                    "content": {
-                        "type": "string",
-                        "description": "\ub9ac\ubdf0 \ub0b4\uc6a9"
                     }
                 }
             },
@@ -1695,38 +1709,25 @@
                     }
                 }
             },
-            "v1-notices-1985385709": {
+            "v1-courses-courseId-reviews-reviewId-report-34979082": {
+                "required": [
+                    "errorCode",
+                    "message",
+                    "timestamp"
+                ],
                 "type": "object",
                 "properties": {
-                    "notices": {
-                        "type": "array",
-                        "items": {
-                            "required": [
-                                "description",
-                                "id",
-                                "imageUrl",
-                                "title"
-                            ],
-                            "type": "object",
-                            "properties": {
-                                "imageUrl": {
-                                    "type": "string",
-                                    "description": "\uacf5\uc9c0\uc0ac\ud56d \uc774\ubbf8\uc9c0 URL"
-                                },
-                                "description": {
-                                    "type": "string",
-                                    "description": "\uacf5\uc9c0\uc0ac\ud56d \ub0b4\uc6a9"
-                                },
-                                "id": {
-                                    "type": "string",
-                                    "description": "\uacf5\uc9c0\uc0ac\ud56d ID"
-                                },
-                                "title": {
-                                    "type": "string",
-                                    "description": "\uacf5\uc9c0\uc0ac\ud56d \uc81c\ubaa9"
-                                }
-                            }
-                        }
+                    "errorCode": {
+                        "type": "string",
+                        "description": "\uc5d0\ub7ec \ucf54\ub4dc"
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "\uc5d0\ub7ec \uc0c1\uc138 \uba54\uc2dc\uc9c0"
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "description": "\uc5d0\ub7ec \ubc1c\uc0dd \uc2dc\uac01"
                     }
                 }
             },
@@ -1756,6 +1757,46 @@
                     "longitude": {
                         "type": "number",
                         "description": "\uacbd\ub3c4"
+                    }
+                }
+            },
+            "v1-notices-945119595": {
+                "required": [
+                    "notices"
+                ],
+                "type": "object",
+                "properties": {
+                    "notices": {
+                        "type": "array",
+                        "description": "\uacf5\uc9c0\uc0ac\ud56d \ub9ac\uc2a4\ud2b8",
+                        "items": {
+                            "required": [
+                                "description",
+                                "id",
+                                "imageUrl",
+                                "targetUrl",
+                                "title"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "imageUrl": {
+                                    "type": "string",
+                                    "description": "\uacf5\uc9c0\uc0ac\ud56d \uc774\ubbf8\uc9c0 URL"
+                                },
+                                "description": {
+                                    "type": "string",
+                                    "description": "\uacf5\uc9c0\uc0ac\ud56d \ub0b4\uc6a9"
+                                },
+                                "id": {
+                                    "type": "string",
+                                    "description": "\uacf5\uc9c0\uc0ac\ud56d ID"
+                                },
+                                "title": {
+                                    "type": "string",
+                                    "description": "\uacf5\uc9c0\uc0ac\ud56d \uc81c\ubaa9"
+                                }
+                            }
+                        }
                     }
                 }
             }
