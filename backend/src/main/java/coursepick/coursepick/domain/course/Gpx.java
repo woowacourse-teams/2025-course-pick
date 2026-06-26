@@ -128,6 +128,9 @@ public class Gpx {
     }
 
     public List<Course> toCourses(User user) {
-        return List.of(new Course(id, new CourseName(name), coordinates, user));
+        List<Coordinate> smoothedCoordinates = CoordinateBuilder.fromRawCoordinates(coordinates)
+                .smooth()
+                .build();
+        return List.of(new Course(id, new CourseName(name), smoothedCoordinates, user));
     }
 }

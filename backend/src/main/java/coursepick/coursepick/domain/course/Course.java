@@ -1,6 +1,5 @@
 package coursepick.coursepick.domain.course;
 
-import coursepick.coursepick.application.exception.ErrorType;
 import coursepick.coursepick.domain.user.User;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -70,7 +69,6 @@ public class Course {
     private List<Coordinate> refineCoordinates(List<Coordinate> rawCoordinates) {
         return CoordinateBuilder.fromRawCoordinates(rawCoordinates)
                 .removeSimilar()
-                .smooth()
                 .build();
     }
 
