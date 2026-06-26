@@ -139,7 +139,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         void 더_보여줄_코스가_없으면_hasNext_false() {
             var coordinates = CoordinateTestUtil.square(new Coordinate(37.5180, 127.0280), new Coordinate(37.5175, 127.0270));
             var courses = new ArrayList<Course>();
-            for (var i = 0; i < 5; i++) courses.add(Course.imported(null, new CourseName("코스" + i), coordinates, ADMIN_USER));
+            for (var i = 0; i < 5; i++) courses.add(new Course(null, new CourseName("코스" + i), coordinates, ADMIN_USER));
             dbUtil.saveAllCourses(courses);
             var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, 0);
 
@@ -152,7 +152,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         void 더_보여줄_코스가_있으면_hasNext_true() {
             var coordinates = CoordinateTestUtil.square(new Coordinate(37.5180, 127.0280), new Coordinate(37.5175, 127.0270));
             var courses = new ArrayList<Course>();
-            for (var i = 0; i < 15; i++) courses.add(Course.imported(null, new CourseName("코스" + i), coordinates, ADMIN_USER));
+            for (var i = 0; i < 15; i++) courses.add(new Course(null, new CourseName("코스" + i), coordinates, ADMIN_USER));
             dbUtil.saveAllCourses(courses);
             var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, 0);
 
@@ -165,7 +165,7 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
         void 다음_데이터_존재_여부를_확인하며_코스_목록을_페이징_조회한다() {
             var coordinates = CoordinateTestUtil.square(new Coordinate(37.5180, 127.0280), new Coordinate(37.5175, 127.0270));
             var courses = new ArrayList<Course>();
-            for (var i = 0; i < 15; i++) courses.add(Course.imported(null, new CourseName("코스" + i), coordinates, ADMIN_USER));
+            for (var i = 0; i < 15; i++) courses.add(new Course(null, new CourseName("코스" + i), coordinates, ADMIN_USER));
             dbUtil.saveAllCourses(courses);
             var condition = new CourseFindCondition(37.5175, 127.0270, 3000, null, null, 1);
 

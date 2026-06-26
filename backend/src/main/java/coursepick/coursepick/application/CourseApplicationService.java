@@ -40,7 +40,7 @@ public class CourseApplicationService {
         validateDuplicatedCourseName(courseName);
         User user = getUser(userId);
 
-        Course newCourse = Course.drawn(null, courseName, coordinates, user);
+        Course newCourse = new Course(null, courseName, coordinates, user);
         courseRepository.save(newCourse);
     }
 

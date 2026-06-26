@@ -53,28 +53,10 @@ public class Course {
 
     private List<CourseTag> tags;
 
-    /**
-     * 사용자가 직접 점을 찍어 만든 코스입니다.
-     * <br>
-     * 의도한 좌표를 그대로 신뢰하므로, GPS 튐 보정용 smooth()는 적용하지 않습니다.
-     */
-    public static Course drawn(String id, CourseName courseName, List<Coordinate> rawCoordinates, User user) {
-        return new Course(id, courseName, rawCoordinates, user, false);
-    }
-
-    /**
-     * GPS 기록 등으로 만들어진 코스입니다.
-     * <br>
-     * 갑자기 튀는 점을 보정하기 위해 smooth()를 적용합니다.
-     */
-    public static Course imported(String id, CourseName courseName, List<Coordinate> rawCoordinates, User user) {
-        return new Course(id, courseName, rawCoordinates, user, true);
-    }
-
-    private Course(String id, CourseName courseName, List<Coordinate> rawCoordinates, User user, boolean smooth) {
+    public Course(String id, CourseName courseName, List<Coordinate> rawCoordinates, User user) {
         this.id = id;
         this.name = courseName;
-        this.coordinates = refineCoordinates(rawCoordinates, smooth);
+        this.coordinates = refineCoordinates(rawCoordinates);
         this.simplifiedCoordinates = simplifyCoordinates(this.coordinates);
         this.length = calculateLength(coordinates);
         this.reviews = new ArrayList<>();
@@ -84,13 +66,10 @@ public class Course {
         this.tags = new ArrayList<>();
     }
 
-    private List<Coordinate> refineCoordinates(List<Coordinate> rawCoordinates, boolean smooth) {
-        CoordinateBuilder builder = CoordinateBuilder.fromRawCoordinates(rawCoordinates)
-                .removeSimilar();
-        if (smooth) {
-            builder = builder.smooth();
-        }
-        return builder.build();
+    private List<Coordinate> refineCoordinates(List<Coordinate> rawCoordinates) {
+        return CoordinateBuilder.fromRawCoordinates(rawCoordinates)
+                .removeSimilar()
+                .build();
     }
 
     private List<Coordinate> simplifyCoordinates(List<Coordinate> coordinates) {
@@ -131,7 +110,7 @@ public class Course {
     }
 
     public void changeCoordinates(List<Coordinate> coordinates) {
-        this.coordinates = refineCoordinates(coordinates, true);
+        this.coordinates = refineCoordinates(coordinates);
         this.simplifiedCoordinates = simplifyCoordinates(this.coordinates);
         this.length = calculateLength(this.coordinates);
     }
