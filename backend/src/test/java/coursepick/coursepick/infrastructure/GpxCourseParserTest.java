@@ -23,10 +23,31 @@ class GpxCourseParserTest {
                 new Coordinate(37.4869515, 126.9230875),
                 new Coordinate(37.4845100, 126.9255380));
 
-        var courses = sut.parse(new CourseFile("테스트코스", CourseFileExtension.GPX, inputStream), ADMIN_USER);
+        var result = sut.parse(new CourseFile("테스트코스", CourseFileExtension.GPX, inputStream), ADMIN_USER);
 
-        assertThat(courses.size()).isEqualTo(1);
-        assertThat(courses).extracting(course -> course.name().value())
-                .contains("테스트코스");
+        assertThat(result.courses().size()).isEqualTo(1);
+        assertThat(result.courses().get(0).name().value()).isEqualTo("test-course");
+    }
+
+    @Test
+    void 이름이_없는_트랙은_무시하고_사유를_남긴다() {
+        var gpxContent = """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <gpx version="1.1" creator="Coursepick" xmlns="http://www.topografix.com/GPX/1/1">
+                    <trk>
+                        <trkseg>
+                            <trkpt lat="37.48" lon="126.92"/>
+                            <trkpt lat="37.49" lon="126.93"/>
+                        </trkseg>
+                    </trk>
+                </gpx>
+                """;
+        var inputStream = new java.io.ByteArrayInputStream(gpxContent.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+
+        var result = sut.parse(new CourseFile("테스트코스", CourseFileExtension.GPX, inputStream), ADMIN_USER);
+
+        assertThat(result.courses()).isEmpty();
+        assertThat(result.skippedReasons()).hasSize(1);
+        assertThat(result.skippedReasons().get(0)).contains("이름 누락");
     }
 }

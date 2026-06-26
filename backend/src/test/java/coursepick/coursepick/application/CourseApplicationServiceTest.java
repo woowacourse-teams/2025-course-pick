@@ -358,6 +358,111 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
     }
 
     @Nested
+    class 파일_코스_임포트 {
+
+        @Test
+        void 파일을_통해_여러_코스를_한번에_저장한다() {
+            var content = """
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <gpx version="1.1" creator="Coursepick" xmlns="http://www.topografix.com/GPX/1/1">
+                        <trk>
+                            <name>코스1</name>
+                            <trkseg>
+                                <trkpt lat="37.48" lon="126.92"/>
+                                <trkpt lat="37.49" lon="126.93"/>
+                            </trkseg>
+                        </trk>
+                        <trk>
+                            <name>코스2</name>
+                            <trkseg>
+                                <trkpt lat="37.5" lon="127.0"/>
+                                <trkpt lat="37.51" lon="127.1"/>
+                            </trkseg>
+                        </trk>
+                    </gpx>
+                    """;
+            var file = new org.springframework.mock.web.MockMultipartFile("file", "test.gpx", "application/gpx+xml", content.getBytes());
+
+            var response = sut.importCustomCourseFile(file, TEST_USER.id());
+
+            assertThat(response.successCount()).isEqualTo(2);
+            assertThat(response.successNames()).containsExactlyInAnyOrder("코스1", "코스2");
+            assertThat(dbUtil.findCourseByName("코스1")).isNotNull();
+            assertThat(dbUtil.findCourseByName("코스2")).isNotNull();
+        }
+
+        @Test
+        void 이름이_중복된_코스는_건너뛰고_나머지만_저장한다() {
+            // Given
+            sut.addCustomCourse("이미있는코스", 한강_좌표, TEST_USER.id());
+
+            var content = """
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <gpx version="1.1" creator="Coursepick" xmlns="http://www.topografix.com/GPX/1/1">
+                        <trk>
+                            <name>이미있는코스</name>
+                            <trkseg>
+                                <trkpt lat="37.4" lon="126.9"/>
+                                <trkpt lat="37.41" lon="126.91"/>
+                            </trkseg>
+                        </trk>
+                        <trk>
+                            <name>새로운코스</name>
+                            <trkseg>
+                                <trkpt lat="37.5" lon="127.0"/>
+                                <trkpt lat="37.51" lon="127.1"/>
+                            </trkseg>
+                        </trk>
+                    </gpx>
+                    """;
+            var file = new org.springframework.mock.web.MockMultipartFile("file", "test.gpx", "application/gpx+xml", content.getBytes());
+
+            // When
+            var response = sut.importCustomCourseFile(file, TEST_USER.id());
+
+            // Then
+            assertThat(response.successCount()).isEqualTo(1);
+            assertThat(response.successNames()).containsExactly("새로운코스");
+            assertThat(response.skippedCount()).isEqualTo(1);
+            assertThat(response.skippedReasons().get(0)).contains("중복된 이름");
+            assertThat(dbUtil.findCourseByName("새로운코스")).isNotNull();
+        }
+
+        @Test
+        void 이름이_없는_트랙은_제외하고_저장한다() {
+            // Given
+            var content = """
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <gpx version="1.1" creator="Coursepick" xmlns="http://www.topografix.com/GPX/1/1">
+                        <trk>
+                            <name>정상코스</name>
+                            <trkseg>
+                                <trkpt lat="37.4" lon="126.9"/>
+                                <trkpt lat="37.41" lon="126.91"/>
+                            </trkseg>
+                        </trk>
+                        <trk>
+                            <trkseg>
+                                <trkpt lat="37.5" lon="127.0"/>
+                                <trkpt lat="37.51" lon="127.1"/>
+                            </trkseg>
+                        </trk>
+                    </gpx>
+                    """;
+            var file = new org.springframework.mock.web.MockMultipartFile("file", "test.gpx", "application/gpx+xml", content.getBytes());
+
+            // When
+            var response = sut.importCustomCourseFile(file, TEST_USER.id());
+
+            // Then
+            assertThat(response.successCount()).isEqualTo(1);
+            assertThat(response.successNames()).containsExactly("정상코스");
+            assertThat(response.skippedCount()).isEqualTo(1);
+            assertThat(response.skippedReasons().get(0)).contains("이름 누락");
+        }
+    }
+
+    @Nested
     class 리뷰_추가_삭제_신고 {
 
         private String courseId;

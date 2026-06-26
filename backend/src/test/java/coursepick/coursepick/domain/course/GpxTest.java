@@ -22,7 +22,7 @@ class GpxTest {
         );
         var courseFile = new CourseFile("테스트코스", CourseFileExtension.GPX, inputStream);
 
-        var sut = Gpx.from(courseFile);
+        var sut = Gpx.from(courseFile).gpxList().getFirst();
 
         assertThat(sut.toXmlContent().strip()).containsIgnoringWhitespaces(
                 """

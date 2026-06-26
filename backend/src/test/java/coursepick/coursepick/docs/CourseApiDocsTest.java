@@ -3,6 +3,7 @@ package coursepick.coursepick.docs;
 import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import coursepick.coursepick.application.dto.CourseDetailResponse;
+import coursepick.coursepick.application.dto.CourseImportResponse;
 import coursepick.coursepick.application.dto.CourseResponse;
 import coursepick.coursepick.application.dto.CoursesResponse;
 import coursepick.coursepick.application.dto.ReviewResponse;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.web.servlet.ResultHandler;
 
@@ -31,6 +33,8 @@ import static org.mockito.Mockito.doThrow;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -598,6 +602,48 @@ class CourseApiDocsTest extends AbstractApiDocsSupport {
                                                     .attributes(key("example").value("review-id")))
                                     .build())));
         }
+
+        @Test
+        void 코스_파일_임포트_API() throws Exception {
+            var response = new CourseImportResponse(
+                    2,
+                    List.of("남산 코스", "한강 코스"),
+                    1,
+                    List.of("3번째 트랙: 이름 누락")
+            );
+            given(courseApplicationService.importCustomCourseFile(any(), anyString()))
+                    .willReturn(response);
+
+            var file = new MockMultipartFile(
+                    "file",
+                    "course.gpx",
+                    "application/gpx+xml",
+                    "test content".getBytes()
+            );
+
+            mockMvc.perform(multipart("/v1/courses/file")
+                            .file(file)
+                            .header("Authorization", "Bearer " + "test.jwt.token")
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andDo(MockMvcRestDocumentationWrapper.document("course-import-file",
+                            preprocessRequest(prettyPrint()),
+                            preprocessResponse(prettyPrint()),
+                            resource(ResourceSnippetParameters.builder()
+                                    .tag(TAG)
+                                    .summary("커스텀 코스 파일 생성")
+                                    .description("GPX 또는 KML 파일을 업로드하여 커스텀 코스들을 생성합니다. (로그인 필요)")
+                                    .responseFields(
+                                            fieldWithPath("successCount").description("성공적으로 저장된 코스 개수"),
+                                            fieldWithPath("successNames[]").description("저장된 코스 이름 리스트"),
+                                            fieldWithPath("skippedCount").description("제외된 코스 개수"),
+                                            fieldWithPath("skippedReasons[]").description("코스 제외 사유 리스트")
+                                    )
+                                    .build()),
+                            requestParts(
+                                    partWithName("file").description("업로드할 GPX 또는 KML 파일")
+                            )));
+        }
     }
 
     @Nested
@@ -796,6 +842,45 @@ class CourseApiDocsTest extends AbstractApiDocsSupport {
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isUnauthorized())
                     .andDo(documentUnauthorized("course-find-custom-401", "내 커스텀 코스 조회"));
+        }
+
+        @Test
+        void 코스_파일_임포트_API_400_에러() throws Exception {
+            doThrow(ErrorType.INVALID_FILE_EXTENSION.create())
+                    .when(courseApplicationService).importCustomCourseFile(any(), anyString());
+
+            var file = new MockMultipartFile(
+                    "file",
+                    "invalid.txt",
+                    "text/plain",
+                    "invalid content".getBytes()
+            );
+
+            mockMvc.perform(multipart("/v1/courses/file")
+                            .file(file)
+                            .header("Authorization", "Bearer " + "test.jwt.token")
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isBadRequest())
+                    .andDo(documentBadRequest("course-import-file-400"));
+        }
+
+        @Test
+        void 코스_파일_임포트_API_401_에러() throws Exception {
+            doThrow(ErrorType.AUTHENTICATION_FAIL.create())
+                    .when(courseApplicationService).importCustomCourseFile(any(), anyString());
+
+            var file = new MockMultipartFile(
+                    "file",
+                    "course.gpx",
+                    "application/gpx+xml",
+                    "test content".getBytes()
+            );
+
+            mockMvc.perform(multipart("/v1/courses/file")
+                            .file(file)
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isUnauthorized())
+                    .andDo(documentUnauthorized("course-import-file-401", "코스 파일 임포트"));
         }
 
         @Test

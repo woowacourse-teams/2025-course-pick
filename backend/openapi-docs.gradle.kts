@@ -189,6 +189,76 @@ fun processOpenApiSpec(specFile: File) {
             parseExamples(requestBody["content"])
         }
 
+    // [4] Multipart 파일 업로드 API의 requestBody 자동 주입
+    // restdocs-api-spec이 requestParts를 OpenAPI requestBody로 변환하지 못하는 한계를 보완합니다.
+    // build/generated-snippets 하위의 request-parts.adoc 파일을 스캔하여 자동으로 주입합니다.
+    val snippetsDir = layout.buildDirectory.dir("generated-snippets").get().asFile
+    if (snippetsDir.exists()) {
+        // operationId → multipart part 목록 매핑 생성
+        val multipartParts = mutableMapOf<String, List<Pair<String, String>>>() // operationId → [(name, description)]
+
+        snippetsDir.listFiles()?.filter { it.isDirectory }?.forEach { snippetDir ->
+            val requestPartsFile = File(snippetDir, "request-parts.adoc")
+            val resourceFile = File(snippetDir, "resource.json")
+            if (requestPartsFile.exists() && resourceFile.exists()) {
+                // resource.json에서 operationId 추출
+                @Suppress("UNCHECKED_CAST")
+                val resource = jsonSlurper.parseText(resourceFile.readText()) as Map<String, Any?>
+                val operationId = resource["operationId"] as? String ?: return@forEach
+
+                // request-parts.adoc 파싱: |`+partName+`\n|설명 형식
+                val parts = mutableListOf<Pair<String, String>>()
+                val lines = requestPartsFile.readLines()
+                var i = 0
+                while (i < lines.size) {
+                    val partMatch = Regex("""\|`\+(.+?)\+`""").find(lines[i])
+                    if (partMatch != null && i + 1 < lines.size) {
+                        val partName = partMatch.groupValues[1]
+                        val desc = lines[i + 1].removePrefix("|").trim()
+                        parts.add(partName to desc)
+                    }
+                    i++
+                }
+                if (parts.isNotEmpty()) {
+                    multipartParts[operationId] = parts
+                }
+            }
+        }
+
+        // OpenAPI spec의 각 operation에 multipart requestBody 주입
+        if (multipartParts.isNotEmpty()) {
+            paths.values.filterIsInstance<Map<*, *>>()
+                .flatMap { it.values.filterIsInstance<MutableMap<String, Any?>>() }
+                .forEach { op ->
+                    val opId = op["operationId"] as? String ?: return@forEach
+                    val parts = multipartParts[opId] ?: return@forEach
+
+                    val properties = mutableMapOf<String, Any>()
+                    val required = mutableListOf<String>()
+                    parts.forEach { (name, desc) ->
+                        properties[name] = mutableMapOf(
+                            "type" to "string",
+                            "format" to "binary",
+                            "description" to desc
+                        )
+                        required.add(name)
+                    }
+
+                    op["requestBody"] = mutableMapOf(
+                        "content" to mutableMapOf(
+                            "multipart/form-data" to mutableMapOf(
+                                "schema" to mutableMapOf(
+                                    "type" to "object",
+                                    "properties" to properties,
+                                    "required" to required
+                                )
+                            )
+                        )
+                    )
+                }
+        }
+    }
+
     // 최종 수정된 내용을 예쁘게(pretty print) 하여 파일로 저장
     specFile.writeText(JsonOutput.prettyPrint(JsonOutput.toJson(json)))
 }
