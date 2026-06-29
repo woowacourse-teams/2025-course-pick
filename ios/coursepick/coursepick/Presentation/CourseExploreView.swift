@@ -2,6 +2,9 @@ import SwiftUI
 
 struct CourseExploreView: View {
     @State private var sheetHeight: CGFloat = 0
+    @State private var selectedCourse: Course?
+
+    private let courses = MockCourseData.courses
 
     var body: some View {
         GeometryReader { geometry in
@@ -17,7 +20,11 @@ struct CourseExploreView: View {
                     expandedHeight: expandedHeight,
                     displayedHeight: $sheetHeight
                 ) {
-                    CourseListSheetView(state: .loaded)
+                    CourseListSheetView(
+                        state: .loaded,
+                        courses: courses,
+                        selectedCourse: $selectedCourse
+                    )
                 }
 
                 Button {

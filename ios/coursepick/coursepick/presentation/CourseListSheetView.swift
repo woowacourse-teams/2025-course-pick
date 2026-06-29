@@ -8,6 +8,8 @@ enum CourseListState {
 
 struct CourseListSheetView: View {
     let state: CourseListState
+    let courses: [Course]
+    @Binding var selectedCourse: Course?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -30,12 +32,17 @@ struct CourseListSheetView: View {
         case .loaded:
             ScrollView {
                 LazyVStack(spacing: 0) {
-                    ForEach(0..<20, id: \.self) { _ in
-                        CourseItemView(
-                            courseName: "종로5가역-경복궁-북악산-혜화역",
-                            distance: 4.56,
-                            length: 7.43
-                        )
+                    ForEach(courses, id: \.self) { course in
+                        Button {
+                            selectedCourse = course
+                        } label: {
+                            CourseItemView(
+                                courseName: course.name.value,
+                                distance: course.distance.meters / 1000,
+                                length: course.length.meters / 1000
+                            )
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
             }
@@ -71,13 +78,25 @@ struct CourseListSheetView: View {
 }
 
 #Preview("Loaded") {
-    CourseListSheetView(state: .loaded)
+    CourseListSheetView(
+        state: .loaded,
+        courses: MockCourseData.courses,
+        selectedCourse: .constant(MockCourseData.courses.first)
+    )
 }
 
 #Preview("Empty") {
-    CourseListSheetView(state: .empty)
+    CourseListSheetView(
+        state: .empty,
+        courses: [],
+        selectedCourse: .constant(nil)
+    )
 }
 
 #Preview("Network Error") {
-    CourseListSheetView(state: .networkError)
+    CourseListSheetView(
+        state: .networkError,
+        courses: [],
+        selectedCourse: .constant(nil)
+    )
 }

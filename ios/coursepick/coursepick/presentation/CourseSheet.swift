@@ -62,6 +62,10 @@ struct CourseSheet<Content: View>: View {
         expandedHeight: 360,
         displayedHeight: .constant(360)
     ) {
-        CourseListSheetView(state: .loaded)
+        CourseListSheetView(
+            state: .loaded,
+            courses: MockCourseData.courses,
+            selectedCourse: .constant(MockCourseData.courses.first)
+        )
     }
 }
