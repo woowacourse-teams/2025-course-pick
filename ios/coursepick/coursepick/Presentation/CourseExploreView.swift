@@ -16,7 +16,11 @@ struct CourseExploreView: View {
                 NaverMapView(
                     polylines: courses.map(\.coordinates),
                     selectedPolyline: selectedCourse?.coordinates
-                )
+                ) { coordinates in
+                    selectedCourse = courses.first { course in
+                        course.coordinates == coordinates
+                    }
+                }
 
                 CourseSheet(
                     collapsedHeight: collapsedHeight,

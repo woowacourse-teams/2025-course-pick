@@ -6,6 +6,7 @@ struct NaverMapView: UIViewRepresentable {
 
     let polylines: [[Coordinate]]
     let selectedPolyline: [Coordinate]?
+    let onSelectPolyline: ([Coordinate]) -> Void
 
     func makeCoordinator() -> Coordinator {
         Coordinator()
@@ -28,14 +29,18 @@ struct NaverMapView: UIViewRepresentable {
                 context.coordinator.mapManager?.drawPolyline(
                     coordinates: coordinates,
                     isSelected: false
-                )
+                ) {
+                    onSelectPolyline(coordinates)
+                }
             }
 
         if let selectedPolyline {
             context.coordinator.mapManager?.drawPolyline(
                 coordinates: selectedPolyline,
                 isSelected: true
-            )
+            ) {
+                onSelectPolyline(selectedPolyline)
+            }
         }
     }
 
