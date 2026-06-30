@@ -5,6 +5,7 @@ struct NaverMapView: UIViewRepresentable {
     private static let initialCoordinate = NMGLatLng(lat: 37.515411, lng: 127.1029607)
 
     let polylines: [[Coordinate]]
+    let selectedPolyline: [Coordinate]?
 
     func makeCoordinator() -> Coordinator {
         Coordinator()
@@ -19,8 +20,22 @@ struct NaverMapView: UIViewRepresentable {
 
     func updateUIView(_ uiView: NMFMapView, context: Context) {
         context.coordinator.mapManager?.clearPolylines()
-        polylines.forEach { coordinates in
-            context.coordinator.mapManager?.drawPolyline(coordinates: coordinates)
+
+        let selectedPolyline = selectedPolyline
+        polylines
+            .filter { coordinates in coordinates != selectedPolyline }
+            .forEach { coordinates in
+                context.coordinator.mapManager?.drawPolyline(
+                    coordinates: coordinates,
+                    isSelected: false
+                )
+            }
+
+        if let selectedPolyline {
+            context.coordinator.mapManager?.drawPolyline(
+                coordinates: selectedPolyline,
+                isSelected: true
+            )
         }
     }
 

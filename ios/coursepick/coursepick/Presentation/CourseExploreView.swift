@@ -2,9 +2,9 @@ import SwiftUI
 
 struct CourseExploreView: View {
     @State private var sheetHeight: CGFloat = 0
-    @State private var selectedCourse: Course?
 
     private let courses = MockCourseData.courses
+    @State private var selectedCourse = MockCourseData.courses.first
 
     var body: some View {
         GeometryReader { geometry in
@@ -13,7 +13,10 @@ struct CourseExploreView: View {
             let displayedSheetHeight = sheetHeight == 0 ? expandedHeight : sheetHeight
 
             ZStack(alignment: .bottomTrailing) {
-                NaverMapView(polylines: courses.map(\.coordinates))
+                NaverMapView(
+                    polylines: courses.map(\.coordinates),
+                    selectedPolyline: selectedCourse?.coordinates
+                )
 
                 CourseSheet(
                     collapsedHeight: collapsedHeight,

@@ -9,7 +9,7 @@ final class NaverMapManager: MapManager {
         self.mapView = mapView
     }
 
-    func drawPolyline(coordinates: [Coordinate]) {
+    func drawPolyline(coordinates: [Coordinate], isSelected: Bool) {
         let points = coordinates.map { coordinate in
             NMGLatLng(
                 lat: coordinate.latitude.value,
@@ -24,7 +24,7 @@ final class NaverMapManager: MapManager {
         }
 
         polylineOverlay.width = 5
-        polylineOverlay.color = .systemBlue
+        polylineOverlay.color = isSelected ? .courseSelected : .courseUnselected
         polylineOverlay.mapView = mapView
         polylineOverlays.append(polylineOverlay)
     }
