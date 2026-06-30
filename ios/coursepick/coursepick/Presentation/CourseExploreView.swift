@@ -13,7 +13,7 @@ struct CourseExploreView: View {
             let displayedSheetHeight = sheetHeight == 0 ? expandedHeight : sheetHeight
 
             ZStack(alignment: .bottomTrailing) {
-                NaverMapView()
+                NaverMapView(polylines: courses.map(\.coordinates))
 
                 CourseSheet(
                     collapsedHeight: collapsedHeight,
