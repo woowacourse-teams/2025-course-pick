@@ -13,6 +13,7 @@ import coursepick.coursepick.presentation.dto.CoordinateWebRequest;
 import coursepick.coursepick.presentation.dto.CourseCreateWebRequest;
 import coursepick.coursepick.presentation.dto.CreateReviewWebRequest;
 import coursepick.coursepick.presentation.dto.FindDraftRouteWebRequest;
+import coursepick.coursepick.presentation.dto.GenerateCourseNameWebRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -385,6 +386,47 @@ class CourseApiDocsTest extends AbstractApiDocsSupport {
                                                     .description(경도),
                                             fieldWithPath("length")
                                                     .description(코스_전체_길이))
+                                    .build())));
+        }
+
+        @Test
+        void AI_코스_이름_추천_API() throws Exception {
+            given(courseApplicationService.generateCourseName(any()))
+                    .willReturn("반포4동 한바퀴");
+
+            var request = new GenerateCourseNameWebRequest(
+                    List.of(
+                            new CoordinateWebRequest(37.514167, 127.103611),
+                            new CoordinateWebRequest(37.515167, 127.104611)
+                    )
+            );
+            var requestBody = objectMapper.writeValueAsString(request);
+
+            mockMvc.perform(post("/v1/courses/draft/name")
+                            .header("Authorization", "Bearer " + "test.jwt.token")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestBody)
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andDo(MockMvcRestDocumentationWrapper.document("course-draft-name",
+                            preprocessRequest(prettyPrint()),
+                            preprocessResponse(prettyPrint()),
+                            resource(ResourceSnippetParameters.builder()
+                                    .tag(TAG)
+                                    .summary("AI 코스 이름 추천")
+                                    .description("그린 좌표를 기반으로 AI가 코스 이름을 추천합니다. (로그인 필요)")
+                                    .requestFields(
+                                            fieldWithPath("coordinates[].latitude")
+                                                    .description(위도)
+                                                    .attributes(key("example")
+                                                            .value("37.514167")),
+                                            fieldWithPath("coordinates[].longitude")
+                                                    .description(경도)
+                                                    .attributes(key("example")
+                                                            .value("127.103611")))
+                                    .responseFields(
+                                            fieldWithPath("name")
+                                                    .description("AI가 추천한 코스 이름"))
                                     .build())));
         }
 
