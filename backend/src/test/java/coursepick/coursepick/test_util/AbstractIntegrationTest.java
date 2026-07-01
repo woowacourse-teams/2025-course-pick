@@ -1,6 +1,7 @@
 package coursepick.coursepick.test_util;
 
 import coursepick.coursepick.application.Alerter;
+import coursepick.coursepick.domain.course.CourseNameGenerator;
 import coursepick.coursepick.domain.course.CourseTagGenerator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +24,9 @@ public abstract class AbstractIntegrationTest {
 
     @MockitoBean
     protected CourseTagGenerator courseTagGenerator;
+
+    @MockitoBean
+    protected CourseNameGenerator courseNameGenerator;
 
     @BeforeEach
     void setUp() {

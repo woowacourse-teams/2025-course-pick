@@ -275,6 +275,32 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
     }
 
     @Nested
+    class 코스_이름_생성 {
+
+        @Test
+        void 좌표로_코스_이름을_생성한다() {
+            var coordinates = List.of(
+                    new Coordinate(37.5087, 126.9876),
+                    new Coordinate(37.5100, 126.9900)
+            );
+            when(courseNameGenerator.generate(any())).thenReturn("반포4동 한바퀴");
+
+            var result = sut.generateCourseName(coordinates);
+
+            assertThat(result).isEqualTo("반포4동 한바퀴");
+            verify(courseNameGenerator, times(1)).generate(any());
+        }
+
+        @Test
+        void 좌표가_2개_미만이면_예외가_발생한다() {
+            var coordinates = List.of(new Coordinate(37.5087, 126.9876));
+
+            assertThatThrownBy(() -> sut.generateCourseName(coordinates))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+    }
+
+    @Nested
     class 나의_코스_조회 {
 
         @Test
