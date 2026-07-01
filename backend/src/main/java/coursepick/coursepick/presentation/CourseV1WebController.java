@@ -114,6 +114,13 @@ public class CourseV1WebController {
     }
 
     @Login
+    @PostMapping("/courses/draft/name")
+    public CourseNameWebResponse generateCourseName(@Valid @RequestBody GenerateCourseNameWebRequest request) {
+        String name = courseApplicationService.generateCourseName(request.toCoordinates());
+        return CourseNameWebResponse.from(name);
+    }
+
+    @Login
     @PostMapping("/courses/{id}/report")
     public void reportCourse(@PathVariable("id") String id, @UserId String userId) {
         courseApplicationService.reportCourse(id, userId);
