@@ -26,6 +26,18 @@ public class RestClientConfig {
     }
 
     @Bean
+    public RestClient kakaoLocalRestClient() {
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(Duration.ofSeconds(1));
+        requestFactory.setReadTimeout(Duration.ofSeconds(5));
+
+        return RestClient.builder()
+                .requestFactory(requestFactory)
+                .baseUrl("https://dapi.kakao.com")
+                .build();
+    }
+
+    @Bean
     public RestClient discordRestClient(@Value("${discord.webhook-url}") String webhookUrl) {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setConnectTimeout(Duration.ofSeconds(1));
