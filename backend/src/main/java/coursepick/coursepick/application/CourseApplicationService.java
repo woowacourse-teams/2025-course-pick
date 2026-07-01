@@ -32,6 +32,7 @@ public class CourseApplicationService {
     private final RouteFinder routeFinder;
     private final Alerter alerter;
     private final CourseTagGenerator courseTagGenerator;
+    private final CourseNameGenerator courseNameGenerator;
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
@@ -95,6 +96,13 @@ public class CourseApplicationService {
         }
         List<Coordinate> coordinates = draftRoute.coordinates();
         return DraftSegment.of(coordinates.subList(1, coordinates.size() - 1));
+    }
+
+    public String generateCourseName(List<Coordinate> coordinates) {
+        if (coordinates.size() < 2) {
+            throw INVALID_COORDINATE_COUNT.create(coordinates.size());
+        }
+        return courseNameGenerator.generate(coordinates);
     }
 
     @Transactional(readOnly = true)
