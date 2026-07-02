@@ -16,7 +16,7 @@ import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.Logger
-import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.course.CourseUiModel
 import io.coursepick.coursepick.presentation.map.CameraMoveReason
 import io.coursepick.coursepick.presentation.map.DistanceCalculator
 import io.coursepick.coursepick.presentation.map.MapManager
@@ -62,7 +62,7 @@ class NaverMapManager(
         }
     }
 
-    override fun updateCourses(courses: List<CourseItem>) {
+    override fun updateCourses(courses: List<CourseUiModel>) {
         overlayManager?.updateCourses(courses) ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
     }
 
@@ -122,11 +122,11 @@ class NaverMapManager(
         ) ?: run { Timber.w(MAP_IS_NULL_MESSAGE) }
     }
 
-    override fun fitTo(course: CourseItem) {
+    override fun fitTo(course: CourseUiModel) {
         fitTo(course.coordinates)
     }
 
-    override fun setOnCourseClickListener(onClick: (CourseItem) -> Unit) {
+    override fun setOnCourseClickListener(onClick: (CourseUiModel) -> Unit) {
         overlayManager?.setOnCourseClickListener(onClick) ?: run { Timber.w(OVERLAY_MANAGER_IS_NULL_MESSAGE) }
     }
 

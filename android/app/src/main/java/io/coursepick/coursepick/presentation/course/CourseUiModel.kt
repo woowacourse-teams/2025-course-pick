@@ -3,7 +3,7 @@ package io.coursepick.coursepick.presentation.course
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Course
 
-data class CourseItem(
+data class CourseUiModel(
     val course: Course,
     val selected: Boolean,
     val favorite: Boolean = false,

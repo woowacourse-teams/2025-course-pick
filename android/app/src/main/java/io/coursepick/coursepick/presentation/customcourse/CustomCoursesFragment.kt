@@ -26,7 +26,7 @@ import io.coursepick.coursepick.databinding.FragmentCustomCoursesBinding
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.presentation.auth.AuthDialog
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
-import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.course.CourseUiModel
 import io.coursepick.coursepick.presentation.course.CoursesActivity
 import io.coursepick.coursepick.presentation.course.CoursesViewModel
 import io.coursepick.coursepick.presentation.coursedetail.CourseDetailActivity
@@ -77,8 +77,8 @@ class CustomCoursesFragment(
                     onGoToCreateCustomCourse = customCourseViewModel::onGoToCreateCustomCourse,
                     onSelect = { customCourse: CustomCourseItem -> customCourseViewModel.select(customCourse) },
                     onNavigateToCourse = { customCourse: CustomCourseItem ->
-                        customCourseViewModel.onNavigateToCourse(customCourse) { courseItem: CourseItem ->
-                            (activity as? CoursesActivity)?.navigateToCourse(courseItem)
+                        customCourseViewModel.onNavigateToCourse(customCourse) { course: CourseUiModel ->
+                            (activity as? CoursesActivity)?.navigateToCourse(course)
                         }
                     },
                     onNavigateToDetail = { customCourse: CustomCourseItem ->
@@ -151,7 +151,7 @@ class CustomCoursesFragment(
                         }
 
                         is CustomCourseUiEvent.SelectCustomCourse -> {
-                            coursesViewModel.selectExternalCourse(event.customCourse.toCourseItem())
+                            coursesViewModel.selectExternalCourse(event.customCourse.toCourseUiModel())
                         }
                     }
                 }

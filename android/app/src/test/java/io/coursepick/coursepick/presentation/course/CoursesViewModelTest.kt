@@ -56,7 +56,7 @@ class CoursesViewModelTest {
                 courses =
                     FAKE_COURSES.mapIndexed { index: Int, course: Course ->
                         CourseListItem.Course(
-                            CourseItem(course, selected = index == 0, favorite = false),
+                            CourseUiModel(course, selected = index == 0, favorite = false),
                         )
                     },
                 status = UiStatus.Success,
@@ -74,7 +74,7 @@ class CoursesViewModelTest {
             CoursesUiState(
                 FAKE_COURSES.map { course: Course ->
                     CourseListItem.Course(
-                        CourseItem(
+                        CourseUiModel(
                             course,
                             selected = course == COURSE_FIXTURE_20,
                             favorite = false,
@@ -85,7 +85,7 @@ class CoursesViewModelTest {
             )
 
         // when
-        mainViewModel.select(CourseItem(COURSE_FIXTURE_20, selected = false, favorite = false))
+        mainViewModel.select(CourseUiModel(COURSE_FIXTURE_20, selected = false, favorite = false))
 
         // then
         Assertions.assertThat(mainViewModel.state.getOrAwaitValue()).isEqualTo(expected)
@@ -94,13 +94,13 @@ class CoursesViewModelTest {
     @Test
     fun `이미 선택된 코스가 선택되면 해당 코스가 유지된다`() {
         // given
-        mainViewModel.select(CourseItem(COURSE_FIXTURE_20, selected = false, favorite = false))
+        mainViewModel.select(CourseUiModel(COURSE_FIXTURE_20, selected = false, favorite = false))
 
         val expected =
             CoursesUiState(
                 FAKE_COURSES.map { course: Course ->
                     CourseListItem.Course(
-                        CourseItem(
+                        CourseUiModel(
                             course,
                             selected = course == COURSE_FIXTURE_20,
                             favorite = false,
@@ -111,7 +111,7 @@ class CoursesViewModelTest {
             )
 
         // when
-        mainViewModel.select(CourseItem(COURSE_FIXTURE_20, selected = true, favorite = false))
+        mainViewModel.select(CourseUiModel(COURSE_FIXTURE_20, selected = true, favorite = false))
 
         // then
         Assertions.assertThat(mainViewModel.state.getOrAwaitValue()).isEqualTo(expected)

@@ -1,23 +1,23 @@
 package io.coursepick.coursepick.presentation.map
 
 import io.coursepick.coursepick.presentation.Logger
-import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.course.CourseUiModel
 
 class CourseDiffHandler(
-    private val onItemAdded: (CourseItem) -> Unit,
-    private val onItemRemoved: (CourseItem) -> Unit,
+    private val onItemAdded: (CourseUiModel) -> Unit,
+    private val onItemRemoved: (CourseUiModel) -> Unit,
 ) {
-    private val courses = mutableSetOf<CourseItem>()
+    private val courses = mutableSetOf<CourseUiModel>()
 
-    fun updateCourses(newValue: Set<CourseItem>) {
+    fun updateCourses(newValue: Set<CourseUiModel>) {
         val removedCourses = courses.subtract(newValue)
         val addedCourses = newValue.subtract(courses)
 
-        removedCourses.forEach { course: CourseItem ->
+        removedCourses.forEach { course: CourseUiModel ->
             courses.remove(course)
             onItemRemoved(course)
         }
-        addedCourses.forEach { course: CourseItem ->
+        addedCourses.forEach { course: CourseUiModel ->
             courses.add(course)
             onItemAdded(course)
         }

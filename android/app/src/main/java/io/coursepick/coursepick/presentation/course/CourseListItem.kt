@@ -6,7 +6,7 @@ sealed class CourseListItem(
     val viewType: Int = itemViewType.ordinal
 
     data class Course(
-        val item: CourseItem,
+        val item: CourseUiModel,
     ) : CourseListItem(ItemViewType.COURSE)
 
     data object Loading : CourseListItem(ItemViewType.LOADING)

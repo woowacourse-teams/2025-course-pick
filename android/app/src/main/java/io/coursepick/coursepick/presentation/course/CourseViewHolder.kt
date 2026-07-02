@@ -13,7 +13,7 @@ class CourseViewHolder private constructor(
         binding.courseItemListener = courseItemListener
     }
 
-    fun bind(course: CourseItem) {
+    fun bind(course: CourseUiModel) {
         binding.course = course
     }
 

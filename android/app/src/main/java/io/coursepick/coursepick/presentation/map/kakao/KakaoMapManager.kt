@@ -10,7 +10,7 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.domain.location.Location
-import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.course.CourseUiModel
 import io.coursepick.coursepick.presentation.map.CameraMoveReason
 import io.coursepick.coursepick.presentation.map.DistanceCalculator
 import io.coursepick.coursepick.presentation.map.MapManager
@@ -55,7 +55,7 @@ class KakaoMapManager(
         }
     }
 
-    override fun updateCourses(courses: List<CourseItem>) {
+    override fun updateCourses(courses: List<CourseUiModel>) {
         eventHandler.updateCourses(courses)
         drawer?.updateCourses(courses) ?: Timber.w("KakaoMapDrawer is null")
     }
@@ -106,15 +106,15 @@ class KakaoMapManager(
         } ?: Timber.w("kakaoMap is null")
     }
 
-    override fun fitTo(course: CourseItem) {
+    override fun fitTo(course: CourseUiModel) {
         kakaoMap?.let { kakaoMap: KakaoMap ->
             cameraController.fitTo(course, kakaoMap)
         } ?: Timber.w("kakaoMap is null")
     }
 
-    override fun setOnCourseClickListener(onClick: (CourseItem) -> Unit) {
+    override fun setOnCourseClickListener(onClick: (CourseUiModel) -> Unit) {
         kakaoMap?.let { kakaoMap: KakaoMap ->
-            eventHandler.setOnCourseClickListener(kakaoMap) { course: CourseItem ->
+            eventHandler.setOnCourseClickListener(kakaoMap) { course: CourseUiModel ->
                 onClick(course)
             }
         } ?: Timber.w("kakaoMap is null")

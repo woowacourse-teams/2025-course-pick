@@ -7,16 +7,16 @@ sealed interface CoursesUiEvent {
     object FetchCourseFailure : CoursesUiEvent
 
     class SelectCourseManually(
-        val course: CourseItem,
+        val course: CourseUiModel,
     ) : CoursesUiEvent
 
     class FetchRouteToCourseSuccess(
         val route: List<Coordinate>,
-        val course: CourseItem,
+        val course: CourseUiModel,
     ) : CoursesUiEvent
 
     class LaunchThirdPartyRouteFinder(
-        val course: CourseItem,
+        val course: CourseUiModel,
         val origin: Coordinate,
         val destination: Coordinate,
         val routeFinder: RouteFinder.ThirdParty,

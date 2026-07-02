@@ -68,8 +68,8 @@ class CoursesViewModel
                 initialValue = null,
             )
 
-        private val _routeFinderDialogCourse = MutableStateFlow<CourseItem?>(null)
-        val routeFinderDialogCourse: StateFlow<CourseItem?> get() = _routeFinderDialogCourse.asStateFlow()
+        private val _routeFinderDialogCourse = MutableStateFlow<CourseUiModel?>(null)
+        val routeFinderDialogCourse: StateFlow<CourseUiModel?> get() = _routeFinderDialogCourse.asStateFlow()
 
         private val _event: MutableSingleLiveData<CoursesUiEvent> = MutableSingleLiveData()
         val event: SingleLiveData<CoursesUiEvent> get() = _event
@@ -98,22 +98,22 @@ class CoursesViewModel
             collectFavorites()
         }
 
-        fun selectExternalCourse(courseItem: CourseItem) {
-            syncExternalSelectedCourse(courseItem)
-            _event.value = CoursesUiEvent.SelectCourseManually(courseItem)
+        fun selectExternalCourse(course: CourseUiModel) {
+            syncExternalSelectedCourse(course)
+            _event.value = CoursesUiEvent.SelectCourseManually(course)
         }
 
-        private fun syncExternalSelectedCourse(courseItem: CourseItem) {
+        private fun syncExternalSelectedCourse(course: CourseUiModel) {
             _state.value =
                 _state.value?.copy(
                     courses =
                         _state.value?.courses?.let { oldList: List<CourseListItem> ->
                             val hasCourse: Boolean =
-                                oldList.any { it is CourseListItem.Course && it.item.id == courseItem.id }
+                                oldList.any { it is CourseListItem.Course && it.item.id == course.id }
                             if (hasCourse) {
                                 oldList.map { item ->
                                     if (item is CourseListItem.Course) {
-                                        CourseListItem.Course(item.item.copy(selected = item.item.id == courseItem.id))
+                                        CourseListItem.Course(item.item.copy(selected = item.item.id == course.id))
                                     } else {
                                         item
                                     }
@@ -131,9 +131,9 @@ class CoursesViewModel
                                             item
                                         }
                                     }
-                                listOf(CourseListItem.Course(courseItem)) + clearedList
+                                listOf(CourseListItem.Course(course)) + clearedList
                             }
-                        } ?: listOf(CourseListItem.Course(courseItem)),
+                        } ?: listOf(CourseListItem.Course(course)),
                     status = UiStatus.Success,
                 )
         }
@@ -173,7 +173,7 @@ class CoursesViewModel
             mapCoordinate = coordinate
         }
 
-        fun select(course: CourseItem) {
+        fun select(course: CourseUiModel) {
             if (course.selected) {
                 _event.value = CoursesUiEvent.SelectCourseManually(course)
                 return
@@ -189,7 +189,7 @@ class CoursesViewModel
             _event.value = CoursesUiEvent.SelectCourseManually(course)
         }
 
-        fun toggleFavorite(toggledCourse: CourseItem) {
+        fun toggleFavorite(toggledCourse: CourseUiModel) {
             viewModelScope.launch {
                 if (toggledCourse.favorite) {
                     favoriteCourseRepository.removeFavorite(toggledCourse.id)
@@ -236,11 +236,11 @@ class CoursesViewModel
                 }.onSuccess { coursesPage: CoursesPage ->
                     Logger.log(Logger.Event.Success("fetch_courses_new"))
 
-                    val courseItems: List<CourseItem> =
+                    val courses: List<CourseUiModel> =
                         coursesPage.courses
                             .sortedBy(Course::distance)
                             .mapIndexed { index, course ->
-                                CourseItem(
+                                CourseUiModel(
                                     course = course,
                                     selected = index == 0,
                                     favorite = favoriteCourseIds.value.contains(course.id),
@@ -256,7 +256,7 @@ class CoursesViewModel
 
                     _state.value =
                         state.value?.copy(
-                            courses = courseItems.map(CourseListItem::Course),
+                            courses = courses.map(CourseListItem::Course),
                             status = UiStatus.Success,
                         )
                 }.onFailure { exception: Throwable ->
@@ -329,7 +329,7 @@ class CoursesViewModel
                     val newCourses =
                         coursesPage.courses.map { course: Course ->
                             CourseListItem.Course(
-                                CourseItem(
+                                CourseUiModel(
                                     course = course,
                                     selected = false,
                                     favorite = favoriteCourseIds.value.contains(course.id),
@@ -385,9 +385,9 @@ class CoursesViewModel
                 runCatching {
                     courseRepository.courses(favoriteCourseIds.value.toList())
                 }.onSuccess { courses: List<Course> ->
-                    val courseItems: List<CourseItem> =
+                    val courseItems: List<CourseUiModel> =
                         courses.map { course: Course ->
-                            CourseItem(
+                            CourseUiModel(
                                 course = course,
                                 selected = false,
                                 favorite = true,
@@ -424,7 +424,7 @@ class CoursesViewModel
             }
         }
 
-        fun onNavigateToCourse(course: CourseItem) {
+        fun onNavigateToCourse(course: CourseUiModel) {
             if (!locationRepository.isFineLocationPermissionGranted) {
                 _event.value = CoursesUiEvent.RequireFineLocationPermission
                 return
@@ -437,7 +437,7 @@ class CoursesViewModel
         }
 
         fun onRouteFinderSelected(
-            course: CourseItem,
+            course: CourseUiModel,
             routeFinder: RouteFinder,
             rememberSelection: Boolean,
         ) {
@@ -456,13 +456,13 @@ class CoursesViewModel
         }
 
         private fun navigateToCourse(
-            course: CourseItem,
+            course: CourseUiModel,
             routeFinder: RouteFinder,
         ) {
             val oldCourses: List<CourseListItem> = state.value?.courses ?: return
             val newCourseItems: List<CourseListItem> = newCoursesListItem(oldCourses, course)
             _state.value = state.value?.copy(courses = newCourseItems, status = UiStatus.Loading)
-            val selectedCourse: CourseItem = course.copy(selected = true)
+            val selectedCourse: CourseUiModel = course.copy(selected = true)
 
             viewModelScope.launch {
                 currentLocation()?.let { location: Location ->
@@ -487,7 +487,7 @@ class CoursesViewModel
         }
 
         private fun fetchRouteToCourse(
-            course: CourseItem,
+            course: CourseUiModel,
             origin: Coordinate,
         ) {
             viewModelScope.launch {
@@ -514,7 +514,7 @@ class CoursesViewModel
         }
 
         private fun launchThirdPartyRouteFinder(
-            course: CourseItem,
+            course: CourseUiModel,
             origin: Coordinate,
             routeFinder: RouteFinder.ThirdParty,
         ) {
@@ -639,7 +639,7 @@ class CoursesViewModel
 
         private fun newCoursesListItem(
             oldCourses: List<CourseListItem>,
-            selectedCourse: CourseItem,
+            selectedCourse: CourseUiModel,
         ): List<CourseListItem> =
             oldCourses.map { courseListItem: CourseListItem ->
                 if (courseListItem is CourseListItem.Course) {

@@ -8,7 +8,7 @@ import com.kakao.vectormap.camera.CameraUpdate
 import com.kakao.vectormap.camera.CameraUpdateFactory
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Coordinate
-import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.course.CourseUiModel
 
 class KakaoMapCameraController(
     context: Context,
@@ -44,7 +44,7 @@ class KakaoMapCameraController(
     }
 
     fun fitTo(
-        course: CourseItem,
+        course: CourseUiModel,
         map: KakaoMap,
     ) {
         fitTo(course.coordinates, map)

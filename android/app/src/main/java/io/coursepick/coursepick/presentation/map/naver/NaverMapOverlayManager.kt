@@ -16,7 +16,7 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.Logger
-import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.course.CourseUiModel
 import io.coursepick.coursepick.presentation.map.BitmapScaler
 import io.coursepick.coursepick.presentation.map.CoordinateAnimator
 import io.coursepick.coursepick.presentation.map.CourseDiffHandler
@@ -66,11 +66,11 @@ class NaverMapOverlayManager(
 
     private var courseClickListener: Overlay.OnClickListener? = null
 
-    fun updateCourses(newCourses: List<CourseItem>) {
+    fun updateCourses(newCourses: List<CourseUiModel>) {
         courseDiffHandler.updateCourses(newCourses.toSet())
     }
 
-    private fun addCourseOverlay(course: CourseItem) {
+    private fun addCourseOverlay(course: CourseUiModel) {
         if (course.coordinates.size < 2) return
         val latLngs: List<LatLng> = course.coordinates.map(Coordinate::toLatLng)
 
@@ -99,7 +99,7 @@ class NaverMapOverlayManager(
 
     private fun addClickableCourseOverlay(
         latLngs: List<LatLng>,
-        course: CourseItem,
+        course: CourseUiModel,
     ) {
         PathOverlay().apply {
             coords = latLngs
@@ -121,7 +121,7 @@ class NaverMapOverlayManager(
         }
     }
 
-    private fun removeCourseOverlay(course: CourseItem) {
+    private fun removeCourseOverlay(course: CourseUiModel) {
         courseIdToOverlay.remove(course.id)?.map = null
         courseIdToClickableOverlay.remove(course.id)?.map = null
     }
@@ -275,11 +275,11 @@ class NaverMapOverlayManager(
         segments.clear()
     }
 
-    fun setOnCourseClickListener(onClick: (CourseItem) -> Unit) {
+    fun setOnCourseClickListener(onClick: (CourseUiModel) -> Unit) {
         courseClickListener =
             Overlay.OnClickListener { overlay: Overlay ->
                 if (overlay is PathOverlay) {
-                    (overlay.tag as? CourseItem)?.let { course: CourseItem ->
+                    (overlay.tag as? CourseUiModel)?.let { course: CourseUiModel ->
                         Logger.log(
                             Logger.Event.Click("course_on_map"),
                             "id" to course.id,
@@ -292,7 +292,7 @@ class NaverMapOverlayManager(
             }
 
         courseIdToClickableOverlay.values.forEach { pathOverlay: PathOverlay ->
-            if (pathOverlay.tag is CourseItem) {
+            if (pathOverlay.tag is CourseUiModel) {
                 pathOverlay.onClickListener = courseClickListener
             }
         }

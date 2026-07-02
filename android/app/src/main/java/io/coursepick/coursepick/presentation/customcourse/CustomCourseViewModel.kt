@@ -14,7 +14,7 @@ import io.coursepick.coursepick.domain.course.CoursesPage
 import io.coursepick.coursepick.domain.customcourse.CustomCourseRepository
 import io.coursepick.coursepick.domain.location.LocationRepository
 import io.coursepick.coursepick.presentation.Logger
-import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.course.CourseUiModel
 import io.coursepick.coursepick.presentation.course.UiStatus
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -214,11 +214,11 @@ class CustomCourseViewModel
 
         fun onNavigateToCourse(
             customCourse: CustomCourseItem,
-            onNavigateTo: (CourseItem) -> Unit,
+            onNavigateTo: (CourseUiModel) -> Unit,
         ) {
             select(customCourse)
-            val courseItem: CourseItem = _state.value.selectedCustomCourse?.toCourseItem() ?: return
-            onNavigateTo(courseItem)
+            val course: CourseUiModel = _state.value.selectedCustomCourse?.toCourseUiModel() ?: return
+            onNavigateTo(course)
         }
 
         sealed interface AuthFeature {
