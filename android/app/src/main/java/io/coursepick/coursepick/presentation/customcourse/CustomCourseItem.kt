@@ -2,6 +2,7 @@ package io.coursepick.coursepick.presentation.customcourse
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -47,6 +48,7 @@ import io.coursepick.coursepick.presentation.customcourse.component.CourseNaviga
 fun CustomCourseItem(
     customCourse: CustomCourseUiModel,
     onSelect: () -> Unit,
+    onDelete: () -> Unit,
     onNavigateToCourse: () -> Unit,
     onNavigateToDetail: () -> Unit,
     modifier: Modifier = Modifier,
@@ -61,14 +63,20 @@ fun CustomCourseItem(
     val horizontalDividerColor: Color =
         if (customCourse.selected) backgroundColor else colorResource(R.color.background_border_light)
 
-    Column(modifier.fillMaxWidth()) {
+    Column(
+        modifier
+            .fillMaxWidth()
+            .combinedClickable(
+                onClick = onSelect,
+                onLongClick = onDelete,
+            ),
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier =
                 Modifier
                     .fillMaxWidth()
                     .background(backgroundColor)
-                    .clickable { onSelect() }
                     .padding(vertical = 8.dp)
                     .padding(start = 20.dp),
         ) {
@@ -154,6 +162,7 @@ private fun CustomCourseItemPreview() {
                 selected = false,
             ),
         onSelect = { },
+        onDelete = { },
         onNavigateToCourse = { },
         onNavigateToDetail = { },
         modifier = Modifier,

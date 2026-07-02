@@ -48,6 +48,7 @@ fun CustomCourseScreen(
     onReconnect: OnReconnectListener,
     onGoToCreateCustomCourse: () -> Unit,
     onSelect: (CustomCourseUiModel) -> Unit,
+    onDelete: (CustomCourseUiModel) -> Unit,
     onNavigateToCourse: (CustomCourseUiModel) -> Unit,
     onNavigateToDetail: (CustomCourseUiModel) -> Unit,
     modifier: Modifier = Modifier,
@@ -96,6 +97,7 @@ fun CustomCourseScreen(
                                 CustomCourseItem(
                                     customCourse = customCourse,
                                     onSelect = { onSelect(customCourse) },
+                                    onDelete = { onDelete(customCourse) },
                                     onNavigateToCourse = { onNavigateToCourse(customCourse) },
                                     onNavigateToDetail = { onNavigateToDetail(customCourse) },
                                 )
@@ -150,6 +152,7 @@ private fun CustomCourseScreen_EmptyPreview() {
         onReconnect = { },
         onGoToCreateCustomCourse = { },
         onSelect = { },
+        onDelete = { },
         onNavigateToCourse = { },
         onNavigateToDetail = { },
     )
@@ -191,6 +194,7 @@ private fun CustomCourseScreen_WithCoursesPreview() {
         onReconnect = {},
         onGoToCreateCustomCourse = { },
         onSelect = { },
+        onDelete = { },
         onNavigateToCourse = { },
         onNavigateToDetail = { },
     )
@@ -209,6 +213,7 @@ private fun CustomCourseScreen_LoadingPreview() {
         onReconnect = {},
         onGoToCreateCustomCourse = { },
         onSelect = { },
+        onDelete = { },
         onNavigateToCourse = { },
         onNavigateToDetail = { },
     )
@@ -227,6 +232,7 @@ private fun CustomCourseScreen_NoInternetPreview() {
         onReconnect = {},
         onGoToCreateCustomCourse = { },
         onSelect = { },
+        onDelete = { },
         onNavigateToCourse = { },
         onNavigateToDetail = { },
     )
@@ -245,6 +251,7 @@ private fun CustomCourseScreen_FailurePreview() {
         onReconnect = {},
         onGoToCreateCustomCourse = { },
         onSelect = { },
+        onDelete = { },
         onNavigateToCourse = { },
         onNavigateToDetail = { },
     )

@@ -76,6 +76,7 @@ class CustomCoursesFragment(
                     onReconnect = onReconnectListener,
                     onGoToCreateCustomCourse = customCourseViewModel::onGoToCreateCustomCourse,
                     onSelect = { customCourse: CustomCourseUiModel -> customCourseViewModel.select(customCourse) },
+                    onDelete = { customCourse: CustomCourseUiModel -> customCourseViewModel.onDeleteCustomCourse(customCourse) },
                     onNavigateToCourse = { customCourse: CustomCourseUiModel ->
                         customCourseViewModel.onNavigateToCourse(customCourse) { course: CourseUiModel ->
                             (activity as? CoursesActivity)?.navigateToCourse(course)
@@ -87,18 +88,35 @@ class CustomCoursesFragment(
                     modifier = Modifier.nestedScroll(nestedScrollInterop),
                 )
 
-                val authDialogState = customCourseViewModel.authDialogState.collectAsStateWithLifecycle().value
-                if (authDialogState != null) {
+                val dialogState: CustomCourseViewModel.DialogState = customCourseViewModel.dialogState.collectAsStateWithLifecycle().value
+                if (dialogState.authFeature != null) {
                     val featureName: String =
-                        when (authDialogState) {
-                            CustomCourseViewModel.AuthFeature.FetchCustomCourses -> getString(R.string.custom_course_feature_name)
-                            CustomCourseViewModel.AuthFeature.CreateCustomCourse -> getString(R.string.create_custom_course_feature_name)
+                        when (dialogState.authFeature) {
+                            CustomCourseViewModel.AuthFeature.FetchCustomCourses -> {
+                                getString(R.string.custom_course_feature_name)
+                            }
+
+                            is CustomCourseViewModel.AuthFeature.DeleteCustomCourse -> {
+                                getString(R.string.delete_custom_course_dialog_feature_name)
+                            }
+
+                            CustomCourseViewModel.AuthFeature.CreateCustomCourse -> {
+                                getString(R.string.create_custom_course_feature_name)
+                            }
                         }
 
                     AuthDialog(
                         featureName = featureName,
                         onDismissRequest = customCourseViewModel::dismissAuthDialog,
-                        onKakaoLoginClick = { customCourseViewModel.signIn(KakaoAuthenticator(requireContext()), authDialogState) },
+                        onKakaoLoginClick = { customCourseViewModel.signIn(KakaoAuthenticator(requireContext()), dialogState.authFeature) },
+                    )
+                }
+
+                if (dialogState.deleteCourseDialog != null) {
+                    DeleteCustomCourseDialog(
+                        courseName = dialogState.deleteCourseDialog.name,
+                        onDismiss = customCourseViewModel::dismissDeleteCourseDialog,
+                        onConfirm = customCourseViewModel::confirmDeleteCustomCourse,
                     )
                 }
             }

@@ -39,8 +39,8 @@ class CustomCourseViewModel
         private val _uiEvent = MutableSharedFlow<CustomCourseUiEvent>()
         val uiEvent: SharedFlow<CustomCourseUiEvent> get() = _uiEvent.asSharedFlow()
 
-        private val _authDialogState = MutableStateFlow<AuthFeature?>(null)
-        val authDialogState: StateFlow<AuthFeature?> get() = _authDialogState.asStateFlow()
+        private val _dialogState = MutableStateFlow<DialogState>(DialogState())
+        val dialogState: StateFlow<DialogState> get() = _dialogState.asStateFlow()
 
         private val _state =
             MutableStateFlow(
@@ -55,7 +55,7 @@ class CustomCourseViewModel
         fun onGoToCreateCustomCourse() {
             viewModelScope.launch {
                 if (authRepository.accessToken() == null) {
-                    _authDialogState.value = AuthFeature.CreateCustomCourse
+                    _dialogState.value = dialogState.value.copy(authFeature = AuthFeature.CreateCustomCourse)
                 } else {
                     _uiEvent.emit(CustomCourseUiEvent.NavigateToCreateCourse)
                 }
@@ -63,7 +63,7 @@ class CustomCourseViewModel
         }
 
         fun dismissAuthDialog() {
-            _authDialogState.value = null
+            _dialogState.value = dialogState.value.copy(authFeature = null)
         }
 
         fun signIn(
@@ -77,6 +77,7 @@ class CustomCourseViewModel
                         _uiEvent.emit(CustomCourseUiEvent.AuthenticationSuccess)
                         when (authFeature) {
                             AuthFeature.FetchCustomCourses -> fetchCustomCourses()
+                            is AuthFeature.DeleteCustomCourse -> onDeleteCustomCourse(authFeature.course)
                             AuthFeature.CreateCustomCourse -> _uiEvent.emit(CustomCourseUiEvent.NavigateToCreateCourse)
                         }
                     }
@@ -112,7 +113,7 @@ class CustomCourseViewModel
                 }
 
                 if (authRepository.accessToken() == null) {
-                    _authDialogState.value = AuthFeature.FetchCustomCourses
+                    _dialogState.value = dialogState.value.copy(authFeature = AuthFeature.FetchCustomCourses)
                     _state.update { currentState ->
                         currentState.copy(status = UiStatus.Success, customCourses = emptyList())
                     }
@@ -212,6 +213,26 @@ class CustomCourseViewModel
             }
         }
 
+        fun onDeleteCustomCourse(customCourse: CustomCourseUiModel) {
+            viewModelScope.launch {
+                _dialogState.value =
+                    if (authRepository.accessToken() == null) {
+                        dialogState.value.copy(authFeature = AuthFeature.DeleteCustomCourse(customCourse))
+                    } else {
+                        dialogState.value.copy(deleteCourseDialog = customCourse)
+                    }
+            }
+        }
+
+        fun dismissDeleteCourseDialog() {
+            _dialogState.value = dialogState.value.copy(deleteCourseDialog = null)
+        }
+
+        fun confirmDeleteCustomCourse() {
+            // TODO: 백엔드 API 추가될 시 구현
+            dismissDeleteCourseDialog()
+        }
+
         fun onNavigateToCourse(
             customCourse: CustomCourseUiModel,
             onNavigateTo: (CourseUiModel) -> Unit,
@@ -221,8 +242,17 @@ class CustomCourseViewModel
             onNavigateTo(course)
         }
 
+        data class DialogState(
+            val authFeature: AuthFeature? = null,
+            val deleteCourseDialog: CustomCourseUiModel? = null,
+        )
+
         sealed interface AuthFeature {
             data object FetchCustomCourses : AuthFeature
+
+            data class DeleteCustomCourse(
+                val course: CustomCourseUiModel,
+            ) : AuthFeature
 
             data object CreateCustomCourse : AuthFeature
         }
