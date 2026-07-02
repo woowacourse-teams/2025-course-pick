@@ -16,6 +16,8 @@ import org.springframework.web.client.RestClient;
 import java.util.List;
 import java.util.Map;
 
+import static coursepick.coursepick.application.exception.ErrorType.AI_COURSE_NAME_GENERATION_FAIL;
+
 @Slf4j
 @Component
 @Profile({"dev", "prod"})
@@ -61,7 +63,7 @@ public class GeminiCourseNameGenerator implements CourseNameGenerator {
             return sanitize(extractText(response));
         } catch (Exception e) {
             log.warn("[EXCEPTION] Gemini 코스 이름 생성 실패", LogContent.exception(e));
-            throw new IllegalStateException("AI 코스 이름 생성에 실패했습니다.", e);
+            throw AI_COURSE_NAME_GENERATION_FAIL.create();
         }
     }
 

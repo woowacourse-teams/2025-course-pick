@@ -104,6 +104,10 @@ public enum ErrorType {
     INVALID_REVIEW_RATING(
             "리뷰 평점은 1이상 5이하여야 합니다. 입력값=%d",
             IllegalArgumentException::new
+    ),
+    AI_COURSE_NAME_GENERATION_FAIL(
+            "AI 코스 이름 생성에 실패했습니다.",
+            RuntimeException::new
     );
 
     private final String message;

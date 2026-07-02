@@ -47,7 +47,8 @@ class GeminiCourseNameGeneratorTest extends AbstractMockServerTest {
         var sut = new GeminiCourseNameGenerator(anyRestClient(), STUB_GEOCODER, "test-key");
 
         assertThatThrownBy(() -> sut.generate(코스_좌표))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("AI_COURSE_NAME_GENERATION_FAIL");
     }
 
     private static String geminiResponse(String text) {
