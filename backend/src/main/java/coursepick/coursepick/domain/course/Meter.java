@@ -17,6 +17,10 @@ public record Meter(
         return new Meter(this.value() + other.value());
     }
 
+    public double toKilometers() {
+        return value / 1000.0;
+    }
+
     public Meter clamp(double min, double max) {
         return new Meter(Math.clamp(this.value(), min, max));
     }

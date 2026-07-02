@@ -58,7 +58,7 @@ public class Course {
         this.name = courseName;
         this.coordinates = refineCoordinates(rawCoordinates);
         this.simplifiedCoordinates = simplifyCoordinates(this.coordinates);
-        this.length = calculateLength(coordinates);
+        this.length = calculateLength();
         this.reviews = new ArrayList<>();
         this.creatorId = user.id();
         this.reportUserIds = new HashSet<>();
@@ -78,13 +78,8 @@ public class Course {
                 .build();
     }
 
-    private static Meter calculateLength(List<Coordinate> coordinates) {
-        Meter totalLength = Meter.zero();
-        for (int i = 0; i < coordinates.size() - 1; i++) {
-            Meter length = GeoLine.between(coordinates.get(i), coordinates.get(i + 1)).length();
-            totalLength = totalLength.add(length);
-        }
-        return totalLength;
+    private Meter calculateLength() {
+        return GeoLine.totalLength(this.coordinates);
     }
 
     public Meter distanceFrom(Coordinate target) {
@@ -112,7 +107,7 @@ public class Course {
     public void changeCoordinates(List<Coordinate> coordinates) {
         this.coordinates = refineCoordinates(coordinates);
         this.simplifiedCoordinates = simplifyCoordinates(this.coordinates);
-        this.length = calculateLength(this.coordinates);
+        this.length = calculateLength();
     }
 
     public void changeName(String courseName) {

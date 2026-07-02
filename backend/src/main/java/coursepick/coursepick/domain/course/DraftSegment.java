@@ -16,11 +16,7 @@ public record DraftSegment(
     }
 
     public static DraftSegment of(List<Coordinate> coordinates) {
-        Meter length = Meter.zero();
-        for (int i = 0; i < coordinates.size() - 1; i++) {
-            length = length.add(GeoLine.between(coordinates.get(i), coordinates.get(i + 1)).length());
-        }
-        return new DraftSegment(coordinates, length);
+        return new DraftSegment(coordinates, GeoLine.totalLength(coordinates));
     }
 
     public DraftSegment merge(DraftSegment next) {

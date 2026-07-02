@@ -6,6 +6,8 @@ import org.locationtech.spatial4j.distance.GeodesicSphereDistCalc;
 import org.locationtech.spatial4j.shape.Point;
 import org.locationtech.spatial4j.shape.ShapeFactory;
 
+import java.util.List;
+
 public record GeoLine(
         Coordinate start,
         Coordinate end
@@ -25,6 +27,14 @@ public record GeoLine(
         double distanceInDegrees = distCalc.distance(point1, point2);
         double distanceInMeters = convertDegreeToMeter(distanceInDegrees);
         return new Meter(distanceInMeters);
+    }
+
+    public static Meter totalLength(List<Coordinate> coordinates) {
+        Meter totalLength = Meter.zero();
+        for (int i = 0; i < coordinates.size() - 1; i++) {
+            totalLength = totalLength.add(between(coordinates.get(i), coordinates.get(i + 1)).length());
+        }
+        return totalLength;
     }
 
     private static double convertDegreeToMeter(double distanceInDegrees) {

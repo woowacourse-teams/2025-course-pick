@@ -93,16 +93,8 @@ public class GeminiCourseNameGenerator implements CourseNameGenerator {
                 startRegion,
                 endRegion,
                 loop ? "예" : "아니오",
-                totalLengthKm(coordinates)
+                GeoLine.totalLength(coordinates).toKilometers()
         );
-    }
-
-    private double totalLengthKm(List<Coordinate> coordinates) {
-        Meter total = Meter.zero();
-        for (int i = 0; i < coordinates.size() - 1; i++) {
-            total = total.add(GeoLine.between(coordinates.get(i), coordinates.get(i + 1)).length());
-        }
-        return total.value() / 1000.0;
     }
 
     @SuppressWarnings("unchecked")
