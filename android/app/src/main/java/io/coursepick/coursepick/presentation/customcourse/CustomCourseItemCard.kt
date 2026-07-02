@@ -45,7 +45,7 @@ import io.coursepick.coursepick.presentation.customcourse.component.CourseNaviga
 
 @Composable
 fun CustomCourseItemCard(
-    customCourse: CustomCourseItem,
+    customCourse: CustomCourseUiModel,
     onSelect: () -> Unit,
     onNavigateToCourse: () -> Unit,
     onNavigateToDetail: () -> Unit,
@@ -149,7 +149,7 @@ private fun CustomCourseItemCardPreview() {
         )
     CustomCourseItemCard(
         customCourse =
-            CustomCourseItem(
+            CustomCourseUiModel(
                 course = course,
                 selected = false,
             ),

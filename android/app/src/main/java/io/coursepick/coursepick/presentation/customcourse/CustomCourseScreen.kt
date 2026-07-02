@@ -47,9 +47,9 @@ fun CustomCourseScreen(
     status: CustomCourseUiState,
     onReconnect: OnReconnectListener,
     onGoToCreateCustomCourse: () -> Unit,
-    onSelect: (CustomCourseItem) -> Unit,
-    onNavigateToCourse: (CustomCourseItem) -> Unit,
-    onNavigateToDetail: (CustomCourseItem) -> Unit,
+    onSelect: (CustomCourseUiModel) -> Unit,
+    onNavigateToCourse: (CustomCourseUiModel) -> Unit,
+    onNavigateToDetail: (CustomCourseUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -91,8 +91,8 @@ fun CustomCourseScreen(
                         ) {
                             items(
                                 items = status.customCourses,
-                                key = CustomCourseItem::id,
-                            ) { customCourse: CustomCourseItem ->
+                                key = CustomCourseUiModel::id,
+                            ) { customCourse: CustomCourseUiModel ->
                                 CustomCourseItemCard(
                                     customCourse = customCourse,
                                     onSelect = { onSelect(customCourse) },
@@ -158,9 +158,9 @@ private fun CustomCourseScreen_EmptyPreview() {
 @PreviewLightDark
 @Composable
 private fun CustomCourseScreen_WithCoursesPreview() {
-    val customCourse: List<CustomCourseItem> =
+    val customCourse: List<CustomCourseUiModel> =
         List(10) { index: Int ->
-            CustomCourseItem(
+            CustomCourseUiModel(
                 course =
                     Course(
                         id = index.toString(),

@@ -6,7 +6,7 @@ import io.coursepick.coursepick.domain.course.Distance
 import io.coursepick.coursepick.domain.course.Length
 import io.coursepick.coursepick.presentation.course.CourseUiModel
 
-data class CustomCourseItem(
+data class CustomCourseUiModel(
     val course: Course,
     val selected: Boolean,
 ) {
@@ -16,9 +16,9 @@ data class CustomCourseItem(
     val length: Length = course.length
     val coordinates: List<Coordinate> = course.coordinates
 
-    fun select(): CustomCourseItem = copy(selected = true)
+    fun select(): CustomCourseUiModel = copy(selected = true)
 
-    fun deselect(): CustomCourseItem = copy(selected = false)
+    fun deselect(): CustomCourseUiModel = copy(selected = false)
 }
 
-fun CustomCourseItem.toCourseUiModel(): CourseUiModel = CourseUiModel(course = course, selected = selected)
+fun CustomCourseUiModel.toCourseUiModel(): CourseUiModel = CourseUiModel(course = course, selected = selected)

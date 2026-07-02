@@ -14,6 +14,6 @@ sealed interface CustomCourseUiEvent {
     data object UnauthorizedUser : CustomCourseUiEvent
 
     data class SelectCustomCourse(
-        val customCourse: CustomCourseItem,
+        val customCourse: CustomCourseUiModel,
     ) : CustomCourseUiEvent
 }

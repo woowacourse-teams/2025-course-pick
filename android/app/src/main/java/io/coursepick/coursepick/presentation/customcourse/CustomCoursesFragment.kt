@@ -75,13 +75,13 @@ class CustomCoursesFragment(
                     status = customCourseState,
                     onReconnect = onReconnectListener,
                     onGoToCreateCustomCourse = customCourseViewModel::onGoToCreateCustomCourse,
-                    onSelect = { customCourse: CustomCourseItem -> customCourseViewModel.select(customCourse) },
-                    onNavigateToCourse = { customCourse: CustomCourseItem ->
+                    onSelect = { customCourse: CustomCourseUiModel -> customCourseViewModel.select(customCourse) },
+                    onNavigateToCourse = { customCourse: CustomCourseUiModel ->
                         customCourseViewModel.onNavigateToCourse(customCourse) { course: CourseUiModel ->
                             (activity as? CoursesActivity)?.navigateToCourse(course)
                         }
                     },
-                    onNavigateToDetail = { customCourse: CustomCourseItem ->
+                    onNavigateToDetail = { customCourse: CustomCourseUiModel ->
                         startActivity(CourseDetailActivity.intent(requireContext(), customCourse.course.id))
                     },
                     modifier = Modifier.nestedScroll(nestedScrollInterop),

@@ -129,9 +129,9 @@ class CustomCourseViewModel
                 }.onSuccess { coursesPage: CoursesPage ->
                     Logger.log(Logger.Event.Success("fetch_custom_courses_new"))
 
-                    val customCourseItems: List<CustomCourseItem> =
+                    val customCourse: List<CustomCourseUiModel> =
                         coursesPage.courses.mapIndexed { index, course ->
-                            CustomCourseItem(
+                            CustomCourseUiModel(
                                 course = course,
                                 selected = index == 0,
                             )
@@ -140,8 +140,8 @@ class CustomCourseViewModel
                     _state.update { currentState ->
                         currentState.copy(
                             status = UiStatus.Success,
-                            customCourses = customCourseItems,
-                            selectedCustomCourse = customCourseItems.firstOrNull(),
+                            customCourses = customCourse,
+                            selectedCustomCourse = customCourse.firstOrNull(),
                         )
                     }
                 }.onFailure { exception: Throwable ->
@@ -190,7 +190,7 @@ class CustomCourseViewModel
             }
         }
 
-        fun select(customCourse: CustomCourseItem) {
+        fun select(customCourse: CustomCourseUiModel) {
             val isAlreadySelected = _state.value.selectedCustomCourse?.id == customCourse.id
 
             if (isAlreadySelected) {
@@ -213,7 +213,7 @@ class CustomCourseViewModel
         }
 
         fun onNavigateToCourse(
-            customCourse: CustomCourseItem,
+            customCourse: CustomCourseUiModel,
             onNavigateTo: (CourseUiModel) -> Unit,
         ) {
             select(customCourse)

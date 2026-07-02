@@ -58,7 +58,7 @@ import io.coursepick.coursepick.presentation.InstallStateObserver
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.coursedetail.CourseDetailActivity
-import io.coursepick.coursepick.presentation.customcourse.CustomCourseItem
+import io.coursepick.coursepick.presentation.customcourse.CustomCourseUiModel
 import io.coursepick.coursepick.presentation.customcourse.CustomCourseViewModel
 import io.coursepick.coursepick.presentation.customcourse.CustomCoursesFragment
 import io.coursepick.coursepick.presentation.customcourse.toCourseUiModel
@@ -707,9 +707,9 @@ class CoursesActivity :
                 customCourseViewModel.state
                     .map { it.selectedCustomCourse }
                     .distinctUntilChanged()
-                    .collect { customCourseItem: CustomCourseItem? ->
-                        customCourseItem?.let {
-                            val courseItem = customCourseItem.toCourseUiModel()
+                    .collect { customCourse: CustomCourseUiModel? ->
+                        customCourse?.let {
+                            val courseItem = customCourse.toCourseUiModel()
                             viewModel.selectExternalCourse(courseItem)
                         }
                     }
