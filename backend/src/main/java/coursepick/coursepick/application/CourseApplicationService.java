@@ -1,26 +1,37 @@
 package coursepick.coursepick.application;
 
 
-import coursepick.coursepick.application.dto.CourseDetailResponse;
-import coursepick.coursepick.application.dto.CourseResponse;
-import coursepick.coursepick.application.dto.CoursesResponse;
-import coursepick.coursepick.application.exception.ErrorType;
-import coursepick.coursepick.domain.course.*;
-import coursepick.coursepick.domain.course.event.ReviewAddedEvent;
-import coursepick.coursepick.domain.user.User;
-import coursepick.coursepick.domain.user.UserRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+
 import org.jspecify.annotations.Nullable;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
-import static coursepick.coursepick.application.exception.ErrorType.*;
+import coursepick.coursepick.application.dto.CourseDetailResponse;
+import coursepick.coursepick.application.dto.CourseResponse;
+import coursepick.coursepick.application.dto.CoursesResponse;
+import coursepick.coursepick.application.exception.ErrorType;
+import static coursepick.coursepick.application.exception.ErrorType.AUTHENTICATION_FAIL;
+import static coursepick.coursepick.application.exception.ErrorType.INVALID_COORDINATE_COUNT;
+import static coursepick.coursepick.application.exception.ErrorType.NOT_EXIST_COURSE;
+import coursepick.coursepick.domain.course.Coordinate;
+import coursepick.coursepick.domain.course.Course;
+import coursepick.coursepick.domain.course.CourseFindCondition;
+import coursepick.coursepick.domain.course.CourseName;
+import coursepick.coursepick.domain.course.CourseNameGenerator;
+import coursepick.coursepick.domain.course.CourseRepository;
+import coursepick.coursepick.domain.course.CourseTag;
+import coursepick.coursepick.domain.course.CourseTagGenerator;
+import coursepick.coursepick.domain.course.DraftSegment;
+import coursepick.coursepick.domain.course.Review;
+import coursepick.coursepick.domain.course.RouteFinder;
+import coursepick.coursepick.domain.course.event.ReviewAddedEvent;
+import coursepick.coursepick.domain.user.User;
+import coursepick.coursepick.domain.user.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
