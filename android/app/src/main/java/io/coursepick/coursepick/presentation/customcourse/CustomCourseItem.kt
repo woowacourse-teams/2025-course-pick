@@ -44,7 +44,7 @@ import io.coursepick.coursepick.presentation.customcourse.component.CourseLength
 import io.coursepick.coursepick.presentation.customcourse.component.CourseNavigationButton
 
 @Composable
-fun CustomCourseItemCard(
+fun CustomCourseItem(
     customCourse: CustomCourseUiModel,
     onSelect: () -> Unit,
     onNavigateToCourse: () -> Unit,
@@ -133,7 +133,7 @@ fun CustomCourseItemCard(
 
 @PreviewLightDark
 @Composable
-private fun CustomCourseItemCardPreview() {
+private fun CustomCourseItemPreview() {
     val course =
         Course(
             id = "1",
@@ -147,7 +147,7 @@ private fun CustomCourseItemCardPreview() {
                     Coordinate(Latitude(37.5500), Longitude(127.0800)),
                 ),
         )
-    CustomCourseItemCard(
+    CustomCourseItem(
         customCourse =
             CustomCourseUiModel(
                 course = course,

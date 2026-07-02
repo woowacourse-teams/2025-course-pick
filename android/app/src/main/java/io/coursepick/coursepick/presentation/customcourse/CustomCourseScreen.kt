@@ -93,7 +93,7 @@ fun CustomCourseScreen(
                                 items = status.customCourses,
                                 key = CustomCourseUiModel::id,
                             ) { customCourse: CustomCourseUiModel ->
-                                CustomCourseItemCard(
+                                CustomCourseItem(
                                     customCourse = customCourse,
                                     onSelect = { onSelect(customCourse) },
                                     onNavigateToCourse = { onNavigateToCourse(customCourse) },
