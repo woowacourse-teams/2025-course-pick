@@ -22,6 +22,7 @@ import java.util.Map;
 public class GeminiCourseNameGenerator implements CourseNameGenerator {
 
     private static final String MODEL = "gemini-2.5-flash";
+    private static final int MIN_NAME_LENGTH = 2;
     private static final int MAX_NAME_LENGTH = 30;
     private static final Meter LOOP_THRESHOLD = new Meter(100);
 
@@ -77,18 +78,19 @@ public class GeminiCourseNameGenerator implements CourseNameGenerator {
 
                 규칙:
                 - 코스 이름만 출력하세요. 따옴표, 설명, 마크다운, 파일 확장자(.gpx 등)는 절대 포함하지 마세요.
-                - %d자 이내로 간결하게 지어주세요.
+                - %d자 이상 %d자 이내로 간결하게 지어주세요.
                 - 지역/장소 이름을 적극적으로 활용하세요.
                 - 출발지와 도착지가 같으면 "○○ 한바퀴"처럼, 다르면 "○○-○○"처럼 지을 수 있습니다.
                 - 지역을 알 수 없으면 거리감이 느껴지는 무난한 이름을 지어주세요.
 
-                예시: 반포4동, 발산역-화곡역, 보라매공원 1바퀴, 북한산 트레일
+                예시: 반포4동, 발산역-화곡역, 보라매공원 한바퀴, 북한산 트레일
 
                 출발 지역: %s
                 도착 지역: %s
                 순환 코스 여부: %s
                 전체 거리: 약 %.1fkm
                 """.formatted(
+                MIN_NAME_LENGTH,
                 MAX_NAME_LENGTH,
                 startRegion,
                 endRegion,
@@ -100,9 +102,19 @@ public class GeminiCourseNameGenerator implements CourseNameGenerator {
     @SuppressWarnings("unchecked")
     private String extractText(Map<String, Object> response) {
         List<Map<String, Object>> candidates = (List<Map<String, Object>>) response.get("candidates");
+        if (candidates == null || candidates.isEmpty()) {
+            throw new IllegalStateException("Gemini 응답에 candidates가 없습니다: " + response);
+        }
         Map<String, Object> content = (Map<String, Object>) candidates.get(0).get("content");
-        List<Map<String, Object>> parts = (List<Map<String, Object>>) content.get("parts");
-        return ((String) parts.get(0).get("text")).strip();
+        List<Map<String, Object>> parts = content == null ? null : (List<Map<String, Object>>) content.get("parts");
+        if (parts == null || parts.isEmpty()) {
+            throw new IllegalStateException("Gemini 응답에 parts가 없습니다: " + response);
+        }
+        String text = (String) parts.get(0).get("text");
+        if (text == null) {
+            throw new IllegalStateException("Gemini 응답에 text가 없습니다: " + response);
+        }
+        return text.strip();
     }
 
     private String sanitize(String text) {
@@ -113,9 +125,8 @@ public class GeminiCourseNameGenerator implements CourseNameGenerator {
         }
         name = name.replaceAll("^[\"'`]+|[\"'`]+$", "").strip();
         name = name.replaceAll("(?i)\\.(gpx|kml)$", "").strip();
-        name = name.replaceAll("\\s+", " ");
-        if (name.length() > MAX_NAME_LENGTH) {
-            name = name.substring(0, MAX_NAME_LENGTH).strip();
+        if (name.length() < MIN_NAME_LENGTH) {
+            throw new IllegalStateException("AI가 유효한 코스 이름을 반환하지 않았습니다: " + text);
         }
         return name;
     }
