@@ -11,7 +11,8 @@ public record CourseDetailWebResponse(
         List<CoordinateWebResponse> coordinates,
         ReviewOverviewWebResponse reviewOverview,
         List<ReviewWebResponse> reviews,
-        List<CourseTagWebResponse> tags
+        List<CourseTagWebResponse> tags,
+        String creatorId
 ) {
     public static CourseDetailWebResponse from(CourseDetailResponse response) {
         return new CourseDetailWebResponse(
@@ -21,7 +22,8 @@ public record CourseDetailWebResponse(
                 CoordinateWebResponse.from(response.coordinates()),
                 ReviewOverviewWebResponse.from(response.reviewCount(), response.averageRating()),
                 ReviewWebResponse.from(response.reviews()),
-                CourseTagWebResponse.from(response.tags())
+                CourseTagWebResponse.from(response.tags()),
+                response.creatorId()
         );
     }
 }

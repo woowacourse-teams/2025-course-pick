@@ -241,7 +241,8 @@ class CourseApiDocsTest extends AbstractApiDocsSupport {
                     5.0,
                     List.of(new ReviewResponse("69d8c0b54561463adc32f259", "착한 강아지",
                             "69d8c0b12361463adc32f259", "노을이 예뻐요.", 5)),
-                    List.of(CourseTag.NIGHT_VIEW, CourseTag.SCENIC)
+                    List.of(CourseTag.NIGHT_VIEW, CourseTag.SCENIC),
+                    "69d8c0b12361463adc32f259"
             );
             given(courseApplicationService.findCourseDetail(anyString()))
                     .willReturn(detailResponse);
@@ -285,7 +286,8 @@ class CourseApiDocsTest extends AbstractApiDocsSupport {
                                             fieldWithPath("reviews[].content")
                                                     .description(리뷰_내용),
                                             fieldWithPath("tags[].name").description("태그 이름 (enum 값)"),
-                                            fieldWithPath("tags[].label").description("태그 라벨 (UI 표시용)")
+                                            fieldWithPath("tags[].label").description("태그 라벨 (UI 표시용)"),
+                                            fieldWithPath("creatorId").description(코스_등록_주체_ID)
                                     )
                                     .build())));
         }

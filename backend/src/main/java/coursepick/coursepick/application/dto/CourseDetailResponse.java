@@ -15,7 +15,8 @@ public record CourseDetailResponse(
         int reviewCount,
         double averageRating,
         List<ReviewResponse> reviews,
-        List<CourseTag> tags
+        List<CourseTag> tags,
+        String creatorId
 ) {
     public static CourseDetailResponse from(Course course) {
         return new CourseDetailResponse(
@@ -26,7 +27,8 @@ public record CourseDetailResponse(
                 course.reviews().size(),
                 course.calculateAverageRating(),
                 ReviewResponse.from(course.reviews()),
-                course.tags()
+                course.tags(),
+                course.creatorId()
         );
     }
 }
