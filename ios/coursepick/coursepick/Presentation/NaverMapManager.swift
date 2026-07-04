@@ -63,6 +63,8 @@ final class NaverMapManager: MapManager {
         }
 
         let cameraUpdate = NMFCameraUpdate(fit: bounds, padding: 48)
+        cameraUpdate.animation = .easeOut
+        cameraUpdate.animationDuration = 0.35
         mapView.moveCamera(cameraUpdate)
     }
 }
