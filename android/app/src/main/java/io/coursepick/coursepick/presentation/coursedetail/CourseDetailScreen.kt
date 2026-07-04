@@ -648,6 +648,7 @@ private fun CourseDetailScreenPreview_Success_EmptyReview() {
                         tags = emptyList(),
                         reviews = emptyList(),
                         isFavorite = false,
+                        isMine = false,
                     ),
             ),
         onNavigateBack = { },
@@ -686,6 +687,7 @@ private fun CourseDetailScreenPreview_Success_NonEmptyReviews() {
                                 )
                             },
                         isFavorite = false,
+                        isMine = false,
                     ),
             ),
         onNavigateBack = { },

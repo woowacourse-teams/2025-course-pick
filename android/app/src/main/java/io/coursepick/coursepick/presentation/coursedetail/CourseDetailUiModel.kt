@@ -14,6 +14,7 @@ data class CourseDetailUiModel(
     val tags: List<String>,
     val reviews: List<CourseReviewUiModel>,
     val isFavorite: Boolean,
+    val isMine: Boolean,
 )
 
 fun CourseDetail.toUiModel(
@@ -28,4 +29,5 @@ fun CourseDetail.toUiModel(
     tags = tags,
     reviews = reviews.map { review: CourseReview -> review.toUiModel(review.authorId == userId) },
     isFavorite = isFavorite,
+    isMine = creatorId == userId,
 )
