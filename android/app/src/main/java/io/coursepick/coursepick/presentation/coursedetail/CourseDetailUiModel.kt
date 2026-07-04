@@ -20,7 +20,7 @@ fun CourseDetail.toUiModel(
     isFavorite: Boolean,
     userId: String?,
 ) = CourseDetailUiModel(
-    id = id,
+    id = courseId,
     name = name.value,
     length = length.meter.value,
     reviewCount = reviewCount,

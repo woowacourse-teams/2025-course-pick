@@ -59,7 +59,7 @@ class CourseDetailViewModel
                 } else {
                     UiState.Success(
                         courseDetail.toUiModel(
-                            isFavorite = favoriteCourseIds.contains(courseDetail.id),
+                            isFavorite = favoriteCourseIds.contains(courseDetail.courseId),
                             userId = authRepository.userId(),
                         ),
                     )
@@ -93,7 +93,7 @@ class CourseDetailViewModel
             }.onSuccess { detail: CourseDetail ->
                 Logger.log(
                     Logger.Event.Success("fetch_course_detail"),
-                    "courseId" to detail.id,
+                    "courseId" to detail.courseId,
                     "courseName" to detail.name.value,
                 )
             }.onFailure { exception: Throwable ->
