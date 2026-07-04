@@ -4,5 +4,6 @@ protocol MapManager {
         isSelected: Bool,
         onSelect: @escaping () -> Void
     )
+    func moveCameraToContain(coordinates: [Coordinate])
     func clearPolylines()
 }

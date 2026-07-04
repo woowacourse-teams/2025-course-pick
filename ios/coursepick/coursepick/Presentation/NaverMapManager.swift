@@ -43,4 +43,26 @@ final class NaverMapManager: MapManager {
         }
         polylineOverlays.removeAll()
     }
+
+    func moveCameraToContain(coordinates: [Coordinate]) {
+        let points = coordinates.map { coordinate in
+            NMGLatLng(
+                lat: coordinate.latitude.value,
+                lng: coordinate.longitude.value
+            )
+        }
+
+        guard let firstPoint = points.first else {
+            return
+        }
+
+        let bounds = points.dropFirst().reduce(
+            NMGLatLngBounds(southWest: firstPoint, northEast: firstPoint)
+        ) { bounds, point in
+            bounds.expand(toPoint: point)
+        }
+
+        let cameraUpdate = NMFCameraUpdate(fit: bounds, padding: 48)
+        mapView.moveCamera(cameraUpdate)
+    }
 }

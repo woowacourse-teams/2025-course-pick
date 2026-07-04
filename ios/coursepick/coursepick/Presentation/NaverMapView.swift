@@ -42,6 +42,12 @@ struct NaverMapView: UIViewRepresentable {
                 onSelectPolyline(selectedPolyline)
             }
         }
+
+        if let selectedPolyline {
+            context.coordinator.mapManager?.moveCameraToContain(
+                coordinates: selectedPolyline
+            )
+        }
     }
 
     private func moveCamera(to coordinate: NMGLatLng, on mapView: NMFMapView) {
