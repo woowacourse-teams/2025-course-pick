@@ -44,7 +44,10 @@ final class NaverMapManager: MapManager {
         polylineOverlays.removeAll()
     }
 
-    func moveCameraToContain(coordinates: [Coordinate]) {
+    func moveCameraToContain(
+        coordinates: [Coordinate],
+        paddingInsets: UIEdgeInsets
+    ) {
         let points = coordinates.map { coordinate in
             NMGLatLng(
                 lat: coordinate.latitude.value,
@@ -62,7 +65,7 @@ final class NaverMapManager: MapManager {
             bounds.expand(toPoint: point)
         }
 
-        let cameraUpdate = NMFCameraUpdate(fit: bounds, padding: 48)
+        let cameraUpdate = NMFCameraUpdate(fit: bounds, paddingInsets: paddingInsets)
         cameraUpdate.animation = .easeOut
         cameraUpdate.animationDuration = 0.35
         mapView.moveCamera(cameraUpdate)

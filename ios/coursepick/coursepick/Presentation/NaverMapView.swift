@@ -6,6 +6,7 @@ struct NaverMapView: UIViewRepresentable {
 
     let polylines: [[Coordinate]]
     let selectedPolyline: [Coordinate]?
+    let bottomContentInset: CGFloat
     let onSelectPolyline: ([Coordinate]) -> Void
 
     func makeCoordinator() -> Coordinator {
@@ -45,7 +46,13 @@ struct NaverMapView: UIViewRepresentable {
 
         if let selectedPolyline {
             context.coordinator.mapManager?.moveCameraToContain(
-                coordinates: selectedPolyline
+                coordinates: selectedPolyline,
+                paddingInsets: UIEdgeInsets(
+                    top: 48,
+                    left: 48,
+                    bottom: bottomContentInset + 48,
+                    right: 48
+                )
             )
         }
     }

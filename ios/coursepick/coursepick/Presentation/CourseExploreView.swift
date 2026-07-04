@@ -15,7 +15,8 @@ struct CourseExploreView: View {
             ZStack(alignment: .bottomTrailing) {
                 NaverMapView(
                     polylines: courses.map(\.coordinates),
-                    selectedPolyline: selectedCourse?.coordinates
+                    selectedPolyline: selectedCourse?.coordinates,
+                    bottomContentInset: displayedSheetHeight
                 ) { coordinates in
                     selectedCourse = courses.first { course in
                         course.coordinates == coordinates
