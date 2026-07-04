@@ -130,6 +130,7 @@ class CourseDetailViewModel
                         _uiEvent.emit(UiEvent.AuthenticationSuccess)
                         when (authFeature) {
                             is AuthFeature.ReportCourse -> onReportCourse()
+                            is AuthFeature.DeleteCourse -> onDeleteCourse()
                             is AuthFeature.DeleteReview -> onDeleteReview(authFeature.review)
                             is AuthFeature.ReportReview -> onReportReview(authFeature.review)
                             is AuthFeature.WriteReview -> onWriteReview()
@@ -227,6 +228,28 @@ class CourseDetailViewModel
                     }
                 }
             }
+        }
+
+        fun onDeleteCourse() {
+            viewModelScope.launch {
+                (uiState.value as? UiState.Success)?.let { uiState: UiState.Success ->
+                    _dialogState.value =
+                        if (authRepository.accessToken() == null) {
+                            dialogState.value.copy(authDialog = AuthFeature.DeleteCourse(uiState.data.id))
+                        } else {
+                            dialogState.value.copy(deleteCourseDialog = uiState.data.name)
+                        }
+                }
+            }
+        }
+
+        fun dismissDeleteCourseDialog() {
+            _dialogState.value = dialogState.value.copy(deleteCourseDialog = null)
+        }
+
+        fun confirmDeleteCourse() {
+            // TODO: 백엔드 API 추가될 시 구현
+            dismissDeleteCourseDialog()
         }
 
         fun onDeleteReview(review: CourseReviewUiModel) {
@@ -425,12 +448,17 @@ class CourseDetailViewModel
         data class DialogState(
             val authDialog: AuthFeature? = null,
             val reportCourseDialog: String? = null,
+            val deleteCourseDialog: String? = null,
             val deleteReviewDialog: CourseReviewUiModel? = null,
             val reportReviewDialog: CourseReviewUiModel? = null,
         )
 
         sealed interface AuthFeature {
             data class ReportCourse(
+                val courseId: String,
+            ) : AuthFeature
+
+            data class DeleteCourse(
                 val courseId: String,
             ) : AuthFeature
 

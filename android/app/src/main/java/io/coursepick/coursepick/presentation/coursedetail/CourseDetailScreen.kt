@@ -63,6 +63,7 @@ import io.coursepick.coursepick.R
 import io.coursepick.coursepick.data.auth.KakaoAuthenticator
 import io.coursepick.coursepick.domain.auth.Authenticator
 import io.coursepick.coursepick.presentation.auth.AuthDialog
+import io.coursepick.coursepick.presentation.customcourse.DeleteCustomCourseDialog
 
 @Composable
 fun CourseDetailScreen(
@@ -88,6 +89,7 @@ fun CourseDetailScreen(
         onNavigateBack = navigateBack,
         onToggleFavorite = viewModel::toggleFavorite,
         onReportCourse = viewModel::onReportCourse,
+        onDeleteCourse = viewModel::onDeleteCourse,
         onDeleteReview = viewModel::onDeleteReview,
         onReportReview = viewModel::onReportReview,
         onWriteReview = viewModel::onWriteReview,
@@ -100,6 +102,8 @@ fun CourseDetailScreen(
         onConfirmAuthDialog = viewModel::signIn,
         onDismissReportCourseDialog = viewModel::dismissReportCourseDialog,
         onConfirmReportCourseDialog = viewModel::submitCourseReport,
+        onDismissDeleteCourseDialog = viewModel::dismissDeleteCourseDialog,
+        onConfirmDeleteCourseDialog = viewModel::confirmDeleteCourse,
         onDismissDeleteReviewDialog = viewModel::dismissDeleteReviewDialog,
         onConfirmDeleteReviewDialog = viewModel::confirmDeleteReview,
         onDismissReportReviewDialog = viewModel::dismissReportReviewDialog,
@@ -172,6 +176,7 @@ private fun CourseDetailScreen(
     onNavigateBack: () -> Unit,
     onToggleFavorite: () -> Unit,
     onReportCourse: () -> Unit,
+    onDeleteCourse: () -> Unit,
     onDeleteReview: (CourseReviewUiModel) -> Unit,
     onReportReview: (CourseReviewUiModel) -> Unit,
     onWriteReview: () -> Unit,
@@ -205,8 +210,10 @@ private fun CourseDetailScreen(
         topBar = {
             TopAppBar(
                 navigateBack = onNavigateBack,
-                canReportCourse = uiState is CourseDetailViewModel.UiState.Success,
+                isMyCourse = uiState is CourseDetailViewModel.UiState.Success && uiState.data.isMine,
+                isActionEnabled = uiState is CourseDetailViewModel.UiState.Success,
                 onReportCourse = onReportCourse,
+                onDeleteCourse = onDeleteCourse,
             )
         },
         floatingActionButton = {
@@ -301,8 +308,10 @@ private fun CourseDetailScreen(
 @Composable
 private fun TopAppBar(
     navigateBack: () -> Unit,
-    canReportCourse: Boolean,
+    isMyCourse: Boolean,
+    isActionEnabled: Boolean,
     onReportCourse: () -> Unit,
+    onDeleteCourse: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -324,15 +333,22 @@ private fun TopAppBar(
         },
         actions = {
             Icon(
-                painter = painterResource(R.drawable.icon_report_course),
-                contentDescription = stringResource(R.string.course_detail_report_course_button_description),
-                tint = colorResource(if (canReportCourse) R.color.item_primary else R.color.item_tertiary),
+                painter = painterResource(if (isMyCourse) R.drawable.icon_delete_course else R.drawable.icon_report_course),
+                contentDescription =
+                    stringResource(
+                        if (isMyCourse) {
+                            R.string.course_detail_delete_course_button_description
+                        } else {
+                            R.string.course_detail_report_course_button_description
+                        },
+                    ),
+                tint = colorResource(if (isActionEnabled) R.color.item_primary else R.color.item_tertiary),
                 modifier =
                     Modifier
                         .padding(end = 10.dp)
                         .size(48.dp)
                         .clip(CircleShape)
-                        .clickable(canReportCourse) { onReportCourse() }
+                        .clickable(isActionEnabled) { if (isMyCourse) onDeleteCourse() else onReportCourse() }
                         .padding(8.dp),
             )
         },
@@ -569,6 +585,8 @@ private fun CourseDetailScreenDialogs(
     onConfirmAuthDialog: (Authenticator, CourseDetailViewModel.AuthFeature) -> Unit,
     onDismissReportCourseDialog: () -> Unit,
     onConfirmReportCourseDialog: () -> Unit,
+    onDismissDeleteCourseDialog: () -> Unit,
+    onConfirmDeleteCourseDialog: () -> Unit,
     onDismissDeleteReviewDialog: () -> Unit,
     onConfirmDeleteReviewDialog: (CourseReviewUiModel) -> Unit,
     onDismissReportReviewDialog: () -> Unit,
@@ -580,6 +598,7 @@ private fun CourseDetailScreenDialogs(
         val featureName: String =
             when (dialogState.authDialog) {
                 is CourseDetailViewModel.AuthFeature.ReportCourse -> stringResource(R.string.report_course_feature_name)
+                is CourseDetailViewModel.AuthFeature.DeleteCourse -> stringResource(R.string.course_detail_delete_course_feature_name)
                 is CourseDetailViewModel.AuthFeature.DeleteReview -> stringResource(R.string.delete_review_feature_name)
                 is CourseDetailViewModel.AuthFeature.ReportReview -> stringResource(R.string.report_review_feature_name)
                 is CourseDetailViewModel.AuthFeature.WriteReview -> stringResource(R.string.write_course_review_feature_name)
@@ -597,6 +616,14 @@ private fun CourseDetailScreenDialogs(
             courseName = dialogState.reportCourseDialog,
             onDismiss = onDismissReportCourseDialog,
             onConfirm = onConfirmReportCourseDialog,
+        )
+    }
+
+    if (dialogState.deleteCourseDialog != null) {
+        DeleteCustomCourseDialog(
+            courseName = dialogState.deleteCourseDialog,
+            onDismiss = onDismissDeleteCourseDialog,
+            onConfirm = onConfirmDeleteCourseDialog,
         )
     }
 
@@ -625,6 +652,7 @@ private fun CourseDetailScreenPreview_Loading() {
         onNavigateBack = { },
         onToggleFavorite = { },
         onReportCourse = { },
+        onDeleteCourse = { },
         onDeleteReview = { },
         onReportReview = { },
         onWriteReview = { },
@@ -634,7 +662,37 @@ private fun CourseDetailScreenPreview_Loading() {
 
 @PreviewLightDark
 @Composable
-private fun CourseDetailScreenPreview_Success_EmptyReview() {
+private fun CourseDetailScreenPreview_Success_EmptyReview_MyCourse() {
+    CourseDetailScreen(
+        uiState =
+            CourseDetailViewModel.UiState.Success(
+                data =
+                    CourseDetailUiModel(
+                        id = "",
+                        name = "석촌호수 동호 한바퀴",
+                        length = 0.0,
+                        reviewCount = 0,
+                        averageRating = 4.32F,
+                        tags = emptyList(),
+                        reviews = emptyList(),
+                        isFavorite = false,
+                        isMine = true,
+                    ),
+            ),
+        onNavigateBack = { },
+        onToggleFavorite = { },
+        onReportCourse = { },
+        onDeleteCourse = { },
+        onDeleteReview = { },
+        onReportReview = { },
+        onWriteReview = { },
+        onRetry = { },
+    )
+}
+
+@PreviewLightDark
+@Composable
+private fun CourseDetailScreenPreview_Success_EmptyReview_NotMyCourse() {
     CourseDetailScreen(
         uiState =
             CourseDetailViewModel.UiState.Success(
@@ -654,6 +712,7 @@ private fun CourseDetailScreenPreview_Success_EmptyReview() {
         onNavigateBack = { },
         onToggleFavorite = { },
         onReportCourse = { },
+        onDeleteCourse = { },
         onDeleteReview = { },
         onReportReview = { },
         onWriteReview = { },
@@ -693,6 +752,7 @@ private fun CourseDetailScreenPreview_Success_NonEmptyReviews() {
         onNavigateBack = { },
         onToggleFavorite = { },
         onReportCourse = { },
+        onDeleteCourse = { },
         onDeleteReview = { },
         onReportReview = { },
         onWriteReview = { },
@@ -708,6 +768,7 @@ private fun CourseDetailScreenPreview_Failure_NoNetwork() {
         onNavigateBack = { },
         onToggleFavorite = { },
         onReportCourse = { },
+        onDeleteCourse = { },
         onDeleteReview = { },
         onReportReview = { },
         onWriteReview = { },
@@ -723,6 +784,7 @@ private fun CourseDetailScreenPreview_Failure_Unknown() {
         onNavigateBack = { },
         onToggleFavorite = { },
         onReportCourse = { },
+        onDeleteCourse = { },
         onDeleteReview = { },
         onReportReview = { },
         onWriteReview = { },

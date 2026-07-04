@@ -87,6 +87,7 @@
     <string name="course_detail_header">코스 정보</string>
     <string name="course_detail_load_failure_message">코스 정보를 불러오지 못했습니다.</string>
     <string name="course_detail_report_course_button_description">코스 신고</string>
+    <string name="course_detail_delete_course_button_description">코스 삭제</string>
     <string name="course_detail_navigate_back_description">뒤로 가기</string>
     <string name="course_detail_review_header">리뷰</string>
     <string name="course_detail_review_count">(%1$d개)</string>
@@ -95,6 +96,7 @@
     <string name="course_detail_write_review_button">리뷰 작성</string>
     <string name="course_detail_already_reviewed_message">이 코스는 이미 리뷰하셨어요.</string>
     <string name="star_rating_description">별 %1$d개</string>
+    <string name="course_detail_delete_course_feature_name">코스 삭제</string>
     <string name="course_detail_delete_review_feature_name">리뷰 삭제</string>
 
     <!--  코스 상세 화면 - 리뷰 목록 아이템  -->
