@@ -15,6 +15,7 @@ import io.coursepick.coursepick.domain.customcourse.CustomCourseRepository
 import io.coursepick.coursepick.domain.customcourse.DraftCourse
 import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.presentation.Logger
+import io.coursepick.coursepick.presentation.map.DistanceCalculator
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -69,34 +70,54 @@ class CreateCustomCourseViewModel
 
         val waypoints: List<Coordinate> get() = segments.value.mapNotNull { segment: DraftSegment -> segment.coordinates.lastOrNull() }
 
-        fun addWaypoint(waypoint: Coordinate) {
+        fun addWaypoint(
+            waypoint: Coordinate,
+            snap: Boolean,
+        ) {
             viewModelScope.launch {
                 val origin: Coordinate = waypoints.lastOrNull() ?: waypoint
-                val rawSegment: DraftSegment =
-                    runCatching { customCourseRepository.draftSegment(origin, waypoint) }
-                        .onSuccess { Logger.log(Logger.Event.Add("create_custom_course_waypoint")) }
-                        .getOrElse { exception: Throwable ->
-                            Logger.log(Logger.Event.Failure("create_custom_course_waypoint"), "exception" to exception.message.orEmpty())
-                            when (exception) {
-                                is CancellationException -> throw exception
-                                is NoNetworkException -> _event.emit(CreateCustomCourseUiEvent.NoNetwork)
-                                else -> _event.emit(CreateCustomCourseUiEvent.UnknownError)
-                            }
-                            return@launch
-                        }
-                val adjustedSegment: DraftSegment =
-                    rawSegment
-                        .let { segment: DraftSegment ->
-                            if (waypoints.isEmpty()) {
-                                val initialWaypoint = segment.coordinates.lastOrNull() ?: return@launch
-                                DraftSegment(listOf(initialWaypoint), Length(0))
-                            } else {
-                                segment
-                            }
-                        }
+                segment(origin, waypoint, snap)?.let { segment: DraftSegment ->
+                    Logger.log(Logger.Event.Add("create_custom_course_waypoint"), "snap" to "$snap")
 
-                _segments.value += adjustedSegment
-                _event.emit(CreateCustomCourseUiEvent.NewSegment(adjustedSegment))
+                    val adjustedSegment =
+                        segment
+                            .let { segment: DraftSegment ->
+                                if (waypoints.isEmpty()) {
+                                    val initialWaypoint = segment.coordinates.lastOrNull() ?: return@launch
+                                    DraftSegment(listOf(initialWaypoint), Length(0))
+                                } else {
+                                    segment
+                                }
+                            }
+                    _segments.value += adjustedSegment
+                    _event.emit(CreateCustomCourseUiEvent.NewSegment(adjustedSegment))
+                }
+            }
+        }
+
+        private suspend fun segment(
+            origin: Coordinate,
+            destination: Coordinate,
+            snap: Boolean,
+        ): DraftSegment? {
+            return if (snap) {
+                runCatching { customCourseRepository.draftSegment(origin, destination) }
+                    .getOrElse { exception: Throwable ->
+                        Logger.log(Logger.Event.Failure("create_custom_course_waypoint"), "exception" to exception.message.orEmpty())
+                        when (exception) {
+                            is CancellationException -> throw exception
+                            is NoNetworkException -> _event.emit(CreateCustomCourseUiEvent.NoNetwork)
+                            else -> _event.emit(CreateCustomCourseUiEvent.UnknownError)
+                        }
+                        return null
+                    }
+            } else {
+                val length =
+                    DistanceCalculator.distance(origin, destination)?.let(::Length) ?: run {
+                        _event.emit(CreateCustomCourseUiEvent.UnknownError)
+                        return null
+                    }
+                DraftSegment(listOf(origin, destination), length)
             }
         }
 

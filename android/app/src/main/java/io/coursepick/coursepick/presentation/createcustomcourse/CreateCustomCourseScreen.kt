@@ -28,11 +28,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -51,9 +54,11 @@ fun CreateCustomCourseScreen(
     onClose: () -> Unit,
     onConfirm: () -> Unit,
     onUndoWaypoint: () -> Unit,
-    onAddWaypoint: () -> Unit,
+    onAddWaypoint: (snap: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var snap: Boolean by remember { mutableStateOf(true) }
+
     Box(
         modifier
             .fillMaxSize()
@@ -128,7 +133,7 @@ fun CreateCustomCourseScreen(
             verticalAlignment = Alignment.CenterVertically,
             modifier =
                 Modifier
-                    .align(Alignment.BottomStart)
+                    .align(Alignment.BottomCenter)
                     .height(IntrinsicSize.Min)
                     .padding(10.dp)
                     .background(color = colorResource(R.color.background_primary), shape = RoundedCornerShape(50))
@@ -138,12 +143,21 @@ fun CreateCustomCourseScreen(
                 text = "보정",
                 color = colorResource(R.color.item_primary),
                 fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
             )
 
             Spacer(Modifier.width(10.dp))
 
-            Switch(checked = false, onCheckedChange = { })
+            Switch(
+                checked = snap,
+                onCheckedChange = { checked: Boolean -> snap = checked },
+                colors =
+                    SwitchDefaults.colors(
+                        checkedBorderColor = colorResource(R.color.point_secondary),
+                        checkedTrackColor = colorResource(R.color.point_tertiary),
+                        checkedThumbColor = colorResource(R.color.point_primary),
+                    ),
+            )
 
             Spacer(Modifier.width(10.dp))
 
@@ -155,7 +169,7 @@ fun CreateCustomCourseScreen(
                 painter = painterResource(R.drawable.icon_snap_help),
                 contentDescription = "보정 기능 안내",
                 tint = colorResource(R.color.item_primary),
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(32.dp),
             )
         }
 
@@ -192,7 +206,7 @@ fun CreateCustomCourseScreen(
                         .clip(shape = CircleShape)
                         .background(colorResource(R.color.background_primary))
                         .size(70.dp)
-                        .clickable { onAddWaypoint() },
+                        .clickable { onAddWaypoint(snap) },
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,

@@ -89,7 +89,11 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                     onClose = viewModel::handleExitAction,
                     onConfirm = viewModel::handleSubmitAction,
                     onUndoWaypoint = viewModel::removeLastWaypoint,
-                    onAddWaypoint = { mapManager.cameraCoordinate?.let(viewModel::addWaypoint) },
+                    onAddWaypoint = { snap: Boolean ->
+                        mapManager.cameraCoordinate?.let { coordinate: Coordinate ->
+                            viewModel.addWaypoint(coordinate, snap)
+                        }
+                    },
                 )
 
                 if (viewModel.showSubmitDialog.collectAsStateWithLifecycle().value) {
