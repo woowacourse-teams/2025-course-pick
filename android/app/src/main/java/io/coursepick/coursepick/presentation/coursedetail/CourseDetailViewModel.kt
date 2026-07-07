@@ -57,11 +57,10 @@ class CourseDetailViewModel
                 } else if (courseDetail == null) {
                     UiState.Failure.Unknown
                 } else {
-                    val userId: String? = authRepository.userId()
                     UiState.Success(
                         courseDetail.toUiModel(
                             isFavorite = favoriteCourseIds.contains(courseDetail.courseId),
-                            userId = userId,
+                            userId = authRepository.userId(),
                         ),
                     )
                 }
