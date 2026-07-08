@@ -40,7 +40,7 @@ class CreateCustomCourseViewModel
         private val _event = MutableSharedFlow<CreateCustomCourseUiEvent>()
         val event: SharedFlow<CreateCustomCourseUiEvent> get() = _event.asSharedFlow()
 
-        private val _showAuthDialog = MutableStateFlow<Boolean>(false)
+        private val _showAuthDialog = MutableStateFlow(false)
         val showAuthDialog: StateFlow<Boolean> get() = _showAuthDialog.asStateFlow()
 
         private val _showSubmitDialog = MutableStateFlow(false)
@@ -48,6 +48,9 @@ class CreateCustomCourseViewModel
 
         private val _showDiscardDialog = MutableStateFlow(false)
         val showDiscardDialog: StateFlow<Boolean> get() = _showDiscardDialog.asStateFlow()
+
+        private val _showSnapGuideDialog = MutableStateFlow(false)
+        val showSnapGuideDialog: StateFlow<Boolean> get() = _showSnapGuideDialog.asStateFlow()
 
         private val _courseName = MutableStateFlow("")
         val courseName: StateFlow<String> get() = _courseName.asStateFlow()
@@ -251,6 +254,14 @@ class CreateCustomCourseViewModel
 
         fun dismissAuthDialog() {
             _showAuthDialog.value = false
+        }
+
+        fun showSnapGuideDialog() {
+            _showSnapGuideDialog.value = true
+        }
+
+        fun dismissSnapGuideDialog() {
+            _showSnapGuideDialog.value = false
         }
 
         companion object {

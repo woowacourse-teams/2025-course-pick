@@ -55,6 +55,7 @@ fun CreateCustomCourseScreen(
     onConfirm: () -> Unit,
     onUndoWaypoint: () -> Unit,
     onAddWaypoint: (snap: Boolean) -> Unit,
+    onShowSnapGuide: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var snap: Boolean by remember { mutableStateOf(true) }
@@ -169,7 +170,11 @@ fun CreateCustomCourseScreen(
                 painter = painterResource(R.drawable.icon_snap_help),
                 contentDescription = "보정 기능 안내",
                 tint = colorResource(R.color.item_primary),
-                modifier = Modifier.size(32.dp),
+                modifier =
+                    Modifier
+                        .size(32.dp)
+                        .clip(CircleShape)
+                        .clickable { onShowSnapGuide() },
             )
         }
 
@@ -228,6 +233,7 @@ fun CreateCustomCourseScreenPreview_ShortCourse() {
         onConfirm = { },
         onUndoWaypoint = { },
         onAddWaypoint = { },
+        onShowSnapGuide = { },
     )
 }
 
@@ -240,5 +246,6 @@ fun CreateCustomCourseScreenPreview_LongCourse() {
         onConfirm = { },
         onUndoWaypoint = { },
         onAddWaypoint = { },
+        onShowSnapGuide = { },
     )
 }
