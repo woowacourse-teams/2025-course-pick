@@ -70,4 +70,18 @@ final class NaverMapManager: MapManager {
         cameraUpdate.animationDuration = 1
         mapView.moveCamera(cameraUpdate)
     }
+
+    func moveCamera(
+        to coordinate: Coordinate,
+        zoom: Double
+    ) {
+        let cameraPosition = NMFCameraPosition(
+            NMGLatLng(
+                lat: coordinate.latitude.value,
+                lng: coordinate.longitude.value
+            ),
+            zoom: zoom
+        )
+        mapView.moveCamera(NMFCameraUpdate(position: cameraPosition))
+    }
 }

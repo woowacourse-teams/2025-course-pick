@@ -1,13 +1,28 @@
 import SwiftUI
 
 struct CourseExploreView: View {
+    private static let defaultInitialCoordinate: Coordinate? = {
+        guard let latitude = try? Latitude(37.515411),
+              let longitude = try? Longitude(127.1029607)
+        else {
+            return nil
+        }
+
+        return Coordinate(latitude: latitude, longitude: longitude)
+    }()
+
     @State private var sheetHeight: CGFloat = 0
     @State private var selectedCourse: Course?
 
     private let courses: [Course]
+    private let initialCoordinate: Coordinate?
 
-    init(courses: [Course]) {
+    init(
+        courses: [Course],
+        initialCoordinate: Coordinate? = Self.defaultInitialCoordinate
+    ) {
         self.courses = courses
+        self.initialCoordinate = initialCoordinate
         self._selectedCourse = State(initialValue: courses.first)
     }
 
@@ -21,6 +36,7 @@ struct CourseExploreView: View {
                 NaverMapView(
                     polylines: courses.map(\.coordinates),
                     selectedPolyline: selectedCourse?.coordinates,
+                    initialCoordinate: initialCoordinate,
                     bottomContentInset: displayedSheetHeight
                 ) { coordinates in
                     selectedCourse = courses.first { course in

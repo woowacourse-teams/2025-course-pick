@@ -10,5 +10,9 @@ protocol MapManager {
         coordinates: [Coordinate],
         paddingInsets: UIEdgeInsets
     )
+    func moveCamera(
+        to coordinate: Coordinate,
+        zoom: Double
+    )
     func clearPolylines()
 }

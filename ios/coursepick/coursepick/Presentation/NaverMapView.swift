@@ -4,6 +4,7 @@ import NMapsMap
 struct NaverMapView: UIViewRepresentable {
     let polylines: [[Coordinate]]
     let selectedPolyline: [Coordinate]?
+    let initialCoordinate: Coordinate?
     let bottomContentInset: CGFloat
     let onSelectPolyline: ([Coordinate]) -> Void
 
@@ -14,6 +15,12 @@ struct NaverMapView: UIViewRepresentable {
     func makeUIView(context: Context) -> NMFMapView {
         let mapView = NMFMapView()
         context.coordinator.mapManager = NaverMapManager(mapView: mapView)
+        if let initialCoordinate {
+            context.coordinator.mapManager?.moveCamera(
+                to: initialCoordinate,
+                zoom: 15
+            )
+        }
         return mapView
     }
 
