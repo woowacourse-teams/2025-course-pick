@@ -2,9 +2,14 @@ import SwiftUI
 
 struct CourseExploreView: View {
     @State private var sheetHeight: CGFloat = 0
+    @State private var selectedCourse: Course?
 
-    private let courses = MockCourseData.courses
-    @State private var selectedCourse = MockCourseData.courses.first
+    private let courses: [Course]
+
+    init(courses: [Course]) {
+        self.courses = courses
+        self._selectedCourse = State(initialValue: courses.first)
+    }
 
     var body: some View {
         GeometryReader { geometry in
@@ -54,5 +59,5 @@ struct CourseExploreView: View {
 }
 
 #Preview {
-    CourseExploreView()
+    CourseExploreView(courses: DefaultCourseRepository().fetchCourses())
 }

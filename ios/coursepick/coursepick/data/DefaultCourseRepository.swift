@@ -1,5 +1,9 @@
-enum MockCourseData {
-    static let courses: [Course] = [
+final class DefaultCourseRepository: CourseRepository {
+    func fetchCourses() -> [Course] {
+        Self.courses
+    }
+
+    private static let courses: [Course] = [
         course(
             name: "석촌호수",
             distance: 200.123,

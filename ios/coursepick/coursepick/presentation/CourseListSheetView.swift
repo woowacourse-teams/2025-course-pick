@@ -78,10 +78,12 @@ struct CourseListSheetView: View {
 }
 
 #Preview("Loaded") {
+    let courses = DefaultCourseRepository().fetchCourses()
+
     CourseListSheetView(
         state: .loaded,
-        courses: MockCourseData.courses,
-        selectedCourse: .constant(MockCourseData.courses.first)
+        courses: courses,
+        selectedCourse: .constant(courses.first)
     )
 }
 

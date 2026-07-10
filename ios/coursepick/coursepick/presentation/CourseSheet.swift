@@ -57,6 +57,8 @@ struct CourseSheet<Content: View>: View {
 }
 
 #Preview {
+    let courses = DefaultCourseRepository().fetchCourses()
+
     CourseSheet(
         collapsedHeight: 120,
         expandedHeight: 360,
@@ -64,8 +66,8 @@ struct CourseSheet<Content: View>: View {
     ) {
         CourseListSheetView(
             state: .loaded,
-            courses: MockCourseData.courses,
-            selectedCourse: .constant(MockCourseData.courses.first)
+            courses: courses,
+            selectedCourse: .constant(courses.first)
         )
     }
 }

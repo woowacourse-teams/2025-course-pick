@@ -1,8 +1,10 @@
 import SwiftUI
 
 struct ContentView: View {
+    private let courses = DefaultCourseRepository().fetchCourses()
+
     var body: some View {
-        CourseExploreView()
+        CourseExploreView(courses: courses)
     }
 }
 
