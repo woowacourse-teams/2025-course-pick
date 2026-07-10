@@ -38,6 +38,7 @@ struct CourseExploreView: View {
                 Button {
                 } label: {
                     Image(systemName: "scope")
+                        .font(.system(size: 20))
                         .frame(width: 48, height: 48)
                         .background(.backgroundPrimary)
                         .clipShape(Circle())
