@@ -57,11 +57,17 @@ struct CourseSheet<Content: View>: View {
 }
 
 #Preview {
+    let courses = DefaultCourseRepository().fetchCourses()
+
     CourseSheet(
         collapsedHeight: 120,
         expandedHeight: 360,
         displayedHeight: .constant(360)
     ) {
-        CourseListSheetView(state: .loaded)
+        CourseListSheetView(
+            state: .loaded,
+            courses: courses,
+            selectedCourse: .constant(courses.first)
+        )
     }
 }
