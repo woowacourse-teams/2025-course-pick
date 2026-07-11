@@ -39,7 +39,8 @@ struct CourseListSheetView: View {
                             CourseItemView(
                                 courseName: course.name.value,
                                 distance: course.distance.meters / 1000,
-                                length: course.length.meters / 1000
+                                length: course.length.meters / 1000,
+                                isSelected: course == selectedCourse
                             )
                         }
                         .buttonStyle(.plain)
