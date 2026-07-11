@@ -49,15 +49,20 @@ struct NaverMapView: UIViewRepresentable {
         }
 
         if let selectedPolyline {
-            context.coordinator.mapManager?.moveCameraToContain(
-                coordinates: selectedPolyline,
-                paddingInsets: UIEdgeInsets(
-                    top: 48,
-                    left: 48,
-                    bottom: bottomContentInset + 48,
-                    right: 48
-                )
+            let mapManager = context.coordinator.mapManager
+            let paddingInsets = UIEdgeInsets(
+                top: 48,
+                left: 48,
+                bottom: bottomContentInset + 48,
+                right: 48
             )
+
+            DispatchQueue.main.async {
+                mapManager?.moveCameraToContain(
+                    coordinates: selectedPolyline,
+                    paddingInsets: paddingInsets
+                )
+            }
         }
     }
 
