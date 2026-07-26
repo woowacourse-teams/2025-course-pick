@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.Modifier
@@ -46,9 +47,12 @@ class CustomCoursesFragment(
     private val customCourseViewModel: CustomCourseViewModel by activityViewModels()
 
     private val createCustomCourseLauncher: ActivityResultLauncher<Intent> =
-        registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult(),
-        ) { result ->
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) customCourseViewModel.fetchCustomCourses()
+        }
+
+    private val courseDetailLauncher: ActivityResultLauncher<Intent> =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) customCourseViewModel.fetchCustomCourses()
         }
 
@@ -83,7 +87,7 @@ class CustomCoursesFragment(
                         }
                     },
                     onNavigateToDetail = { customCourse: CustomCourseUiModel ->
-                        startActivity(CourseDetailActivity.intent(requireContext(), customCourse.course.id))
+                        courseDetailLauncher.launch(CourseDetailActivity.intent(requireContext(), customCourse.course.id))
                     },
                     modifier = Modifier.nestedScroll(nestedScrollInterop),
                 )

@@ -70,6 +70,7 @@ fun CourseDetailScreen(
     courseId: String,
     navigateBack: () -> Unit,
     navigateToWriteCourseReview: (CourseDetailUiModel) -> Unit,
+    onCourseDeleted: () -> Unit,
     viewModel: CourseDetailViewModel = viewModel(),
 ) {
     val context: Context = LocalContext.current
@@ -80,7 +81,7 @@ fun CourseDetailScreen(
 
     LaunchedEffect(Unit) {
         viewModel.uiEvent.collect { event: CourseDetailViewModel.UiEvent ->
-            event.handle(context, navigateBack, navigateToWriteCourseReview)
+            event.handle(context, navigateToWriteCourseReview, onCourseDeleted)
         }
     }
 
@@ -115,8 +116,8 @@ fun CourseDetailScreen(
 
 private fun CourseDetailViewModel.UiEvent.handle(
     context: Context,
-    navigateBack: () -> Unit,
     navigateToWriteCourseReview: (CourseDetailUiModel) -> Unit,
+    onCourseDeleted: () -> Unit,
 ) {
     when (this) {
         CourseDetailViewModel.UiEvent.AuthenticationSuccess -> {
@@ -176,7 +177,7 @@ private fun CourseDetailViewModel.UiEvent.handle(
         }
 
         CourseDetailViewModel.UiEvent.Exit -> {
-            navigateBack()
+            onCourseDeleted()
         }
     }
 }

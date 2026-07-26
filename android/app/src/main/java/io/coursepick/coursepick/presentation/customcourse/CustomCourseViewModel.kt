@@ -235,6 +235,7 @@ class CustomCourseViewModel
                     customCourseRepository.deleteCourse(courseId)
                     dismissDeleteCourseDialog()
                     _uiEvent.emit(CustomCourseUiEvent.DeleteCourseSuccess)
+                    fetchCustomCourses()
 
                     Logger.log(Logger.Event.Success("delete_custom_course"), "courseId" to courseId)
                 } catch (exception: Throwable) {
