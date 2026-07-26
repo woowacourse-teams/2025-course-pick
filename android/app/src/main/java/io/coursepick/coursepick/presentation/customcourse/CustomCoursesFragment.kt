@@ -118,9 +118,9 @@ class CustomCoursesFragment(
 
                 if (dialogState.deleteCourseDialog != null) {
                     DeleteCustomCourseDialog(
-                        courseName = dialogState.deleteCourseDialog.name,
+                        state = dialogState.deleteCourseDialog,
                         onDismiss = customCourseViewModel::dismissDeleteCourseDialog,
-                        onConfirm = { customCourseViewModel.confirmDeleteCustomCourse(dialogState.deleteCourseDialog.id) },
+                        onConfirm = { customCourseViewModel.confirmDeleteCustomCourse(dialogState.deleteCourseDialog.courseId) },
                     )
                 }
             }

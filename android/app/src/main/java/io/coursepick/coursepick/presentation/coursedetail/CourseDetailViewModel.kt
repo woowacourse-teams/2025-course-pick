@@ -14,6 +14,7 @@ import io.coursepick.coursepick.domain.course.CourseRepository
 import io.coursepick.coursepick.domain.customcourse.CustomCourseRepository
 import io.coursepick.coursepick.domain.favorites.FavoriteCourseRepository
 import io.coursepick.coursepick.presentation.Logger
+import io.coursepick.coursepick.presentation.customcourse.DeleteCourseDialogState
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -238,7 +239,7 @@ class CourseDetailViewModel
                         if (authRepository.accessToken() == null) {
                             dialogState.value.copy(authDialog = AuthFeature.DeleteCourse(uiState.data.id))
                         } else {
-                            dialogState.value.copy(deleteCourseDialog = uiState.data.name)
+                            dialogState.value.copy(deleteCourseDialog = DeleteCourseDialogState(uiState.data.id, uiState.data.name))
                         }
                 }
             }
@@ -249,9 +250,13 @@ class CourseDetailViewModel
         }
 
         fun confirmDeleteCourse() {
+            if (dialogState.value.deleteCourseDialog?.isDeleting == true) return
+
             viewModelScope.launch {
                 (uiState.value as? UiState.Success)?.let { state: UiState.Success ->
                     try {
+                        _dialogState.value =
+                            dialogState.value.copy(deleteCourseDialog = dialogState.value.deleteCourseDialog?.copy(isDeleting = true))
                         customCourseRepository.deleteCourse(state.data.id)
                         dismissDeleteCourseDialog()
                         _uiEvent.emit(UiEvent.DeleteCourseSuccess)
@@ -292,6 +297,9 @@ class CourseDetailViewModel
                                 _uiEvent.emit(UiEvent.UnknownFailure)
                             }
                         }
+                    } finally {
+                        _dialogState.value =
+                            dialogState.value.copy(deleteCourseDialog = dialogState.value.deleteCourseDialog?.copy(isDeleting = false))
                     }
                 }
             }
@@ -497,7 +505,7 @@ class CourseDetailViewModel
         data class DialogState(
             val authDialog: AuthFeature? = null,
             val reportCourseDialog: String? = null,
-            val deleteCourseDialog: String? = null,
+            val deleteCourseDialog: DeleteCourseDialogState? = null,
             val deleteReviewDialog: CourseReviewUiModel? = null,
             val reportReviewDialog: CourseReviewUiModel? = null,
         )

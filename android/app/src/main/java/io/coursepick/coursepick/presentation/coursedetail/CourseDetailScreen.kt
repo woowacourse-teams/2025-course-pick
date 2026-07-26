@@ -633,7 +633,7 @@ private fun CourseDetailScreenDialogs(
 
     if (dialogState.deleteCourseDialog != null) {
         DeleteCustomCourseDialog(
-            courseName = dialogState.deleteCourseDialog,
+            state = dialogState.deleteCourseDialog,
             onDismiss = onDismissDeleteCourseDialog,
             onConfirm = onConfirmDeleteCourseDialog,
         )

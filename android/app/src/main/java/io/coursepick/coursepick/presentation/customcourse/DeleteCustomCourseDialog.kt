@@ -9,11 +9,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -26,13 +29,13 @@ import io.coursepick.coursepick.R
 
 @Composable
 fun DeleteCustomCourseDialog(
-    courseName: String,
+    state: DeleteCourseDialogState,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
 ) {
-    Dialog(onDismiss) {
+    Dialog(onDismissRequest = { if (!state.isDeleting) onDismiss() }) {
         DeleteCustomCourseDialogContent(
-            courseName = courseName,
+            state = state,
             onDismiss = onDismiss,
             onConfirm = onConfirm,
         )
@@ -41,7 +44,7 @@ fun DeleteCustomCourseDialog(
 
 @Composable
 private fun DeleteCustomCourseDialogContent(
-    courseName: String,
+    state: DeleteCourseDialogState,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
 ) {
@@ -54,7 +57,7 @@ private fun DeleteCustomCourseDialogContent(
                 .padding(20.dp),
     ) {
         Text(
-            text = courseName,
+            text = state.courseName,
             color = colorResource(R.color.item_primary),
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
@@ -77,6 +80,7 @@ private fun DeleteCustomCourseDialogContent(
         )
 
         DeleteCustomCourseDialogButtons(
+            isDeleting = state.isDeleting,
             onDismiss = onDismiss,
             onConfirm = onConfirm,
             modifier = Modifier.padding(10.dp),
@@ -86,6 +90,7 @@ private fun DeleteCustomCourseDialogContent(
 
 @Composable
 private fun DeleteCustomCourseDialogButtons(
+    isDeleting: Boolean,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
     modifier: Modifier = Modifier,
@@ -101,7 +106,7 @@ private fun DeleteCustomCourseDialogButtons(
                 Modifier
                     .weight(1F)
                     .clip(RoundedCornerShape(50))
-                    .clickable { onDismiss() }
+                    .clickable(enabled = !isDeleting) { onDismiss() }
                     .background(colorResource(R.color.background_tertiary))
                     .padding(horizontal = 20.dp, vertical = 10.dp),
         ) {
@@ -118,7 +123,7 @@ private fun DeleteCustomCourseDialogButtons(
                 Modifier
                     .weight(1F)
                     .clip(RoundedCornerShape(50))
-                    .clickable { onConfirm() }
+                    .clickable(enabled = !isDeleting) { onConfirm() }
                     .background(colorResource(R.color.point_primary))
                     .padding(horizontal = 20.dp, vertical = 10.dp),
         ) {
@@ -126,6 +131,15 @@ private fun DeleteCustomCourseDialogButtons(
                 text = stringResource(R.string.delete_custom_course_dialog_positive_button),
                 color = colorResource(R.color.item_primary),
                 fontSize = 16.sp,
+                modifier = Modifier.alpha(if (isDeleting) 0F else 1F),
+            )
+
+            CircularProgressIndicator(
+                color = colorResource(R.color.item_primary),
+                modifier =
+                    Modifier
+                        .size(16.dp)
+                        .alpha(if (isDeleting) 1F else 0F),
             )
         }
     }
@@ -135,7 +149,17 @@ private fun DeleteCustomCourseDialogButtons(
 @Composable
 private fun DeleteCustomCourseDialogPreview() {
     DeleteCustomCourseDialogContent(
-        courseName = "석촌호수 한바퀴",
+        state = DeleteCourseDialogState("", "석촌호수 한바퀴", false),
+        onDismiss = { },
+        onConfirm = { },
+    )
+}
+
+@PreviewLightDark
+@Composable
+private fun DeleteCustomCourseDialogDeletingPreview() {
+    DeleteCustomCourseDialogContent(
+        state = DeleteCourseDialogState("", "석촌호수 한바퀴", true),
         onDismiss = { },
         onConfirm = { },
     )

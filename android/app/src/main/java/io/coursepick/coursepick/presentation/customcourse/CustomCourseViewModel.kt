@@ -220,7 +220,7 @@ class CustomCourseViewModel
                     if (authRepository.accessToken() == null) {
                         dialogState.value.copy(authFeature = AuthFeature.DeleteCustomCourse(customCourse))
                     } else {
-                        dialogState.value.copy(deleteCourseDialog = customCourse)
+                        dialogState.value.copy(deleteCourseDialog = DeleteCourseDialogState(customCourse.id, customCourse.name))
                     }
             }
         }
@@ -230,8 +230,12 @@ class CustomCourseViewModel
         }
 
         fun confirmDeleteCustomCourse(courseId: String) {
+            if (dialogState.value.deleteCourseDialog?.isDeleting == true) return
+
             viewModelScope.launch {
                 try {
+                    _dialogState.value =
+                        dialogState.value.copy(deleteCourseDialog = dialogState.value.deleteCourseDialog?.copy(isDeleting = true))
                     customCourseRepository.deleteCourse(courseId)
                     dismissDeleteCourseDialog()
                     _uiEvent.emit(CustomCourseUiEvent.DeleteCourseSuccess)
@@ -267,6 +271,9 @@ class CustomCourseViewModel
                             _uiEvent.emit(CustomCourseUiEvent.UnknownFailure)
                         }
                     }
+                } finally {
+                    _dialogState.value =
+                        dialogState.value.copy(deleteCourseDialog = dialogState.value.deleteCourseDialog?.copy(isDeleting = false))
                 }
             }
         }
@@ -282,7 +289,7 @@ class CustomCourseViewModel
 
         data class DialogState(
             val authFeature: AuthFeature? = null,
-            val deleteCourseDialog: CustomCourseUiModel? = null,
+            val deleteCourseDialog: DeleteCourseDialogState? = null,
         )
 
         sealed interface AuthFeature {
