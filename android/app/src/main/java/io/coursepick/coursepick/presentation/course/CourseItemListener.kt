@@ -1,11 +1,11 @@
 package io.coursepick.coursepick.presentation.course
 
 interface CourseItemListener {
-    fun select(course: CourseItem)
+    fun select(course: CourseUiModel)
 
-    fun toggleFavorite(course: CourseItem)
+    fun toggleFavorite(course: CourseUiModel)
 
-    fun navigateToCourse(course: CourseItem)
+    fun navigateToCourse(course: CourseUiModel)
 
-    fun navigateToDetail(course: CourseItem)
+    fun navigateToDetail(course: CourseUiModel)
 }

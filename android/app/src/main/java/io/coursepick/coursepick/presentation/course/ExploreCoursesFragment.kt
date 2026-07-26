@@ -84,10 +84,10 @@ class ExploreCoursesFragment(
         )
     }
 
-    fun scrollTo(courseItem: CourseItem) {
+    fun scrollTo(course: CourseUiModel) {
         val position =
             courseAdapter.currentList.indexOfFirst { item: CourseListItem ->
-                item is CourseListItem.Course && item.item.id == courseItem.id
+                item is CourseListItem.Course && item.item.id == course.id
             }
         if (position == -1) return
         val layoutManager = binding.exploreCourses.layoutManager as? LinearLayoutManager ?: return

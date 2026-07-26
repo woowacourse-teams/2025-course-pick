@@ -50,6 +50,15 @@
     <string name="custom_courses_empty_description">등록한 코스가 없어요</string>
     <string name="custom_courses_load_failed">데이터를 불러오는 데 실패했습니다.</string>
 
+
+    <!--  나의 코스 - 삭제 다이얼로그  -->
+    <string name="delete_custom_course_dialog_feature_name">나의 코스 삭제</string>
+    <string name="delete_custom_course_dialog_title">이 코스를 삭제할까요?</string>
+    <string name="delete_custom_course_dialog_warning">삭제된 코스는 되돌릴 수 없어요.</string>
+    <string name="delete_custom_course_dialog_negative_button">취소</string>
+    <string name="delete_custom_course_dialog_positive_button">확인</string>
+    <string name="delete_custom_course_dialog_success_message">코스가 삭제됐습니다.</string>
+
     <!--  코스 화면: 현 위치로 이동 권한  -->
     <string name="current_location_location_permission_rationale_message">현 위치 표시를 위해 위치 권한을 허용해주세요.</string>
     <string name="current_location_location_permission_rationale_negative_button">설정으로 이동</string>
@@ -79,6 +88,7 @@
     <string name="course_detail_header">코스 정보</string>
     <string name="course_detail_load_failure_message">코스 정보를 불러오지 못했습니다.</string>
     <string name="course_detail_report_course_button_description">코스 신고</string>
+    <string name="course_detail_delete_course_button_description">코스 삭제</string>
     <string name="course_detail_navigate_back_description">뒤로 가기</string>
     <string name="course_detail_review_header">리뷰</string>
     <string name="course_detail_review_count">(%1$d개)</string>
@@ -87,6 +97,7 @@
     <string name="course_detail_write_review_button">리뷰 작성</string>
     <string name="course_detail_already_reviewed_message">이 코스는 이미 리뷰하셨어요.</string>
     <string name="star_rating_description">별 %1$d개</string>
+    <string name="course_detail_delete_course_feature_name">코스 삭제</string>
     <string name="course_detail_delete_review_feature_name">리뷰 삭제</string>
 
     <!--  코스 상세 화면 - 리뷰 목록 아이템  -->

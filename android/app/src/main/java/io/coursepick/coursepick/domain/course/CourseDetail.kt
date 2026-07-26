@@ -1,7 +1,8 @@
 package io.coursepick.coursepick.domain.course
 
 data class CourseDetail(
-    val id: String,
+    val courseId: String,
+    val creatorId: String,
     val name: CourseName,
     val length: Length,
     val coordinates: List<Coordinate>,

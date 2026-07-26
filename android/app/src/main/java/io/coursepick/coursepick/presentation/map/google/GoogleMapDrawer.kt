@@ -18,7 +18,7 @@ import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.domain.location.Location
-import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.course.CourseUiModel
 import io.coursepick.coursepick.presentation.map.BitmapScaler
 import io.coursepick.coursepick.presentation.map.CoordinateAnimator
 import io.coursepick.coursepick.presentation.map.CourseDiffHandler
@@ -68,11 +68,11 @@ class GoogleMapDrawer(
     private var fineUserLocationAnimator: ValueAnimator? = null
     private var coarseUserLocationAnimator: ValueAnimator? = null
 
-    fun updateCourses(courses: List<CourseItem>) {
+    fun updateCourses(courses: List<CourseUiModel>) {
         courseDiffHandler.updateCourses(courses.toSet())
     }
 
-    private fun addCoursePolyline(course: CourseItem) {
+    private fun addCoursePolyline(course: CourseUiModel) {
         if (course.selected) {
             addSelectedCoursePolyline(course)
         } else {
@@ -80,7 +80,7 @@ class GoogleMapDrawer(
         }
     }
 
-    private fun addUnselectedCoursePolyline(course: CourseItem) {
+    private fun addUnselectedCoursePolyline(course: CourseUiModel) {
         val options =
             PolylineOptions()
                 .addAll(course.coordinates.map(Coordinate::toLatLng))
@@ -92,7 +92,7 @@ class GoogleMapDrawer(
         courseIdToPolyline[course.id] = map.addPolyline(options).apply { tag = course }
     }
 
-    private fun addSelectedCoursePolyline(course: CourseItem) {
+    private fun addSelectedCoursePolyline(course: CourseUiModel) {
         val courseStrokeStyle =
             StrokeStyle
                 .colorBuilder(context.getColor(R.color.course_selected))
@@ -112,7 +112,7 @@ class GoogleMapDrawer(
         courseIdToPolyline[course.id] = map.addPolyline(courseOptions).apply { tag = course }
     }
 
-    private fun removeCoursePolyline(course: CourseItem) {
+    private fun removeCoursePolyline(course: CourseUiModel) {
         courseIdToPolyline.remove(course.id)?.remove()
     }
 

@@ -50,7 +50,8 @@ class FakeCourseRepository : CourseRepository {
 
     override suspend fun detail(courseId: String): CourseDetail =
         CourseDetail(
-            id = COURSE_FIXTURE_1.id,
+            courseId = COURSE_FIXTURE_1.id,
+            creatorId = "creatorId",
             name = COURSE_FIXTURE_1.name,
             length = COURSE_FIXTURE_1.length,
             coordinates = COURSE_FIXTURE_1.coordinates,

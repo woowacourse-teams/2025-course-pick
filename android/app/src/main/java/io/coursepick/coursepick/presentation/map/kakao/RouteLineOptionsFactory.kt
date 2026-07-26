@@ -11,7 +11,7 @@ import com.kakao.vectormap.route.RouteLineStyle
 import com.kakao.vectormap.route.RouteLineStyles
 import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Coordinate
-import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.course.CourseUiModel
 
 class RouteLineOptionsFactory(
     private val context: Context,
@@ -35,7 +35,7 @@ class RouteLineOptionsFactory(
             ),
         )
 
-    fun routeLineOptions(course: CourseItem): RouteLineOptions =
+    fun routeLineOptions(course: CourseUiModel): RouteLineOptions =
         RouteLineOptions.from(
             course.id,
             routeLineSegmentWithStyle(

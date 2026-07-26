@@ -58,10 +58,10 @@ import io.coursepick.coursepick.presentation.InstallStateObserver
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
 import io.coursepick.coursepick.presentation.coursedetail.CourseDetailActivity
-import io.coursepick.coursepick.presentation.customcourse.CustomCourseItem
+import io.coursepick.coursepick.presentation.customcourse.CustomCourseUiModel
 import io.coursepick.coursepick.presentation.customcourse.CustomCourseViewModel
 import io.coursepick.coursepick.presentation.customcourse.CustomCoursesFragment
-import io.coursepick.coursepick.presentation.customcourse.toCourseItem
+import io.coursepick.coursepick.presentation.customcourse.toCourseUiModel
 import io.coursepick.coursepick.presentation.favorites.FavoriteCoursesFragment
 import io.coursepick.coursepick.presentation.filter.CourseFilterBottomSheet
 import io.coursepick.coursepick.presentation.map.CameraMoveReason
@@ -102,7 +102,7 @@ class CoursesActivity :
 
     private val courseItemListener =
         object : CourseItemListener {
-            override fun select(course: CourseItem) {
+            override fun select(course: CourseUiModel) {
                 Logger.log(
                     Logger.Event.Click("course_on_list"),
                     "id" to course.id,
@@ -111,15 +111,15 @@ class CoursesActivity :
                 viewModel.select(course)
             }
 
-            override fun toggleFavorite(course: CourseItem) {
+            override fun toggleFavorite(course: CourseUiModel) {
                 viewModel.toggleFavorite(course)
             }
 
-            override fun navigateToCourse(course: CourseItem) {
+            override fun navigateToCourse(course: CourseUiModel) {
                 this@CoursesActivity.navigateToCourse(course)
             }
 
-            override fun navigateToDetail(course: CourseItem) {
+            override fun navigateToDetail(course: CourseUiModel) {
                 startActivity(CourseDetailActivity.intent(this@CoursesActivity, course.id))
             }
         }
@@ -166,7 +166,7 @@ class CoursesActivity :
                 }
             }
 
-            mapManager.setOnCourseClickListener { course: CourseItem ->
+            mapManager.setOnCourseClickListener { course: CourseUiModel ->
                 viewModel.select(course)
             }
 
@@ -398,7 +398,7 @@ class CoursesActivity :
         }
     }
 
-    fun navigateToCourse(course: CourseItem) {
+    fun navigateToCourse(course: CourseUiModel) {
         Logger.log(
             Logger.Event.Click("navigate"),
             "id" to course.id,
@@ -707,9 +707,9 @@ class CoursesActivity :
                 customCourseViewModel.state
                     .map { it.selectedCustomCourse }
                     .distinctUntilChanged()
-                    .collect { customCourseItem: CustomCourseItem? ->
-                        customCourseItem?.let {
-                            val courseItem = customCourseItem.toCourseItem()
+                    .collect { customCourse: CustomCourseUiModel? ->
+                        customCourse?.let {
+                            val courseItem = customCourse.toCourseUiModel()
                             viewModel.selectExternalCourse(courseItem)
                         }
                     }
@@ -721,7 +721,7 @@ class CoursesActivity :
         viewModel.state.observe(this) { state: CoursesUiState ->
             courseAdapter.submitList(state.courses)
             mapManager.clearRoute()
-            val courses: List<CourseItem> =
+            val courses: List<CourseUiModel> =
                 state.courses
                     .filterIsInstance<CourseListItem.Course>()
                     .map(CourseListItem.Course::item)
@@ -853,7 +853,7 @@ class CoursesActivity :
                         )
                     }
 
-                    viewModel.routeFinderDialogCourse.collectAsStateWithLifecycle().value?.let { course: CourseItem ->
+                    viewModel.routeFinderDialogCourse.collectAsStateWithLifecycle().value?.let { course: CourseUiModel ->
                         RouteFinderDialog(
                             onConfirm = { routeFinder: RouteFinder, rememberSelection: Boolean ->
                                 viewModel.onRouteFinderSelected(course, routeFinder, rememberSelection)

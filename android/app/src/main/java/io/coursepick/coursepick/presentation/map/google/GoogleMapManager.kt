@@ -16,7 +16,7 @@ import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.domain.location.Location
 import io.coursepick.coursepick.presentation.Logger
-import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.course.CourseUiModel
 import io.coursepick.coursepick.presentation.map.CameraMoveReason
 import io.coursepick.coursepick.presentation.map.DistanceCalculator
 import io.coursepick.coursepick.presentation.map.MapManager
@@ -70,7 +70,7 @@ class GoogleMapManager(
         }
     }
 
-    override fun updateCourses(courses: List<CourseItem>) {
+    override fun updateCourses(courses: List<CourseUiModel>) {
         drawer?.updateCourses(courses) ?: run { Timber.w(DRAWER_IS_NULL_MESSAGE) }
     }
 
@@ -136,14 +136,14 @@ class GoogleMapManager(
         } ?: run { Timber.w(MAP_IS_NULL_MESSAGE) }
     }
 
-    override fun fitTo(course: CourseItem) {
+    override fun fitTo(course: CourseUiModel) {
         fitTo(course.coordinates)
     }
 
-    override fun setOnCourseClickListener(onClick: (CourseItem) -> Unit) {
+    override fun setOnCourseClickListener(onClick: (CourseUiModel) -> Unit) {
         map?.let { map: GoogleMap ->
             map.setOnPolylineClickListener { polyline: Polyline ->
-                (polyline.tag as? CourseItem)?.let { course: CourseItem ->
+                (polyline.tag as? CourseUiModel)?.let { course: CourseUiModel ->
                     Logger.log(
                         Logger.Event.Click("course_on_map"),
                         "id" to course.id,

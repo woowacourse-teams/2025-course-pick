@@ -9,21 +9,21 @@ import com.kakao.vectormap.Poi
 import com.kakao.vectormap.camera.CameraPosition
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.presentation.Logger
-import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.course.CourseUiModel
 import io.coursepick.coursepick.presentation.map.CameraMoveReason
 import kotlin.math.pow
 import kotlin.math.sqrt
 
 class KakaoMapEventHandler {
-    private var courses: List<CourseItem> = listOf()
+    private var courses: List<CourseUiModel> = listOf()
 
-    fun updateCourses(courses: List<CourseItem>) {
+    fun updateCourses(courses: List<CourseUiModel>) {
         this.courses = courses
     }
 
     fun setOnCourseClickListener(
         map: KakaoMap,
-        onClick: (CourseItem) -> Unit,
+        onClick: (CourseUiModel) -> Unit,
     ) {
         map.setOnMapClickListener { kakaoMap: KakaoMap, latLng: LatLng, target: PointF, poi: Poi ->
             Logger.log(
@@ -35,7 +35,7 @@ class KakaoMapEventHandler {
                 "point_of_interest" to poi.name,
             )
 
-            for (course: CourseItem in courses) {
+            for (course: CourseUiModel in courses) {
                 if (course.isNear(kakaoMap, target)) {
                     Logger.log(
                         Logger.Event.Click("course_on_map"),
@@ -80,7 +80,7 @@ class KakaoMapEventHandler {
         }
     }
 
-    private fun CourseItem.isNear(
+    private fun CourseUiModel.isNear(
         map: KakaoMap,
         target: PointF,
     ): Boolean {

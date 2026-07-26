@@ -47,9 +47,10 @@ fun CustomCourseScreen(
     status: CustomCourseUiState,
     onReconnect: OnReconnectListener,
     onGoToCreateCustomCourse: () -> Unit,
-    onSelect: (CustomCourseItem) -> Unit,
-    onNavigateToCourse: (CustomCourseItem) -> Unit,
-    onNavigateToDetail: (CustomCourseItem) -> Unit,
+    onSelect: (CustomCourseUiModel) -> Unit,
+    onDelete: (CustomCourseUiModel) -> Unit,
+    onNavigateToCourse: (CustomCourseUiModel) -> Unit,
+    onNavigateToDetail: (CustomCourseUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -91,11 +92,12 @@ fun CustomCourseScreen(
                         ) {
                             items(
                                 items = status.customCourses,
-                                key = CustomCourseItem::id,
-                            ) { customCourse: CustomCourseItem ->
-                                CustomCourseItemCard(
+                                key = CustomCourseUiModel::id,
+                            ) { customCourse: CustomCourseUiModel ->
+                                CustomCourseItem(
                                     customCourse = customCourse,
                                     onSelect = { onSelect(customCourse) },
+                                    onDelete = { onDelete(customCourse) },
                                     onNavigateToCourse = { onNavigateToCourse(customCourse) },
                                     onNavigateToDetail = { onNavigateToDetail(customCourse) },
                                 )
@@ -150,6 +152,7 @@ private fun CustomCourseScreen_EmptyPreview() {
         onReconnect = { },
         onGoToCreateCustomCourse = { },
         onSelect = { },
+        onDelete = { },
         onNavigateToCourse = { },
         onNavigateToDetail = { },
     )
@@ -158,9 +161,9 @@ private fun CustomCourseScreen_EmptyPreview() {
 @PreviewLightDark
 @Composable
 private fun CustomCourseScreen_WithCoursesPreview() {
-    val customCourse: List<CustomCourseItem> =
+    val customCourse: List<CustomCourseUiModel> =
         List(10) { index: Int ->
-            CustomCourseItem(
+            CustomCourseUiModel(
                 course =
                     Course(
                         id = index.toString(),
@@ -191,6 +194,7 @@ private fun CustomCourseScreen_WithCoursesPreview() {
         onReconnect = {},
         onGoToCreateCustomCourse = { },
         onSelect = { },
+        onDelete = { },
         onNavigateToCourse = { },
         onNavigateToDetail = { },
     )
@@ -209,6 +213,7 @@ private fun CustomCourseScreen_LoadingPreview() {
         onReconnect = {},
         onGoToCreateCustomCourse = { },
         onSelect = { },
+        onDelete = { },
         onNavigateToCourse = { },
         onNavigateToDetail = { },
     )
@@ -227,6 +232,7 @@ private fun CustomCourseScreen_NoInternetPreview() {
         onReconnect = {},
         onGoToCreateCustomCourse = { },
         onSelect = { },
+        onDelete = { },
         onNavigateToCourse = { },
         onNavigateToDetail = { },
     )
@@ -245,6 +251,7 @@ private fun CustomCourseScreen_FailurePreview() {
         onReconnect = {},
         onGoToCreateCustomCourse = { },
         onSelect = { },
+        onDelete = { },
         onNavigateToCourse = { },
         onNavigateToDetail = { },
     )

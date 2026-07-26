@@ -14,8 +14,9 @@ import io.coursepick.coursepick.domain.course.CoursesPage
 import io.coursepick.coursepick.domain.customcourse.CustomCourseRepository
 import io.coursepick.coursepick.domain.location.LocationRepository
 import io.coursepick.coursepick.presentation.Logger
-import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.course.CourseUiModel
 import io.coursepick.coursepick.presentation.course.UiStatus
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -39,8 +40,8 @@ class CustomCourseViewModel
         private val _uiEvent = MutableSharedFlow<CustomCourseUiEvent>()
         val uiEvent: SharedFlow<CustomCourseUiEvent> get() = _uiEvent.asSharedFlow()
 
-        private val _authDialogState = MutableStateFlow<AuthFeature?>(null)
-        val authDialogState: StateFlow<AuthFeature?> get() = _authDialogState.asStateFlow()
+        private val _dialogState = MutableStateFlow<DialogState>(DialogState())
+        val dialogState: StateFlow<DialogState> get() = _dialogState.asStateFlow()
 
         private val _state =
             MutableStateFlow(
@@ -55,7 +56,7 @@ class CustomCourseViewModel
         fun onGoToCreateCustomCourse() {
             viewModelScope.launch {
                 if (authRepository.accessToken() == null) {
-                    _authDialogState.value = AuthFeature.CreateCustomCourse
+                    _dialogState.value = dialogState.value.copy(authFeature = AuthFeature.CreateCustomCourse)
                 } else {
                     _uiEvent.emit(CustomCourseUiEvent.NavigateToCreateCourse)
                 }
@@ -63,7 +64,7 @@ class CustomCourseViewModel
         }
 
         fun dismissAuthDialog() {
-            _authDialogState.value = null
+            _dialogState.value = dialogState.value.copy(authFeature = null)
         }
 
         fun signIn(
@@ -77,6 +78,7 @@ class CustomCourseViewModel
                         _uiEvent.emit(CustomCourseUiEvent.AuthenticationSuccess)
                         when (authFeature) {
                             AuthFeature.FetchCustomCourses -> fetchCustomCourses()
+                            is AuthFeature.DeleteCustomCourse -> onDeleteCustomCourse(authFeature.course)
                             AuthFeature.CreateCustomCourse -> _uiEvent.emit(CustomCourseUiEvent.NavigateToCreateCourse)
                         }
                     }
@@ -112,7 +114,7 @@ class CustomCourseViewModel
                 }
 
                 if (authRepository.accessToken() == null) {
-                    _authDialogState.value = AuthFeature.FetchCustomCourses
+                    _dialogState.value = dialogState.value.copy(authFeature = AuthFeature.FetchCustomCourses)
                     _state.update { currentState ->
                         currentState.copy(status = UiStatus.Success, customCourses = emptyList())
                     }
@@ -129,9 +131,9 @@ class CustomCourseViewModel
                 }.onSuccess { coursesPage: CoursesPage ->
                     Logger.log(Logger.Event.Success("fetch_custom_courses_new"))
 
-                    val customCourseItems: List<CustomCourseItem> =
+                    val customCourse: List<CustomCourseUiModel> =
                         coursesPage.courses.mapIndexed { index, course ->
-                            CustomCourseItem(
+                            CustomCourseUiModel(
                                 course = course,
                                 selected = index == 0,
                             )
@@ -140,8 +142,8 @@ class CustomCourseViewModel
                     _state.update { currentState ->
                         currentState.copy(
                             status = UiStatus.Success,
-                            customCourses = customCourseItems,
-                            selectedCustomCourse = customCourseItems.firstOrNull(),
+                            customCourses = customCourse,
+                            selectedCustomCourse = customCourse.firstOrNull(),
                         )
                     }
                 }.onFailure { exception: Throwable ->
@@ -190,7 +192,7 @@ class CustomCourseViewModel
             }
         }
 
-        fun select(customCourse: CustomCourseItem) {
+        fun select(customCourse: CustomCourseUiModel) {
             val isAlreadySelected = _state.value.selectedCustomCourse?.id == customCourse.id
 
             if (isAlreadySelected) {
@@ -212,17 +214,90 @@ class CustomCourseViewModel
             }
         }
 
+        fun onDeleteCustomCourse(customCourse: CustomCourseUiModel) {
+            viewModelScope.launch {
+                _dialogState.value =
+                    if (authRepository.accessToken() == null) {
+                        dialogState.value.copy(authFeature = AuthFeature.DeleteCustomCourse(customCourse))
+                    } else {
+                        dialogState.value.copy(deleteCourseDialog = DeleteCourseDialogState(customCourse.id, customCourse.name))
+                    }
+            }
+        }
+
+        fun dismissDeleteCourseDialog() {
+            _dialogState.value = dialogState.value.copy(deleteCourseDialog = null)
+        }
+
+        fun confirmDeleteCustomCourse(courseId: String) {
+            if (dialogState.value.deleteCourseDialog?.isDeleting == true) return
+
+            viewModelScope.launch {
+                try {
+                    _dialogState.value =
+                        dialogState.value.copy(deleteCourseDialog = dialogState.value.deleteCourseDialog?.copy(isDeleting = true))
+                    customCourseRepository.deleteCourse(courseId)
+                    dismissDeleteCourseDialog()
+                    _uiEvent.emit(CustomCourseUiEvent.DeleteCourseSuccess)
+                    fetchCustomCourses()
+
+                    Logger.log(Logger.Event.Success("delete_custom_course"), "courseId" to courseId)
+                } catch (exception: Throwable) {
+                    Logger.log(
+                        Logger.Event.Failure("submit_course_report"),
+                        "exception" to exception.message.orEmpty(),
+                        "courseId" to courseId,
+                    )
+
+                    when (exception) {
+                        is CancellationException -> {
+                            throw exception
+                        }
+
+                        is NoNetworkException -> {
+                            _uiEvent.emit(CustomCourseUiEvent.NoNetwork)
+                        }
+
+                        is HttpException -> {
+                            _uiEvent.emit(
+                                when (exception.code()) {
+                                    401 -> CustomCourseUiEvent.UnauthorizedUser
+                                    else -> CustomCourseUiEvent.UnknownFailure
+                                },
+                            )
+                        }
+
+                        else -> {
+                            _uiEvent.emit(CustomCourseUiEvent.UnknownFailure)
+                        }
+                    }
+                } finally {
+                    _dialogState.value =
+                        dialogState.value.copy(deleteCourseDialog = dialogState.value.deleteCourseDialog?.copy(isDeleting = false))
+                }
+            }
+        }
+
         fun onNavigateToCourse(
-            customCourse: CustomCourseItem,
-            onNavigateTo: (CourseItem) -> Unit,
+            customCourse: CustomCourseUiModel,
+            onNavigateTo: (CourseUiModel) -> Unit,
         ) {
             select(customCourse)
-            val courseItem: CourseItem = _state.value.selectedCustomCourse?.toCourseItem() ?: return
-            onNavigateTo(courseItem)
+            val course: CourseUiModel = _state.value.selectedCustomCourse?.toCourseUiModel() ?: return
+            onNavigateTo(course)
         }
+
+        data class DialogState(
+            val authFeature: AuthFeature? = null,
+            val deleteCourseDialog: DeleteCourseDialogState? = null,
+        )
 
         sealed interface AuthFeature {
             data object FetchCustomCourses : AuthFeature
+
+            data class DeleteCustomCourse(
+                val course: CustomCourseUiModel,
+            ) : AuthFeature
 
             data object CreateCustomCourse : AuthFeature
         }

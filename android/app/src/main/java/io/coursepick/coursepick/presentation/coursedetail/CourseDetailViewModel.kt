@@ -11,8 +11,10 @@ import io.coursepick.coursepick.domain.auth.AuthenticationError
 import io.coursepick.coursepick.domain.auth.Authenticator
 import io.coursepick.coursepick.domain.course.CourseDetail
 import io.coursepick.coursepick.domain.course.CourseRepository
+import io.coursepick.coursepick.domain.customcourse.CustomCourseRepository
 import io.coursepick.coursepick.domain.favorites.FavoriteCourseRepository
 import io.coursepick.coursepick.presentation.Logger
+import io.coursepick.coursepick.presentation.customcourse.DeleteCourseDialogState
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,6 +35,7 @@ class CourseDetailViewModel
     constructor(
         private val courseRepository: CourseRepository,
         private val favoriteCourseRepository: FavoriteCourseRepository,
+        private val customCourseRepository: CustomCourseRepository,
         private val authRepository: AuthRepository,
         private val networkMonitor: NetworkMonitor,
     ) : ViewModel() {
@@ -59,7 +62,7 @@ class CourseDetailViewModel
                 } else {
                     UiState.Success(
                         courseDetail.toUiModel(
-                            isFavorite = favoriteCourseIds.contains(courseDetail.id),
+                            isFavorite = favoriteCourseIds.contains(courseDetail.courseId),
                             userId = authRepository.userId(),
                         ),
                     )
@@ -93,7 +96,7 @@ class CourseDetailViewModel
             }.onSuccess { detail: CourseDetail ->
                 Logger.log(
                     Logger.Event.Success("fetch_course_detail"),
-                    "courseId" to detail.id,
+                    "courseId" to detail.courseId,
                     "courseName" to detail.name.value,
                 )
             }.onFailure { exception: Throwable ->
@@ -129,6 +132,7 @@ class CourseDetailViewModel
                         _uiEvent.emit(UiEvent.AuthenticationSuccess)
                         when (authFeature) {
                             is AuthFeature.ReportCourse -> onReportCourse()
+                            is AuthFeature.DeleteCourse -> onDeleteCourse()
                             is AuthFeature.DeleteReview -> onDeleteReview(authFeature.review)
                             is AuthFeature.ReportReview -> onReportReview(authFeature.review)
                             is AuthFeature.WriteReview -> onWriteReview()
@@ -223,6 +227,79 @@ class CourseDetailViewModel
                                 _uiEvent.emit(UiEvent.UnknownFailure)
                             }
                         }
+                    }
+                }
+            }
+        }
+
+        fun onDeleteCourse() {
+            viewModelScope.launch {
+                (uiState.value as? UiState.Success)?.let { uiState: UiState.Success ->
+                    _dialogState.value =
+                        if (authRepository.accessToken() == null) {
+                            dialogState.value.copy(authDialog = AuthFeature.DeleteCourse(uiState.data.id))
+                        } else {
+                            dialogState.value.copy(deleteCourseDialog = DeleteCourseDialogState(uiState.data.id, uiState.data.name))
+                        }
+                }
+            }
+        }
+
+        fun dismissDeleteCourseDialog() {
+            _dialogState.value = dialogState.value.copy(deleteCourseDialog = null)
+        }
+
+        fun confirmDeleteCourse() {
+            if (dialogState.value.deleteCourseDialog?.isDeleting == true) return
+
+            viewModelScope.launch {
+                (uiState.value as? UiState.Success)?.let { state: UiState.Success ->
+                    try {
+                        _dialogState.value =
+                            dialogState.value.copy(deleteCourseDialog = dialogState.value.deleteCourseDialog?.copy(isDeleting = true))
+                        customCourseRepository.deleteCourse(state.data.id)
+                        dismissDeleteCourseDialog()
+                        _uiEvent.emit(UiEvent.DeleteCourseSuccess)
+                        _uiEvent.emit(UiEvent.Exit)
+
+                        Logger.log(
+                            Logger.Event.Success("delete_custom_course"),
+                            "courseId" to state.data.id,
+                            "courseName" to state.data.name,
+                        )
+                    } catch (exception: Throwable) {
+                        Logger.log(
+                            Logger.Event.Failure("submit_course_report"),
+                            "exception" to exception.message.orEmpty(),
+                            "courseId" to state.data.id,
+                            "courseName" to state.data.name,
+                        )
+
+                        when (exception) {
+                            is CancellationException -> {
+                                throw exception
+                            }
+
+                            is NoNetworkException -> {
+                                _uiEvent.emit(UiEvent.NoNetwork)
+                            }
+
+                            is HttpException -> {
+                                _uiEvent.emit(
+                                    when (exception.code()) {
+                                        401 -> UiEvent.UnauthorizedUser
+                                        else -> UiEvent.UnknownFailure
+                                    },
+                                )
+                            }
+
+                            else -> {
+                                _uiEvent.emit(UiEvent.UnknownFailure)
+                            }
+                        }
+                    } finally {
+                        _dialogState.value =
+                            dialogState.value.copy(deleteCourseDialog = dialogState.value.deleteCourseDialog?.copy(isDeleting = false))
                     }
                 }
             }
@@ -394,6 +471,8 @@ class CourseDetailViewModel
 
             data object CourseAlreadyReported : UiEvent
 
+            data object DeleteCourseSuccess : UiEvent
+
             data object DeleteReviewSuccess : UiEvent
 
             data object ReportReviewSuccess : UiEvent
@@ -405,6 +484,8 @@ class CourseDetailViewModel
             ) : UiEvent
 
             data object CourseAlreadyReviewed : UiEvent
+
+            data object Exit : UiEvent
         }
 
         sealed interface UiState {
@@ -424,12 +505,17 @@ class CourseDetailViewModel
         data class DialogState(
             val authDialog: AuthFeature? = null,
             val reportCourseDialog: String? = null,
+            val deleteCourseDialog: DeleteCourseDialogState? = null,
             val deleteReviewDialog: CourseReviewUiModel? = null,
             val reportReviewDialog: CourseReviewUiModel? = null,
         )
 
         sealed interface AuthFeature {
             data class ReportCourse(
+                val courseId: String,
+            ) : AuthFeature
+
+            data class DeleteCourse(
                 val courseId: String,
             ) : AuthFeature
 

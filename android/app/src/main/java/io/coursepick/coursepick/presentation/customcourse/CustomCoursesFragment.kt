@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.Modifier
@@ -26,7 +27,7 @@ import io.coursepick.coursepick.databinding.FragmentCustomCoursesBinding
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.presentation.auth.AuthDialog
 import io.coursepick.coursepick.presentation.compat.OnReconnectListener
-import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.course.CourseUiModel
 import io.coursepick.coursepick.presentation.course.CoursesActivity
 import io.coursepick.coursepick.presentation.course.CoursesViewModel
 import io.coursepick.coursepick.presentation.coursedetail.CourseDetailActivity
@@ -46,9 +47,12 @@ class CustomCoursesFragment(
     private val customCourseViewModel: CustomCourseViewModel by activityViewModels()
 
     private val createCustomCourseLauncher: ActivityResultLauncher<Intent> =
-        registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult(),
-        ) { result ->
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) customCourseViewModel.fetchCustomCourses()
+        }
+
+    private val courseDetailLauncher: ActivityResultLauncher<Intent> =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) customCourseViewModel.fetchCustomCourses()
         }
 
@@ -75,30 +79,48 @@ class CustomCoursesFragment(
                     status = customCourseState,
                     onReconnect = onReconnectListener,
                     onGoToCreateCustomCourse = customCourseViewModel::onGoToCreateCustomCourse,
-                    onSelect = { customCourse: CustomCourseItem -> customCourseViewModel.select(customCourse) },
-                    onNavigateToCourse = { customCourse: CustomCourseItem ->
-                        customCourseViewModel.onNavigateToCourse(customCourse) { courseItem: CourseItem ->
-                            (activity as? CoursesActivity)?.navigateToCourse(courseItem)
+                    onSelect = { customCourse: CustomCourseUiModel -> customCourseViewModel.select(customCourse) },
+                    onDelete = { customCourse: CustomCourseUiModel -> customCourseViewModel.onDeleteCustomCourse(customCourse) },
+                    onNavigateToCourse = { customCourse: CustomCourseUiModel ->
+                        customCourseViewModel.onNavigateToCourse(customCourse) { course: CourseUiModel ->
+                            (activity as? CoursesActivity)?.navigateToCourse(course)
                         }
                     },
-                    onNavigateToDetail = { customCourse: CustomCourseItem ->
-                        startActivity(CourseDetailActivity.intent(requireContext(), customCourse.course.id))
+                    onNavigateToDetail = { customCourse: CustomCourseUiModel ->
+                        courseDetailLauncher.launch(CourseDetailActivity.intent(requireContext(), customCourse.course.id))
                     },
                     modifier = Modifier.nestedScroll(nestedScrollInterop),
                 )
 
-                val authDialogState = customCourseViewModel.authDialogState.collectAsStateWithLifecycle().value
-                if (authDialogState != null) {
+                val dialogState: CustomCourseViewModel.DialogState = customCourseViewModel.dialogState.collectAsStateWithLifecycle().value
+                if (dialogState.authFeature != null) {
                     val featureName: String =
-                        when (authDialogState) {
-                            CustomCourseViewModel.AuthFeature.FetchCustomCourses -> getString(R.string.custom_course_feature_name)
-                            CustomCourseViewModel.AuthFeature.CreateCustomCourse -> getString(R.string.create_custom_course_feature_name)
+                        when (dialogState.authFeature) {
+                            CustomCourseViewModel.AuthFeature.FetchCustomCourses -> {
+                                getString(R.string.custom_course_feature_name)
+                            }
+
+                            is CustomCourseViewModel.AuthFeature.DeleteCustomCourse -> {
+                                getString(R.string.delete_custom_course_dialog_feature_name)
+                            }
+
+                            CustomCourseViewModel.AuthFeature.CreateCustomCourse -> {
+                                getString(R.string.create_custom_course_feature_name)
+                            }
                         }
 
                     AuthDialog(
                         featureName = featureName,
                         onDismissRequest = customCourseViewModel::dismissAuthDialog,
-                        onKakaoLoginClick = { customCourseViewModel.signIn(KakaoAuthenticator(requireContext()), authDialogState) },
+                        onKakaoLoginClick = { customCourseViewModel.signIn(KakaoAuthenticator(requireContext()), dialogState.authFeature) },
+                    )
+                }
+
+                if (dialogState.deleteCourseDialog != null) {
+                    DeleteCustomCourseDialog(
+                        state = dialogState.deleteCourseDialog,
+                        onDismiss = customCourseViewModel::dismissDeleteCourseDialog,
+                        onConfirm = { customCourseViewModel.confirmDeleteCustomCourse(dialogState.deleteCourseDialog.courseId) },
                     )
                 }
             }
@@ -116,6 +138,24 @@ class CustomCoursesFragment(
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 customCourseViewModel.uiEvent.collect { event: CustomCourseUiEvent ->
                     when (event) {
+                        CustomCourseUiEvent.NoNetwork -> {
+                            Toast
+                                .makeText(requireContext(), R.string.failure_no_network_message, Toast.LENGTH_SHORT)
+                                .show()
+                        }
+
+                        CustomCourseUiEvent.UnauthorizedUser -> {
+                            Toast
+                                .makeText(requireContext(), R.string.failure_unauthorized_user_toast_message, Toast.LENGTH_SHORT)
+                                .show()
+                        }
+
+                        CustomCourseUiEvent.UnknownFailure -> {
+                            Toast
+                                .makeText(requireContext(), R.string.failure_unknown_toast_message, Toast.LENGTH_SHORT)
+                                .show()
+                        }
+
                         CustomCourseUiEvent.AuthenticationSuccess -> {
                             Toast
                                 .makeText(requireContext(), getString(R.string.authentication_success_message), Toast.LENGTH_SHORT)
@@ -144,14 +184,14 @@ class CustomCoursesFragment(
                                 .show()
                         }
 
-                        CustomCourseUiEvent.UnauthorizedUser -> {
+                        CustomCourseUiEvent.DeleteCourseSuccess -> {
                             Toast
-                                .makeText(requireContext(), R.string.failure_unauthorized_user_toast_message, Toast.LENGTH_SHORT)
+                                .makeText(requireContext(), R.string.delete_custom_course_dialog_success_message, Toast.LENGTH_SHORT)
                                 .show()
                         }
 
                         is CustomCourseUiEvent.SelectCustomCourse -> {
-                            coursesViewModel.selectExternalCourse(event.customCourse.toCourseItem())
+                            coursesViewModel.selectExternalCourse(event.customCourse.toCourseUiModel())
                         }
                     }
                 }

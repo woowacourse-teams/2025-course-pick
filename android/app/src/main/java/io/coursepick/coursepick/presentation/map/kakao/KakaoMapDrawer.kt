@@ -25,7 +25,7 @@ import io.coursepick.coursepick.R
 import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.domain.location.Location
-import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.course.CourseUiModel
 import io.coursepick.coursepick.presentation.map.BitmapScaler
 import io.coursepick.coursepick.presentation.map.CourseDiffHandler
 
@@ -60,11 +60,11 @@ class KakaoMapDrawer(
             kakaoAdjustedDimension(R.dimen.waypoint_marker_size),
         )
 
-    fun updateCourses(courses: List<CourseItem>) {
+    fun updateCourses(courses: List<CourseUiModel>) {
         courseDiffHandler.updateCourses(courses.toSet())
     }
 
-    private fun addCourseRouteLine(course: CourseItem) {
+    private fun addCourseRouteLine(course: CourseUiModel) {
         val layer: RouteLineLayer = map.routeLineManager?.layer ?: return
         val options: RouteLineOptions =
             routeLineOptionsFactory.routeLineOptions(course).apply {
@@ -73,7 +73,7 @@ class KakaoMapDrawer(
         layer.addRouteLine(options)
     }
 
-    private fun removeCourseRouteLine(course: CourseItem) {
+    private fun removeCourseRouteLine(course: CourseUiModel) {
         map.routeLineManager?.layer?.apply {
             getRouteLine(course.id)?.let(::remove)
         }

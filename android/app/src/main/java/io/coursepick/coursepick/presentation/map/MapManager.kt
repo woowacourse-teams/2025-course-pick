@@ -4,7 +4,7 @@ import io.coursepick.coursepick.domain.course.Coordinate
 import io.coursepick.coursepick.domain.course.Scope
 import io.coursepick.coursepick.domain.customcourse.DraftSegment
 import io.coursepick.coursepick.domain.location.Location
-import io.coursepick.coursepick.presentation.course.CourseItem
+import io.coursepick.coursepick.presentation.course.CourseUiModel
 
 interface MapManager {
     val cameraCoordinate: Coordinate?
@@ -13,7 +13,7 @@ interface MapManager {
 
     fun startMap(onMapReady: () -> Unit)
 
-    fun updateCourses(courses: List<CourseItem>)
+    fun updateCourses(courses: List<CourseUiModel>)
 
     fun drawRoute(route: List<Coordinate>)
 
@@ -37,9 +37,9 @@ interface MapManager {
 
     fun fitTo(coordinates: List<Coordinate>)
 
-    fun fitTo(course: CourseItem)
+    fun fitTo(course: CourseUiModel)
 
-    fun setOnCourseClickListener(onClick: (CourseItem) -> Unit)
+    fun setOnCourseClickListener(onClick: (CourseUiModel) -> Unit)
 
     fun setOnCameraMoveListener(onCameraMove: (coordinate: Coordinate, reason: CameraMoveReason) -> Unit)
 
