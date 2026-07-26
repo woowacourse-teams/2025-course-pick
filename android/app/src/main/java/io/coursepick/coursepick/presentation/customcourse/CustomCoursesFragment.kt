@@ -116,7 +116,7 @@ class CustomCoursesFragment(
                     DeleteCustomCourseDialog(
                         courseName = dialogState.deleteCourseDialog.name,
                         onDismiss = customCourseViewModel::dismissDeleteCourseDialog,
-                        onConfirm = customCourseViewModel::confirmDeleteCustomCourse,
+                        onConfirm = { customCourseViewModel.confirmDeleteCustomCourse(dialogState.deleteCourseDialog.id) },
                     )
                 }
             }
@@ -134,6 +134,24 @@ class CustomCoursesFragment(
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 customCourseViewModel.uiEvent.collect { event: CustomCourseUiEvent ->
                     when (event) {
+                        CustomCourseUiEvent.NoNetwork -> {
+                            Toast
+                                .makeText(requireContext(), R.string.failure_no_network_message, Toast.LENGTH_SHORT)
+                                .show()
+                        }
+
+                        CustomCourseUiEvent.UnauthorizedUser -> {
+                            Toast
+                                .makeText(requireContext(), R.string.failure_unauthorized_user_toast_message, Toast.LENGTH_SHORT)
+                                .show()
+                        }
+
+                        CustomCourseUiEvent.UnknownFailure -> {
+                            Toast
+                                .makeText(requireContext(), R.string.failure_unknown_toast_message, Toast.LENGTH_SHORT)
+                                .show()
+                        }
+
                         CustomCourseUiEvent.AuthenticationSuccess -> {
                             Toast
                                 .makeText(requireContext(), getString(R.string.authentication_success_message), Toast.LENGTH_SHORT)
@@ -162,9 +180,9 @@ class CustomCoursesFragment(
                                 .show()
                         }
 
-                        CustomCourseUiEvent.UnauthorizedUser -> {
+                        CustomCourseUiEvent.DeleteCourseSuccess -> {
                             Toast
-                                .makeText(requireContext(), R.string.failure_unauthorized_user_toast_message, Toast.LENGTH_SHORT)
+                                .makeText(requireContext(), R.string.delete_custom_course_dialog_success_message, Toast.LENGTH_SHORT)
                                 .show()
                         }
 

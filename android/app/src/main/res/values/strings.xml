@@ -57,6 +57,7 @@
     <string name="delete_custom_course_dialog_warning">삭제된 코스는 되돌릴 수 없어요.</string>
     <string name="delete_custom_course_dialog_negative_button">취소</string>
     <string name="delete_custom_course_dialog_positive_button">확인</string>
+    <string name="delete_custom_course_dialog_success_message">코스가 삭제됐습니다.</string>
 
     <!--  코스 화면: 현 위치로 이동 권한  -->
     <string name="current_location_location_permission_rationale_message">현 위치 표시를 위해 위치 권한을 허용해주세요.</string>

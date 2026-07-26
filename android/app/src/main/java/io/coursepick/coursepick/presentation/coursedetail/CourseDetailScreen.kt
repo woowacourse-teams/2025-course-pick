@@ -79,7 +79,9 @@ fun CourseDetailScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.uiEvent.collect { event: CourseDetailViewModel.UiEvent -> event.handle(context, navigateToWriteCourseReview) }
+        viewModel.uiEvent.collect { event: CourseDetailViewModel.UiEvent ->
+            event.handle(context, navigateBack, navigateToWriteCourseReview)
+        }
     }
 
     val state: CourseDetailViewModel.UiState = viewModel.uiState.collectAsStateWithLifecycle().value
@@ -113,6 +115,7 @@ fun CourseDetailScreen(
 
 private fun CourseDetailViewModel.UiEvent.handle(
     context: Context,
+    navigateBack: () -> Unit,
     navigateToWriteCourseReview: (CourseDetailUiModel) -> Unit,
 ) {
     when (this) {
@@ -148,6 +151,10 @@ private fun CourseDetailViewModel.UiEvent.handle(
             Toast.makeText(context, context.getString(R.string.report_course_failure_already_reported_message), Toast.LENGTH_SHORT).show()
         }
 
+        CourseDetailViewModel.UiEvent.DeleteCourseSuccess -> {
+            Toast.makeText(context, context.getString(R.string.delete_custom_course_dialog_success_message), Toast.LENGTH_SHORT).show()
+        }
+
         CourseDetailViewModel.UiEvent.DeleteReviewSuccess -> {
             Toast.makeText(context, context.getString(R.string.delete_review_success_message), Toast.LENGTH_SHORT).show()
         }
@@ -166,6 +173,10 @@ private fun CourseDetailViewModel.UiEvent.handle(
 
         CourseDetailViewModel.UiEvent.CourseAlreadyReviewed -> {
             Toast.makeText(context, context.getString(R.string.write_course_review_already_reviewed_message), Toast.LENGTH_SHORT).show()
+        }
+
+        CourseDetailViewModel.UiEvent.Exit -> {
+            navigateBack()
         }
     }
 }

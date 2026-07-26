@@ -16,6 +16,7 @@ import io.coursepick.coursepick.domain.location.LocationRepository
 import io.coursepick.coursepick.presentation.Logger
 import io.coursepick.coursepick.presentation.course.CourseUiModel
 import io.coursepick.coursepick.presentation.course.UiStatus
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -228,9 +229,45 @@ class CustomCourseViewModel
             _dialogState.value = dialogState.value.copy(deleteCourseDialog = null)
         }
 
-        fun confirmDeleteCustomCourse() {
-            // TODO: 백엔드 API 추가될 시 구현
-            dismissDeleteCourseDialog()
+        fun confirmDeleteCustomCourse(courseId: String) {
+            viewModelScope.launch {
+                try {
+                    customCourseRepository.deleteCourse(courseId)
+                    dismissDeleteCourseDialog()
+                    _uiEvent.emit(CustomCourseUiEvent.DeleteCourseSuccess)
+
+                    Logger.log(Logger.Event.Success("delete_custom_course"), "courseId" to courseId)
+                } catch (exception: Throwable) {
+                    Logger.log(
+                        Logger.Event.Failure("submit_course_report"),
+                        "exception" to exception.message.orEmpty(),
+                        "courseId" to courseId,
+                    )
+
+                    when (exception) {
+                        is CancellationException -> {
+                            throw exception
+                        }
+
+                        is NoNetworkException -> {
+                            _uiEvent.emit(CustomCourseUiEvent.NoNetwork)
+                        }
+
+                        is HttpException -> {
+                            _uiEvent.emit(
+                                when (exception.code()) {
+                                    401 -> CustomCourseUiEvent.UnauthorizedUser
+                                    else -> CustomCourseUiEvent.UnknownFailure
+                                },
+                            )
+                        }
+
+                        else -> {
+                            _uiEvent.emit(CustomCourseUiEvent.UnknownFailure)
+                        }
+                    }
+                }
+            }
         }
 
         fun onNavigateToCourse(

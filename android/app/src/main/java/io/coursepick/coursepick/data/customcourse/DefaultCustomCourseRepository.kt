@@ -29,6 +29,10 @@ class DefaultCustomCourseRepository
             service.submitCourse(DraftCourseDto(course))
         }
 
+        override suspend fun deleteCourse(courseId: String) {
+            service.deleteCourse(courseId)
+        }
+
         override suspend fun customCourses(userCoordinate: Coordinate?): CoursesPage =
             service
                 .customCourses(

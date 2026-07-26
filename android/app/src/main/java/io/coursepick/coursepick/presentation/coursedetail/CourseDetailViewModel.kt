@@ -11,6 +11,7 @@ import io.coursepick.coursepick.domain.auth.AuthenticationError
 import io.coursepick.coursepick.domain.auth.Authenticator
 import io.coursepick.coursepick.domain.course.CourseDetail
 import io.coursepick.coursepick.domain.course.CourseRepository
+import io.coursepick.coursepick.domain.customcourse.CustomCourseRepository
 import io.coursepick.coursepick.domain.favorites.FavoriteCourseRepository
 import io.coursepick.coursepick.presentation.Logger
 import kotlinx.coroutines.CancellationException
@@ -33,6 +34,7 @@ class CourseDetailViewModel
     constructor(
         private val courseRepository: CourseRepository,
         private val favoriteCourseRepository: FavoriteCourseRepository,
+        private val customCourseRepository: CustomCourseRepository,
         private val authRepository: AuthRepository,
         private val networkMonitor: NetworkMonitor,
     ) : ViewModel() {
@@ -247,8 +249,52 @@ class CourseDetailViewModel
         }
 
         fun confirmDeleteCourse() {
-            // TODO: 백엔드 API 추가될 시 구현
-            dismissDeleteCourseDialog()
+            viewModelScope.launch {
+                (uiState.value as? UiState.Success)?.let { state: UiState.Success ->
+                    try {
+                        customCourseRepository.deleteCourse(state.data.id)
+                        dismissDeleteCourseDialog()
+                        _uiEvent.emit(UiEvent.DeleteCourseSuccess)
+                        _uiEvent.emit(UiEvent.Exit)
+
+                        Logger.log(
+                            Logger.Event.Success("delete_custom_course"),
+                            "courseId" to state.data.id,
+                            "courseName" to state.data.name,
+                        )
+                    } catch (exception: Throwable) {
+                        Logger.log(
+                            Logger.Event.Failure("submit_course_report"),
+                            "exception" to exception.message.orEmpty(),
+                            "courseId" to state.data.id,
+                            "courseName" to state.data.name,
+                        )
+
+                        when (exception) {
+                            is CancellationException -> {
+                                throw exception
+                            }
+
+                            is NoNetworkException -> {
+                                _uiEvent.emit(UiEvent.NoNetwork)
+                            }
+
+                            is HttpException -> {
+                                _uiEvent.emit(
+                                    when (exception.code()) {
+                                        401 -> UiEvent.UnauthorizedUser
+                                        else -> UiEvent.UnknownFailure
+                                    },
+                                )
+                            }
+
+                            else -> {
+                                _uiEvent.emit(UiEvent.UnknownFailure)
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         fun onDeleteReview(review: CourseReviewUiModel) {
@@ -417,6 +463,8 @@ class CourseDetailViewModel
 
             data object CourseAlreadyReported : UiEvent
 
+            data object DeleteCourseSuccess : UiEvent
+
             data object DeleteReviewSuccess : UiEvent
 
             data object ReportReviewSuccess : UiEvent
@@ -428,6 +476,8 @@ class CourseDetailViewModel
             ) : UiEvent
 
             data object CourseAlreadyReviewed : UiEvent
+
+            data object Exit : UiEvent
         }
 
         sealed interface UiState {
