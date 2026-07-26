@@ -30,7 +30,7 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,7 +58,7 @@ fun CreateCustomCourseScreen(
     onShowSnapGuide: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var snap: Boolean by remember { mutableStateOf(true) }
+    var snap: Boolean by rememberSaveable { mutableStateOf(true) }
 
     Box(
         modifier
