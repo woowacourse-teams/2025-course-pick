@@ -141,7 +141,7 @@ fun CreateCustomCourseScreen(
                     .padding(horizontal = 16.dp, vertical = 4.dp),
         ) {
             Text(
-                text = "보정",
+                text = stringResource(R.string.create_custom_course_snap_switch_label),
                 color = colorResource(R.color.item_primary),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -168,7 +168,7 @@ fun CreateCustomCourseScreen(
 
             Icon(
                 painter = painterResource(R.drawable.icon_snap_help),
-                contentDescription = "보정 기능 안내",
+                contentDescription = stringResource(R.string.create_custom_course_snap_help_button_description),
                 tint = colorResource(R.color.item_primary),
                 modifier =
                     Modifier

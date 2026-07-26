@@ -153,6 +153,8 @@
     <string name="create_custom_course_confirm_button_description">코스를 생성합니다.</string>
     <string name="create_custom_course_remove_waypoint_button_description">코스가 지나가는 좌표 중 마지막 좌표를 제거합니다.</string>
     <string name="create_custom_course_add_waypoint_button_description">코스가 지나갈 좌표를 추가합니다.</string>
+    <string name="create_custom_course_snap_switch_label">보정</string>
+    <string name="create_custom_course_snap_help_button_description">보정 기능 안내</string>
     <string name="create_custom_course_no_network_message">네트워크 연결을 확인해주세요.</string>
     <string name="create_custom_course_course_added_message">코스가 추가됐습니다.</string>
     <string name="create_custom_course_invalid_course_name_message">코스 이름을 다시 확인해주세요.</string>
