@@ -124,7 +124,7 @@ private fun DeleteCustomCourseDialogButtons(
                     .weight(1F)
                     .clip(RoundedCornerShape(50))
                     .clickable(enabled = !isDeleting) { onConfirm() }
-                    .background(colorResource(R.color.point_primary))
+                    .background(colorResource(if (!isDeleting) R.color.point_primary else R.color.background_tertiary))
                     .padding(horizontal = 20.dp, vertical = 10.dp),
         ) {
             Text(
@@ -136,6 +136,7 @@ private fun DeleteCustomCourseDialogButtons(
 
             CircularProgressIndicator(
                 color = colorResource(R.color.item_primary),
+                strokeWidth = 2.dp,
                 modifier =
                     Modifier
                         .size(16.dp)
