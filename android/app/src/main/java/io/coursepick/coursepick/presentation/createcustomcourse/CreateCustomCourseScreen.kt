@@ -4,12 +4,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
@@ -17,9 +22,16 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,6 +39,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,9 +54,12 @@ fun CreateCustomCourseScreen(
     onClose: () -> Unit,
     onConfirm: () -> Unit,
     onUndoWaypoint: () -> Unit,
-    onAddWaypoint: () -> Unit,
+    onAddWaypoint: (snap: Boolean) -> Unit,
+    onShowSnapGuide: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var snap: Boolean by rememberSaveable { mutableStateOf(true) }
+
     Box(
         modifier
             .fillMaxSize()
@@ -114,6 +130,54 @@ fun CreateCustomCourseScreen(
                     .size(40.dp),
         )
 
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier =
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .height(IntrinsicSize.Min)
+                    .padding(10.dp)
+                    .background(color = colorResource(R.color.background_primary), shape = RoundedCornerShape(50))
+                    .padding(horizontal = 16.dp, vertical = 4.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.create_custom_course_snap_switch_label),
+                color = colorResource(R.color.item_primary),
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
+
+            Spacer(Modifier.width(10.dp))
+
+            Switch(
+                checked = snap,
+                onCheckedChange = { checked: Boolean -> snap = checked },
+                colors =
+                    SwitchDefaults.colors(
+                        checkedBorderColor = colorResource(R.color.point_secondary),
+                        checkedTrackColor = colorResource(R.color.point_tertiary),
+                        checkedThumbColor = colorResource(R.color.point_primary),
+                    ),
+            )
+
+            Spacer(Modifier.width(10.dp))
+
+            VerticalDivider(color = colorResource(R.color.background_border), modifier = Modifier.height(32.dp))
+
+            Spacer(Modifier.width(10.dp))
+
+            Icon(
+                painter = painterResource(R.drawable.icon_snap_help),
+                contentDescription = stringResource(R.string.create_custom_course_snap_help_button_description),
+                tint = colorResource(R.color.item_primary),
+                modifier =
+                    Modifier
+                        .size(32.dp)
+                        .clip(CircleShape)
+                        .clickable { onShowSnapGuide() },
+            )
+        }
+
         Column(
             Modifier
                 .align(Alignment.BottomEnd)
@@ -147,7 +211,7 @@ fun CreateCustomCourseScreen(
                         .clip(shape = CircleShape)
                         .background(colorResource(R.color.background_primary))
                         .size(70.dp)
-                        .clickable { onAddWaypoint() },
+                        .clickable { onAddWaypoint(snap) },
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
@@ -169,6 +233,7 @@ fun CreateCustomCourseScreenPreview_ShortCourse() {
         onConfirm = { },
         onUndoWaypoint = { },
         onAddWaypoint = { },
+        onShowSnapGuide = { },
     )
 }
 
@@ -181,5 +246,6 @@ fun CreateCustomCourseScreenPreview_LongCourse() {
         onConfirm = { },
         onUndoWaypoint = { },
         onAddWaypoint = { },
+        onShowSnapGuide = { },
     )
 }

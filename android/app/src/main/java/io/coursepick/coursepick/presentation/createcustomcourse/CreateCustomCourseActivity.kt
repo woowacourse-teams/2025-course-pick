@@ -89,7 +89,12 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                     onClose = viewModel::handleExitAction,
                     onConfirm = viewModel::handleSubmitAction,
                     onUndoWaypoint = viewModel::removeLastWaypoint,
-                    onAddWaypoint = { mapManager.cameraCoordinate?.let(viewModel::addWaypoint) },
+                    onAddWaypoint = { snap: Boolean ->
+                        mapManager.cameraCoordinate?.let { coordinate: Coordinate ->
+                            viewModel.addWaypoint(coordinate, snap)
+                        }
+                    },
+                    onShowSnapGuide = viewModel::showSnapGuideDialog,
                 )
 
                 if (viewModel.showSubmitDialog.collectAsStateWithLifecycle().value) {
@@ -115,6 +120,10 @@ class CreateCustomCourseActivity : AppCompatActivity() {
                         onDismissRequest = viewModel::dismissAuthDialog,
                         onKakaoLoginClick = { viewModel.signIn(KakaoAuthenticator(this)) },
                     )
+                }
+
+                if (viewModel.showSnapGuideDialog.collectAsStateWithLifecycle().value) {
+                    SnapGuideDialog(onDismiss = viewModel::dismissSnapGuideDialog)
                 }
             }
         }
