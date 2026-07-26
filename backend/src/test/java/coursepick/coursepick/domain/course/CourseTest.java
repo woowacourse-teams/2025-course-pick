@@ -1,9 +1,6 @@
 package coursepick.coursepick.domain.course;
 
 import coursepick.coursepick.application.exception.UnauthorizedException;
-import coursepick.coursepick.domain.user.Nickname;
-import coursepick.coursepick.domain.user.User;
-import coursepick.coursepick.domain.user.UserProvider;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -136,6 +133,26 @@ class CourseTest {
             course.addReport(TEST_USER3);
 
             assertThat(course.isReportThreshold()).isTrue();
+        }
+    }
+
+    @Nested
+    class 나의코스삭제_테스트 {
+
+        @Test
+        void 작성자가_본인이면_삭제할_수_있다() {
+            var course = createCourse("코스", of(new Coordinate(0, 0), new Coordinate(2, 2)), TEST_USER);
+
+            assertThatCode(() -> course.verifyDeletable(TEST_USER.id()))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void 작성자가_아니면_삭제할_수_없다() {
+            var course = createCourse("코스", of(new Coordinate(0, 0), new Coordinate(2, 2)), TEST_USER);
+
+            assertThatThrownBy(() -> course.verifyDeletable(TEST_USER2.id()))
+                    .isInstanceOf(UnauthorizedException.class);
         }
     }
 

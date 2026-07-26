@@ -321,6 +321,34 @@ class CourseApplicationServiceTest extends AbstractIntegrationTest {
     }
 
     @Nested
+    class 나의_코스_삭제 {
+
+        @Test
+        void 내가_만든_코스를_삭제한다() {
+            var course = dbUtil.saveCourse(createCourse("내 코스", 한강_좌표, TEST_USER));
+
+            sut.deleteCourse(course.id(), TEST_USER.id());
+
+            assertThat(dbUtil.findCourseById(course.id())).isNull();
+        }
+
+        @Test
+        void 다른_사람이_만든_코스는_삭제할_수_없다() {
+            var course = dbUtil.saveCourse(createCourse("남의 코스", 한강_좌표, TEST_USER2));
+
+            assertThatThrownBy(() -> sut.deleteCourse(course.id(), TEST_USER.id()))
+                    .isInstanceOf(UnauthorizedException.class);
+            assertThat(dbUtil.findCourseById(course.id())).isNotNull();
+        }
+
+        @Test
+        void 존재하지_않는_코스를_삭제하면_예외가_발생한다() {
+            assertThatThrownBy(() -> sut.deleteCourse("notExistCourseId", TEST_USER.id()))
+                    .isInstanceOf(NoSuchElementException.class);
+        }
+    }
+
+    @Nested
     class 유저_코스_생성 {
 
         @Test

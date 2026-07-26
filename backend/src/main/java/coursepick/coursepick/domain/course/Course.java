@@ -131,6 +131,12 @@ public class Course {
         }
     }
 
+    public void verifyDeletable(String userId) {
+        if (!creatorId.equals(userId)) {
+            throw AUTHENTICATION_FAIL.create();
+        }
+    }
+
     public void addReport(User user) {
         if (reportUserIds.contains(user.id())) {
             throw ALREADY_REPORTED_COURSE.create(this.id, user.id());

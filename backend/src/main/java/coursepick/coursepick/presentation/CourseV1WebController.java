@@ -107,6 +107,12 @@ public class CourseV1WebController {
         courseApplicationService.addCustomCourse(request.name(), request.toCoordinates(), userId);
     }
 
+    @Login
+    @DeleteMapping("/courses/{id}")
+    public void deleteCourse(@PathVariable("id") String id, @UserId String userId) {
+        courseApplicationService.deleteCourse(id, userId);
+    }
+
     @PostMapping("/courses/draft/route")
     public DraftRouteWebResponse findDraftRoute(@Valid @RequestBody FindDraftRouteWebRequest request) {
         DraftSegment route = courseApplicationService.findDraftRoute(request.toCoordinates());
